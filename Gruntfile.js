@@ -1,37 +1,28 @@
-// Generated on 2014-12-02 using generator-jhipster 1.10.0
 'use strict';
-
 var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
 module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
-    require('time-grunt')(grunt);
+    //require('time-grunt')(grunt);
 
     grunt.initConfig({
         yeoman: {
             // configurable paths
-            app: require('./bower.json').appPath || 'app',
+            app: require('./bower.json').appPath || 'src/main/webapp',
             dist: 'src/main/webapp/dist'
         },
         watch: {
-//            compass: {
-//                files: ['src/main/scss/**/*.{scss,sass}'],
-//                tasks: ['compass:server', 'autoprefixer']
-//            },
             styles: {
-                files: ['src/main/webapp/styles/**/*.css'],
-                tasks: ['copy:styles', 'autoprefixer']
+                files: ['<%= yeoman.app %>/styles/**/*.scss'],
+                tasks: ['sass', 'copy:styles', 'autoprefixer']
             },
             livereload: {
-                options: {
-                    livereload: 35729
-                },
                 files: [
-                    'src/main/webapp/**/*.html',
-                    'src/main/webapp/**/*.json',
+                    '<%= yeoman.app %>/**/*.html',
+                    '<%= yeoman.app %>/**/*.json',
                     '.tmp/styles/**/*.css',
-                    '{.tmp/,}src/main/webapp/scripts/**/*.js',
-                    'src/main/webapp/images/**/*.{png,jpg,jpeg,gif,webp,svg}'
+                    '{.tmp,<%= yeoman.app %>}/scripts/**/*.js',
+                    '<%= yeoman.app %>/images/**/*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
         },
@@ -109,12 +100,13 @@ module.exports = function (grunt) {
                     open: true,
                     base: [
                         '.tmp',
-                        'src/main/webapp'
+                        '<%= yeoman.app %>'
                     ],
                     middleware: function (connect) {
                         return [
                             proxySnippet,
                             connect.static('.tmp'),
+                            //connect.static('<%= yeoman.app %>')
                             connect.static('src/main/webapp')
                         ];
                     }
@@ -126,7 +118,7 @@ module.exports = function (grunt) {
                     base: [
                         '.tmp',
                         'test',
-                        'src/main/webapp'
+                        '<%= yeoman.app %>'
                     ]
                 }
             },
@@ -151,57 +143,19 @@ module.exports = function (grunt) {
         },
         jshint: {
             options: {
-                jshintrc: '.jshintrc'
+              jshintrc: '.jshintrc'
             },
             all: [
-                'Gruntfile.js',
-                'src/main/webapp/scripts/{,*/}*.js'
+              'Gruntfile.js',
+              '<%= yeoman.app %>/scripts/{,*/}*.js'
             ]
         },
-        coffee: {
-            options: {
-                sourceMap: true,
-                sourceRoot: ''
-            },
-            dist: {
-                files: [{
-                    expand: true,
-                    cwd: 'src/main/webapp/scripts',
-                    src: '**/*.coffee',
-                    dest: '.tmp/scripts',
-                    ext: '.js'
-                }]
-            },
-            test: {
-                files: [{
-                    expand: true,
-                    cwd: 'test/spec',
-                    src: '**/*.coffee',
-                    dest: '.tmp/spec',
-                    ext: '.js'
-                }]
+        sass: {
+          dist: {
+            files: {
+              '.tmp/styles/main.css': '<%= yeoman.app %>/styles/main.scss'
             }
-        },
-        compass: {
-            options: {
-                sassDir: 'src/main/scss',
-                cssDir: 'src/main/webapp/styles',
-                generatedImagesDir: '.tmp/images/generated',
-                imagesDir: 'src/main/webapp/images',
-                javascriptsDir: 'src/main/webapp/scripts',
-                fontsDir: 'src/main/webapp/styles/fonts',
-                importPath: 'src/main/webapp/bower_components',
-                httpImagesPath: '/images',
-                httpGeneratedImagesPath: '/images/generated',
-                httpFontsPath: '/styles/fonts',
-                relativeAssets: false
-            },
-            dist: {},
-            server: {
-                options: {
-                    debugInfo: true
-                }
-            }
+          }
         },
         // not used since Uglify task does concat,
         // but still available if needed
@@ -221,7 +175,7 @@ module.exports = function (grunt) {
             }
         },
         useminPrepare: {
-            html: 'src/main/webapp/**/*.html',
+            html: '<%= yeoman.app %>/**/*.html',
             options: {
                 dest: '<%= yeoman.dist %>'
             }
@@ -238,7 +192,7 @@ module.exports = function (grunt) {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: 'src/main/webapp/images',
+                    cwd: '<%= yeoman.app %>/images',
                 src: '**/*.{jpg,jpeg}', // we don't optimize PNG files as it doesn't work on Linux. If you are not on Linux, feel free to use '{,*/}*.{png,jpg,jpeg}'
                     dest: '<%= yeoman.dist %>/images'
                 }]
@@ -248,7 +202,7 @@ module.exports = function (grunt) {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: 'src/main/webapp/images',
+                    cwd: '<%= yeoman.app %>/images',
                     src: '**/*.svg',
                     dest: '<%= yeoman.dist %>/images'
                 }]
@@ -294,7 +248,7 @@ module.exports = function (grunt) {
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: 'src/main/webapp',
+                    cwd: '<%= yeoman.app %>',
                     dest: '<%= yeoman.dist %>',
                     src: [
                         '*.html',
@@ -313,9 +267,15 @@ module.exports = function (grunt) {
             },
             styles: {
                 expand: true,
-                cwd: 'src/main/webapp/styles',
+                cwd: '<%= yeoman.app %>/styles',
                 dest: '.tmp/styles/',
                 src: '{,*/}*.css'
+            },
+            fonts: {
+              expand: true,
+              cwd: '<%= yeoman.app %>/bower_components/bootstrap-sass/vendor/assets/fonts/bootstrap',
+              dest: '.tmp/styles/fonts',
+              src: '*.{eot,svg,ttf,woff}'
             },
             generateHerokuDirectory: {
                     expand: true,
@@ -337,15 +297,21 @@ module.exports = function (grunt) {
         concurrent: {
             server: [
 //                'compass:server',
-                'copy:styles'
+                'sass',
+                //'copy:styles',
+                'copy:fonts'
             ],
             test: [
 //                'compass',
-                'copy:styles'
+                'sass',
+                //'copy:styles',
+                'copy:fonts'
             ],
             dist: [
 //                'compass:dist',
-                'copy:styles',
+                'sass:dist',
+                //'copy:styles',
+                'copy:fonts',
                 'imagemin',
                 'svgmin'
             ]
@@ -451,32 +417,6 @@ module.exports = function (grunt) {
         'rev',
         'usemin',
         'htmlmin'
-    ]);
-
-    grunt.registerTask('buildHeroku', [
-        'test',
-        'build',
-        'copy:generateHerokuDirectory',
-    ]);
-
-    grunt.registerTask('deployHeroku', [
-        'test',
-        'build',
-        'copy:generateHerokuDirectory',
-        'buildcontrol:heroku'
-    ]);
-
-    grunt.registerTask('buildOpenshift', [
-        'test',
-        'build',
-        'copy:generateOpenshiftDirectory',
-    ]);
-
-    grunt.registerTask('deployOpenshift', [
-        'test',
-        'build',
-        'copy:generateOpenshiftDirectory',
-        'buildcontrol:openshift'
     ]);
 
     grunt.registerTask('default', [

@@ -5,15 +5,15 @@
 ylopsApp.factory('LanguageService', function ($http, $translate, LANGUAGES) {
         return {
             getBy: function(language) {
-                if (language == undefined) {
+                if (language === undefined) {
                     language = $translate.storage().get('NG_TRANSLATE_LANG_KEY');
                 }
-                if (language == undefined) {
+                if (language === undefined) {
                     language = 'en';
                 }
 
-                var promise =  $http.get('i18n/' + language + '.json').then(function(response) {
-                    return LANGUAGES;
+                var promise = $http.get('i18n/' + language + '.json').then(function(/*response*/) {
+                  return LANGUAGES;
                 });
                 return promise;
             }
@@ -89,7 +89,7 @@ ylopsApp.factory('ConfigurationService', function ($rootScope, $filter, $http) {
                     properties.push(data);
                 });
                 var orderBy = $filter('orderBy');
-                return orderBy(properties, 'prefix');;
+                return orderBy(properties, 'prefix');
             });
             return promise;
         }
@@ -117,7 +117,7 @@ ylopsApp.factory('AuditsService', function ($http) {
                 });
                 return promise;
             }
-        }
+        };
     });
 
 ylopsApp.factory('Session', function () {
@@ -141,19 +141,19 @@ ylopsApp.factory('Session', function () {
 ylopsApp.factory('AuthenticationSharedService', function ($rootScope, $http, authService, Session, Account) {
         return {
             login: function (param) {
-                var data ="j_username=" + encodeURIComponent(param.username) +"&j_password=" + encodeURIComponent(param.password) +"&_spring_security_remember_me=" + param.rememberMe +"&submit=Login";
+                var data ='j_username=' + encodeURIComponent(param.username) + '&j_password=' + encodeURIComponent(param.password) + '&_spring_security_remember_me=' + param.rememberMe + '&submit=Login';
                 $http.post('app/authentication', data, {
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
                     ignoreAuthModule: 'ignoreAuthModule'
-                }).success(function (data, status, headers, config) {
+                }).success(function (/*data, status, headers, config*/) {
                     Account.get(function(data) {
                         Session.create(data.login, data.firstName, data.lastName, data.email, data.roles);
                         $rootScope.account = Session;
                         authService.loginConfirmed(data);
                     });
-                }).error(function (data, status, headers, config) {
+                }).error(function (/*data, status, headers, config*/) {
                     $rootScope.authenticationError = true;
                     Session.invalidate();
                 });
@@ -162,27 +162,27 @@ ylopsApp.factory('AuthenticationSharedService', function ($rootScope, $http, aut
 
                 $http.get('protected/authentication_check.gif', {
                     ignoreAuthModule: 'ignoreAuthModule'
-                }).success(function (data, status, headers, config) {
+                }).success(function (/*data, status, headers, config*/) {
                     if (!Session.login) {
                         Account.get(function(data) {
                             Session.create(data.login, data.firstName, data.lastName, data.email, data.roles);
                             $rootScope.account = Session;
                             if (!$rootScope.isAuthorized(authorizedRoles)) {
                                 // user is not allowed
-                               $rootScope.$broadcast("event:auth-notAuthorized");
+                               $rootScope.$broadcast('event:auth-notAuthorized');
                             } else {
-                                $rootScope.$broadcast("event:auth-loginConfirmed");
+                                $rootScope.$broadcast('event:auth-loginConfirmed');
                             }
                         });
                     }else{
                         if (!$rootScope.isAuthorized(authorizedRoles)) {
                                 // user is not allowed
-                                $rootScope.$broadcast("event:auth-notAuthorized");
+                                $rootScope.$broadcast('event:auth-notAuthorized');
                         } else {
-                                $rootScope.$broadcast("event:auth-loginConfirmed");
+                                $rootScope.$broadcast('event:auth-loginConfirmed');
                         }
                     }
-                }).error(function (data, status, headers, config) {
+                }).error(function (data /*, status, headers, config*/) {
                     if (!$rootScope.isAuthorized(authorizedRoles)) {
                         $rootScope.$broadcast('event:auth-loginRequired', data);
                     }
@@ -190,7 +190,7 @@ ylopsApp.factory('AuthenticationSharedService', function ($rootScope, $http, aut
             },
             isAuthorized: function (authorizedRoles) {
                 if (!angular.isArray(authorizedRoles)) {
-                    if (authorizedRoles == '*') {
+                    if (authorizedRoles === '*') {
                         return true;
                     }
 
@@ -202,7 +202,7 @@ ylopsApp.factory('AuthenticationSharedService', function ($rootScope, $http, aut
                     var authorized = (!!Session.login &&
                         Session.userRoles.indexOf(authorizedRole) !== -1);
 
-                    if (authorized || authorizedRole == '*') {
+                    if (authorized || authorizedRole === '*') {
                         isAuthorized = true;
                     }
                 });
