@@ -17,13 +17,17 @@ module.exports = function (grunt) {
                 tasks: ['sass', 'copy:styles', 'autoprefixer']
             },
             livereload: {
-                files: [
-                    '<%= yeoman.app %>/**/*.html',
-                    '<%= yeoman.app %>/**/*.json',
-                    '.tmp/styles/**/*.css',
-                    '{.tmp,<%= yeoman.app %>}/scripts/**/*.js',
-                    '<%= yeoman.app %>/images/**/*.{png,jpg,jpeg,gif,webp,svg}'
-                ]
+              options: {
+                livereload: true,
+                open: false
+              },
+              files: [
+                '<%= yeoman.app %>/**/*.html',
+                '<%= yeoman.app %>/**/*.json',
+                '.tmp/styles/**/*.css',
+                '{.tmp,<%= yeoman.app %>}/scripts/**/*.js',
+                '<%= yeoman.app %>/images/**/*.{png,jpg,jpeg,gif,webp,svg}'
+              ]
             }
         },
         autoprefixer: {

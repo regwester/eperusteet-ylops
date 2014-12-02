@@ -2,25 +2,19 @@
 
 /* Controllers */
 
-ylopsApp.controller('MainController', function () {
-    });
+ylopsApp.controller('MainController', function ($scope) {
+  $scope.testText = {fi: 'Tekstiä suomeksi', sv: 'Höger eller vänster?'};
+});
 
 ylopsApp.controller('AdminController', function () {
     });
 
-ylopsApp.controller('LanguageController', function ($scope, $translate, LanguageService) {
-        $scope.changeLanguage = function (languageKey) {
-            $translate.use(languageKey);
-
-            LanguageService.getBy(languageKey).then(function(languages) {
-                $scope.languages = languages;
-            });
-        };
-
-        LanguageService.getBy().then(function (languages) {
-            $scope.languages = languages;
-        });
-    });
+ylopsApp.controller('LanguageController', function ($scope, $translate) {
+  $scope.languages = ['fi', 'sv'];
+  $scope.changeLanguage = function (languageKey) {
+    $translate.use(languageKey);
+  };
+});
 
 ylopsApp.controller('MenuController', function () {
     });

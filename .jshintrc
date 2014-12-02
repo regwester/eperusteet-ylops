@@ -7,7 +7,8 @@
   "esnext": true,
   "globals": {
     "angular": false,
-    "ylopsApp": true
+    "ylopsApp": true,
+    "_": false
   },
   "immed": true,
   "indent": 2,

@@ -8,7 +8,8 @@ var ylopsApp = angular.module('ylopsApp', [
   'ngCookies',
   //'ylopsAppUtils',
   'pascalprecht.translate',
-  'ngCacheBuster'
+  'ngCacheBuster',
+  'ui.bootstrap'
 ]);
 
 ylopsApp.config(function ($routeProvider, $httpProvider, $translateProvider,
@@ -137,15 +138,10 @@ ylopsApp.config(function ($routeProvider, $httpProvider, $translateProvider,
           }
       });
 
-  // Initialize angular-translate
-  $translateProvider.useStaticFilesLoader({
-    prefix: 'i18n/',
-    suffix: '.json'
-  });
-
-  $translateProvider.preferredLanguage('en');
-
-  $translateProvider.useCookieStorage();
+  var preferredLang = 'fi';
+  $translateProvider.useLoader('LokalisointiLoader');
+  $translateProvider.preferredLanguage(preferredLang);
+  //moment.lang(preferredLang);
 
   tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
   tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');

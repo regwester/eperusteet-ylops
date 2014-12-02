@@ -2,6 +2,8 @@
 
 /* Constants */
 
+ylopsApp.constant('LOKALISOINTI_SERVICE_LOC', '/lokalisointi/cxf/rest/v1/localisation');
+
 ylopsApp.constant('USER_ROLES', {
         'all': '*',
         'admin': 'ROLE_ADMIN',
