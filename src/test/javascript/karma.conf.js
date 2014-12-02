@@ -12,8 +12,9 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             'src/main/webapp/bower_components/modernizr/modernizr.js',
-            'src/main/webapp/bower_components/jquery/dist/jquery.js',
-            'src/main/webapp/bower_components/angular/angular.js',
+            'src/main/webapp/bower_components/jquery/dist/jquery.min.js',
+            'src/main/webapp/bower_components/lodash/dist/lodash.min.js',
+            'src/main/webapp/bower_components/angular/angular.min.js',
             'src/main/webapp/bower_components/angular-mocks/angular-mocks.js',
             'src/main/webapp/bower_components/angular-route/angular-route.js',
             'src/main/webapp/bower_components/angular-resource/angular-resource.js',
@@ -24,6 +25,9 @@ module.exports = function (config) {
             'src/main/webapp/bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
             'src/main/webapp/bower_components/angular-dynamic-locale/src/tmhDynamicLocale.js',
             'src/main/webapp/bower_components/angular-cache-buster/angular-cache-buster.js',
+            'src/main/webapp/bower_components/angular-http-auth/src/http-auth-interceptor.js',
+            'src/main/webapp/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
+
             'src/main/webapp/scripts/*.js',
             'src/main/webapp/scripts/**/*.js',
             'src/test/javascript/**/!(karma.conf).js'
