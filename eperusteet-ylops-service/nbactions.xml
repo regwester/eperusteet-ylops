@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>test.single</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>test-compile</goal>
+                <goal>surefire:test</goal>
+            </goals>
+            <properties>
+                <test>${packageClassName}</test>
+                <db-it-tests>true</db-it-tests>
+                
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>oph</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
+            <actionName>build</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <it-db-tests></it-db-tests>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-Quick build</actionName>
+            <displayName>Quick build</displayName>
+            <goals>
+                <goal>prepare-package</goal>
+                <goal>war:exploded</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>oph</activatedProfile>
+            </activatedProfiles>
+        </action>
+    </actions>
