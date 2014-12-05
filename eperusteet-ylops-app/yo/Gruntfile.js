@@ -1,19 +1,10 @@
 // Generated on 2013-10-06 using generator-angular 0.4.0
 'use strict';
 var LIVERELOAD_PORT = 36729;
-var lrSnippet = require('connect-livereload')({
-  port: LIVERELOAD_PORT
-});
 var mountFolder = function(connect, dir) {
   return connect.static(require('path').resolve(dir));
 };
 var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
-
-// # Globbing
-// for performance reasons we're only matching one level down:
-// 'test/spec/{,*/}*.js'
-// use this if you want to recursively match all subfolders:
-// 'test/spec/**/*.js'
 
 
 module.exports = function(grunt) {
@@ -79,7 +70,8 @@ module.exports = function(grunt) {
     connect: {
       options: {
         port: 9010,
-        hostname: '0.0.0.0'
+        hostname: '0.0.0.0',
+        livereload: LIVERELOAD_PORT
       },
       proxies: [{
         context: '/eperusteet-ylops-service',
@@ -98,10 +90,10 @@ module.exports = function(grunt) {
       }],
       livereload: {
         options: {
+          base: ['.tmp', '<%= yeoman.app %>'],
           middleware: function(connect) {
             return [
               proxySnippet,
-              lrSnippet,
               mountFolder(connect, '.tmp'),
               mountFolder(connect, yeomanConfig.app)
             ];
@@ -153,8 +145,7 @@ module.exports = function(grunt) {
       },
       all: [
         'Gruntfile.js',
-        '<%= yeoman.app %>/scripts/**/*.js',
-        '<%= yeoman.app %>/ckeditor-plugins/**/*.js',
+        '<%= yeoman.app %>/scripts/**/*.js'
       ]
     },
     // not used since Uglify task does concat,
@@ -280,13 +271,6 @@ module.exports = function(grunt) {
           src: [
             '**',
             '!samples/**',
-          ]
-        }, {
-          expand: true,
-          cwd: '<%= yeoman.app %>/ckeditor-plugins',
-          dest: '<%= yeoman.dist %>/ckeditor-plugins',
-          src: [
-            '**',
           ]
         }, {
           expand: true,

@@ -14,19 +14,4 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
-/* jshint ignore:start */
-
-var ylopsApp = angular.module('ylopsApp', [
-  'ngRoute',
-  'ngSanitize',
-  'ui.router',
-  'ngResource',
-  'ngAnimate',
-  'pascalprecht.translate',
-  'ui.bootstrap',
-  'ui.utils'
-]);
-
-/* jshint ignore:end */
+ylopsApp.constant('SERVICE_LOC', '/eperusteet-ylops-service/api');

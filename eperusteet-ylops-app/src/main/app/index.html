@@ -12,11 +12,11 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <script type="text/javascript" src="/virkailija-raamit/apply-raamit.js"></script>
-    <!-- build:css(.tmp) styles/eperusteet.css -->
-    <link rel="stylesheet" href="styles/eperusteet.css">
+    <!-- build:css(.tmp) styles/eperusteet-ylops.css -->
+    <link rel="stylesheet" href="styles/eperusteet-ylops.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="eperusteet-ylops-app" style="height:100%; background-color: white">
+  <body ng-app="ylopsApp" style="height:100%; background-color: white">
     <!-- build:js scripts/ieshims.js -->
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
@@ -34,7 +34,7 @@
 
     <!-- build:js scripts/components.js -->
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
     <script src="bower_components/angular-route/angular-route.min.js"></script>
@@ -65,6 +65,7 @@
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
+    <script src="scripts/constants.js"></script>
     <!-- endbuild -->
   </body>
 </html>
