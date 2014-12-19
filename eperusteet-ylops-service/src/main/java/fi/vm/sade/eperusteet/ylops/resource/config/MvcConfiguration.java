@@ -17,8 +17,7 @@ package fi.vm.sade.eperusteet.ylops.resource.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheHeaderInterceptor;
 import fi.vm.sade.eperusteet.ylops.resource.util.LoggingInterceptor;
 import java.util.List;
@@ -80,8 +79,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         converter.setPrettyPrint(true);
         converter.getObjectMapper().enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         converter.getObjectMapper().enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-        converter.getObjectMapper().registerModule(new JodaModule());
-        converter.getObjectMapper().registerModule(new GuavaModule());
+        converter.getObjectMapper().registerModule(new Jdk8Module());
         MappingModule module = new MappingModule();
         converter.getObjectMapper().registerModule(module);
         return converter;
