@@ -15,10 +15,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 European Union Public Licence for more details.
 -->
 <Context antiJARLocking="true">
-  <Resource name="jdbc/eperusteety-ylops" auth="Container" type="javax.sql.DataSource"
+  <Resource name="jdbc/eperusteet-ylops" auth="Container" type="javax.sql.DataSource"
           maxActive="100" maxIdle="30" maxWait="10000"
-          username="${eperusteet-ylops.devdb.user}" 
-          password="${eperusteet-ylops.devdb.password}" 
+          username="${eperusteet-ylops.devdb.user}"
+          password="${eperusteet-ylops.devdb.password}"
           driverClassName="org.postgresql.Driver"
-          url="${eperusteet.devdb.jdbcurl}"/>    
+          url="${eperusteet-ylops.devdb.jdbcurl}"/>
 </Context>
