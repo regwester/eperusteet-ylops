@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
+import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import java.io.Serializable;
 import java.util.List;
 import org.springframework.beans.factory.BeanCreationException;

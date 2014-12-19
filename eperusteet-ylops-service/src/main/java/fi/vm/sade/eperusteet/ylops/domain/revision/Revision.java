@@ -13,24 +13,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+package fi.vm.sade.eperusteet.ylops.domain.revision;
 
-package fi.vm.sade.eperusteet.ylops.service.internal;
+import java.io.Serializable;
+import java.util.Date;
+import lombok.EqualsAndHashCode;
 
-import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo;
-import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import lombok.Getter;
 
-/**
- *
- * @author jhyoty
- */
-public class AuditRevisionListener implements org.hibernate.envers.RevisionListener {
+@Getter
+@EqualsAndHashCode
+public class Revision implements Serializable {
+    private final Integer numero;
+    private final Date pvm;
+    private final String muokkaajaOid;
+    private final String kommentti;
 
-    @Override
-    public void newRevision(Object revisionEntity) {
-        if ( revisionEntity instanceof RevisionInfo ) {
-            RevisionInfo ri = (RevisionInfo)revisionEntity;
-            ri.setMuokkaajaOid(SecurityUtil.getAuthenticatedPrincipal().getName());
-        }
+    public Revision(Integer number, Long timestamp, String muokkaajaOid, String kommentti) {
+        this.numero = number;
+        this.pvm = new Date(timestamp);
+        this.muokkaajaOid = muokkaajaOid;
+        this.kommentti = kommentti;
     }
-
 }

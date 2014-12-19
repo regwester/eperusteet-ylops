@@ -13,24 +13,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+package fi.vm.sade.eperusteet.ylops.repository.teksti;
 
-package fi.vm.sade.eperusteet.ylops.service.internal;
-
-import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo;
-import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author jhyoty
  */
-public class AuditRevisionListener implements org.hibernate.envers.RevisionListener {
-
-    @Override
-    public void newRevision(Object revisionEntity) {
-        if ( revisionEntity instanceof RevisionInfo ) {
-            RevisionInfo ri = (RevisionInfo)revisionEntity;
-            ri.setMuokkaajaOid(SecurityUtil.getAuthenticatedPrincipal().getName());
-        }
-    }
+@Repository
+public interface LokalisoituTekstiRepository extends JpaRepository<LokalisoituTeksti, Long>{
 
 }

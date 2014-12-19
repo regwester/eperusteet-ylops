@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain;
+package fi.vm.sade.eperusteet.ylops.domain.revision;
 
 import fi.vm.sade.eperusteet.ylops.service.internal.AuditRevisionListener;
 import javax.persistence.AttributeOverride;
