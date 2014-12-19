@@ -8,3 +8,5 @@ nbproject/
 nbactions-oph.xml
 npm-debug.log
 
+*.iml
+.idea/
