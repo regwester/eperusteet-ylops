@@ -15,29 +15,27 @@
  */
 
 'use strict';
-
-/* jshint ignore:start */
-
-var ylopsApp = angular.module('ylopsApp', [
-  'ngRoute',
-  'ngSanitize',
-  'ui.router',
-  'ngResource',
-  'ngAnimate',
-  'pascalprecht.translate',
-  'ui.bootstrap',
-  'ui.utils'
-]);
-
-/* jshint ignore:end */
+/* global _ */
 
 ylopsApp
-  .run(function ($rootScope, VirheService) {
-    $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.name});
+  .controller('VirheController', function ($scope, VirheService) {
+    $scope.$watch(VirheService.getData, function (value) {
+      $scope.data = value;
     });
+  })
 
-    $rootScope.$on('$stateNotFound', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.to});
-    });
+  .service('VirheService', function ($state) {
+    var data = {};
+
+    this.setData = function(data) { data = data; };
+    this.getData = function() { return data; };
+
+    this.virhe = function(virhe) {
+      if (_.isObject(virhe)) {
+        data = virhe;
+      } else {
+        data = { muu: virhe };
+      }
+      $state.go('root.virhe');
+    };
   });

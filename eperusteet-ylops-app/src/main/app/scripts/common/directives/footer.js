@@ -16,28 +16,10 @@
 
 'use strict';
 
-/* jshint ignore:start */
-
-var ylopsApp = angular.module('ylopsApp', [
-  'ngRoute',
-  'ngSanitize',
-  'ui.router',
-  'ngResource',
-  'ngAnimate',
-  'pascalprecht.translate',
-  'ui.bootstrap',
-  'ui.utils'
-]);
-
-/* jshint ignore:end */
-
 ylopsApp
-  .run(function ($rootScope, VirheService) {
-    $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.name});
-    });
-
-    $rootScope.$on('$stateNotFound', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.to});
-    });
+  .directive('ylopsFooter', function () {
+    return {
+      restrict: 'AE',
+      templateUrl: 'views/common/directives/footer.html',
+    };
   });

@@ -14,4 +14,9 @@
  * European Union Public Licence for more details.
  */
 
-ylopsApp.constant('SERVICE_LOC', '/eperusteet-ylops-service/api');
+'use strict';
+
+ylopsApp
+  .constant('SERVICE_LOC', '/eperusteet-ylops-service/api')
+  .constant('LOKALISOINTI_SERVICE_LOC', '/lokalisointi/cxf/rest/v1/localisation?category=eperusteet-ylops')
+;

@@ -39,3 +39,28 @@ button.icon-only {
     margin: 0;
   }
 }
+
+.kielenvaihto {
+  margin-right: 5px;
+  list-style-type: none;
+  li {
+    display: inline;
+  }
+}
+
+.modalkielenvaihto {
+  font-size: 110%;
+  float: right;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.kieli-dropdown {
+  position: relative;
+  margin-right: 10px;
+}
+
+.ylops-footer {
+  min-height: 1px;
+  margin-bottom: 100px;
+}

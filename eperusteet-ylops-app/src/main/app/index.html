@@ -27,9 +27,11 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
-          <p>Tähän rakennetaan ePerusteiden perusopetuksen opetussuunnitelman laadintatyökalua</p>
+          <ylops-header></ylops-header>
+          <div ui-view></div>
         </div>
       </div>
+      <ylops-footer></ylops-footer>
     </div>
 
     <!-- build:js scripts/components.js -->
@@ -65,7 +67,21 @@
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
+    <script src="scripts/config.js"></script>
     <script src="scripts/constants.js"></script>
+    <script src="scripts/states.js"></script>
+
+    <script src="scripts/common/services/lokalisointi.js"></script>
+    <script src="scripts/common/services/kieli.js"></script>
+    <script src="scripts/common/services/iconrole.js"></script>
+    <script src="scripts/common/services/kaanna.js"></script>
+    <script src="scripts/common/services/virhe.js"></script>
+
+    <script src="scripts/common/directives/header.js"></script>
+    <script src="scripts/common/directives/footer.js"></script>
+
+    <script src="scripts/views/etusivu.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/lista.js"></script>
     <!-- endbuild -->
   </body>
 </html>

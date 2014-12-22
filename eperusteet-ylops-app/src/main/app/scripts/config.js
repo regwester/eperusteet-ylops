@@ -15,29 +15,22 @@
  */
 
 'use strict';
+/* global moment */
 
-/* jshint ignore:start */
+ylopsApp.config(function($urlRouterProvider, $sceProvider) {
+    $sceProvider.enabled(true);
+    $urlRouterProvider.when('', '/');
+    $urlRouterProvider.otherwise(function($injector, $location) {
 
-var ylopsApp = angular.module('ylopsApp', [
-  'ngRoute',
-  'ngSanitize',
-  'ui.router',
-  'ngResource',
-  'ngAnimate',
-  'pascalprecht.translate',
-  'ui.bootstrap',
-  'ui.utils'
-]);
-
-/* jshint ignore:end */
-
-ylopsApp
-  .run(function ($rootScope, VirheService) {
-    $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.name});
+    $injector.get('VirheService').setData({path: $location.path()});
+    $injector.get('$state').go('root.virhe');
     });
+  })
 
-    $rootScope.$on('$stateNotFound', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.to});
-    });
+  .config(function($translateProvider, $urlRouterProvider) {
+    var preferred = 'fi';
+    $urlRouterProvider.when('/', '/' + preferred);
+    $translateProvider.useLoader('LokalisointiLoader');
+    $translateProvider.preferredLanguage(preferred);
+    moment.lang(preferred);
   });
