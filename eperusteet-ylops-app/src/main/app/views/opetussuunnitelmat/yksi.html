@@ -1,2 +1,18 @@
-<h1 kaanna="opetussuunnitelma"></h1>
-<button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+<h1 ng-bind="model.nimi | kaanna"></h1>
+
+<div class="action-buttons">
+  <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+  <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
+</div>
+
+<div ng-if="editMode">
+  <h3 kaanna="'nimi'"></h3>
+  <input ng-model="model.nimi" slocalized class="form-control">
+  <h3 kaanna="'kuvaus'"></h3>
+  <div ckeditor ng-model="model.kuvaus" slocalized>
+</div>
+
+<div ng-if="!editMode">
+  <h3 kaanna="'kuvaus'"></h3>
+  <p ng-bind-html="model.kuvaus | kaanna | unsafe"></p>
+</div>

@@ -21,5 +21,18 @@ ylopsApp
     return {
       restrict: 'AE',
       templateUrl: 'views/common/directives/header.html',
+      controller: 'YlopsHeaderController'
     };
+  })
+
+  .controller('YlopsHeaderController', function ($scope, $state) {
+    $scope.$on('$stateChangeSuccess', function (event, toState) {
+      if (toState.name === 'root.opetussuunnitelmat.yksi') {
+        $scope.crumbs = [
+          {url: $state.href('root.opetussuunnitelmat.lista'), label: 'opetussuunnitelmat'}
+        ];
+      } else {
+        $scope.crumbs = [];
+      }
+    });
   });

@@ -16,29 +16,9 @@
 
 'use strict';
 
-/* jshint ignore:start */
-
-var ylopsApp = angular.module('ylopsApp', [
-  'ngRoute',
-  'ngSanitize',
-  'ui.router',
-  'ngResource',
-  'ngAnimate',
-  'pascalprecht.translate',
-  'ui.bootstrap',
-  'ui.utils',
-  'ui.select'
-]);
-
-/* jshint ignore:end */
-
 ylopsApp
-  .run(function ($rootScope, VirheService) {
-    $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.name});
-    });
-
-    $rootScope.$on('$stateNotFound', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.to});
+  .factory('OpetussuunnitelmaCRUD', function ($resource, SERVICE_LOC) {
+    return $resource(SERVICE_LOC + '/opetussuunnitelmat/:id', {
+      id: '@id'
     });
   });

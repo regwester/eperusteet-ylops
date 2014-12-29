@@ -1,2 +1,11 @@
 <h1 kaanna="opetussuunnitelmat"></h1>
-<button class="btn btn-default" kaanna="'lisaa'" icon-role="add" ng-click="addNew()"></button>
+
+<div class="action-buttons">
+  <button class="btn btn-default" kaanna="'lisaa-opetussuunnitelma'" icon-role="add" ng-click="addNew()"></button>
+</div>
+
+<ol>
+  <li ng-repeat="item in items">
+    <a ui-sref="root.opetussuunnitelmat.yksi({id: item.id})" ng-bind="item.nimi | kaanna"></a>
+  </li>
+</ol>

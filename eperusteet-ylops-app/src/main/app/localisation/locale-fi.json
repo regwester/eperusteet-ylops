@@ -3,7 +3,10 @@
   "peruuta": "Peruuta",
   "tallenna": "Tallenna",
   "ok": "OK",
-  "lisaa": "Lisää",
+  "tallennettu-ok": "Tallennus onnistui",
+  "varmista-poisto": "Varmista poisto",
+  "poisto-onnistui": "Poisto onnistui",
+  "poista": "Poista",
 
   "muokkaa": "Muokkaa",
   "muokattavana": "Muokattavana",
@@ -12,10 +15,14 @@
   "etusivu": "Etusivu",
   "opetussuunnitelmat": "Opetussuunnitelmat",
   "opetussuunnitelma": "Opetussuunnitelma",
+  "lisaa-opetussuunnitelma": "Luo uusi opetussuunnitelma",
 
   "ui-kieli": "Käyttöliittymäkieli",
   "sisallon-kieli": "Sisällön kieli",
 
   "jarjestelmavirhe-teksti": "Tapahtui järjestelmävirhe {{virhekoodi}}. Ole hyvä ja yritä uudelleen. Jos ongelma toistuu ota yhteyttä palvelun ylläpitäjään.",
-  "odottamaton-virhe": "Tapahtui odottamaton virhe"
+  "odottamaton-virhe": "Tapahtui odottamaton virhe",
+
+  "nimi": "Nimi",
+  "kuvaus": "Kuvaus"
 }

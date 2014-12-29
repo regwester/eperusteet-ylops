@@ -18,7 +18,8 @@
 
 ylopsApp
   .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams,
-    $timeout, $state) {
+    $timeout, $state, OpetussuunnitelmaCRUD, Notifikaatiot, Varmistusdialogi) {
+
     $scope.editMode = false;
     if ($stateParams.id === 'uusi') {
       $timeout(function () {
@@ -26,16 +27,60 @@ ylopsApp
       }, 200);
     }
 
+    $scope.model = {};
+
+    function fetch() {
+      if ($stateParams.id === 'uusi') {
+        $scope.model = {
+          nimi: {},
+          kuvaus: {},
+          tila: 'luonnos'
+        };
+      } else {
+        OpetussuunnitelmaCRUD.get({id: $stateParams.id}, function (res) {
+          $scope.model = res;
+        }, Notifikaatiot.serverCb);
+      }
+    }
+    fetch();
+
     $scope.edit = function () {
       Editointikontrollit.startEditing();
     };
 
+    $scope.delete = function () {
+      Varmistusdialogi.dialogi({
+        otsikko: 'varmista-poisto',
+        primaryBtn: 'poista',
+        successCb: function () {
+          $scope.model.$delete({}, function () {
+            Notifikaatiot.onnistui('poisto-onnistui');
+            $timeout(function () {
+              $state.go('root.opetussuunnitelmat.lista');
+            });
+          }, Notifikaatiot.serverCb);
+        }
+      })();
+    };
+
+    var successCb = function (res) {
+      $scope.model = res;
+      Notifikaatiot.onnistui('tallennettu-ok');
+      if ($stateParams.id === 'uusi') {
+        $state.go($state.current.name, {id: res.id}, {reload: true});
+      }
+    };
+
     var callbacks = {
       edit: function () {
-
+        fetch();
       },
       save: function () {
-
+        if ($stateParams.id === 'uusi') {
+          OpetussuunnitelmaCRUD.save({}, $scope.model, successCb, Notifikaatiot.serverCb);
+        } else {
+          $scope.model.$save({}, successCb, Notifikaatiot.serverCb);
+        }
       },
       cancel: function () {
         if ($stateParams.id === 'uusi') {
@@ -43,7 +88,7 @@ ylopsApp
             $state.go('root.opetussuunnitelmat.lista');
           });
         } else {
-
+          fetch();
         }
       },
       notify: function (mode) {

@@ -17,7 +17,10 @@
 'use strict';
 
 ylopsApp
-  .controller('OpetussuunnitelmatListaController', function ($scope, $state) {
+  .controller('OpetussuunnitelmatListaController', function ($scope, $state,
+    OpetussuunnitelmaCRUD) {
+    $scope.items = OpetussuunnitelmaCRUD.query();
+
     $scope.addNew = function () {
       $state.go('root.opetussuunnitelmat.yksi', {id: 'uusi'});
     };
