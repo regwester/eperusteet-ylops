@@ -24,14 +24,26 @@
     <![endif]-->
     <!-- endbuild  -->
     <!-- Add your site or application content here -->
-    <div class="container-fluid">
+    <div class="container-fluid" id="ylasivuankkuri">
       <div class="row">
         <div class="col-md-12">
           <ylops-header></ylops-header>
           <div ui-view></div>
         </div>
       </div>
+      <div class="editointi-wrapper"><editointikontrollit ng-controller="EditointiController"></editointikontrollit></div>
       <ylops-footer></ylops-footer>
+      <backtotop></backtotop>
+      <div class="notification-wrapper" ng-cloak>
+        <div class="notifications" ng-model="viestit" ng-controller="NotifikaatioController">
+          <div ng-if="viestit" ng-click="poistaNotifikaatio(viesti)" ng-model="viestit" ng-class="{ 'notification-normal': viesti.tyyppi === 0, 'notification-success': viesti.tyyppi === 1, 'notification-warning': viesti.tyyppi === 2, 'notification-danger': viesti.tyyppi === 3 }" ng-repeat="viesti in viestit">
+            <div class="notification-body">
+              <span class="close">×</span>
+              <span class="notification-message" kaanna="viesti.viesti"></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- build:js scripts/components.js -->
@@ -76,12 +88,17 @@
     <script src="scripts/common/services/iconrole.js"></script>
     <script src="scripts/common/services/kaanna.js"></script>
     <script src="scripts/common/services/virhe.js"></script>
+    <script src="scripts/common/services/utils.js"></script>
+    <script src="scripts/common/services/notifikaatiot.js"></script>
+    <script src="scripts/common/services/editointikontrollit.js"></script>
 
     <script src="scripts/common/directives/header.js"></script>
     <script src="scripts/common/directives/footer.js"></script>
+    <script src="scripts/common/directives/editointikontrollit.js"></script>
 
     <script src="scripts/views/etusivu.js"></script>
     <script src="scripts/views/opetussuunnitelmat/lista.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/yksi.js"></script>
     <!-- endbuild -->
   </body>
 </html>

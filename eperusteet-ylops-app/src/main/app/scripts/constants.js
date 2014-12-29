@@ -19,4 +19,6 @@
 ylopsApp
   .constant('SERVICE_LOC', '/eperusteet-ylops-service/api')
   .constant('LOKALISOINTI_SERVICE_LOC', '/lokalisointi/cxf/rest/v1/localisation?category=eperusteet-ylops')
+  .constant('NOTIFICATION_DELAY_SUCCESS', 4000)
+  .constant('NOTIFICATION_DELAY_WARNING', 10000)
 ;

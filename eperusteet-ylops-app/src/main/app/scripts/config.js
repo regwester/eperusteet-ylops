@@ -17,7 +17,8 @@
 'use strict';
 /* global moment */
 
-ylopsApp.config(function($urlRouterProvider, $sceProvider) {
+ylopsApp
+  .config(function($urlRouterProvider, $sceProvider) {
     $sceProvider.enabled(true);
     $urlRouterProvider.when('', '/');
     $urlRouterProvider.otherwise(function($injector, $location) {

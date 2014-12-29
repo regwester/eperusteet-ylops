@@ -1,7 +1,21 @@
 {
+  "sulje": "Sulje",
+  "peruuta": "Peruuta",
+  "tallenna": "Tallenna",
+  "ok": "OK",
+  "lisaa": "Lisää",
+
+  "muokkaa": "Muokkaa",
+  "muokattavana": "Muokattavana",
+  "kommentoi-muutosta": "Kommentoi muutosta",
+
   "etusivu": "Etusivu",
   "opetussuunnitelmat": "Opetussuunnitelmat",
+  "opetussuunnitelma": "Opetussuunnitelma",
 
   "ui-kieli": "Käyttöliittymäkieli",
-  "sisallon-kieli": "Sisällön kieli"
+  "sisallon-kieli": "Sisällön kieli",
+
+  "jarjestelmavirhe-teksti": "Tapahtui järjestelmävirhe {{virhekoodi}}. Ole hyvä ja yritä uudelleen. Jos ongelma toistuu ota yhteyttä palvelun ylläpitäjään.",
+  "odottamaton-virhe": "Tapahtui odottamaton virhe"
 }

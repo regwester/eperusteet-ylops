@@ -43,7 +43,19 @@ ylopsApp
 
       .state('root.opetussuunnitelmat', {
         url: '/opetussuunnitelmat',
+        abstract: true,
+        template: '<div ui-view></div>',
+      })
+
+      .state('root.opetussuunnitelmat.lista', {
+        url: '',
         templateUrl: 'views/opetussuunnitelmat/lista.html',
         controller: 'OpetussuunnitelmatListaController'
+      })
+
+      .state('root.opetussuunnitelmat.yksi', {
+        url: '/:id',
+        templateUrl: 'views/opetussuunnitelmat/yksi.html',
+        controller: 'OpetussuunnitelmaController'
       });
   });
