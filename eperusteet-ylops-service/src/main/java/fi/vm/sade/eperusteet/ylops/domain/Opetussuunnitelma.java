@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -25,16 +26,18 @@ import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.util.List;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  *
@@ -43,7 +46,8 @@ import java.util.List;
 @Entity
 @Audited
 @Table(name = "opetussuunnitelma")
-public class Opetussuunnitelma {
+public class Opetussuunnitelma extends AbstractAuditedEntity
+        implements Serializable, ReferenceableEntity, WithOpetussuunnitelmanTila {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter
@@ -64,6 +68,12 @@ public class Opetussuunnitelma {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private LokalisoituTeksti kuvaus;
 
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    @Getter
+    @Setter
+    private OpetussuunnitelmanTila tila = OpetussuunnitelmanTila.LUONNOS;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @Getter
     @Setter
@@ -72,5 +82,10 @@ public class Opetussuunnitelma {
 
     public boolean containsViite(TekstiKappaleViite viite) {
         return viite != null && tekstit.getId().equals(viite.getRoot().getId());
+    }
+
+    @Override
+    public EntityReference getReference() {
+        return new EntityReference(getId());
     }
 }

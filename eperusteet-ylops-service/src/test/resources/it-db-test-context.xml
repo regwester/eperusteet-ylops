@@ -37,7 +37,7 @@
     <bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager"/>
 
     <!-- import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/ -->
-    <context:component-scan base-package="fi.vm.sade.eperusteet.service"/>
+    <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service"/>
     <tx:annotation-driven/>
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
@@ -53,7 +53,7 @@
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="dbinit">
         <property name="persistenceUnitName" value="eperusteet"/>
         <property name="dataSource" ref="dataSource"/>
-        <property name="packagesToScan" value="fi.vm.sade.eperusteet.domain"/>
+        <property name="packagesToScan" value="fi.vm.sade.eperusteet.ylops.domain"/>
         <property name="persistenceProviderClass" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
         <property name="jpaPropertyMap">
             <map>
@@ -74,7 +74,7 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="dbinit" class="fi.vm.sade.eperusteet.service.test.DbInitializer" depends-on="flyway" init-method="initDb">
+    <bean id="dbinit" class="fi.vm.sade.eperusteet.ylops.service.test.DbInitializer" depends-on="flyway" init-method="initDb">
 
     </bean>
 
@@ -82,6 +82,6 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
-    <jpa:repositories base-package="fi.vm.sade.eperusteet.repository" factory-class="fi.vm.sade.eperusteet.repository.version.JpaWithVersioningRepositoryFactoryBean" />
+    <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean" />
 
 </beans>

@@ -34,6 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ import java.util.List;
 @Entity
 @Audited
 @Table(name = "tekstikappaleviite")
-public class TekstiKappaleViite implements ReferenceableEntity {
+public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

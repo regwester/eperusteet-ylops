@@ -40,7 +40,7 @@
     <bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager"/>
 
     <!-- import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/ -->
-    <context:component-scan base-package="fi.vm.sade.eperusteet.service"/>
+    <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service"/>
     <tx:annotation-driven/>
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
@@ -54,7 +54,7 @@
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="eperusteet"/>
         <property name="dataSource" ref="dataSource"/>
-        <property name="packagesToScan" value="fi.vm.sade.eperusteet.domain"/>
+        <property name="packagesToScan" value="fi.vm.sade.eperusteet.ylops.domain"/>
         <property name="persistenceProviderClass" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
         <property name="jpaPropertyMap">
             <map>
@@ -76,9 +76,9 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
-    <jpa:repositories base-package="fi.vm.sade.eperusteet.repository" factory-class="fi.vm.sade.eperusteet.repository.version.JpaWithVersioningRepositoryFactoryBean"/>
+    <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean"/>
 
-    <bean id="testPermissionEvaluator" class="fi.vm.sade.eperusteet.service.test.TestPermissionEvaluator"/>
+    <bean id="testPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.test.TestPermissionEvaluator"/>
 
     <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
         <property name="permissionEvaluator" ref="testPermissionEvaluator"/>
@@ -86,7 +86,7 @@
 
     <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
         <security:expression-handler ref="expressionHandler"/>
-        <security:protect-pointcut expression="execution(* fi.vm.sade.eperusteet.service.*.*(..))" access="ROLE_DENY_ALL"/>
+        <security:protect-pointcut expression="execution(* fi.vm.sade.eperusteet.ylops.service.*.*(..))" access="ROLE_DENY_ALL"/>
     </security:global-method-security>
 
     <security:authentication-manager alias="authenticationManager">
