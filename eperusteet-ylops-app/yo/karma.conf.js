@@ -38,8 +38,7 @@ module.exports = function(config) {
       'app/bower_components/angular-cache/dist/angular-cache.min.js',
       'app/scripts/*.js',
       'app/scripts/**/*.js',
-      '../test/js/mock/**/*.js',
-      '../test/js/spec/**/*.js',
+      '../test/js/**/*.spec.js',
       'app/views/**/*.html'
     ],
 

@@ -127,6 +127,9 @@ module.exports = function(grunt) {
     //   }
     // },
     clean: {
+      options: {
+        force: true, /* files outside working directory! */
+      },
       dist: {
         files: [{
           dot: true,
@@ -427,7 +430,7 @@ module.exports = function(grunt) {
 //  'connect:test',
     'regex-check',
     'jshint',
-//    'karma'
+    'karma'
   ]);
 
   grunt.registerTask('build', [
