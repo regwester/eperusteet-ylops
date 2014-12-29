@@ -5,14 +5,14 @@
   <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
 </div>
 
+<div ng-if="!editMode">
+  <h3 kaanna="'kuvaus'"></h3>
+  <div ng-bind-html="model.kuvaus | kaanna | unsafe"></div>
+</div>
+
 <div ng-if="editMode">
   <h3 kaanna="'nimi'"></h3>
   <input ng-model="model.nimi" slocalized class="form-control">
   <h3 kaanna="'kuvaus'"></h3>
   <div ckeditor ng-model="model.kuvaus" slocalized>
-</div>
-
-<div ng-if="!editMode">
-  <h3 kaanna="'kuvaus'"></h3>
-  <p ng-bind-html="model.kuvaus | kaanna | unsafe"></p>
 </div>
