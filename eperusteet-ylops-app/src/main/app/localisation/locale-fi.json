@@ -24,5 +24,8 @@
   "odottamaton-virhe": "Tapahtui odottamaton virhe",
 
   "nimi": "Nimi",
-  "kuvaus": "Kuvaus"
+  "kuvaus": "Kuvaus",
+  "tekstikappaleet": "Tekstikappaleet",
+  "ei-tekstikappaleita": "Ei tekstikappaleita",
+  "luo-uusi-tekstikappale": "Luo uusi tekstikappale"
 }
