@@ -13,16 +13,23 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.repository.teksti;
+package fi.vm.sade.eperusteet.ylops.service.teksti;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
- *
- * @author jhyoty
+ * @author mikkom
  */
-@Repository
-public interface LokalisoituTekstiRepository extends JpaRepository<LokalisoituTeksti, Long> {
+public interface TekstiKappaleService {
+
+    @PreAuthorize("permitAll()")
+    TekstiKappaleDto get(Long id);
+
+    @PreAuthorize("permitAll()")
+    TekstiKappaleDto add(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
+
+    @PreAuthorize("permitAll()")
+    void delete(Long id);
 }

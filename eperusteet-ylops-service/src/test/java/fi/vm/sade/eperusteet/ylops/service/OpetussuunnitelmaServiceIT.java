@@ -17,9 +17,11 @@ package fi.vm.sade.eperusteet.ylops.service;
 
 import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
-import fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
 import java.util.List;
 
+import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lokalisoituTekstiOf;
 import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.uniikkiString;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author mikkom
@@ -93,5 +96,27 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         opetussuunnitelmaService.removeOpetussuunnitelma(id);
 
         assertEquals(0, opetussuunnitelmaService.getAll().size());
+    }
+
+    @Test
+    public void testAddTekstiKappale() {
+        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAll();
+        assertEquals(1, opsit.size());
+
+        Long id = opsit.get(0).getId();
+
+        TekstiKappaleDto tekstiKappale = new TekstiKappaleDto();
+        tekstiKappale.setNimi(lt("Otsake"));
+        tekstiKappale.setTeksti(lt("Leipää ja tekstiä"));
+        tekstiKappale.setTila(OpetussuunnitelmanTila.LUONNOS);
+
+        TekstiKappaleViiteDto.Matala viiteDto = new TekstiKappaleViiteDto.Matala();
+        viiteDto.setTekstiKappale(tekstiKappale);
+
+        viiteDto = opetussuunnitelmaService.addTekstiKappale(id, viiteDto);
+
+        TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(id);
+        assertNotNull(tekstit);
+        assertEquals(1, tekstit.getLapset().size());
     }
 }

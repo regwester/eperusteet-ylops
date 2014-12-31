@@ -76,7 +76,7 @@ public class TekstiKappale extends AbstractAuditedEntity
     @Getter
     private OpetussuunnitelmanTila tila = OpetussuunnitelmanTila.LUONNOS;
 
-    protected TekstiKappale() { /* JPA */ }
+    public TekstiKappale() { }
 
     public TekstiKappale(TekstiKappale other) {
         copyState(other);

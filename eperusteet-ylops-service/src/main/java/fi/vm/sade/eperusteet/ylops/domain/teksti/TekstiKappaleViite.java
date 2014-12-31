@@ -74,6 +74,12 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     private List<TekstiKappaleViite> lapset;
 
+    public TekstiKappaleViite() {}
+
+    public TekstiKappaleViite(Omistussuhde omistussuhde) {
+        this.omistussuhde = omistussuhde;
+    }
+
     @Override
     public EntityReference getReference() {
         return new EntityReference(id);

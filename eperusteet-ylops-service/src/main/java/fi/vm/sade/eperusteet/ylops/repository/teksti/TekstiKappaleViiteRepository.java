@@ -13,22 +13,21 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto;
+package fi.vm.sade.eperusteet.ylops.repository.teksti;
 
-import lombok.Getter;
-import lombok.Setter;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  *
  * @author mikkom
  */
-@Getter
-@Setter
-public class TekstiKappaleViiteDto {
-    @Getter
-    private final Long id;
-
-    public TekstiKappaleViiteDto(Long id) {
-        this.id = id;
-    }
+@Repository
+public interface TekstiKappaleViiteRepository extends JpaWithVersioningRepository<TekstiKappaleViite, Long> {
+    List<TekstiKappaleViite> findAllByTekstiKappale(TekstiKappale tekstiKappale);
 }

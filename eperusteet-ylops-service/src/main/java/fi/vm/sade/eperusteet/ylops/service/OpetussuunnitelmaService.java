@@ -15,7 +15,9 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -40,4 +42,14 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("permitAll()")
     void removeOpetussuunnitelma(@P("id") Long id);
+
+    @PreAuthorize("permitAll()")
+    TekstiKappaleViiteDto.Puu getTekstit(@P("opsId") final Long opsId);
+
+    @PreAuthorize("permitAll()")
+    TekstiKappaleViiteDto.Matala addTekstiKappale(@P("opsId") final Long opsId, TekstiKappaleViiteDto.Matala viite);
+
+    @PreAuthorize("permitAll()")
+    TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
+                                                       TekstiKappaleViiteDto.Matala childId);
 }

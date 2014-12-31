@@ -18,7 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import ma.glasnost.orika.converter.BidirectionalConverter;
-import fi.vm.sade.eperusteet.ylops.dto.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
 import java.util.Map;
 import ma.glasnost.orika.metadata.Type;

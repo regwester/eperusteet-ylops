@@ -13,33 +13,38 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto;
+package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
+ *
  * @author mikkom
  */
 @Getter
 @Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class OpetussuunnitelmaDto implements Serializable {
+public class TekstiKappaleDto {
     private Long id;
-
     private Date luotu;
-    private String luoja;
     private Date muokattu;
     private String muokkaaja;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String muokkaajanNimi;
+
     private LokalisoituTekstiDto nimi;
-    private LokalisoituTekstiDto kuvaus;
+    private LokalisoituTekstiDto teksti;
     private OpetussuunnitelmanTila tila;
-    private TekstiKappaleViiteDto.Puu tekstit;
+
+    public TekstiKappaleDto() {}
+
+    public TekstiKappaleDto(LokalisoituTekstiDto nimi, LokalisoituTekstiDto teksti, OpetussuunnitelmanTila tila) {
+        this.nimi = nimi;
+        this.teksti = teksti;
+        this.tila = tila;
+    }
 }

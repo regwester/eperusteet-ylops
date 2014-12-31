@@ -18,7 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.test.util;
 import com.google.common.base.Optional;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import fi.vm.sade.eperusteet.ylops.dto.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 
 import java.util.Collections;
 
