@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
@@ -70,6 +71,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
+        ops.setTila(OpetussuunnitelmanTila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
         ops = repository.save(ops);
         return mapper.map(ops, OpetussuunnitelmaDto.class);
