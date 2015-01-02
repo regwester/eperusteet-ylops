@@ -15,12 +15,14 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
+import fi.vm.sade.eperusteet.ylops.domain.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +45,9 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     OpetussuunnitelmaService opetussuunnitelmaService;
+
+    @Autowired
+    TekstiKappaleViiteService tekstiKappaleViiteService;
 
     @Before
     public void setUp() {
@@ -118,5 +123,11 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(id);
         assertNotNull(tekstit);
         assertEquals(1, tekstit.getLapset().size());
+
+        TekstiKappaleViiteDto.Matala dto = tekstiKappaleViiteService.getTekstiKappaleViite(id, viiteDto.getId());
+        assertNotNull(dto);
+
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        assertNotNull(ops);
     }
 }

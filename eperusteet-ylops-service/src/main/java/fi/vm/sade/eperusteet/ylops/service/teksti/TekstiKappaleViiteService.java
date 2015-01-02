@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.teksti;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
  */
 public interface TekstiKappaleViiteService {
     @PreAuthorize("permitAll()")
-    TekstiKappaleViiteDto getTekstit(@P("opsId") Long opsId, Long viiteId);
+    TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId);
 
     @PreAuthorize("permitAll()")
     TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId,
@@ -32,4 +33,7 @@ public interface TekstiKappaleViiteService {
 
     @PreAuthorize("permitAll()")
     void removeTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId);
+
+    @PreAuthorize("permitAll()")
+    TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(@P("opsId") Long opsId, Long viiteId);
 }

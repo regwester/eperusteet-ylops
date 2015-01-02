@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource;
 
+import com.mangofactory.swagger.annotations.ApiIgnore;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -38,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}")
-@Api(value = "Opetussuunnitelman sisältö")
+@ApiIgnore
 public class OpetussuunnitelmanSisaltoController {
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
@@ -87,6 +88,17 @@ public class OpetussuunnitelmanSisaltoController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/tekstit/{viiteId}", method = RequestMethod.GET)
+    public ResponseEntity<TekstiKappaleViiteDto.Matala> getTekstiKappaleViite(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("viiteId") final Long viiteId) {
+        TekstiKappaleViiteDto.Matala dto = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, viiteId);
+        if (dto == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/tekstit/{viiteId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeTekstiKappaleViite(
@@ -101,13 +113,13 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId,
             @RequestBody final TekstiKappaleViiteDto tekstiKappaleViiteDto) {
-        throw new NotImplementedException();
+        //tekstiKappaleViiteService.updateTekstiKappaleViite(opsId, viiteId, );
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}/muokattavakopio", method = RequestMethod.POST)
     public TekstiKappaleViiteDto kloonaaTekstiKappale(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId) {
-        throw new NotImplementedException();
+        return kloonaaTekstiKappale(opsId, viiteId);
     }
 }

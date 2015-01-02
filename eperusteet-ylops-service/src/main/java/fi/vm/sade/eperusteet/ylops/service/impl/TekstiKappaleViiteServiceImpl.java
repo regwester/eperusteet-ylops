@@ -59,9 +59,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     private TekstiKappaleService tekstiKappaleService;
 
     @Override
-    @Transactional(readOnly = true)
-    public TekstiKappaleViiteDto getTekstit(@P("opsId") Long opsId, Long viiteId) {
-        return null;
+    public TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId) {
+        TekstiKappaleViite viite = findViite(opsId, viiteId);
+        return mapper.map(viite, TekstiKappaleViiteDto.Matala.class);
     }
 
     @Override
@@ -78,6 +78,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             parentViite.setLapset(lapset);
         }
         lapset.add(uusiViite);
+        uusiViite.setVanhempi(parentViite);
         uusiViite = repository.save(uusiViite);
 
         if (viiteDto == null || (viiteDto.getTekstiKappaleRef() == null && viiteDto.getTekstiKappale() == null)) {
@@ -124,6 +125,11 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.getVanhempi().getLapset().remove(viite);
         viite.setVanhempi(null);
         repository.delete(viite);
+    }
+
+    @Override
+    public TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(@P("opsId") Long opsId, Long viiteId) {
+        return null;
     }
 
     private List<TekstiKappaleViite> findViitteet(Long opsId, Long viiteId) {
