@@ -27,7 +27,8 @@ var ylopsApp = angular.module('ylopsApp', [
   'pascalprecht.translate',
   'ui.bootstrap',
   'ui.utils',
-  'ui.select'
+  'ui.select',
+  'ui.tree'
 ]);
 
 /* jshint ignore:end */

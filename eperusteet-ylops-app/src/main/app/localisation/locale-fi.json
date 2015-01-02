@@ -28,5 +28,8 @@
   "kuvaus": "Kuvaus",
   "tekstikappaleet": "Tekstikappaleet",
   "ei-tekstikappaleita": "Ei tekstikappaleita",
-  "luo-uusi-tekstikappale": "Luo uusi tekstikappale"
+  "luo-uusi-tekstikappale": "Luo uusi tekstikappale",
+  "tallenna-rakenne": "Tallenna rakenne",
+  "muokkaa-rakennetta": "Muokkaa rakennetta",
+  "peru-rakenne": "Peruuta rakenteen muokkaus"
 }

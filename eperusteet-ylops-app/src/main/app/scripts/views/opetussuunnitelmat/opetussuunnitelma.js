@@ -18,9 +18,11 @@
 
 ylopsApp
   .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams,
-    $timeout, $state, OpetussuunnitelmaCRUD, Notifikaatiot, Varmistusdialogi) {
+    $timeout, $state, OpetussuunnitelmaCRUD, Notifikaatiot, Varmistusdialogi,
+    OpetussuunnitelmanTekstit) {
 
     $scope.editMode = false;
+    $scope.rakenneEdit = false;
     if ($stateParams.id === 'uusi') {
       $timeout(function () {
         $scope.edit();
@@ -64,6 +66,34 @@ ylopsApp
 
     $scope.addTekstikappale = function () {
       $state.go('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: 'uusi'});
+    };
+
+    function mapSisalto(root) {
+      return {
+        id: root.id,
+        lapset: _.map(root.lapset, mapSisalto)
+      };
+    }
+
+    $scope.saveRakenne = function () {
+      var postdata = mapSisalto($scope.model.tekstit);
+      OpetussuunnitelmanTekstit.save({
+        opsId: $scope.model.id,
+        viiteId: $scope.model.tekstit.id
+      }, postdata, function () {
+        Notifikaatiot.onnistui('tallennettu-ok');
+        $scope.rakenneEdit = false;
+        fetch();
+      }, Notifikaatiot.serverCb);
+    };
+
+    $scope.editRakenne = function () {
+      $scope.rakenneEdit = true;
+    };
+
+    $scope.cancelRakenne = function () {
+      $scope.rakenneEdit = false;
+      fetch();
     };
 
     var successCb = function (res) {

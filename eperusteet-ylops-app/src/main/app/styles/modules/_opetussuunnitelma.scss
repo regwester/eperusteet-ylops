@@ -1,0 +1,15 @@
+.tekstikappaleet {
+  padding-left: 100px;
+  max-width: 800px;
+  margin-top: 20px;
+  .teksti-node {
+    padding-top: 5px;
+    padding-left: 5px;
+    border: 1px solid #ccc;
+    height: 32px;
+    font-size: 16px;
+    & > ul {
+      margin-top: 11px;
+    }
+  }
+}
