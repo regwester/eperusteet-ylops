@@ -94,7 +94,7 @@ public class TekstiKappale extends AbstractAuditedEntity
 
     @Override
     public void setTila(OpetussuunnitelmanTila tila) {
-        if (this.tila == OpetussuunnitelmanTila.LUONNOS) {
+        if (this.tila == null || this.tila == OpetussuunnitelmanTila.LUONNOS) {
             this.tila = tila;
         }
     }
