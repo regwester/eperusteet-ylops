@@ -1,0 +1,15 @@
+<h1 ng-bind="model.nimi | kaanna"></h1>
+
+<div class="action-buttons">
+  <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+  <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
+</div>
+
+<div ng-if="!editMode">
+  <div ng-bind-html="model.teksti | kaanna | unsafe"></div>
+</div>
+
+<div ng-if="editMode">
+  <input ng-model="model.nimi" slocalized class="form-control">
+  <div ckeditor ng-model="model.teksti" slocalized></div>
+</div>

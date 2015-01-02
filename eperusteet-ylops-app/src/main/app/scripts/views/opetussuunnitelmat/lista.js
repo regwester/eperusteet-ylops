@@ -22,6 +22,6 @@ ylopsApp
     $scope.items = OpetussuunnitelmaCRUD.query();
 
     $scope.addNew = function () {
-      $state.go('root.opetussuunnitelmat.yksi', {id: 'uusi'});
+      $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma', {id: 'uusi'});
     };
   });

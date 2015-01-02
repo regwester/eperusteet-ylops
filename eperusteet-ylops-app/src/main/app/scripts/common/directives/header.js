@@ -27,7 +27,7 @@ ylopsApp
 
   .controller('YlopsHeaderController', function ($scope, $state) {
     $scope.$on('$stateChangeSuccess', function (event, toState) {
-      if (toState.name === 'root.opetussuunnitelmat.yksi') {
+      if (toState.name.indexOf('root.opetussuunnitelmat.yksi') === 0) {
         $scope.crumbs = [
           {url: $state.href('root.opetussuunnitelmat.lista'), label: 'opetussuunnitelmat'}
         ];

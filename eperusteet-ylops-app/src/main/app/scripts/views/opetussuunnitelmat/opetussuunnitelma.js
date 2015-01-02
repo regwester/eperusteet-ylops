@@ -63,21 +63,8 @@ ylopsApp
       })();
     };
 
-    $scope.tekstit = {
-      add: function () {
-        if (_.isEmpty($scope.model.tekstit)) {
-          $scope.model.tekstit = [];
-        }
-        $scope.model.tekstit.push({
-          nimi: {},
-          teksti: {}
-        });
-      },
-      remove: function (tekstikappale) {
-        _.remove($scope.model.tekstit, function (item) {
-          return item === tekstikappale;
-        });
-      }
+    $scope.addTekstikappale = function () {
+      $state.go('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: 'uusi'});
     };
 
     var successCb = function (res) {
@@ -93,9 +80,6 @@ ylopsApp
         fetch();
       },
       save: function () {
-        // TODO tekstikappaleen tallennus disabloitu
-        $scope.model.tekstit = null;
-
         if ($stateParams.id === 'uusi') {
           OpetussuunnitelmaCRUD.save({}, $scope.model, successCb, Notifikaatiot.serverCb);
         } else {
