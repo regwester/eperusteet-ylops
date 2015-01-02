@@ -397,7 +397,23 @@ module.exports = function(grunt) {
           pattern : /\.controller\s*\(\s*'([a-z][^']+|([^'](?!Controller))+)'/g
         },
       }
-
+    },
+    maxlines: {
+      options: {
+        limit: 500
+      },
+      javascript: {
+        options: {
+          limit: 300
+        },
+        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}],
+      },
+      scss: {
+        options: {
+          limit: 500
+        },
+        files: [{src: ['<%= yeoman.app %>/styles/**/*.scss']}],
+      }
     }
   });
 
@@ -430,6 +446,7 @@ module.exports = function(grunt) {
 //  'connect:test',
     'regex-check',
     'jshint',
+    'maxlines',
     'karma'
   ]);
 
