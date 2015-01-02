@@ -15,7 +15,7 @@
   <!-- TODO: puurakenne -->
   <ul>
     <li ng-repeat="kappale in model.tekstit.lapset">
-      <a ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: kappale.id})" ng-bind="kappale.nimi || 'nimeton' | kaanna"></a>
+      <a ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: kappale.id})" ng-bind="kappale.tekstiKappale.nimi || 'nimeton' | kaanna"></a>
     </li>
   </ul>
 

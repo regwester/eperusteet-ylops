@@ -33,8 +33,7 @@ ylopsApp
       if ($stateParams.id === 'uusi') {
         $scope.model = {
           nimi: {},
-          kuvaus: {},
-          tila: 'luonnos'
+          kuvaus: {}
         };
       } else {
         OpetussuunnitelmaCRUD.get({opsId: $stateParams.id}, function (res) {

@@ -32,8 +32,10 @@ ylopsApp
     function fetch() {
       if ($stateParams.tekstikappaleId === 'uusi') {
         $scope.model = {
-          nimi: {},
-          teksti: {}
+          tekstiKappale: {
+            nimi: {},
+            teksti: {}
+          }
         };
       } else {
         OpetussuunnitelmanTekstit.get({
