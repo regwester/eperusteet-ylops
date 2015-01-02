@@ -55,7 +55,7 @@ ylopsApp
         otsikko: 'varmista-poisto',
         primaryBtn: 'poista',
         successCb: function () {
-          $scope.model.$delete({}, function () {
+          $scope.model.$delete({opsId: $stateParams.id}, function () {
             Notifikaatiot.onnistui('poisto-onnistui');
             $timeout(function () {
               $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma');

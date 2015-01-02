@@ -27,12 +27,18 @@ ylopsApp
 
   .controller('YlopsHeaderController', function ($scope, $state) {
     $scope.$on('$stateChangeSuccess', function (event, toState) {
+      $scope.crumbs = [];
       if (toState.name.indexOf('root.opetussuunnitelmat.yksi') === 0) {
-        $scope.crumbs = [
-          {url: $state.href('root.opetussuunnitelmat.lista'), label: 'opetussuunnitelmat'}
-        ];
-      } else {
-        $scope.crumbs = [];
+        $scope.crumbs.push({
+          url: $state.href('root.opetussuunnitelmat.lista'),
+          label: 'opetussuunnitelmat'
+        });
+        if (toState.name !== 'root.opetussuunnitelmat.yksi.opetussuunnitelma') {
+          $scope.crumbs.push({
+            url: $state.href('root.opetussuunnitelmat.yksi.opetussuunnitelma'),
+            label: 'opetussuunnitelma'
+          });
+        }
       }
     });
   });
