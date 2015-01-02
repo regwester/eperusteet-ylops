@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource;
 
-import com.mangofactory.swagger.annotations.ApiIgnore;
+import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.OpetussuunnitelmaService;
@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}")
-@ApiIgnore
+@Api(value = "Opetussuunnitelman sisältö")
 public class OpetussuunnitelmanSisaltoController {
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
