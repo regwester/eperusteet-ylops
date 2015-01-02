@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
@@ -50,6 +51,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     @Override
     public TekstiKappaleDto add(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
         TekstiKappale tekstiKappale = mapper.map(tekstiKappaleDto, TekstiKappale.class);
+        tekstiKappale.setTila(OpetussuunnitelmanTila.LUONNOS);
         viite.setTekstiKappale(tekstiKappale);
         tekstiKappale = repository.saveAndFlush(tekstiKappale);
         mapper.map(tekstiKappale, tekstiKappaleDto);

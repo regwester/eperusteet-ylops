@@ -126,8 +126,5 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         TekstiKappaleViiteDto.Matala dto = tekstiKappaleViiteService.getTekstiKappaleViite(id, viiteDto.getId());
         assertNotNull(dto);
-
-        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
-        assertNotNull(ops);
     }
 }
