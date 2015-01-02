@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
@@ -35,12 +36,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author mikkom
  */
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService {
 
     @Autowired
@@ -65,6 +68,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     @Override
+    @Transactional(readOnly = false)
     public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId, Long parentViiteId,
                                                               TekstiKappaleViiteDto.Matala viiteDto) {
         TekstiKappaleViite parentViite = findViite(opsId, parentViiteId);
@@ -104,6 +108,19 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     @Override
+    @Transactional(readOnly = false)
+    public void reorderSubTree(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
+        TekstiKappaleViite viite = findViite(opsId, rootViiteId);
+        repository.lock(viite.getRoot());
+        Set<TekstiKappaleViite> refs = Sets.newIdentityHashSet();
+        refs.add(viite);
+        clearChildren(viite, refs);
+        TekstiKappaleViite parent = viite.getVanhempi();
+        updateTraverse(parent, uusi, refs);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
     public void removeTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
 
@@ -128,8 +145,17 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     @Override
+    @Transactional(readOnly = false)
     public TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(@P("opsId") Long opsId, Long viiteId) {
-        return null;
+        TekstiKappaleViite viite = findViite(opsId, viiteId);
+        TekstiKappale originaali = viite.getTekstiKappale();
+        // TODO: Tarkista onko tekstikappaleeseen lukuoikeutta
+        TekstiKappale klooni = originaali.copy();
+        klooni.setTila(OpetussuunnitelmanTila.LUONNOS);
+        viite.setTekstiKappale(tekstiKappaleRepository.save(klooni));
+        viite.setOmistussuhde(Omistussuhde.OMA);
+        viite = repository.save(viite);
+        return mapper.map(viite, TekstiKappaleViiteDto.Puu.class);
     }
 
     private List<TekstiKappaleViite> findViitteet(Long opsId, Long viiteId) {
@@ -146,6 +172,34 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             throw new BusinessRuleViolationException("Annettu tekstikappaleviite ei kuulu tähän opetussuunnitelmaan");
         }
         return viite;
+    }
+
+    private void clearChildren(TekstiKappaleViite viite, Set<TekstiKappaleViite> refs) {
+        for (TekstiKappaleViite lapsi : viite.getLapset()) {
+            refs.add(lapsi);
+            clearChildren(lapsi, refs);
+        }
+        viite.setVanhempi(null);
+        viite.getLapset().clear();
+    }
+
+    private TekstiKappaleViite updateTraverse(TekstiKappaleViite parent, TekstiKappaleViiteDto.Puu uusi,
+                                              Set<TekstiKappaleViite> refs) {
+        TekstiKappaleViite viite = repository.getOne(uusi.getId());
+        if (!refs.remove(viite)) {
+            throw new BusinessRuleViolationException("Viitepuun päivitysvirhe, annettua alipuun juuren viitettä ei löydy");
+        }
+        viite.setVanhempi(parent);
+
+        List<TekstiKappaleViite> lapset = viite.getLapset();
+        lapset.clear();
+
+        lapset.addAll(uusi.getLapset()
+                          .stream()
+                          .map(elem -> updateTraverse(viite, elem, refs))
+                          .collect(Collectors.toList()));
+
+        return repository.save(viite);
     }
 
     private static void assertExists(Object o, String msg) {

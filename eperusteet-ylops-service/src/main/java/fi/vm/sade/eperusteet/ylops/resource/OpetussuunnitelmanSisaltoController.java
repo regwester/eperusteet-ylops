@@ -16,12 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.resource;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
-import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -112,14 +110,14 @@ public class OpetussuunnitelmanSisaltoController {
     public void updateTekstiKappaleViite(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId,
-            @RequestBody final TekstiKappaleViiteDto tekstiKappaleViiteDto) {
-        //tekstiKappaleViiteService.updateTekstiKappaleViite(opsId, viiteId, );
+            @RequestBody final TekstiKappaleViiteDto.Puu tekstiKappaleViiteDto) {
+        tekstiKappaleViiteService.reorderSubTree(opsId, viiteId, tekstiKappaleViiteDto);
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}/muokattavakopio", method = RequestMethod.POST)
-    public TekstiKappaleViiteDto kloonaaTekstiKappale(
+    public TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId) {
-        return kloonaaTekstiKappale(opsId, viiteId);
+        return tekstiKappaleViiteService.kloonaaTekstiKappale(opsId, viiteId);
     }
 }
