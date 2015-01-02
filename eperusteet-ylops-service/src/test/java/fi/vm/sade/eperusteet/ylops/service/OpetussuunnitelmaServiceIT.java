@@ -108,23 +108,34 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAll();
         assertEquals(1, opsit.size());
 
-        Long id = opsit.get(0).getId();
+        Long opsId = opsit.get(0).getId();
 
         TekstiKappaleDto tekstiKappale = new TekstiKappaleDto();
         tekstiKappale.setNimi(lt("Otsake"));
         tekstiKappale.setTeksti(lt("Leipää ja tekstiä"));
-        tekstiKappale.setTila(OpetussuunnitelmanTila.LUONNOS);
 
         TekstiKappaleViiteDto.Matala viiteDto = new TekstiKappaleViiteDto.Matala();
         viiteDto.setTekstiKappale(tekstiKappale);
 
-        viiteDto = opetussuunnitelmaService.addTekstiKappale(id, viiteDto);
+        viiteDto = opetussuunnitelmaService.addTekstiKappale(opsId, viiteDto);
 
-        TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(id);
+        TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsId);
         assertNotNull(tekstit);
         assertEquals(1, tekstit.getLapset().size());
 
-        TekstiKappaleViiteDto.Matala dto = tekstiKappaleViiteService.getTekstiKappaleViite(id, viiteDto.getId());
+        TekstiKappaleViiteDto.Matala dto = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, viiteDto.getId());
         assertNotNull(dto);
+
+        tekstiKappale = new TekstiKappaleDto();
+        tekstiKappale.setNimi(lt("Aliotsake"));
+        tekstiKappale.setTeksti(lt("Sirkushuveja"));
+        viiteDto = new TekstiKappaleViiteDto.Matala();
+        viiteDto.setTekstiKappale(tekstiKappale);
+
+        opetussuunnitelmaService.addTekstiKappaleLapsi(opsId, dto.getId(), viiteDto);
+
+        tekstit = opetussuunnitelmaService.getTekstit(opsId);
+        assertNotNull(tekstit);
+        assertEquals(1, tekstit.getLapset().get(0).getLapset().size());
     }
 }

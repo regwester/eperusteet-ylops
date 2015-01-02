@@ -51,5 +51,5 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("permitAll()")
     TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
-                                                       TekstiKappaleViiteDto.Matala childId);
+                                                       TekstiKappaleViiteDto.Matala viite);
 }
