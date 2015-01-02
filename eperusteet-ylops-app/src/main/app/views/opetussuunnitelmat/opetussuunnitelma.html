@@ -9,12 +9,12 @@
   <h3 kaanna="'kuvaus'"></h3>
   <div ng-bind-html="model.kuvaus | kaanna | unsafe"></div>
   <h3 kaanna="'tekstikappaleet'"></h3>
-  <p ng-show="!model.tekstit || model.tekstit.length === 0" kaanna="'ei-tekstikappaleita'"></p>
+  <p ng-show="!model.tekstit.lapset || model.tekstit.lapset.length === 0" kaanna="'ei-tekstikappaleita'"></p>
   <button class="btn btn-default" kaanna="'luo-uusi-tekstikappale'" icon-role="add" ng-click="addTekstikappale()"></button>
 
   <!-- TODO: puurakenne -->
   <ul>
-    <li ng-repeat="kappale in model.tekstit">
+    <li ng-repeat="kappale in model.tekstit.lapset">
       <a ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: kappale.id})" ng-bind="kappale.nimi | kaanna"></a>
     </li>
   </ul>

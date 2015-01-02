@@ -17,8 +17,18 @@
 'use strict';
 
 ylopsApp
-  .factory('OpetussuunnitelmaCRUD', function ($resource, SERVICE_LOC) {
-    return $resource(SERVICE_LOC + '/opetussuunnitelmat/:id', {
-      id: '@id'
+  .service('YlopsResources', function (SERVICE_LOC) {
+    this.OPS = SERVICE_LOC + '/opetussuunnitelmat/:opsId';
+  })
+
+  .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS, {
+      opsId: '@id'
+    });
+  })
+
+  .factory('OpetussuunnitelmanTekstit', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/tekstit/:viiteId', {
+      viiteId: '@id'
     });
   });

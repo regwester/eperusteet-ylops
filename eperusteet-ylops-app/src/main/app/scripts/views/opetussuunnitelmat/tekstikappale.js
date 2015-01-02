@@ -18,7 +18,7 @@
 
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
-    Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state) {
+    Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit) {
 
     $scope.editMode = false;
     if ($stateParams.tekstikappaleId === 'uusi') {
@@ -36,7 +36,12 @@ ylopsApp
           teksti: {}
         };
       } else {
-        // TODO crud get
+        OpetussuunnitelmanTekstit.get({
+          opsId: $stateParams.id,
+          viiteId: $stateParams.tekstikappaleId
+        }, function (res) {
+          $scope.model = res;
+        }, Notifikaatiot.serverCb);
       }
     }
     fetch();
@@ -50,36 +55,34 @@ ylopsApp
         otsikko: 'varmista-poisto',
         primaryBtn: 'poista',
         successCb: function () {
-          /*$scope.model.$delete({}, function () {
+          $scope.model.$delete({}, function () {
             Notifikaatiot.onnistui('poisto-onnistui');
             $timeout(function () {
               $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma');
             });
-          }, Notifikaatiot.serverCb);*/
-          $timeout(function () {
-            $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma');
-          });
+          }, Notifikaatiot.serverCb);
         }
       })();
     };
 
-    /*var successCb = function (res) {
+    var successCb = function (res) {
       $scope.model = res;
       Notifikaatiot.onnistui('tallennettu-ok');
       if ($stateParams.tekstikappaleId === 'uusi') {
         $state.go($state.current.name, {tekstikappaleId: res.id}, {reload: true});
       }
-    };*/
+    };
 
     var callbacks = {
       edit: function () {
         fetch();
       },
       save: function () {
+        var params = {opsId: $stateParams.id};
         if ($stateParams.tekstikappaleId === 'uusi') {
-          //TekstikappaleCRUD.save({}, $scope.model, successCb, Notifikaatiot.serverCb);
+          OpetussuunnitelmanTekstit.save(params, $scope.model, successCb, Notifikaatiot.serverCb);
         } else {
-          //$scope.model.$save({}, successCb, Notifikaatiot.serverCb);
+          $scope.model.$save(params, successCb, Notifikaatiot.serverCb);
         }
       },
       cancel: function () {

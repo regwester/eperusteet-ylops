@@ -37,7 +37,7 @@ ylopsApp
           tila: 'luonnos'
         };
       } else {
-        OpetussuunnitelmaCRUD.get({id: $stateParams.id}, function (res) {
+        OpetussuunnitelmaCRUD.get({opsId: $stateParams.id}, function (res) {
           $scope.model = res;
         }, Notifikaatiot.serverCb);
       }
