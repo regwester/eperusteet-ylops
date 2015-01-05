@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
@@ -42,6 +43,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     private TekstiKappaleRepository repository;
 
     @Override
+    @Transactional(readOnly = true)
     public TekstiKappaleDto get(Long id) {
         TekstiKappale tekstiKappale = repository.getOne(id);
         assertExists(tekstiKappale, "Pyydettyä tekstikappaletta ei ole olemassa");
@@ -59,8 +61,47 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     }
 
     @Override
+    public TekstiKappaleDto update(TekstiKappaleDto tekstiKappaleDto) {
+        Long id = tekstiKappaleDto.getId();
+        assertExists(id);
+        // TODO: Lukitse entiteetti!
+        //         lockManager.ensureLockedByAuthenticatedUser(id);
+        TekstiKappale current = repository.findOne(id);
+        TekstiKappale updated = mapper.map(tekstiKappaleDto, TekstiKappale.class);
+        current.mergeState(updated);
+        current = repository.save(current);
+
+        mapper.map(current, tekstiKappaleDto);
+        return tekstiKappaleDto;
+    }
+
+    @Override
+    public TekstiKappaleDto mergeNew(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
+        assertExists(viite.getTekstiKappale(), "Viitteellä ei ole tekstikappaletta");
+        Long id = viite.getTekstiKappale().getId();
+        assertExists(id);
+
+        TekstiKappale clone = repository.findOne(id).copy();
+        TekstiKappale updated = mapper.map(tekstiKappaleDto, TekstiKappale.class);
+        clone.mergeState(updated);
+        clone = repository.save(clone);
+
+        viite.setTekstiKappale(clone);
+        viite.setOmistussuhde(Omistussuhde.OMA);
+
+        mapper.map(clone, tekstiKappaleDto);
+        return tekstiKappaleDto;
+    }
+
+    @Override
     public void delete(Long id) {
         repository.delete(id);
+    }
+
+    private void assertExists(Long id) {
+        if (!repository.exists(id)) {
+            throw new BusinessRuleViolationException("Pyydettyä tekstikappaletta ei ole olemassa");
+        }
     }
 
     private static void assertExists(Object o, String msg) {

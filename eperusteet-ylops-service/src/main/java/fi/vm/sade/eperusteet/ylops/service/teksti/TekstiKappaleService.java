@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.teksti;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +30,12 @@ public interface TekstiKappaleService {
 
     @PreAuthorize("permitAll()")
     TekstiKappaleDto add(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
+
+    @PreAuthorize("permitAll()")
+    TekstiKappaleDto update(TekstiKappaleDto tekstiKappaleDto);
+
+    @PreAuthorize("permitAll()")
+    TekstiKappaleDto mergeNew(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
 
     @PreAuthorize("permitAll()")
     void delete(Long id);

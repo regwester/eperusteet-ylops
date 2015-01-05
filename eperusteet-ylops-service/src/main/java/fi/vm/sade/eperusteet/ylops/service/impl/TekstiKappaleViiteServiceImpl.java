@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
@@ -114,8 +115,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         repository.lock(viite.getRoot());
         Set<TekstiKappaleViite> refs = Sets.newIdentityHashSet();
         refs.add(viite);
-        clearChildren(viite, refs);
         TekstiKappaleViite parent = viite.getVanhempi();
+        clearChildren(viite, refs);
         updateTraverse(parent, uusi, refs);
     }
 
@@ -193,6 +194,16 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         List<TekstiKappaleViite> lapset = viite.getLapset();
         lapset.clear();
+
+        if (uusi.getTekstiKappale() != null) {
+            // Päivitä samalla myös tekstikappale
+            if (viite.getOmistussuhde() == Omistussuhde.OMA) {
+                tekstiKappaleService.update(uusi.getTekstiKappale());
+            } else {
+                tekstiKappaleService.mergeNew(viite, uusi.getTekstiKappale());
+                // TODO: Nice to have: Poista vanha tekstikappale jos siihen ei tämän jälkeen enää löydy viittauksia
+            }
+        }
 
         lapset.addAll(uusi.getLapset()
                           .stream()
