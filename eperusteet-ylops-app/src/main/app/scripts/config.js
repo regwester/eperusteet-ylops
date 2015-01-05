@@ -34,4 +34,23 @@ ylopsApp
     $translateProvider.useLoader('LokalisointiLoader');
     $translateProvider.preferredLanguage(preferred);
     moment.lang(preferred);
+  })
+
+  .config(function($httpProvider) {
+    $httpProvider.interceptors.push(['$rootScope', '$q', 'SpinnerService', function($rootScope, $q, Spinner) {
+      return {
+        request: function(request) {
+          Spinner.enable();
+          return request;
+        },
+        response: function(response) {
+          Spinner.disable();
+          return response || $q.when(response);
+        },
+        responseError: function(error) {
+          Spinner.disable();
+          return $q.reject(error);
+        }
+      };
+    }]);
   });
