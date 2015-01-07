@@ -110,6 +110,14 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = false)
+    public void updateTekstiKappaleViite(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
+        TekstiKappaleViite viite = findViite(opsId, rootViiteId);
+        repository.lock(viite.getRoot());
+        updateTekstiKappale(viite, uusi);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
     public void reorderSubTree(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
         TekstiKappaleViite viite = findViite(opsId, rootViiteId);
         repository.lock(viite.getRoot());
@@ -184,6 +192,22 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.getLapset().clear();
     }
 
+    private void updateTekstiKappale(TekstiKappaleViite viite, TekstiKappaleViiteDto uusi) {
+        if (uusi.getTekstiKappale() != null) {
+            if (viite.getOmistussuhde() == Omistussuhde.OMA) {
+                tekstiKappaleService.update(uusi.getTekstiKappale());
+            } else {
+                TekstiKappale vanha = viite.getTekstiKappale();
+                tekstiKappaleService.mergeNew(viite, uusi.getTekstiKappale());
+
+                // Poista vanha tekstikappale jos siihen ei tämän jälkeen enää löydy viittauksia
+                if (repository.findAllByTekstiKappale(vanha).size() == 0) {
+                    tekstiKappaleService.delete(vanha.getId());
+                }
+            }
+        }
+    }
+
     private TekstiKappaleViite updateTraverse(TekstiKappaleViite parent, TekstiKappaleViiteDto.Puu uusi,
                                               Set<TekstiKappaleViite> refs) {
         TekstiKappaleViite viite = repository.getOne(uusi.getId());
@@ -195,15 +219,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         List<TekstiKappaleViite> lapset = viite.getLapset();
         lapset.clear();
 
-        if (uusi.getTekstiKappale() != null) {
-            // Päivitä samalla myös tekstikappale
-            if (viite.getOmistussuhde() == Omistussuhde.OMA) {
-                tekstiKappaleService.update(uusi.getTekstiKappale());
-            } else {
-                tekstiKappaleService.mergeNew(viite, uusi.getTekstiKappale());
-                // TODO: Nice to have: Poista vanha tekstikappale jos siihen ei tämän jälkeen enää löydy viittauksia
-            }
-        }
+        // Päivitä myös tekstikappale jos DTO sen sisältää
+        updateTekstiKappale(viite, uusi);
 
         lapset.addAll(uusi.getLapset()
                           .stream()

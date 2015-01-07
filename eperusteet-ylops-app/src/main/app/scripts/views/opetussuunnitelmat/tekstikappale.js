@@ -84,7 +84,8 @@ ylopsApp
         if ($stateParams.tekstikappaleId === 'uusi') {
           OpetussuunnitelmanTekstit.save(params, $scope.model, successCb, Notifikaatiot.serverCb);
         } else {
-          $scope.model.$save(params, successCb, Notifikaatiot.serverCb);
+          // Pelkkää tekstikappaletta muokattaessa lapset-kenttä tulee jättää pois
+          _.omit($scope.model, 'lapset').$save(params, successCb, Notifikaatiot.serverCb);
         }
       },
       cancel: function () {

@@ -111,7 +111,12 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId,
             @RequestBody final TekstiKappaleViiteDto.Puu tekstiKappaleViiteDto) {
-        tekstiKappaleViiteService.reorderSubTree(opsId, viiteId, tekstiKappaleViiteDto);
+        if (tekstiKappaleViiteDto.getLapset() != null) {
+            tekstiKappaleViiteService.reorderSubTree(opsId, viiteId, tekstiKappaleViiteDto);
+        } else {
+            // Päivitä vain tekstikappale
+            tekstiKappaleViiteService.updateTekstiKappaleViite(opsId, viiteId, tekstiKappaleViiteDto);
+        }
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}/muokattavakopio", method = RequestMethod.POST)

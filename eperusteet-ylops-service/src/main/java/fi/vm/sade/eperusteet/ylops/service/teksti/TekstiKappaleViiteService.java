@@ -32,6 +32,9 @@ public interface TekstiKappaleViiteService {
                                                        TekstiKappaleViiteDto.Matala viiteDto);
 
     @PreAuthorize("permitAll()")
+    void updateTekstiKappaleViite(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi);
+
+    @PreAuthorize("permitAll()")
     void reorderSubTree(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi);
 
     @PreAuthorize("permitAll()")
