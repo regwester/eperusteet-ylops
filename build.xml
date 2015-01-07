@@ -19,7 +19,7 @@ deploy to luokka shell command:
                 <sshexec command="/data00/oph/tomcat/ophtomcat ${oph.name} stop"
                  host="${tomcat-host}" username="tomcat" keyfile="${ssh.keyfile}"
                  passphrase="${ssh.keypass}" trust="true" failonerror="false" />
-                                
+
 
                 <echo>Wait Tomcat to stop...</echo>
         <waitfor maxwait="10000" checkevery="500">
@@ -37,13 +37,13 @@ deploy to luokka shell command:
         <echo>Copy files to server...</echo>
                 <scp todir="tomcat@${tomcat-host}:${tomcat.home}/webapps/"
                keyfile="${ssh.keyfile}" passphrase="${ssh.keypass}" >
-               
-                               <fileset dir="../artifacts/eperusteet/eperusteet-app/target" >
-                                       <include name="eperusteet-app.war"/>
+
+                               <fileset dir="../artifacts/eperusteet-ylops/eperusteet-ylops-app/target" >
+                                       <include name="eperusteet-ylops-app.war"/>
                                </fileset>
-                        
-                                <fileset dir="../artifacts/eperusteet/eperusteet-service/target" >
-                                       <include name="eperusteet-service.war"/>
+
+                                <fileset dir="../artifacts/eperusteet-ylops/eperusteet-ylops-service/target" >
+                                       <include name="eperusteet-ylops-service.war"/>
                                </fileset>
 
                 </scp>
@@ -52,38 +52,38 @@ deploy to luokka shell command:
         <sshexec command="mkdir -p ${tomcat.home}/webapps
 cd ${tomcat.home}/webapps
 ls -la
-mkdir eperusteet-app;
-mkdir eperusteet-service;
+mkdir eperusteet-ylops-app;
+mkdir eperusteet-ylops-service;
 
-unzip -qo -deperusteet-app eperusteet-app.war;
-unzip -qo -deperusteet-service eperusteet-service.war;
+unzip -qo -deperusteet-ylops-app eperusteet-ylops-app.war;
+unzip -qo -deperusteet-ylops-service eperusteet-ylops-service.war;
 rm -rf *.war;"
                 host="${tomcat-host}" username="tomcat" keyfile="${ssh.keyfile}"
                 passphrase="${ssh.keypass}" trust="true" failonerror="false" />
-                        
+
                 <echo>Remove extra log4j config-files</echo>
                 <sshexec command="find ${tomcat.home} -name 'log4j.properties' -exec rm -rf {} \;"
                  host="${tomcat-host}" username="tomcat" keyfile="${ssh.keyfile}"
                  passphrase="${ssh.keypass}" trust="true" failonerror="false" />
-                                
+
                 <echo>Start Tomcat</echo>
                 <sshexec command="/data00/oph/tomcat/ophtomcat ${oph.name} start"
                  host="${tomcat-host}" username="tomcat" keyfile="${ssh.keyfile}"
                  passphrase="${ssh.keypass}" trust="true" failonerror="false" />
 
-                                
+
                 <echo>Wait for service http-url</echo>
                 <waitfor maxwait="10000" checkevery="500" >
-                        <http url="http://${tomcat-host}/eperusteet-app"/>
+                        <http url="http://${tomcat-host}/eperusteet-ylops-app"/>
                 </waitfor>
                 <fail message="App did not come up. Check your log files, fix and try again. Good Luck :-).">
                         <condition>
                                 <not>
-                                        <http url="http://${tomcat-host}/eperusteet-app" />
+                                        <http url="http://${tomcat-host}/eperusteet-ylops-app" />
                                 </not>
                         </condition>
                 </fail>
-                
+
         <echo>Successfully deployed to ${tomcat-host}</echo>
     </target>
 
