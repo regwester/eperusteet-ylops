@@ -31,14 +31,16 @@ import ma.glasnost.orika.metadata.Type;
 /**
  * Tuki Javan Optional-luokalle Orika mapperin yhteydessä.
  *
- * Tarkoitettu Dto->Entiteetti->Dto mappaukseen.
+ * Tarkoitettu Dto-Entiteetti-Dto mappaukseen.
  *
- * Mahdollistaa mappauksen siten, että DTO-luokissa voi määritellä attribuuttela Optional<Attr> a ja mappaus entiteetteihin toimii seuraavasti:
- * null: pidetään kohdearvo
- * Present: mapätään rekursiivisesti kohdearvoon
- * Absent: asetetaan kohdearvo NULL-arvoksi
- *
+ * Mahdollistaa mappauksen siten, että DTO-luokissa voi määritellä attribuuttela Optional&lt;Attr&gt; ja mappaus entiteetteihin toimii seuraavasti:
+ * <ul>
+ *   <li>null: pidetään kohdearvo
+ *   <li>present: mapätään rekursiivisesti kohdearvoon
+ *   <li>empty: asetetaan kohdearvo NULL-arvoksi
+ * </ul>
  * TODO: Kohdearvo ei voi olla itse Optional (ainakaan kaikissa tapauksissa).
+ *
  * @author jhyoty
  */
 public final class OptionalSupport {
@@ -156,8 +158,7 @@ public final class OptionalSupport {
         }
 
         private static boolean isImmutable(Type<?> type) {
-            return
-                LokalisoituTeksti.class.isAssignableFrom(type.getRawType())
+            return LokalisoituTeksti.class.isAssignableFrom(type.getRawType())
                 || type.isPrimitiveWrapper()
                 || type.isEnum()
                 || type.isPrimitive()
