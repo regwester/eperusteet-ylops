@@ -36,6 +36,7 @@ public class DtoMapperConfig {
 
         factory.getConverterFactory().registerConverter(lokalisoituTekstiConverter);
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTeksti.class));
+        OptionalSupport.register(factory);
 
         return new DtoMapperImpl(factory.getMapperFacade());
     }
