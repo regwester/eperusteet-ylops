@@ -26,8 +26,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.Getter;
 import org.hibernate.envers.Audited;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Kantaluokka entiteeteille joista ylläpidetään luotu/muokattu -tietoja.
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @MappedSuperclass
 public abstract class AbstractAuditedEntity implements Serializable {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractAuditedEntity.class);
 
     @Audited
     @Column(updatable = false)

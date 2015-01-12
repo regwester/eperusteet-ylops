@@ -13,7 +13,7 @@
     <properties>
         <hibernate.version>4.3.7.Final</hibernate.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>4.1.3.RELEASE</spring.version>
+        <spring.version>4.1.4.RELEASE</spring.version>
         <spring.security.version>3.2.5.RELEASE</spring.security.version>
         <spring.data.jpa.version>1.7.1.RELEASE</spring.data.jpa.version>
         <logback.version>1.1.2</logback.version>
@@ -305,7 +305,7 @@
             <artifactId>swagger-springmvc</artifactId>
             <version>${swagger.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjtools</artifactId>
@@ -369,9 +369,9 @@
                 <configuration>
                     <argLine>${failsafeArgLine}</argLine>
                     <systemPropertyVariables>
-                        <eperusteet.ittestdb.user>${eperusteet-ylops.ittestdb.user}</eperusteet.ittestdb.user>
-                        <eperusteet.ittestdb.password>${eperusteeti-ylops.ittestdb.password}</eperusteet.ittestdb.password>
-                        <eperusteet.ittestdb.jdbcurl>${eperusteet-ylops.ittestdb.jdbcurl}</eperusteet.ittestdb.jdbcurl>
+                        <ittestdb.user>${eperusteet-ylops.ittestdb.user}</ittestdb.user>
+                        <ittestdb.password>${eperusteeti-ylops.ittestdb.password}</ittestdb.password>
+                        <ittestdb.jdbcurl>${eperusteet-ylops.ittestdb.jdbcurl}</ittestdb.jdbcurl>
                     </systemPropertyVariables>
                     <excludes>
                         <exclude>**/service/test/*.java</exclude>
@@ -388,9 +388,9 @@
                 <configuration>
                     <argLine>${surefireArgLine}</argLine>
                     <systemPropertyVariables>
-                        <eperusteet.ittestdb.user>${eperusteet-ylops.ittestdb.user}</eperusteet.ittestdb.user>
-                        <eperusteet.ittestdb.password>${eperusteet-ylops.ittestdb.password}</eperusteet.ittestdb.password>
-                        <eperusteet.ittestdb.jdbcurl>${eperusteet-ylops.ittestdb.jdbcurl}</eperusteet.ittestdb.jdbcurl>
+                        <ittestdb.user>${eperusteet-ylops.ittestdb.user}</ittestdb.user>
+                        <ittestdb.password>${eperusteet-ylops.ittestdb.password}</ittestdb.password>
+                        <ittestdb.jdbcurl>${eperusteet-ylops.ittestdb.jdbcurl}</ittestdb.jdbcurl>
                     </systemPropertyVariables>
                     <excludes>
                         <exclude>**/service/test/*.java</exclude>
@@ -420,7 +420,7 @@
                 <plugin>
                     <groupId>de.juplo</groupId>
                     <artifactId>hibernate4-maven-plugin</artifactId>
-                    <version>1.0.4</version>
+                    <version>1.0.5</version>
                     <executions>
                         <execution>
                             <goals>

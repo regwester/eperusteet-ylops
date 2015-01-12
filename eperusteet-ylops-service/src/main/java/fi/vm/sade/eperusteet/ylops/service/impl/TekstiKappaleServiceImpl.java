@@ -67,10 +67,8 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
         // TODO: Lukitse entiteetti!
         //         lockManager.ensureLockedByAuthenticatedUser(id);
         TekstiKappale current = repository.findOne(id);
-        TekstiKappale updated = mapper.map(tekstiKappaleDto, TekstiKappale.class);
-        current.mergeState(updated);
+        mapper.map(tekstiKappaleDto, current);
         current = repository.save(current);
-
         mapper.map(current, tekstiKappaleDto);
         return tekstiKappaleDto;
     }
@@ -82,8 +80,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
         assertExists(id);
 
         TekstiKappale clone = repository.findOne(id).copy();
-        TekstiKappale updated = mapper.map(tekstiKappaleDto, TekstiKappale.class);
-        clone.mergeState(updated);
+        mapper.map(tekstiKappaleDto, clone);
         clone = repository.save(clone);
 
         viite.setTekstiKappale(clone);

@@ -47,7 +47,7 @@ import java.io.Serializable;
 @Audited
 @Table(name = "opetussuunnitelma")
 public class Opetussuunnitelma extends AbstractAuditedEntity
-        implements Serializable, ReferenceableEntity, WithOpetussuunnitelmanTila {
+        implements Serializable, ReferenceableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter

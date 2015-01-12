@@ -13,12 +13,21 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain;
+package fi.vm.sade.eperusteet.ylops.service;
+
+import fi.vm.sade.eperusteet.ylops.service.test.AbstractDbIntegrationTest;
+import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
-public interface Mergeable<T> {
-    void mergeState(T updated);
+@DirtiesContext
+public class MigrationTest extends AbstractDbIntegrationTest {
+
+    @Test
+    public void testMigration() {
+        //NOP. testaa että flyway-migraatio toimii
+    }
 }

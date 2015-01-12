@@ -16,10 +16,8 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
-import fi.vm.sade.eperusteet.ylops.domain.Mergeable;
 import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.domain.WithOpetussuunnitelmanTila;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import lombok.Getter;
@@ -39,6 +37,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.UUID;
+import javax.persistence.Column;
 
 /**
  *
@@ -48,14 +48,17 @@ import java.io.Serializable;
 @Table(name = "tekstikappale")
 @Audited
 public class TekstiKappale extends AbstractAuditedEntity
-        implements Serializable, Mergeable<TekstiKappale>, ReferenceableEntity,
-        WithOpetussuunnitelmanTila {
+        implements Serializable, ReferenceableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter
     @Setter
     private Long id;
+
+    @Getter
+    @Column(columnDefinition = "UUID", updatable = false)
+    private UUID tunniste;
 
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -76,15 +79,13 @@ public class TekstiKappale extends AbstractAuditedEntity
     @Getter
     private OpetussuunnitelmanTila tila = OpetussuunnitelmanTila.LUONNOS;
 
-    public TekstiKappale() { }
-
-    public TekstiKappale(TekstiKappale other) {
-        copyState(other);
+    public TekstiKappale() {
+        tunniste = UUID.randomUUID();
     }
 
-    @Override
-    public void mergeState(TekstiKappale updated) {
-        copyState(updated);
+    public TekstiKappale(TekstiKappale other) {
+        this.tunniste = other.tunniste;
+        copyState(other);
     }
 
     @Override
@@ -92,7 +93,6 @@ public class TekstiKappale extends AbstractAuditedEntity
         return new EntityReference(getId());
     }
 
-    @Override
     public void setTila(OpetussuunnitelmanTila tila) {
         if (this.tila == null || this.tila == OpetussuunnitelmanTila.LUONNOS) {
             this.tila = tila;

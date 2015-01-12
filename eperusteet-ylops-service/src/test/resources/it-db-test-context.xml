@@ -19,14 +19,14 @@
     <cache:annotation-driven />
 
     <context:property-placeholder
-        location="classpath:eperusteet-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/eperusteet-service.properties, file:///${user.home:''}/oph-configuration/override.properties"
+        location="classpath:eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/override.properties"
         ignore-resource-not-found="true"
         properties-ref="defaultProps"/>
 
     <bean id="defaultProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="properties">
             <util:properties local-override="true">
-                <prop key="cas_key">eperusteet-service</prop>
+                <prop key="cas_key">eperusteet-ylops-service</prop>
                 <!-- prop key="cas_service">${cas.service.eperusteet-service}</prop -->
                 <prop key="spring_security_default_access">permitAll</prop>
             </util:properties>
@@ -45,9 +45,9 @@
     <bean id="dataSource"
         class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="${eperusteet.ittestdb.jdbcurl}"/>
-        <property name="username" value="${eperusteet.ittestdb.user}"/>
-        <property name="password" value="${eperusteet.ittestdb.password}"/>
+        <property name="username" value="${ittestdb.user}"/>
+        <property name="password" value="${ittestdb.password}"/>
+        <property name="url" value="${ittestdb.jdbcurl}"/>
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="dbinit">
@@ -62,6 +62,7 @@
                 <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
                 <entry key="javax.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/>
                 <entry key="hibernate.cache.use_second_level_cache" value="true"/>
+                <entry key="net.sf.ehcache.configurationResourceName" value="/eperusteet-hibernate-ehcache.xml"/>
                 <entry key="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"/>
                 <entry key="javax.persistence.validation.factory" value-ref="validator" />
             </map>
@@ -75,7 +76,6 @@
     </bean>
 
     <bean id="dbinit" class="fi.vm.sade.eperusteet.ylops.service.test.DbInitializer" depends-on="flyway" init-method="initDb">
-
     </bean>
 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
