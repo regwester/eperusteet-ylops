@@ -39,6 +39,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.Column;
+import org.hibernate.annotations.Type;
 
 /**
  *
@@ -58,6 +59,7 @@ public class TekstiKappale extends AbstractAuditedEntity
 
     @Getter
     @Column(columnDefinition = "UUID", updatable = false)
+    @Type(type = "pg-uuid")
     private UUID tunniste;
 
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
