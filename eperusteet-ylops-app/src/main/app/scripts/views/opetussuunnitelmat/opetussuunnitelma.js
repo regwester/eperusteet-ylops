@@ -18,7 +18,7 @@
 
 ylopsApp
   .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams,
-    $timeout, $state, OpetussuunnitelmaCRUD, Notifikaatiot, Varmistusdialogi,
+    $timeout, $state, OpetussuunnitelmaCRUD, opsModel, opsService, Notifikaatiot, Varmistusdialogi,
     OpetussuunnitelmanTekstit) {
 
     $scope.editMode = false;
@@ -29,21 +29,11 @@ ylopsApp
       }, 200);
     }
 
-    $scope.model = {};
+    $scope.model = opsModel;
 
     function fetch() {
-      if ($stateParams.id === 'uusi') {
-        $scope.model = {
-          nimi: {},
-          kuvaus: {}
-        };
-      } else {
-        OpetussuunnitelmaCRUD.get({opsId: $stateParams.id}, function (res) {
-          $scope.model = res;
-        }, Notifikaatiot.serverCb);
-      }
+      opsService.refetch();
     }
-    fetch();
 
     $scope.edit = function () {
       Editointikontrollit.startEditing();

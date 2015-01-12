@@ -27,5 +27,26 @@ ylopsApp
 })
 
 .controller('OpsNavigaatioController', function ($scope) {
+  $scope.items = [
+    {
+      label: 'Ohjeistus',
+      items: []
+    },
+    {
+      label: 'Opetuksen ja yhteistyön järjestäminen',
+      items: []
+    },
+    {
+      label: 'Vuosiluokat ja oppiaineet',
+      items: []
+    }
+  ];
+  // TODO alitilat
+  $scope.active = 0;
 
+  _.each($scope.items, function (item, index) {
+    item.items = _.map(_.range(10), function (num) {
+      return {label: 'Aliotsikko ' + index + '.' + num};
+    });
+  });
 });

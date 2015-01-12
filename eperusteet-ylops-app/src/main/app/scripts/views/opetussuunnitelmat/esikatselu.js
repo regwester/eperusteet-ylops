@@ -17,17 +17,6 @@
 'use strict';
 
 ylopsApp
-.directive('opsHeader', function () {
-  return {
-    restrict: 'AE',
-    scope: {
-      model: '='
-    },
-    templateUrl: 'views/opetussuunnitelmat/directives/header.html',
-    controller: 'OpsHeaderController',
-  };
-})
-
-.controller('OpsHeaderController', function (/*$scope*/) {
+.controller('EsikatseluController', function () {
 
 });

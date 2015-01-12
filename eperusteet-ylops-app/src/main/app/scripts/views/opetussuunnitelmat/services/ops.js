@@ -17,17 +17,32 @@
 'use strict';
 
 ylopsApp
-.directive('opsHeader', function () {
-  return {
-    restrict: 'AE',
-    scope: {
-      model: '='
-    },
-    templateUrl: 'views/opetussuunnitelmat/directives/header.html',
-    controller: 'OpsHeaderController',
-  };
-})
+.service('OpsService', function (OpetussuunnitelmaCRUD, Notifikaatiot) {
+  var opsId = null;
+  var ops = null;
 
-.controller('OpsHeaderController', function (/*$scope*/) {
+  function uusi() {
+    return {
+      nimi: {},
+      kuvaus: {}
+    };
+  }
 
+  function refetch() {
+    if (opsId !== 'uusi') {
+      return OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+        ops = res;
+      }, Notifikaatiot.serverCb);
+    }
+  }
+
+  function fetch(id) {
+    opsId = id;
+    return opsId === 'uusi' ? uusi() : OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+      ops = res;
+    }, Notifikaatiot.serverCb);
+  }
+
+  this.fetch = fetch;
+  this.refetch = refetch;
 });

@@ -57,6 +57,18 @@ ylopsApp
         url: '/:id',
         templateUrl: 'views/opetussuunnitelmat/opetussuunnitelmabase.html',
         abstract: true,
+        resolve: {
+          opsService: 'OpsService',
+          opsId: ['$stateParams', function($stateParams){
+            return $stateParams.id;
+          }],
+          opsModel: ['opsService', 'opsId', function(opsService, opsId) {
+            return opsService.fetch(opsId);
+          }]
+        },
+        controller: function ($scope, opsModel) {
+          $scope.model = opsModel;
+        }
       })
 
       .state('root.opetussuunnitelmat.yksi.opetussuunnitelma', {
@@ -69,5 +81,11 @@ ylopsApp
         url: '/tekstikappale/:tekstikappaleId',
         templateUrl: 'views/opetussuunnitelmat/tekstikappale.html',
         controller: 'TekstikappaleController'
+      })
+
+      .state('root.opetussuunnitelmat.yksi.esikatselu', {
+        url: '/esikatselu',
+        templateUrl: 'views/opetussuunnitelmat/esikatselu.html',
+        controller: 'EsikatseluController'
       });
   });
