@@ -71,8 +71,30 @@ ylopsApp
         }
       })
 
+      .state('root.opetussuunnitelmat.yksi.sisalto', {
+        url: '/osiot',
+        templateUrl: 'views/opetussuunnitelmat/sisalto.html',
+        controller: 'OpetussuunnitelmaSisaltoController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
+          }]
+        }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.sisaltoalue', {
+        url: '/osiot/:alueId',
+        templateUrl: 'views/opetussuunnitelmat/sisaltoalue.html',
+        controller: 'OpetussuunnitelmaSisaltoAlueController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive();
+          }]
+        }
+      })
+
       .state('root.opetussuunnitelmat.yksi.opetussuunnitelma', {
-        url: '',
+        url: '/ops',
         templateUrl: 'views/opetussuunnitelmat/opetussuunnitelma.html',
         controller: 'OpetussuunnitelmaController'
       })
@@ -80,7 +102,12 @@ ylopsApp
       .state('root.opetussuunnitelmat.yksi.tekstikappale', {
         url: '/tekstikappale/:tekstikappaleId',
         templateUrl: 'views/opetussuunnitelmat/tekstikappale.html',
-        controller: 'TekstikappaleController'
+        controller: 'TekstikappaleController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive();
+          }]
+        }
       })
 
       .state('root.opetussuunnitelmat.yksi.esikatselu', {

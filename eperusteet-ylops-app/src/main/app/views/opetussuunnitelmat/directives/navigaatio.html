@@ -1,15 +1,15 @@
-<div role="navigation" class="navigaatio-ylataso">
+<div role="navigation" class="navigaatio-ylataso" ng-if="isActive">
   <div class="list-group list-group-horizontal">
-    <a ng-repeat="item in items" class="list-group-item" ng-class="{active: active === $index}">
+    <a ng-href="{{item.url}}" ng-repeat="item in items" class="list-group-item" ng-class="{active: item.active}">
       <span ng-bind="item.label | kaanna"></span>
     </a>
   </div>
 </div>
 
-<div class="navigaatio-wrapper">
+<div class="navigaatio-wrapper" ng-if="isActive">
   <div class="navigaatio-alataso-wrapper">
     <div class="list-group" role="navigation">
-      <a ng-repeat="item in items[active].items" class="list-group-item">
+      <a ng-href="{{item.url}}" ng-repeat="item in items[chosen].items" class="list-group-item">
         <span ng-bind="item.label | kaanna"></span>
       </a>
     </div>
@@ -17,4 +17,8 @@
   <div class="navigaatio-content">
     <div ng-transclude></div>
   </div>
+</div>
+
+<div ng-if="!isActive" class="navigaatio-content-plain">
+  <div ng-transclude></div>
 </div>

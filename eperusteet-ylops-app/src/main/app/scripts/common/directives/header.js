@@ -33,9 +33,9 @@ ylopsApp
           url: $state.href('root.opetussuunnitelmat.lista'),
           label: 'opetussuunnitelmat'
         });
-        if (toState.name !== 'root.opetussuunnitelmat.yksi.opetussuunnitelma') {
+        if (toState.name !== 'root.opetussuunnitelmat.yksi.sisalto') {
           $scope.crumbs.push({
-            url: $state.href('root.opetussuunnitelmat.yksi.opetussuunnitelma'),
+            url: $state.href('root.opetussuunnitelmat.yksi.sisalto'),
             label: 'opetussuunnitelma'
           });
         }

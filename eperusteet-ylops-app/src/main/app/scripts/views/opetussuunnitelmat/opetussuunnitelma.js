@@ -90,7 +90,7 @@ ylopsApp
       $scope.model = res;
       Notifikaatiot.onnistui('tallennettu-ok');
       if ($stateParams.id === 'uusi') {
-        $state.go($state.current.name, {id: res.id}, {reload: true});
+        $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
       }
     };
 

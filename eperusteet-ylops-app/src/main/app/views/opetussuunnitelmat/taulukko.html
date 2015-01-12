@@ -6,7 +6,7 @@
   </tr>
   <tr ng-repeat="item in items">
     <td>
-      <a ui-sref="root.opetussuunnitelmat.yksi.opetussuunnitelma({id: item.id})" ng-bind="item.nimi | kaanna"></a>
+      <a ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
     </td>
     <td><span ng-bind="item.tila | kaanna"></span></td>
     <td><span ng-bind="item.muokattu | date:'d.M.yyyy HH:mm'"></span></td>

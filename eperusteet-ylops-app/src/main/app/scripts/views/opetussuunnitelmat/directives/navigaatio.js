@@ -22,31 +22,109 @@ ylopsApp
     restrict: 'AE',
     templateUrl: 'views/opetussuunnitelmat/directives/navigaatio.html',
     controller: 'OpsNavigaatioController',
+    scope: {
+      model: '='
+    },
     transclude: true
   };
 })
 
-.controller('OpsNavigaatioController', function ($scope) {
-  $scope.items = [
-    {
-      label: 'Ohjeistus',
-      items: []
-    },
-    {
-      label: 'Opetuksen ja yhteistyön järjestäminen',
-      items: []
-    },
-    {
-      label: 'Vuosiluokat ja oppiaineet',
-      items: []
+.controller('OpsNavigaatioController', function ($scope, OpsNavigaatio, $state, $stateParams) {
+  $scope.isActive = true;
+  $scope.chosen = 0;
+
+  function listener(value) {
+    $scope.isActive = value;
+  }
+  OpsNavigaatio.listen(listener);
+  $scope.$on('$destroy', function () {
+    OpsNavigaatio.stopListening();
+  });
+
+  /*var found = null;
+  function findChild(node, viiteId) {
+    _.each(node.lapset, function (lapsi) {
+      if (lapsi.id === viiteId) {
+        found = lapsi;
+      }
+      findChild(lapsi, viiteId);
+    });
+  }*/
+
+  function updateActive() {
+    //var inTekstikappale = $state.is('root.opetussuunnitelmat.yksi.tekstikappale');
+    _.each($scope.items, function (item, index) {
+      item.active = $stateParams.alueId === '' + item.id;
+      if (item.active) {
+        $scope.chosen = index;
+      }
+      // TODO etsi oikea osio teksikappaleelle
+      /*if (inTekstikappale) {
+        var root = _.find($scope.model.tekstit.lapset, {id: item.id});
+        if (root) {
+          found = null;
+          findChild(root, $stateParams.tekstikappaleId);
+          item.active = found !== null;
+        }
+      }*/
+    });
+  }
+
+  $scope.$watch('model.tekstit.lapset', function () {
+    if ($scope.model && $scope.model.tekstit) {
+      $scope.items = _.map($scope.model.tekstit.lapset, function (lapsi) {
+        return {
+          label: lapsi.tekstiKappale.nimi,
+          id: lapsi.id,
+          items: _.map(lapsi.lapset, function (alilapsi) {
+            return {
+              label: alilapsi.tekstiKappale.nimi,
+              id: alilapsi.id,
+              url: $state.href('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: alilapsi.id})
+            };
+          }),
+          url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: lapsi.id})
+        };
+      });
+      $scope.items.push({
+        label: 'vuosiluokat-ja-oppiaineet',
+        id: 'vuosiluokat',
+        items: [],
+        url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: 'vuosiluokat'})
+      });
+      updateActive();
     }
-  ];
-  // TODO alitilat
-  $scope.active = 0;
+  }, true);
+
+  $scope.$on('$stateChangeSuccess', function () {
+    updateActive();
+  });
 
   _.each($scope.items, function (item, index) {
     item.items = _.map(_.range(10), function (num) {
       return {label: 'Aliotsikko ' + index + '.' + num};
     });
   });
+})
+
+.service('OpsNavigaatio', function () {
+  var active = true;
+  var callback = angular.noop;
+
+  this.setActive = function (value) {
+    active = _.isUndefined(value) || !!value;
+    callback(active);
+  };
+
+  this.listen = function (cb) {
+    var first = callback === angular.noop;
+    callback = cb;
+    if (first) {
+      callback(active);
+    }
+  };
+
+  this.stopListening = function () {
+    callback = angular.noop;
+  };
 });
