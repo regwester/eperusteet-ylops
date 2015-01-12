@@ -1,2 +1,46 @@
-<h1 kaanna="etusivu"></h1>
-<a ui-sref="root.opetussuunnitelmat.lista" kaanna="opetussuunnitelmat"></a>
+<h1 kaanna="'ops-tyokalu'"></h1>
+
+<div class="row etusivu-osiot">
+
+  <div class="osio col-md-6 col-sm-8">
+    <h2 kaanna="'omat-opetussuunnitelmat'"></h2>
+    <div ng-controller="OpetussuunnitelmatListaController">
+      <div ng-include="'views/opetussuunnitelmat/taulukko.html'"></div>
+    </div>
+  </div>
+
+  <div class="osio col-md-3 col-sm-4">
+    <h2 kaanna="'aloita-uusi-ops'"></h2>
+    <form name="aloitauusiForm" ng-controller="UusiOpsController">
+      <label>
+        <input type="radio" ng-model="pohja.active" value="1">
+        <span kaanna="'kayta-pohjaa'"></span>
+      </label>
+      <select ng-model="pohja.model" ng-options="(item.nimi | kaanna) for item in pohjat">
+        <option value="">{{'valitse-pohja' | kaanna}}</option>
+      </select>
+      <br/>
+      <label>
+        <input type="radio" ng-model="pohja.active" value="0">
+        <span kaanna="'tyhja-pohja'"></span>
+      </label>
+      <br/>
+      <button class="btn btn-primary luo-nappi" ng-click="addNew()" ng-disabled="pohja.active === '1' && !pohja.model"
+              kaanna="'luo-projekti'"></button>
+    </form>
+  </div>
+
+  <div class="osio col-md-3 col-sm-12">
+    <h2></h2>
+    <div ng-controller="TiedotteetController" class="etusivu-tiedotteet">
+      <h3 kaanna="'tiedotteet'"></h3>
+      <div class="tiedote-list-item" ng-repeat="tiedote in tiedotteet">
+        <a ng-bind="tiedote.nimi | kaanna"></a>
+        <div class="tiedote-lista-tiedot">
+          <span ng-bind="tiedote.muokattu"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

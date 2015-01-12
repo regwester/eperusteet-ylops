@@ -14,10 +14,18 @@
   "kommentoi-muutosta": "Kommentoi muutosta",
 
   "etusivu": "Etusivu",
+  "ops-tyokalu": "OPS-työkalu",
+  "omat-opetussuunnitelmat": "Opetussuunnitelmasi",
+  "aloita-uusi-ops": "Aloita uusi OPS-projekti",
+  "tiedotteet": "Tiedotteet",
   "opetussuunnitelmat": "Opetussuunnitelmat",
   "opetussuunnitelma": "Opetussuunnitelma",
   "lisaa-opetussuunnitelma": "Luo uusi opetussuunnitelma",
   "esikatselu": "Esikatselu",
+  "luo-projekti": "Luo projekti",
+  "kayta-pohjaa": "Käytä pohjaa:",
+  "tyhja-pohja": "Tyhjä pohja",
+  "valitse-pohja": "Valitse pohja...",
 
   "ui-kieli": "Käyttöliittymäkieli",
   "sisallon-kieli": "Sisällön kieli",
@@ -26,11 +34,15 @@
   "odottamaton-virhe": "Tapahtui odottamaton virhe",
 
   "nimi": "Nimi",
+  "tila": "Tila",
+  "muokattu-viimeksi": "Muokattu viimeksi",
   "kuvaus": "Kuvaus",
   "tekstikappaleet": "Tekstikappaleet",
   "ei-tekstikappaleita": "Ei tekstikappaleita",
   "luo-uusi-tekstikappale": "Luo uusi tekstikappale",
   "tallenna-rakenne": "Tallenna rakenne",
   "muokkaa-rakennetta": "Muokkaa rakennetta",
-  "peru-rakenne": "Peruuta rakenteen muokkaus"
+  "peru-rakenne": "Peruuta rakenteen muokkaus",
+
+  "luonnos": "Luonnos"
 }

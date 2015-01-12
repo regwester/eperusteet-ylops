@@ -24,4 +24,28 @@ ylopsApp
     $scope.addNew = function () {
       $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma', {id: 'uusi'});
     };
+  })
+
+  .controller('UusiOpsController', function ($scope, $state) {
+    $scope.pohja = {
+      active: 0,
+      model: null
+    };
+
+    $scope.addNew = function () {
+      $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma', {id: 'uusi'});
+    };
+
+    $scope.pohjat = [
+      {nimi: {fi: 'Dummypohja 1'}},
+      {nimi: {fi: 'Dummypohja 2'}},
+      {nimi: {fi: 'Dummypohja 3'}},
+    ];
+  })
+
+  .controller('TiedotteetController', function ($scope) {
+    $scope.tiedotteet = [
+      {nimi: {fi: 'Tiedote 1'}, muokattu: '14.1.2015'},
+      {nimi: {fi: 'Jotain tärkeää on tapahtunut jossain'}, muokattu: '12.1.2015'}
+    ];
   });

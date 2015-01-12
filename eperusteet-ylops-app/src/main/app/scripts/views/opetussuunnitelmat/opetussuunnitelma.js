@@ -47,7 +47,7 @@ ylopsApp
           $scope.model.$delete({}, function () {
             Notifikaatiot.onnistui('poisto-onnistui');
             $timeout(function () {
-              $state.go('root.opetussuunnitelmat.lista');
+              $state.go('root.etusivu');
             });
           }, Notifikaatiot.serverCb);
         }
@@ -108,7 +108,7 @@ ylopsApp
       cancel: function () {
         if ($stateParams.id === 'uusi') {
           $timeout(function () {
-            $state.go('root.opetussuunnitelmat.lista');
+            $state.go('root.etusivu');
           });
         } else {
           fetch();

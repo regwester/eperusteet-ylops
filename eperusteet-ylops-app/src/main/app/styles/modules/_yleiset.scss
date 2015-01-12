@@ -131,3 +131,9 @@ $backtotop-size: 48px;
     border-radius: 0;
   }
 }
+
+label {
+  input[type="radio"] {
+    top: 0;
+  }
+}
