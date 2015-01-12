@@ -17,9 +17,14 @@ package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
@@ -32,6 +37,8 @@ import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,13 +81,32 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setTila(OpetussuunnitelmanTila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
         ops = repository.save(ops);
+        lisaaTekstipuunLapset(ops);
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
     private void lisaaTekstipuunJuuri(Opetussuunnitelma ops) {
         TekstiKappaleViite juuri = new TekstiKappaleViite(Omistussuhde.OMA);
-        juuri = viiteRepository.save(juuri);
+        juuri = viiteRepository.saveAndFlush(juuri);
         ops.setTekstit(juuri);
+    }
+
+    private void lisaaTekstipuunLapset(Opetussuunnitelma ops) {
+        LokalisoituTekstiDto nimi, teksti;
+        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Ohjeistus"));
+        teksti = new LokalisoituTekstiDto(null, null);
+        TekstiKappaleDto ohjeistusTeksti = new TekstiKappaleDto(nimi, teksti, OpetussuunnitelmanTila.LUONNOS);
+        TekstiKappaleViiteDto.Matala ohjeistus = new TekstiKappaleViiteDto.Matala(ohjeistusTeksti);
+        addTekstiKappale(ops.getId(), ohjeistus);
+
+        nimi = new LokalisoituTekstiDto(null,
+                                        Collections.singletonMap(Kieli.FI, "Opetuksen ja yhteistyön järjestäminen"));
+        teksti = new LokalisoituTekstiDto(null, null);
+        TekstiKappaleDto opetuksenJarjestaminenTeksti =
+                new TekstiKappaleDto(nimi, teksti, OpetussuunnitelmanTila.LUONNOS);
+        TekstiKappaleViiteDto.Matala opetuksenJarjestaminen =
+                new TekstiKappaleViiteDto.Matala(opetuksenJarjestaminenTeksti);
+        addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
     @Override

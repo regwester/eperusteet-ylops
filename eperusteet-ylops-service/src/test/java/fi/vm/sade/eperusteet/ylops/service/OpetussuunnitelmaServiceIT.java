@@ -117,11 +117,14 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         TekstiKappaleViiteDto.Matala viiteDto = new TekstiKappaleViiteDto.Matala();
         viiteDto.setTekstiKappale(tekstiKappale);
 
+        TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsId);
+        final int lastenMaara = tekstit.getLapset() != null ? tekstit.getLapset().size() : 0;
+
         viiteDto = opetussuunnitelmaService.addTekstiKappale(opsId, viiteDto);
 
-        TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsId);
+        tekstit = opetussuunnitelmaService.getTekstit(opsId);
         assertNotNull(tekstit);
-        assertEquals(1, tekstit.getLapset().size());
+        assertEquals(lastenMaara + 1, tekstit.getLapset().size());
 
         TekstiKappaleViiteDto.Matala dto = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, viiteDto.getId());
         assertNotNull(dto);
@@ -136,6 +139,6 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         tekstit = opetussuunnitelmaService.getTekstit(opsId);
         assertNotNull(tekstit);
-        assertEquals(1, tekstit.getLapset().get(0).getLapset().size());
+        assertEquals(1, tekstit.getLapset().get(lastenMaara).getLapset().size());
     }
 }
