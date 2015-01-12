@@ -1,0 +1,19 @@
+$navigaatio-width: 280px;
+
+.navigaatio-ylataso {
+  margin-top: -1px;
+  font-size: 120%;
+}
+
+.navigaatio-content {
+  margin-left: $navigaatio-width;
+  padding-left: 30px;
+}
+
+.navigaatio-alataso-wrapper {
+  float: left;
+  width: $navigaatio-width;
+  .list-group-item {
+    border-radius: 0;
+  }
+}

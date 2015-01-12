@@ -1,3 +1,13 @@
+$ops-header-background: rgba(20, 158, 203, 0.06);
+$ops-header-height: 150px;
+$ops-border: 1px solid #ddd;
+
+.ops-header {
+  background-color: $ops-header-background;
+  height: $ops-header-height;
+  border: $ops-border;
+}
+
 .tekstikappaleet {
   padding-left: 100px;
   max-width: 800px;

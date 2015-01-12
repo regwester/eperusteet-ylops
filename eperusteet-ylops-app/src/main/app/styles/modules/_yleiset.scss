@@ -119,3 +119,15 @@ $backtotop-size: 48px;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
+.list-group-horizontal {
+  .list-group-item {
+    display: inline-block;
+    margin-bottom: 0;
+    &:not(:first-child) {
+      margin-left: -5px;
+    }
+    margin-right: 0;
+    border-radius: 0;
+  }
+}

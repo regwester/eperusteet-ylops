@@ -55,7 +55,7 @@ ylopsApp
 
       .state('root.opetussuunnitelmat.yksi', {
         url: '/:id',
-        template: '<div ui-view></div>',
+        templateUrl: 'views/opetussuunnitelmat/opetussuunnitelmabase.html',
         abstract: true,
       })
 
