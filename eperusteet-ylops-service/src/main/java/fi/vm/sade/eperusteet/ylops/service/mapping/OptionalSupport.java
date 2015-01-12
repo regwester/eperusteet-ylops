@@ -33,7 +33,8 @@ import ma.glasnost.orika.metadata.Type;
  *
  * Tarkoitettu Dto-Entiteetti-Dto mappaukseen.
  *
- * Mahdollistaa mappauksen siten, että DTO-luokissa voi määritellä attribuuttela Optional&lt;Attr&gt; ja mappaus entiteetteihin toimii seuraavasti:
+ * Mahdollistaa mappauksen siten, että DTO-luokissa voi määritellä attribuutteja Optional&lt;Attr&gt;
+ * ja mappaus entiteetteihin toimii seuraavasti:
  * <ul>
  *   <li>null: pidetään kohdearvo
  *   <li>present: mapätään rekursiivisesti kohdearvoon
