@@ -17,3 +17,22 @@ $navigaatio-width: 280px;
     border-radius: 0;
   }
 }
+
+/* Kapea näyttö */
+@media (max-width: $screen-md-max) {
+  .navigaatio-alataso-wrapper {
+    display: none;
+  }
+  .navigaatio-content {
+    margin-left: 15px;
+    padding-left: 0;
+  }
+
+}
+
+/* Leveä näyttö */
+@media (min-width: $screen-lg-min) {
+  .navigaatio-alataso-wrapper {
+    display: block;
+  }
+}
