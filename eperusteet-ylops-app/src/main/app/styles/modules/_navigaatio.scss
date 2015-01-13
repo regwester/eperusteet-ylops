@@ -14,6 +14,13 @@ $navigaatio-width: 280px;
   padding-left: 30px;
 }
 
+.navigaatio-content-plain, .navigaatio-content {
+  margin-top: 40px;
+  h2 {
+    margin-top: 0;
+  }
+}
+
 .navigaatio-alataso-wrapper {
   float: left;
   width: $navigaatio-width;

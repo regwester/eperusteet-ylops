@@ -67,11 +67,17 @@ ylopsApp
       if (item.active) {
         $scope.chosen = index;
       }
+      _.each(item.items, function (alilapsi) {
+        alilapsi.active = false;
+      });
       if (inTekstikappale) {
         var root = _.find($scope.model.tekstit.lapset, {id: item.id});
         if (root) {
           var found = findChild(root, $stateParams.tekstikappaleId);
           item.active = !!found;
+          if (item.active) {
+            $scope.chosen = index;
+          }
           _.each(item.items, function (alilapsi) {
             alilapsi.active = '' + alilapsi.id === '' + $stateParams.tekstikappaleId;
           });
