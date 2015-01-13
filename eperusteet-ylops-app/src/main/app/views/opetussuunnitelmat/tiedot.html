@@ -1,0 +1,13 @@
+<h2 kaanna="'opsn-tiedot'"></h2>
+
+<h3 kaanna="'nimi'"></h3>
+<div ng-bind="model.nimi | kaanna"></div>
+
+<h3 kaanna="'kuvaus'"></h3>
+<div ng-bind-html="model.kuvaus | kaanna | unsafe"></div>
+
+<h3 kaanna="'luotu'"></h3>
+<div ng-bind="model.luotu | aikaleima"></div>
+
+<h3 kaanna="'muokattu-viimeksi'"></h3>
+<div ng-bind="model.luotu | aikaleima"></div>

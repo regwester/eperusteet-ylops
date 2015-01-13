@@ -27,6 +27,7 @@
   "tyhja-pohja": "Tyhjä pohja",
   "valitse-pohja": "Valitse pohja...",
   "vuosiluokat-ja-oppiaineet": "Vuosiluokat ja oppiaineet",
+  "opsn-tiedot": "OPS:n tiedot",
 
   "ui-kieli": "Käyttöliittymäkieli",
   "sisallon-kieli": "Sisällön kieli",
@@ -37,6 +38,7 @@
   "nimi": "Nimi",
   "tila": "Tila",
   "muokattu-viimeksi": "Muokattu viimeksi",
+  "luotu": "Luotu",
   "kuvaus": "Kuvaus",
   "tekstikappaleet": "Tekstikappaleet",
   "ei-tekstikappaleita": "Ei tekstikappaleita",

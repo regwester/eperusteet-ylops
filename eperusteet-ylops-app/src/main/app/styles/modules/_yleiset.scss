@@ -7,6 +7,13 @@ a:hover {
   cursor: pointer;
 }
 
+/* ikoni + linkkiteksti */
+.iconlink > .glyphicon {
+  margin-right: 5px;
+}
+*[icon-role] .glyphicon {
+  margin-right: 5px;
+}
 button {
   .glyphicon {
     margin-right: 5px;
@@ -14,11 +21,6 @@ button {
   img {
     margin-right: 5px;
   }
-}
-
-/* ikoni + linkkiteksti */
-.iconlink > .glyphicon {
-  margin-right: 5px;
 }
 
 /* animointia varten */

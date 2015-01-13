@@ -21,4 +21,10 @@ ylopsApp
     return function (val) {
       return $sce.trustAsHtml(val);
     };
+  })
+
+  .filter('aikaleima', function ($filter) {
+    return function (val) {
+      return $filter('date')(val, 'dd.MM.yyyy HH:mm:ss');
+    };
   });
