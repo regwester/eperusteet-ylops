@@ -39,7 +39,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 @Entity
 @Table(name = "ohje", indexes = {@Index(columnList = "kohde", unique = false)})
 @Audited
-class Ohje extends AbstractAuditedReferenceableEntity {
+public class Ohje extends AbstractAuditedReferenceableEntity {
 
     @ValidHtml
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)

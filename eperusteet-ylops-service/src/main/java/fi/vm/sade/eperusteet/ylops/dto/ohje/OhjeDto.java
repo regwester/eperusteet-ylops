@@ -13,10 +13,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.teksti;
+package fi.vm.sade.eperusteet.ylops.dto.ohje;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,7 +29,7 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class TekstiKappaleDto {
+public class OhjeDto {
     private Long id;
     private Date luotu;
     private Date muokattu;
@@ -37,16 +37,6 @@ public class TekstiKappaleDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String muokkaajanNimi;
 
-    private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto teksti;
-    private OpetussuunnitelmanTila tila;
-    private UUID tunniste;
-
-    public TekstiKappaleDto() {}
-
-    public TekstiKappaleDto(LokalisoituTekstiDto nimi, LokalisoituTekstiDto teksti, OpetussuunnitelmanTila tila) {
-        this.nimi = nimi;
-        this.teksti = teksti;
-        this.tila = tila;
-    }
+    private UUID kohde;
 }
