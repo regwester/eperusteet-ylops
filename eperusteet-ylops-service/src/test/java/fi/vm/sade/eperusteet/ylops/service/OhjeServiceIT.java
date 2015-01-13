@@ -25,7 +25,6 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +50,6 @@ public class OhjeServiceIT extends AbstractIntegrationTest {
     private TekstiKappaleRepository tekstiKappaleRepository;
 
     @Test
-    @Ignore
     public void testAddAndGetTekstiKappaleOhje() {
         TekstiKappale tekstiKappale = new TekstiKappale();
         final String NIMI = "Namnet";
@@ -84,7 +82,6 @@ public class OhjeServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void testGetAndDeleteOhje() {
         Ohje ohje = new Ohje();
         final String OHJETEKSTI = "Så här";
