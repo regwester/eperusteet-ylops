@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.UUID;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
@@ -50,7 +49,6 @@ public class Ohje extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
-    @Column(columnDefinition = "UUID")
-    @Type(type = "pg-uuid")
+    @Type(type = "uuid")
     private UUID kohde;
 }

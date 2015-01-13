@@ -58,8 +58,8 @@ public class TekstiKappale extends AbstractAuditedEntity
     private Long id;
 
     @Getter
-    @Column(columnDefinition = "UUID", updatable = false)
-    @Type(type = "pg-uuid")
+    @Column(updatable = false)
+    @Type(type = "uuid")
     private UUID tunniste;
 
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)

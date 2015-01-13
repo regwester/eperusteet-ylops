@@ -192,7 +192,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>${hibernate.version}</version>
+            <version>4.3.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -259,7 +259,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.182</version>
+            <version>1.4.184</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -438,6 +438,7 @@
                         <username></username>
                         <password></password>
                         <hibernateProperties>src/test/config/hibernate.properties</hibernateProperties>
+                        <hibernateMapping>src/main/resources/hibernate-typedefs.hbm.xml</hibernateMapping>
                         <outputFile>${schema.file}</outputFile>
                         <scanDependencies>NONE</scanDependencies>
                     </configuration>
