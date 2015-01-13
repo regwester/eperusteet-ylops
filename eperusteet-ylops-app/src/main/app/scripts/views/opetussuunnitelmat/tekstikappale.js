@@ -18,7 +18,8 @@
 
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
-    Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit) {
+    Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
+    OhjeCRUD) {
 
     $scope.editMode = false;
     if ($stateParams.tekstikappaleId === 'uusi') {
@@ -28,6 +29,7 @@ ylopsApp
     }
 
     $scope.model = {};
+    $scope.ohje = {};
 
     function fetch() {
       if ($stateParams.tekstikappaleId === 'uusi') {
@@ -43,7 +45,11 @@ ylopsApp
           viiteId: $stateParams.tekstikappaleId
         }, function (res) {
           $scope.model = res;
+          OhjeCRUD.forTekstikappale({uuid: res.tekstiKappale.tunniste}, function (ohje) {
+            $scope.ohje = ohje;
+          });
         }, Notifikaatiot.serverCb);
+
       }
     }
     fetch();
@@ -102,5 +108,32 @@ ylopsApp
       }
     };
     Editointikontrollit.registerCallback(callbacks);
+
+    $scope.ohjeOps = {
+      editing: false,
+      edit: function () {
+        $scope.ohjeOps.editing = true;
+      },
+      ok: function () {
+        $scope.ohjeOps.editing = false;
+        if (!$scope.ohje.$save) {
+          $scope.ohje.kohde = $scope.model.tekstiKappale.tunniste;
+          OhjeCRUD.save({}, $scope.ohje, function (res) {
+            $scope.ohje = res;
+          }, Notifikaatiot.serverCb);
+        } else {
+          $scope.ohje.$save();
+        }
+
+      },
+      cancel: function () {
+        $scope.ohjeOps.editing = false;
+      },
+      delete: function () {
+        $scope.ohje.$delete(function () {
+          $scope.ohje = {};
+        });
+      }
+    };
 
   });

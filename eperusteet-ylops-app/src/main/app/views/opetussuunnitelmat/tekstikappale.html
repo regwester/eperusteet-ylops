@@ -6,6 +6,24 @@
 </div>
 
 <div ng-if="!editMode">
+  <div class="panel panel-default tekstikappale-ohje">
+
+    <div ng-hide="ohjeOps.editing" class="pull-right">
+      <a ng-click="ohjeOps.edit()">Muokkaa</a>
+      <a ng-show="ohje.id" ng-click="ohjeOps.delete()">Poista</a>
+    </div>
+    <div ng-show="ohjeOps.editing" class="pull-right">
+      <a ng-click="ohjeOps.ok()">Ok</a>
+      <a ng-click="ohjeOps.cancel()">Peruuta</a>
+    </div>
+
+    <h3 kaanna="'ohje'"></h3>
+
+    <div ng-if="ohjeOps.editing" ckeditor ng-model="ohje.teksti" slocalized></div>
+    <div ng-if="!ohjeOps.editing" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
+
+    <p ng-if="!ohje.teksti && !ohjeOps.editing" kaanna="'ei-ohjetta'"></p>
+  </div>
   <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></div>
 </div>
 
