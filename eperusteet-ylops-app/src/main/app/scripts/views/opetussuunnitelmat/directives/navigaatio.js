@@ -41,32 +41,42 @@ ylopsApp
     OpsNavigaatio.stopListening();
   });
 
-  /*var found = null;
   function findChild(node, viiteId) {
+    var found = null;
     _.each(node.lapset, function (lapsi) {
-      if (lapsi.id === viiteId) {
+      if ('' + lapsi.id === '' + viiteId) {
         found = lapsi;
       }
-      findChild(lapsi, viiteId);
     });
-  }*/
+    if (!found) {
+      var childFound = false;
+      _.each(node.lapset, function (lapsi) {
+        if (findChild(lapsi, viiteId)) {
+          childFound = true;
+        }
+      });
+      found = childFound;
+    }
+    return found;
+  }
 
   function updateActive() {
-    //var inTekstikappale = $state.is('root.opetussuunnitelmat.yksi.tekstikappale');
+    var inTekstikappale = $state.is('root.opetussuunnitelmat.yksi.tekstikappale');
     _.each($scope.items, function (item, index) {
       item.active = $stateParams.alueId === '' + item.id;
       if (item.active) {
         $scope.chosen = index;
       }
-      // TODO etsi oikea osio teksikappaleelle
-      /*if (inTekstikappale) {
+      if (inTekstikappale) {
         var root = _.find($scope.model.tekstit.lapset, {id: item.id});
         if (root) {
-          found = null;
-          findChild(root, $stateParams.tekstikappaleId);
-          item.active = found !== null;
+          var found = findChild(root, $stateParams.tekstikappaleId);
+          item.active = !!found;
+          _.each(item.items, function (alilapsi) {
+            alilapsi.active = '' + alilapsi.id === '' + $stateParams.tekstikappaleId;
+          });
         }
-      }*/
+      }
     });
   }
 

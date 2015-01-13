@@ -9,7 +9,7 @@
 <div class="navigaatio-wrapper" ng-if="isActive">
   <div class="navigaatio-alataso-wrapper">
     <div class="list-group" role="navigation">
-      <a ng-href="{{item.url}}" ng-repeat="item in items[chosen].items" class="list-group-item">
+      <a ng-href="{{item.url}}" ng-repeat="item in items[chosen].items" class="list-group-item" ng-class="{active: item.active}">
         <span ng-bind="item.label | kaanna"></span>
       </a>
     </div>
