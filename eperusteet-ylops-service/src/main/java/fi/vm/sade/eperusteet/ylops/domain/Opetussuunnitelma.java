@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
+import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -25,6 +26,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,11 +35,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -79,6 +85,18 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     @JoinColumn
     private TekstiKappaleViite tekstit = new TekstiKappaleViite();
+
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private Set<KoodistoKoodi> kunnat = new HashSet<>();
+
+    @ElementCollection
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private Set<String> koulut = new HashSet<>();
 
     public boolean containsViite(TekstiKappaleViite viite) {
         return viite != null && tekstit.getId().equals(viite.getRoot().getId());
