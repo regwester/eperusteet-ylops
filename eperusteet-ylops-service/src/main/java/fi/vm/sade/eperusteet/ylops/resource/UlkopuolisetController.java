@@ -62,7 +62,7 @@ public class UlkopuolisetController {
         return new ResponseEntity<>(ryhma, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{koodisto}", method = GET)
+    @RequestMapping(value = "/koodisto/{koodisto}", method = GET)
     @ResponseBody
     public ResponseEntity<List<KoodistoKoodiDto>> kaikki(
             @PathVariable("koodisto") final String koodisto,

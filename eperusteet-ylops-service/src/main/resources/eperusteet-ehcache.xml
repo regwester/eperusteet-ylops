@@ -284,4 +284,10 @@
         diskExpiryThreadIntervalSeconds="120"
         memoryStoreEvictionPolicy="LRU"
     />
+
+    <cache name="koodistot"
+           maxElementsInMemory="10000"
+           eternal="false"
+           timeToLiveSeconds="86400"
+           overflowToDisk="false" />
 </ehcache>

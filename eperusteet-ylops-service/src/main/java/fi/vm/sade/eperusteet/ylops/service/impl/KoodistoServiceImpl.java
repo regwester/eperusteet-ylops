@@ -58,6 +58,7 @@ public class KoodistoServiceImpl implements KoodistoService {
     }
 
     @Override
+    @Cacheable("koodistot")
     public KoodistoKoodiDto get(String koodisto, String koodi) {
         RestTemplate restTemplate = new RestTemplate();
         String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/" + koodi;
