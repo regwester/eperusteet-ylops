@@ -81,7 +81,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
      * kertoo koostuuko oppiaine oppimääristä (esim. äidinkieli ja kirjallisuus) vai onko se "yksinkertainen" kuten matematiikka.
      */
     @Getter
-    @Setter
     private boolean koosteinen = false;
 
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
@@ -92,9 +91,8 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     private Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
 
     /**
-     * Palauttaa oppimäärät
+     * Palauttaa oppimäärät jos kyseessä on koosteinen oppiaine.
      *
-     * @see #isKoosteinen()
      * @return oppimäärät (joukkoa ei voi muokata) tai null jos oppiaine ei ole koosteinen
      */
     public Set<Oppiaine> getOppimaarat() {
@@ -117,7 +115,13 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         if (vuosiluokkakokonaisuudet.add(ovk)) {
             this.muokattu();
         }
+    }
 
+    public void setKoosteinen(boolean koosteinen) {
+        if ( this.oppiaine != null) {
+            throw new IllegalStateException("Oppimäärä ei voi olla koosteinen");
+        }
+        this.koosteinen = koosteinen;
     }
 
     public void removeVuosiluokkaKokonaisuus(Oppiaineenvuosiluokkakokonaisuus ovk) {
