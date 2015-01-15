@@ -32,6 +32,7 @@ ylopsApp
 .controller('OpsNavigaatioController', function ($scope, OpsNavigaatio, $state, $stateParams, Algoritmit) {
   $scope.isActive = true;
   $scope.chosen = 0;
+  $scope.collapsed = true;
 
   function listener(value) {
     $scope.isActive = value;
@@ -125,7 +126,12 @@ ylopsApp
 
   $scope.$on('$stateChangeSuccess', function () {
     updateActive();
+    $scope.collapsed = true;
   });
+
+  $scope.toggle = function () {
+    $scope.collapsed = !$scope.collapsed;
+  };
 
 })
 

@@ -50,5 +50,8 @@
   "peru-rakenne": "Peruuta rakenteen muokkaus",
 
   "luonnos": "Luonnos",
-  "tila-luonnos": "luonnos"
+  "tila-luonnos": "luonnos",
+
+  "sivunavigointi-avaa-menu": "Avaa navigaatiopalkki",
+  "sivunavigointi-sulje-menu": "Sulje navigaatiopalkki"
 }
