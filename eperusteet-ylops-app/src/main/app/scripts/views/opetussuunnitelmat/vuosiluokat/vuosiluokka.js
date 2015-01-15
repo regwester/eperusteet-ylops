@@ -17,6 +17,6 @@
 'use strict';
 
 ylopsApp
-.controller('OpetussuunnitelmaSisaltoController', function () {
+.controller('VuosiluokkaController', function () {
 
 });

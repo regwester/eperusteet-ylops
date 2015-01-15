@@ -17,6 +17,12 @@
 'use strict';
 
 ylopsApp
-.controller('OpetussuunnitelmaSisaltoController', function () {
-
+.controller('OppiaineController', function ($scope, $state, $stateParams) {
+  $scope.goToDummy = function (id) {
+    $state.go('root.opetussuunnitelmat.yksi.vuosiluokka', {
+      vlkId: $stateParams.vlkId,
+      oppiaineId: $stateParams.oppiaineId,
+      vlId: id
+    });
+  };
 });

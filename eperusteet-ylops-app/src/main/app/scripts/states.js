@@ -59,15 +59,20 @@ ylopsApp
         abstract: true,
         resolve: {
           opsService: 'OpsService',
+          vuosiluokatService: 'VuosiluokatService',
           opsId: ['$stateParams', function($stateParams){
             return $stateParams.id;
           }],
           opsModel: ['opsService', 'opsId', function(opsService, opsId) {
             return opsService.fetch(opsId);
+          }],
+          vuosiluokat: ['vuosiluokatService', function (vuosiluokatService) {
+            return vuosiluokatService.getVuosiluokat();
           }]
         },
-        controller: function ($scope, opsModel) {
+        controller: function ($scope, opsModel, vuosiluokat) {
           $scope.model = opsModel;
+          $scope.vuosiluokat = vuosiluokat;
         }
       })
 
@@ -131,5 +136,38 @@ ylopsApp
         url: '/esikatselu',
         templateUrl: 'views/opetussuunnitelmat/esikatselu.html',
         controller: 'EsikatseluController'
+      })
+
+      .state('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {
+        url: '/vuosiluokat/:vlkId',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlk.html',
+        controller: 'VuosiluokkakokonaisuusController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive();
+          }]
+        }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.oppiaine', {
+        url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/oppiaine.html',
+        controller: 'OppiaineController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive();
+          }]
+        }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.vuosiluokka', {
+        url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId/vuosiluokka/:vlId',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokka.html',
+        controller: 'VuosiluokkaController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive();
+          }]
+        }
       });
   });

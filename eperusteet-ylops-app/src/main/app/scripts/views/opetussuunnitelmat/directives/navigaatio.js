@@ -23,13 +23,14 @@ ylopsApp
     templateUrl: 'views/opetussuunnitelmat/directives/navigaatio.html',
     controller: 'OpsNavigaatioController',
     scope: {
-      model: '='
+      model: '=',
+      vuosiluokat: '='
     },
     transclude: true
   };
 })
 
-.controller('OpsNavigaatioController', function ($scope, OpsNavigaatio, $state, $stateParams, Algoritmit) {
+.controller('OpsNavigaatioController', function ($scope, OpsNavigaatio, $state, $stateParams, Algoritmit, VuosiluokatService) {
   $scope.isActive = true;
   $scope.chosen = 0;
   $scope.collapsed = true;
@@ -61,7 +62,15 @@ ylopsApp
     return found;
   }
 
-  function updateActive() {
+  function startsWith(str1, str2) {
+    return str1.substr(0, str2.length) === str2;
+  }
+
+  function stateMatch(id, paramName) {
+    return '' + id === '' + $stateParams[paramName];
+  }
+
+  function findActiveTeksti() {
     var inTekstikappale = $state.is('root.opetussuunnitelmat.yksi.tekstikappale');
     _.each($scope.items, function (item, index) {
       item.active = $stateParams.alueId === '' + item.id;
@@ -80,11 +89,34 @@ ylopsApp
             $scope.chosen = index;
           }
           _.each(item.items, function (alilapsi) {
-            alilapsi.active = '' + alilapsi.id === '' + $stateParams.tekstikappaleId;
+            alilapsi.active = stateMatch(alilapsi.id, 'tekstikappaleId');
           });
         }
       }
     });
+  }
+
+  function findActiveVuosiluokkaOrOppiaine(isOppiaine) {
+    _.each($scope.items[$scope.chosen].items, function (item) {
+      item.active = (isOppiaine && stateMatch(item.id, 'oppiaineId')) ||
+                    (!isOppiaine && stateMatch(item.id, 'vlkId'));
+    });
+  }
+
+  function updateActive() {
+    _.each($scope.items, function (item) {
+      item.active = false;
+    });
+    var inVuosiluokat = startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus');
+    var inOppiaine = startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.oppiaine') ||
+                     $state.current.name === 'root.opetussuunnitelmat.yksi.vuosiluokka';
+    if (inVuosiluokat || inOppiaine) {
+      $scope.chosen = $scope.items.length - 1;
+      $scope.items[$scope.chosen].active = true;
+      findActiveVuosiluokkaOrOppiaine(inOppiaine);
+    } else {
+      findActiveTeksti();
+    }
   }
 
   function createNavimenu(node) {
@@ -114,12 +146,13 @@ ylopsApp
   $scope.$watch('model.tekstit.lapset', function () {
     if ($scope.model && $scope.model.tekstit) {
       $scope.items = mapLapset($scope.model.tekstit.lapset);
-      $scope.items.push({
+      var vuosiluokat = {
         label: 'vuosiluokat-ja-oppiaineet',
         id: 'vuosiluokat',
-        items: [],
-        url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: 'vuosiluokat'})
-      });
+        url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: 'vuosiluokat'}),
+        items: VuosiluokatService.mapForMenu($scope.vuosiluokat)
+      };
+      $scope.items.push(vuosiluokat);
       updateActive();
     }
   }, true);
