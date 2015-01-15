@@ -1,0 +1,215 @@
+/*
+ * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
+ *
+ * This program is free software: Licensed under the EUPL, Version 1.1 or - as
+ * soon as they will be approved by the European Commission - subsequent versions
+ * of the EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * European Union Public Licence for more details.
+ */
+package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
+
+import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
+/**
+ *
+ * @author jhyoty
+ */
+@Entity
+@Audited
+@Table(name = "oppiaine")
+public class Oppiaine extends AbstractAuditedReferenceableEntity {
+
+    @Getter
+    @Setter
+    private String koodi;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @NotNull(groups = Strict.class)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
+    private LokalisoituTeksti nimi;
+
+    @Getter
+    @Setter
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Tekstiosa tehtava;
+
+    @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @NotNull(groups = Strict.class)
+    @Size(min = 1, groups = Strict.class)
+    @Valid
+    private Set<Oppiaineenvuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
+
+    @Getter
+    @ManyToOne(optional = true)
+    /**
+     * oppiaine johon oppimäärä kuuluu tai null jos kyseessä itse oppiaine.
+     */
+    private Oppiaine oppiaine;
+
+    /**
+     * kertoo koostuuko oppiaine oppimääristä (esim. äidinkieli ja kirjallisuus) vai onko se "yksinkertainen" kuten matematiikka.
+     */
+    @Getter
+    @Setter
+    private boolean koosteinen = false;
+
+    @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    private Set<Oppiaine> oppimaarat;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable
+    private Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
+
+    /**
+     * Palauttaa oppimäärät
+     *
+     * @see #isKoosteinen()
+     * @return oppimäärät (joukkoa ei voi muokata) tai null jos oppiaine ei ole koosteinen
+     */
+    public Set<Oppiaine> getOppimaarat() {
+        if (koosteinen == false) {
+            return null;
+        }
+        return oppimaarat == null ? new HashSet<Oppiaine>() : new HashSet<>(oppimaarat);
+    }
+
+    public Set<Oppiaineenvuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
+        return vuosiluokkakokonaisuudet == null ? Collections.<Oppiaineenvuosiluokkakokonaisuus>emptySet()
+            : Collections.unmodifiableSet(vuosiluokkakokonaisuudet);
+    }
+
+    public void addVuosiluokkaKokonaisuus(Oppiaineenvuosiluokkakokonaisuus ovk) {
+        if (vuosiluokkakokonaisuudet == null) {
+            vuosiluokkakokonaisuudet = new HashSet<>();
+        }
+        ovk.setOppiaine(this);
+        if (vuosiluokkakokonaisuudet.add(ovk)) {
+            this.muokattu();
+        }
+
+    }
+
+    public void removeVuosiluokkaKokonaisuus(Oppiaineenvuosiluokkakokonaisuus ovk) {
+        if (!ovk.getOppiaine().equals(this)) {
+            throw new IllegalArgumentException("Vuosiluokkakokonaisuus ei kuulu tähän oppiaineeseen");
+        }
+        vuosiluokkakokonaisuudet.remove(ovk);
+        ovk.setOppiaine(null);
+    }
+
+    public void addOppimaara(Oppiaine oppimaara) {
+        if (koosteinen == false) {
+            throw new IllegalStateException("Oppiaine ei ole koosteinen eikä tue oppimääriä");
+        }
+        if (oppimaarat == null) {
+            oppimaarat = new HashSet<>();
+        }
+        oppimaara.setOppiaine(this);
+        if (oppimaarat.add(oppimaara)) {
+            this.muokattu();
+        }
+    }
+
+    public void removeOppimaara(Oppiaine aine) {
+        if (koosteinen == false) {
+            throw new IllegalStateException("Oppiaine ei ole koosteinen eikä tue oppimääriä");
+        }
+        if (aine.getOppiaine().equals(this) && oppimaarat.remove(aine)) {
+            aine.oppiaine = null;
+        } else {
+            throw new IllegalArgumentException("Oppimäärä ei kuulu tähän oppiaineeseen");
+        }
+    }
+
+    public void setOppiaine(Oppiaine oppiaine) {
+        if (this.oppiaine == null || this.oppiaine.equals(oppiaine)) {
+            this.oppiaine = oppiaine;
+        } else {
+            throw new IllegalStateException("Oppiaineviittausta ei voi muuttaa");
+        }
+    }
+
+    public Set<Opetuksenkohdealue> getKohdealueet() {
+        return new HashSet<>(kohdealueet);
+    }
+
+    public void setKohdealueet(Set<Opetuksenkohdealue> kohdealueet) {
+        if (kohdealueet == null) {
+            this.kohdealueet.clear();
+        } else {
+            Set<Opetuksenkohdealue> added = new HashSet<>(kohdealueet.size());
+            //kohdealueita ei ole paljon (<10), joten O(n^2) OK tässä
+            for ( Opetuksenkohdealue k : kohdealueet ) {
+                added.add(addKohdealue(k));
+            }
+            //TODO: tarkista onko jokin poistettava kohdealue käytössä
+            this.kohdealueet.retainAll(added);
+        }
+    }
+
+    /**
+     * Lisää uuden kohdealueen. Jos samanniminen kohdealue on jo olemassa, palauttaa tämän.
+     *
+     * @param kohdealue
+     * @return Lisätty kohdealue tai samanniminen olemassa oleva.
+     */
+    public Opetuksenkohdealue addKohdealue(Opetuksenkohdealue kohdealue) {
+        for (Opetuksenkohdealue k : kohdealueet) {
+            if (k.getNimi().equals(kohdealue.getNimi())) {
+                return k;
+            }
+        }
+        this.kohdealueet.add(kohdealue);
+        return kohdealue;
+    }
+
+    public void removeKohdealue(Opetuksenkohdealue kohdealue) {
+        this.kohdealueet.remove(kohdealue);
+    }
+
+    //hiberate javaassist proxy "workaround"
+    //ilman equals-metodia objectX.equals(proxy-objectX) on aina false
+    @Override
+    public boolean equals(Object other) {
+        return this == other;
+    }
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+
+    public interface Strict {
+    };
+}
