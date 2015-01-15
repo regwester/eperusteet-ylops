@@ -11,8 +11,8 @@
     <packaging>war</packaging>
     <name>eperusteet-ylops-service</name>
     <properties>
-        <hibernate.version>4.3.7.Final</hibernate.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hibernate.version>4.3.8.Final</hibernate.version>
         <spring.version>4.1.4.RELEASE</spring.version>
         <spring.security.version>3.2.5.RELEASE</spring.security.version>
         <spring.data.jpa.version>1.7.1.RELEASE</spring.data.jpa.version>
