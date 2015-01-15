@@ -1,5 +1,11 @@
 <div class="list-group navimenu" role="navigation">
-  <a ng-href="{{item.url}}" ng-repeat="item in items" class="list-group-item" ng-class="getClasses(item)">
-    <span ng-bind="item.label | kaanna"></span>
+  <a class="list-group-item item" ng-class="getClasses(item)" ng-repeat="item in items"
+     ng-hide="item.root || (item.$hidden || item.$impHidden)" ng-href="{{item.url}}">
+    <div class="toggler">
+      <span ng-show="!item.$leaf" ng-click="toggle(items, item, $event)" class="glyphicon"
+            ng-class="{'glyphicon-chevron-right': item.$collapsed, 'glyphicon-chevron-down': !item.$collapsed}"></span>
+    </div>
+
+    <span class="linktext" ng-bind="item.label | kaanna"></span>
   </a>
 </div>

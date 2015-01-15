@@ -69,4 +69,26 @@ $sivunavi-level-padding: 20px;
   @each $i in $sn-levels {
     .level#{$i} { @include sn-padding($i); }
   }
+  .item {
+    .toggler {
+      display: block;
+      float: left;
+      width: 20px;
+      min-height: 1px;
+      .glyphicon, .glyphicon:hover {
+        text-decoration: none;
+        color: black;
+      }
+    }
+    .linktext {
+      display: block;
+      margin-left: 22px;
+      overflow-x: hidden;
+    }
+    &.active {
+      .glyphicon, .glyphicon:hover {
+        color: white;
+      }
+    }
+  }
 }
