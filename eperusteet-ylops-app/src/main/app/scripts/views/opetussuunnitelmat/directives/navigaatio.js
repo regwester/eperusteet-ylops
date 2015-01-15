@@ -29,7 +29,7 @@ ylopsApp
   };
 })
 
-.controller('OpsNavigaatioController', function ($scope, OpsNavigaatio, $state, $stateParams) {
+.controller('OpsNavigaatioController', function ($scope, OpsNavigaatio, $state, $stateParams, Algoritmit) {
   $scope.isActive = true;
   $scope.chosen = 0;
 
@@ -86,22 +86,33 @@ ylopsApp
     });
   }
 
+  function createNavimenu(node) {
+    var arr = [];
+    Algoritmit.traverse(node, 'lapset', function (lapsi, depth) {
+      arr.push({
+        label: lapsi.tekstiKappale.nimi,
+        id: lapsi.id,
+        url: $state.href('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: lapsi.id}),
+        depth: depth
+      });
+    });
+    return arr;
+  }
+
+  function mapLapset(node) {
+    return _.map(node, function (lapsi) {
+      return {
+        label: lapsi.tekstiKappale.nimi,
+        id: lapsi.id,
+        url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: lapsi.id}),
+        items: createNavimenu(lapsi)
+      };
+    });
+  }
+
   $scope.$watch('model.tekstit.lapset', function () {
     if ($scope.model && $scope.model.tekstit) {
-      $scope.items = _.map($scope.model.tekstit.lapset, function (lapsi) {
-        return {
-          label: lapsi.tekstiKappale.nimi,
-          id: lapsi.id,
-          items: _.map(lapsi.lapset, function (alilapsi) {
-            return {
-              label: alilapsi.tekstiKappale.nimi,
-              id: alilapsi.id,
-              url: $state.href('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: alilapsi.id})
-            };
-          }),
-          url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: lapsi.id})
-        };
-      });
+      $scope.items = mapLapset($scope.model.tekstit.lapset);
       $scope.items.push({
         label: 'vuosiluokat-ja-oppiaineet',
         id: 'vuosiluokat',
@@ -116,11 +127,6 @@ ylopsApp
     updateActive();
   });
 
-  _.each($scope.items, function (item, index) {
-    item.items = _.map(_.range(10), function (num) {
-      return {label: 'Aliotsikko ' + index + '.' + num};
-    });
-  });
 })
 
 .service('OpsNavigaatio', function () {

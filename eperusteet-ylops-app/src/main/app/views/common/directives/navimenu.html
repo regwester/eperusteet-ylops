@@ -1,0 +1,5 @@
+<div class="list-group navimenu" role="navigation">
+  <a ng-href="{{item.url}}" ng-repeat="item in items" class="list-group-item" ng-class="getClasses(item)">
+    <span ng-bind="item.label | kaanna"></span>
+  </a>
+</div>
