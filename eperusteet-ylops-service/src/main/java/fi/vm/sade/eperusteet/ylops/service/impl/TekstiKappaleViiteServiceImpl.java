@@ -140,7 +140,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         }
 
         if (viite.getTekstiKappale() != null &&
- viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) &&            findViitteet(opsId, viiteId).size() == 1) {
+            viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) &&
+            findViitteet(opsId, viiteId).size() == 1) {
             TekstiKappale tekstiKappale = viite.getTekstiKappale();
             tekstiKappaleService.delete(tekstiKappale.getId());
         }

@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -24,6 +25,8 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
@@ -89,6 +92,11 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable
     private Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
+
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    @Getter
+    private Tila tila = Tila.LUONNOS;
 
     /**
      * Palauttaa oppimäärät jos kyseessä on koosteinen oppiaine.

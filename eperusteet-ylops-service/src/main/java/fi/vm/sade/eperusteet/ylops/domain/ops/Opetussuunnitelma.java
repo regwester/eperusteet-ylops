@@ -38,6 +38,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -93,6 +94,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<KoodistoKoodi> kunnat = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<OpsOppiaine> oppiaineet = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
+
     @ElementCollection
     @Getter
     @Setter
@@ -106,5 +113,37 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Override
     public EntityReference getReference() {
         return new EntityReference(getId());
+    }
+
+    public Set<OpsOppiaine> getOppiaineet() {
+        return new HashSet<>(oppiaineet);
+    }
+
+    public void setOppiaineet(Set<OpsOppiaine> oppiaineet) {
+        if ( oppiaineet == null ) {
+            this.oppiaineet.clear();
+        } else {
+            this.oppiaineet.addAll(oppiaineet);
+            this.oppiaineet.retainAll(oppiaineet);
+            for ( OpsOppiaine o : oppiaineet ) {
+                o.setOpetussuunnitelma(this);
+            }
+        }
+    }
+
+    public Set<OpsVuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
+        return new HashSet<>(vuosiluokkakokonaisuudet);
+    }
+
+    public void setVuosiluokkakokonaisuudet(Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet) {
+        if (vuosiluokkakokonaisuudet == null) {
+            this.vuosiluokkakokonaisuudet.clear();
+        } else {
+            this.vuosiluokkakokonaisuudet.addAll(vuosiluokkakokonaisuudet);
+            this.vuosiluokkakokonaisuudet.retainAll(vuosiluokkakokonaisuudet);
+            for (OpsVuosiluokkakokonaisuus v : vuosiluokkakokonaisuudet) {
+                v.setOpetussuunnitelma(this);
+            }
+        }
     }
 }

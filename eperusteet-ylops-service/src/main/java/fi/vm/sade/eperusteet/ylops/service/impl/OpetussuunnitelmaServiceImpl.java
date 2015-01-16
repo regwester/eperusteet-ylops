@@ -99,7 +99,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                                         Collections.singletonMap(Kieli.FI, "Opetuksen ja yhteistyön järjestäminen"));
         teksti = new LokalisoituTekstiDto(null, null);
         TekstiKappaleDto opetuksenJarjestaminenTeksti =
- new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
+                new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
         TekstiKappaleViiteDto.Matala opetuksenJarjestaminen =
                 new TekstiKappaleViiteDto.Matala(opetuksenJarjestaminenTeksti);
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);

@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -24,10 +25,13 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -78,6 +82,12 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
     @OneToMany(mappedBy = "vuosiluokkakokonaisuus", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Laajaalainenosaaminen> laajaalaisetosaamiset = new HashSet<>();
 
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    @Getter
+    private Tila tila = Tila.LUONNOS;
+
+
     public Set<Laajaalainenosaaminen> getLaajaalaisetOsaamiset() {
         return new HashSet<>(laajaalaisetosaamiset);
     }
@@ -93,6 +103,12 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
         this.laajaalaisetosaamiset.addAll(osaamiset);
         for (Laajaalainenosaaminen v : osaamiset) {
             v.setVuosiluokkaKokonaisuus(this);
+        }
+    }
+
+    public void setTila(Tila tila) {
+        if (this.tila == null || this.tila == Tila.LUONNOS) {
+            this.tila = tila;
         }
     }
 

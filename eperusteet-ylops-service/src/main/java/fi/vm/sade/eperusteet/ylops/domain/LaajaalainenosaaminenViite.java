@@ -30,10 +30,13 @@ public class LaajaalainenosaaminenViite {
 
     @Getter
     @Column(name = "laajaalainenosaaminen_viite")
-    private final String viite;
+    private String viite;
 
     public LaajaalainenosaaminenViite(String viite) {
         this.viite = viite;
     }
 
+    protected LaajaalainenosaaminenViite() {
+        //JPA
+    }
 }

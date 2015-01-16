@@ -38,7 +38,7 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.NaturalId;
 
 /**
- *
+ * Viittaa perusteessa määriteltyyn vuosiluokkakokonaisuuteen.
  * @author jhyoty
  */
 @Entity

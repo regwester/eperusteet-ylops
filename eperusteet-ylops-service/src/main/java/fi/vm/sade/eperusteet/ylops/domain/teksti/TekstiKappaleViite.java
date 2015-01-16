@@ -17,10 +17,8 @@ package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
-
+import java.io.Serializable;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,8 +32,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 /**
  *
