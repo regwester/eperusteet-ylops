@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  *
  * @author mikkom
  */
-public enum OpetussuunnitelmanTila {
+public enum Tila {
 
     LUONNOS("luonnos"),
     VALMIS("valmis"),
@@ -31,13 +31,13 @@ public enum OpetussuunnitelmanTila {
 
     private final String tila;
 
-    private OpetussuunnitelmanTila(String tila) { this.tila = tila; }
+    private Tila(String tila) { this.tila = tila; }
 
     @Override
     public String toString() { return tila; }
 
     @JsonCreator
-    public static OpetussuunnitelmanTila of(String tila) {
+    public static Tila of(String tila) {
         return Stream.of(values()).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(tila +
                         " ei ole kelvollinen tila"));

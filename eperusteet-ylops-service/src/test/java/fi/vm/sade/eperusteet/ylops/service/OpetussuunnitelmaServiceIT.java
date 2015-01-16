@@ -15,23 +15,19 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
-import fi.vm.sade.eperusteet.ylops.domain.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
+import java.util.List;
+import javax.transaction.Transactional;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
-import java.util.List;
-
-import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lokalisoituTekstiOf;
 import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.assertEquals;
@@ -55,7 +51,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops = new OpetussuunnitelmaDto();
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
-        ops.setTila(OpetussuunnitelmanTila.LUONNOS);
+        ops.setTila(Tila.LUONNOS);
         opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }
 

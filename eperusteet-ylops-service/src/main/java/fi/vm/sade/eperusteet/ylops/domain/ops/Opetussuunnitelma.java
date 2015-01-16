@@ -13,18 +13,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain;
+package fi.vm.sade.eperusteet.ylops.domain.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
+import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
-
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -40,10 +41,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 /**
  *
@@ -78,7 +79,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @NotNull
     @Getter
     @Setter
-    private OpetussuunnitelmanTila tila = OpetussuunnitelmanTila.LUONNOS;
+    private Tila tila = Tila.LUONNOS;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @Getter

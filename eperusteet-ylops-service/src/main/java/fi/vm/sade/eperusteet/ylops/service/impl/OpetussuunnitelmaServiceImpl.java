@@ -15,12 +15,10 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
-import fi.vm.sade.eperusteet.ylops.domain.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -32,14 +30,12 @@ import fi.vm.sade.eperusteet.ylops.service.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
+import java.util.Collections;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author mikkom
@@ -78,7 +74,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
-        ops.setTila(OpetussuunnitelmanTila.LUONNOS);
+        ops.setTila(Tila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
         ops = repository.save(ops);
         lisaaTekstipuunLapset(ops);
@@ -95,7 +91,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         LokalisoituTekstiDto nimi, teksti;
         nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Ohjeistus"));
         teksti = new LokalisoituTekstiDto(null, null);
-        TekstiKappaleDto ohjeistusTeksti = new TekstiKappaleDto(nimi, teksti, OpetussuunnitelmanTila.LUONNOS);
+        TekstiKappaleDto ohjeistusTeksti = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
         TekstiKappaleViiteDto.Matala ohjeistus = new TekstiKappaleViiteDto.Matala(ohjeistusTeksti);
         addTekstiKappale(ops.getId(), ohjeistus);
 
@@ -103,7 +99,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                                         Collections.singletonMap(Kieli.FI, "Opetuksen ja yhteistyön järjestäminen"));
         teksti = new LokalisoituTekstiDto(null, null);
         TekstiKappaleDto opetuksenJarjestaminenTeksti =
-                new TekstiKappaleDto(nimi, teksti, OpetussuunnitelmanTila.LUONNOS);
+ new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
         TekstiKappaleViiteDto.Matala opetuksenJarjestaminen =
                 new TekstiKappaleViiteDto.Matala(opetuksenJarjestaminenTeksti);
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);

@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
-import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
@@ -49,7 +49,7 @@ public class TekstiKappaleServiceIT extends AbstractIntegrationTest {
         final String TEKSTI = "Teksten";
         tekstiKappale.setNimi(lokalisoituTekstiOf(Kieli.SV, NIMI));
         tekstiKappale.setTeksti(lokalisoituTekstiOf(Kieli.SV, TEKSTI));
-        tekstiKappale.setTila(OpetussuunnitelmanTila.LUONNOS);
+        tekstiKappale.setTila(Tila.LUONNOS);
 
         tekstiKappale = tekstiKappaleRepository.save(tekstiKappale);
 

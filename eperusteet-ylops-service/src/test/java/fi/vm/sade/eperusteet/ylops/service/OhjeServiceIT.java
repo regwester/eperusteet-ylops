@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
-import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
@@ -24,12 +24,11 @@ import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
+import java.util.UUID;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lokalisoituTekstiOf;
 import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lt;
@@ -56,7 +55,7 @@ public class OhjeServiceIT extends AbstractIntegrationTest {
         final String TEKSTI = "Teksten";
         tekstiKappale.setNimi(lokalisoituTekstiOf(Kieli.SV, NIMI));
         tekstiKappale.setTeksti(lokalisoituTekstiOf(Kieli.SV, TEKSTI));
-        tekstiKappale.setTila(OpetussuunnitelmanTila.LUONNOS);
+        tekstiKappale.setTila(Tila.LUONNOS);
 
         tekstiKappale = tekstiKappaleRepository.save(tekstiKappale);
 

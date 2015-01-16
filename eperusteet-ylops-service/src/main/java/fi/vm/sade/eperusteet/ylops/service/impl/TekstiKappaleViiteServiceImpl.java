@@ -16,12 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import com.google.common.collect.Sets;
-import fi.vm.sade.eperusteet.ylops.domain.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
@@ -30,15 +29,14 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author mikkom
@@ -142,8 +140,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         }
 
         if (viite.getTekstiKappale() != null &&
-            viite.getTekstiKappale().getTila().equals(OpetussuunnitelmanTila.LUONNOS) &&
-            findViitteet(opsId, viiteId).size() == 1) {
+ viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) &&            findViitteet(opsId, viiteId).size() == 1) {
             TekstiKappale tekstiKappale = viite.getTekstiKappale();
             tekstiKappaleService.delete(tekstiKappale.getId());
         }
@@ -160,7 +157,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappale originaali = viite.getTekstiKappale();
         // TODO: Tarkista onko tekstikappaleeseen lukuoikeutta
         TekstiKappale klooni = originaali.copy();
-        klooni.setTila(OpetussuunnitelmanTila.LUONNOS);
+        klooni.setTila(Tila.LUONNOS);
         viite.setTekstiKappale(tekstiKappaleRepository.save(klooni));
         viite.setOmistussuhde(Omistussuhde.OMA);
         viite = repository.save(viite);

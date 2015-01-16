@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository;
 
-import fi.vm.sade.eperusteet.ylops.domain.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import org.springframework.stereotype.Repository;
 

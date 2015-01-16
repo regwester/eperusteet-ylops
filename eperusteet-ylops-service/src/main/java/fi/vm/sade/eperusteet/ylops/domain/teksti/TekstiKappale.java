@@ -16,7 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
-import fi.vm.sade.eperusteet.ylops.domain.OpetussuunnitelmanTila;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
@@ -79,7 +79,7 @@ public class TekstiKappale extends AbstractAuditedEntity
     @Enumerated(value = EnumType.STRING)
     @NotNull
     @Getter
-    private OpetussuunnitelmanTila tila = OpetussuunnitelmanTila.LUONNOS;
+    private Tila tila = Tila.LUONNOS;
 
     public TekstiKappale() {
         tunniste = UUID.randomUUID();
@@ -95,8 +95,8 @@ public class TekstiKappale extends AbstractAuditedEntity
         return new EntityReference(getId());
     }
 
-    public void setTila(OpetussuunnitelmanTila tila) {
-        if (this.tila == null || this.tila == OpetussuunnitelmanTila.LUONNOS) {
+    public void setTila(Tila tila) {
+        if (this.tila == null || this.tila == Tila.LUONNOS) {
             this.tila = tila;
         }
     }
