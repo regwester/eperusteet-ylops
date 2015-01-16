@@ -83,6 +83,7 @@ ylopsApp
     connectWith: '.container-items',
     cursor: 'move',
     cursorAt: {top : 2, left: 2},
+    tolerance: 'pointer',
     start: function (event, ui) {
       // Must use same sorter(s) as in ng-repeat template
       var model = modelFromTarget(event.target);
