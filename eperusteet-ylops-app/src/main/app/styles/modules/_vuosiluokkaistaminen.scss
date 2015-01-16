@@ -3,6 +3,7 @@ $vl-container-width: 255px;
 .vuosiluokkaistaminen-container-outer {
   position: relative;
   width: 100%;
+  margin-bottom: 300px;
 }
 
 .vuosiluokkaistaminen-container {
@@ -34,6 +35,7 @@ $vl-container-width: 255px;
     float: none;
     position: absolute;
     right: 0;
+    top: -70px;
 
     .panel-heading {
       background-color: $brand-primary;
