@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
@@ -27,6 +28,9 @@ import javax.transaction.Transactional;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.uniikkiString;
@@ -52,6 +56,12 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTila(Tila.LUONNOS);
+
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        ops.setKoulut(new HashSet<>(Collections.singleton("Etelä-Hervannan koulu")));
         opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }
 

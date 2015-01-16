@@ -44,11 +44,27 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
     private static final String ORGANISAATIOT = "/rest/organisaatio/";
     private static final String ORGANISAATIORYHMAT = ORGANISAATIOT + "1.2.246.562.10.00000000001/ryhmat";
+    private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
+    private static final String KUNTA_KRITEERI_ID = "kunta";
+    private static final String PERUSKOULU_HAKU =
+            "&aktiiviset=true&suunnitellut=true&lakkautetut=false" +
+            "&oppilaitostyyppi=oppilaitostyyppi_11%23*&organisaatiotyyppi=Oppilaitos";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     RestClientFactory restClientFactory;
+
+    @Override
+    public JsonNode getPeruskoulut(String kuntaId) {
+        CachingRestClient crc = restClientFactory.get(serviceUrl);
+        String url = serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + KUNTA_KRITEERI_ID + "=" + kuntaId + PERUSKOULU_HAKU;
+        try {
+            return mapper.readTree(crc.getAsString(url));
+        } catch (IOException ex) {
+            throw new BusinessRuleViolationException("Peruskoulujen tietojen hakeminen epäonnistui", ex);
+        }
+    }
 
     @Override
     public JsonNode getRyhma(String organisaatioOid) {

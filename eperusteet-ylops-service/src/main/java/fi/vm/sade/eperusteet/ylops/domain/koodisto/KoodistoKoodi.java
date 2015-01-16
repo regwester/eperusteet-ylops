@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.domain.koodisto;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
@@ -36,9 +37,9 @@ import java.io.Serializable;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-@Immutable
 @EqualsAndHashCode
 @Getter
+@Setter
 @Table(name = "koodistokoodi")
 public class KoodistoKoodi implements Serializable {
     @Id
@@ -48,7 +49,7 @@ public class KoodistoKoodi implements Serializable {
     private String koodiUri;
     private String koodiArvo;
 
-    protected KoodistoKoodi() {}
+    public KoodistoKoodi() {}
 
     public KoodistoKoodi(String koodiUri, String koodiArvo) {
         this.koodiUri = koodiUri;
