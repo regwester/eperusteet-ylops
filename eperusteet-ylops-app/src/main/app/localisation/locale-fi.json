@@ -53,5 +53,9 @@
   "tila-luonnos": "luonnos",
 
   "sivunavigointi-avaa-menu": "Avaa navigaatiopalkki",
-  "sivunavigointi-sulje-menu": "Sulje navigaatiopalkki"
+  "sivunavigointi-sulje-menu": "Sulje navigaatiopalkki",
+
+  "vuosiluokkaistaminen": "Vuosiluokkaistaminen",
+  "vuosiluokka": "Vuosiluokka",
+  "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt"
 }

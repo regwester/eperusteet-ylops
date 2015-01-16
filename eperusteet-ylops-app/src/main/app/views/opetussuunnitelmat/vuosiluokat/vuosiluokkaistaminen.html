@@ -1,0 +1,21 @@
+<h2 kaanna="'vuosiluokkaistaminen'"></h2>
+
+<div class="vuosiluokkaistaminen-container-outer">
+  <div class="vuosiluokkaistaminen-container">
+  <div ng-repeat="container in containers" class="panel panel-default vuosiluokka" ng-class="{tavoitteet: container.type === 'tavoitteet'}">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{container.label || 'vuosiluokka' | kaanna}} {{container.vuosiluokka}}</h3>
+    </div>
+    <div class="panel-body">
+      <ul class="container-items" ng-class="{empty: container.items.length === 0, 'tavoite-list': container.type === 'tavoitteet', 'vuosiluokka-list': container.type !== 'tavoitteet'}"
+          id="{{container.id}}"
+          ui-sortable="sortableOptions" ng-model="container.items">
+        <li ng-repeat="item in container.items | orderBy:tavoiteSorter track by $index" class="container-item" id="{{container.id + '-' + item.koodi}}">
+          <span class="koodi" ng-bind="item.koodi"></span>
+          <span ng-bind="item.tavoite | kaanna"></span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>

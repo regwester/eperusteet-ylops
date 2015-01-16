@@ -38,7 +38,22 @@ ylopsApp
   };
 })
 
-.service('VuosiluokatService', function ($q, DummyVuosiluokat, DummyOppiaineet, $state) {
+.service('DummyTavoitteet', function () {
+  this.get = function () {
+    return [
+      {tavoite: {fi: 'pitää yllä oppilaan innostusta ja kiinnostusta matematiikkaa kohtaan sekä tukee positiivista minäkuvaa ja itseluottamusta'}},
+      {tavoite: {fi: 'ohjaa oppilasta havaitsemaan yhteyksiä oppimiensa asioiden välillä'}},
+      {tavoite: {fi: 'kehittää oppilaan taitoa esittää kysymyksiä ja tehdä perusteltuja päätelmiä havaintojensa pohjalta'}},
+      {tavoite: {fi: 'kannustaa oppilasta esittämään ratkaisujaan ja päätelmiään muille konkreettisin välinein, piirroksin, suullisesti ja kirjallisesti käyttäen myös tieto- ja viestintäteknologiaa'}},
+      {tavoite: {fi: 'ohjaa oppilasta ymmärtämään ja käyttämään matemaattisia käsitteitä ja merkintöjä'}},
+      {tavoite: {fi: 'varmistaa, että oppilas ymmärtää kymmenjärjestelmän periaatteen sekä desimaaliluvut sen osana'}},
+      {tavoite: {fi: 'laajentaa lukukäsitteen ymmärtämistä positiivisiin rationaalilukuihin ja negatiivisiin kokonaislukuihin'}},
+      {tavoite: {fi: 'ohjaa oppilasta arvioimaan mittauskohteen suuruutta ja valitsemaan mittaamiseen sopivan välineen sekä käyttämään sopivaa mittayksikköä ja pohtimaan mittaustuloksen järkevyyttä'}},
+    ];
+  };
+})
+
+.service('VuosiluokatService', function ($q, DummyVuosiluokat, DummyOppiaineet, DummyTavoitteet, $state) {
   var opsId = null;
   var vuosiluokat = null;
 
@@ -69,6 +84,10 @@ ylopsApp
     return promisify(vuosiluokat);
   }
 
+  function getTavoitteet(/*oppiaineenVlkId*/) {
+    return promisify(DummyTavoitteet.get());
+  }
+
   function mapForMenu(data) {
     var arr = [];
     _.each(data, function (item) {
@@ -93,5 +112,6 @@ ylopsApp
   this.setOps = setOps;
   this.fetch = fetch;
   this.getVuosiluokat = getVuosiluokat;
+  this.getTavoitteet = getTavoitteet;
   this.mapForMenu = mapForMenu;
 });

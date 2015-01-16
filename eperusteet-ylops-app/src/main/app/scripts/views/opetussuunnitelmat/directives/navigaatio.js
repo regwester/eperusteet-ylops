@@ -108,8 +108,7 @@ ylopsApp
       item.active = false;
     });
     var inVuosiluokat = startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus');
-    var inOppiaine = startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.oppiaine') ||
-                     $state.current.name === 'root.opetussuunnitelmat.yksi.vuosiluokka';
+    var inOppiaine = startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.oppiaine');
     if (inVuosiluokat || inOppiaine) {
       $scope.chosen = $scope.items.length - 1;
       $scope.items[$scope.chosen].active = true;

@@ -17,12 +17,21 @@
 'use strict';
 
 ylopsApp
+.controller('OppiaineBaseController', function () {
+
+})
+
 .controller('OppiaineController', function ($scope, $state, $stateParams) {
   $scope.goToDummy = function (id) {
-    $state.go('root.opetussuunnitelmat.yksi.vuosiluokka', {
+    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {
       vlkId: $stateParams.vlkId,
-      oppiaineId: $stateParams.oppiaineId,
       vlId: id
+    });
+  };
+
+  $scope.vuosiluokkaistaminenDemo = function () {
+    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
+      vlkId: $stateParams.vlkId,
     });
   };
 });
