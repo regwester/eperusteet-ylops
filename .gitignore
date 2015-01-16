@@ -1,0 +1,12 @@
+target
+*~
+nbproject/
+**/.project
+**/.settings
+**/.classpath
+**/rebel.xml
+nbactions-oph.xml
+npm-debug.log
+
+*.iml
+.idea/

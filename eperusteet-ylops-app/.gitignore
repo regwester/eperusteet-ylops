@@ -1,0 +1,11 @@
+target/
+*.swp
+npm-debug.log
+node_modules/
+dist
+.tmp
+.sass-cache
+bower_components/
+.netbeans.xml
+*~
+

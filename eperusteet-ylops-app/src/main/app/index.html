@@ -1,0 +1,133 @@
+<!doctype html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if IE 9]>         <html class="no-js lt-ie10"> <![endif]-->
+<!--[if !(IE)]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="/virkailija-raamit/apply-raamit.js"></script>
+    <!-- build:css(.tmp) styles/eperusteet-ylops.css -->
+    <link rel="stylesheet" href="styles/eperusteet-ylops.css">
+    <!-- endbuild -->
+  </head>
+  <body ng-app="ylopsApp" style="height:100%; background-color: white">
+    <!-- build:js scripts/ieshims.js -->
+    <!--[if lt IE 9]>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.js"></script>
+    <![endif]-->
+    <!-- endbuild  -->
+    <!-- Add your site or application content here -->
+    <div class="container-fluid" id="ylasivuankkuri">
+      <div class="row">
+        <div class="col-md-12">
+          <ylops-header></ylops-header>
+          <div ui-view></div>
+        </div>
+      </div>
+      <div class="editointi-wrapper"><editointikontrollit ng-controller="EditointiController"></editointikontrollit></div>
+      <ylops-footer></ylops-footer>
+      <spinner></spinner>
+      <backtotop></backtotop>
+      <div class="notification-wrapper" ng-cloak>
+        <div class="notifications" ng-model="viestit" ng-controller="NotifikaatioController">
+          <div ng-if="viestit" ng-click="poistaNotifikaatio(viesti)" ng-model="viestit" ng-class="{ 'notification-normal': viesti.tyyppi === 0, 'notification-success': viesti.tyyppi === 1, 'notification-warning': viesti.tyyppi === 2, 'notification-danger': viesti.tyyppi === 3 }" ng-repeat="viesti in viestit">
+            <div class="notification-body">
+              <span class="close">×</span>
+              <span class="notification-message" kaanna="viesti.viesti"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- build:js scripts/components.js -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+    <script src="bower_components/angular-translate/angular-translate.min.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+    <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+    <script src="bower_components/jquery-ui/ui/minified/core.min.js"></script>
+    <script src="bower_components/jquery-ui/ui/minified/widget.min.js"></script>
+    <script src="bower_components/jquery-ui/ui/minified/mouse.min.js"></script>
+    <script src="bower_components/jquery-ui/ui/minified/sortable.min.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/tooltip.js"></script>
+    <script src="bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/popover.js"></script>
+    <script src="bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
+    <script src="bower_components/angular-ui-utils/ui-utils.min.js"></script>
+    <script src="bower_components/angular-ui-sortable/sortable.min.js"></script>
+    <script src="bower_components/angular-ui-tree/dist/angular-ui-tree.min.js"></script>
+    <script src="bower_components/angular-elastic/elastic.js"></script>
+    <script src="bower_components/lodash/dist/lodash.min.js"></script>
+    <script src="bower_components/angular-i18n/angular-locale_fi-fi.js"></script>
+    <script src="bower_components/momentjs/min/moment.min.js"></script>
+    <script src="bower_components/momentjs/lang/fi.js"></script>
+    <script src="bower_components/momentjs/lang/sv.js"></script>
+    <script src="bower_components/angular-cache/dist/angular-cache.min.js"></script>
+    <script src="bower_components/angular-ui-select/dist/select.min.js"></script>
+    <!-- endbuild -->
+
+    <script src="bower_components/ckeditor/ckeditor.js?v=4.4.5"></script>
+
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="scripts/app.js"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/constants.js"></script>
+    <script src="scripts/states.js"></script>
+
+    <script src="scripts/common/services/lokalisointi.js"></script>
+    <script src="scripts/common/services/kieli.js"></script>
+    <script src="scripts/common/services/iconrole.js"></script>
+    <script src="scripts/common/services/kaanna.js"></script>
+    <script src="scripts/common/services/virhe.js"></script>
+    <script src="scripts/common/services/utils.js"></script>
+    <script src="scripts/common/services/notifikaatiot.js"></script>
+    <script src="scripts/common/services/editointikontrollit.js"></script>
+    <script src="scripts/common/services/varmistusdialogi.js"></script>
+    <script src="scripts/common/services/algoritmit.js"></script>
+
+    <script src="scripts/common/filters.js"></script>
+
+    <script src="scripts/common/directives/header.js"></script>
+    <script src="scripts/common/directives/footer.js"></script>
+    <script src="scripts/common/directives/spinner.js"></script>
+    <script src="scripts/common/directives/editointikontrollit.js"></script>
+    <script src="scripts/common/directives/localized.js"></script>
+    <script src="scripts/common/directives/ckeditor.js"></script>
+    <script src="scripts/common/directives/navimenu.js"></script>
+
+    <script src="scripts/resources/opetussuunnitelma.js"></script>
+    <script src="scripts/resources/ohje.js"></script>
+
+    <script src="scripts/views/etusivu.js"></script>
+
+    <script src="scripts/views/opetussuunnitelmat/services/ops.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/services/vuosiluokat.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/directives/navigaatio.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/directives/header.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/directives/statusbadge.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/lista.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/opetussuunnitelma.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/tekstikappale.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/esikatselu.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/sisalto.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/sisaltoalue.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/tiedot.js"></script>
+
+    <script src="scripts/views/opetussuunnitelmat/vuosiluokat/vlk.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/vuosiluokat/oppiaine.js"></script>
+    <script src="scripts/views/opetussuunnitelmat/vuosiluokat/vuosiluokka.js"></script>
+
+    <!-- endbuild -->
+  </body>
+</html>

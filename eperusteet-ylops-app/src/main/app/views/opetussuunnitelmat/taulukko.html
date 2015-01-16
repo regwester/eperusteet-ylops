@@ -1,0 +1,14 @@
+<table class="table table-hover">
+  <tr>
+    <th kaanna="'nimi'"></th>
+    <th kaanna="'tila'"></th>
+    <th kaanna="'muokattu-viimeksi'"></th>
+  </tr>
+  <tr ng-repeat="item in items">
+    <td>
+      <a ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
+    </td>
+    <td><span ng-bind="item.tila | kaanna"></span></td>
+    <td><span ng-bind="item.muokattu | aikaleima"></span></td>
+  </tr>
+</table>

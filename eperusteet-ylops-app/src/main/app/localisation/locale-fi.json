@@ -1,0 +1,57 @@
+{
+  "sulje": "Sulje",
+  "peruuta": "Peruuta",
+  "tallenna": "Tallenna",
+  "ok": "OK",
+  "tallennettu-ok": "Tallennus onnistui",
+  "varmista-poisto": "Varmista poisto",
+  "poisto-onnistui": "Poisto onnistui",
+  "poista": "Poista",
+  "nimeton": "[Ei nimeä]",
+
+  "muokkaa": "Muokkaa",
+  "muokattavana": "Muokattavana",
+  "kommentoi-muutosta": "Kommentoi muutosta",
+
+  "etusivu": "Etusivu",
+  "ops-tyokalu": "OPS-työkalu",
+  "omat-opetussuunnitelmat": "Opetussuunnitelmasi",
+  "aloita-uusi-ops": "Aloita uusi OPS-projekti",
+  "tiedotteet": "Tiedotteet",
+  "opetussuunnitelmat": "Opetussuunnitelmat",
+  "opetussuunnitelma": "Opetussuunnitelma",
+  "lisaa-opetussuunnitelma": "Luo uusi opetussuunnitelma",
+  "esikatselu": "Esikatselu",
+  "luo-projekti": "Luo projekti",
+  "kayta-pohjaa": "Käytä pohjaa:",
+  "tyhja-pohja": "Tyhjä pohja",
+  "valitse-pohja": "Valitse pohja...",
+  "vuosiluokat-ja-oppiaineet": "Vuosiluokat ja oppiaineet",
+  "opsn-tiedot": "OPS:n tiedot",
+  "ohje": "Ohje",
+  "ei-ohjetta": "[ei ohjetta]",
+
+  "ui-kieli": "Käyttöliittymäkieli",
+  "sisallon-kieli": "Sisällön kieli",
+
+  "jarjestelmavirhe-teksti": "Tapahtui järjestelmävirhe {{virhekoodi}}. Ole hyvä ja yritä uudelleen. Jos ongelma toistuu ota yhteyttä palvelun ylläpitäjään.",
+  "odottamaton-virhe": "Tapahtui odottamaton virhe",
+
+  "nimi": "Nimi",
+  "tila": "Tila",
+  "muokattu-viimeksi": "Muokattu viimeksi",
+  "luotu": "Luotu",
+  "kuvaus": "Kuvaus",
+  "tekstikappaleet": "Tekstikappaleet",
+  "ei-tekstikappaleita": "Ei tekstikappaleita",
+  "luo-uusi-tekstikappale": "Luo uusi tekstikappale",
+  "tallenna-rakenne": "Tallenna rakenne",
+  "muokkaa-rakennetta": "Muokkaa rakennetta",
+  "peru-rakenne": "Peruuta rakenteen muokkaus",
+
+  "luonnos": "Luonnos",
+  "tila-luonnos": "luonnos",
+
+  "sivunavigointi-avaa-menu": "Avaa navigaatiopalkki",
+  "sivunavigointi-sulje-menu": "Sulje navigaatiopalkki"
+}

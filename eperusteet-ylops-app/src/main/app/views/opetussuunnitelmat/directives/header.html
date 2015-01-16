@@ -1,0 +1,21 @@
+<div class="ops-header">
+  <div class="ops-header-toiminnot">
+    <button ui-sref="root.opetussuunnitelmat.yksi.esikatselu" class="btn btn-default" icon-role="file" kaanna="'esikatselu'"></button>
+  </div>
+  <div class="ops-header-status">
+    <statusbadge status="model.tila"></statusbadge>
+  </div>
+
+  <div class="ops-header-tiedot">
+    <h1 ng-bind="model.nimi | kaanna"></h1>
+    <a ui-sref="root.opetussuunnitelmat.yksi.opetussuunnitelma">Väliaikainen muokkaustila &gt;&gt;</a>
+
+    <ul class="ops-header-linkit" role="navigation">
+      <li>
+        <a ui-sref="root.opetussuunnitelmat.yksi.tiedot" icon-role="info" kaanna="'opsn-tiedot'"></a>
+      </li>
+    </ul>
+
+  </div>
+
+</div>
