@@ -1,3 +1,5 @@
+<!-- TODO käytä tekstiosa-direktiiviä, yhtenevä oppiaine-näkymän kanssa -->
+
 <div class="action-buttons-inline" ng-if="godmode">
   <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
 </div>
@@ -11,9 +13,7 @@
 <div class="panel-clear-fix">
   <div class="panel panel-default">
     <div class="panel-heading">
-      <div class="panel-title collapse-toggler" ng-click="isCollapsed = !isCollapsed">
-        <span class="glyphicon"
-              ng-class="isCollapsed ? 'glyphicon-chevron-right' : 'glyphicon-chevron-down'"></span>
+      <div collapse-toggler="isCollapsed" class="panel-title">
         <span kaanna="'perusteen-teksti'"></span>
       </div>
 

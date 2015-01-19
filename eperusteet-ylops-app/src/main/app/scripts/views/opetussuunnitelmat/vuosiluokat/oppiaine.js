@@ -17,11 +17,26 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineBaseController', function () {
-
+.controller('OppiaineBaseController', function ($scope, oppiaine) {
+  $scope.oppiaine = oppiaine;
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams) {
+  $scope.vuosiluokkakokonaisuus = $scope.oppiaine.vuosiluokkakokonaisuudet[0];
+
+  $scope.tekstit = {
+    ohjaus: {
+      teksti: {fi: 'Oppilaan matematiikan osaamista ja taitojen kehittymistä seurataan ja tarvittaessa annetaan lisätukea heti tuen tarpeen ilmetessä. Tarjottava tuki antaa oppilaalle mahdollisuuden ymmärtää matematiikkaa ikätasonsa mukaisesti ja kehittää taitojaan niin, että oppimisen ja osaamisen ilo säilyvät. Oppilaille tarjotaan sopivia välineitä oppimisen tueksi ja hänelle tarjotaan mahdollisuuksia oivaltaa ja ymmärtää itse.'}
+    },
+    tyotavat: {
+
+    },
+    arviointi: {
+
+    }
+  };
+
+
   $scope.goToDummy = function (id) {
     $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {
       vlkId: $stateParams.vlkId,

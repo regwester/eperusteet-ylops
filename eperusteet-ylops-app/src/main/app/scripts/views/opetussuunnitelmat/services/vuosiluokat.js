@@ -17,18 +17,16 @@
 'use strict';
 
 ylopsApp
-.service('DummyVuosiluokat', function () {
-  this.get = function () {
+.service('DummyData', function () {
+  this.getVuosiluokat = function () {
     return [
       {id: 'dummy1', nimi: {fi: 'Vuosiluokat 1-2'}},
       {id: 'dummy2', nimi: {fi: 'Vuosiluokat 3-6'}},
       {id: 'dummy3', nimi: {fi: 'Vuosiluokat 7-9'}},
     ];
   };
-})
 
-.service('DummyOppiaineet', function () {
-  this.get = function () {
+  this.getOppiaineet = function () {
     return [
       {id: 'dummy4', nimi: {fi: 'Matematiikka'}},
       {id: 'dummy5', nimi: {fi: 'Äidinkieli ja kirjallisuus'}},
@@ -36,10 +34,8 @@ ylopsApp
       {id: 'dummy7', nimi: {fi: 'Liikunta'}},
     ];
   };
-})
 
-.service('DummyTavoitteet', function () {
-  this.get = function () {
+  this.getTavoitteet = function () {
     return [
       {tavoite: {fi: 'pitää yllä oppilaan innostusta ja kiinnostusta matematiikkaa kohtaan sekä tukee positiivista minäkuvaa ja itseluottamusta'}},
       {tavoite: {fi: 'ohjaa oppilasta havaitsemaan yhteyksiä oppimiensa asioiden välillä'}},
@@ -51,9 +47,34 @@ ylopsApp
       {tavoite: {fi: 'ohjaa oppilasta arvioimaan mittauskohteen suuruutta ja valitsemaan mittaamiseen sopivan välineen sekä käyttämään sopivaa mittayksikköä ja pohtimaan mittaustuloksen järkevyyttä'}},
     ];
   };
+
+  this.getOppiaine = function () {
+    return {
+      nimi: {fi: 'Matematiikka'},
+      tehtava: {otsikko: {fi: 'Oppiaineen tehtävä'}, teksti: {fi: 'Matematiikan opetuksen tehtävänä on kehittää oppilaan loogista, täsmällistä ja luovaa matemaattista ajattelua. Opetus luo pohjan matemaattisten käsitteiden ja rakenteiden ymmärtämiselle sekä kehittää oppilaan kykyä käsitellä tietoa ja ratkaista ongelmia.'}},
+      vuosiluokat: [
+        {
+          vuosiluokka: '1'
+        },
+        {
+          vuosiluokka: '2'
+        },
+      ],
+      vuosiluokkakokonaisuudet: [
+        {
+          nimi: {fi: 'Vuosiluokat 1-2'},
+
+          tehtava: {otsikko: {fi: 'Matematiikan tehtävä vuosiluokilla 1-2'}, teksti: {fi: 'Vuosiluokkien 1−2 matematiikan opetuksessa oppilaalle tarjotaan monipuolisia kokemuksia matemaattisten käsitteiden ja rakenteiden muodostumisen perustaksi.'}},
+          tyotavat: {otsikko: {fi: 'Oppiaineen oppimisympäristöihin ja työtapoihin liittyvät tavoitteet vuosiluokalla 1-2'}, teksti: {fi: 'Opetuksen lähtökohtana käytetään oppilaalle tuttuja ja kiinnostavia aiheita ja ongelmia. Tavoitteena on luoda oppimisympäristö, jossa matematiikkaa ja matematiikan käsitteitä opiskellaan toiminnallisesti ja välineiden avulla.'}},
+          ohjaus: {otsikko: {fi: 'Ohjaus ja tuki oppiaineessa vuosiluokilla 1-2'}, teksti: {fi: 'Oppilaiden osaamisessa on huomattavia eroja jo ennen koulun alkamista. Hierarkkisena oppiaineena matematiikan perusasioiden hallinta on välttämätön edellytys uusien sisältöjen oppimiselle.'}},
+          arviointi: {otsikko: {fi: 'Oppilaan oppimisen arviointi oppiaineessa vuosiluokilla 1-2'}, teksti: {fi: 'Vuosiluokilla 1-2 matematiikan oppimisen arvioinnissa on kiinnitettävä huomiota kannustavan palautteen antamiseen. Keskeisten sisältöjen oppimisen rinnalla on myös arvioitava laaja-alaisten taitojen kehittymistä monipuolisesti.'}},
+        },
+      ]
+    };
+  };
 })
 
-.service('VuosiluokatService', function ($q, DummyVuosiluokat, DummyOppiaineet, DummyTavoitteet, $state) {
+.service('VuosiluokatService', function ($q, DummyData, $state) {
   var opsId = null;
   var vuosiluokat = null;
 
@@ -68,8 +89,8 @@ ylopsApp
   }
 
   function fetch() {
-    var vlk = DummyVuosiluokat.get();
-    vlk[0].oppiaineet = DummyOppiaineet.get();
+    var vlk = DummyData.getVuosiluokat();
+    vlk[0].oppiaineet = DummyData.getOppiaineet();
     var promise = promisify(vlk);
     promise.then(function (res) {
       vuosiluokat = res;
@@ -85,7 +106,11 @@ ylopsApp
   }
 
   function getTavoitteet(/*oppiaineenVlkId*/) {
-    return promisify(DummyTavoitteet.get());
+    return promisify(DummyData.getTavoitteet());
+  }
+
+  function getOppiaine() {
+    return promisify(DummyData.getOppiaine());
   }
 
   function mapForMenu(data) {
@@ -113,5 +138,6 @@ ylopsApp
   this.fetch = fetch;
   this.getVuosiluokat = getVuosiluokat;
   this.getTavoitteet = getTavoitteet;
+  this.getOppiaine = getOppiaine;
   this.mapForMenu = mapForMenu;
 });

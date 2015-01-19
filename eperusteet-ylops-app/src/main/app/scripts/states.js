@@ -153,7 +153,13 @@ ylopsApp
         url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId',
         template: '<div ui-view></div>',
         abstract: true,
-        controller: 'OppiaineBaseController'
+        controller: 'OppiaineBaseController',
+        resolve: {
+          vuosiluokatService: 'VuosiluokatService',
+          oppiaine: ['vuosiluokatService', function (vuosiluokatService) {
+            return vuosiluokatService.getOppiaine(/*oppiaineId*/);
+          }]
+        }
       })
 
       .state('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {

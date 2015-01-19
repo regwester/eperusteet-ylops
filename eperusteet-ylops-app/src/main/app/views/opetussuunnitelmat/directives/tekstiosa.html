@@ -1,0 +1,22 @@
+<div ng-if="model.otsikko || model.teksti" class="tekstiosa-wrapper">
+  <h3 ng-attr-title="{{model.$isCollapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna}}">
+    <span ng-bind="model.otsikko | kaanna"></span>
+  </h3>
+  <div class="tekstiosa perusteen-teksti">
+    <a class="toggle-perusteen-teksti" ng-click="model.$isCollapsed = !model.$isCollapsed" ng-bind="model.$isCollapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></a>
+    <div class="teksti" collapse="model.$isCollapsed" ng-bind-html="model.teksti | kaanna | unsafe"></div>
+  </div>
+
+</div>
+<div ng-if="editable" class="panel-clear-fix tekstiosa">
+
+  <h4>
+    <div class="action-buttons-inline">
+      <button class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+    </div>
+    <span kaanna="'opsin-teksti'"></span>
+  </h4>
+  <div ng-bind-html="muokattava.teksti | kaanna | unsafe"></div>
+  <p class="empty-notice" ng-show="!muokattava.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
+
+</div>

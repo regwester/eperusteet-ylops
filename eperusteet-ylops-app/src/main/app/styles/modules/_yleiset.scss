@@ -23,6 +23,12 @@ button {
   }
 }
 
+.collapse-toggler {
+  cursor: pointer;
+  margin-right: 5px;
+  color: $brand-primary;
+}
+
 /* animointia varten */
 .ng-hide-add, .ng-hide-remove {
   display: block !important;
@@ -118,7 +124,7 @@ $backtotop-size: 48px;
   float: right;
 }
 
-.panel-title {
+.panel-title, h3, h4 {
   .action-buttons-inline {
     margin-top: -5px;
   }

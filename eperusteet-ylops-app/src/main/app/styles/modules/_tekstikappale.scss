@@ -13,12 +13,48 @@
   width: 50%;
 }
 
-.collapse-toggler {
-  cursor: pointer;
-}
-
 .panel-clear-fix {
   .panel-body:after {
     clear: right;
   }
 }
+
+.perusteen-teksti {
+  padding: 10px;
+  background-color: lighten(#a38566, 40%);
+  .teksti {
+    margin-top: 10px;
+  }
+}
+
+.tekstiosa-wrapper {
+  h3 {
+    margin-top: 40px;
+    padding-top: 15px;
+    border-top: 1px solid lighten($brand-primary, 30%);
+  }
+}
+
+.tekstiosa {
+  h4 {
+    margin-top: 20px;
+    margin-botton: 20px;
+  }
+  margin-left: 25px;
+  .empty-notice {
+    font-style: italic;
+    opacity: 0.7;
+  }
+}
+
+.toggle-perusteen-teksti {
+  line-height: 10px;
+  display: block;
+}
+
+/*
+#fbb03b #ffd400 #3a8fbe #89bcd8
+#800080 #b366b3 #0c566e #6d9aa8
+#008000 #8cc63f #2e3192 #8283be
+#663300 #a38566 #666600 #a3a366
+*/

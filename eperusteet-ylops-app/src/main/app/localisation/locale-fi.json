@@ -30,8 +30,14 @@
   "opsn-tiedot": "OPS:n tiedot",
   "ohje": "Ohje",
   "ei-ohjetta": "[ei ohjetta]",
+  "ei-paikallista-sisaltoa": "Paikallista OPS-sisältöä ei määritelty",
   "perusteen-teksti": "Perusteen teksti",
   "opsin-teksti": "Opetussuunnitelman teksti",
+  "tavoitteet-ja-sisallot-vuosiluokittain": "Tavoitteet ja sisällöt vuosiluokittain",
+  "nayta-perusteen-teksti": "Näytä perusteen teksti",
+  "piilota-perusteen-teksti": "Piilota perusteen teksti",
+  "tavoitteet": "Tavoitteet",
+  "sisaltoalueet": "sisaltoalueet",
 
   "ui-kieli": "Käyttöliittymäkieli",
   "sisallon-kieli": "Sisällön kieli",
@@ -65,6 +71,7 @@
   "sivunavigointi-sulje-menu": "Sulje navigaatiopalkki",
 
   "vuosiluokkaistaminen": "Vuosiluokkaistaminen",
+  "tavoitteiden-vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet",
   "vuosiluokka": "Vuosiluokka",
   "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt"
 }
