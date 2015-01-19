@@ -25,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ import java.util.stream.StreamSupport;
  */
 @Service
 @Transactional
+@Profile(value = "default")
 public class OrganisaatioServiceImpl implements OrganisaatioService {
 
     @Value("${cas.service.organisaatio-service:''}")
@@ -54,6 +56,17 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
     @Autowired
     RestClientFactory restClientFactory;
+
+    @Override
+    public JsonNode getOrganisaatio(String organisaatioOid) {
+        CachingRestClient crc = restClientFactory.get(serviceUrl);
+        String url = serviceUrl + ORGANISAATIOT + organisaatioOid;
+        try {
+            return mapper.readTree(crc.getAsString(url));
+        } catch (IOException ex) {
+            throw new BusinessRuleViolationException("Peruskoulujen tietojen hakeminen epäonnistui", ex);
+        }
+    }
 
     @Override
     public JsonNode getPeruskoulut(String kuntaId) {

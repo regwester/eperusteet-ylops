@@ -17,5 +17,8 @@
 'use strict';
 
 ylopsApp
-.controller('OpetussuunnitelmaTiedotController', function (/*$scope*/) {
-});
+.controller('OpetussuunnitelmaTiedotController', function ($scope, Kieli) {
+    $scope.haeNimi = function (item) {
+      return item.nimi[Kieli.getSisaltokieli()] || item.nimi.fi;
+    };
+  });

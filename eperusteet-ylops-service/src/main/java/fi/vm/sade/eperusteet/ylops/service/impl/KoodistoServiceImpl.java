@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -54,7 +55,9 @@ public class KoodistoServiceImpl implements KoodistoService {
         RestTemplate restTemplate = new RestTemplate();
         String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/";
         KoodistoKoodiDto[] koodistot = restTemplate.getForObject(url, KoodistoKoodiDto[].class);
-        return mapper.mapAsList(Arrays.asList(koodistot), KoodistoKoodiDto.class);
+        List<KoodistoKoodiDto> koodistoLista =
+                Arrays.stream(koodistot).filter(x -> x.getVoimassaLoppuPvm() == null).collect(Collectors.toList());
+        return mapper.mapAsList(koodistoLista, KoodistoKoodiDto.class);
     }
 
     @Override

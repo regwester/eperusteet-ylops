@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
@@ -61,7 +62,10 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");
         ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
-        ops.setKoulut(new HashSet<>(Collections.singleton("Etelä-Hervannan koulu")));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.15252345624572462");
+        ops.setKoulut(new HashSet<>(Collections.singleton(kouluDto)));
         opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }
 

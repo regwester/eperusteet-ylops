@@ -13,27 +13,37 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.external;
+package fi.vm.sade.eperusteet.ylops.service.test.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.security.access.prepost.PreAuthorize;
-
-import java.util.List;
+import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
 /**
+ *
  * @author mikkom
  */
-public interface OrganisaatioService {
+@Service
+@Profile(value = "test")
+public class OrganisaatioServiceMock implements OrganisaatioService {
+    @Override
+    public JsonNode getOrganisaatio(String organisaatioOid) {
+        return null;
+    }
 
-    @PreAuthorize("permitAll()")
-    JsonNode getOrganisaatio(String organisaatioOid);
+    @Override
+    public JsonNode getPeruskoulut(String kuntaId) {
+        return null;
+    }
 
-    @PreAuthorize("permitAll()")
-    JsonNode getPeruskoulut(String kuntaId);
+    @Override
+    public JsonNode getRyhma(String organisaatioOid) {
+        return null;
+    }
 
-    @PreAuthorize("permitAll()")
-    JsonNode getRyhma(String organisaatioOid);
-
-    @PreAuthorize("permitAll()")
-    JsonNode getRyhmat();
+    @Override
+    public JsonNode getRyhmat() {
+        return null;
+    }
 }

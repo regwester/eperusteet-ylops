@@ -13,7 +13,7 @@
 <div ng-bind="model.luotu | aikaleima"></div>
 
 <h3 kaanna="'kunnat'"></h3>
-<div ng-repeat="kunta in model.kunnat">{{kunta.koodiUri}}</div>
+<div ng-repeat="kunta in model.kunnat">{{haeNimi(kunta)}}</div>
 
 <h3 kaanna="'koulut'"></h3>
-<div ng-repeat="koulu in model.koulut">{{koulu}}</div>
+<div ng-repeat="koulu in model.koulut">{{haeNimi(koulu)}}</div>
