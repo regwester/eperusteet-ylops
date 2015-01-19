@@ -114,6 +114,16 @@ $backtotop-size: 48px;
   margin-bottom: 20px;
 }
 
+.action-buttons-inline {
+  float: right;
+}
+
+.panel-title {
+  .action-buttons-inline {
+    margin-top: -5px;
+  }
+}
+
 .angular-ui-tree-placeholder {
   background: #f0f9ff;
   border: 2px dashed #bed2db;
@@ -136,7 +146,7 @@ $backtotop-size: 48px;
 }
 
 label {
-  input[type="radio"] {
+  input[type="radio"], input[type="checkbox"] {
     top: 0;
   }
 }

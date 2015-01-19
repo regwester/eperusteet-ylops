@@ -21,6 +21,7 @@ ylopsApp
     Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
     OhjeCRUD) {
 
+    $scope.isCollapsed = true;
     $scope.editMode = false;
     if ($stateParams.tekstikappaleId === 'uusi') {
       $timeout(function () {

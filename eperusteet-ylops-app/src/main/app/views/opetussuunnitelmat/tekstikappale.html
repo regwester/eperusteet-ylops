@@ -1,33 +1,62 @@
-<h2 ng-bind="model.tekstiKappale.nimi | kaanna"></h2>
-
-<div class="action-buttons">
-  <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+<div class="action-buttons-inline" ng-if="godmode">
   <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
 </div>
+<h2 ng-bind="model.tekstiKappale.nimi | kaanna"></h2>
 
-<div ng-if="!editMode">
-  <div class="panel panel-default tekstikappale-ohje">
-
-    <div ng-hide="ohjeOps.editing" class="pull-right">
-      <a ng-click="ohjeOps.edit()">Muokkaa</a>
-      <a ng-show="ohje.id" ng-click="ohjeOps.delete()">Poista</a>
-    </div>
-    <div ng-show="ohjeOps.editing" class="pull-right">
-      <a ng-click="ohjeOps.ok()">Ok</a>
-      <a ng-click="ohjeOps.cancel()">Peruuta</a>
-    </div>
-
-    <h3 kaanna="'ohje'"></h3>
-
-    <div ng-if="ohjeOps.editing" ckeditor ng-model="ohje.teksti" slocalized></div>
-    <div ng-if="!ohjeOps.editing" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
-
-    <p ng-if="!ohje.teksti && !ohjeOps.editing" kaanna="'ei-ohjetta'"></p>
-  </div>
-  <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></div>
+<div class="valiaikaiset-kontrollit">
+  <span>Väliaikaiset kontrollit:</span>&nbsp;
+  <label><input ng-model="godmode" type="checkbox"> Saa muokata kaikkea</label>
 </div>
 
-<div ng-if="editMode">
-  <input ng-model="model.tekstiKappale.nimi" slocalized class="form-control">
-  <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
+<div class="panel-clear-fix">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title collapse-toggler" ng-click="isCollapsed = !isCollapsed">
+        <span class="glyphicon"
+              ng-class="isCollapsed ? 'glyphicon-chevron-right' : 'glyphicon-chevron-down'"></span>
+        <span kaanna="'perusteen-teksti'"></span>
+      </div>
+
+    </div>
+    <div class="panel-body" collapse="isCollapsed">
+
+      <div ng-if="godmode">
+        <div ng-hide="ohjeOps.editing">
+          <a ng-click="ohjeOps.edit()">Muokkaa</a>
+          <a ng-show="ohje.id" ng-click="ohjeOps.delete()">Poista</a>
+        </div>
+        <div ng-show="ohjeOps.editing">
+          <a ng-click="ohjeOps.ok()">Ok</a>
+          <a ng-click="ohjeOps.cancel()">Peruuta</a>
+        </div>
+      </div>
+
+      <div ng-if="ohjeOps.editing" ckeditor ng-model="ohje.teksti" slocalized></div>
+      <div ng-if="!ohjeOps.editing" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
+
+      <p ng-if="!ohje.teksti && !ohjeOps.editing" kaanna="'ei-ohjetta'"></p>
+    </div>
+  </div>
+
+  <div ng-if="!editMode" class="panel panel-default">
+    <div class="panel-heading">
+      <div class="panel-title">
+        <div class="action-buttons-inline">
+          <button class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+        </div>
+        <span kaanna="'opsin-teksti'"></span>
+      </div>
+    </div>
+    <div class="panel-body">
+
+      <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></div>
+    </div>
+  </div>
+
+  <div ng-if="editMode">
+    <h4><span kaanna="'opsin-teksti'"></span></h4>
+    <input ng-if="godmode" ng-model="model.tekstiKappale.nimi" slocalized class="form-control">
+    <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
+  </div>
+
 </div>

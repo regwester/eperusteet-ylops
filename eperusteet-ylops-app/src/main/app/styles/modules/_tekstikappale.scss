@@ -4,3 +4,21 @@
   }
   padding: 15px;
 }
+
+.valiaikaiset-kontrollit {
+  padding: 3px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border: 1px dashed #999;
+  width: 50%;
+}
+
+.collapse-toggler {
+  cursor: pointer;
+}
+
+.panel-clear-fix {
+  .panel-body:after {
+    clear: right;
+  }
+}
