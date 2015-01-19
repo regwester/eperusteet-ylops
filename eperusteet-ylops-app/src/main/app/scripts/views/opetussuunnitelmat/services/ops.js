@@ -24,7 +24,10 @@ ylopsApp
   function uusi() {
     return {
       nimi: {},
-      kuvaus: {}
+      kuvaus: {},
+      kunnat: [],
+      koulut: [],
+      tekstit: {lapset: []}
     };
   }
 

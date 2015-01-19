@@ -57,3 +57,19 @@ $ops-border: 1px solid #ddd;
   font-weight: 700;
   font-size: 110%;
 }
+
+.organisaatio-label {
+  float: left;
+}
+
+.organisaatio-input {
+  margin-left: 80px;
+}
+
+.ui-select {
+  min-height: 80px;
+}
+
+.ui-select-match {
+  float: bottom;
+}

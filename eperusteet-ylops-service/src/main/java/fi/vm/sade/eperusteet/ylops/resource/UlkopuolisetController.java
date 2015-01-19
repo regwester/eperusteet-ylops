@@ -65,8 +65,8 @@ public class UlkopuolisetController {
     @RequestMapping(value = "/organisaatiot/peruskoulut/{kuntaId}", method = GET)
     @ResponseBody
     public ResponseEntity<JsonNode> getPeruskoulut(@PathVariable(value = "kuntaId") final String kuntaId) {
-        JsonNode ryhma = organisaatioService.getRyhma(kuntaId);
-        return new ResponseEntity<>(ryhma, HttpStatus.OK);
+        JsonNode peruskoulut = organisaatioService.getPeruskoulut(kuntaId);
+        return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/koodisto/{koodisto}", method = GET)

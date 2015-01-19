@@ -43,4 +43,40 @@ ylopsApp
     $rootScope.$on('$stateNotFound', function(event, toState/*, toParams, fromState*/) {
       VirheService.virhe({state: toState.to});
     });
+  })
+  // Lodash mixins and other stuff
+  .run(function() {
+    _.mixin({ arraySwap: function(array, a, b) {
+      if (_.isArray(array) && _.size(array) > a && _.size(array) > b) {
+        var temp = array[a];
+        array[a] = array[b];
+        array[b] = temp;
+      }
+      return array;
+    }});
+    _.mixin({ zipBy: function(array, kfield, vfield) {
+      if (_.isArray(array) && kfield) {
+        if (vfield) {
+          return _.zipObject(_.map(array, kfield), _.map(array, vfield));
+        }
+        else {
+          return _.zipObject(_.map(array, kfield), array);
+        }
+      }
+      else {
+        return {};
+      }
+    }});
+    _.mixin({ set: function(obj, field) {
+      return function(value) {
+        obj[field] = value;
+      };
+    }});
+    _.mixin({ setWithCallback: function(obj, field, cb) {
+      return function(value) {
+        cb = cb || angular.noop;
+        obj[field] = value;
+        cb(value);
+      };
+    }});
   });

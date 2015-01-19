@@ -11,3 +11,9 @@
 
 <h3 kaanna="'muokattu-viimeksi'"></h3>
 <div ng-bind="model.luotu | aikaleima"></div>
+
+<h3 kaanna="'kunnat'"></h3>
+<div ng-repeat="kunta in model.kunnat">{{kunta.koodiUri}}</div>
+
+<h3 kaanna="'koulut'"></h3>
+<div ng-repeat="koulu in model.koulut">{{koulu}}</div>

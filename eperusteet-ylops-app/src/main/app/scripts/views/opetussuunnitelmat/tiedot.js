@@ -18,5 +18,4 @@
 
 ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function (/*$scope*/) {
-
 });

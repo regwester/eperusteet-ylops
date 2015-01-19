@@ -19,7 +19,7 @@
 ylopsApp
   .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams,
     $timeout, $state, OpetussuunnitelmaCRUD, opsModel, opsService, Notifikaatiot, Varmistusdialogi,
-    OpetussuunnitelmanTekstit) {
+    OpetussuunnitelmanTekstit, KoodistoHaku, PeruskouluHaku, Kieli) {
 
     $scope.editMode = false;
     $scope.rakenneEdit = false;
@@ -85,6 +85,58 @@ ylopsApp
       $scope.rakenneEdit = false;
       fetch();
     };
+
+    $scope.haeKunnanNimi = function (kunta) {
+      var kieliMap = { fi: 'FI', se: 'SE' };
+      var kieli = kieliMap[Kieli.getSisaltokieli()] || 'FI';
+
+      var metadata =
+        _.find(kunta.metadata, function (md) { return md.kieli === kieli; }) || kunta.metadata[0];
+      return metadata.nimi;
+    };
+
+    $scope.haeKoulunNimi = function (koulu) {
+      return koulu.nimi[Kieli.getSisaltokieli()] || koulu.nimi.fi;
+    };
+
+    function aakkosta(lista, nimiFn) {
+      var snd = function (arr) { return arr[1]; };
+      var nimet = _.map(lista, nimiFn);
+
+      return _.chain(lista)
+        .zip(nimet)
+        .sortBy(snd)
+        .map(_.first)
+        .value();
+    }
+
+    $scope.haeKunnat = function () {
+      KoodistoHaku.get({ koodistoUri: 'kunta' }, function(kunnat) {
+        // Kunnat aakkosjärjestykseen
+        $scope.kuntalista = aakkosta(kunnat, $scope.haeKunnanNimi);
+      }, Notifikaatiot.serverCb);
+    };
+
+    $scope.haeKoulut = function () {
+      var kunnat = $scope.model.kunnat;
+      if (kunnat.length === 1) {
+        var kunta = kunnat[0];
+        PeruskouluHaku.get({ kuntaUri: kunta.koodiUri }, function(res) {
+          var koulut = res.organisaatiot;
+          if (koulut.length === 0) {
+            console.log('Kunnasta ' + $scope.haeKunnanNimi(kunta) + ' ei löytynyt yhtäkään koulua');
+          }
+
+          // Koulut aakkosjärjestykseen
+          $scope.koululista = aakkosta(koulut, $scope.haeKoulunNimi);
+        }, Notifikaatiot.serverCb);
+      } else {
+        $scope.koululista = [];
+      }
+    };
+
+    $scope.haeKunnat();
+    $scope.haeKoulut();
 
     var successCb = function (res) {
       $scope.model = res;

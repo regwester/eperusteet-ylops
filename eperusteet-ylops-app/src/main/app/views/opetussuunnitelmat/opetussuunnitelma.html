@@ -1,3 +1,4 @@
+
 <div class="action-buttons">
   <button ng-hide="editMode || rakenneEdit" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
   <button ng-hide="editMode || rakenneEdit" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
@@ -13,7 +14,7 @@
   <button ng-show="rakenneEdit" class="btn btn-default" kaanna="'peru-rakenne'" ng-click="cancelRakenne()"></button>
   <button ng-show="rakenneEdit" class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="saveRakenne()"></button>
 
-  <button ng-hide="rakenneEdit || model.tekstit.lapset.length === 0"
+  <button ng-hide="rakenneEdit || !model.tekstit.lapset || model.tekstit.lapset.length === 0"
           class="btn btn-default" kaanna="'muokkaa-rakennetta'" ng-click="editRakenne()"></button>
 
   <div ng-show="model.tekstit.lapset.length > 0" ui-tree class="tekstikappaleet" data-empty-place-holder-enabled="true" data-drag-enabled="rakenneEdit">
@@ -25,8 +26,53 @@
 </div>
 
 <div ng-if="editMode">
-  <h3 kaanna="'nimi'"></h3>
-  <input ng-model="model.nimi" slocalized class="form-control">
-  <h3 kaanna="'kuvaus'"></h3>
-  <div ckeditor ng-model="model.kuvaus" slocalized></div>
+  <div class="row">
+    <div class="col-sm-4">
+      <h3 kaanna="'nimi'"></h3>
+    </div>
+    <div class="col-sm-8">
+      <input ng-model="model.nimi" slocalized class="form-control">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <h3 kaanna="'kuvaus'"></h3>
+    </div>
+    <div class="col-sm-8">
+      <div ckeditor ng-model="model.kuvaus" slocalized></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <h3 kaanna="'organisaatio'"></h3>
+    </div>
+
+    <div class="col-sm-8">
+      <div>
+        <div class="organisaatio-label"><label kaanna="'kunta'"></label></div>
+        <div class="organisaatio-input">
+          <ui-select class="ui-select" multiple ng-model="model.kunnat" on-select="haeKoulut()" on-remove="haeKoulut()">
+            <ui-select-choices repeat="kunta in kuntalista | filter: $select.search">
+              <span ng-bind-html="haeKunnanNimi(kunta)"></span>
+            </ui-select-choices>
+            <ui-select-match class="ui-select-match" placeholder="{{'valitse-kunnat' | kaanna}}">{{haeKunnanNimi($item)}}</ui-select-match>
+          </ui-select>
+        </div>
+      </div>
+
+      <div>
+        <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
+        <div class="organisaatio-input">
+          <ui-select class="ui-select" multiple ng-model="model.koulut" ng-disabled="model.kunnat.length !== 1">
+            <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{haeKoulunNimi($item)}}</ui-select-match>
+            <ui-select-choices repeat="koulu in koululista | filter: $select.search">
+              <span ng-bind-html="haeKoulunNimi(koulu)"></span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
