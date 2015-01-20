@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,23 +44,26 @@ public class VuosiluokkakokonaisuusController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<VuosiluokkakokonaisuusDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        VuosiluokkakokonaisuusDto dto = new VuosiluokkakokonaisuusDto();
-        return response(dto);
+        return response(vuosiluokkakokonaisuudet.get(opsId, id));
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public Set<VuosiluokkakokonaisuusDto> getAll(@PathVariable("opsId") final Long opsId) {
-        return null;
+        throw new UnsupportedOperationException("TODO: toteuta");
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public VuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        return null;
+    public VuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId,
+        @PathVariable("id") final Long id,
+        @RequestBody VuosiluokkakokonaisuusDto dto) {
+        dto.setId(id);
+        return vuosiluokkakokonaisuudet.update(opsId, dto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public VuosiluokkakokonaisuusDto delete(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        return null;
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        vuosiluokkakokonaisuudet.delete(opsId, id);
     }
 
     private static <T> ResponseEntity<T> response(T data) {
