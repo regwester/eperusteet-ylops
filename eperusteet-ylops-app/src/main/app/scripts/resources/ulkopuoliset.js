@@ -20,6 +20,14 @@ ylopsApp
   .service('UlkopuolisetResources', function (SERVICE_LOC) {
     this.ULKOPUOLISET = SERVICE_LOC + '/ulkopuoliset/';
   })
+  .factory('EperusteetTiedotteet', function(UlkopuolisetResources, $resource) {
+    return $resource(UlkopuolisetResources.ULKOPUOLISET + 'tiedotteet', {
+      get: { isArray: true }
+    });
+  })
+  .factory('EperusteetPerusopetus', function(UlkopuolisetResources, $resource) {
+    return $resource(UlkopuolisetResources.ULKOPUOLISET + 'perusopetusperuste/:id');
+  })
   .factory('KoodistoHaku', function(UlkopuolisetResources, $resource) {
     return $resource(UlkopuolisetResources.ULKOPUOLISET + 'koodisto/:koodistoUri', {
       koodistoUri: '@koodistoUri'
