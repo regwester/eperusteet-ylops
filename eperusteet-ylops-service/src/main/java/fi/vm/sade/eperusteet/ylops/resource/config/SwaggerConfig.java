@@ -24,6 +24,7 @@ import com.mangofactory.swagger.models.dto.ApiInfo;
 import com.mangofactory.swagger.paths.RelativeSwaggerPathProvider;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class SwaggerConfig {
             .apiInfo(apiInfo())
             .pathProvider(relativeSwaggerPathProvider)
             .directModelSubstitute(JsonNode.class, Object.class)
-            .genericModelSubstitutes(ResponseEntity.class)
+            .genericModelSubstitutes(ResponseEntity.class, Optional.class)
             .alternateTypeRules(
                 Alternates.newRule(typeResolver.resolve(new GenericType<Callable<ResponseEntity<Object>>>() {
                 }), typeResolver.resolve(Object.class))
