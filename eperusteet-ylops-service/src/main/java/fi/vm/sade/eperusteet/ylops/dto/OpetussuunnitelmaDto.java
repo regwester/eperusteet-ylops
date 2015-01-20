@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -46,5 +47,6 @@ public class OpetussuunnitelmaDto implements Serializable {
     private Tila tila;
     private Set<KoodistoDto> kunnat;
     private Set<OrganisaatioDto> koulut;
+    private Set<Kieli> julkaisukielet;
     private TekstiKappaleViiteDto.Puu tekstit;
 }

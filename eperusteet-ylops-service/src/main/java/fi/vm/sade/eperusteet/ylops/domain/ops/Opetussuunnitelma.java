@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -105,6 +106,14 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<String> koulut = new HashSet<>();
+
+    @ElementCollection
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private Set<Kieli> julkaisukielet = new HashSet<>();
 
     public boolean containsViite(TekstiKappaleViite viite) {
         return viite != null && tekstit.getId().equals(viite.getRoot().getId());
