@@ -197,5 +197,29 @@ ylopsApp
             OpsNavigaatio.setActive(false);
           }]
         }
+      })
+
+      .state('root.pohjat', {
+        url: '/pohjat',
+        template: '<div ui-view></div>',
+        controller: function () {}
+      })
+
+      .state('root.pohjat.yksi', {
+        url: '/:pohjaId',
+        template: '<div ui-view></div>',
+        controller: 'PohjaController'
+      })
+
+      .state('root.pohjat.yksi.sisalto', {
+        url: '/sisalto',
+        templateUrl: 'views/opetussuunnitelmat/pohja/sisalto.html',
+        controller: 'PohjaSisaltoController'
+      })
+
+      .state('root.pohjat.yksi.tiedot', {
+        url: '/tiedot',
+        templateUrl: 'views/opetussuunnitelmat/pohja/tiedot.html',
+        controller: 'PohjaTiedotController'
       });
   });

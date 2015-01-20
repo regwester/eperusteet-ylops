@@ -19,8 +19,9 @@
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
-    OhjeCRUD) {
+    OhjeCRUD, Oikeudet) {
 
+    $scope.godmode = Oikeudet.isVirkailija;
     $scope.isCollapsed = true;
     $scope.editMode = false;
     if ($stateParams.tekstikappaleId === 'uusi') {

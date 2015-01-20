@@ -1,0 +1,21 @@
+<h1 ng-if="isLuonti" kaanna="'uusi-pohja'" class="plain"></h1>
+
+<div class="ops-edit-container">
+  <div class="row">
+    <div class="col-sm-3 formfield-label">
+      <label for="ops-field-nimi" kaanna="'nimi'"></label>
+    </div>
+    <div class="col-sm-9 formfield-data">
+      <input id="ops-field-nimi" ng-model="model.nimi" slocalized class="form-control">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-3 formfield-label"></div>
+    <div class="col-sm-9 formfield-data">
+      <button class="btn btn-default" kaanna="'peruuta'" ng-click="cancel()"></button>
+      <button class="btn btn-primary" kaanna="'luo-pohja'" ng-click="save()"></button>
+    </div>
+  </div>
+
+</div>

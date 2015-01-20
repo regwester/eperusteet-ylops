@@ -17,14 +17,14 @@
 'use strict';
 
 ylopsApp
-.controller('EtusivuController', function ($scope, Oikeudet, $state) {
-  $scope.isVirkailija = Oikeudet.isVirkailija;
+.service('Oikeudet', function() {
+  var isVirkailija = false;
 
-  $scope.addNewPohja = function () {
-    $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});
+  this.setVirkailija = function (value) {
+    isVirkailija = !!value;
   };
-})
 
-.controller('EsikatseluController', function () {
-
+  this.isVirkailija = function () {
+    return isVirkailija;
+  };
 });

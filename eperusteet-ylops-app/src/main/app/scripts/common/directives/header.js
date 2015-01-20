@@ -20,12 +20,15 @@ ylopsApp
   .directive('ylopsHeader', function () {
     return {
       restrict: 'AE',
+      scope: {},
       templateUrl: 'views/common/directives/header.html',
       controller: 'YlopsHeaderController'
     };
   })
 
-  .controller('YlopsHeaderController', function ($scope, $state) {
+  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet) {
+    $scope.isVirkailija = Oikeudet.isVirkailija();
+
     $scope.$on('$stateChangeSuccess', function (event, toState) {
       $scope.crumbs = [];
       if (toState.name.indexOf('root.opetussuunnitelmat.yksi') === 0) {
@@ -40,5 +43,9 @@ ylopsApp
           });
         }
       }
+    });
+
+    $scope.$watch('isVirkailija', function (value) {
+      Oikeudet.setVirkailija(value);
     });
   });

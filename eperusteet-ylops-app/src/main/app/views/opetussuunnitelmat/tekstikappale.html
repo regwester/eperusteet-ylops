@@ -1,14 +1,9 @@
 <!-- TODO käytä tekstiosa-direktiiviä, yhtenevä oppiaine-näkymän kanssa -->
 
-<div class="action-buttons-inline" ng-if="godmode">
+<div class="action-buttons-inline" ng-if="godmode()">
   <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
 </div>
 <h2 ng-bind="model.tekstiKappale.nimi | kaanna"></h2>
-
-<div class="valiaikaiset-kontrollit">
-  <span>Väliaikaiset kontrollit:</span>&nbsp;
-  <label><input ng-model="godmode" type="checkbox"> Saa muokata kaikkea</label>
-</div>
 
 <div class="panel-clear-fix">
   <div class="panel panel-default">
@@ -20,7 +15,7 @@
     </div>
     <div class="panel-body" collapse="isCollapsed">
 
-      <div ng-if="godmode">
+      <div ng-if="godmode()">
         <div ng-hide="ohjeOps.editing">
           <a ng-click="ohjeOps.edit()">Muokkaa</a>
           <a ng-show="ohje.id" ng-click="ohjeOps.delete()">Poista</a>
@@ -55,7 +50,7 @@
 
   <div ng-if="editMode">
     <h4><span kaanna="'opsin-teksti'"></span></h4>
-    <input ng-if="godmode" ng-model="model.tekstiKappale.nimi" slocalized class="form-control">
+    <input ng-if="godmode()" ng-model="model.tekstiKappale.nimi" slocalized class="form-control">
     <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
   </div>
 

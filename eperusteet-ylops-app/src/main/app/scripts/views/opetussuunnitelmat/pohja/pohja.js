@@ -17,14 +17,31 @@
 'use strict';
 
 ylopsApp
-.controller('EtusivuController', function ($scope, Oikeudet, $state) {
-  $scope.isVirkailija = Oikeudet.isVirkailija;
 
-  $scope.addNewPohja = function () {
-    $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});
+.controller('PohjaListaController', function ($scope) {
+  // TODO
+  $scope.items = {$resolved: true};
+})
+
+.controller('PohjaController', function ($state) {
+  if ($state.current.name === 'root.pohjat.yksi') {
+    $state.go('root.pohjat.yksi.sisalto');
+  }
+})
+
+.controller('PohjaTiedotController', function ($scope, $stateParams, $state) {
+  $scope.isLuonti = $stateParams.pohjaId === 'uusi';
+
+  $scope.cancel = function () {
+    $state.go('root.etusivu');
+  };
+
+  $scope.save = function () {
+    // TODO
+    $state.go('root.pohjat.yksi', {pohjaId: 'dummy'}, {reload: true});
   };
 })
 
-.controller('EsikatseluController', function () {
+.controller('PohjaSisaltoController', function () {
 
 });
