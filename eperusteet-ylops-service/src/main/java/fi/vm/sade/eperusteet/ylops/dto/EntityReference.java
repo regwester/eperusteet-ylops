@@ -15,6 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 
 /**
@@ -30,7 +32,8 @@ public class EntityReference {
         this.id = id.toString();
     }
 
-    public EntityReference(String id) {
+    @JsonCreator
+    public EntityReference(@JsonProperty("id") String id) {
         this.id = id;
     }
 

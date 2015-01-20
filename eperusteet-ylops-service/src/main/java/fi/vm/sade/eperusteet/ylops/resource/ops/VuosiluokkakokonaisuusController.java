@@ -37,7 +37,7 @@ public class VuosiluokkakokonaisuusController {
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public VuosiluokkakokonaisuusDto add(@PathVariable("opsId") final Long opsId, @RequestBody VuosiluokkakokonaisuusDto dto) {
         return vuosiluokkakokonaisuudet.add(opsId, dto);
     }
@@ -47,7 +47,7 @@ public class VuosiluokkakokonaisuusController {
         return response(vuosiluokkakokonaisuudet.get(opsId, id));
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public Set<VuosiluokkakokonaisuusDto> getAll(@PathVariable("opsId") final Long opsId) {
         throw new UnsupportedOperationException("TODO: toteuta");
     }
