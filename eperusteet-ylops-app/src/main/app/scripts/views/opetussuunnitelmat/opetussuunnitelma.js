@@ -19,7 +19,7 @@
 ylopsApp
   .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams,
     $timeout, $state, OpetussuunnitelmaCRUD, opsModel, opsService, Notifikaatiot, Varmistusdialogi,
-    OpetussuunnitelmanTekstit, KoodistoHaku, PeruskouluHaku, Kieli) {
+    OpetussuunnitelmanTekstit, KoodistoHaku, PeruskouluHaku, Kaanna) {
 
     $scope.editMode = false;
     $scope.rakenneEdit = false;
@@ -86,51 +86,44 @@ ylopsApp
       fetch();
     };
 
-    $scope.haeKunnanNimi = function (kunta) {
-      var kieliMap = { fi: 'FI', se: 'SE' };
-      var kieli = kieliMap[Kieli.getSisaltokieli()] || 'FI';
-
-      var metadata =
-        _.find(kunta.metadata, function (md) { return md.kieli === kieli; }) || kunta.metadata[0];
-      return metadata.nimi;
+    $scope.nimiOrderFn = function (item) {
+      return Kaanna.kaanna(item.nimi).toLowerCase();
     };
 
-    $scope.haeKoulunNimi = function (koulu) {
-      return koulu.nimi[Kieli.getSisaltokieli()] || koulu.nimi.fi;
-    };
-
-    function aakkosta(lista, nimiFn) {
-      var snd = function (arr) { return arr[1]; };
-      var nimet = _.map(lista, nimiFn);
-
-      return _.chain(lista)
-        .zip(nimet)
-        .sortBy(snd)
-        .map(_.first)
-        .value();
+    function mapKunnat(lista) {
+      return _(lista).map(function (kunta) {
+        return {
+          koodiUri: kunta.koodiUri,
+          koodiArvo: kunta.koodiArvo,
+          nimi: _(kunta.metadata).indexBy(function (item) {
+            return item.kieli.toLowerCase();
+          }).mapValues('nimi').value()
+        };
+      }).sortBy($scope.nimiOrderFn).value();
     }
 
     $scope.haeKunnat = function () {
       KoodistoHaku.get({ koodistoUri: 'kunta' }, function(kunnat) {
         // Kunnat aakkosjärjestykseen
-        $scope.kuntalista = aakkosta(kunnat, $scope.haeKunnanNimi);
+        $scope.kuntalista = mapKunnat(kunnat);
       }, Notifikaatiot.serverCb);
     };
 
+    $scope.$watch('model.kunnat', function () {
+      $scope.haeKoulut();
+    });
+
     $scope.haeKoulut = function () {
       var kunnat = $scope.model.kunnat;
-      if (kunnat.length === 1) {
+      if (kunnat.length === 0) {
+        $scope.model.koulut = [];
+      } else if (kunnat.length === 1) {
         var kunta = kunnat[0];
         PeruskouluHaku.get({ kuntaUri: kunta.koodiUri }, function(res) {
-          var koulut = res.organisaatiot;
-          if (koulut.length === 0) {
-            console.log('Kunnasta ' + $scope.haeKunnanNimi(kunta) + ' ei löytynyt yhtäkään koulua');
-          }
-
-          // Koulut aakkosjärjestykseen
-          $scope.koululista = aakkosta(koulut, $scope.haeKoulunNimi);
+          $scope.koululista = _.sortBy(res.organisaatiot, $scope.nimiOrderFn);
         }, Notifikaatiot.serverCb);
       } else {
+        $scope.model.koulut = [];
         $scope.koululista = [];
       }
     };

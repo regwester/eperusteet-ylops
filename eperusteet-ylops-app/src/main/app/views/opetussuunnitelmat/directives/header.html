@@ -1,4 +1,5 @@
-<div class="ops-header">
+<h1 class="plain" ng-if="luonnissa" kaanna="'uusi-ops'"></h1>
+<div class="ops-header" ng-if="!luonnissa">
   <div class="ops-header-toiminnot">
     <button ui-sref="root.opetussuunnitelmat.yksi.esikatselu" class="btn btn-default" icon-role="file" kaanna="'esikatselu'"></button>
   </div>

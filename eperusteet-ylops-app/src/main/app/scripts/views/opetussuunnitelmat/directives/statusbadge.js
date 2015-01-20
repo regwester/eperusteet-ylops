@@ -40,7 +40,7 @@ ylopsApp
       var el = element.find('.status-name');
 
       function adjust() {
-        if (scope.status.length > 8) {
+        if (scope.status && scope.status.length > 8) {
           var spacing = 1 - ((scope.status.length - OFFSET) * 0.2);
           el.css('letter-spacing', spacing + 'px');
         }

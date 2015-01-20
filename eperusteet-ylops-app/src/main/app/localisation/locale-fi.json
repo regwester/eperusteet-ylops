@@ -14,6 +14,7 @@
   "kommentoi-muutosta": "Kommentoi muutosta",
 
   "etusivu": "Etusivu",
+  "uusi-ops": "Uusi opetussuunnitelma",
   "ops-tyokalu": "OPS-työkalu",
   "omat-opetussuunnitelmat": "Opetussuunnitelmasi",
   "aloita-uusi-ops": "Aloita uusi OPS-projekti",
@@ -37,7 +38,7 @@
   "nayta-perusteen-teksti": "Näytä perusteen teksti",
   "piilota-perusteen-teksti": "Piilota perusteen teksti",
   "tavoitteet": "Tavoitteet",
-  "sisaltoalueet": "sisaltoalueet",
+  "sisaltoalueet": "Sisältöalueet",
 
   "ui-kieli": "Käyttöliittymäkieli",
   "sisallon-kieli": "Sisällön kieli",
@@ -59,10 +60,11 @@
   "organisaatio": "Organisaatio",
   "kunta": "Kunta",
   "koulu": "Koulu",
-  "valitse-kunnat": "Valitse kunnat",
+  "valitse-kunnat": "Valitse kunta/kunnat",
   "valitse-koulut": "Valitse koulut",
   "kunnat": "Kunnat",
   "koulut": "Koulut",
+  "kunnalla-ei-kouluja": "Valitulle kunnalle ei löytynyt kouluja.",
 
   "luonnos": "Luonnos",
   "tila-luonnos": "luonnos",

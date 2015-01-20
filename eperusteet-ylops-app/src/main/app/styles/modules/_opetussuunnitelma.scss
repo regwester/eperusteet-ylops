@@ -35,6 +35,10 @@ $ops-border: 1px solid #ddd;
   }
 }
 
+h1.plain {
+  margin-top: 30px;
+}
+
 .tekstikappaleet {
   padding-left: 100px;
   max-width: 800px;
@@ -58,18 +62,42 @@ $ops-border: 1px solid #ddd;
   font-size: 110%;
 }
 
+.ops-edit-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1000px;
+}
+
+.formfield-label {
+  padding-top: 5px;
+  margin-bottom: 5px;
+  & > label {
+    font-size: 120%;
+  }
+}
+
+.formfield-data {
+  padding-bottom: 30px;
+}
+
 .organisaatio-label {
+  padding-top: 5px;
   float: left;
 }
 
 .organisaatio-input {
-  margin-left: 80px;
+  margin-left: 100px;
+  margin-bottom: 10px;
+}
+
+.organisaatio-spacer {
+  margin-bottom: 150px;
+}
+
+.ui-select-search {
+  box-shadow: none;
 }
 
 .ui-select {
-  min-height: 80px;
-}
-
-.ui-select-match {
-  float: bottom;
+  min-height: 32px;
 }
