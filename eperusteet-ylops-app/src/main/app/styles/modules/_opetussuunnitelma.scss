@@ -66,6 +66,12 @@ h1.plain {
   margin-left: auto;
   margin-right: auto;
   max-width: 1000px;
+  .muokkaustiedot {
+    color: #999;
+  }
+  .data-container {
+    margin-top: 40px;
+  }
 }
 
 .formfield-label {
@@ -78,6 +84,9 @@ h1.plain {
 
 .formfield-data {
   padding-bottom: 30px;
+  &.viewmode {
+    padding-top: 5px;
+  }
 }
 
 .organisaatio-label {
@@ -88,10 +97,14 @@ h1.plain {
 .organisaatio-input {
   margin-left: 100px;
   margin-bottom: 10px;
+  &.viewmode {
+    padding-top: 5px;
+  }
+  min-height: 20px;
 }
 
 .organisaatio-spacer {
-  margin-bottom: 150px;
+  margin-bottom: 120px;
 }
 
 .ui-select-search {
@@ -119,4 +132,9 @@ h1.plain {
 .tallenna-peruuta-nappi {
   margin: 20px;
   padding: 10px 20px;
+}
+
+.julkaisukieli {
+  margin-top: 5px;
+  margin-right: 20px;
 }

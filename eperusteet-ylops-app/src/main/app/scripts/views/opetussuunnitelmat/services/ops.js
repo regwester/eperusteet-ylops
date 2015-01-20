@@ -31,10 +31,11 @@ ylopsApp
     };
   }
 
-  function refetch() {
+  function refetch(cb) {
     if (opsId !== 'uusi') {
       return OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
         ops = res;
+        cb(res);
       }, Notifikaatiot.serverCb);
     }
   }

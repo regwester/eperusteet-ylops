@@ -1,22 +1,132 @@
+<div class="ops-edit-container">
+  <h2>
+    <div class="action-buttons-inline">
+      <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+    </div>
+    <span kaanna="'opsn-tiedot'"></span>
+  </h2>
+  <div class="muokkaustiedot" ng-show="!editMode">
+    <span kaanna="'luotu'"></span> <span ng-bind="model.luotu | aikaleima"></span><span ng-if="model.luotu != model.muokattu">,
+    <span kaanna="'muokattu-viimeksi'"></span>  <span ng-bind="model.muokattu | aikaleima"></span></span>
+  </div>
 
-<div class="muokkaa-button">
-    <button class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+  <div ng-if="!editMode" class="data-container">
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-nimi" kaanna="'nimi'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div ng-bind="model.nimi | kaanna"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'organisaatio'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <div>
+          <div class="organisaatio-label"><label kaanna="'kunta'"></label></div>
+          <div class="organisaatio-input viewmode">
+            <span ng-repeat="kunta in model.kunnat">{{kunta.nimi | kaanna}}<span ng-show="!$last">, </span></span>
+          </div>
+        </div>
+
+        <div>
+          <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
+          <div class="organisaatio-input viewmode">
+            <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna}}<span ng-show="!$last">, </span></span>
+            <span ng-if="!model.koulut || model.koulut.length === 0">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'julkaisukielet'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data viewmode">
+        <span ng-repeat="kielikoodi in model.julkaisukielet" class="julkaisukieli">
+          <span ng-bind="kielikoodi | kaanna"></span><span ng-show="!$last">, </span>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div ng-if="editMode && !loading" class="data-container">
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-nimi" kaanna="'nimi'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data">
+        <input id="ops-field-nimi" ng-model="editableModel.nimi" slocalized class="form-control">
+      </div>
+    </div>
+
+    <!-- <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-kuvaus" kaanna="'kuvaus'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data">
+        <div id="ops-field-kuvaus" ckeditor ng-model="editableModel.kuvaus" slocalized></div>
+      </div>
+    </div> -->
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'organisaatio'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <div>
+          <div class="organisaatio-label"><label kaanna="'kunta'"></label></div>
+          <div class="organisaatio-input">
+            <ui-select class="ui-select" multiple ng-model="editableModel.kuntaUrit" on-select="$select.search = ''">
+              <ui-select-choices repeat="kunta.koodiUri as kunta in kuntalista | filter: $select.search">
+                <span ng-bind-html="kunta.nimi | kaanna | highlight: $select.search"></span>
+              </ui-select-choices>
+              <ui-select-match class="ui-select-match" placeholder="{{'valitse-kunnat' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
+            </ui-select>
+          </div>
+        </div>
+
+        <div>
+          <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
+          <div class="organisaatio-input">
+            <ui-select class="ui-select" multiple ng-model="editableModel.kouluOidit" ng-disabled="editableModel.kuntaUrit.length !== 1 || koululista.length === 0">
+              <ui-select-choices repeat="koulu.oid as koulu in koululista | filter: $select.search">
+                <span ng-bind-html="koulu.nimi | kaanna | highlight: $select.search"></span>
+              </ui-select-choices>
+              <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
+            </ui-select>
+            <p ng-if="editableModel.kuntaUrit.length === 1 && koululista.length === 0" kaanna="'kunnalla-ei-kouluja'"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'julkaisukielet'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <label ng-repeat="kielikoodi in kielivalinnat" class="julkaisukieli">
+          <input type="checkbox" ng-model="julkaisukielet[kielikoodi]">
+          <span ng-bind="kielikoodi | kaanna"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- tilaa kunta/koulu-dropdowneille -->
+    <div ng-if="editMode" class="organisaatio-spacer"></div>
+
+  </div>
+
 </div>
-
-<div class="muokattu-viimeksi">
-    <span kaanna>muokattu-viimeksi</span>: {{model.luotu | aikaleima}}
-</div>
-
-<h2 kaanna="'opsn-tiedot'"></h2>
-
-<h3 kaanna="'nimi'"></h3>
-<div ng-bind="model.nimi | kaanna"></div>
-
-<h3 kaanna="'kunnat'"></h3>
-<div ng-repeat="kunta in model.kunnat">{{haeNimi(kunta)}}</div>
-
-<h3 kaanna="'koulut'"></h3>
-<div ng-repeat="koulu in model.koulut">{{haeNimi(koulu)}}</div>
-
-<h3 kaanna="'julkaisukielet'"></h3>
-<div>{{naytaJulkaisukielet(model.julkaisukielet)}}</div>

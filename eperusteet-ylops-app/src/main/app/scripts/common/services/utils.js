@@ -44,6 +44,10 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
       return !_.isUndefined($window.FormData);
     };
 
+    this.sort = function (item) {
+      return Kaanna.kaanna(item.nimi).toLowerCase();
+    };
+
     this.nameSort = function (item, key) {
       return Kaanna.kaanna(key ? item[key] : item.nimi).toLowerCase();
     };
