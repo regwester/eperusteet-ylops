@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
@@ -39,7 +40,7 @@ public class OpsVuosiluokkakokonaisuus extends AbstractOpsViite {
 
     @Getter
     @Setter
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     @NotNull
     private Vuosiluokkakokonaisuus vuosiluokkakokonaisuus;
 

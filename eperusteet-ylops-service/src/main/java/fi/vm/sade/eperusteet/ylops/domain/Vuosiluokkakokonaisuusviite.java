@@ -69,7 +69,7 @@ public class Vuosiluokkakokonaisuusviite implements ReferenceableEntity, Seriali
 
     @Override
     public EntityReference getReference() {
-        return new EntityReference(viite);
+        return new EntityReference(id);
     }
 
     public Set<Vuosiluokka> getVuosiluokat() {

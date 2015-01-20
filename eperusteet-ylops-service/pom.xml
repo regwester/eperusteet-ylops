@@ -18,7 +18,7 @@
         <spring.data.jpa.version>1.7.1.RELEASE</spring.data.jpa.version>
         <logback.version>1.1.2</logback.version>
         <postgresql.version>9.3-1102-jdbc41</postgresql.version>
-        <jackson.version>2.4.4</jackson.version>
+        <jackson.version>2.5.0</jackson.version>
         <eperusteet-ylops.devdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.devdb.user}</eperusteet-ylops.devdb.jdbcurl>
         <eperusteet-ylops.ittestdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.ittestdb.user}</eperusteet-ylops.ittestdb.jdbcurl>
         <buildhelper.skipAttach>true</buildhelper.skipAttach>
@@ -332,6 +332,13 @@
             <artifactId>xml-apis</artifactId>
             <version>1.4.01</version>
         </dependency>
+        <!-- swagger vaatii guavan; runtime scope estää IDE:ä tarjoamasta sitä autocompletessa -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -341,6 +348,7 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <debug>true</debug>
                 </configuration>
             </plugin>
             <plugin>
@@ -380,6 +388,7 @@
                     </systemPropertyVariables>
                     <excludes>
                         <exclude>**/service/test/*.java</exclude>
+                        <exclude>**/test/**/*.java</exclude>
                     </excludes>
                     <includes>
                         <include>**/*IT.java</include>

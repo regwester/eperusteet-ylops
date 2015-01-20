@@ -13,28 +13,23 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto;
+package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import lombok.EqualsAndHashCode;
+import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import java.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author jhyoty
  */
-@EqualsAndHashCode
-public class EntityReference {
+@Getter
+@Setter
+public class VuosiluokkakokonaisuusDto implements ReferenceableDto {
 
-    private final String id;
+    private Long id;
+    private Optional<EntityReference> tunniste;
 
-    public EntityReference(Long id) {
-        this.id = id.toString();
-    }
-
-    public EntityReference(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
 }

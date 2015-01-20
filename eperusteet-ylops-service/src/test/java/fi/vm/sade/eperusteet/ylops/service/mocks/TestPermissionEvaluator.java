@@ -13,28 +13,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto;
+package fi.vm.sade.eperusteet.ylops.service.mocks;
 
-import lombok.EqualsAndHashCode;
+import org.springframework.security.core.Authentication;
+
+import java.io.Serializable;
 
 /**
  *
- * @author jhyoty
+ * @author mikkom
  */
-@EqualsAndHashCode
-public class EntityReference {
+public class TestPermissionEvaluator implements org.springframework.security.access.PermissionEvaluator {
 
-    private final String id;
-
-    public EntityReference(Long id) {
-        this.id = id.toString();
+    @Override
+    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
+        return authentication.isAuthenticated();
     }
 
-    public EntityReference(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
+    @Override
+    public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
+        return authentication.isAuthenticated();
     }
 }

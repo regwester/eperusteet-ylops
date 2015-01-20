@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
-import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
@@ -30,6 +29,8 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -119,7 +120,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public void reorderSubTree(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
         TekstiKappaleViite viite = findViite(opsId, rootViiteId);
         repository.lock(viite.getRoot());
-        Set<TekstiKappaleViite> refs = Sets.newIdentityHashSet();
+        Set<TekstiKappaleViite> refs = Collections.newSetFromMap(new IdentityHashMap<TekstiKappaleViite, Boolean>());
         refs.add(viite);
         TekstiKappaleViite parent = viite.getVanhempi();
         clearChildren(viite, refs);

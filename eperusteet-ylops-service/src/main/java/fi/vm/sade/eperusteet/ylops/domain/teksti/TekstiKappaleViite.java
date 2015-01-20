@@ -65,7 +65,7 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @NotNull
     @Getter
     @Setter
-    private Omistussuhde omistussuhde;
+    private Omistussuhde omistussuhde = Omistussuhde.OMA;
 
     @OneToMany(mappedBy = "vanhempi", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderColumn

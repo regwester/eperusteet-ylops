@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import org.springframework.security.access.method.P;
@@ -28,28 +27,29 @@ import java.util.List;
  * @author mikkom
  */
 public interface OpetussuunnitelmaService {
+
     @PreAuthorize("permitAll()")
     List<OpetussuunnitelmaDto> getAll();
 
-    @PreAuthorize("permitAll()")
-    OpetussuunnitelmaDto getOpetussuunnitelma(@P("id") Long id);
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpetussuunnitelmaDto getOpetussuunnitelma(@P("opsId") Long id);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUONTI')")
     OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto);
 
-    @PreAuthorize("permitAll()")
-    OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto);
+    @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'MUOKKAUS')")
+    OpetussuunnitelmaDto updateOpetussuunnitelma(@P("ops") OpetussuunnitelmaDto opetussuunnitelmaDto);
 
-    @PreAuthorize("permitAll()")
-    void removeOpetussuunnitelma(@P("id") Long id);
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
+    void removeOpetussuunnitelma(@P("opsId") Long id);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     TekstiKappaleViiteDto.Puu getTekstit(@P("opsId") final Long opsId);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappale(@P("opsId") final Long opsId, TekstiKappaleViiteDto.Matala viite);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
                                                        TekstiKappaleViiteDto.Matala viite);
 }

@@ -8,13 +8,15 @@
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:security="http://www.springframework.org/schema/security"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
-       http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+       http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <cache:annotation-driven />
 
@@ -80,7 +82,7 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="dbinit" class="fi.vm.sade.eperusteet.ylops.service.test.DbInitializer" depends-on="flyway" init-method="initDb">
+    <bean id="dbinit" class="fi.vm.sade.eperusteet.ylops.test.DbInitializer" depends-on="flyway" init-method="initDb">
     </bean>
 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -88,5 +90,16 @@
     </bean>
 
     <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean" />
+
+    <bean id="testPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.mocks.TestPermissionEvaluator"/>
+
+    <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+        <property name="permissionEvaluator" ref="testPermissionEvaluator"/>
+    </bean>
+
+    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
+        <security:expression-handler ref="expressionHandler"/>
+        <security:protect-pointcut expression="execution(* fi.vm.sade.eperusteet.ylops.service.*.*(..))" access="ROLE_DENY_ALL"/>
+    </security:global-method-security>
 
 </beans>

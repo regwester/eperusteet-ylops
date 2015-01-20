@@ -13,25 +13,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.test;
+package fi.vm.sade.eperusteet.ylops.repository;
 
-import org.springframework.security.core.Authentication;
-
-import java.io.Serializable;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
-public class TestPermissionEvaluator implements org.springframework.security.access.PermissionEvaluator {
+@Repository
+public interface VuosiluokkakokonaisuusviiteRepository extends JpaRepository<Vuosiluokkakokonaisuusviite, Long> {
 
-    @Override
-    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        return authentication.isAuthenticated();
-    }
-
-    @Override
-    public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
-        return authentication.isAuthenticated();
-    }
 }

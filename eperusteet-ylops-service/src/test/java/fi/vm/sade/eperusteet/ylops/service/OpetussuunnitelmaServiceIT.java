@@ -33,8 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lt;
-import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.uniikkiString;
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

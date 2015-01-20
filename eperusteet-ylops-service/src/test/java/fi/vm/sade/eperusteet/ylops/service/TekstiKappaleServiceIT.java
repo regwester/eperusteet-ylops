@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lokalisoituTekstiOf;
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lokalisoituTekstiOf;
 
 /**
  *

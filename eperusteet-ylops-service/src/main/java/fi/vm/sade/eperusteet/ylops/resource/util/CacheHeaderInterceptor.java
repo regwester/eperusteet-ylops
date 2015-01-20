@@ -15,12 +15,12 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.util;
 
-import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -50,8 +50,8 @@ public class CacheHeaderInterceptor implements HandlerInterceptor {
                     date = (new Date().getTime()) + cc.age() * 1000;
                     cacheControl = CacheControls.buildCacheControl(cc);
                 }
-                response.setDateHeader(com.google.common.net.HttpHeaders.EXPIRES, date);
-                response.setHeader(com.google.common.net.HttpHeaders.CACHE_CONTROL, cacheControl);
+                response.setDateHeader(HttpHeaders.EXPIRES, date);
+                response.setHeader(HttpHeaders.CACHE_CONTROL, cacheControl);
             }
         }
         return true;

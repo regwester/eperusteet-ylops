@@ -50,8 +50,15 @@
         </property>
     </bean>
 
+    <bean id="ylopsPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator"/>
+
     <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+        <property name="permissionEvaluator" ref="ylopsPermissionEvaluator"/>
     </bean>
+
+    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
+        <security:expression-handler ref="expressionHandler"/>
+    </security:global-method-security>
 
     <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
 
@@ -109,9 +116,5 @@
     <bean id="defaultExecutor" class="org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor">
         <constructor-arg ref="defaultThreadPool"/>
     </bean>
-
-    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
-      <!--security:expression-handler ref="expressionHandler"/-->
-    </security:global-method-security>
 
 </beans>

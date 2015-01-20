@@ -15,26 +15,10 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto;
 
-import lombok.EqualsAndHashCode;
-
 /**
  *
  * @author jhyoty
  */
-@EqualsAndHashCode
-public class EntityReference {
-
-    private final String id;
-
-    public EntityReference(Long id) {
-        this.id = id.toString();
-    }
-
-    public EntityReference(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
+public interface ReferenceableDto {
+    Long getId();
 }

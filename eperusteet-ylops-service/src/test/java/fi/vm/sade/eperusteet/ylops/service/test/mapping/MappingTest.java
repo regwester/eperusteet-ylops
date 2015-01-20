@@ -21,6 +21,8 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.LokalisoituTekstiConverter;
 import fi.vm.sade.eperusteet.ylops.service.mapping.OrganisaatioConverter;
+import java.util.Collections;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import ma.glasnost.orika.MapperFacade;
@@ -28,10 +30,7 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Set;
-
-import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lt;
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 
 /**
  *

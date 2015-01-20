@@ -30,14 +30,17 @@ public class DtoMapperConfig {
 
     @Bean
     public DtoMapper dtoMapper(
+        ReferenceableEntityConverter referenceableEntityConverter,
         LokalisoituTekstiConverter lokalisoituTekstiConverter) {
         DefaultMapperFactory factory = new DefaultMapperFactory.Builder()
             .build();
 
+        factory.getConverterFactory().registerConverter(referenceableEntityConverter);
         factory.getConverterFactory().registerConverter(lokalisoituTekstiConverter);
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTeksti.class));
         factory.getConverterFactory().registerConverter(new OrganisaatioConverter());
         OptionalSupport.register(factory);
+        factory.registerMapper(new ReferenceableCollectionMergeMapper());
 
         return new DtoMapperImpl(factory.getMapperFacade());
     }

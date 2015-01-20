@@ -83,7 +83,7 @@
 
     <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean"/>
 
-    <bean id="testPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.test.TestPermissionEvaluator"/>
+    <bean id="testPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.mocks.TestPermissionEvaluator"/>
 
     <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
         <property name="permissionEvaluator" ref="testPermissionEvaluator"/>
