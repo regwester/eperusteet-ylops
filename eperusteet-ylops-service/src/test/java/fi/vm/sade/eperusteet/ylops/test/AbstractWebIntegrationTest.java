@@ -41,7 +41,7 @@ public abstract class AbstractWebIntegrationTest {
     @Autowired
     private WebApplicationContext wac;
 
-    private MockMvc mockMvc;
+    protected MockMvc mockMvc;
 
     @Before
     public void setup() {

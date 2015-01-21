@@ -17,7 +17,6 @@ package fi.vm.sade.eperusteet.ylops.service.mocks;
 
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -28,7 +27,6 @@ import java.util.List;
  * @author mikkom
  */
 @Service
-@Profile(value = "test")
 public class KoodistoServiceMock implements KoodistoService {
     @Override
     public List<KoodistoKoodiDto> getAll(String koodisto) {

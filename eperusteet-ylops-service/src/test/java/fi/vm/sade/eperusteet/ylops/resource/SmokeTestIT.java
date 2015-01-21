@@ -13,21 +13,23 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service;
+package fi.vm.sade.eperusteet.ylops.resource;
 
-import fi.vm.sade.eperusteet.ylops.test.AbstractDbIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractWebIntegrationTest;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  *
  * @author jhyoty
  */
-@DirtiesContext
-public class MigrationTest extends AbstractDbIntegrationTest {
+public class SmokeTestIT extends AbstractWebIntegrationTest {
 
     @Test
-    public void testMigration() {
-        //NOP. testaa että flyway-migraatio toimii
+    public void testOpetussuunnitelmatResource() throws Exception {
+        mockMvc.perform(get("/opetussuunnitelmat")).andExpect(status().isOk());
     }
+
 }

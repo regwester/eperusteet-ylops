@@ -13,35 +13,21 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.mocks;
+package fi.vm.sade.eperusteet.ylops.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
-import org.springframework.stereotype.Service;
+import fi.vm.sade.eperusteet.ylops.test.AbstractDbIntegrationTest;
+import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
-@Service
-public class OrganisaatioServiceMock implements OrganisaatioService {
-    @Override
-    public JsonNode getOrganisaatio(String organisaatioOid) {
-        return null;
-    }
+@DirtiesContext
+public class MigrationTestIT extends AbstractDbIntegrationTest {
 
-    @Override
-    public JsonNode getPeruskoulut(String kuntaId) {
-        return null;
-    }
-
-    @Override
-    public JsonNode getRyhma(String organisaatioOid) {
-        return null;
-    }
-
-    @Override
-    public JsonNode getRyhmat() {
-        return null;
+    @Test
+    public void testMigration() {
+        //NOP. testaa että flyway-migraatio toimii
     }
 }
