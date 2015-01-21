@@ -55,8 +55,16 @@ public class KoodistoServiceImpl implements KoodistoService {
         RestTemplate restTemplate = new RestTemplate();
         String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/";
         KoodistoKoodiDto[] koodistot = restTemplate.getForObject(url, KoodistoKoodiDto[].class);
-        List<KoodistoKoodiDto> koodistoLista =
-                Arrays.stream(koodistot).filter(x -> x.getVoimassaLoppuPvm() == null).collect(Collectors.toList());
+        List<KoodistoKoodiDto> koodistoLista = Arrays.asList(koodistot);
+        if ("kunta".equals(koodisto)) {
+            koodistoLista =
+                    Arrays.stream(koodistot)
+                          // Filtteröi pois ex-kunnat
+                          .filter(kunta -> kunta.getVoimassaLoppuPvm() == null)
+                          // Ja "puuttuva" kunta
+                          .filter(kunta -> !"999".equals(kunta.getKoodiArvo()))
+                          .collect(Collectors.toList());
+        }
         return mapper.mapAsList(koodistoLista, KoodistoKoodiDto.class);
     }
 
