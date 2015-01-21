@@ -25,12 +25,14 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author jhyoty
  */
 @Service
+@Transactional(readOnly = true)
 public class VuosiluokkakokonaisuusServiceImpl implements VuosiluokkakokonaisuusService {
 
     @Autowired

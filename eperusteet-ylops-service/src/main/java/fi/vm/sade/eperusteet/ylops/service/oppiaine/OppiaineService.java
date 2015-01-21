@@ -13,30 +13,27 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.ops;
+package fi.vm.sade.eperusteet.ylops.service.oppiaine;
 
-import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.oppiaine.OppiaineDto;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author jhyoty
+ * @author mikkom
  */
-public interface VuosiluokkakokonaisuusService {
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    VuosiluokkakokonaisuusDto add(@P("opsId") Long opsId, VuosiluokkakokonaisuusDto dto);
-
+public interface OppiaineService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    VuosiluokkakokonaisuusDto get(@P("opsId") Long opsId, Long kokonaisuusId);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(#opsId, 'opetussuunnitelma', 'KORJAUS')")
-    VuosiluokkakokonaisuusDto update(@P("opsId") Long opsId, VuosiluokkakokonaisuusDto dto);
+    OppiaineDto get(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void delete(@P("opsId") Long opsId, Long kokonaisuusId);
+    OppiaineDto add(@P("opsId") Long opsId, OppiaineDto oppiaineDto);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    OppiaineDto update(@P("opsId") Long opsId, OppiaineDto oppiaineDto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void delete(@P("opsId") Long opsId, Long id);
 }

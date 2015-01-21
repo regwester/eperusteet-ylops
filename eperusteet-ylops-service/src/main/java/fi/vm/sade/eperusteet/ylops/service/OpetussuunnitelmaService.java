@@ -28,7 +28,7 @@ import java.util.List;
  */
 public interface OpetussuunnitelmaService {
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
     List<OpetussuunnitelmaDto> getAll();
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
@@ -56,5 +56,6 @@ public interface OpetussuunnitelmaService {
     TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
                                                        TekstiKappaleViiteDto.Matala viite);
 
+    @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
     public List<OpetussuunnitelmaDto> getAllPohjat();
 }

@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
@@ -28,7 +29,9 @@ import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakoko
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -153,6 +156,43 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             this.oppiaineet.addAll(oppiaineet);
             this.oppiaineet.retainAll(oppiaineet);
         }
+    }
+
+    public void addOppiaine(Oppiaine oppiaine) {
+        if (oppiaine.getOppiaine() != null) {
+            // Oppimäärä
+            if (containsOppiaine(oppiaine.getOppiaine())) {
+                oppiaine.getOppiaine().addOppimaara(oppiaine);
+            } else {
+                throw new IllegalArgumentException("Ei voida lisätä oppimäärää jonka oppiaine ei kuulu sisältöön");
+            }
+        } else {
+            // Simppeli oppiaine
+            oppiaineet.add(new OpsOppiaine(oppiaine, true /* TODO: tsekkaa pitäisikö tämän olla parametrina */));
+        }
+    }
+
+    public void removeOppiaine(Oppiaine oppiaine) {
+        List<OpsOppiaine> poistettavat = oppiaineet.stream()
+                  .filter(opsOppiaine -> opsOppiaine.getOppiaine().equals(oppiaine))
+                  .collect(Collectors.toList());
+        for (OpsOppiaine opsOppiaine : poistettavat) {
+            // TODO: Tarkista onko opsOppiaineen alla oleva oppiaine enää käytössä missään
+            oppiaineet.remove(opsOppiaine);
+        }
+    }
+
+    public boolean containsOppiaine(Oppiaine oppiaine) {
+        if (oppiaine == null) {
+            return false;
+        }
+
+        if (oppiaine.getOppiaine() != null) {
+            return containsOppiaine(oppiaine.getOppiaine());
+        }
+
+        return oppiaineet.stream()
+                         .anyMatch(opsOppiaine -> opsOppiaine.getOppiaine().equals(oppiaine));
     }
 
     public Set<OpsVuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {

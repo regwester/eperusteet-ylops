@@ -13,12 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.resource.ops;
+package fi.vm.sade.eperusteet.ylops.resource;
 
-import com.wordnik.swagger.annotations.Api;
-import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
-import java.util.Set;
+import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.dto.oppiaine.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.service.oppiaine.OppiaineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,41 +29,39 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ *
+ * @author mikkom
+ */
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet")
-@Api(value = "Opetussuunnitelmat")
-public class VuosiluokkakokonaisuusController {
+@RequestMapping("/opetussuunnitelmat/{opsId}")
+@ApiIgnore
+public class OppiaineController {
 
     @Autowired
-    private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
+    private OppiaineService oppiaineService;
 
     @RequestMapping(method = RequestMethod.POST)
-    public VuosiluokkakokonaisuusDto add(@PathVariable("opsId") final Long opsId, @RequestBody VuosiluokkakokonaisuusDto dto) {
-        return vuosiluokkakokonaisuudet.add(opsId, dto);
+    public OppiaineDto add(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineDto dto) {
+        return oppiaineService.add(opsId, dto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<VuosiluokkakokonaisuusDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        return response(vuosiluokkakokonaisuudet.get(opsId, id));
-    }
-
-    @RequestMapping(method = RequestMethod.GET)
-    public Set<VuosiluokkakokonaisuusDto> getAll(@PathVariable("opsId") final Long opsId) {
-        throw new UnsupportedOperationException("TODO: toteuta");
+    public ResponseEntity<OppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        return response(oppiaineService.get(opsId, id));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public VuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId,
-        @PathVariable("id") final Long id,
-        @RequestBody VuosiluokkakokonaisuusDto dto) {
+    public OppiaineDto update(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id,
+                              @RequestBody OppiaineDto dto) {
         dto.setId(id);
-        return vuosiluokkakokonaisuudet.update(opsId, dto);
+        return oppiaineService.update(opsId, dto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        vuosiluokkakokonaisuudet.delete(opsId, id);
+        oppiaineService.delete(opsId, id);
     }
 
     private static <T> ResponseEntity<T> response(T data) {
@@ -72,5 +70,4 @@ public class VuosiluokkakokonaisuusController {
         }
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
-
 }
