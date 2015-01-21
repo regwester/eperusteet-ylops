@@ -16,24 +16,23 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
-import javax.persistence.Entity;
-import javax.persistence.Index;
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
 
 /**
  * Opetussuunnitelman oppiaine
  *
  * @author jhyoty
  */
-@Entity
-@Audited
-@Table(name = "ops_oppiaine", indexes = {@Index(unique = true, columnList = "opetussuunnitelma_id,oppiaine_id")})
-public class OpsOppiaine extends AbstractOpsViite {
+@Embeddable
+@EqualsAndHashCode(of = "oppiaine")
+public class OpsOppiaine implements Serializable {
 
     @Getter
     @Setter
@@ -41,14 +40,18 @@ public class OpsOppiaine extends AbstractOpsViite {
     @NotNull
     private Oppiaine oppiaine;
 
+    @Getter
+    @Setter
+    @Column(updatable = false)
+    private boolean oma;
 
-    protected OpsOppiaine() {
-        super();
+    public OpsOppiaine(Oppiaine oppiaine, boolean oma) {
+        this.oppiaine = oppiaine;
+        this.oma = oma;
     }
 
-    public OpsOppiaine(Opetussuunnitelma opetussuunnitelma, Oppiaine oppiaine, boolean oma) {
-        super(opetussuunnitelma, oma);
-        this.oppiaine = oppiaine;
+    protected OpsOppiaine() {
+        //JPA
     }
 
 }

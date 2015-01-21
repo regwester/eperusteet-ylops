@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -25,8 +25,9 @@ import org.springframework.stereotype.Repository;
  * @author jhyoty
  */
 @Repository
-public interface VuosiluokkakokonaisuusRepository extends JpaWithVersioningRepository<OpsVuosiluokkakokonaisuus, Long> {
+public interface VuosiluokkakokonaisuusRepository extends JpaWithVersioningRepository<Vuosiluokkakokonaisuus, Long> {
 
-    @Query("SELECT v FROM OpsVuosiluokkakokonaisuus v WHERE v.opetussuunnitelma.id = ?1 AND v.vuosiluokkakokonaisuus.id = ?2")
-    public OpsVuosiluokkakokonaisuus findBy(Long opsId, Long id);
+    @Query("SELECT v FROM Opetussuunnitelma o JOIN o.vuosiluokkakokonaisuudet ov JOIN ov.vuosiluokkakokonaisuus v WHERE o.id = ?1 AND v.id = ?2")
+    public Vuosiluokkakokonaisuus findBy(Long opsId, Long id);
+
 }

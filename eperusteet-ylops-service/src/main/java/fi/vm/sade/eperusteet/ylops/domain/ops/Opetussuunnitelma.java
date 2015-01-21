@@ -23,11 +23,13 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -39,7 +41,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -95,16 +96,19 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<KoodistoKoodi> kunnat = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY, orphanRemoval = true)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = {
+        @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
     private Set<OpsOppiaine> oppiaineet = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY, orphanRemoval = true)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = {
+        @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
     private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
 
     @ElementCollection
     @Getter
     @Setter
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<String> koulut = new HashSet<>();
 
     @ElementCollection
@@ -112,8 +116,15 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     @Enumerated(EnumType.STRING)
     @NotNull
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<Kieli> julkaisukielet = new HashSet<>();
+
+    public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
+        vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
+    }
+
+    public void attachVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
+        vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, false));
+    }
 
     public boolean containsViite(TekstiKappaleViite viite) {
         return viite != null && tekstit.getId().equals(viite.getRoot().getId());
@@ -134,9 +145,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         } else {
             this.oppiaineet.addAll(oppiaineet);
             this.oppiaineet.retainAll(oppiaineet);
-            for ( OpsOppiaine o : oppiaineet ) {
-                o.setOpetussuunnitelma(this);
-            }
         }
     }
 
@@ -150,9 +158,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         } else {
             this.vuosiluokkakokonaisuudet.addAll(vuosiluokkakokonaisuudet);
             this.vuosiluokkakokonaisuudet.retainAll(vuosiluokkakokonaisuudet);
-            for (OpsVuosiluokkakokonaisuus v : vuosiluokkakokonaisuudet) {
-                v.setOpetussuunnitelma(this);
-            }
         }
+    }
+
+    public boolean removeVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus vk) {
+        return vuosiluokkakokonaisuudet.remove(new OpsVuosiluokkakokonaisuus(vk, false));
     }
 }

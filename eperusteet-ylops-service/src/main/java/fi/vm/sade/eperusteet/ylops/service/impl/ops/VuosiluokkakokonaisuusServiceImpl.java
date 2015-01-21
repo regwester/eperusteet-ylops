@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.service.impl.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.OpetussuunnitelmaRepository;
@@ -48,38 +47,41 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
         Vuosiluokkakokonaisuus vk;
         if (dto.getId() != null) {
-            //TODO: implement
-            throw new UnsupportedOperationException("vuosiluokkakokonaisuuden liittäminen ei ole tuettu");
+            vk = kokonaisuudet.findOne(opsId);
+            ops.attachVuosiluokkaKokonaisuus(vk);
+            //TODO: tarkista lukuoikeus
         } else {
             vk = mapper.map(dto, Vuosiluokkakokonaisuus.class);
+            vk = kokonaisuudet.save(vk);
+            ops.addVuosiluokkaKokonaisuus(vk);
         }
-        OpsVuosiluokkakokonaisuus ovk = new OpsVuosiluokkakokonaisuus(ops, vk, true);
-        ovk = kokonaisuudet.save(ovk);
-        return mapper.map(ovk.getVuosiluokkakokonaisuus(), VuosiluokkakokonaisuusDto.class);
+        return mapper.map(vk, VuosiluokkakokonaisuusDto.class);
     }
 
     @Override
     public VuosiluokkakokonaisuusDto get(Long opsId, Long kokonaisuusId) {
-        final OpsVuosiluokkakokonaisuus ovk = kokonaisuudet.findBy(opsId, kokonaisuusId);
-        return mapper.map(ovk.getVuosiluokkakokonaisuus(), VuosiluokkakokonaisuusDto.class);
+        final Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, kokonaisuusId);
+        return vk == null ? null : mapper.map(vk, VuosiluokkakokonaisuusDto.class);
     }
 
     @Override
     public void delete(Long opsId, Long kokonaisuusId) {
-        OpsVuosiluokkakokonaisuus ovk = kokonaisuudet.findBy(opsId, kokonaisuusId);
-        if (ovk != null) {
-            kokonaisuudet.delete(ovk);
+        Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, kokonaisuusId);
+        if (vk != null) {
+            Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
+            ops.removeVuosiluokkakokonaisuus(vk);
+            //TODO poista kokonaisuus kokonaan jos se on oma eikä ole käytössä.
         }
     }
 
     @Override
     public VuosiluokkakokonaisuusDto update(Long opsId, VuosiluokkakokonaisuusDto dto) {
-        final OpsVuosiluokkakokonaisuus ovk = kokonaisuudet.findBy(opsId, dto.getId());
-        if (ovk == null) {
+        final Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, dto.getId());
+        if (vk == null) {
             throw new BusinessRuleViolationException("Päivitettävää vuosiluokkakokonaisuutta ei ole olemassa");
         }
-        mapper.map(dto, ovk.getVuosiluokkakokonaisuus());
-        return mapper.map(ovk.getVuosiluokkakokonaisuus(), VuosiluokkakokonaisuusDto.class);
+        mapper.map(dto, vk);
+        return mapper.map(vk, VuosiluokkakokonaisuusDto.class);
     }
 
 }
