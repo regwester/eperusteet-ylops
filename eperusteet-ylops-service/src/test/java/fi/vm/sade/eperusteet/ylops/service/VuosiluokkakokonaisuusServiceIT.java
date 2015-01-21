@@ -23,7 +23,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
-import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.EnumSet;
 import java.util.Optional;
 import org.junit.Before;

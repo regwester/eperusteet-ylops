@@ -13,15 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.test.util;
+package fi.vm.sade.eperusteet.ylops.service.mocks;
 
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
-import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
+import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  *
@@ -29,29 +26,24 @@ import java.util.List;
  */
 @Service
 @Profile(value = "test")
-public class KoodistoServiceMock implements KoodistoService {
+public class OrganisaatioServiceMock implements OrganisaatioService {
     @Override
-    public List<KoodistoKoodiDto> getAll(String koodisto) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public KoodistoKoodiDto get(String koodisto, String koodi) {
+    public JsonNode getOrganisaatio(String organisaatioOid) {
         return null;
     }
 
     @Override
-    public List<KoodistoKoodiDto> filterBy(String koodisto, String haku) {
-        return Collections.emptyList();
+    public JsonNode getPeruskoulut(String kuntaId) {
+        return null;
     }
 
     @Override
-    public List<KoodistoKoodiDto> getAlarelaatio(String koodi) {
-        return Collections.emptyList();
+    public JsonNode getRyhma(String organisaatioOid) {
+        return null;
     }
 
     @Override
-    public List<KoodistoKoodiDto> getYlarelaatio(String koodi) {
-        return Collections.emptyList();
+    public JsonNode getRyhmat() {
+        return null;
     }
 }

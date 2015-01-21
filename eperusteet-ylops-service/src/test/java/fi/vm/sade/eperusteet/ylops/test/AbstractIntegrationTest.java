@@ -13,33 +13,28 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-
-package fi.vm.sade.eperusteet.ylops.service.test;
+package fi.vm.sade.eperusteet.ylops.test;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.IfProfileValue;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Kantaluokka service-tason integraatiotesteille joita ajetaan "oikeaa" tietokantaa vasten.
- * Vaatii paikallisen asennuksen sovelluksen tietokannasta. Tämän takia testit ovat ehdollisia.
- * @author jhyoty
+ * @author mikkom
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/it-db-test-context.xml")
-@IfProfileValue(name="db-it-tests", values="true")
-public class AbstractDbIntegrationTest {
-
+@ContextConfiguration("/it-test-context.xml")
+@ActiveProfiles(profiles = "test")
+public class AbstractIntegrationTest {
     @Before
     public void setUpSecurityContext() {
         SecurityContext ctx = SecurityContextHolder.createEmptyContext();
-        ctx.setAuthentication(new UsernamePasswordAuthenticationToken("test","test"));
+        ctx.setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
         SecurityContextHolder.setContext(ctx);
     }
-
 }

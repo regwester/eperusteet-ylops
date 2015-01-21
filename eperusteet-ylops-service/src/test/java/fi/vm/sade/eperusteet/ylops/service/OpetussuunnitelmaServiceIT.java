@@ -23,7 +23,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
-import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.junit.Before;

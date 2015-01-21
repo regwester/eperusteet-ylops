@@ -401,8 +401,7 @@
                         <ittestdb.jdbcurl>${eperusteet-ylops.ittestdb.jdbcurl}</ittestdb.jdbcurl>
                     </systemPropertyVariables>
                     <excludes>
-                        <exclude>**/service/test/*.java</exclude>
-                        <exclude>**/test/**/*.java</exclude>
+                        <exclude>**/ylops/test/**.java</exclude>
                     </excludes>
                     <includes>
                         <include>**/*IT.java</include>
@@ -421,7 +420,7 @@
                         <ittestdb.jdbcurl>${eperusteet-ylops.ittestdb.jdbcurl}</ittestdb.jdbcurl>
                     </systemPropertyVariables>
                     <excludes>
-                        <exclude>**/service/test/*.java</exclude>
+                        <exclude>**/ylops/test/**.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

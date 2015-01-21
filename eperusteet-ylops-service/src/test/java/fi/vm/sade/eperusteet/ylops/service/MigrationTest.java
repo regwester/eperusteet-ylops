@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
-import fi.vm.sade.eperusteet.ylops.service.test.AbstractDbIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractDbIntegrationTest;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 
