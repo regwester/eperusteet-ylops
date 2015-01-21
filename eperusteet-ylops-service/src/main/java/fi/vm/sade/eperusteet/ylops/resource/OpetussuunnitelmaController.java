@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource;
 
-import com.codahale.metrics.annotation.Metered;
+import com.codahale.metrics.annotation.Timed;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.service.OpetussuunnitelmaService;
@@ -43,19 +43,21 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
+    @Timed
     public List<OpetussuunnitelmaDto> getAll() {
         return opetussuunnitelmaService.getAll();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    @Metered
+    @Timed
     public ResponseEntity<OpetussuunnitelmaDto> get(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelma(id), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
+    @Timed
     public ResponseEntity<OpetussuunnitelmaDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaDto opetussuunnitelmaDto) {
         return new ResponseEntity<>(opetussuunnitelmaService.addOpetussuunnitelma(opetussuunnitelmaDto),
@@ -64,6 +66,7 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     @ResponseBody
+    @Timed
     public ResponseEntity<OpetussuunnitelmaDto> updateOpetussuunnitelma(
             @PathVariable("id") final Long id,
             @RequestBody OpetussuunnitelmaDto opetussuunnitelmaDto) {
@@ -73,6 +76,7 @@ public class OpetussuunnitelmaController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @Timed
     public void deleteOpetussuunnitelma(@PathVariable("id") final Long id) {
         opetussuunnitelmaService.removeOpetussuunnitelma(id);
     }
