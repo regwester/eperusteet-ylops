@@ -273,7 +273,14 @@ module.exports = function(grunt) {
           dest: '<%= yeoman.dist %>/bower_components/ckeditor',
           src: [
             '**',
-            '!samples/**',
+            '!samples/**'
+          ]
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/ckeditor-plugins',
+          dest: '<%= yeoman.dist %>/ckeditor-plugins',
+          src: [
+            '**'
           ]
         }, {
           expand: true,
