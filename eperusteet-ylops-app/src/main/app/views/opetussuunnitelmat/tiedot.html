@@ -1,19 +1,17 @@
+<div class="muokattu-viimeksi">
+    <span kaanna>muokattu-viimeksi</span>: {{model.luotu | aikaleima}}
+</div>
+
 <h2 kaanna="'opsn-tiedot'"></h2>
 
 <h3 kaanna="'nimi'"></h3>
 <div ng-bind="model.nimi | kaanna"></div>
-
-<h3 kaanna="'kuvaus'"></h3>
-<div ng-bind-html="model.kuvaus | kaanna | unsafe"></div>
-
-<h3 kaanna="'luotu'"></h3>
-<div ng-bind="model.luotu | aikaleima"></div>
-
-<h3 kaanna="'muokattu-viimeksi'"></h3>
-<div ng-bind="model.luotu | aikaleima"></div>
 
 <h3 kaanna="'kunnat'"></h3>
 <div ng-repeat="kunta in model.kunnat">{{haeNimi(kunta)}}</div>
 
 <h3 kaanna="'koulut'"></h3>
 <div ng-repeat="koulu in model.koulut">{{haeNimi(koulu)}}</div>
+
+<h3 kaanna="'julkaisukielet'"></h3>
+<div>{{naytaJulkaisukielet(model.julkaisukielet)}}</div>

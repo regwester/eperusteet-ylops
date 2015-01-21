@@ -128,8 +128,21 @@ ylopsApp
       }
     };
 
+    function mapJulkaisukielet() {
+      $scope.julkaisukielet = { fi: false, sv: false, se: false };
+      _.map($scope.model.julkaisukielet, function (kieli) {
+        $scope.julkaisukielet[kieli] = true;
+      });
+    }
+
+    $scope.paivitaJulkaisukielet = function (kielet) {
+      $scope.model.julkaisukielet =
+        _(kielet).keys().filter(function (kieli) { return kielet[kieli]; }).value();
+    };
+
     $scope.haeKunnat();
     $scope.haeKoulut();
+    mapJulkaisukielet();
 
     var successCb = function (res) {
       $scope.model = res;

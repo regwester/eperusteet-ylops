@@ -70,6 +70,10 @@
   "kunnat": "Kunnat",
   "koulut": "Koulut",
   "kunnalla-ei-kouluja": "Valitulle kunnalle ei löytynyt kouluja.",
+  "julkaisukielet": "Julkaisukielet",
+  "fi": "suomi",
+  "sv": "ruotsi",
+  "se": "saame",
 
   "luonnos": "Luonnos",
   "tila-luonnos": "luonnos",

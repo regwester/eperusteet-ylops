@@ -37,15 +37,6 @@
 
   <div class="row">
     <div class="col-sm-3 formfield-label">
-      <label for="ops-field-kuvaus" kaanna="'kuvaus'"></label>
-    </div>
-    <div class="col-sm-9 formfield-data">
-      <div id="ops-field-kuvaus" ckeditor layout="simplified" ng-model="model.kuvaus" slocalized></div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-sm-3 formfield-label">
       <label kaanna="'organisaatio'"></label>
     </div>
 
@@ -70,6 +61,30 @@
           <p ng-if="model.kunnat.length === 1 && koululista.length === 0" kaanna="'kunnalla-ei-kouluja'"></p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-3 formfield-label">
+      <label for="ops-field-julkaisukielet-first" kaanna="'julkaisukielet'"></label>
+    </div>
+
+    <div class="col-sm-3 formfield-data" id="ops-field-julkaisukielet-first">
+      <input id="ops-field-julkaisukielet-fi" type="checkbox" ng-model="julkaisukielet.fi"
+             ng-click="paivitaJulkaisukielet(julkaisukielet)" class="form-control">
+      <label for="ops-field-julkaisukielet-fi" kaanna="'fi'"></label>
+    </div>
+
+    <div class="col-sm-3 formfield-data">
+      <input id="ops-field-julkaisukielet-sv" type="checkbox" ng-model="julkaisukielet.sv"
+             ng-click="paivitaJulkaisukielet(julkaisukielet)" class="form-control">
+      <label for="ops-field-julkaisukielet-sv" kaanna="'sv'"></label>
+    </div>
+
+    <div class="col-sm-3 formfield-data">
+      <input id="ops-field-julkaisukielet-se" type="checkbox" ng-model="julkaisukielet.se"
+             ng-click="paivitaJulkaisukielet(julkaisukielet)"  class="form-control">
+      <label for="ops-field-julkaisukielet-se" kaanna="'se'"></label>
     </div>
   </div>
   <div class="organisaatio-spacer"></div>
