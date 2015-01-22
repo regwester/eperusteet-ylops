@@ -22,6 +22,8 @@ ylopsApp
     OpetussuunnitelmanTekstit, KoodistoHaku, PeruskouluHaku, Kaanna) {
 
     $scope.editMode = false;
+    $scope.id = $stateParams.id;
+
     $scope.rakenneEdit = false;
     if ($stateParams.id === 'uusi') {
       $timeout(function () {
@@ -36,7 +38,11 @@ ylopsApp
     }
 
     $scope.edit = function () {
-      Editointikontrollit.startEditing();
+      if ($stateParams.id === 'uusi') {
+        $scope.editMode = true;
+      } else {
+        Editointikontrollit.startEditing();
+      }
     };
 
     $scope.delete = function () {
@@ -152,7 +158,7 @@ ylopsApp
       }
     };
 
-    var callbacks = {
+    $scope.callbacks = {
       edit: function () {
         fetch();
       },
@@ -176,6 +182,6 @@ ylopsApp
         $scope.editMode = mode;
       }
     };
-    Editointikontrollit.registerCallback(callbacks);
 
+    Editointikontrollit.registerCallback($scope.callbacks);
   });

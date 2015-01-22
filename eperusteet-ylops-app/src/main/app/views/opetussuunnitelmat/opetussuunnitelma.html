@@ -5,8 +5,6 @@
 </div>
 
 <div ng-if="!editMode">
-  <h3 kaanna="'kuvaus'"></h3>
-  <div ng-bind-html="model.kuvaus | kaanna | unsafe"></div>
   <h3 kaanna="'tekstikappaleet'"></h3>
   <p ng-show="!model.tekstit.lapset || model.tekstit.lapset.length === 0" kaanna="'ei-tekstikappaleita'"></p>
   <button ng-hide="rakenneEdit" class="btn btn-default" kaanna="'luo-uusi-tekstikappale'" icon-role="add" ng-click="addTekstikappale()"></button>
@@ -69,22 +67,37 @@
       <label for="ops-field-julkaisukielet-first" kaanna="'julkaisukielet'"></label>
     </div>
 
-    <div class="col-sm-3 formfield-data" id="ops-field-julkaisukielet-first">
-      <input id="ops-field-julkaisukielet-fi" type="checkbox" ng-model="julkaisukielet.fi"
-             ng-click="paivitaJulkaisukielet(julkaisukielet)" class="form-control">
-      <label for="ops-field-julkaisukielet-fi" kaanna="'fi'"></label>
+    <div class="col-sm-2 col-xs-3 formfield-data" id="ops-field-julkaisukielet-first">
+      <label>
+        <input type="checkbox" ng-model="julkaisukielet.fi"
+               ng-click="paivitaJulkaisukielet(julkaisukielet)">
+        <span kaanna="'fi'"></span>
+      </label>
     </div>
 
-    <div class="col-sm-3 formfield-data">
-      <input id="ops-field-julkaisukielet-sv" type="checkbox" ng-model="julkaisukielet.sv"
-             ng-click="paivitaJulkaisukielet(julkaisukielet)" class="form-control">
-      <label for="ops-field-julkaisukielet-sv" kaanna="'sv'"></label>
+    <div class="col-sm-2 col-xs-3 formfield-data">
+      <label>
+        <input type="checkbox" ng-model="julkaisukielet.sv"
+               ng-click="paivitaJulkaisukielet(julkaisukielet)">
+        <span kaanna="'sv'"></span>
+      </label>
     </div>
 
-    <div class="col-sm-3 formfield-data">
-      <input id="ops-field-julkaisukielet-se" type="checkbox" ng-model="julkaisukielet.se"
-             ng-click="paivitaJulkaisukielet(julkaisukielet)"  class="form-control">
-      <label for="ops-field-julkaisukielet-se" kaanna="'se'"></label>
+    <div class="col-sm-2 col-xs-3 formfield-data">
+      <label>
+        <input type="checkbox" ng-model="julkaisukielet.se"
+               ng-click="paivitaJulkaisukielet(julkaisukielet)">
+        <span kaanna="'se'"></span>
+      </label>
+    </div>
+
+    <div class="col-sm-3"></div>
+  </div>
+  <div class="row" ng-show="id === 'uusi'">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-9">
+      <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'tallenna'" ng-click="callbacks.save()"></button>
+      <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="callbacks.cancel()"></button>
     </div>
   </div>
   <div class="organisaatio-spacer"></div>

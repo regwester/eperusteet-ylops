@@ -17,12 +17,16 @@
 'use strict';
 
 ylopsApp
-.controller('OpetussuunnitelmaTiedotController', function ($scope, Kieli, Kaanna) {
+.controller('OpetussuunnitelmaTiedotController', function ($scope, $state, Kieli, Kaanna) {
     $scope.haeNimi = function (item) {
       return item.nimi[Kieli.getSisaltokieli()] || item.nimi.fi;
     };
 
     $scope.naytaJulkaisukielet = function (kielet) {
       return _(kielet).map(Kaanna.kaanna).join(', ');
+    };
+
+    $scope.edit = function () {
+      $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma', {id: $scope.model.id, editMode: true});
     };
   });
