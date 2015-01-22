@@ -51,7 +51,9 @@ public class ReferenceableCollectionMergeMapper extends CustomMapper<Collection<
     }
 
     private void mergeMap(Collection<ReferenceableDto> a, Collection<ReferenceableEntity> b, MappingContext context) {
-        Map<Long, ReferenceableEntity> indx = b.stream().collect(Collectors.toMap(ReferenceableEntity::getId, r -> r));
+        Map<Long, ReferenceableEntity> indx = b.stream().collect(Collectors.toMap(ReferenceableEntity::getId, r -> {
+            return r;
+        }));
         Class<? extends ReferenceableEntity> typeB = context.getResolvedDestinationType().getComponentType().getRawType().asSubclass(ReferenceableEntity.class);
 
         List<ReferenceableEntity> tmp = new ArrayList<>();

@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -151,10 +150,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         nimi = new LokalisoituTekstiDto(null,
                                         Collections.singletonMap(Kieli.FI, "Opetuksen ja yhteistyön järjestäminen"));
         teksti = new LokalisoituTekstiDto(null, null);
-        TekstiKappaleDto opetuksenJarjestaminenTeksti =
-                new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
-        TekstiKappaleViiteDto.Matala opetuksenJarjestaminen =
-                new TekstiKappaleViiteDto.Matala(opetuksenJarjestaminenTeksti);
+        TekstiKappaleDto opetuksenJarjestaminenTeksti
+            = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
+        TekstiKappaleViiteDto.Matala opetuksenJarjestaminen
+            = new TekstiKappaleViiteDto.Matala(opetuksenJarjestaminenTeksti);
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
@@ -163,6 +162,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
         mapper.map(opetussuunnitelmaDto, ops);
+        if (opetussuunnitelmaDto.getTekstit() != null) {
+            tekstiKappaleViiteService.reorderSubTree(ops.getId(), ops.getTekstit().getId(), opetussuunnitelmaDto.getTekstit().get());
+        }
         ops = repository.save(ops);
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
@@ -191,7 +193,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") Long opsId, Long parentId,
-                                                              TekstiKappaleViiteDto.Matala viite) {
+        TekstiKappaleViiteDto.Matala viite) {
         // Lisätään viite parent-noden alle
         return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, parentId, viite);
     }

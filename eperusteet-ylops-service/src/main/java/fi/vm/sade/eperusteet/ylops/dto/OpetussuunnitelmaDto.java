@@ -22,12 +22,12 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author mikkom
@@ -48,5 +48,5 @@ public class OpetussuunnitelmaDto implements Serializable {
     private Set<KoodistoDto> kunnat;
     private Set<OrganisaatioDto> koulut;
     private Set<Kieli> julkaisukielet;
-    private TekstiKappaleViiteDto.Puu tekstit;
+    private Optional<TekstiKappaleViiteDto.Puu> tekstit;
 }

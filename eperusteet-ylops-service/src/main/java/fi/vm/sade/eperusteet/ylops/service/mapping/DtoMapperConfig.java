@@ -15,7 +15,10 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +44,11 @@ public class DtoMapperConfig {
         factory.getConverterFactory().registerConverter(new OrganisaatioConverter());
         OptionalSupport.register(factory);
         factory.registerMapper(new ReferenceableCollectionMergeMapper());
+
+        factory.classMap(OpetussuunnitelmaDto.class, Opetussuunnitelma.class)
+            .fieldBToA(Opetussuunnitelma_.tekstit.getName(), Opetussuunnitelma_.tekstit.getName())
+            .byDefault()
+            .register();
 
         return new DtoMapperImpl(factory.getMapperFacade());
     }

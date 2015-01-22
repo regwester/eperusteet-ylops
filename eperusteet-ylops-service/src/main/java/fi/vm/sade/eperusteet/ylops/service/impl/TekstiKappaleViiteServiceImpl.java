@@ -70,7 +70,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     @Transactional(readOnly = false)
     public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId, Long parentViiteId,
-                                                              TekstiKappaleViiteDto.Matala viiteDto) {
+        TekstiKappaleViiteDto.Matala viiteDto) {
         TekstiKappaleViite parentViite = findViite(opsId, parentViiteId);
 
         TekstiKappaleViite uusiViite = new TekstiKappaleViite(Omistussuhde.OMA);
@@ -140,9 +140,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             throw new BusinessRuleViolationException("Sisällöllä on lapsia, ei voida poistaa");
         }
 
-        if (viite.getTekstiKappale() != null &&
-            viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) &&
-            findViitteet(opsId, viiteId).size() == 1) {
+        if (viite.getTekstiKappale() != null && viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
             TekstiKappale tekstiKappale = viite.getTekstiKappale();
             tekstiKappaleService.delete(tekstiKappale.getId());
         }
@@ -208,7 +206,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     private TekstiKappaleViite updateTraverse(TekstiKappaleViite parent, TekstiKappaleViiteDto.Puu uusi,
-                                              Set<TekstiKappaleViite> refs) {
+        Set<TekstiKappaleViite> refs) {
         TekstiKappaleViite viite = repository.getOne(uusi.getId());
         if (!refs.remove(viite)) {
             throw new BusinessRuleViolationException("Viitepuun päivitysvirhe, annettua alipuun juuren viitettä ei löydy");
@@ -221,11 +219,12 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         // Päivitä myös tekstikappale jos DTO sen sisältää
         updateTekstiKappale(viite, uusi);
 
-        lapset.addAll(uusi.getLapset()
-                          .stream()
-                          .map(elem -> updateTraverse(viite, elem, refs))
-                          .collect(Collectors.toList()));
-
+        if (uusi.getLapset() != null) {
+            lapset.addAll(uusi.getLapset()
+                .stream()
+                .map(elem -> updateTraverse(viite, elem, refs))
+                .collect(Collectors.toList()));
+        }
         return repository.save(viite);
     }
 
