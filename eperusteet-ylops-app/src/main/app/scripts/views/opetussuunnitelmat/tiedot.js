@@ -22,11 +22,21 @@ ylopsApp
 
   $scope.luonnissa = $stateParams.id === 'uusi';
   $scope.editableModel = $scope.model;
+  if ($scope.luonnissa) {
+    $scope.editableModel.julkaisukielet = ['fi'];
+  }
   $scope.editMode = false;
   $scope.kielivalinnat = ['fi', 'sv', 'se'];
   $scope.loading = false;
   $scope.kuntalista = [];
   $scope.koululista = [];
+
+  $scope.hasRequiredFields = function () {
+    var model = $scope.editableModel;
+    return Utils.hasLocalizedText(model.nimi) &&
+           model.kuntaUrit && model.kuntaUrit.length > 0 &&
+           _.any(_.values($scope.julkaisukielet));
+  };
 
   function mapKunnat(lista) {
     return _(lista).map(function (kunta) {
@@ -82,6 +92,9 @@ ylopsApp
     edit: function () {
       $scope.loading = true;
       fetch();
+    },
+    validate: function () {
+      return $scope.hasRequiredFields();
     },
     save: function () {
       mapKouluKunta();

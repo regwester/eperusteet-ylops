@@ -62,7 +62,7 @@
   <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
     <div class="row">
       <div class="col-sm-3 formfield-label">
-        <label for="ops-field-nimi" kaanna="'nimi'"></label>
+        <label for="ops-field-nimi"><span kaanna="'nimi'"></span>*</label>
       </div>
       <div class="col-sm-9 formfield-data">
         <input id="ops-field-nimi" ng-model="editableModel.nimi" slocalized class="form-control">
@@ -85,7 +85,7 @@
 
       <div class="col-sm-9 formfield-data">
         <div>
-          <div class="organisaatio-label"><label kaanna="'kunta'"></label></div>
+          <div class="organisaatio-label"><label><span kaanna="'kunta'"></span>*</label></div>
           <div class="organisaatio-input">
             <ui-select class="ui-select" multiple ng-model="editableModel.kuntaUrit" on-select="$select.search = ''">
               <ui-select-choices repeat="kunta.koodiUri as kunta in kuntalista | filter: $select.search">
@@ -129,7 +129,8 @@
       <div class="col-sm-3"></div>
       <div class="col-sm-9">
         <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
-        <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-opetussuunnitelma'" ng-click="uusi.create()"></button>
+        <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-opetussuunnitelma'" ng-click="uusi.create()"
+                ng-disabled="!hasRequiredFields()"></button>
       </div>
     </div>
 
