@@ -133,18 +133,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
-
-        // Populoi kuntalistaan jo kannasta valmiiksi löytyvät kunnat
-        ops.setKunnat(
-                ops.getKunnat()
-                   .stream()
-                   .map(koodistoKoodi ->
-                                koodistoKoodiRepository.findByKoodiUri(koodistoKoodi.getKoodiUri())
-                                                       .stream()
-                                                       .findFirst()
-                                                       .orElse(koodistoKoodi))
-                   .collect(Collectors.toSet()));
-
+        populoiKuntalista(ops);
         ops.setTila(Tila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
         ops = repository.save(ops);
@@ -176,11 +165,25 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
+    private void populoiKuntalista(Opetussuunnitelma ops) {
+        // Populoi kuntalistaan jo kannasta valmiiksi löytyvät kunnat
+        ops.setKunnat(
+                ops.getKunnat()
+                   .stream()
+                   .map(koodistoKoodi ->
+                                koodistoKoodiRepository.findByKoodiUri(koodistoKoodi.getKoodiUri())
+                                                       .stream()
+                                                       .findFirst()
+                                                       .orElse(koodistoKoodi))
+                   .collect(Collectors.toSet()));
+    }
+
     @Override
     public OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
         mapper.map(opetussuunnitelmaDto, ops);
+        populoiKuntalista(ops);
         if (opetussuunnitelmaDto.getTekstit() != null) {
             tekstiKappaleViiteService.reorderSubTree(ops.getId(), ops.getTekstit().getId(), opetussuunnitelmaDto.getTekstit().get());
         }
