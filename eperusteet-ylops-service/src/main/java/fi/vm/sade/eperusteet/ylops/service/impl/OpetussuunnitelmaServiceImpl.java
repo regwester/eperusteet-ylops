@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
@@ -30,6 +31,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.koodisto.KoodistoKoodiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -42,6 +44,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -62,6 +66,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private TekstiKappaleViiteRepository viiteRepository;
+
+    @Autowired
+    private KoodistoKoodiRepository koodistoKoodiRepository;
 
     @Autowired
     private TekstiKappaleViiteService tekstiKappaleViiteService;
@@ -126,6 +133,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
+
+        // Populoi kuntalistaan jo kannasta valmiiksi löytyvät kunnat
+        ops.setKunnat(
+                ops.getKunnat()
+                   .stream()
+                   .map(koodistoKoodi ->
+                                koodistoKoodiRepository.findByKoodiUri(koodistoKoodi.getKoodiUri())
+                                                       .stream()
+                                                       .findFirst()
+                                                       .orElse(koodistoKoodi))
+                   .collect(Collectors.toSet()));
+
         ops.setTila(Tila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
         ops = repository.save(ops);
