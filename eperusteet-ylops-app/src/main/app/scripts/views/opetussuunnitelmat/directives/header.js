@@ -30,7 +30,7 @@ ylopsApp
 
 .controller('OpsHeaderController', function ($scope, $state, $stateParams) {
   function update() {
-    $scope.luonnissa = $state.is('root.opetussuunnitelmat.yksi.opetussuunnitelma') && $stateParams.id === 'uusi';
+    $scope.luonnissa = $state.is('root.opetussuunnitelmat.yksi.tiedot') && $stateParams.id === 'uusi';
   }
   $scope.$on('$stateChangeSuccess', update);
   update();

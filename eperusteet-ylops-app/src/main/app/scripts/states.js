@@ -94,6 +94,15 @@ ylopsApp
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive(false);
+          }],
+          tiedotId: ['$stateParams', function ($stateParams) {
+            return $stateParams.id;
+          }],
+          kunnat: ['KoodistoHaku', 'tiedotId', function (KoodistoHaku, tiedotId) {
+            if (tiedotId === 'uusi') {
+              return KoodistoHaku.get({ koodistoUri: 'kunta' }).$promise;
+            }
+            return null;
           }]
         }
       })

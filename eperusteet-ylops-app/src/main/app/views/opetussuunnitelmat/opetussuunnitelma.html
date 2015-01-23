@@ -1,104 +1,20 @@
 
 <div class="action-buttons">
-  <button ng-hide="editMode || rakenneEdit" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
   <button ng-hide="editMode || rakenneEdit" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
 </div>
 
-<div ng-if="!editMode">
-  <h3 kaanna="'tekstikappaleet'"></h3>
-  <p ng-show="!model.tekstit.lapset || model.tekstit.lapset.length === 0" kaanna="'ei-tekstikappaleita'"></p>
-  <button ng-hide="rakenneEdit" class="btn btn-default" kaanna="'luo-uusi-tekstikappale'" icon-role="add" ng-click="addTekstikappale()"></button>
+<h3 kaanna="'tekstikappaleet'"></h3>
+<p ng-show="!model.tekstit.lapset || model.tekstit.lapset.length === 0" kaanna="'ei-tekstikappaleita'"></p>
+<button ng-hide="rakenneEdit" class="btn btn-default" kaanna="'luo-uusi-tekstikappale'" icon-role="add" ng-click="addTekstikappale()"></button>
 
-  <button ng-show="rakenneEdit" class="btn btn-default" kaanna="'peru-rakenne'" ng-click="cancelRakenne()"></button>
-  <button ng-show="rakenneEdit" class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="saveRakenne()"></button>
+<button ng-show="rakenneEdit" class="btn btn-default" kaanna="'peru-rakenne'" ng-click="cancelRakenne()"></button>
+<button ng-show="rakenneEdit" class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="saveRakenne()"></button>
 
-  <button ng-hide="rakenneEdit || !model.tekstit.lapset || model.tekstit.lapset.length === 0"
-          class="btn btn-default" kaanna="'muokkaa-rakennetta'" ng-click="editRakenne()"></button>
+<button ng-hide="rakenneEdit || !model.tekstit.lapset || model.tekstit.lapset.length === 0"
+        class="btn btn-default" kaanna="'muokkaa-rakennetta'" ng-click="editRakenne()"></button>
 
-  <div ng-show="model.tekstit.lapset.length > 0" ui-tree class="tekstikappaleet" data-empty-place-holder-enabled="true" data-drag-enabled="rakenneEdit">
-    <ul ui-tree-nodes ng-model="model.tekstit.lapset">
-      <li ng-repeat="kappale in model.tekstit.lapset" ui-tree-node ng-include="'views/opetussuunnitelmat/treenode.html'"></li>
-    </ul>
-  </div>
-
-</div>
-
-<div ng-if="editMode" class="ops-edit-container">
-  <div class="row">
-    <div class="col-sm-3 formfield-label">
-      <label for="ops-field-nimi" kaanna="'nimi'"></label>
-    </div>
-    <div class="col-sm-9 formfield-data">
-      <input id="ops-field-nimi" ng-model="model.nimi" slocalized class="form-control">
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-sm-3 formfield-label">
-      <label kaanna="'organisaatio'"></label>
-    </div>
-
-    <div class="col-sm-9 formfield-data">
-      <div>
-        <div class="organisaatio-label"><label kaanna="'kunta'"></label></div>
-        <div class="organisaatio-input">
-          <ui-select class="ui-select" multiple ng-model="model.kunnat" on-select="$select.search = ''">
-            <ui-select-choices repeat="kunta in kuntalista | filter: $select.search">{{kunta.nimi|kaanna}}</ui-select-choices>
-            <ui-select-match class="ui-select-match" placeholder="{{'valitse-kunnat' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
-          </ui-select>
-        </div>
-      </div>
-
-      <div>
-        <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
-        <div class="organisaatio-input">
-          <ui-select class="ui-select" multiple ng-model="model.koulut" ng-disabled="model.kunnat.length !== 1 || koululista.length === 0">
-            <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
-            <ui-select-choices repeat="koulu in koululista | filter: $select.search">{{koulu.nimi|kaanna}}</ui-select-choices>
-          </ui-select>
-          <p ng-if="model.kunnat.length === 1 && koululista.length === 0" kaanna="'kunnalla-ei-kouluja'"></p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-sm-3 formfield-label">
-      <label for="ops-field-julkaisukielet-first" kaanna="'julkaisukielet'"></label>
-    </div>
-
-    <div class="col-sm-2 col-xs-3 formfield-data" id="ops-field-julkaisukielet-first">
-      <label>
-        <input type="checkbox" ng-model="julkaisukielet.fi"
-               ng-click="paivitaJulkaisukielet(julkaisukielet)">
-        <span kaanna="'fi'"></span>
-      </label>
-    </div>
-
-    <div class="col-sm-2 col-xs-3 formfield-data">
-      <label>
-        <input type="checkbox" ng-model="julkaisukielet.sv"
-               ng-click="paivitaJulkaisukielet(julkaisukielet)">
-        <span kaanna="'sv'"></span>
-      </label>
-    </div>
-
-    <div class="col-sm-2 col-xs-3 formfield-data">
-      <label>
-        <input type="checkbox" ng-model="julkaisukielet.se"
-               ng-click="paivitaJulkaisukielet(julkaisukielet)">
-        <span kaanna="'se'"></span>
-      </label>
-    </div>
-
-    <div class="col-sm-3"></div>
-  </div>
-  <div class="row" ng-show="id === 'uusi'">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-9">
-      <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'tallenna'" ng-click="callbacks.save()"></button>
-      <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="callbacks.cancel()"></button>
-    </div>
-  </div>
-  <div class="organisaatio-spacer"></div>
+<div ng-show="model.tekstit.lapset.length > 0" ui-tree class="tekstikappaleet" data-empty-place-holder-enabled="true" data-drag-enabled="rakenneEdit">
+  <ul ui-tree-nodes ng-model="model.tekstit.lapset">
+    <li ng-repeat="kappale in model.tekstit.lapset" ui-tree-node ng-include="'views/opetussuunnitelmat/treenode.html'"></li>
+  </ul>
 </div>

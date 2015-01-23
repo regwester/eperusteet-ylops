@@ -19,31 +19,14 @@
 ylopsApp
   .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams,
     $timeout, $state, OpetussuunnitelmaCRUD, opsModel, opsService, Notifikaatiot, Varmistusdialogi,
-    OpetussuunnitelmanTekstit, KoodistoHaku, PeruskouluHaku, Kaanna) {
-
-    $scope.editMode = false;
-    $scope.id = $stateParams.id;
+    OpetussuunnitelmanTekstit) {
 
     $scope.rakenneEdit = false;
-    if ($stateParams.id === 'uusi') {
-      $timeout(function () {
-        $scope.edit();
-      }, 200);
-    }
-
     $scope.model = opsModel;
 
     function fetch() {
       opsService.refetch();
     }
-
-    $scope.edit = function () {
-      if ($stateParams.id === 'uusi') {
-        $scope.editMode = true;
-      } else {
-        Editointikontrollit.startEditing();
-      }
-    };
 
     $scope.delete = function () {
       Varmistusdialogi.dialogi({
@@ -92,96 +75,4 @@ ylopsApp
       fetch();
     };
 
-    $scope.nimiOrderFn = function (item) {
-      return Kaanna.kaanna(item.nimi).toLowerCase();
-    };
-
-    function mapKunnat(lista) {
-      return _(lista).map(function (kunta) {
-        return {
-          koodiUri: kunta.koodiUri,
-          koodiArvo: kunta.koodiArvo,
-          nimi: _(kunta.metadata).indexBy(function (item) {
-            return item.kieli.toLowerCase();
-          }).mapValues('nimi').value()
-        };
-      }).sortBy($scope.nimiOrderFn).value();
-    }
-
-    $scope.haeKunnat = function () {
-      KoodistoHaku.get({ koodistoUri: 'kunta' }, function(kunnat) {
-        // Kunnat aakkosjärjestykseen
-        $scope.kuntalista = mapKunnat(kunnat);
-      }, Notifikaatiot.serverCb);
-    };
-
-    $scope.$watch('model.kunnat', function () {
-      $scope.haeKoulut();
-    });
-
-    $scope.haeKoulut = function () {
-      var kunnat = $scope.model.kunnat;
-      if (kunnat.length === 0) {
-        $scope.model.koulut = [];
-      } else if (kunnat.length === 1) {
-        var kunta = kunnat[0];
-        PeruskouluHaku.get({ kuntaUri: kunta.koodiUri }, function(res) {
-          $scope.koululista = _.sortBy(res.organisaatiot, $scope.nimiOrderFn);
-        }, Notifikaatiot.serverCb);
-      } else {
-        $scope.model.koulut = [];
-        $scope.koululista = [];
-      }
-    };
-
-    function mapJulkaisukielet() {
-      $scope.julkaisukielet = { fi: false, sv: false, se: false };
-      _.map($scope.model.julkaisukielet, function (kieli) {
-        $scope.julkaisukielet[kieli] = true;
-      });
-    }
-
-    $scope.paivitaJulkaisukielet = function (kielet) {
-      $scope.model.julkaisukielet =
-        _(kielet).keys().filter(function (kieli) { return kielet[kieli]; }).value();
-    };
-
-    $scope.haeKunnat();
-    $scope.haeKoulut();
-    mapJulkaisukielet();
-
-    var successCb = function (res) {
-      $scope.model = res;
-      Notifikaatiot.onnistui('tallennettu-ok');
-      if ($stateParams.id === 'uusi') {
-        $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
-      }
-    };
-
-    $scope.callbacks = {
-      edit: function () {
-        fetch();
-      },
-      save: function () {
-        if ($stateParams.id === 'uusi') {
-          OpetussuunnitelmaCRUD.save({}, $scope.model, successCb, Notifikaatiot.serverCb);
-        } else {
-          $scope.model.$save({}, successCb, Notifikaatiot.serverCb);
-        }
-      },
-      cancel: function () {
-        if ($stateParams.id === 'uusi') {
-          $timeout(function () {
-            $state.go('root.etusivu');
-          });
-        } else {
-          fetch();
-        }
-      },
-      notify: function (mode) {
-        $scope.editMode = mode;
-      }
-    };
-
-    Editointikontrollit.registerCallback($scope.callbacks);
   });

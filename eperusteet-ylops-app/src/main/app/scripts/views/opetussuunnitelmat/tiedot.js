@@ -18,12 +18,33 @@
 
 ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function ($scope, Editointikontrollit, $stateParams, $state,
-  OpetussuunnitelmaCRUD, Notifikaatiot, $timeout, OpsService, Utils, KoodistoHaku, PeruskouluHaku) {
+  OpetussuunnitelmaCRUD, Notifikaatiot, $timeout, OpsService, Utils, KoodistoHaku, PeruskouluHaku, kunnat, Kieli) {
 
+  $scope.luonnissa = $stateParams.id === 'uusi';
   $scope.editableModel = $scope.model;
   $scope.editMode = false;
   $scope.kielivalinnat = ['fi', 'sv', 'se'];
   $scope.loading = false;
+  $scope.kuntalista = [];
+  $scope.koululista = [];
+
+  function mapKunnat(lista) {
+    return _(lista).map(function (kunta) {
+      return {
+        koodiUri: kunta.koodiUri,
+        koodiArvo: kunta.koodiArvo,
+        nimi: _(kunta.metadata).indexBy(function (item) {
+          return item.kieli.toLowerCase();
+        }).mapValues('nimi').value()
+      };
+    }).sortBy(Utils.sort).value();
+  }
+
+  if (kunnat) {
+    $scope.kuntalista = mapKunnat(kunnat);
+  }
+
+  $scope.kieliOrderFn = Kieli.orderFn;
 
   function fetch() {
     OpsService.refetch(function (res) {
@@ -37,7 +58,7 @@ ylopsApp
   var successCb = function (res) {
     $scope.model = res;
     Notifikaatiot.onnistui('tallennettu-ok');
-    if ($stateParams.id === 'uusi') {
+    if ($scope.luonnissa) {
       $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
     }
   };
@@ -68,20 +89,14 @@ ylopsApp
         return $scope.julkaisukielet[koodi];
       }).value();
       delete $scope.editableModel.tekstit.lapset;
-      if ($stateParams.id === 'uusi') {
+      if ($scope.luonnissa) {
         OpetussuunnitelmaCRUD.save({}, $scope.editableModel, successCb, Notifikaatiot.serverCb);
       } else {
         $scope.editableModel.$save({}, successCb, Notifikaatiot.serverCb);
       }
     },
     cancel: function () {
-      if ($stateParams.id === 'uusi') {
-        $timeout(function () {
-          $state.go('root.etusivu');
-        });
-      } else {
-        fetch();
-      }
+      fetch();
     },
     notify: function (mode) {
       $scope.editMode = mode;
@@ -93,24 +108,23 @@ ylopsApp
   };
   Editointikontrollit.registerCallback(callbacks);
 
+  $scope.uusi = {
+    cancel: function () {
+      $timeout(function () {
+        $state.go('root.etusivu');
+      });
+    },
+    create: function () {
+      callbacks.save();
+    }
+  };
+
   $scope.edit = function () {
     Editointikontrollit.startEditing();
   };
 
-  function mapKunnat(lista) {
-    return _(lista).map(function (kunta) {
-      return {
-        koodiUri: kunta.koodiUri,
-        koodiArvo: kunta.koodiArvo,
-        nimi: _(kunta.metadata).indexBy(function (item) {
-          return item.kieli.toLowerCase();
-        }).mapValues('nimi').value()
-      };
-    }).sortBy(Utils.sort).value();
-  }
-
   $scope.haeKunnat = function () {
-    if (!$scope.editMode) {
+    if (!($scope.editMode || $scope.luonnissa)) {
       return;
     }
     KoodistoHaku.get({ koodistoUri: 'kunta' }, function(kunnat) {
@@ -120,6 +134,12 @@ ylopsApp
 
   $scope.$watch('editableModel.kuntaUrit', function () {
     $scope.haeKoulut();
+  });
+
+  $scope.$watch('koululista', function () {
+    if ($scope.editableModel.koulut) {
+      $scope.editableModel.kouluOidit = _.map($scope.editableModel.koulut, 'oid');
+    }
   });
 
   $scope.$watch('editableModel.kouluOidit', function (value) {
@@ -139,7 +159,7 @@ ylopsApp
 
   $scope.haeKoulut = function () {
     var kunnat = $scope.editableModel.kuntaUrit;
-    if (!$scope.editMode || !kunnat) {
+    if (!($scope.editMode || $scope.luonnissa) || !kunnat) {
       return;
     }
     if (kunnat.length === 0) {

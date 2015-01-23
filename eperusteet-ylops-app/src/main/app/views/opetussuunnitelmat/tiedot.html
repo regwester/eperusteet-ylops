@@ -1,16 +1,16 @@
 <div class="ops-edit-container">
-  <h2>
+  <h2 ng-hide="luonnissa">
     <div class="action-buttons-inline">
       <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
     </div>
     <span kaanna="'opsn-tiedot'"></span>
   </h2>
-  <div class="muokkaustiedot" ng-show="!editMode">
+  <div class="muokkaustiedot" ng-hide="editMode || luonnissa">
     <span kaanna="'luotu'"></span> <span ng-bind="model.luotu | aikaleima"></span><span ng-if="model.luotu != model.muokattu">,
     <span kaanna="'muokattu-viimeksi'"></span>  <span ng-bind="model.muokattu | aikaleima"></span></span>
   </div>
 
-  <div ng-if="!editMode" class="data-container">
+  <div ng-if="!(editMode || luonnissa)" class="data-container">
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
@@ -50,7 +50,7 @@
       </div>
 
       <div class="col-sm-9 formfield-data viewmode">
-        <span ng-repeat="kielikoodi in model.julkaisukielet" class="julkaisukieli">
+        <span ng-repeat="kielikoodi in model.julkaisukielet | orderBy:kieliOrderFn">
           <span ng-bind="kielikoodi | kaanna"></span><span ng-show="!$last">, </span>
         </span>
       </div>
@@ -59,7 +59,7 @@
   </div>
 
 
-  <div ng-if="editMode && !loading" class="data-container">
+  <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label for="ops-field-nimi" kaanna="'nimi'"></label>
@@ -99,7 +99,8 @@
         <div>
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input">
-            <ui-select class="ui-select" multiple ng-model="editableModel.kouluOidit" ng-disabled="editableModel.kuntaUrit.length !== 1 || koululista.length === 0">
+            <ui-select class="ui-select" multiple ng-model="editableModel.kouluOidit" on-select="$select.search = ''"
+                       ng-disabled="editableModel.kuntaUrit.length !== 1 || koululista.length === 0">
               <ui-select-choices repeat="koulu.oid as koulu in koululista | filter: $select.search">
                 <span ng-bind-html="koulu.nimi | kaanna | highlight: $select.search"></span>
               </ui-select-choices>
@@ -121,6 +122,14 @@
           <input type="checkbox" ng-model="julkaisukielet[kielikoodi]">
           <span ng-bind="kielikoodi | kaanna"></span>
         </label>
+      </div>
+    </div>
+
+    <div class="row" ng-if="luonnissa">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-9">
+        <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
+        <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-opetussuunnitelma'" ng-click="uusi.create()"></button>
       </div>
     </div>
 
