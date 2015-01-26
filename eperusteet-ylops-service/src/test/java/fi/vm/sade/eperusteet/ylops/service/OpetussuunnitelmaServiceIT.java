@@ -29,6 +29,7 @@ import javax.transaction.Transactional;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author mikkom
  */
-@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Autowired

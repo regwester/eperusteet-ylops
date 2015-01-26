@@ -29,7 +29,16 @@ import lombok.Setter;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KoodistoDto {
+    private Long id;
     private String koodiUri;
     private String koodiArvo;
     private LokalisoituTekstiDto nimi;
+
+    public KoodistoDto() { }
+
+    public KoodistoDto(Long id, String koodiUri, String koodiArvo) {
+        this.id = id;
+        this.koodiUri = koodiUri;
+        this.koodiArvo = koodiArvo;
+    }
 }

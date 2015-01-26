@@ -34,12 +34,14 @@ public class DtoMapperConfig {
     @Bean
     public DtoMapper dtoMapper(
         ReferenceableEntityConverter referenceableEntityConverter,
-        LokalisoituTekstiConverter lokalisoituTekstiConverter) {
+        LokalisoituTekstiConverter lokalisoituTekstiConverter,
+        KoodistoKoodiConverter koodistoKoodiConverter) {
         DefaultMapperFactory factory = new DefaultMapperFactory.Builder()
             .build();
 
         factory.getConverterFactory().registerConverter(referenceableEntityConverter);
         factory.getConverterFactory().registerConverter(lokalisoituTekstiConverter);
+        factory.getConverterFactory().registerConverter(koodistoKoodiConverter);
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTeksti.class));
         factory.getConverterFactory().registerConverter(new OrganisaatioConverter());
         OptionalSupport.register(factory);

@@ -90,7 +90,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @JoinColumn
     private TekstiKappaleViite tekstit = new TekstiKappaleViite();
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)

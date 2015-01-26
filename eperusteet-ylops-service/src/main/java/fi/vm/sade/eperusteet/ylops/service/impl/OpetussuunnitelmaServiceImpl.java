@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -52,6 +51,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ *
  * @author mikkom
  */
 @Service
@@ -66,9 +66,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private TekstiKappaleViiteRepository viiteRepository;
-
-    @Autowired
-    private KoodistoKoodiRepository koodistoKoodiRepository;
 
     @Autowired
     private TekstiKappaleViiteService tekstiKappaleViiteService;
@@ -133,7 +130,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
-        populoiKuntalista(ops);
         ops.setTila(Tila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
         ops = repository.save(ops);
@@ -165,25 +161,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
-    private void populoiKuntalista(Opetussuunnitelma ops) {
-        // Populoi kuntalistaan jo kannasta valmiiksi löytyvät kunnat
-        ops.setKunnat(
-                ops.getKunnat()
-                   .stream()
-                   .map(koodistoKoodi ->
-                                koodistoKoodiRepository.findByKoodiUri(koodistoKoodi.getKoodiUri())
-                                                       .stream()
-                                                       .findFirst()
-                                                       .orElse(koodistoKoodi))
-                   .collect(Collectors.toSet()));
-    }
-
     @Override
     public OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
         mapper.map(opetussuunnitelmaDto, ops);
-        populoiKuntalista(ops);
         if (opetussuunnitelmaDto.getTekstit() != null) {
             tekstiKappaleViiteService.reorderSubTree(ops.getId(), ops.getTekstit().getId(), opetussuunnitelmaDto.getTekstit().get());
         }

@@ -39,7 +39,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @EqualsAndHashCode(of = "koodiUri")
 @Getter
-@Setter
 @Table(name = "koodistokoodi", uniqueConstraints = {
     @UniqueConstraint(columnNames = "koodiUri")})
 public class KoodistoKoodi implements Serializable {
