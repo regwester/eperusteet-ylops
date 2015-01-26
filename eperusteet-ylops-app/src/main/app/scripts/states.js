@@ -216,8 +216,14 @@ ylopsApp
 
       .state('root.pohjat.yksi', {
         url: '/:pohjaId',
-        template: '<div ui-view></div>',
-        controller: 'PohjaController'
+        templateUrl: 'views/opetussuunnitelmat/pohja/base.html',
+        controller: 'PohjaController',
+        resolve: {
+          pohjaModel: [function () {
+            // TODO
+            return {};
+          }]
+        }
       })
 
       .state('root.pohjat.yksi.sisalto', {

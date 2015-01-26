@@ -1,6 +1,6 @@
-<h1 class="plain" ng-if="luonnissa" kaanna="'uusi-ops'"></h1>
+<h1 class="plain" ng-if="luonnissa" ng-bind="isPohja ? 'uusi-pohja' : 'uusi-ops' | kaanna"></h1>
 <div class="ops-header" ng-if="!luonnissa && model.$resolved">
-  <div class="ops-header-toiminnot">
+  <div class="ops-header-toiminnot" ng-hide="isPohja">
     <button ui-sref="root.opetussuunnitelmat.yksi.esikatselu" class="btn btn-default" icon-role="file" kaanna="'esikatselu'"></button>
   </div>
   <div class="ops-header-status">
@@ -12,8 +12,8 @@
     <a ui-sref="root.opetussuunnitelmat.yksi.opetussuunnitelma">Väliaikainen muokkaustila &gt;&gt;</a>
 
     <ul class="ops-header-linkit" role="navigation">
-      <li>
-        <a ui-sref="root.opetussuunnitelmat.yksi.tiedot" icon-role="info" kaanna="'opsn-tiedot'"></a>
+      <li ng-repeat="linkki in linkit">
+        <a ng-href="{{linkki.url}}" icon-role="{{linkki.role}}"><span ng-bind="linkki.label | kaanna"></span></a>
       </li>
     </ul>
 

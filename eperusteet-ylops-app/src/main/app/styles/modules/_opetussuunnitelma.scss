@@ -49,6 +49,9 @@ h1.plain {
     border: 1px solid #ccc;
     height: 32px;
     font-size: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     & > ul {
       margin-top: 11px;
     }

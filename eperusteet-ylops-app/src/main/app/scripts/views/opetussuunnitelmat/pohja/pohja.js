@@ -23,10 +23,18 @@ ylopsApp
   $scope.items = {$resolved: true};
 })
 
-.controller('PohjaController', function ($state) {
+.controller('PohjaController', function ($scope, $state, pohjaModel) {
   if ($state.current.name === 'root.pohjat.yksi') {
     $state.go('root.pohjat.yksi.sisalto');
   }
+  $scope.model = pohjaModel;
+
+  // TODO remove dummy data
+  $scope.model.$resolved = true;
+  $scope.model.tila = 'luonnos';
+  $scope.model.nimi = {fi: 'Opetussuunnitelmapohja'};
+  $scope.model.jarjestaminen = {tekstiKappale: {nimi: {fi: 'Opetuksen järjestäminen'}}, lapset: []};
+  $scope.model.lahtokohdat = {tekstiKappale: {nimi: {fi: 'Opetuksen toteuttamisen lähtökohdat'}}, lapset: []};
 })
 
 .controller('PohjaTiedotController', function ($scope, $stateParams, $state) {
@@ -42,6 +50,63 @@ ylopsApp
   };
 })
 
-.controller('PohjaSisaltoController', function () {
+.controller('PohjaSisaltoController', function ($scope, Algoritmit, Utils) {
+  $scope.uusi = {nimi: {}};
+  $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
+  $scope.kappaleEdit = null;
 
+  $scope.hasText = function () {
+    return Utils.hasLocalizedText($scope.uusi.nimi);
+  };
+
+  $scope.pohjaOps = {
+    addNew: function (osio) {
+      var newNode = {tekstiKappale: angular.copy($scope.uusi), lapset: []};
+      $scope.model[osio].lapset.push(newNode);
+      // TODO save to backend
+      $scope.uusi = {nimi: {}};
+    },
+    edit: function (kappale) {
+      $scope.kappaleEdit = kappale;
+      kappale.$original = _.cloneDeep(kappale.tekstiKappale);
+    },
+    delete: function (osio, kappale) {
+      var foundIndex = null, foundList = null;
+      Algoritmit.traverse($scope.model[osio], 'lapset', function (lapsi, depth, index, arr) {
+        if (lapsi === kappale) {
+          foundIndex = index;
+          foundList = arr;
+          return true;
+        }
+      });
+      if (foundList) {
+        foundList.splice(foundIndex, 1);
+      }
+    },
+    cancel: function (kappale) {
+      $scope.kappaleEdit = null;
+      kappale.tekstiKappale = _.cloneDeep(kappale.$original);
+      delete kappale.$original;
+    },
+    save: function (kappale) {
+      $scope.kappaleEdit = null;
+      delete kappale.$original;
+    }
+  };
+
+  $scope.rakenne = {
+    edit: function (osio) {
+      $scope.rakenneEdit[osio] = true;
+      $scope.model[osio].$original = _.cloneDeep($scope.model[osio].lapset);
+    },
+    save: function (osio) {
+      $scope.rakenneEdit[osio] = false;
+      delete $scope.model[osio].$original;
+    },
+    cancel: function (osio) {
+      $scope.rakenneEdit[osio] = false;
+      $scope.model[osio].lapset = _.cloneDeep($scope.model[osio].$original);
+      delete $scope.model[osio].$original;
+    }
+  };
 });

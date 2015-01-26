@@ -20,8 +20,8 @@ ylopsApp
 .service('Algoritmit', function () {
   function traverse(objekti, lapsienAvain, cb, depth) {
     depth = depth || 0;
-    _.forEach(objekti[lapsienAvain], function(solmu) {
-      if (!cb(solmu, depth)) {
+    _.forEach(objekti[lapsienAvain], function(solmu, index) {
+      if (!cb(solmu, depth, index, objekti[lapsienAvain])) {
         traverse(solmu, lapsienAvain, cb, depth + 1);
       }
     });

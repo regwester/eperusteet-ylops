@@ -29,8 +29,24 @@ ylopsApp
 })
 
 .controller('OpsHeaderController', function ($scope, $state, $stateParams) {
+  var POHJALINKIT = [
+    {state: 'root.pohjat.yksi.tiedot', label: 'pohjan-tiedot', role: 'info'}
+  ];
+  var OPSLINKIT = [
+    {state: 'root.opetussuunnitelmat.yksi.tiedot', label: 'opsn-tiedot', role: 'info'}
+  ];
+
+  function mapUrls(arr) {
+    return _.map(arr, function (item) {
+      return _.extend({url: $state.href(item.state, $stateParams)}, item);
+    });
+  }
+
   function update() {
-    $scope.luonnissa = $state.is('root.opetussuunnitelmat.yksi.tiedot') && $stateParams.id === 'uusi';
+    $scope.luonnissa = ($state.is('root.opetussuunnitelmat.yksi.tiedot') && $stateParams.id === 'uusi') ||
+      ($state.is('root.pohjat.yksi.tiedot') && $stateParams.pohjaId === 'uusi');
+    $scope.isPohja = $state.current.name.substr(0, 12) === 'root.pohjat.';
+    $scope.linkit = mapUrls($scope.isPohja ? POHJALINKIT : OPSLINKIT);
   }
   $scope.$on('$stateChangeSuccess', update);
   update();
