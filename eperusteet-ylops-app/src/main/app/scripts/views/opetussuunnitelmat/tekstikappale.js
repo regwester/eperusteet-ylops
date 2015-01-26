@@ -33,6 +33,7 @@ ylopsApp
     $scope.model = {};
     $scope.ohje = {};
 
+    console.log("tekstikappaleen ctrl", $stateParams);
     function fetch() {
       if ($stateParams.tekstikappaleId === 'uusi') {
         $scope.model = {

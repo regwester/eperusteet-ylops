@@ -1,10 +1,31 @@
 <div class="row" ng-show="model.$resolved">
-  <div class="col-md-4 col-sm-6" ng-repeat="osio in model.tekstit.lapset">
-    <div class="list-group">
-      <a class="list-group-item list-group-header" ng-bind="osio.tekstiKappale.nimi | kaanna"
-         ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: osio.id})"></a>
-      <a class="list-group-item" ng-repeat="item in osio.lapset" ng-bind="item.tekstiKappale.nimi | kaanna"
+  <div class="col-md-4 col-sm-6" ng-repeat="osio in ['jarjestaminen', 'lahtokohdat']">
+    <div class="list-group sisalto-osio">
+      <a class="list-group-item list-group-header"
+         ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: model[osio].id})">
+         <div class="kontrollit" ng-hide="rakenneEdit[osio]">
+           <span ng-click="rakenne.edit(osio, $event)" icon-role="edit" ng-attr-title="{{'muokkaa-rakennetta' | kaanna}}"></span>
+         </div>
+        <span ng-bind="model[osio].tekstiKappale.nimi | kaanna"></span>
+      </a>
+
+      <a ng-if="!rakenneEdit[osio]" class="list-group-item" ng-repeat="item in model[osio].lapset" ng-bind="item.tekstiKappale.nimi | kaanna"
          ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: item.id})"></a>
+
+      <div ng-if="rakenneEdit[osio]" class="list-group-item pohjan-muokkaus">
+        <div class="rakenne">
+
+          <button class="btn btn-default" kaanna="'peru-rakenne'" ng-click="rakenne.cancel(osio)"></button>
+          <button class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="rakenne.save(osio)"></button>
+
+          <div ng-show="model[osio].lapset.length > 0" ui-tree class="tekstikappaleet" data-empty-place-holder-enabled="true">
+            <ul ui-tree-nodes ng-model="model[osio].lapset">
+              <li ng-repeat="kappale in model[osio].lapset" ui-tree-node ng-include="'views/opetussuunnitelmat/treenode.html'"></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-md-4 col-sm-6">

@@ -35,7 +35,7 @@ ylopsApp
     if (opsId !== 'uusi') {
       return OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
         ops = res;
-        cb(res);
+        (cb || angular.noop)(res);
       }, Notifikaatiot.serverCb);
     }
   }
@@ -47,6 +47,11 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   }
 
+  function get() {
+    return ops;
+  }
+
   this.fetch = fetch;
   this.refetch = refetch;
+  this.get = get;
 });

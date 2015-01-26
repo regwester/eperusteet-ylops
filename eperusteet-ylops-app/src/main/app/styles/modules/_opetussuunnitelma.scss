@@ -39,6 +39,13 @@ h1.plain {
   margin-top: 30px;
 }
 
+.sisalto-osio {
+  .kontrollit {
+    position: absolute;
+    right: 5px;
+  }
+}
+
 .tekstikappaleet {
   padding-left: 100px;
   max-width: 800px;
@@ -59,6 +66,7 @@ h1.plain {
 }
 
 .list-group-header {
+  position: relative;
   text-align: center;
   background-color: #f0f0f0;
   font-weight: 700;
