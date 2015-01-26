@@ -51,6 +51,7 @@
 
   "jarjestelmavirhe-teksti": "Tapahtui järjestelmävirhe {{virhekoodi}}. Ole hyvä ja yritä uudelleen. Jos ongelma toistuu ota yhteyttä palvelun ylläpitäjään.",
   "odottamaton-virhe": "Tapahtui odottamaton virhe",
+  "mandatory-odottamaton-virhe": "Kaikkia pakollisia kenttiä ei ole täytetty",
 
   "nimi": "Nimi",
   "tila": "Tila",
