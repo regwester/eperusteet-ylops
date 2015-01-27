@@ -17,9 +17,45 @@
 'use strict';
 
 ylopsApp
-  .directive('ylopsFooter', function () {
-    return {
-      restrict: 'AE',
-      templateUrl: 'views/common/directives/footer.html',
-    };
-  });
+.service('EpFooterData', function ($http, $window, $q) {
+  var data = null;
+  var fetched = false;
+  var pattern = /([^=]+)=([^=]+)(?:\n|$)/gi;
+  this.fetch = function () {
+    var deferred = $q.defer();
+    if (fetched) {
+      deferred.resolve(data);
+    } else {
+      fetched = true;
+      $http.get($window.location.pathname + 'buildversion.txt').success(function (res) {
+        var result;
+        data = {};
+        while ((result = pattern.exec(res)) !== null) {
+          data[result[1]] = result[1] === 'vcsRevision' ? result[2].substr(0, 8) :
+          result[2].replace(/\s\s*$/, '');
+        }
+        deferred.resolve(data);
+      }).error(function () {
+        data = null;
+        deferred.resolve(data);
+      });
+    }
+    return deferred.promise;
+  };
+})
+
+.directive('ylopsFooter', function (EpFooterData) {
+  return {
+    restrict: 'AE',
+    templateUrl: 'views/common/directives/footer.html',
+    scope: {},
+    controller: function($scope) {
+      $scope.active = true;
+      if ($scope.active) {
+        EpFooterData.fetch().then(function (data) {
+          $scope.data = data;
+        });
+      }
+    }
+  };
+});
