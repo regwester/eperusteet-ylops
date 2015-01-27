@@ -21,9 +21,7 @@ ylopsApp
   Notifikaatiot, opsService, opsModel, $rootScope) {
   $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
 
-  // TODO Resolve isn't done again when switching between views, keep model up to date.
-  // Fix after ui-router double controller init bug is fixed.
-  $scope.model = opsModel;
+  $scope.model = opsService.get() || opsModel;
 
   function mapModel() {
     $scope.model.jarjestaminen = $scope.model.tekstit ? $scope.model.tekstit.lapset[0] : [];
