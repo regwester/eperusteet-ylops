@@ -9,10 +9,14 @@
   "poisto-onnistui": "Poisto onnistui",
   "poista": "Poista",
   "nimeton": "[Ei nimeä]",
+  "ei-maaritetty": "Tyhjä",
 
   "muokkaa": "Muokkaa",
+  "muokkaa-otsikkoa": "Muokkaa otsikkoa",
   "muokattavana": "Muokattavana",
   "kommentoi-muutosta": "Kommentoi muutosta",
+  "muokkaa-kappaletta": "Muokkaa tekstikappaletta",
+  "kappaleen-otsikko": "Otsikko",
 
   "etusivu": "Etusivu",
   "uusi-ops": "Uusi opetussuunnitelma",

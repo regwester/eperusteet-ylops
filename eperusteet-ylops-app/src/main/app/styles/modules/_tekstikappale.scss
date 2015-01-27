@@ -27,6 +27,10 @@
   }
 }
 
+.tekstikappale-title {
+  margin-bottom: 30px;
+}
+
 .tekstiosa-wrapper {
   h3 {
     margin-top: 40px;
@@ -41,6 +45,9 @@
     margin-botton: 20px;
   }
   margin-left: 25px;
+  &.single {
+    margin-left: 0;
+  }
   .empty-notice {
     font-style: italic;
     opacity: 0.7;
@@ -50,6 +57,24 @@
 .toggle-perusteen-teksti {
   line-height: 10px;
   display: block;
+}
+
+.tekstikappale-edit {
+  .row {
+    margin-bottom: 15px;
+  }
+  margin-top: 50px;
+  h3 {
+    margin-top: 0;
+  }
+}
+
+.opsin-teksti {
+  opacity: 0.7;
+}
+
+.empty-placeholder {
+  color: #999;
 }
 
 /*

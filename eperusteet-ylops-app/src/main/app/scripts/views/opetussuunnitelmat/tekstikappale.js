@@ -19,10 +19,12 @@
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
-    OhjeCRUD, Oikeudet) {
+    OhjeCRUD) {
 
-    $scope.godmode = Oikeudet.isVirkailija;
-    $scope.isCollapsed = true;
+    $scope.opsId = $stateParams.id;
+    $scope.options = {
+      isCollapsed: true
+    };
     $scope.editMode = false;
     if ($stateParams.tekstikappaleId === 'uusi') {
       $timeout(function () {
@@ -110,32 +112,5 @@ ylopsApp
       }
     };
     Editointikontrollit.registerCallback(callbacks);
-
-    $scope.ohjeOps = {
-      editing: false,
-      edit: function () {
-        $scope.ohjeOps.editing = true;
-      },
-      ok: function () {
-        $scope.ohjeOps.editing = false;
-        if (!$scope.ohje.$save) {
-          $scope.ohje.kohde = $scope.model.tekstiKappale.tunniste;
-          OhjeCRUD.save({}, $scope.ohje, function (res) {
-            $scope.ohje = res;
-          }, Notifikaatiot.serverCb);
-        } else {
-          $scope.ohje.$save();
-        }
-
-      },
-      cancel: function () {
-        $scope.ohjeOps.editing = false;
-      },
-      delete: function () {
-        $scope.ohje.$delete(function () {
-          $scope.ohje = {};
-        });
-      }
-    };
 
   });

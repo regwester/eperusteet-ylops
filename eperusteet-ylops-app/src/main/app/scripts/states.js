@@ -239,5 +239,25 @@ ylopsApp
         url: '/tiedot',
         templateUrl: 'views/opetussuunnitelmat/pohja/tiedot.html',
         controller: 'PohjaTiedotController'
+      })
+
+      .state('root.pohjat.yksi.tekstikappale', {
+        url: '/tekstikappale/:tekstikappaleId',
+        templateUrl: 'views/opetussuunnitelmat/pohja/tekstikappale.html',
+        controller: 'PohjaTekstikappaleController',
+        resolve: {
+          tekstikappaleId: ['$stateParams', function ($stateParams) {
+            return $stateParams.tekstikappaleId;
+          }],
+          opsId: ['$stateParams', function ($stateParams) {
+            return $stateParams.pohjaId;
+          }],
+          tekstikappaleModel: ['opsId', 'tekstikappaleId', 'OpetussuunnitelmanTekstit', function (opsId, tekstikappaleId, OpetussuunnitelmanTekstit) {
+            return OpetussuunnitelmanTekstit.get({opsId: opsId, viiteId: tekstikappaleId}).$promise;
+          }]
+          /*naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive();
+          }]*/
+        }
       });
   });

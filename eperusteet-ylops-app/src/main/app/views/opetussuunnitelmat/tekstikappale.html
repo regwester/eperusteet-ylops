@@ -1,57 +1,27 @@
-<!-- TODO käytä tekstiosa-direktiiviä, yhtenevä oppiaine-näkymän kanssa -->
-
-<div class="action-buttons-inline" ng-if="godmode()">
-  <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
+<div class="action-buttons-inline">
+  <a ui-sref="root.pohjat.yksi.tekstikappale({pohjaId: opsId, tekstikappaleId: model.id})">[pohjanäkymä]</a>
+  <button class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
 </div>
-<h2 ng-bind="model.tekstiKappale.nimi | kaanna"></h2>
 
-<div class="panel-clear-fix">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div collapse-toggler="isCollapsed" class="panel-title">
-        <span kaanna="'perusteen-teksti'"></span>
-      </div>
+<h2 class="tekstikappale-title" ng-bind="model.tekstiKappale.nimi | kaanna"></h2>
 
-    </div>
-    <div class="panel-body" collapse="isCollapsed">
 
-      <div ng-if="godmode()">
-        <div ng-hide="ohjeOps.editing">
-          <a ng-click="ohjeOps.edit()">Muokkaa</a>
-          <a ng-show="ohje.id" ng-click="ohjeOps.delete()">Poista</a>
-        </div>
-        <div ng-show="ohjeOps.editing">
-          <a ng-click="ohjeOps.ok()">Ok</a>
-          <a ng-click="ohjeOps.cancel()">Peruuta</a>
-        </div>
-      </div>
-
-      <div ng-if="ohjeOps.editing" ckeditor ng-model="ohje.teksti" slocalized></div>
-      <div ng-if="!ohjeOps.editing" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
-
-      <p ng-if="!ohje.teksti && !ohjeOps.editing" kaanna="'ei-ohjetta'"></p>
-    </div>
+<div class="tekstiosa-wrapper">
+  <div class="tekstiosa single perusteen-teksti" ng-if="ohje.teksti">
+    <a class="toggle-perusteen-teksti" ng-click="options.isCollapsed = !options.isCollapsed" ng-bind="options.isCollapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></a>
+    <div class="teksti" collapse="options.isCollapsed" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
   </div>
 
-  <div ng-if="!editMode" class="panel panel-default">
-    <div class="panel-heading">
-      <div class="panel-title">
-        <div class="action-buttons-inline">
-          <button class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
-        </div>
-        <span kaanna="'opsin-teksti'"></span>
-      </div>
-    </div>
-    <div class="panel-body">
-
-      <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></div>
-    </div>
-  </div>
+</div>
+<div class="panel-clear-fix tekstiosa single">
+  <h4><span kaanna="'opsin-teksti'"></span></h4>
 
   <div ng-if="editMode">
-    <h4><span kaanna="'opsin-teksti'"></span></h4>
-    <input ng-if="godmode()" ng-model="model.tekstiKappale.nimi" slocalized class="form-control">
     <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
+  </div>
+  <div ng-if="!editMode">
+    <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></div>
+    <p class="empty-notice" ng-show="!model.tekstiKappale.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
   </div>
 
 </div>

@@ -31,6 +31,7 @@ ylopsApp
 
     $scope.$on('$stateChangeSuccess', function (event, toState) {
       $scope.crumbs = [];
+      // TODO more generic crumb generation
       if (toState.name.indexOf('root.opetussuunnitelmat.yksi') === 0) {
         $scope.crumbs.push({
           url: $state.href('root.opetussuunnitelmat.lista'),
@@ -40,6 +41,18 @@ ylopsApp
           $scope.crumbs.push({
             url: $state.href('root.opetussuunnitelmat.yksi.sisalto'),
             label: 'opetussuunnitelma'
+          });
+        }
+      }
+      if (toState.name.indexOf('root.pohjat.yksi') === 0) {
+        $scope.crumbs.push({
+          url: $state.href('root.pohjat.lista'),
+          label: 'pohjat'
+        });
+        if (toState.name !== 'root.pohjat.yksi.sisalto') {
+          $scope.crumbs.push({
+            url: $state.href('root.pohjat.yksi.sisalto'),
+            label: 'pohja'
           });
         }
       }
