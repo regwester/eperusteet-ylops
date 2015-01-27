@@ -45,6 +45,7 @@ ylopsApp
       {tavoite: {fi: 'varmistaa, että oppilas ymmärtää kymmenjärjestelmän periaatteen sekä desimaaliluvut sen osana'}},
       {tavoite: {fi: 'laajentaa lukukäsitteen ymmärtämistä positiivisiin rationaalilukuihin ja negatiivisiin kokonaislukuihin'}},
       {tavoite: {fi: 'ohjaa oppilasta arvioimaan mittauskohteen suuruutta ja valitsemaan mittaamiseen sopivan välineen sekä käyttämään sopivaa mittayksikköä ja pohtimaan mittaustuloksen järkevyyttä'}},
+      {tavoite: {fi: 'laajentaa lukukäsitteen ymmärtämistä positiivisiin rationaalilukuihin ja negatiivisiin kokonaislukuihin'}},
     ];
   };
 

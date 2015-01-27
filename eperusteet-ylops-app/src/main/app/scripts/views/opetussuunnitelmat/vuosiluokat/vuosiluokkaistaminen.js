@@ -22,6 +22,8 @@ ylopsApp
   var VUOSILUOKKA = 'vuosiluokka-list';
   $scope.singleVuosiluokat = [3, 4, 5, 6];
   $scope.tavoitteet = tavoitteet;
+  $scope.allDragged = false;
+  $scope.collapsedMode = false;
 
   _.each($scope.tavoitteet, function (tavoite, index) {
     tavoite.koodi = 'T' + (index + 8);
@@ -38,6 +40,22 @@ ylopsApp
 
   function resetTavoitteet() {
     $scope.containers.tavoitteet.items = _.clone($scope.tavoitteet);
+    var usedTavoitteet = {};
+    var unused = [];
+    _.each($scope.containers, function (container, key) {
+      if (key !== 'tavoitteet') {
+        _.each(container.items, function (tavoite) {
+          usedTavoitteet[tavoite.koodi] = true;
+        });
+      }
+    });
+    _.each($scope.containers.tavoitteet.items, function (tavoite) {
+      tavoite.$kaytossa = usedTavoitteet[tavoite.koodi];
+      if (!tavoite.$kaytossa) {
+        unused.push(tavoite);
+      }
+    });
+    $scope.allDragged = unused.length === 0;
   }
 
   resetTavoitteet();
@@ -71,7 +89,6 @@ ylopsApp
   };
 
   function modelFromTarget(target) {
-    //console.log("target", target);
     var id = target.getAttribute('id');
     return _.find($scope.containers, function (container) {
       return container.id === id;
