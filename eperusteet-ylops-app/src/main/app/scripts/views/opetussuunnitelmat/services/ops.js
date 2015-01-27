@@ -42,6 +42,22 @@ ylopsApp
 
   function fetch(id) {
     opsId = id;
+
+    if (('' + opsId).substr(0, 5) === 'dummy') {
+      // TODO remove dummy data
+      return {
+        $resolved: true,
+        tila: 'luonnos',
+        nimi: {fi: 'Opetussuunnitelmapohja'},
+        tekstit: {
+          lapset: [
+            {tekstiKappale: {nimi: {fi: 'Opetuksen järjestäminen'}}, lapset: []},
+            {tekstiKappale: {nimi: {fi: 'Opetuksen toteuttamisen lähtökohdat'}}, lapset: []}
+          ]
+        }
+      };
+    }
+
     return opsId === 'uusi' ? uusi() : OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
       ops = res;
     }, Notifikaatiot.serverCb);
@@ -52,6 +68,7 @@ ylopsApp
   }
 
   this.fetch = fetch;
+  this.fetchPohja = fetch;
   this.refetch = refetch;
   this.get = get;
 });

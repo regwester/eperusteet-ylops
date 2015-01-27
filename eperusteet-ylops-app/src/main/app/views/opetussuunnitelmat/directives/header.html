@@ -10,6 +10,8 @@
   <div class="ops-header-tiedot">
     <h1 ng-bind="model.nimi | kaanna"></h1>
     <a ng-hide="isPohja" ui-sref="root.opetussuunnitelmat.yksi.opetussuunnitelma">Väliaikainen muokkaustila &gt;&gt;</a>
+    <a ng-hide="isPohja" ui-sref="root.pohjat.yksi.sisalto({pohjaId: opsId})">Näytä pohjana &gt;&gt;</a>
+    <a ng-show="isPohja" ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: pohjaId})">Näytä OPSina &gt;&gt;</a>
 
     <ul class="ops-header-linkit" role="navigation">
       <li ng-repeat="linkki in linkit">

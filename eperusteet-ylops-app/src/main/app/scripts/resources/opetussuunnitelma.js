@@ -30,5 +30,7 @@ ylopsApp
   .factory('OpetussuunnitelmanTekstit', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/tekstit/:viiteId', {
       viiteId: '@id'
+    }, {
+      setChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:parentId/lapsi/:childId'}
     });
   });

@@ -28,13 +28,6 @@ ylopsApp
     $state.go('root.pohjat.yksi.sisalto');
   }
   $scope.model = pohjaModel;
-
-  // TODO remove dummy data
-  $scope.model.$resolved = true;
-  $scope.model.tila = 'luonnos';
-  $scope.model.nimi = {fi: 'Opetussuunnitelmapohja'};
-  $scope.model.jarjestaminen = {tekstiKappale: {nimi: {fi: 'Opetuksen järjestäminen'}}, lapset: []};
-  $scope.model.lahtokohdat = {tekstiKappale: {nimi: {fi: 'Opetuksen toteuttamisen lähtökohdat'}}, lapset: []};
 })
 
 .controller('PohjaTiedotController', function ($scope, $stateParams, $state) {
@@ -50,10 +43,20 @@ ylopsApp
   };
 })
 
-.controller('PohjaSisaltoController', function ($scope, Algoritmit, Utils) {
+.controller('PohjaSisaltoController', function ($scope, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
+  Notifikaatiot) {
   $scope.uusi = {nimi: {}};
   $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
   $scope.kappaleEdit = null;
+
+  function mapModel() {
+    $scope.model.jarjestaminen = $scope.model.tekstit ? $scope.model.tekstit.lapset[0] : [];
+    $scope.model.lahtokohdat = $scope.model.tekstit ? $scope.model.tekstit.lapset[1] : [];
+  }
+
+  $scope.$watch('model.tekstit', function () {
+    mapModel();
+  }, true);
 
   $scope.hasText = function () {
     return Utils.hasLocalizedText($scope.uusi.nimi);
@@ -63,25 +66,35 @@ ylopsApp
     addNew: function (osio) {
       var newNode = {tekstiKappale: angular.copy($scope.uusi), lapset: []};
       $scope.model[osio].lapset.push(newNode);
-      // TODO save to backend
-      $scope.uusi = {nimi: {}};
+      var params = {opsId: $stateParams.pohjaId};
+      OpetussuunnitelmanTekstit.setChild(_.extend({parentId: $scope.model[osio].id}, params), newNode, function (res) {
+        res.tekstiKappale.nimi = newNode.tekstiKappale.nimi;
+        // TODO: lapsi-APIa käyttämällä ei tekstikappale tallennu samalla pyynnöllä
+        OpetussuunnitelmanTekstit.save(params, res, function () {
+          Notifikaatiot.onnistui('tallennettu-ok');
+        }, Notifikaatiot.serverCb);
+        $scope.uusi = {nimi: {}};
+      }, Notifikaatiot.serverCb);
     },
     edit: function (kappale) {
       $scope.kappaleEdit = kappale;
       kappale.$original = _.cloneDeep(kappale.tekstiKappale);
     },
     delete: function (osio, kappale) {
-      var foundIndex = null, foundList = null;
-      Algoritmit.traverse($scope.model[osio], 'lapset', function (lapsi, depth, index, arr) {
-        if (lapsi === kappale) {
-          foundIndex = index;
-          foundList = arr;
-          return true;
+      var params = {opsId: $stateParams.pohjaId};
+      OpetussuunnitelmanTekstit.delete(params, kappale, function () {
+        var foundIndex = null, foundList = null;
+        Algoritmit.traverse($scope.model[osio], 'lapset', function (lapsi, depth, index, arr) {
+          if (lapsi === kappale) {
+            foundIndex = index;
+            foundList = arr;
+            return true;
+          }
+        });
+        if (foundList) {
+          foundList.splice(foundIndex, 1);
         }
-      });
-      if (foundList) {
-        foundList.splice(foundIndex, 1);
-      }
+      }, Notifikaatiot.serverCb);
     },
     cancel: function (kappale) {
       $scope.kappaleEdit = null;
@@ -90,9 +103,32 @@ ylopsApp
     },
     save: function (kappale) {
       $scope.kappaleEdit = null;
-      delete kappale.$original;
+      var params = {opsId: $stateParams.pohjaId};
+      OpetussuunnitelmanTekstit.save(params, _.omit(kappale, 'lapset'), function () {
+        Notifikaatiot.onnistui('tallennettu-ok');
+        delete kappale.$original;
+      }, Notifikaatiot.serverCb);
     }
   };
+
+  function mapSisalto(root) {
+    return {
+      id: root.id,
+      lapset: _.map(root.lapset, mapSisalto)
+    };
+  }
+
+  function saveRakenne(osio) {
+    var postdata = mapSisalto($scope.model.tekstit);
+    OpetussuunnitelmanTekstit.save({
+      opsId: $scope.model.id,
+      viiteId: $scope.model.tekstit.id
+    }, postdata, function () {
+      Notifikaatiot.onnistui('tallennettu-ok');
+      $scope.rakenneEdit[osio] = false;
+      delete $scope.model[osio].$original;
+    }, Notifikaatiot.serverCb);
+  }
 
   $scope.rakenne = {
     edit: function (osio) {
@@ -100,8 +136,7 @@ ylopsApp
       $scope.model[osio].$original = _.cloneDeep($scope.model[osio].lapset);
     },
     save: function (osio) {
-      $scope.rakenneEdit[osio] = false;
-      delete $scope.model[osio].$original;
+      saveRakenne(osio);
     },
     cancel: function (osio) {
       $scope.rakenneEdit[osio] = false;

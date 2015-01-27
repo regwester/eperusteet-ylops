@@ -222,9 +222,12 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/pohja/base.html',
         controller: 'PohjaController',
         resolve: {
-          pohjaModel: [function () {
-            // TODO
-            return {};
+          opsService: 'OpsService',
+          pohjaId: ['$stateParams', function($stateParams){
+            return $stateParams.pohjaId;
+          }],
+          pohjaModel: ['opsService', 'pohjaId', function(opsService, pohjaId) {
+            return opsService.fetchPohja(pohjaId);
           }]
         }
       })
@@ -249,11 +252,8 @@ ylopsApp
           tekstikappaleId: ['$stateParams', function ($stateParams) {
             return $stateParams.tekstikappaleId;
           }],
-          opsId: ['$stateParams', function ($stateParams) {
-            return $stateParams.pohjaId;
-          }],
-          tekstikappaleModel: ['opsId', 'tekstikappaleId', 'OpetussuunnitelmanTekstit', function (opsId, tekstikappaleId, OpetussuunnitelmanTekstit) {
-            return OpetussuunnitelmanTekstit.get({opsId: opsId, viiteId: tekstikappaleId}).$promise;
+          tekstikappaleModel: ['pohjaId', 'tekstikappaleId', 'OpetussuunnitelmanTekstit', function (pohjaId, tekstikappaleId, OpetussuunnitelmanTekstit) {
+            return OpetussuunnitelmanTekstit.get({opsId: pohjaId, viiteId: tekstikappaleId}).$promise;
           }]
           /*naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();

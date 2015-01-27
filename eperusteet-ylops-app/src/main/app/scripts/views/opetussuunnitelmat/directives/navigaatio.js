@@ -122,7 +122,7 @@ ylopsApp
     var arr = [];
     Algoritmit.traverse(node, 'lapset', function (lapsi, depth) {
       arr.push({
-        label: lapsi.tekstiKappale.nimi,
+        label: lapsi.tekstiKappale ? lapsi.tekstiKappale.nimi : '[tyhjä viite]',
         id: lapsi.id,
         url: $state.href('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: lapsi.id}),
         depth: depth

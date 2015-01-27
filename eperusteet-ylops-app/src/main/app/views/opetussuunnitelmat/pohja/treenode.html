@@ -7,7 +7,7 @@
   </div>
 
   <span ng-show="rakenneEdit[osio]" icon-role="drag" ui-tree-handle></span>
-  <a ui-sref="root.pohjat.yksi.tekstikappale({tekstikappaleId: kappale.tekstiKappale.id})"
+  <a ui-sref="root.pohjat.yksi.tekstikappale({tekstikappaleId: kappale.id})"
      ng-if="kappaleEdit !== kappale" ng-bind="kappale.tekstiKappale.nimi || 'nimeton' | kaanna"
      ng-attr-title="{{kappale.tekstiKappale.nimi | kaanna}}"></a>
 
