@@ -18,9 +18,9 @@
 
 ylopsApp
 
-.controller('PohjaListaController', function ($scope) {
-  // TODO
-  $scope.items = {$resolved: true};
+.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD) {
+  $scope.items = OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'});
+  $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
 })
 
 .controller('PohjaController', function ($scope, $state, pohjaModel) {
