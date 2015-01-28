@@ -16,7 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.repository;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
+import java.util.List;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -25,4 +28,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository<Opetussuunnitelma, Long> {
+
+    public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
+    public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
+    public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
+
 }

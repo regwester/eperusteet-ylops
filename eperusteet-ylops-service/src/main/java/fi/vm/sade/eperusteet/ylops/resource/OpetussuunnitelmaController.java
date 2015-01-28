@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.resource;
 
 import com.codahale.metrics.annotation.Timed;
 import com.wordnik.swagger.annotations.Api;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.service.OpetussuunnitelmaService;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,9 +46,14 @@ public class OpetussuunnitelmaController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public List<OpetussuunnitelmaDto> getAll() {
-        return opetussuunnitelmaService.getAll();
+    public List<OpetussuunnitelmaDto> getAll(@RequestParam(value="tyyppi", required=false) Tyyppi tyyppi) {
+        if (tyyppi == null || tyyppi.equals(Tyyppi.OPS)) {
+            return opetussuunnitelmaService.getAll();
+        } else {
+            return opetussuunnitelmaService.getAllPohjat();
+        }
     }
+
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
@@ -60,8 +67,18 @@ public class OpetussuunnitelmaController {
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaDto opetussuunnitelmaDto) {
-        return new ResponseEntity<>(opetussuunnitelmaService.addOpetussuunnitelma(opetussuunnitelmaDto),
+
+        if (opetussuunnitelmaDto.getTyyppi() == null) {
+            opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
+        }
+
+        if (opetussuunnitelmaDto.getTyyppi().equals(Tyyppi.POHJA)) {
+            return new ResponseEntity<>(opetussuunnitelmaService.addPohja(opetussuunnitelmaDto),
                 HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(opetussuunnitelmaService.addOpetussuunnitelma(opetussuunnitelmaDto),
+                HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)

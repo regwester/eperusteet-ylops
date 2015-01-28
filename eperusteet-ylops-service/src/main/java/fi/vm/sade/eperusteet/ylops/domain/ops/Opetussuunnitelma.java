@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.ops;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -83,6 +84,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Getter
     @Setter
     private Tila tila = Tila.LUONNOS;
+
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    @Getter
+    @Setter
+    private Tyyppi tyyppi = Tyyppi.OPS;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @Getter
@@ -164,4 +171,5 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public boolean removeVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus vk) {
         return vuosiluokkakokonaisuudet.remove(new OpsVuosiluokkakokonaisuus(vk, false));
     }
+
 }

@@ -13,23 +13,33 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.resource.config;
+package fi.vm.sade.eperusteet.ylops.domain;
 
-import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.InitBinder;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  *
- * @author jhyoty
+ * @author harrik
  */
-@ControllerAdvice
-public class InitBinderControllerAdvice {
+public enum Tyyppi {
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(Tyyppi.class, new EnumToUpperCaseEditor<>(Tyyppi.class));
-    }
+    OPS("ops"),
+    POHJA("pohja");
 
+    private final String tyyppi;
+
+    private Tyyppi(String tyyppi) { this.tyyppi = tyyppi; }
+
+    @Override
+    public String toString() { return tyyppi; }
+
+    @JsonCreator
+    public static Tyyppi of(String tyyppi) {
+        for (Tyyppi t : values()) {
+            if (t.tyyppi.equalsIgnoreCase(tyyppi)) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException(tyyppi + " ei ole kelvollinen tila");
+   }
 }

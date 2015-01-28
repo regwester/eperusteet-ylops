@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -32,6 +33,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.koodisto.KoodistoKoodiRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -39,11 +41,14 @@ import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -68,6 +73,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private TekstiKappaleViiteRepository viiteRepository;
 
     @Autowired
+    private TekstiKappaleRepository tekstiKappaleRepository;
+
+    @Autowired
     private TekstiKappaleViiteService tekstiKappaleViiteService;
 
     @Autowired
@@ -79,7 +87,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaDto> getAll() {
-        List<Opetussuunnitelma> opetussuunnitelmat = repository.findAll();
+        List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(Tyyppi.OPS);
+        return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaDto.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OpetussuunnitelmaDto> getAllPohjat() {
+        List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(Tyyppi.POHJA);
         return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaDto.class);
     }
 
@@ -129,11 +144,62 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
+        opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
+        //Opetussuunnitelma pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
+        // TODO: Keksi tapa valita oikea pohja
+        Opetussuunnitelma pohja = repository.findFirst1ByTyyppi(Tyyppi.POHJA);
+
+        if (pohja != null) {
+            ops.setTekstit(new TekstiKappaleViite(Omistussuhde.OMA));
+            ops.getTekstit().setLapset(new ArrayList<>());
+            luoOpsPohjasta(pohja, ops);
+            ops.setTila(Tila.LUONNOS);
+            ops = repository.save(ops);
+        } else {
+            throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei ole olemassa");
+        }
+
+        return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    @Transactional
+    private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
+        kopioiTekstit(pohja.getTekstit(), ops.getTekstit());
+        // TODO: Toteuttamatta ainakin oppiaineiden ja vuosiluokkakokonaisuuksien kopiointi
+
+
+    }
+
+    @Transactional
+    private void kopioiTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent) {
+        List<TekstiKappaleViite> vanhaLapset = vanha.getLapset();
+        if (vanhaLapset != null) {
+            for (TekstiKappaleViite vanhaTkv : vanhaLapset) {
+                if (vanhaTkv.getTekstiKappale()!= null) {
+                    TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
+                    tkv.setOmistussuhde(Omistussuhde.LAINATTU);
+                    tkv.setLapset(new ArrayList<>());
+                    tkv.setVanhempi(parent);
+                    tkv.setTekstiKappale(tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy()));
+                    parent.getLapset().add(tkv);
+                    kopioiTekstit(vanhaTkv, tkv);
+                }
+            }
+        }
+    }
+
+    @Override
+    public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaDto opetussuunnitelmaDto) {
+        Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
+
         ops.setTila(Tila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
         ops = repository.save(ops);
         lisaaTekstipuunLapset(ops);
+
+        //TODO: Oppiaineiden ja vuosiluokka tietojen hakeminen ePerusteista
+
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
@@ -145,14 +211,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private void lisaaTekstipuunLapset(Opetussuunnitelma ops) {
         LokalisoituTekstiDto nimi, teksti;
-        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Ohjeistus"));
+        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Opetuksen järjestäminen"));
         teksti = new LokalisoituTekstiDto(null, null);
         TekstiKappaleDto ohjeistusTeksti = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
         TekstiKappaleViiteDto.Matala ohjeistus = new TekstiKappaleViiteDto.Matala(ohjeistusTeksti);
         addTekstiKappale(ops.getId(), ohjeistus);
 
         nimi = new LokalisoituTekstiDto(null,
-                                        Collections.singletonMap(Kieli.FI, "Opetuksen ja yhteistyön järjestäminen"));
+                                        Collections.singletonMap(Kieli.FI, "Opetuksen toteuttamisen lähtökohdat"));
         teksti = new LokalisoituTekstiDto(null, null);
         TekstiKappaleDto opetuksenJarjestaminenTeksti
             = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);

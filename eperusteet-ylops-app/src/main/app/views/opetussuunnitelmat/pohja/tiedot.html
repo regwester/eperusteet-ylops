@@ -8,6 +8,19 @@
         <input id="ops-field-nimi" ng-model="model.nimi" slocalized class="form-control">
       </div>
     </div>
+    
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'julkaisukielet'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <label ng-repeat="kielikoodi in kielivalinnat" class="julkaisukieli">
+          <input type="checkbox" ng-model="julkaisukielet[kielikoodi]">
+          <span ng-bind="kielikoodi | kaanna"></span>
+        </label>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col-sm-3 formfield-label"></div>

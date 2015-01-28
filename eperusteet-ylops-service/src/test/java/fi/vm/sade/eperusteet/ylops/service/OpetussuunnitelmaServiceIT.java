@@ -16,12 +16,16 @@
 package fi.vm.sade.eperusteet.ylops.service;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.repository.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.List;
@@ -51,13 +55,30 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     @Autowired
     TekstiKappaleViiteService tekstiKappaleViiteService;
 
+    @Autowired
+    OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    private DtoMapper mapper;
+
     @Before
     public void setUp() {
         OpetussuunnitelmaDto ops;
         ops = new OpetussuunnitelmaDto();
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
+        ops.setTyyppi(Tyyppi.POHJA);
+        ops = opetussuunnitelmaService.addPohja(ops);
+
+        ops.setTila(Tila.VALMIS);
+        opetussuunnitelmaRepository.save(mapper.map(ops, Opetussuunnitelma.class));
+
+
+        ops = new OpetussuunnitelmaDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
         ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.OPS);
 
 
         KoodistoDto kunta = new KoodistoDto();
