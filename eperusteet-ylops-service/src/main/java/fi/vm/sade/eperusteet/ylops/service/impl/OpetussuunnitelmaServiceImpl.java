@@ -146,7 +146,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
-        Opetussuunnitelma pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
+        //Opetussuunnitelma pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
+        // TODO: Keksi tapa valita oikea pohja
+        Opetussuunnitelma pohja = repository.findFirst1ByTyyppi(Tyyppi.POHJA);
 
         if (pohja != null) {
             ops.setTekstit(new TekstiKappaleViite(Omistussuhde.OMA));

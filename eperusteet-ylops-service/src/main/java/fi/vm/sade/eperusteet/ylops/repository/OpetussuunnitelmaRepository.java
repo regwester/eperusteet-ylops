@@ -30,6 +30,7 @@ import org.springframework.stereotype.Repository;
 public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository<Opetussuunnitelma, Long> {
 
     public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
+    public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
     public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
 
 }
