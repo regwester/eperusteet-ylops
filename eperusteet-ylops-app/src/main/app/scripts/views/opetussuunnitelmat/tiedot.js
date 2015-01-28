@@ -18,7 +18,8 @@
 
 ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function ($scope, Editointikontrollit, $stateParams, $state,
-  OpetussuunnitelmaCRUD, Notifikaatiot, $timeout, OpsService, Utils, KoodistoHaku, PeruskouluHaku, kunnat, Kieli) {
+  $timeout, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
+  kunnat, Kieli) {
 
   $scope.luonnissa = $stateParams.id === 'uusi';
   $scope.editableModel = $scope.model;
@@ -56,20 +57,26 @@ ylopsApp
 
   $scope.kieliOrderFn = Kieli.orderFn;
 
-  function fetch() {
+  function fetch(notify) {
     OpsService.refetch(function (res) {
+      $scope.model = res;
       $scope.editableModel = res;
       $scope.editableModel.kuntaUrit = _.map(res.kunnat, 'koodiUri');
       $scope.editableModel.kouluOidit = _.map(res.koulut, 'oid');
+      if (notify) {
+        $rootScope.$broadcast('rakenne:updated');
+      }
+
       $scope.loading = false;
     });
   }
 
   var successCb = function (res) {
-    $scope.model = res;
     Notifikaatiot.onnistui('tallennettu-ok');
     if ($scope.luonnissa) {
       $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
+    } else {
+      fetch(true);
     }
   };
 
