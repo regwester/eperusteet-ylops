@@ -37,6 +37,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUONTI')")
     OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto);
 
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    OpetussuunnitelmaDto addPohja(OpetussuunnitelmaDto opetussuunnitelmaDto);
+
     @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'MUOKKAUS')")
     OpetussuunnitelmaDto updateOpetussuunnitelma(@P("ops") OpetussuunnitelmaDto opetussuunnitelmaDto);
 
@@ -52,4 +55,6 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
                                                        TekstiKappaleViiteDto.Matala viite);
+
+    public List<OpetussuunnitelmaDto> getAllPohjat();
 }

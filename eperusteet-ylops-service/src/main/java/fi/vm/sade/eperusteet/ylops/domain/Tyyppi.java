@@ -13,23 +13,33 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.repository;
+package fi.vm.sade.eperusteet.ylops.domain;
 
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-import java.util.List;
-import org.springframework.stereotype.Repository;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  *
- * @author mikkom
+ * @author harrik
  */
-@Repository
-public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository<Opetussuunnitelma, Long> {
+public enum Tyyppi {
 
-    public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
-    public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
+    OPS("ops"),
+    POHJA("pohja");
 
+    private final String tyyppi;
+
+    private Tyyppi(String tyyppi) { this.tyyppi = tyyppi; }
+
+    @Override
+    public String toString() { return tyyppi; }
+
+    @JsonCreator
+    public static Tyyppi of(String tyyppi) {
+        for (Tyyppi t : values()) {
+            if (t.tyyppi.equalsIgnoreCase(tyyppi)) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException(tyyppi + " ei ole kelvollinen tila");
+   }
 }
