@@ -20,6 +20,7 @@ ylopsApp
 .service('OpsService', function (OpetussuunnitelmaCRUD, Notifikaatiot) {
   var opsId = null;
   var ops = null;
+  var deferred = null;
 
   function uusi() {
     return {
@@ -33,42 +34,39 @@ ylopsApp
 
   function refetch(cb) {
     if (opsId !== 'uusi') {
-      return OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+      deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
         ops = res;
         (cb || angular.noop)(res);
       }, Notifikaatiot.serverCb);
+      return deferred;
     }
   }
 
   function fetch(id) {
     opsId = id;
 
-    if (('' + opsId).substr(0, 5) === 'dummy') {
-      // TODO remove dummy data
-      return {
-        $resolved: true,
-        tila: 'luonnos',
-        nimi: {fi: 'Opetussuunnitelmapohja'},
-        tekstit: {
-          lapset: [
-            {tekstiKappale: {nimi: {fi: 'Opetuksen järjestäminen'}}, lapset: []},
-            {tekstiKappale: {nimi: {fi: 'Opetuksen toteuttamisen lähtökohdat'}}, lapset: []}
-          ]
-        }
-      };
+    if (opsId === 'uusi') {
+      return uusi();
     }
-
-    return opsId === 'uusi' ? uusi() : OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+    deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
       ops = res;
     }, Notifikaatiot.serverCb);
+    return deferred;
   }
 
-  function get() {
-    return ops;
+  function get(validateId) {
+    if (validateId && validateId !== opsId) {
+      opsId = null;
+      ops = null;
+      return null;
+    }
+    return deferred;
   }
 
   this.fetch = fetch;
   this.fetchPohja = fetch;
   this.refetch = refetch;
+  this.refetchPohja = refetch;
   this.get = get;
+  this.getPohja = get;
 });

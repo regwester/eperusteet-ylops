@@ -108,7 +108,6 @@ ylopsApp
       $scope.editableModel.julkaisukielet = _($scope.julkaisukielet).keys().filter(function (koodi) {
         return $scope.julkaisukielet[koodi];
       }).value();
-      delete $scope.editableModel.tekstit.lapset;
       if ($scope.luonnissa) {
         OpetussuunnitelmaCRUD.save({}, $scope.editableModel, successCb, Notifikaatiot.serverCb);
       } else {

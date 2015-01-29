@@ -18,10 +18,10 @@
 
 ylopsApp
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, OpetussuunnitelmanTekstit,
-  Notifikaatiot, opsService, opsModel, $rootScope) {
+  Notifikaatiot, opsService, opsModel, $rootScope, $stateParams) {
   $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
 
-  $scope.model = opsService.get() || opsModel;
+  $scope.model = opsService.get($stateParams.id) || opsModel;
 
   function mapModel() {
     $scope.model.jarjestaminen = $scope.model.tekstit ? $scope.model.tekstit.lapset[0] : [];

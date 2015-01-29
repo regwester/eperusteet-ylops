@@ -17,57 +17,19 @@
 'use strict';
 
 ylopsApp
-
-.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD) {
-  $scope.items = OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'});
-  $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
-})
-
-.controller('PohjaController', function ($scope, $state, pohjaModel) {
+.controller('PohjaController', function ($scope, $state, pohjaModel, opsService) {
   if ($state.current.name === 'root.pohjat.yksi') {
     $state.go('root.pohjat.yksi.sisalto');
   }
   $scope.model = pohjaModel;
+  $scope.$on('rakenne:updated', function () {
+    $scope.model = opsService.getPohja();
+  });
 })
 
-.controller('PohjaTiedotController', function ($scope, $stateParams, $state,
-   OpetussuunnitelmaCRUD, Notifikaatiot) {
-  $scope.isLuonti = $stateParams.pohjaId === 'uusi';
-
-  if ($scope.isLuonti) {
-    $scope.model.julkaisukielet = ['fi'];
-  }
-
-  $scope.kielivalinnat = ['fi', 'sv', 'se'];
-
-  $scope.cancel = function () {
-    $state.go('root.etusivu');
-  };
-
-  $scope.save = function () {
-    // TODO
-    $scope.model.tyyppi = 'pohja';
-    $scope.model.julkaisukielet = _($scope.julkaisukielet).keys().filter(function (koodi) {
-        return $scope.julkaisukielet[koodi];
-      }).value();
-    if ($scope.isLuonti) {
-      OpetussuunnitelmaCRUD.save({}, $scope.model, function(vastaus) {
-        $state.go('root.pohjat.yksi', {pohjaId: vastaus.id}, {reload: true});
-      }, Notifikaatiot.serverCb);
-    } else {
-      console.log('pohjan tietojen tallennus tekemättä');
-      $state.go('root.pohjat.yksi', {pohjaId: $stateParams.pohjaId}, {reload: true});
-    }
-  };
-
-  function mapJulkaisukielet() {
-    $scope.julkaisukielet = _.zipObject($scope.kielivalinnat, _.map($scope.kielivalinnat, function (kieli) {
-      return _.indexOf($scope.model.julkaisukielet, kieli) > -1;
-    }));
-  }
-
-  $scope.$watch('model.julkaisukielet', mapJulkaisukielet);
-
+.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD) {
+  $scope.items = OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'});
+  $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
 })
 
 .controller('PohjaSisaltoController', function ($scope, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
