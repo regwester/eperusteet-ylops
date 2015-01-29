@@ -1,66 +1,52 @@
-<div class="action-buttons-inline" ng-hide="editMode">
-  <a ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({id: pohjaId, tekstikappaleId: model.id})">[ops-näkymä]</a>
-  <button class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
-  <button class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
-</div>
-
-<div ng-if="editMode">
-
-  <h2 kaanna="'muokkaa-kappaletta'"></h2>
-
-  <div class="tekstikappale-edit">
-    <div class="row">
-      <div class="col-md-3">
-        <h3 kaanna="'kappaleen-otsikko'"></h3>
-      </div>
-      <div class="col-md-9">
-        <input ng-model="model.tekstiKappale.nimi" slocalized class="form-control">
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-3">
-        <h3 kaanna="'perusteen-teksti'"></h3>
-      </div>
-      <div class="col-md-9">
-        <div ckeditor ng-model="ohje.teksti" slocalized></div>
-      </div>
-    </div>
-    <div class="row opsin-teksti">
-      <div class="col-md-3">
-        <h3 kaanna="'opsin-teksti'"></h3>
-      </div>
-      <div class="col-md-9">
-        <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
-      </div>
-    </div>
+<div class="pohja-tekstikappale">
+  <div class="action-buttons-inline" ng-hide="editMode">
+    <a ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({id: pohjaId, tekstikappaleId: model.id})">[ops-näkymä]</a>
+    <button class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
+    <button class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
   </div>
 
-</div>
+  <div ng-if="editMode" class="teksti-edit-mode">
 
+    <h2 kaanna="'muokkaa-kappaletta'"></h2>
 
-<div ng-if="!editMode">
+    <h3 kaanna="'kappaleen-otsikko'"></h3>
+    <input ng-model="model.tekstiKappale.nimi" slocalized class="form-control">
 
-  <h2><span ng-bind="model.tekstiKappale.nimi | kaanna"></span></h2>
+    <h3 collapse-toggler="options.ohjeCollapsed" kaanna="'perusteen-teksti'"></h3>
 
-  <div class="tekstikappale-edit">
-    <div class="row">
-      <div class="col-md-3">
-        <h3 kaanna="'perusteen-teksti'"></h3><a ng-hide="isEmpty(ohje.teksti)" ng-click="ohjeOps.delete()" kaanna="'poista'"></a>
-      </div>
-      <div class="col-md-9">
-        <span ng-bind-html="ohje.teksti | kaanna | unsafe"></span>
-        <span class="empty-placeholder" ng-if="isEmpty(ohje.teksti)" kaanna="'ei-maaritetty'"></span>
-      </div>
+    <div collapse="options.ohjeCollapsed" class="teksti-well">
+      <div ckeditor ng-model="ohje.teksti" slocalized></div>
     </div>
-    <div class="row opsin-teksti">
-      <div class="col-md-3">
-        <h3 kaanna="'opsin-teksti'"></h3>
-      </div>
-      <div class="col-md-9">
-        <span ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></span>
-        <span class="empty-placeholder" ng-if="isEmpty(model.tekstiKappale.teksti)" kaanna="'ei-maaritetty'"></span>
-      </div>
+
+    <h3 collapse-toggler="options.tekstiCollapsed" kaanna="'opsin-teksti'"></h3>
+
+    <div collapse="options.tekstiCollapsed" class="teksti-well">
+      <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
     </div>
+
   </div>
 
+
+  <div ng-if="!editMode">
+
+    <h2><span ng-bind="model.tekstiKappale.nimi | kaanna"></span></h2>
+
+    <h3 collapse-toggler="options.ohjeCollapsed">
+      <span kaanna="'perusteen-teksti'"></span>
+      <a class="inline-toggle-link" ng-hide="isEmpty(ohje.teksti)" ng-click="ohjeOps.delete($event)" kaanna="'poista'"></a>
+    </h3>
+
+    <div collapse="options.ohjeCollapsed" class="teksti-well">
+      <span ng-bind-html="ohje.teksti | kaanna | unsafe"></span>
+      <span class="empty-placeholder" ng-if="isEmpty(ohje.teksti)" kaanna="'ei-maaritetty'"></span>
+    </div>
+
+    <h3 collapse-toggler="options.tekstiCollapsed" kaanna="'opsin-teksti'"></h3>
+
+    <div collapse="options.tekstiCollapsed" class="teksti-well">
+      <span ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></span>
+      <span class="empty-placeholder" ng-if="isEmpty(model.tekstiKappale.teksti)" kaanna="'ei-maaritetty'"></span>
+    </div>
+
+  </div>
 </div>

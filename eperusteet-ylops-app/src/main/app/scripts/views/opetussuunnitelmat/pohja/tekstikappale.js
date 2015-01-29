@@ -23,6 +23,7 @@ ylopsApp
   $scope.pohjaId = $stateParams.pohjaId;
   $scope.model = tekstikappaleModel;
   $scope.ohje = {};
+  $scope.options = {};
 
   $scope.isEmpty = function (model) {
     return _.isEmpty(model);
@@ -107,7 +108,8 @@ ylopsApp
   Editointikontrollit.registerCallback(callbacks);
 
   $scope.ohjeOps = {
-    delete: function () {
+    delete: function ($event) {
+      $event.stopPropagation();
       $scope.ohje.$delete(function () {
         $scope.ohje = {};
       });

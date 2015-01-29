@@ -59,22 +59,29 @@
   display: block;
 }
 
-.tekstikappale-edit {
-  .row {
-    margin-bottom: 15px;
-  }
-  margin-top: 50px;
-  h3 {
-    margin-top: 0;
-  }
-}
-
 .opsin-teksti {
   opacity: 0.7;
 }
 
 .empty-placeholder {
   color: #999;
+}
+
+.pohja-tekstikappale {
+  .teksti-well {
+    margin-left: 27px;
+  }
+  .teksti-edit-mode {
+    .teksti-well {
+      margin-left: 0;
+    }
+  }
+  h2 {
+    margin-bottom: 50px;
+  }
+  h3 {
+    margin-top: 30px;
+  }
 }
 
 /*
