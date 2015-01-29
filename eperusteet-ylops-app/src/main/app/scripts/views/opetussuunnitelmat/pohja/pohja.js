@@ -63,8 +63,10 @@ ylopsApp
       $scope.model[osio].lapset.push(newNode);
       var params = {opsId: $stateParams.pohjaId};
       OpetussuunnitelmanTekstit.setChild(_.extend({parentId: $scope.model[osio].id}, params), newNode, function (res) {
-        res.tekstiKappale.nimi = newNode.tekstiKappale.nimi;
+        var otsikko = _.cloneDeep(newNode.tekstiKappale.nimi);
         newNode.id = res.id;
+        newNode.tekstiKappale = res.tekstiKappale;
+        res.tekstiKappale.nimi = otsikko;
         // TODO: lapsi-APIa käyttämällä ei tekstikappale tallennu samalla pyynnöllä
         OpetussuunnitelmanTekstit.save(params, res, function () {
           Notifikaatiot.onnistui('tallennettu-ok');
