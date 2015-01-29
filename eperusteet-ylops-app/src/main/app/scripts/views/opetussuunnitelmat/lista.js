@@ -21,9 +21,9 @@ ylopsApp
     OpetussuunnitelmaCRUD) {
     $scope.items = OpetussuunnitelmaCRUD.query();
     $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
- 
+
     $scope.addNew = function () {
-      $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma', {id: 'uusi'});
+      $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi'});
     };
   })
 

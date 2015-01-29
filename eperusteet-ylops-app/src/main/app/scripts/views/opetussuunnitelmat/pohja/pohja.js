@@ -30,6 +30,10 @@ ylopsApp
 .controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD) {
   $scope.items = OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'});
   $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
+
+  $scope.addNew = function () {
+    $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});
+  };
 })
 
 .controller('PohjaSisaltoController', function ($scope, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,

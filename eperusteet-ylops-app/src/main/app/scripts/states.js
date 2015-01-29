@@ -214,7 +214,13 @@ ylopsApp
       .state('root.pohjat', {
         url: '/pohjat',
         template: '<div ui-view></div>',
-        controller: function () {}
+        abstract: true
+      })
+
+      .state('root.pohjat.lista', {
+        url: '',
+        templateUrl: 'views/opetussuunnitelmat/pohja/lista.html',
+        controller: 'PohjaListaController'
       })
 
       .state('root.pohjat.yksi', {
