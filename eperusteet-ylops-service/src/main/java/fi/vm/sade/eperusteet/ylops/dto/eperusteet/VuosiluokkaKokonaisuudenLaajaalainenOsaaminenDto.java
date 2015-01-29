@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +27,6 @@ import lombok.Setter;
 @Setter
 public class VuosiluokkaKokonaisuudenLaajaalainenOsaaminenDto implements ReferenceableDto {
     private Long id;
-    private EntityReference laajaalainenOsaaminen;
+    private String laajaalainenOsaaminen;
     private LokalisoituTekstiDto kuvaus;
 }

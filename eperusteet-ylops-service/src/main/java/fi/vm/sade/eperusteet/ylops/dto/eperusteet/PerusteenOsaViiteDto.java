@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +27,7 @@ import lombok.Setter;
 @Setter
 public class PerusteenOsaViiteDto {
     private Long id;
-    private EntityReference perusteenOsaRef;
+    private String perusteenOsaRef;
     private PerusteenOsaDto perusteenOsa;
-    private List<EntityReference> lapset;
+    private List<String> lapset;
 }

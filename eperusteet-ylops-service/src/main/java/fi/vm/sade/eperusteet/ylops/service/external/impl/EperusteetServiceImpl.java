@@ -19,10 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
-import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.Arrays;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -37,9 +35,6 @@ import org.springframework.web.client.RestTemplate;
 public class EperusteetServiceImpl implements EperusteetService {
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String koodistoServiceUrl;
-
-    @Autowired
-    private DtoMapper mapper;
 
     private final RestTemplate client = new RestTemplate();
 

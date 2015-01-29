@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.Set;
 import java.util.UUID;
@@ -32,8 +31,8 @@ public class OpetuksenTavoiteDto implements ReferenceableDto {
     private Long id;
     private UUID tunniste;
     private LokalisoituTekstiDto tavoite;
-    private Set<EntityReference> sisaltoalueet;
-    private Set<EntityReference> laajattavoitteet;
-    private Set<EntityReference> kohdealueet;
+    private Set<String> sisaltoalueet;
+    private Set<String> laajattavoitteet;
+    private Set<String> kohdealueet;
     private Set<TavoitteenArviointiDto> arvioinninkohteet;
 }

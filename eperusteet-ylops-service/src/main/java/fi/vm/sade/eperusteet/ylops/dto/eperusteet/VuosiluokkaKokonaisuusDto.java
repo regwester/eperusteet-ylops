@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
-import com.google.common.base.Optional;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.Set;
 import java.util.UUID;
