@@ -71,12 +71,18 @@ ylopsApp
 })
 
 .controller('PohjaSisaltoController', function ($scope, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
-  Notifikaatiot) {
+  Notifikaatiot, $state) {
   $scope.uusi = {nimi: {}};
   $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
   $scope.kappaleEdit = null;
 
   function mapModel() {
+    Algoritmit.traverse($scope.model.tekstit, 'lapset', function (teksti) {
+      teksti.$url = $state.href('root.pohjat.yksi.tekstikappale', {
+        pohjaId: $scope.model.id,
+        tekstikappaleId: teksti.id
+      });
+    });
     $scope.model.jarjestaminen = $scope.model.tekstit ? $scope.model.tekstit.lapset[0] : [];
     $scope.model.lahtokohdat = $scope.model.tekstit ? $scope.model.tekstit.lapset[1] : [];
   }
@@ -96,9 +102,11 @@ ylopsApp
       var params = {opsId: $stateParams.pohjaId};
       OpetussuunnitelmanTekstit.setChild(_.extend({parentId: $scope.model[osio].id}, params), newNode, function (res) {
         res.tekstiKappale.nimi = newNode.tekstiKappale.nimi;
+        newNode.id = res.id;
         // TODO: lapsi-APIa käyttämällä ei tekstikappale tallennu samalla pyynnöllä
         OpetussuunnitelmanTekstit.save(params, res, function () {
           Notifikaatiot.onnistui('tallennettu-ok');
+          mapModel();
         }, Notifikaatiot.serverCb);
         $scope.uusi = {nimi: {}};
       }, Notifikaatiot.serverCb);

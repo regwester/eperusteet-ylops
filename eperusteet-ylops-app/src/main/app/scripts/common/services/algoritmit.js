@@ -19,6 +19,9 @@
 ylopsApp
 .service('Algoritmit', function () {
   function traverse(objekti, lapsienAvain, cb, depth) {
+    if (!objekti) {
+      return;
+    }
     depth = depth || 0;
     _.forEach(objekti[lapsienAvain], function(solmu, index) {
       if (!cb(solmu, depth, index, objekti[lapsienAvain])) {
