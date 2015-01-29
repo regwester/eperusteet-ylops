@@ -168,7 +168,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             }
         } else {
             // Simppeli oppiaine
-            oppiaineet.add(new OpsOppiaine(oppiaine, true /* TODO: tsekkaa pitäisikö tämän olla parametrina */));
+            oppiaineet.add(new OpsOppiaine(oppiaine, true));
         }
     }
 
