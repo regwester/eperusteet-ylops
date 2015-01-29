@@ -16,7 +16,13 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -32,17 +38,20 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String koodistoServiceUrl;
 
+    @Autowired
+    private DtoMapper mapper;
+
     private final RestTemplate client = new RestTemplate();
 
     @Override
-    public JsonNode perusopetuksenPerusteet() {
-        JsonNode perusteet = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus", JsonNode.class);
-        return perusteet;
+    public List<PerusteInfoDto> perusopetuksenPerusteet() {
+        PerusteInfoDto[] kaikki = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus", PerusteInfoDto[].class);
+        return Arrays.asList(kaikki);
     }
 
     @Override
-    public JsonNode perusopetuksenPeruste(final Long id) {
-        JsonNode peruste = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus/" + id.toString() + "/kaikki", JsonNode.class);
+    public PerusopetusPerusteKaikkiDto perusopetuksenPeruste(final Long id) {
+        PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus/" + String.valueOf(id) + "/kaikki", PerusopetusPerusteKaikkiDto.class);
         return peruste;
     }
 

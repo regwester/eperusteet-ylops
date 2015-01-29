@@ -13,19 +13,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.external;
+package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
-import java.util.List;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
- * @author nkala
+ * @author jhyoty
  */
-public interface EperusteetService {
-    List<PerusteInfoDto> perusopetuksenPerusteet();
-    PerusopetusPerusteKaikkiDto perusopetuksenPeruste(final Long id);
-    JsonNode tiedotteet(Long jalkeen);
+@Getter
+@Setter
+public class LaajaalainenOsaaminenDto implements ReferenceableDto {
+    private Long id;
+    private UUID tunniste;
+    private LokalisoituTekstiDto nimi;
+    private LokalisoituTekstiDto kuvaus;
 }
