@@ -20,11 +20,16 @@ import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 /**
  *
  * @author mikkom
  */
 public interface OppiaineService {
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Set<OppiaineDto> getAll(@P("opsId") Long opsId);
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OppiaineDto get(@P("opsId") Long opsId, Long id);
 

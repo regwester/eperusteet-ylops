@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
+
 /**
  *
  * @author mikkom
@@ -48,6 +50,11 @@ public class OppiaineController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         return response(oppiaineService.get(opsId, id));
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public Set<OppiaineDto> getAll(@PathVariable("opsId") final Long opsId) {
+        return oppiaineService.getAll(opsId);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
