@@ -32,14 +32,4 @@ public enum Tyyppi {
 
     @Override
     public String toString() { return tyyppi; }
-
-    @JsonCreator
-    public static Tyyppi of(String tyyppi) {
-        for (Tyyppi t : values()) {
-            if (t.tyyppi.equalsIgnoreCase(tyyppi)) {
-                return t;
-            }
-        }
-        throw new IllegalArgumentException(tyyppi + " ei ole kelvollinen tyyppi");
-   }
 }

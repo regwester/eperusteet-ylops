@@ -35,11 +35,4 @@ public enum Omistussuhde {
 
     @Override
     public String toString() { return omistussuhde; }
-
-    @JsonCreator
-    public static Omistussuhde of(String omistussuhde) {
-        return Stream.of(values()).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(omistussuhde +
-                        " ei ole kelvollinen omistussuhde"));
-    }
 }

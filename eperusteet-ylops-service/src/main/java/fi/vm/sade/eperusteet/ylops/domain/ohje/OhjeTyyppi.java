@@ -32,14 +32,4 @@ public enum OhjeTyyppi {
 
     @Override
     public String toString() { return tyyppi; }
-
-    @JsonCreator
-    public static OhjeTyyppi of(String tyyppi) {
-        for (OhjeTyyppi t : values()) {
-            if (t.tyyppi.equalsIgnoreCase(tyyppi)) {
-                return t;
-            }
-        }
-        throw new IllegalArgumentException(tyyppi + " ei ole kelvollinen ohje tyyppi");
-   }
 }
