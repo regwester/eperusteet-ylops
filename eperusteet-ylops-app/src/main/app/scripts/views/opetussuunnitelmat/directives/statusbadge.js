@@ -32,7 +32,8 @@ ylopsApp
     scope: {
       status: '=',
       editable: '=?',
-      projektiId: '='
+      projektiId: '=',
+      model: '='
     },
     controller: 'StatusbadgeController',
     link: function (scope, element) {
@@ -51,7 +52,7 @@ ylopsApp
   };
 })
 
-.controller('StatusbadgeController', function ($scope) {
+.controller('StatusbadgeController', function ($scope, OpsinTilanvaihto, OpsinTila, Notifikaatiot) {
     $scope.iconMapping = {
       luonnos: 'pencil',
       laadinta: 'pencil',
@@ -71,6 +72,21 @@ ylopsApp
 
     $scope.iconClasses = function () {
       return 'glyphicon glyphicon-' + $scope.iconMapping[$scope.status];
+    };
+
+    $scope.startEditing = function() {
+      // TODO tilat backendiltä?
+      var tilat = ['luonnos', 'valmis'];
+      OpsinTilanvaihto.start({
+        currentStatus: $scope.status,
+        mahdollisetTilat: tilat,
+        isPohja: $scope.model.tyyppi === 'pohja'
+      }, function (newStatus) {
+        OpsinTila.save({}, _.extend({tila: newStatus}, _.omit($scope.model, 'tila')), function(res) {
+          Notifikaatiot.onnistui('tallennettu-ok');
+          $scope.status = res.tila;
+        }, Notifikaatiot.serverCb);
+      });
     };
 
   });
