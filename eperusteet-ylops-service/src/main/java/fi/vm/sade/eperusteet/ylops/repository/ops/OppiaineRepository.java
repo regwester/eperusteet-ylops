@@ -16,8 +16,12 @@
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.Set;
 
 /**
  *
@@ -25,4 +29,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine, Long> {
+    @Query(value = "SELECT a FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a WHERE o.id = ?1")
+    Set<Oppiaine> findByOpsId(long opsId);
 }

@@ -28,6 +28,7 @@ import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,11 +49,10 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     @Override
     @Transactional(readOnly = true)
-    public Set<OppiaineDto> getAll(@P("opsId") Long opsId) {
+    public List<OppiaineDto> getAll(@P("opsId") Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        //oppiaineRepository.findByOpsId(opsId);
-        throw new UnsupportedOperationException("TODO: toteuta");
+        return mapper.mapAsList(oppiaineRepository.findByOpsId(opsId), OppiaineDto.class);
     }
 
     @Override

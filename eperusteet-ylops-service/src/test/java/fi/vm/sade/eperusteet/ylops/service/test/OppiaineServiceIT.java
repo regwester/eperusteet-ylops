@@ -17,11 +17,13 @@ package fi.vm.sade.eperusteet.ylops.service.test;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
@@ -36,6 +38,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -49,6 +52,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     OppiaineService oppiaineService;
+
+    @Autowired
+    OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Before
     public void setUp() {
@@ -79,12 +85,24 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
 
         OppiaineDto oppiaineDto = new OppiaineDto();
+        oppiaineDto.setNimi(lt("Uskonto"));
+        oppiaineDto.setKoodi("koodikoodi");
+        oppiaineDto.setKoosteinen(false);
+
+        oppiaineDto = oppiaineService.add(id, oppiaineDto);
+        assertNotNull(oppiaineDto);
+
+        oppiaineDto = new OppiaineDto();
         oppiaineDto.setNimi(lt("Matematiikka"));
         oppiaineDto.setKoodi("jaa-a");
         oppiaineDto.setKoosteinen(false);
 
         oppiaineDto = oppiaineService.add(id, oppiaineDto);
         assertNotNull(oppiaineDto);
+
+        List<OppiaineDto> oppiaineet = oppiaineService.getAll(id);
+        assertNotNull(oppiaineet);
+        assertEquals(2, oppiaineet.size());
 
         oppiaineDto = oppiaineService.get(id, oppiaineDto.getId());
         assertNotNull(oppiaineDto);
