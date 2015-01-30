@@ -17,16 +17,19 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
-import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -44,67 +47,75 @@ public class KoodistoServiceImpl implements KoodistoService {
     private static final String ALARELAATIO = "relaatio/sisaltyy-alakoodit/";
 
     @Autowired
-    private DtoMapper mapper;
+    private Client client;
 
-    @Override
-    @Cacheable("koodistot")
-    public List<KoodistoKoodiDto> getAll(String koodisto) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/";
-        KoodistoKoodiDto[] koodistot = restTemplate.getForObject(url, KoodistoKoodiDto[].class);
-        List<KoodistoKoodiDto> koodistoLista = Arrays.asList(koodistot);
-        if ("kunta".equals(koodisto)) {
-            koodistoLista =
-                    Arrays.stream(koodistot)
-                          // Filtteröi pois ex-kunnat
-                          .filter(kunta -> kunta.getVoimassaLoppuPvm() == null)
-                          // Ja "puuttuva" kunta
-                          .filter(kunta -> !"999".equals(kunta.getKoodiArvo()))
-                          .collect(Collectors.toList());
+    @Component
+    public static class Client {
+
+        private static final Logger LOG = LoggerFactory.getLogger(Client.class);
+        private final RestTemplate restTemplate = new RestTemplate();
+
+        @Cacheable(value = "koodistot", unless = "#result == null")
+        public <T> T getForObject(String url, Class<T> responseType) {
+            try {
+                return restTemplate.getForObject(url, responseType);
+            } catch (HttpServerErrorException e) {
+                LOG.warn(e.getMessage());
+                return null;
+            }
         }
-        return mapper.mapAsList(koodistoLista, KoodistoKoodiDto.class);
     }
 
     @Override
-    @Cacheable("koodistot")
+    public List<KoodistoKoodiDto> getAll(String koodisto) {
+        String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/";
+        KoodistoKoodiDto[] koodistot = client.getForObject(url, KoodistoKoodiDto[].class);
+        List<KoodistoKoodiDto> koodistoLista = null;
+        if ("kunta".equals(koodisto)) {
+            koodistoLista
+                = Arrays.stream(koodistot)
+                // Filtteröi pois ex-kunnat
+                .filter(kunta -> kunta.getVoimassaLoppuPvm() == null)
+                // Ja "puuttuva" kunta
+                .filter(kunta -> !"999".equals(kunta.getKoodiArvo()))
+                .collect(Collectors.toList());
+        }
+        return koodistot == null ? null : koodistoLista;
+    }
+
+    @Override
     public KoodistoKoodiDto get(String koodisto, String koodi) {
-        RestTemplate restTemplate = new RestTemplate();
         String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/" + koodi;
-        return restTemplate.getForObject(url, KoodistoKoodiDto.class);
+        return client.getForObject(url, KoodistoKoodiDto.class);
     }
 
     @Override
-    @Cacheable("koodistot")
     public List<KoodistoKoodiDto> filterBy(String koodisto, String haku) {
         List<KoodistoKoodiDto> filter = getAll(koodisto);
         List<KoodistoKoodiDto> tulos = new ArrayList<>();
 
-        Predicate<KoodistoKoodiDto> matches =
-                x -> x.getKoodiUri().contains(haku) ||
-                     Arrays.stream(x.getMetadata())
-                           .anyMatch(y -> y.getNimi().toLowerCase().contains(haku.toLowerCase()));
+        Predicate<KoodistoKoodiDto> matches
+            = x -> x.getKoodiUri().contains(haku) || Arrays.stream(x.getMetadata())
+            .anyMatch(y -> y.getNimi().toLowerCase().contains(haku.toLowerCase()));
 
         filter.stream()
-              .filter(matches)
-              .forEach(tulos::add);
+            .filter(matches)
+            .forEach(tulos::add);
         return tulos;
     }
 
     @Override
-    @Cacheable("koodistot")
     public List<KoodistoKoodiDto> getAlarelaatio(String koodi) {
-        RestTemplate restTemplate = new RestTemplate();
         String url = koodistoServiceUrl + KOODISTO_API + ALARELAATIO + koodi;
-        KoodistoKoodiDto[] koodistot = restTemplate.getForObject(url, KoodistoKoodiDto[].class);
-        return mapper.mapAsList(Arrays.asList(koodistot), KoodistoKoodiDto.class);
+        KoodistoKoodiDto[] koodistot = client.getForObject(url, KoodistoKoodiDto[].class);
+        return koodistot == null ? null : Arrays.asList(koodistot);
     }
 
     @Override
-    @Cacheable("koodistot")
     public List<KoodistoKoodiDto> getYlarelaatio(String koodi) {
-        RestTemplate restTemplate = new RestTemplate();
         String url = koodistoServiceUrl + KOODISTO_API + YLARELAATIO + koodi;
-        KoodistoKoodiDto[] koodistot = restTemplate.getForObject(url, KoodistoKoodiDto[].class);
-        return mapper.mapAsList(Arrays.asList(koodistot), KoodistoKoodiDto.class);
+        KoodistoKoodiDto[] koodistot = client.getForObject(url, KoodistoKoodiDto[].class);
+        return koodistot == null ? null : Arrays.asList(koodistot);
     }
+
 }
