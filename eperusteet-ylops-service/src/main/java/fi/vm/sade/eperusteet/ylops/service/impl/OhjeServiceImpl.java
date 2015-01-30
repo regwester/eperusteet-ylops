@@ -16,11 +16,13 @@
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
+import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -51,13 +53,17 @@ public class OhjeServiceImpl implements OhjeService {
 
     @Override
     @Transactional(readOnly = true)
-    public OhjeDto getTekstiKappaleOhje(@P("uuid") UUID uuid) {
-        Ohje ohje = repository.findFirstByKohde(uuid);
-        return mapper.map(ohje, OhjeDto.class);
+    public List<OhjeDto> getTekstiKappaleOhjeet(@P("uuid") UUID uuid) {
+        List<Ohje> ohjeet = repository.findByKohde(uuid);
+        return mapper.mapAsList(ohjeet, OhjeDto.class);
     }
 
     @Override
     public OhjeDto addOhje(OhjeDto ohjeDto) {
+        // NOTE: Poista jossain vaiheessa kun frontti tukee tyyppejä
+        if (ohjeDto.getTyyppi() == null) {
+            ohjeDto.setTyyppi(OhjeTyyppi.PERUSTETEKSTI);
+        }
         Ohje ohje = mapper.map(ohjeDto, Ohje.class);
         ohje = repository.save(ohje);
         return mapper.map(ohje, OhjeDto.class);

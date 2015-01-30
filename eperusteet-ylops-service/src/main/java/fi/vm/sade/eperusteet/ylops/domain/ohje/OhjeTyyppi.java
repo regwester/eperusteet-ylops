@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain;
+package fi.vm.sade.eperusteet.ylops.domain.ohje;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
@@ -21,25 +21,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  *
  * @author harrik
  */
-public enum Tyyppi {
+public enum OhjeTyyppi {
 
-    OPS("ops"),
-    POHJA("pohja");
+    OHJE("ohje"),
+    PERUSTETEKSTI("perusteteksti");
 
     private final String tyyppi;
 
-    private Tyyppi(String tyyppi) { this.tyyppi = tyyppi; }
+    private OhjeTyyppi(String tyyppi) { this.tyyppi = tyyppi; }
 
     @Override
     public String toString() { return tyyppi; }
 
     @JsonCreator
-    public static Tyyppi of(String tyyppi) {
-        for (Tyyppi t : values()) {
+    public static OhjeTyyppi of(String tyyppi) {
+        for (OhjeTyyppi t : values()) {
             if (t.tyyppi.equalsIgnoreCase(tyyppi)) {
                 return t;
             }
         }
-        throw new IllegalArgumentException(tyyppi + " ei ole kelvollinen tyyppi");
+        throw new IllegalArgumentException(tyyppi + " ei ole kelvollinen ohje tyyppi");
    }
 }
