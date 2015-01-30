@@ -27,7 +27,8 @@ ylopsApp
   }, {
     forTekstikappale: {
       method: 'GET',
-      url: OhjeResources.base + '/tekstikappale/:uuid'
+      url: OhjeResources.base + '/tekstikappale/:uuid',
+      isArray: true
     }
   });
 });

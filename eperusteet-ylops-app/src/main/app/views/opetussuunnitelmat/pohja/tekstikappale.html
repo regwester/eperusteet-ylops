@@ -21,7 +21,7 @@
     <h3 collapse-toggler="options.perusteentekstiCollapsed" kaanna="'perusteen-teksti'"></h3>
 
     <div collapse="options.perusteentekstiCollapsed" class="teksti-well">
-      <div ckeditor ng-model="ohje2.teksti" slocalized></div>
+      <div ckeditor ng-model="perusteteksti.teksti" slocalized></div>
     </div>
 
     <h3 collapse-toggler="options.tekstiCollapsed">
@@ -52,12 +52,12 @@
 
     <h3 collapse-toggler="options.perusteentekstiCollapsed">
       <span kaanna="'perusteen-teksti'"></span>
-      <a class="inline-toggle-link" ng-hide="isEmpty(ohje2.teksti)" ng-click="ohjeOps.delete($event, ohje2)" kaanna="'poista'"></a>
+      <a class="inline-toggle-link" ng-hide="isEmpty(perusteteksti.teksti)" ng-click="ohjeOps.delete($event, perusteteksti)" kaanna="'poista'"></a>
     </h3>
 
     <div collapse="options.perusteentekstiCollapsed" class="teksti-well">
-      <span ng-bind-html="ohje2.teksti | kaanna | unsafe"></span>
-      <span class="empty-placeholder" ng-if="isEmpty(ohje2.teksti)" kaanna="'ei-maaritetty'"></span>
+      <span ng-bind-html="perusteteksti.teksti | kaanna | unsafe"></span>
+      <span class="empty-placeholder" ng-if="isEmpty(perusteteksti.teksti)" kaanna="'ei-maaritetty'"></span>
     </div>
 
     <h3 collapse-toggler="options.tekstiCollapsed">

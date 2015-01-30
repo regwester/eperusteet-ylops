@@ -24,10 +24,13 @@ ylopsApp
   $scope.pohjaId = $stateParams.pohjaId;
   $scope.model = tekstikappaleModel;
   $scope.ohje = {};
+  $scope.perusteteksti = {};
   $scope.options = {tekstiCollapsed: true};
+  var TYYPIT = ['ohje', 'perusteteksti'];
   var originals = {
     teksti: _.cloneDeep($scope.model),
-    ohje: null
+    ohje: null,
+    perusteteksti: null
   };
 
   $scope.isEmpty = function (model) {
@@ -59,8 +62,15 @@ ylopsApp
 
   function fetchOhje(model) {
     OhjeCRUD.forTekstikappale({uuid: model.tekstiKappale.tunniste}, function (ohje) {
-      $scope.ohje = ohje;
-      saveOriginal('ohje', ohje);
+      _.each(TYYPIT, function (tyyppi) {
+        var found = _.find(ohje, function (item) {
+          return item.tyyppi === tyyppi;
+        });
+        if (found) {
+          $scope[tyyppi] = found;
+          saveOriginal(tyyppi, $scope[tyyppi]);
+        }
+      });
     });
   }
 
@@ -89,16 +99,19 @@ ylopsApp
     }
   };
 
-  function saveOhje() {
-    if (!$scope.ohje.$save) {
-      $scope.ohje.kohde = $scope.model.tekstiKappale.tunniste;
-      OhjeCRUD.save({}, $scope.ohje, function (res) {
-        $scope.ohje = res;
-        saveOriginal('ohje', res);
+  function saveOhje(tyyppi) {
+    if (!$scope[tyyppi].tyyppi) {
+      $scope[tyyppi].tyyppi = tyyppi;
+    }
+    if (!$scope[tyyppi].$save) {
+      $scope[tyyppi].kohde = $scope.model.tekstiKappale.tunniste;
+      OhjeCRUD.save({}, $scope[tyyppi], function (res) {
+        $scope[tyyppi] = res;
+        saveOriginal(res.tyyppi, res);
       }, Notifikaatiot.serverCb);
     } else {
-      $scope.ohje.$save({}, function (res) {
-        saveOriginal('ohje', res);
+      $scope[tyyppi].$save({}, function (res) {
+        saveOriginal(res.tyyppi, res);
       }, Notifikaatiot.serverCb);
     }
   }
@@ -108,18 +121,20 @@ ylopsApp
     var cmp = Utils.compareLocalizedText;
     var tekstiaMuutettu = !cmp(teksti.nimi, originals.teksti.tekstiKappale.nimi) ||
       !cmp(teksti.teksti, originals.teksti.tekstiKappale.teksti);
-    var ohjeLisatty = _.isEmpty(originals.ohje) && Utils.hasLocalizedText($scope.ohje.teksti);
     var changes = {
       teksti: {
         changed: tekstiaMuutettu || $scope.model.pakollinen !== originals.teksti.pakollinen
-      },
-      ohje: {
-        changed: ohjeLisatty ||
-                 (!_.isEmpty(originals.ohje) && !cmp($scope.ohje.teksti, originals.ohje.teksti)),
-        deleted: !_.isEmpty(originals.ohje) && !Utils.hasLocalizedText($scope.ohje.teksti) &&
-                 Utils.hasLocalizedText(originals.ohje.teksti)
       }
     };
+    _.each(TYYPIT, function (tyyppi) {
+      var lisatty = _.isEmpty(originals[tyyppi]) && Utils.hasLocalizedText($scope[tyyppi].teksti);
+      changes[tyyppi] = {
+        changed: lisatty ||
+                 (!_.isEmpty(originals[tyyppi]) && !cmp($scope[tyyppi].teksti, originals[tyyppi].teksti)),
+        deleted: !_.isEmpty(originals[tyyppi]) && !Utils.hasLocalizedText($scope[tyyppi].teksti) &&
+                 Utils.hasLocalizedText(originals[tyyppi].teksti)
+      };
+    });
     return changes;
   }
 
@@ -136,11 +151,13 @@ ylopsApp
         // Pelkkää tekstikappaletta muokattaessa lapset-kenttä tulee jättää pois
         _.omit($scope.model, 'lapset').$save(params, successCb, Notifikaatiot.serverCb);
       }
-      if (changed.ohje.deleted) {
-        $scope.ohjeOps.delete();
-      } else if (changed.ohje.changed) {
-        saveOhje();
-      }
+      _.each(TYYPIT, function (tyyppi) {
+        if (changed[tyyppi].deleted) {
+          $scope.ohjeOps.delete(null, $scope[tyyppi]);
+        } else if (changed[tyyppi].changed) {
+          saveOhje(tyyppi);
+        }
+      });
     },
     cancel: function () {
       fetch();
@@ -152,12 +169,13 @@ ylopsApp
   Editointikontrollit.registerCallback(callbacks);
 
   $scope.ohjeOps = {
-    delete: function ($event) {
+    delete: function ($event, ohje) {
       if ($event) {
         $event.stopPropagation();
       }
-      $scope.ohje.$delete(function () {
-        $scope.ohje = {};
+      var tyyppi = ohje.tyyppi;
+      ohje.$delete(function () {
+        $scope[tyyppi] = {};
       });
     }
   };
