@@ -25,7 +25,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -40,7 +39,6 @@ public class Keskeinensisaltoalue extends AbstractReferenceableEntity {
 
     @Getter
     @Setter
-    @Type(type="uuid")
     private UUID tunniste;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

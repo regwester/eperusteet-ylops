@@ -13,12 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
+package fi.vm.sade.eperusteet.ylops.repository.ops;
+
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author jhyoty
+ * @author mikkom
  */
-public interface ReferenceableDto {
-    Long getId();
+@Repository
+public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine, Long> {
 }

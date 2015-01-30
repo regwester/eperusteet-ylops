@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;

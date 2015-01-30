@@ -13,17 +13,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.repository;
+package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author jhyoty
  */
-@Repository
-public interface VuosiluokkakokonaisuusviiteRepository extends JpaRepository<Vuosiluokkakokonaisuusviite, Long> {
+@Getter
+@Setter
+public class OpsVuosiluokkakokonaisuusDto {
 
+    private boolean oma;
+    private VuosiluokkakokonaisuusDto vuosiluokkakokonaisuus;
 }

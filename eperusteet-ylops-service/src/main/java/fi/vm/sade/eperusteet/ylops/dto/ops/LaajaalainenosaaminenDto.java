@@ -13,36 +13,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops;
+package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
-import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
 
 /**
  *
  * @author jhyoty
  */
-@MappedSuperclass
-public class AbstractAuditedReferenceableEntity extends AbstractAuditedEntity implements ReferenceableEntity {
+@Getter
+@Setter
+public class LaajaalainenosaaminenDto implements ReferenceableDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Getter
-    @Setter
-    @Audited
     private Long id;
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(id);
-    }
+    private EntityReference laajaalainenosaaminen;
+    private Optional<LokalisoituTekstiDto> kuvaus;
 
 }

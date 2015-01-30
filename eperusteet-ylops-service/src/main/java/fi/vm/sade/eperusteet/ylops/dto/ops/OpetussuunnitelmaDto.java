@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto;
+package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
@@ -50,5 +50,6 @@ public class OpetussuunnitelmaDto implements Serializable {
     private Set<KoodistoDto> kunnat;
     private Set<OrganisaatioDto> koulut;
     private Set<Kieli> julkaisukielet;
+    private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Optional<TekstiKappaleViiteDto.Puu> tekstit;
 }

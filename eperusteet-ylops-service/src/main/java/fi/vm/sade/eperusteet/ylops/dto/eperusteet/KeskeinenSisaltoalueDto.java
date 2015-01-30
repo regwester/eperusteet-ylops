@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.UUID;
 import lombok.Getter;

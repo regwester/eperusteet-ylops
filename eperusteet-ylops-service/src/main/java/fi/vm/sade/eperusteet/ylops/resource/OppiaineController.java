@@ -16,9 +16,8 @@
 package fi.vm.sade.eperusteet.ylops.resource;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.oppiaine.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.service.oppiaine.OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mikkom
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}")
+@RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet")
 @ApiIgnore
 public class OppiaineController {
 

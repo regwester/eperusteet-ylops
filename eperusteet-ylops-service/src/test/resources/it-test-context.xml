@@ -47,78 +47,95 @@
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
-    <bean id="dataSource"
-          class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="org.h2.Driver"/>
-        <property name="url" value="jdbc:h2:mem:test"/>
-    </bean>
+    <beans profile="h2db">
+        <bean id="h2db" class="org.h2.tools.Server"
+              factory-method="createTcpServer" init-method="start" destroy-method="stop" lazy-init="false">
+            <constructor-arg value="-tcpAllowOthers,-tcpPort,12345" />
+        </bean>
+        <bean id="dataSource"
+              class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close" depends-on="h2db">
+            <property name="driverClassName" value="org.h2.Driver"/>
+            <property name="url" value="jdbc:h2:tcp://localhost:12345/mem:test"/>
+        </bean>
+    </beans>
 
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceUnitName" value="eperusteet"/>
-        <property name="dataSource" ref="dataSource"/>
-        <property name="packagesToScan" value="fi.vm.sade.eperusteet.ylops.domain"/>
-        <property name="persistenceProviderClass" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
-        <property name="jpaPropertyMap">
-            <map>
-                <entry key="hibernate.hbm2ddl.auto" value="create"/>
-                <entry key="hibernate.show_sql" value="${hibernate.show_sql:false}"/>
-                <entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-                <entry key="javax.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/>
-                <entry key="hibernate.cache.use_second_level_cache" value="true"/>
-                <entry key="net.sf.ehcache.configurationResourceName" value="/eperusteet-hibernate-ehcache.xml"/>
-                <entry key="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"/>
-                <entry key="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.ValidityAuditStrategy"/>
-                <entry key="org.hibernate.envers.allow_identifier_reuse" value="true"/>
-                <entry key="javax.persistence.validation.factory" value-ref="validator"/>
-            </map>
-        </property>
-        <property name="mappingResources">
-            <list>
-                <value>typedefs-h2.xml</value>
-            </list>
-        </property>
-    </bean>
+    <beans profile="default,test">
+        <bean id="dataSource"
+              class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close">
+            <property name="driverClassName" value="org.h2.Driver"/>
+            <property name="url" value="jdbc:h2:mem:test"/>
+        </bean>
+    </beans>
 
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-    </bean>
+    <beans>
+        <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+            <property name="persistenceUnitName" value="eperusteet"/>
+            <property name="dataSource" ref="dataSource"/>
+            <property name="packagesToScan" value="fi.vm.sade.eperusteet.ylops.domain"/>
+            <property name="persistenceProviderClass" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
+            <property name="jpaPropertyMap">
+                <map>
+                    <entry key="hibernate.hbm2ddl.auto" value="create"/>
+                    <entry key="hibernate.show_sql" value="${hibernate.show_sql:false}"/>
+                    <entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+                    <entry key="javax.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/>
+                    <entry key="hibernate.cache.use_second_level_cache" value="true"/>
+                    <entry key="net.sf.ehcache.configurationResourceName" value="/eperusteet-hibernate-ehcache.xml"/>
+                    <entry key="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"/>
+                    <entry key="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.ValidityAuditStrategy"/>
+                    <entry key="org.hibernate.envers.allow_identifier_reuse" value="true"/>
+                    <entry key="javax.persistence.validation.factory" value-ref="validator"/>
+                </map>
+            </property>
+            <property name="mappingResources">
+                <list>
+                    <value>typedefs-h2.xml</value>
+                    <value>orm-h2.xml</value>
+                </list>
+            </property>
+        </bean>
 
-    <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean"/>
 
-    <bean id="testPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.mocks.TestPermissionEvaluator"/>
+        <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+            <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        </bean>
 
-    <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
-        <property name="permissionEvaluator" ref="testPermissionEvaluator"/>
-    </bean>
+        <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean"/>
 
-    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
-        <security:expression-handler ref="expressionHandler"/>
-        <security:protect-pointcut expression="execution(* fi.vm.sade.eperusteet.ylops.service.*.*(..))" access="ROLE_DENY_ALL"/>
-    </security:global-method-security>
+        <bean id="testPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.mocks.TestPermissionEvaluator"/>
 
-    <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider>
-            <security:user-service>
-                <security:user name="test" password="test" authorities="ROLE_USER"/>
-                <security:user name="test1" password="test" authorities="ROLE_USER"/>
-                <security:user name="test2" password="test" authorities="ROLE_USER"/>
-                <security:user name="test3" password="test" authorities="ROLE_USER"/>
-                <security:user name="test4" password="test" authorities="ROLE_USER"/>
-                <security:user name="test5" password="test" authorities="ROLE_USER"/>
-                <security:user name="test6" password="test" authorities="ROLE_USER"/>
-                <security:user name="test7" password="test" authorities="ROLE_USER"/>
-                <security:user name="test8" password="test" authorities="ROLE_USER"/>
-            </security:user-service>
-        </security:authentication-provider>
-    </security:authentication-manager>
+        <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+            <property name="permissionEvaluator" ref="testPermissionEvaluator"/>
+        </bean>
 
-    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
-        <property name="allowIfAllAbstainDecisions" value="true"/>
-        <property name="decisionVoters">
-            <list>
-                <bean class="org.springframework.security.access.vote.RoleVoter"/>
-            </list>
-        </property>
-    </bean>
+        <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
+            <security:expression-handler ref="expressionHandler"/>
+            <security:protect-pointcut expression="execution(* fi.vm.sade.eperusteet.ylops.service.*.*(..))" access="ROLE_DENY_ALL"/>
+        </security:global-method-security>
 
+        <security:authentication-manager alias="authenticationManager">
+            <security:authentication-provider>
+                <security:user-service>
+                    <security:user name="test" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test1" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test2" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test3" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test4" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test5" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test6" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test7" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test8" password="test" authorities="ROLE_USER"/>
+                </security:user-service>
+            </security:authentication-provider>
+        </security:authentication-manager>
+
+        <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+            <property name="allowIfAllAbstainDecisions" value="true"/>
+            <property name="decisionVoters">
+                <list>
+                    <bean class="org.springframework.security.access.vote.RoleVoter"/>
+                </list>
+            </property>
+        </bean>
+    </beans>
 </beans>

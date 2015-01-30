@@ -13,24 +13,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.repository;
+package fi.vm.sade.eperusteet.ylops.repository.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-import java.util.List;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
 @Repository
-public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository<Opetussuunnitelma, Long> {
-
-    public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
-    public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
-    public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
+public interface VuosiluokkakokonaisuusviiteRepository extends JpaRepository<Vuosiluokkakokonaisuusviite, Long> {
 
 }
