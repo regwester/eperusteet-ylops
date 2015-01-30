@@ -40,6 +40,8 @@ public class TekstiKappaleViiteDto {
 
     private Omistussuhde omistussuhde;
 
+    private boolean pakollinen;
+
     public TekstiKappaleViiteDto() { }
 
     public TekstiKappaleViiteDto(TekstiKappaleDto tekstiKappale) {

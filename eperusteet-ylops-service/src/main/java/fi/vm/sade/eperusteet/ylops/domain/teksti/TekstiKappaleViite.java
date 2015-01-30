@@ -63,6 +63,10 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     private Long id;
 
+    @Getter
+    @Setter
+    private boolean pakollinen;
+
     @ManyToOne
     @Getter
     @Setter
