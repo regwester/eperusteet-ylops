@@ -17,6 +17,48 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkakokonaisuusController', function () {
+.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit) {
+  $scope.perusteVlk = {
+    nimi: {fi: 'Vuosiluokat 1-2'},
+    tehtava: {otsikko: {fi: 'Vuosiluokkakokonaisuuden tehtävä'}, teksti: {fi: 'Tehtävän teksti.'}},
+    siirtymaEdellisesta: {otsikko: {fi: 'Siirtymä esiopetuksesta'}, teksti: {fi: 'Siirtymä edellisestä -teksti.'}},
+    siirtymaSeuraavaan: {otsikko: {fi: 'Siirtymä vuosiluokille 3-6'}, teksti: {fi: 'Siirtymä seuraavaan -teksti.'}},
+    laajaalainenOsaaminen: {otsikko: {fi: 'Laaja-alainen osaaminen vuosiluokilla 1-2'}, teksti: {fi: 'Laaja-alainen osaaminen -teksti.'}},
+    laajaalaisetOsaamiset: [
+      {tunniste: '1234', nimi: {fi: 'L1 Joku osaaminen'}, kuvaus: {fi: 'L1 kuvaus.'}},
+      {tunniste: '5678', nimi: {fi: 'L2 Joku toinen osaaminen'}, kuvaus: {fi: 'L2 kuvaus.'}},
+      {tunniste: 'abcd', nimi: {fi: 'L3 Joku kolmas osaaminen'}, kuvaus: {fi: 'L2 kuvaus.'}},
+    ]
+  };
+
+  $scope.vlk = {
+    siirtymaEdellisesta: {},
+    siirtymaSeuraavaan: {},
+  };
+  $scope.laajaalaiset = _.map($scope.perusteVlk.laajaalaisetOsaamiset, function (item) {
+    item.teksti = item.kuvaus;
+    item.otsikko = item.nimi;
+    item.paikallinen = {};
+    return item;
+  });
+
+  $scope.siirtymat = ['siirtymaEdellisesta', 'siirtymaSeuraavaan'];
+
+  $scope.callbacks = {
+    edit: function () {
+
+    },
+    save: function () {
+
+    },
+    cancel: function () {
+
+    },
+    notify: function (mode) {
+      $scope.callbacks.notifier(mode);
+    },
+    notifier: angular.noop
+  };
+  Editointikontrollit.registerCallback($scope.callbacks);
 
 });

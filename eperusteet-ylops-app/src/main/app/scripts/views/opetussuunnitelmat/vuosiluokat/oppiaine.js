@@ -21,7 +21,7 @@ ylopsApp
   $scope.oppiaine = oppiaine;
 })
 
-.controller('OppiaineController', function ($scope, $state, $stateParams) {
+.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit) {
   $scope.vuosiluokkakokonaisuus = $scope.oppiaine.vuosiluokkakokonaisuudet[0];
 
   $scope.tekstit = {
@@ -35,6 +35,23 @@ ylopsApp
 
     }
   };
+
+  $scope.callbacks = {
+    edit: function () {
+
+    },
+    save: function () {
+
+    },
+    cancel: function () {
+
+    },
+    notify: function (mode) {
+      $scope.callbacks.notifier(mode);
+    },
+    notifier: angular.noop
+  };
+  Editointikontrollit.registerCallback($scope.callbacks);
 
 
   $scope.goToDummy = function (id) {

@@ -1,1 +1,19 @@
-<h2>Vuosiluokkakokonaisuus</h2>
+<h2 ng-bind="perusteVlk.nimi | kaanna"></h2>
+
+<div class="vuosiluokkakokonaisuus">
+
+  <div perusteen-tekstiosa="perusteVlk.tehtava"></div>
+
+  <h2 kaanna="'siirtymavaiheet'"></h2>
+  <div ng-repeat="osio in siirtymat">
+    <div perusteen-tekstiosa="perusteVlk[osio]" muokattava="vlk[osio]" callbacks="callbacks"></div>
+  </div>
+
+  <h2 kaanna="'laaja-alainen-osaaminen'"></h2>
+  <div perusteen-tekstiosa="perusteVlk.laajaalainenOsaaminen"></div>
+
+  <div ng-repeat="osaaminen in laajaalaiset">
+    <div perusteen-tekstiosa="osaaminen" muokattava="osaaminen.paikallinen" callbacks="callbacks"></div>
+  </div>
+
+</div>

@@ -16,7 +16,7 @@ $navigaatio-width: 280px;
 
 .navigaatio-content-plain, .navigaatio-content {
   margin-top: 40px;
-  h2 {
+  h2:first-child {
     margin-top: 0;
   }
 }

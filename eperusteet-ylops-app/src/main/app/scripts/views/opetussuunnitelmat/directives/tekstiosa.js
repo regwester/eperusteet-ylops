@@ -23,13 +23,32 @@ ylopsApp
     scope: {
       model: '=perusteenTekstiosa',
       muokattava: '=?',
+      callbacks: '=',
     },
     templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
-    controller: 'TekstiosaController'
+    controller: 'TekstiosaController',
+    link: function (scope, element, attrs) {
+      scope.editable = !!attrs.muokattava;
+      scope.options = {
+        collapsed: scope.editable
+      };
+    }
   };
 })
 
-.controller('TekstiosaController', function ($scope) {
-  $scope.editable = !!$scope.muokattava;
-  $scope.model.$isCollapsed = $scope.editable;
+.controller('TekstiosaController', function ($scope, Editointikontrollit) {
+  $scope.editMode = false;
+
+  function notifyFn(mode) {
+    $scope.editMode = mode;
+    if (!mode) {
+      $scope.callbacks.notifier = angular.noop;
+    }
+  }
+
+  $scope.startEditing = function () {
+    $scope.editMode = true;
+    $scope.callbacks.notifier = notifyFn;
+    Editointikontrollit.startEditing();
+  };
 });
