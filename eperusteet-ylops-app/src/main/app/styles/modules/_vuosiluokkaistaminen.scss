@@ -10,6 +10,9 @@ $vl-container-width: 255px;
   font-size: 13px;
   font-weight: normal;
   margin-left: 10px;
+  &.badge {
+    font-weight: 700;
+  }
 }
 
 .vuosiluokkaistaminen-container {

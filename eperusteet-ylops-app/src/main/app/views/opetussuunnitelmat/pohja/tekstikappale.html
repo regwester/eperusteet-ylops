@@ -12,13 +12,22 @@
     <h3 kaanna="'kappaleen-otsikko'"></h3>
     <input ng-model="model.tekstiKappale.nimi" slocalized class="form-control">
 
-    <h3 collapse-toggler="options.ohjeCollapsed" kaanna="'perusteen-teksti'"></h3>
+    <h3 collapse-toggler="options.ohjeistusCollapsed" kaanna="'ohjeistus'"></h3>
 
-    <div collapse="options.ohjeCollapsed" class="teksti-well">
+    <div collapse="options.ohjeistusCollapsed" class="teksti-well">
       <div ckeditor ng-model="ohje.teksti" slocalized></div>
     </div>
 
-    <h3 collapse-toggler="options.tekstiCollapsed" kaanna="'opsin-teksti'"></h3>
+    <h3 collapse-toggler="options.perusteentekstiCollapsed" kaanna="'perusteen-teksti'"></h3>
+
+    <div collapse="options.perusteentekstiCollapsed" class="teksti-well">
+      <div ckeditor ng-model="ohje2.teksti" slocalized></div>
+    </div>
+
+    <h3 collapse-toggler="options.tekstiCollapsed">
+      <span kaanna="'opsin-teksti'"></span>
+    </h3>
+    <label><input type="checkbox" ng-model="model.pakollinen"><span kaanna="'pakollinen'"></span></label>
 
     <div collapse="options.tekstiCollapsed" class="teksti-well">
       <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
@@ -31,17 +40,30 @@
 
     <h2><span ng-bind="model.tekstiKappale.nimi | kaanna"></span></h2>
 
-    <h3 collapse-toggler="options.ohjeCollapsed">
-      <span kaanna="'perusteen-teksti'"></span>
-      <a class="inline-toggle-link" ng-hide="isEmpty(ohje.teksti)" ng-click="ohjeOps.delete($event)" kaanna="'poista'"></a>
+    <h3 collapse-toggler="options.ohjeistusCollapsed">
+      <span kaanna="'ohjeistus'"></span>
+      <a class="inline-toggle-link" ng-hide="isEmpty(ohje.teksti)" ng-click="ohjeOps.delete($event, ohje)" kaanna="'poista'"></a>
     </h3>
 
-    <div collapse="options.ohjeCollapsed" class="teksti-well">
+    <div collapse="options.ohjeistusCollapsed" class="teksti-well">
       <span ng-bind-html="ohje.teksti | kaanna | unsafe"></span>
       <span class="empty-placeholder" ng-if="isEmpty(ohje.teksti)" kaanna="'ei-maaritetty'"></span>
     </div>
 
-    <h3 collapse-toggler="options.tekstiCollapsed" kaanna="'opsin-teksti'"></h3>
+    <h3 collapse-toggler="options.perusteentekstiCollapsed">
+      <span kaanna="'perusteen-teksti'"></span>
+      <a class="inline-toggle-link" ng-hide="isEmpty(ohje2.teksti)" ng-click="ohjeOps.delete($event, ohje2)" kaanna="'poista'"></a>
+    </h3>
+
+    <div collapse="options.perusteentekstiCollapsed" class="teksti-well">
+      <span ng-bind-html="ohje2.teksti | kaanna | unsafe"></span>
+      <span class="empty-placeholder" ng-if="isEmpty(ohje2.teksti)" kaanna="'ei-maaritetty'"></span>
+    </div>
+
+    <h3 collapse-toggler="options.tekstiCollapsed">
+      <span kaanna="'opsin-teksti'"></span>
+      <span ng-show="model.pakollinen" class="badge inline-toggle-link" kaanna="'pakollinen'"></span>
+    </h3>
 
     <div collapse="options.tekstiCollapsed" class="teksti-well">
       <span ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></span>

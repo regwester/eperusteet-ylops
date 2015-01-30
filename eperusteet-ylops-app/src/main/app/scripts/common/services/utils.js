@@ -40,6 +40,11 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
       return hasContent;
     };
 
+    this.compareLocalizedText = function (t1, t2) {
+      var langs = _.values(Kieli.SISALTOKIELET);
+      return _.isEqual(_.pick(t1, langs), _.pick(t2, langs));
+    };
+
     this.supportsFileReader = function () {
       return !_.isUndefined($window.FormData);
     };
