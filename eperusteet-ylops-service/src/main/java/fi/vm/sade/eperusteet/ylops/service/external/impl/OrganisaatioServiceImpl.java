@@ -23,12 +23,12 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.stream.StreamSupport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 /**
  *
@@ -54,17 +54,19 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     RestClientFactory restClientFactory;
 
     @Override
+    @Cacheable("organisaatiot")
     public JsonNode getOrganisaatio(String organisaatioOid) {
         CachingRestClient crc = restClientFactory.get(serviceUrl);
         String url = serviceUrl + ORGANISAATIOT + organisaatioOid;
         try {
             return mapper.readTree(crc.getAsString(url));
         } catch (IOException ex) {
-            throw new BusinessRuleViolationException("Peruskoulujen tietojen hakeminen epäonnistui", ex);
+            throw new BusinessRuleViolationException("Organisaation tietojen hakeminen epäonnistui", ex);
         }
     }
 
     @Override
+    @Cacheable("organisaatiot")
     public JsonNode getPeruskoulut(String kuntaId) {
         CachingRestClient crc = restClientFactory.get(serviceUrl);
         String url = serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + KUNTA_KRITEERI_ID + "=" + kuntaId + PERUSKOULU_HAKU;
