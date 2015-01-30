@@ -49,4 +49,8 @@ public class Ohje extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     private UUID kohde;
+
+    @Getter
+    @Setter
+    private OhjeTyyppi tyyppi;
 }

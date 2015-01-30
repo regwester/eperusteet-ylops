@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lokalisoituTekstiOf;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
+import java.util.List;
 
 /**
  * @author mikkom
@@ -74,10 +75,12 @@ public class OhjeServiceIT extends AbstractIntegrationTest {
         Assert.assertEquals(OHJETEKSTI, ohjeDto.getTeksti().get(Kieli.FI));
         Assert.assertEquals(tekstiKappale.getTunniste(), ohjeDto.getKohde());
 
-        ohjeDto = ohjeService.getTekstiKappaleOhje(tekstiKappale.getTunniste());
-        Assert.assertNotNull(ohjeDto);
-        Assert.assertEquals(OHJETEKSTI, ohjeDto.getTeksti().get(Kieli.FI));
-        Assert.assertEquals(tekstiKappale.getTunniste(), ohjeDto.getKohde());
+        List<OhjeDto> ohjeDtos = ohjeService.getTekstiKappaleOhjeet(tekstiKappale.getTunniste());
+        Assert.assertNotNull(ohjeDtos);
+        for (OhjeDto dto : ohjeDtos) {
+            Assert.assertEquals(OHJETEKSTI, dto.getTeksti().get(Kieli.FI));
+            Assert.assertEquals(tekstiKappale.getTunniste(), dto.getKohde());
+        }
     }
 
     @Test
