@@ -15,10 +15,9 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-import fi.vm.sade.eperusteet.ylops.dto.oppiaine.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
 
 import java.util.Set;
 

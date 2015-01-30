@@ -17,7 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.oppiaine.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;

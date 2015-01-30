@@ -13,10 +13,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.resource;
+package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import fi.vm.sade.eperusteet.ylops.dto.oppiaine.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

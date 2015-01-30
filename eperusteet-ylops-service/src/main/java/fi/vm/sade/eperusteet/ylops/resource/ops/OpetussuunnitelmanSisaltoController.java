@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.resource;
+package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;

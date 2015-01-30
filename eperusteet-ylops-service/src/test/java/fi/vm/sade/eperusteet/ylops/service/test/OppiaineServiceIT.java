@@ -20,7 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.oppiaine.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
