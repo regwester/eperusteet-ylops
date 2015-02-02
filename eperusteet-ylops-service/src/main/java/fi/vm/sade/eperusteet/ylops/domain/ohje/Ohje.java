@@ -21,6 +21,8 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
@@ -52,5 +54,6 @@ public class Ohje extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
+    @Enumerated(EnumType.STRING)
     private OhjeTyyppi tyyppi;
 }

@@ -28,6 +28,9 @@ import org.springframework.stereotype.Repository;
 public interface VuosiluokkakokonaisuusRepository extends JpaWithVersioningRepository<Vuosiluokkakokonaisuus, Long> {
 
     @Query("SELECT v FROM Opetussuunnitelma o JOIN o.vuosiluokkakokonaisuudet ov JOIN ov.vuosiluokkakokonaisuus v WHERE o.id = ?1 AND v.id = ?2")
-    public Vuosiluokkakokonaisuus findBy(Long opsId, Long id);
+    Vuosiluokkakokonaisuus findBy(Long opsId, Long id);
+
+    @Query("SELECT CASE COUNT(o) WHEN 0 THEN false ELSE true END FROM Opetussuunnitelma o JOIN o.vuosiluokkakokonaisuudet ov JOIN ov.vuosiluokkakokonaisuus v WHERE v.id = ?1")
+    boolean isInUse(Long kokonaisuusId);
 
 }

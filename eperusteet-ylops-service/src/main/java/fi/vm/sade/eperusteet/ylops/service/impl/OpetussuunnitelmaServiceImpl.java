@@ -18,38 +18,34 @@ package fi.vm.sade.eperusteet.ylops.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.repository.koodisto.KoodistoKoodiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -83,6 +79,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OrganisaatioService organisaatioService;
+
+    @Autowired
+    private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
 
     @Override
     @Transactional(readOnly = true)
@@ -232,10 +231,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
         mapper.map(opetussuunnitelmaDto, ops);
+        ops = repository.save(ops);
+
         if (opetussuunnitelmaDto.getTekstit() != null) {
             tekstiKappaleViiteService.reorderSubTree(ops.getId(), ops.getTekstit().getId(), opetussuunnitelmaDto.getTekstit().get());
         }
-        ops = repository.save(ops);
+
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 

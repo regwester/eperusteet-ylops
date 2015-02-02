@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.UUID;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +59,9 @@ public class PermissionRepositoryIT extends AbstractIntegrationTest {
     @Ignore
     public void testPermissionRepository() {
 
-        Vuosiluokkakokonaisuusviite vs = vkvr.save(new Vuosiluokkakokonaisuusviite("VUOSILUOKAT1-2", EnumSet.of(Vuosiluokka.VUOSILUOKKA_1, Vuosiluokka.VUOSILUOKKA_2)));
-        vkvr.save(new Vuosiluokkakokonaisuusviite("VUOSILUOKAT3-6", EnumSet.of(Vuosiluokka.VUOSILUOKKA_3, Vuosiluokka.VUOSILUOKKA_4, Vuosiluokka.VUOSILUOKKA_5, Vuosiluokka.VUOSILUOKKA_6)));
-        vkvr.save(new Vuosiluokkakokonaisuusviite("VUOSILUOKAT6-9", EnumSet.of(Vuosiluokka.VUOSILUOKKA_7, Vuosiluokka.VUOSILUOKKA_8, Vuosiluokka.VUOSILUOKKA_9)));
+        Vuosiluokkakokonaisuusviite vs = vkvr.save(new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_1, Vuosiluokka.VUOSILUOKKA_2)));
+        vkvr.save(new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_3, Vuosiluokka.VUOSILUOKKA_4, Vuosiluokka.VUOSILUOKKA_5, Vuosiluokka.VUOSILUOKKA_6)));
+        vkvr.save(new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_7, Vuosiluokka.VUOSILUOKKA_8, Vuosiluokka.VUOSILUOKKA_9)));
 
         final OpetussuunnitelmaDto dto = ops.addOpetussuunnitelma(new OpetussuunnitelmaDto());
         VuosiluokkakokonaisuusDto vk = vks.add(dto.getId(), new VuosiluokkakokonaisuusDto(vs.getReference()));

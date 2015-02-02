@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +52,7 @@ public class ReferenceableCollectionMergeMapper extends CustomMapper<Collection<
     }
 
     private void mergeMap(Collection<ReferenceableDto> a, Collection<ReferenceableEntity> b, MappingContext context) {
-        Map<Long, ReferenceableEntity> indx = b.stream().collect(Collectors.toMap(ReferenceableEntity::getId, r -> {
+        Map<Serializable, ReferenceableEntity> indx = b.stream().collect(Collectors.toMap(ReferenceableEntity::getId, r -> {
             return r;
         }));
         Class<? extends ReferenceableEntity> typeB = context.getResolvedDestinationType().getComponentType().getRawType().asSubclass(ReferenceableEntity.class);

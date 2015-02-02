@@ -47,6 +47,9 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
     @Override
     public VuosiluokkakokonaisuusDto add(Long opsId, VuosiluokkakokonaisuusDto dto) {
         Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
+        if (ops == null) {
+            throw new BusinessRuleViolationException("Opetussuunnitelmaa ei löydy");
+        }
         Vuosiluokkakokonaisuus vk;
         if (dto.getId() != null) {
             vk = kokonaisuudet.findOne(opsId);
@@ -72,7 +75,9 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         if (vk != null) {
             Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
             ops.removeVuosiluokkakokonaisuus(vk);
-            //TODO poista kokonaisuus kokonaan jos se on oma eikä ole käytössä.
+            if (!kokonaisuudet.isInUse(kokonaisuusId)) {
+                kokonaisuudet.delete(vk);
+            }
         }
     }
 

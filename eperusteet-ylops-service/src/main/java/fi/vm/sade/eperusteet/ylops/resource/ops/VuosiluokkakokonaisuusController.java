@@ -16,7 +16,9 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.wordnik.swagger.annotations.Api;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,12 @@ public class VuosiluokkakokonaisuusController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<VuosiluokkakokonaisuusDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        return response(vuosiluokkakokonaisuudet.get(opsId, id));
+        return Responses.ofNullable(vuosiluokkakokonaisuudet.get(opsId, id));
+    }
+
+    @RequestMapping(value = "/{id}/oppiaineet", method = RequestMethod.GET)
+    public Set<OppiaineDto> findOppiaineet(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        throw new UnsupportedOperationException("Ei ole toteutettu");
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -64,13 +71,6 @@ public class VuosiluokkakokonaisuusController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         vuosiluokkakokonaisuudet.delete(opsId, id);
-    }
-
-    private static <T> ResponseEntity<T> response(T data) {
-        if (data == null) {
-            return new ResponseEntity<>((T)null, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
 }

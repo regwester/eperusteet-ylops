@@ -17,8 +17,15 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.metamodel.IdentifiableType;
+import javax.persistence.metamodel.ManagedType;
+import ma.glasnost.orika.ConverterException;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.springframework.stereotype.Component;
@@ -46,7 +53,24 @@ public class ReferenceableEntityConverter extends BidirectionalConverter<Referen
 
     @Override
     public ReferenceableEntity convertFrom(EntityReference reference, Type<ReferenceableEntity> type) {
-        return em.getReference(type.getRawType(), Long.valueOf(reference.getId()));
+        ManagedType<ReferenceableEntity> managedType = em.getMetamodel().managedType(type.getRawType());
+        if (managedType instanceof IdentifiableType) {
+            final Class<?> idType = ((IdentifiableType<?>) managedType).getIdType().getJavaType();
+            return em.getReference(type.getRawType(), converters.getOrDefault(idType, ReferenceableEntityConverter::fail).apply(reference));
+        }
+        throw new ConverterException();
+    }
+
+    private static final Map<Class<?>, Function<EntityReference, ?>> converters;
+
+    private static Object fail(EntityReference r) {
+        throw new IllegalArgumentException("tuntematon viitetyyppi");
+    }
+
+    static {
+        converters = new IdentityHashMap<>();
+        converters.put(Long.class, s -> Long.valueOf(s.getId()));
+        converters.put(UUID.class, s -> UUID.fromString(s.getId()));
     }
 
 }

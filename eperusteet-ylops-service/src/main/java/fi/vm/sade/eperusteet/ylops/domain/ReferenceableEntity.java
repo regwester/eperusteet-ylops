@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import java.io.Serializable;
 
 /**
  *
@@ -23,5 +24,5 @@ import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
  */
 public interface ReferenceableEntity {
     EntityReference getReference();
-    Long getId();
+    Serializable getId();
 }

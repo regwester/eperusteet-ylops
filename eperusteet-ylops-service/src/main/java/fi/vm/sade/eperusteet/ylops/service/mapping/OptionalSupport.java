@@ -27,18 +27,19 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.MappingException;
 import ma.glasnost.orika.NullFilter;
 import ma.glasnost.orika.metadata.Type;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 
 /**
  * Tuki Javan Optional-luokalle Orika mapperin yhteydessä.
  *
  * Tarkoitettu Dto-Entiteetti-Dto mappaukseen.
  *
- * Mahdollistaa mappauksen siten, että DTO-luokissa voi määritellä attribuutteja Optional&lt;Attr&gt;
- * ja mappaus entiteetteihin toimii seuraavasti:
+ * Mahdollistaa mappauksen siten, että DTO-luokissa voi määritellä attribuutteja Optional&lt;Attr&gt; ja mappaus entiteetteihin toimii seuraavasti:
  * <ul>
- *   <li>null: pidetään kohdearvo
- *   <li>present: mapätään rekursiivisesti kohdearvoon
- *   <li>empty: asetetaan kohdearvo NULL-arvoksi
+ * <li>null: pidetään kohdearvo
+ * <li>present: mapätään rekursiivisesti kohdearvoon
+ * <li>empty: asetetaan kohdearvo NULL-arvoksi
  * </ul>
  * TODO: Kohdearvo ei voi olla itse Optional (ainakaan kaikissa tapauksissa).
  *
@@ -58,12 +59,22 @@ public final class OptionalSupport {
         factory.registerMapper(new Mapper());
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T unproxy(T entity) {
+        if (entity instanceof HibernateProxy) {
+            Hibernate.initialize(entity);
+            entity = (T) ((HibernateProxy) entity).getHibernateLazyInitializer()
+                .getImplementation();
+        }
+        return entity;
+    }
+
     static final class Mapper extends CustomMapper<Optional<?>, Object> {
 
         @Override
         public void mapAtoB(Optional<?> a, Object b, MappingContext context) {
             if (a.isPresent()) {
-                mapperFacade.map(a.get(), b, context);
+                mapperFacade.map(a.get(), unproxy(b), context);
             } else {
                 throw new MappingException("Optional.absent havaittu");
             }

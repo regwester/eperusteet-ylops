@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +53,9 @@ public class VuosiluokkakokonaisuusServiceIT extends AbstractIntegrationTest {
 
     @Before
     public void setup() {
-        Vuosiluokkakokonaisuusviite viite = new Vuosiluokkakokonaisuusviite("VUOSILUOKAT_1_2", EnumSet.of(Vuosiluokka.VUOSILUOKKA_1, Vuosiluokka.VUOSILUOKKA_2));
+        Vuosiluokkakokonaisuusviite viite = new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_1, Vuosiluokka.VUOSILUOKKA_2));
         this.viite1Ref = viitteet.save(viite).getReference();
-        viite = new Vuosiluokkakokonaisuusviite("VUOSILUOKAT_3_6", EnumSet.of(Vuosiluokka.VUOSILUOKKA_3, Vuosiluokka.VUOSILUOKKA_4, Vuosiluokka.VUOSILUOKKA_5, Vuosiluokka.VUOSILUOKKA_6));
+        viite = new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_3, Vuosiluokka.VUOSILUOKKA_4, Vuosiluokka.VUOSILUOKKA_5, Vuosiluokka.VUOSILUOKKA_6));
         this.viite2Ref = viitteet.save(viite).getReference();
         Opetussuunnitelma ops = new Opetussuunnitelma();
         ops = suunnitelmat.save(ops);

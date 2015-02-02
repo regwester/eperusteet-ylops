@@ -47,8 +47,13 @@ public class DtoMapperConfig {
         OptionalSupport.register(factory);
         factory.registerMapper(new ReferenceableCollectionMergeMapper());
 
+        //yksisuuntainen mappaus 
         factory.classMap(OpetussuunnitelmaDto.class, Opetussuunnitelma.class)
             .fieldBToA(Opetussuunnitelma_.tekstit.getName(), Opetussuunnitelma_.tekstit.getName())
+            .byDefault()
+            .register();
+        factory.classMap(OpetussuunnitelmaDto.class, Opetussuunnitelma.class)
+            .fieldBToA(Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName(), Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName())
             .byDefault()
             .register();
 
