@@ -17,6 +17,17 @@
 'use strict';
 
 ylopsApp
+.service('OpsListaService', function (OpetussuunnitelmaCRUD) {
+  var cached = null;
+  this.query = function (useCache) {
+    if (useCache && cached) {
+      return cached;
+    }
+    cached = OpetussuunnitelmaCRUD.query();
+    return cached;
+  };
+})
+
 .service('OpsService', function (OpetussuunnitelmaCRUD, Notifikaatiot) {
   var opsId = null;
   var ops = null;
