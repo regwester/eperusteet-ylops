@@ -15,14 +15,19 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.resource.config.EntityReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,7 +41,17 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String koodistoServiceUrl;
 
-    private final RestTemplate client = new RestTemplate();
+    private final RestTemplate client;
+
+    public EperusteetServiceImpl() {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.getObjectMapper().enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        converter.getObjectMapper().enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        converter.getObjectMapper().registerModule(new Jdk8Module());
+        converter.getObjectMapper().setPropertyNamingStrategy(new EntityReferenceNamingStrategy());
+        client = new RestTemplate(Arrays.asList(converter));
+    }
+
 
     @Override
     public List<PerusteInfoDto> perusopetuksenPerusteet() {

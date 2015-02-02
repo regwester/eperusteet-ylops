@@ -86,7 +86,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         converter.getObjectMapper().registerModule(new Jdk8Module());
         MappingModule module = new MappingModule();
         converter.getObjectMapper().registerModule(module);
-        converter.getObjectMapper().setPropertyNamingStrategy(new CustomNamingStrategy());
+        converter.getObjectMapper().setPropertyNamingStrategy(new EntityReferenceNamingStrategy());
         return converter;
     }
 

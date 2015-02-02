@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
@@ -26,12 +27,11 @@ import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetuksenPerusteenSisalto
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.TekstiOsaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
@@ -40,17 +40,17 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
-import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
-import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -104,6 +103,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private EperusteetService eperusteetService;
+
+    @Autowired
+    private VuosiluokkakokonaisuusviiteRepository vuosiluokkakokonaisuusviiteRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -189,7 +191,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         kopioiTekstit(pohja.getTekstit(), ops.getTekstit());
         // TODO: Toteuttamatta ainakin oppiaineiden ja vuosiluokkakokonaisuuksien kopiointi
 
-
     }
 
     @Transactional
@@ -197,7 +198,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         List<TekstiKappaleViite> vanhaLapset = vanha.getLapset();
         if (vanhaLapset != null) {
             for (TekstiKappaleViite vanhaTkv : vanhaLapset) {
-                if (vanhaTkv.getTekstiKappale()!= null) {
+                if (vanhaTkv.getTekstiKappale() != null) {
                     TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
                     tkv.setOmistussuhde(Omistussuhde.LAINATTU);
                     tkv.setLapset(new ArrayList<>());
@@ -221,23 +222,31 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunLapset(ops);
 
         // TODO: Paree olisi jos eperusteetService palauttaisi suoraan uusimman perusteen
-        PerusteInfoDto perusteInfoDto =
-            eperusteetService.perusopetuksenPerusteet().stream()
-                             .max(Comparator.comparingLong(p -> p.getVoimassaoloLoppuu().getTime()))
-                             .orElseThrow(() -> new BusinessRuleViolationException(
-                                 "Perusopetuksen perustetta ei löytynyt"));
+        PerusteInfoDto perusteInfoDto
+            = eperusteetService.perusopetuksenPerusteet().stream()
+            .max(Comparator.comparingLong(p -> p.getVoimassaoloLoppuu().getTime()))
+            .orElseThrow(() -> new BusinessRuleViolationException(
+                    "Perusopetuksen perustetta ei löytynyt"));
 
-        PerusopetusPerusteKaikkiDto perusteDto =
-            eperusteetService.perusopetuksenPeruste(perusteInfoDto.getId());
+        PerusopetusPerusteKaikkiDto perusteDto
+            = eperusteetService.perusopetuksenPeruste(perusteInfoDto.getId());
 
         Long opsId = ops.getId();
 
-        PerusopetuksenPerusteenSisaltoDto sisalto =
-            perusteDto.getPerusopetuksenPerusteenSisalto();
+        PerusopetuksenPerusteenSisaltoDto sisalto
+            = perusteDto.getPerusopetuksenPerusteenSisalto();
+
+        if (sisalto.getVuosiluokkakokonaisuudet() != null) {
+            sisalto.getVuosiluokkakokonaisuudet()
+                .forEach(vk -> {
+                    vuosiluokkakokonaisuusviiteRepository.save(new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat()));
+                });
+        }
+
         if (sisalto.getOppiaineet() != null) {
             sisalto.getOppiaineet().stream()
-                   .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
-                   .forEach(oa -> oppiaineService.add(opsId, oa));
+                .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                .forEach(oa -> oppiaineService.add(opsId, oa));
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
@@ -254,8 +263,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (oa.getOppimaarat() != null) {
             dto.setOppimaarat(
                 oa.getOppimaarat().stream()
-                  .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
-                  .collect(Collectors.toSet()));
+                .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                .collect(Collectors.toSet()));
         }
 
         // TODO: Lisää oppiaineen vlk:t
@@ -276,14 +285,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         dto.setKohdealueet(
             oa.getKohdealueet().stream()
-              .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
-              .collect(Collectors.toSet()));
+            .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+            .collect(Collectors.toSet()));
 
         if (oa.getOppimaarat() != null) {
             dto.setOppimaarat(
                 oa.getOppimaarat().stream()
-                  .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
-                  .collect(Collectors.toSet()));
+                .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                .collect(Collectors.toSet()));
         }
 
         return dto;

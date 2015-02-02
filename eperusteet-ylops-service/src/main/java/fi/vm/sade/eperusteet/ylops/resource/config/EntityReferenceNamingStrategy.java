@@ -27,7 +27,7 @@ import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
  *
  * @author jhyoty
  */
-class CustomNamingStrategy extends PropertyNamingStrategy {
+public class EntityReferenceNamingStrategy extends PropertyNamingStrategy {
 
     @Override
     public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName) {
