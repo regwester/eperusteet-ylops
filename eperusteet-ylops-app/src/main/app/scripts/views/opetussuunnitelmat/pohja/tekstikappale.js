@@ -19,10 +19,11 @@
 ylopsApp
 .controller('PohjaTekstikappaleController', function ($scope, tekstikappaleModel, Editointikontrollit,
   Notifikaatiot, Varmistusdialogi, $timeout, $state, $stateParams, OhjeCRUD, OpetussuunnitelmanTekstit,
-  Utils, $rootScope) {
+  Utils, $rootScope, MurupolkuData) {
 
   $scope.pohjaId = $stateParams.pohjaId;
   $scope.model = tekstikappaleModel;
+  MurupolkuData.set('tekstiNimi', $scope.model.tekstiKappale.nimi);
   $scope.ohje = {};
   $scope.perusteteksti = {};
   $scope.options = {tekstiCollapsed: true};
@@ -84,6 +85,7 @@ ylopsApp
       viiteId: $stateParams.tekstikappaleId
     }, function (res) {
       $scope.model = res;
+      MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
       saveOriginal('teksti', res);
       fetchOhje(res);
     }, Notifikaatiot.serverCb);

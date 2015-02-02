@@ -17,6 +17,23 @@
 'use strict';
 
 ylopsApp
+  .service('MurupolkuData', function ($rootScope) {
+    var data = {};
+    this.set = function (key, value) {
+      if (_.isObject(key)) {
+        _.each(key, function (item, k) {
+          data[k] = item;
+        });
+      } else {
+        data[key] = value;
+      }
+      $rootScope.$broadcast('murupolku:update');
+    };
+    this.get = function (key) {
+      return data[key];
+    };
+  })
+
   .directive('ylopsHeader', function () {
     return {
       restrict: 'AE',
@@ -26,36 +43,115 @@ ylopsApp
     };
   })
 
-  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet) {
+  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData) {
+    var currentState = null;
+    var STATE_ROOTS = {
+      'root.opetussuunnitelmat.yksi': {
+        state: 'root.opetussuunnitelmat.lista',
+        label: 'opetussuunnitelmat'
+      },
+      'root.pohjat.yksi': {
+        state: 'root.pohjat.lista',
+        label: 'pohjat'
+      },
+    };
+
+    var STATES = {
+      'root.opetussuunnitelmat.yksi.sisalto': {
+        useData: 'opsNimi'
+      },
+      'root.opetussuunnitelmat.yksi.sisaltoalue': {
+        parent: 'root.opetussuunnitelmat.yksi.sisalto',
+        useData: 'osioNimi',
+        useId: 'alueId'
+      },
+      'root.opetussuunnitelmat.yksi.tiedot': {
+        parent: 'root.opetussuunnitelmat.yksi.sisalto',
+        label: 'opsn-tiedot'
+      },
+      'root.opetussuunnitelmat.yksi.esikatselu': {
+        parent: 'root.opetussuunnitelmat.yksi.sisalto'
+      },
+      'root.opetussuunnitelmat.yksi.tekstikappale': {
+        useData: 'tekstiNimi',
+        parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
+      },
+      'root.pohjat.yksi.sisalto': {
+        useData: 'opsNimi'
+      },
+      'root.pohjat.yksi.tiedot': {
+        parent: 'root.pohjat.yksi.sisalto',
+        label: 'pohjan-tiedot'
+      },
+      'root.pohjat.yksi.tekstikappale': {
+        useData: 'tekstiNimi',
+        parent: 'root.pohjat.yksi.sisalto'
+      },
+      'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus': {
+        useData: 'vlkNimi',
+        parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
+      },
+      'root.opetussuunnitelmat.yksi.oppiaine.oppiaine': {
+        useData: 'oppiaineNimi',
+        parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus'
+      }
+    };
+
+    function getPath(state) {
+      var tree = [];
+      if (!state) {
+        return tree;
+      }
+      var current = STATES[state];
+      if (!current) {
+        return tree;
+      } else {
+        tree.push(_.extend({state: state}, current));
+        var parents = getPath(current.parent);
+        if (!_.isEmpty(parents)) {
+          tree = tree.concat(parents);
+        }
+      }
+      return tree;
+    }
+
+    function update() {
+      var toState = currentState;
+      if (!toState) {
+        return;
+      }
+      $scope.crumbs = [];
+
+      _.each(STATE_ROOTS, function (root, key) {
+        if (toState.name.indexOf(key) === 0 && toState.name !== key) {
+          $scope.crumbs.push({
+            url: $state.href(root.state),
+            label: root.label
+          });
+        }
+      });
+
+      var path = getPath(toState.name);
+      _(path).reverse().each(function (item) {
+        var params = {};
+        if (item.useId) {
+          params[item.useId] = MurupolkuData.get(item.useId);
+        }
+        $scope.crumbs.push({
+          url: $state.href(item.state, params),
+          label: item.useData ? MurupolkuData.get(item.useData) :
+                 (item.label ? item.label : _.last(item.state.split('.')))
+        });
+      }).value();
+    }
+
     $scope.isVirkailija = Oikeudet.isVirkailija();
 
+    $scope.$on('murupolku:update', update);
+
     $scope.$on('$stateChangeSuccess', function (event, toState) {
-      $scope.crumbs = [];
-      // TODO more generic crumb generation
-      if (toState.name.indexOf('root.opetussuunnitelmat.yksi') === 0) {
-        $scope.crumbs.push({
-          url: $state.href('root.opetussuunnitelmat.lista'),
-          label: 'opetussuunnitelmat'
-        });
-        if (toState.name !== 'root.opetussuunnitelmat.yksi.sisalto') {
-          $scope.crumbs.push({
-            url: $state.href('root.opetussuunnitelmat.yksi.sisalto'),
-            label: 'opetussuunnitelma'
-          });
-        }
-      }
-      if (toState.name.indexOf('root.pohjat.yksi') === 0) {
-        $scope.crumbs.push({
-          url: $state.href('root.pohjat.lista'),
-          label: 'pohjat'
-        });
-        if (toState.name !== 'root.pohjat.yksi.sisalto') {
-          $scope.crumbs.push({
-            url: $state.href('root.pohjat.yksi.sisalto'),
-            label: 'pohja'
-          });
-        }
-      }
+      currentState = toState;
+      update();
     });
 
     $scope.$watch('isVirkailija', function (value) {

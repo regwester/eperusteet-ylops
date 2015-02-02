@@ -28,7 +28,7 @@ ylopsApp
   };
 })
 
-.service('OpsService', function (OpetussuunnitelmaCRUD, Notifikaatiot) {
+.service('OpsService', function (OpetussuunnitelmaCRUD, Notifikaatiot, MurupolkuData) {
   var opsId = null;
   var ops = null;
   var deferred = null;
@@ -46,6 +46,7 @@ ylopsApp
   function refetch(cb) {
     if (opsId !== 'uusi') {
       deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+        MurupolkuData.set('opsNimi', angular.copy(res.nimi));
         ops = res;
         (cb || angular.noop)(res);
       }, Notifikaatiot.serverCb);
@@ -60,6 +61,7 @@ ylopsApp
       return uusi();
     }
     deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+      MurupolkuData.set('opsNimi', angular.copy(res.nimi));
       ops = res;
     }, Notifikaatiot.serverCb);
     return deferred;

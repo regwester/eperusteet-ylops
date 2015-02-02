@@ -70,11 +70,12 @@ ylopsApp
             return vuosiluokatService.getVuosiluokat();
           }]
         },
-        controller: function ($scope, opsModel, vuosiluokat, opsService) {
+        controller: function ($scope, opsModel, vuosiluokat, opsService, $rootScope) {
           $scope.model = opsModel;
           $scope.vuosiluokat = vuosiluokat;
           $scope.$on('rakenne:updated', function () {
             $scope.model = opsService.get();
+            $rootScope.$broadcast('murupolku:update');
           });
         }
       })

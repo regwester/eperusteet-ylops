@@ -19,7 +19,7 @@
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
-    OhjeCRUD) {
+    OhjeCRUD, MurupolkuData) {
 
     $scope.opsId = $stateParams.id;
     $scope.options = {
@@ -49,6 +49,7 @@ ylopsApp
           viiteId: $stateParams.tekstikappaleId
         }, function (res) {
           $scope.model = res;
+          MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
           OhjeCRUD.forTekstikappale({uuid: res.tekstiKappale.tunniste}, function (ohje) {
             $scope.ohje = ohje;
           });

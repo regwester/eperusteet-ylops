@@ -17,8 +17,9 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineBaseController', function ($scope, oppiaine) {
+.controller('OppiaineBaseController', function ($scope, oppiaine, MurupolkuData) {
   $scope.oppiaine = oppiaine;
+  MurupolkuData.set('oppiaineNimi', $scope.oppiaine.nimi);
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit) {

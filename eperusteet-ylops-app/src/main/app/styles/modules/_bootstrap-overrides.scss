@@ -8,7 +8,19 @@ $fluid-container-width: 1400px;
 }
 
 .breadcrumb {
-  margin-bottom: 0;
+  margin-bottom: 10px;
+  .active {
+    color: #777;
+  }
+  li {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 20em;
+  }
+  & > li + li:before {
+    padding-right: 0;
+  }
 }
 
 .input-group .btn, .input-group input {

@@ -17,7 +17,8 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit) {
+.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
+  MurupolkuData) {
   $scope.perusteVlk = {
     nimi: {fi: 'Vuosiluokat 1-2'},
     tehtava: {otsikko: {fi: 'Vuosiluokkakokonaisuuden tehtävä'}, teksti: {fi: 'Tehtävän teksti.'}},
@@ -30,6 +31,8 @@ ylopsApp
       {tunniste: 'abcd', nimi: {fi: 'L3 Joku kolmas osaaminen'}, kuvaus: {fi: 'L2 kuvaus.'}},
     ]
   };
+
+  MurupolkuData.set('vlkNimi', $scope.perusteVlk.nimi);
 
   $scope.vlk = {
     siirtymaEdellisesta: {},

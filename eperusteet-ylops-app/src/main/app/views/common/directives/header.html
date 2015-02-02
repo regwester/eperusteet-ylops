@@ -4,7 +4,8 @@
       <a ui-sref="root.etusivu" icon-role="home"></a>
     </li>
     <li ng-repeat="crumb in crumbs">
-      <a ng-href="{{crumb.url}}" ng-bind="crumb.label | kaanna"></a>
+      <a ng-if="!$last" ng-href="{{crumb.url}}" ng-bind="crumb.label | kaanna"></a>
+      <a class="active" ng-if="$last" ng-bind="crumb.label | kaanna"></a>
     </li>
   </ol>
 
