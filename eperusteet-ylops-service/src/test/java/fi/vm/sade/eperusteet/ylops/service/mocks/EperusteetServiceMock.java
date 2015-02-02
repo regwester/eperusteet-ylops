@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.mocks;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -32,12 +33,16 @@ public class EperusteetServiceMock implements EperusteetService {
 
     @Override
     public List<PerusteInfoDto> perusopetuksenPerusteet() {
-        return Collections.emptyList();
+        return Collections.singletonList(new PerusteInfoDto());
     }
 
     @Override
     public PerusopetusPerusteKaikkiDto perusopetuksenPeruste(Long id) {
-        return new PerusopetusPerusteKaikkiDto();
+        PerusopetusPerusteKaikkiDto peruste = new PerusopetusPerusteKaikkiDto();
+        PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
+        sisalto.setOppiaineet(Collections.emptySet());
+        peruste.setPerusopetuksenPerusteenSisalto(sisalto);
+        return peruste;
     }
 
     @Override

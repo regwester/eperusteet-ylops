@@ -17,23 +17,19 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 /**
- *
  * @author mikkom
  */
 @Getter
 @Setter
-public class OppiaineDto extends OppiaineBaseDto {
-    private TekstiosaDto tehtava;
-    private Set<OppiaineSuppeaDto> oppimaarat;
-    private Set<OpetuksenKohdealueDto> kohdealueet;
-    // TODO: Lisää oppiaineen vuosiluokkakokonaisuudet
-    private String koodiUri;
-    private String koodiArvo;
+public abstract class OppiaineBaseDto {
+    private Long id;
+    private Tila tila;
+    // "äitioppiaine" jos kyseessä on oppiaineen oppimäärä
+    private String oppiaine;
+    private boolean koosteinen;
+    private LokalisoituTekstiDto nimi;
 }

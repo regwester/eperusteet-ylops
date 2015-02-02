@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
@@ -86,7 +87,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         OppiaineDto oppiaineDto = new OppiaineDto();
         oppiaineDto.setNimi(lt("Uskonto"));
-        oppiaineDto.setKoodi("koodikoodi");
+        oppiaineDto.setKoodiUri("koodikoodi");
         oppiaineDto.setKoosteinen(false);
 
         oppiaineDto = oppiaineService.add(id, oppiaineDto);
@@ -94,7 +95,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         oppiaineDto = new OppiaineDto();
         oppiaineDto.setNimi(lt("Matematiikka"));
-        oppiaineDto.setKoodi("jaa-a");
+        oppiaineDto.setKoodiUri("jaa-a");
         oppiaineDto.setKoosteinen(false);
 
         oppiaineDto = oppiaineService.add(id, oppiaineDto);
@@ -114,6 +115,5 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto = oppiaineService.get(id, oppiaineDto.getId());
         assertNotNull(oppiaineDto);
         assertEquals("Biologia", oppiaineDto.getNimi().get(Kieli.FI));
-
     }
 }

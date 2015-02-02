@@ -81,6 +81,7 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     private Oppiaine saveOppiaine(OppiaineDto oppiaineDto) {
         Oppiaine oppiaine = mapper.map(oppiaineDto, Oppiaine.class);
+        // TODO: Lisää tuki koosteisiille oppiaineille
         return oppiaineRepository.save(oppiaine);
     }
 

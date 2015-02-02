@@ -41,6 +41,7 @@ public enum Kieli {
         return koodi;
     }
 
+    @JsonCreator
     public static Kieli of(String koodi) {
         for (Kieli k : values()) {
             if (k.koodi.equalsIgnoreCase(koodi)) {

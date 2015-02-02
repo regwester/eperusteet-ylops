@@ -22,30 +22,46 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.TekstiOsaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -75,6 +91,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private TekstiKappaleViiteService tekstiKappaleViiteService;
 
     @Autowired
+    private OppiaineService oppiaineService;
+
+    @Autowired
     private KoodistoService koodistoService;
 
     @Autowired
@@ -82,6 +101,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
+
+    @Autowired
+    private EperusteetService eperusteetService;
 
     @Override
     @Transactional(readOnly = true)
@@ -194,12 +216,89 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         ops.setTila(Tila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
+
         ops = repository.save(ops);
         lisaaTekstipuunLapset(ops);
 
-        //TODO: Oppiaineiden ja vuosiluokka tietojen hakeminen ePerusteista
+        // TODO: Paree olisi jos eperusteetService palauttaisi suoraan uusimman perusteen
+        PerusteInfoDto perusteInfoDto =
+            eperusteetService.perusopetuksenPerusteet().stream()
+                             .max(Comparator.comparingLong(p -> p.getVoimassaoloLoppuu().getTime()))
+                             .orElseThrow(() -> new BusinessRuleViolationException(
+                                 "Perusopetuksen perustetta ei löytynyt"));
+
+        PerusopetusPerusteKaikkiDto perusteDto =
+            eperusteetService.perusopetuksenPeruste(perusteInfoDto.getId());
+
+        Long opsId = ops.getId();
+
+        PerusopetuksenPerusteenSisaltoDto sisalto =
+            perusteDto.getPerusopetuksenPerusteenSisalto();
+        if (sisalto.getOppiaineet() != null) {
+            sisalto.getOppiaineet().stream()
+                   .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                   .forEach(oa -> oppiaineService.add(opsId, oa));
+        }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private static OppiaineSuppeaDto fromEperusteet(
+        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineSuppeaDto oa) {
+        OppiaineSuppeaDto dto = new OppiaineSuppeaDto();
+        dto.setTila(Tila.LUONNOS);
+
+        dto.setNimi(oa.getNimi());
+        dto.setOppiaine(oa.getOppiaine());
+        dto.setKoosteinen(oa.getKoosteinen());
+        if (oa.getOppimaarat() != null) {
+            dto.setOppimaarat(
+                oa.getOppimaarat().stream()
+                  .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                  .collect(Collectors.toSet()));
+        }
+
+        // TODO: Lisää oppiaineen vlk:t
+        return dto;
+    }
+
+    private static OppiaineDto fromEperusteet(
+        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineDto oa) {
+        OppiaineDto dto = new OppiaineDto();
+        dto.setTila(Tila.LUONNOS);
+
+        dto.setNimi(oa.getNimi());
+        dto.setOppiaine(oa.getOppiaine());
+        dto.setKoosteinen(oa.getKoosteinen());
+        dto.setTehtava(fromEperusteet(oa.getTehtava()));
+        dto.setKoodiArvo(oa.getKoodiArvo());
+        dto.setKoodiUri(oa.getKoodiUri());
+
+        dto.setKohdealueet(
+            oa.getKohdealueet().stream()
+              .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+              .collect(Collectors.toSet()));
+
+        if (oa.getOppimaarat() != null) {
+            dto.setOppimaarat(
+                oa.getOppimaarat().stream()
+                  .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                  .collect(Collectors.toSet()));
+        }
+
+        return dto;
+    }
+
+    private static TekstiosaDto fromEperusteet(TekstiOsaDto dto) {
+        LokalisoituTekstiDto otsikko = dto.getOtsikko();
+        LokalisoituTekstiDto teksti = dto.getTeksti();
+        return new TekstiosaDto(Optional.ofNullable(otsikko),
+                                Optional.ofNullable(teksti));
+    }
+
+    private static OpetuksenKohdealueDto fromEperusteet(
+        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OpetuksenKohdealueDto dto) {
+        return new OpetuksenKohdealueDto(dto.getNimi());
     }
 
     private void lisaaTekstipuunJuuri(Opetussuunnitelma ops) {

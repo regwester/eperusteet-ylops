@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
@@ -52,4 +53,5 @@ public class OpetussuunnitelmaDto implements Serializable {
     private Set<Kieli> julkaisukielet;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Optional<TekstiKappaleViiteDto.Puu> tekstit;
+    private Set<OppiaineDto> oppiaineet;
 }
