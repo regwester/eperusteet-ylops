@@ -82,4 +82,7 @@ ylopsApp
   this.refetchPohja = refetch;
   this.get = get;
   this.getPohja = get;
+  this.getId = function () {
+    return opsId;
+  };
 });

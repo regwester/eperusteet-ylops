@@ -153,7 +153,7 @@ ylopsApp
         label: 'vuosiluokat-ja-oppiaineet',
         id: 'vuosiluokat',
         url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: 'vuosiluokat'}),
-        items: VuosiluokatService.mapForMenu($scope.vuosiluokat)
+        items: VuosiluokatService.mapForMenu($scope.model)
       };
       $scope.items.push(vuosiluokat);
       updateActive();

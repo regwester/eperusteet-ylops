@@ -66,8 +66,8 @@ ylopsApp
           opsModel: ['opsService', 'opsId', function(opsService, opsId) {
             return opsService.fetch(opsId);
           }],
-          vuosiluokat: ['vuosiluokatService', function (vuosiluokatService) {
-            return vuosiluokatService.getVuosiluokat();
+          vuosiluokat: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
+            return vuosiluokatService.getVuosiluokat(opsModel);
           }]
         },
         controller: function ($scope, opsModel, vuosiluokat, opsService, $rootScope) {
@@ -158,6 +158,13 @@ ylopsApp
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();
+          }],
+          vuosiluokatService: 'VuosiluokatService',
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          vlk: ['vuosiluokatService', 'vlkId', 'opsModel', function (vuosiluokatService, vlkId, opsModel) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsModel, vlkId);
           }]
         }
       })
@@ -169,8 +176,12 @@ ylopsApp
         controller: 'OppiaineBaseController',
         resolve: {
           vuosiluokatService: 'VuosiluokatService',
-          oppiaine: ['vuosiluokatService', function (vuosiluokatService) {
-            return vuosiluokatService.getOppiaine(/*oppiaineId*/);
+          oppiaineId: ['$stateParams', function($stateParams){
+            return $stateParams.oppiaineId;
+          }],
+          oppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
+            console.log(oppiaineId);
+            return vuosiluokatService.getOppiaine(oppiaineId).$promise;
           }]
         }
       })

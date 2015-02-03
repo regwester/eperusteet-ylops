@@ -23,7 +23,7 @@ ylopsApp
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit) {
-  $scope.vuosiluokkakokonaisuus = $scope.oppiaine.vuosiluokkakokonaisuudet[0];
+  $scope.vuosiluokkakokonaisuus = $scope.vuosiluokat[0];
 
   $scope.tekstit = {
     ohjaus: {

@@ -19,6 +19,7 @@
 ylopsApp
   .service('YlopsResources', function (SERVICE_LOC) {
     this.OPS = SERVICE_LOC + '/opetussuunnitelmat/:opsId';
+    this.OPPIAINE = this.OPS + '/oppiaineet/:oppiaineId';
   })
 
   .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {
@@ -32,5 +33,11 @@ ylopsApp
       viiteId: '@id'
     }, {
       setChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:parentId/lapsi/:childId'}
+    });
+  })
+
+  .factory('OppiaineCRUD', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPPIAINE, {
+      oppiaineId: '@id'
     });
   });

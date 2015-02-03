@@ -18,6 +18,7 @@
 
 ylopsApp
 .service('DummyData', function () {
+  // TODO poista dummydata
   this.getVuosiluokat = function () {
     return [
       {id: 'dummy1', nimi: {fi: 'Vuosiluokat 1-2'}},
@@ -75,7 +76,7 @@ ylopsApp
   };
 })
 
-.service('VuosiluokatService', function ($q, DummyData, $state) {
+.service('VuosiluokatService', function ($q, DummyData, $state, OppiaineCRUD, Utils, OpsService) {
   var opsId = null;
   var vuosiluokat = null;
 
@@ -89,55 +90,97 @@ ylopsApp
     opsId = ops.id;
   }
 
-  function fetch() {
-    var vlk = DummyData.getVuosiluokat();
-    vlk[0].oppiaineet = DummyData.getOppiaineet();
-    var promise = promisify(vlk);
-    promise.then(function (res) {
-      vuosiluokat = res;
-    });
-    return promise;
+  function vlkSorter (item) {
+    // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
+    return Utils.sort(item.vuosiluokkakokonaisuus);
   }
 
-  function getVuosiluokat() {
-    if (vuosiluokat === null) {
-      return fetch();
+  function onCompletion(model, cb) {
+    if (model.$promise) {
+      model.$promise.then(function (res) {
+        cb(res);
+      });
+    } else {
+      cb(model);
     }
-    return promisify(vuosiluokat);
+  }
+
+  function fetch(ops) {
+    var promise = $q.defer();
+    function processVuosiluokkakokonaisuudet(model) {
+      opsId = model.id;
+      var vlkt = model.vuosiluokkakokonaisuudet;
+      vuosiluokat = _.sortBy(vlkt, vlkSorter);
+      promise.resolve(vuosiluokat);
+    }
+    var opsModel = (ops || OpsService.get());
+    onCompletion(opsModel, processVuosiluokkakokonaisuudet);
+    return promise.promise;
+  }
+
+  function getVuosiluokat(ops) {
+    return fetch(ops);
+  }
+
+  function getVuosiluokkakokonaisuus(ops, vlkId) {
+    // TODO käytä varsinaista vlk APIa jos/kun sellainen tulee
+    var found = null;
+    var promise = $q.defer();
+    onCompletion(ops, function (model) {
+      found = _.find(model.vuosiluokkakokonaisuudet, function (item) {
+        return '' + item.vuosiluokkakokonaisuus.id === '' + vlkId;
+      });
+      promise.resolve(found);
+    });
+    return promise.promise;
   }
 
   function getTavoitteet(/*oppiaineenVlkId*/) {
     return promisify(DummyData.getTavoitteet());
   }
 
-  function getOppiaine() {
-    return promisify(DummyData.getOppiaine());
+  function getOppiaine(oppiaineId) {
+    return OppiaineCRUD.get({opsId: opsId || OpsService.getId()}, {id: oppiaineId});
   }
 
-  function mapForMenu(data) {
+  function generateOppiaineItem(oppiaine, vlk) {
+    return {
+      depth: 1,
+      label: oppiaine.nimi,
+      id: oppiaine.id,
+      url: $state.href('root.opetussuunnitelmat.yksi.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id}),
+    };
+  }
+
+  function mapForMenu(ops) {
     var arr = [];
-    _.each(data, function (item) {
-      var vlk = {
-        label: item.nimi,
-        id: item.id,
-        url: $state.href('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: item.id}),
-      };
-      arr.push(vlk);
-      _.each(item.oppiaineet, function (oppiaine) {
-        arr.push({
-          depth: 1,
-          label: oppiaine.nimi,
-          id: oppiaine.id,
-          url: $state.href('root.opetussuunnitelmat.yksi.oppiaine', {vlkId: item.id, oppiaineId: oppiaine.id}),
-        });
+    if (ops) {
+      _.each(vuosiluokat, function (vlk, index) {
+        var obj = vlk.vuosiluokkakokonaisuus;
+        var item = {
+          label: obj.nimi,
+          id: obj.id,
+          url: $state.href('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: obj.id}),
+        };
+        arr.push(item);
+        // TODO vlk:t ei vielä sidottu oppiaineisiin, lisää kaikki 1. vlk:n alle
+        if (index === 0) {
+          var sorted = _(ops.oppiaineet).sortBy(function (item) {
+            return Utils.sort(item.oppiaine);
+          }).map(function (oppiaine) {
+            return generateOppiaineItem(oppiaine.oppiaine, obj);
+          }).value();
+          arr = arr.concat(sorted);
+        }
       });
-    });
+    }
     return arr;
   }
 
   this.setOps = setOps;
   this.fetch = fetch;
   this.getVuosiluokat = getVuosiluokat;
+  this.getVuosiluokkakokonaisuus = getVuosiluokkakokonaisuus;
   this.getTavoitteet = getTavoitteet;
   this.getOppiaine = getOppiaine;
   this.mapForMenu = mapForMenu;
