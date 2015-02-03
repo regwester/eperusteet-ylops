@@ -271,7 +271,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         dto.setTila(Tila.LUONNOS);
 
         dto.setNimi(oa.getNimi());
-        dto.setOppiaine(oa.getOppiaine());
         dto.setKoosteinen(oa.getKoosteinen());
         if (oa.getOppimaarat() != null) {
             dto.setOppimaarat(
@@ -290,7 +289,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         dto.setTila(Tila.LUONNOS);
 
         dto.setNimi(oa.getNimi());
-        dto.setOppiaine(oa.getOppiaine());
         dto.setKoosteinen(oa.getKoosteinen());
         dto.setTehtava(fromEperusteet(oa.getTehtava()));
         dto.setKoodiArvo(oa.getKoodiArvo());

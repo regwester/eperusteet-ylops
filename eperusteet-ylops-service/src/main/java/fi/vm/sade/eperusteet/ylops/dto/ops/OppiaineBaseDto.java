@@ -28,8 +28,6 @@ import lombok.Setter;
 public abstract class OppiaineBaseDto {
     private Long id;
     private Tila tila;
-    // "äitioppiaine" jos kyseessä on oppiaineen oppimäärä
-    private String oppiaine;
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;
 }

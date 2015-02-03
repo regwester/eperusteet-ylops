@@ -28,8 +28,6 @@ import lombok.Setter;
 @Setter
 public abstract class OppiaineBaseDto implements ReferenceableDto {
     private Long id;
-    //"äitioppiaine" jos kyseessä on oppiaineen oppimäärä
-    private String oppiaine;
     private Boolean koosteinen;
     private Boolean abstrakti;
     private LokalisoituTekstiDto nimi;
