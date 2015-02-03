@@ -58,6 +58,7 @@ ylopsApp
     opsId = id;
 
     if (opsId === 'uusi') {
+      MurupolkuData.set('opsNimi', 'uusi');
       return uusi();
     }
     deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
