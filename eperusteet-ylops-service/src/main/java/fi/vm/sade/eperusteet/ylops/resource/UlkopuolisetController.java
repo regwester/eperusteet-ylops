@@ -57,19 +57,19 @@ public class UlkopuolisetController {
     @RequestMapping(value = "/perusopetusperuste", method = GET)
     @ResponseBody
     public ResponseEntity<List<PerusteInfoDto>> getPerusopetusperusteet() {
-        return new ResponseEntity<>(eperusteetService.perusopetuksenPerusteet(), HttpStatus.OK);
+        return new ResponseEntity<>(eperusteetService.findPerusopetuksenPerusteet(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/perusopetusperuste/{id}", method = GET)
     @ResponseBody
     public ResponseEntity<PerusopetusPerusteKaikkiDto> getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
-        return new ResponseEntity<>(eperusteetService.perusopetuksenPeruste(id), HttpStatus.OK);
+        return new ResponseEntity<>(eperusteetService.getPerusopetuksenPeruste(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/tiedotteet", method = GET)
     @ResponseBody
     public ResponseEntity<JsonNode> getTiedotteet(@RequestParam(value = "jalkeen", required = false) final Long jalkeen) {
-        return new ResponseEntity<>(eperusteetService.tiedotteet(jalkeen), HttpStatus.OK);
+        return new ResponseEntity<>(eperusteetService.getTiedotteet(jalkeen), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/organisaatioryhmat", method = GET)

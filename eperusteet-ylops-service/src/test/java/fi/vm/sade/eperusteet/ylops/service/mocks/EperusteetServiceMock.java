@@ -32,21 +32,21 @@ import org.springframework.stereotype.Service;
 public class EperusteetServiceMock implements EperusteetService {
 
     @Override
-    public List<PerusteInfoDto> perusopetuksenPerusteet() {
+    public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
         return Collections.singletonList(new PerusteInfoDto());
     }
 
     @Override
-    public PerusopetusPerusteKaikkiDto perusopetuksenPeruste(Long id) {
+    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste(Long id) {
         PerusopetusPerusteKaikkiDto peruste = new PerusopetusPerusteKaikkiDto();
         PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
         sisalto.setOppiaineet(Collections.emptySet());
-        peruste.setPerusopetuksenPerusteenSisalto(sisalto);
+        peruste.setPerusopetus(sisalto);
         return peruste;
     }
 
     @Override
-    public JsonNode tiedotteet(Long jalkeen) {
+    public JsonNode getTiedotteet(Long jalkeen) {
         return null;
     }
 

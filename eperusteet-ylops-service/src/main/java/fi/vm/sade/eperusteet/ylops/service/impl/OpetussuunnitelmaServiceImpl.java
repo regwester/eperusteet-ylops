@@ -223,18 +223,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         // TODO: Paree olisi jos eperusteetService palauttaisi suoraan uusimman perusteen
         PerusteInfoDto perusteInfoDto
-            = eperusteetService.perusopetuksenPerusteet().stream()
+            = eperusteetService.findPerusopetuksenPerusteet().stream()
             .max(Comparator.comparingLong(p -> p.getVoimassaoloLoppuu().getTime()))
             .orElseThrow(() -> new BusinessRuleViolationException(
                     "Perusopetuksen perustetta ei löytynyt"));
 
         PerusopetusPerusteKaikkiDto perusteDto
-            = eperusteetService.perusopetuksenPeruste(perusteInfoDto.getId());
+            = eperusteetService.getPerusopetuksenPeruste(perusteInfoDto.getId());
 
         Long opsId = ops.getId();
 
         PerusopetuksenPerusteenSisaltoDto sisalto
-            = perusteDto.getPerusopetuksenPerusteenSisalto();
+            = perusteDto.getPerusopetus();
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()

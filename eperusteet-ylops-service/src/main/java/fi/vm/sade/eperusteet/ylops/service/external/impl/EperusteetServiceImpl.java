@@ -22,6 +22,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.EntityReferenceNamingStrategy;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +41,8 @@ import org.springframework.web.client.RestTemplate;
 public class EperusteetServiceImpl implements EperusteetService {
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String koodistoServiceUrl;
+    @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus: 'koulutustyyppi_16'}")
+    private String koulutustyyppiPerusopetus;
 
     private final RestTemplate client;
 
@@ -54,19 +57,22 @@ public class EperusteetServiceImpl implements EperusteetService {
 
 
     @Override
-    public List<PerusteInfoDto> perusopetuksenPerusteet() {
+    public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
         PerusteInfoDto[] kaikki = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus", PerusteInfoDto[].class);
         return Arrays.asList(kaikki);
     }
 
     @Override
-    public PerusopetusPerusteKaikkiDto perusopetuksenPeruste(final Long id) {
-        PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus/" + String.valueOf(id) + "/kaikki", PerusopetusPerusteKaikkiDto.class);
+    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste(final Long id) {
+        PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl + "/api/perusteet/{id}/kaikki", PerusopetusPerusteKaikkiDto.class, id);
+        if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi())) {
+            throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
+        }
         return peruste;
     }
 
     @Override
-    public JsonNode tiedotteet(Long jalkeen) {
+    public JsonNode getTiedotteet(Long jalkeen) {
         String params = "";
         if (jalkeen != null) {
             params = "?alkaen=" + String.valueOf(jalkeen);

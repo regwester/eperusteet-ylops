@@ -25,5 +25,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PerusopetusPerusteKaikkiDto extends PerusteBaseDto {
-    private PerusopetuksenPerusteenSisaltoDto perusopetuksenPerusteenSisalto;
+    private PerusopetuksenPerusteenSisaltoDto perusopetus;
 }

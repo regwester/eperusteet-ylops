@@ -25,7 +25,7 @@ import java.util.List;
  * @author nkala
  */
 public interface EperusteetService {
-    List<PerusteInfoDto> perusopetuksenPerusteet();
-    PerusopetusPerusteKaikkiDto perusopetuksenPeruste(final Long id);
-    JsonNode tiedotteet(Long jalkeen);
+    List<PerusteInfoDto> findPerusopetuksenPerusteet();
+    PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste(final Long id);
+    JsonNode getTiedotteet(Long jalkeen);
 }
