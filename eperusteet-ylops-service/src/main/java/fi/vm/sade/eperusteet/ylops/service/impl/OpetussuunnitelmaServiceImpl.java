@@ -312,6 +312,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private static TekstiosaDto fromEperusteet(fi.vm.sade.eperusteet.ylops.dto.eperusteet.TekstiOsaDto dto) {
+        if (dto == null) {
+            return null;
+        }
         LokalisoituTekstiDto otsikko = dto.getOtsikko();
         LokalisoituTekstiDto teksti = dto.getTeksti();
         return new TekstiosaDto(Optional.ofNullable(otsikko),
