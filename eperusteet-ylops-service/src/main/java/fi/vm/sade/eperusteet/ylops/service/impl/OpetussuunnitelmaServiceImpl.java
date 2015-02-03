@@ -19,7 +19,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
@@ -61,6 +63,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -190,8 +193,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         kopioiTekstit(pohja.getTekstit(), ops.getTekstit());
-        // TODO: Toteuttamatta ainakin oppiaineiden ja vuosiluokkakokonaisuuksien kopiointi
 
+        ops.setOppiaineet(pohja.getOppiaineet().stream()
+                               .map(ooa -> new OpsOppiaine(ooa.getOppiaine(), false))
+                               .collect(Collectors.toSet()));
+
+        // TODO: Toteuttamatta ainakin vuosiluokkakokonaisuuksien kopiointi
     }
 
     @Transactional
@@ -240,7 +247,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
                    .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
-                                new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
+                       new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
         }
 
         if (sisalto.getOppiaineet() != null) {
