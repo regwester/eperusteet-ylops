@@ -23,10 +23,10 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.TekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
@@ -35,6 +35,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -249,7 +250,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .forEach(oa -> oppiaineService.add(opsId, oa));
         }
 
+        if (sisalto.getVuosiluokkakokonaisuudet() != null) {
+            sisalto.getVuosiluokkakokonaisuudet().stream()
+                .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
+        }
+
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private static VuosiluokkakokonaisuusDto fromEperusteet(fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto) {
+        VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new EntityReference(dto.getTunniste().toString()));
+        vk.setNimi(Optional.ofNullable(dto.getNimi()));
+        //TODO. laaja-alaiset osaamiset
+        return vk;
     }
 
     private static OppiaineSuppeaDto fromEperusteet(
@@ -298,7 +312,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return dto;
     }
 
-    private static TekstiosaDto fromEperusteet(TekstiOsaDto dto) {
+    private static TekstiosaDto fromEperusteet(fi.vm.sade.eperusteet.ylops.dto.eperusteet.TekstiOsaDto dto) {
         LokalisoituTekstiDto otsikko = dto.getOtsikko();
         LokalisoituTekstiDto teksti = dto.getTeksti();
         return new TekstiosaDto(Optional.ofNullable(otsikko),

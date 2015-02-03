@@ -15,8 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,14 +26,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class PerusteenOsaDto {
+public class VuosiluokkakokonaisuudenLaajaalainenOsaaminenDto implements ReferenceableDto {
     private Long id;
-    private Date luotu;
-    private Date muokattu;
-    private String muokkaaja;
-    private String muokkaajanNimi;
-    private LokalisoituTekstiDto nimi;
-    private String tila;
-    private String tunniste;
-    private String osanTyyppi;
+    private String laajaalainenOsaaminen;
+    private LokalisoituTekstiDto kuvaus;
 }

@@ -15,11 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
-import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.util.Set;
-import java.util.UUID;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,15 +25,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class VuosiluokkaKokonaisuusDto implements ReferenceableDto {
+public class TekstiKappaleViiteDto {
     private Long id;
-    private UUID tunniste;
-    private Set<Vuosiluokka> vuosiluokat;
-    private LokalisoituTekstiDto nimi;
-    private TekstiOsaDto siirtymaEdellisesta;
-    private TekstiOsaDto tehtava;
-    private TekstiOsaDto siirtymaSeuraavaan;
-    private TekstiOsaDto laajaalainenOsaaminen;
-    private Set<VuosiluokkaKokonaisuudenLaajaalainenOsaaminenDto> laajaalaisetOsaamiset;
-    private TekstiOsaDto paikallisestiPaatettavatAsiat;
+    private TekstiKappaleDto tesktiKappale;
+    private List<TekstiKappaleViiteDto> lapset;
 }

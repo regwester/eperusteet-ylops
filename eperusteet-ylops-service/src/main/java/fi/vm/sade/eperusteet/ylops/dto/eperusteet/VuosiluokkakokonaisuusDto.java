@@ -15,20 +15,29 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
-import java.io.Serializable;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  *
- * @author nkala
+ * @author jhyoty
  */
 @Getter
 @Setter
-public class PerusopetuksenPerusteenSisaltoDto implements Serializable {
-    private TekstiKappaleViiteDto sisalto;
-    private Set<LaajaalainenOsaaminenDto> laajaAlalaisetOsaamiset;
-    private Set<OppiaineDto> oppiaineet;
-    private Set<VuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
+public class VuosiluokkakokonaisuusDto implements ReferenceableDto {
+    private Long id;
+    private UUID tunniste;
+    private Set<Vuosiluokka> vuosiluokat;
+    private LokalisoituTekstiDto nimi;
+    private TekstiOsaDto siirtymaEdellisesta;
+    private TekstiOsaDto tehtava;
+    private TekstiOsaDto siirtymaSeuraavaan;
+    private TekstiOsaDto laajaalainenOsaaminen;
+    private Set<VuosiluokkakokonaisuudenLaajaalainenOsaaminenDto> laajaalaisetOsaamiset;
+    private TekstiOsaDto paikallisestiPaatettavatAsiat;
 }

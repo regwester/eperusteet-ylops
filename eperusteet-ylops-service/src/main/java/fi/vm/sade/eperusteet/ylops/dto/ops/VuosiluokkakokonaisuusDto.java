@@ -19,7 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import java.util.Optional;
 import java.util.Set;
 import lombok.Getter;
@@ -36,10 +36,10 @@ public class VuosiluokkakokonaisuusDto implements ReferenceableDto {
     private Long id;
     private Optional<EntityReference> tunniste;
     private Optional<LokalisoituTekstiDto> nimi;
-    private Optional<TekstiKappaleDto> siirtymaEdellisesta;
-    private Optional<TekstiKappaleDto> tehtava;
-    private Optional<TekstiKappaleDto> siirtymaSeuraavaan;
-    private Optional<TekstiKappaleDto> laajaalainenosaaminen;
+    private Optional<TekstiosaDto> siirtymaEdellisesta;
+    private Optional<TekstiosaDto> tehtava;
+    private Optional<TekstiosaDto> siirtymaSeuraavaan;
+    private Optional<TekstiosaDto> laajaalainenosaaminen;
     private Optional<Tila> tila;
     private Set<LaajaalainenosaaminenDto> laajaalaisetosaamiset;
 

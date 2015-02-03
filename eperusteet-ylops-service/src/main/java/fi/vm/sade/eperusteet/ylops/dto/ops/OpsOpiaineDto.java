@@ -13,9 +13,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
+package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,9 +24,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusteenOsaViiteDto {
-    private Long id;
-    private String perusteenOsaRef;
-    private PerusteenOsaDto perusteenOsa;
-    private List<String> lapset;
+public class OpsOpiaineDto {
+
+    private boolean oma;
+    private OppiaineDto oppiaine;
 }

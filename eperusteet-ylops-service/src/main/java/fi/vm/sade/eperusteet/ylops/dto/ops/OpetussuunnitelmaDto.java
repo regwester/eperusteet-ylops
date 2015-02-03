@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
@@ -39,19 +38,21 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpetussuunnitelmaDto implements Serializable {
     private Long id;
+    private Tyyppi tyyppi;
+    private LokalisoituTekstiDto nimi;
+    private LokalisoituTekstiDto kuvaus;
+
+    private Optional<TekstiKappaleViiteDto.Puu> tekstit;
+    private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
+    private Set<OpsOpiaineDto> oppiaineet;
+
+    private Set<KoodistoDto> kunnat;
+    private Set<OrganisaatioDto> koulut;
+    private Set<Kieli> julkaisukielet;
+    private Tila tila;
 
     private Date luotu;
     private String luoja;
     private Date muokattu;
     private String muokkaaja;
-    private LokalisoituTekstiDto nimi;
-    private LokalisoituTekstiDto kuvaus;
-    private Tila tila;
-    private Tyyppi tyyppi;
-    private Set<KoodistoDto> kunnat;
-    private Set<OrganisaatioDto> koulut;
-    private Set<Kieli> julkaisukielet;
-    private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
-    private Optional<TekstiKappaleViiteDto.Puu> tekstit;
-    private Set<OppiaineDto> oppiaineet;
 }

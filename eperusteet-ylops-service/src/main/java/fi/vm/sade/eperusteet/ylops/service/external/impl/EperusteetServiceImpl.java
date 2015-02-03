@@ -41,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
 public class EperusteetServiceImpl implements EperusteetService {
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String koodistoServiceUrl;
-    @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus: 'koulutustyyppi_16'}")
+    @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
     private String koulutustyyppiPerusopetus;
 
     private final RestTemplate client;
@@ -65,6 +65,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste(final Long id) {
         PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl + "/api/perusteet/{id}/kaikki", PerusopetusPerusteKaikkiDto.class, id);
+
         if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
         }
