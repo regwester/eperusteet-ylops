@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -31,6 +32,8 @@ import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +97,23 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         assertNotNull(oppiaineDto);
 
         oppiaineDto = new OppiaineDto();
+        oppiaineDto.setNimi(lt("Äidinkieli"));
+        oppiaineDto.setKoodiUri("koodi_123");
+
+        OppiaineSuppeaDto oppimaaraDto = new OppiaineSuppeaDto();
+        oppimaaraDto.setNimi(lt("Suomen kieli ja kirjallisuus"));
+        oppimaaraDto.setKoosteinen(false);
+        oppimaaraDto.setOppiaine(oppiaineDto.getNimi().get(Kieli.FI));
+
+        oppiaineDto.setOppimaarat(Collections.singleton(oppimaaraDto));
+        oppiaineDto.setKoosteinen(true);
+
+        oppiaineDto = oppiaineService.add(id, oppiaineDto);
+        assertNotNull(oppiaineDto);
+        assertNotNull(oppiaineDto.getOppimaarat());
+        assertEquals(1, oppiaineDto.getOppimaarat().size());
+
+        oppiaineDto = new OppiaineDto();
         oppiaineDto.setNimi(lt("Matematiikka"));
         oppiaineDto.setKoodiUri("jaa-a");
         oppiaineDto.setKoosteinen(false);
@@ -103,7 +123,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         List<OppiaineDto> oppiaineet = oppiaineService.getAll(id);
         assertNotNull(oppiaineet);
-        assertEquals(2, oppiaineet.size());
+        assertEquals(3, oppiaineet.size());
 
         oppiaineDto = oppiaineService.get(id, oppiaineDto.getId());
         assertNotNull(oppiaineDto);

@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.impl;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -80,9 +81,42 @@ public class OppiaineServiceImpl implements OppiaineService {
     }
 
     private Oppiaine saveOppiaine(OppiaineDto oppiaineDto) {
-        Oppiaine oppiaine = mapper.map(oppiaineDto, Oppiaine.class);
-        // TODO: Lisää tuki koosteisiille oppiaineille
+        Oppiaine oppiaine = fromDto(oppiaineDto);
         return oppiaineRepository.save(oppiaine);
+
+    }
+
+    private Oppiaine fromDto(OppiaineDto dto) {
+        Oppiaine mappedOppiaine = mapper.map(dto, Oppiaine.class);
+        Oppiaine oppiaine = new Oppiaine();
+        oppiaine.setId(mappedOppiaine.getId());
+        oppiaine.setNimi(mappedOppiaine.getNimi());
+        oppiaine.setTehtava(mappedOppiaine.getTehtava());
+        oppiaine.setKoodi(mappedOppiaine.getKoodi());
+        oppiaine.setKoosteinen(mappedOppiaine.isKoosteinen());
+        oppiaine.setKohdealueet(mappedOppiaine.getKohdealueet());
+
+        if (dto.getOppimaarat() != null) {
+            for (OppiaineSuppeaDto oppimaaraDto : dto.getOppimaarat()) {
+                Oppiaine oppimaara = fromDto(oppimaaraDto);
+                oppiaine.addOppimaara(oppimaara);
+            }
+        }
+
+        return oppiaine;
+    }
+
+    private Oppiaine fromDto(OppiaineSuppeaDto dto) {
+        Oppiaine mappedOppiaine = mapper.map(dto, Oppiaine.class);
+        Oppiaine oppiaine = new Oppiaine();
+        oppiaine.setId(mappedOppiaine.getId());
+        oppiaine.setNimi(mappedOppiaine.getNimi());
+        oppiaine.setTehtava(mappedOppiaine.getTehtava());
+        oppiaine.setKoodi(mappedOppiaine.getKoodi());
+        oppiaine.setKoosteinen(mappedOppiaine.isKoosteinen());
+        oppiaine.setKohdealueet(mappedOppiaine.getKohdealueet());
+
+        return oppiaine;
     }
 
     @Override
