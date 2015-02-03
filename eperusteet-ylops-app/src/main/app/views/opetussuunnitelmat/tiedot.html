@@ -106,7 +106,7 @@
               </ui-select-choices>
               <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
             </ui-select>
-            <p ng-if="editableModel.kuntaUrit.length === 1 && koululista.length === 0" kaanna="'kunnalla-ei-kouluja'"></p>
+            <p ng-if="!loadingKoulut && eiKoulujaVaroitus" kaanna="'kunnalla-ei-kouluja'"></p>
           </div>
         </div>
       </div>

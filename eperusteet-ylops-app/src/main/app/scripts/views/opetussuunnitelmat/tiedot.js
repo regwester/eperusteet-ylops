@@ -31,6 +31,7 @@ ylopsApp
   $scope.loading = false;
   $scope.kuntalista = [];
   $scope.koululista = [];
+  $scope.eiKoulujaVaroitus = false;
 
   $scope.hasRequiredFields = function () {
     var model = $scope.editableModel;
@@ -151,14 +152,22 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   };
 
+  function updateKouluVaroitus() {
+    $scope.eiKoulujaVaroitus = _.isArray($scope.editableModel.kuntaUrit) &&
+      $scope.editableModel.kuntaUrit.length === 1 &&
+      _.isArray($scope.koululista) && $scope.koululista.length === 0;
+  }
+
   $scope.$watch('editableModel.kuntaUrit', function () {
     $scope.haeKoulut();
+    updateKouluVaroitus();
   });
 
   $scope.$watch('koululista', function () {
     if ($scope.editableModel.koulut) {
       $scope.editableModel.kouluOidit = _.map($scope.editableModel.koulut, 'oid');
     }
+    updateKouluVaroitus();
   });
 
   $scope.$watch('editableModel.kouluOidit', function (value) {
@@ -177,18 +186,23 @@ ylopsApp
   $scope.$watch('editableModel.julkaisukielet', mapJulkaisukielet);
 
   $scope.haeKoulut = function () {
+    $scope.loadingKoulut = true;
     var kunnat = $scope.editableModel.kuntaUrit;
     if (!($scope.editMode || $scope.luonnissa) || !kunnat) {
+      $scope.loadingKoulut = false;
       return;
     }
     if (kunnat.length === 0) {
+      $scope.loadingKoulut = false;
       $scope.editableModel.kouluOidit = [];
     } else if (kunnat.length === 1) {
       var kunta = kunnat[0];
       PeruskouluHaku.get({ kuntaUri: kunta }, function(res) {
         $scope.koululista = _.sortBy(res.organisaatiot, Utils.sort);
+        $scope.loadingKoulut = false;
       }, Notifikaatiot.serverCb);
     } else {
+      $scope.loadingKoulut = false;
       $scope.editableModel.kouluOidit = [];
       $scope.koululista = [];
     }
