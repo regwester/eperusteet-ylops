@@ -239,9 +239,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
-                .forEach(vk -> {
-                    vuosiluokkakokonaisuusviiteRepository.save(new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat()));
-                });
+                   .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
+                                new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
         }
 
         if (sisalto.getOppiaineet() != null) {
