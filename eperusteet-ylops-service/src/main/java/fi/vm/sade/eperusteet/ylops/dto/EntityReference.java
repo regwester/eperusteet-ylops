@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 
+import java.util.UUID;
+
 /**
  *
  * @author jhyoty
@@ -30,6 +32,10 @@ public class EntityReference {
 
     public EntityReference(Long id) {
         this.id = id.toString();
+    }
+
+    public EntityReference(UUID uuid) {
+        this.id = uuid.toString();
     }
 
     @JsonCreator

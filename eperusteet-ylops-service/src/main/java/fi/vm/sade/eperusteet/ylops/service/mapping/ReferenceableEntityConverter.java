@@ -56,7 +56,8 @@ public class ReferenceableEntityConverter extends BidirectionalConverter<Referen
         ManagedType<ReferenceableEntity> managedType = em.getMetamodel().managedType(type.getRawType());
         if (managedType instanceof IdentifiableType) {
             final Class<?> idType = ((IdentifiableType<?>) managedType).getIdType().getJavaType();
-            return em.getReference(type.getRawType(), converters.getOrDefault(idType, ReferenceableEntityConverter::fail).apply(reference));
+            return em.getReference(type.getRawType(),
+                                   converters.getOrDefault(idType, ReferenceableEntityConverter::fail).apply(reference));
         }
         throw new ConverterException();
     }

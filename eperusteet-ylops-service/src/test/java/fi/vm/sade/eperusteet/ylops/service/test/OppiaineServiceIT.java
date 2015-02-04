@@ -17,19 +17,31 @@ package fi.vm.sade.eperusteet.ylops.service.test;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +68,15 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     @Autowired
     OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
+    @Autowired
+    VuosiluokkakokonaisuusService vuosiluokkakokonaisuusService;
+
+    @Autowired
+    private VuosiluokkakokonaisuusviiteRepository vlkViitteet;
+
+    private Long opsId;
+    private EntityReference vlkViiteRef;
+
     @Before
     public void setUp() {
         OpetussuunnitelmaDto ops;
@@ -73,23 +94,31 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         kouluDto.setOid("1.2.15252345624572462");
         ops.setKoulut(new HashSet<>(Collections.singleton(kouluDto)));
         opetussuunnitelmaService.addPohja(ops);
+
+        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAllPohjat();
+        assertEquals(1, opsit.size());
+
+        this.opsId = opsit.get(0).getId();
+        assertNotNull(this.opsId);
+
+        Vuosiluokkakokonaisuusviite viite = new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_1, Vuosiluokka.VUOSILUOKKA_2));
+        this.vlkViiteRef = vlkViitteet.save(viite).getReference();
     }
 
     @Test
     public void testCRUD() {
-        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAllPohjat();
-        assertEquals(1, opsit.size());
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(opsId);
 
-        Long id = opsit.get(0).getId();
-        assertNotNull(id);
-        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
+        vlk.setNimi(Optional.of(lt("ykköskakkoset")));
+        vlk = vuosiluokkakokonaisuusService.add(ops.getId(), vlk);
 
         OppiaineDto oppiaineDto = new OppiaineDto();
         oppiaineDto.setNimi(lt("Uskonto"));
         oppiaineDto.setKoodiUri("koodikoodi");
         oppiaineDto.setKoosteinen(false);
 
-        oppiaineDto = oppiaineService.add(id, oppiaineDto);
+        oppiaineDto = oppiaineService.add(opsId, oppiaineDto);
         assertNotNull(oppiaineDto);
 
         oppiaineDto = new OppiaineDto();
@@ -103,7 +132,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto.setOppimaarat(Collections.singleton(oppimaaraDto));
         oppiaineDto.setKoosteinen(true);
 
-        oppiaineDto = oppiaineService.add(id, oppiaineDto);
+        oppiaineDto = oppiaineService.add(opsId, oppiaineDto);
         assertNotNull(oppiaineDto);
         assertNotNull(oppiaineDto.getOppimaarat());
         assertEquals(1, oppiaineDto.getOppimaarat().size());
@@ -113,22 +142,38 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto.setKoodiUri("jaa-a");
         oppiaineDto.setKoosteinen(false);
 
-        oppiaineDto = oppiaineService.add(id, oppiaineDto);
+        OppiaineenVuosiluokkakokonaisuusDto ovk = new OppiaineenVuosiluokkakokonaisuusDto();
+        ovk.setArviointi(getTekstiosa("Arviointi"));
+        ovk.setTehtava(getTekstiosa("Tehtävä"));
+        ovk.setTyotavat(getTekstiosa("Työtavat"));
+        ovk.setOhjaus(getTekstiosa("Ohjaus"));
+        ovk.setVuosiluokkakokonaisuus(vlkViiteRef);
+        oppiaineDto.setVuosiluokkakokonaisuudet(Collections.singleton(ovk));
+
+        oppiaineDto = oppiaineService.add(opsId, oppiaineDto);
         assertNotNull(oppiaineDto);
 
-        List<OppiaineDto> oppiaineet = oppiaineService.getAll(id);
+        List<OppiaineDto> oppiaineet = oppiaineService.getAll(opsId);
         assertNotNull(oppiaineet);
         assertEquals(3, oppiaineet.size());
 
-        oppiaineDto = oppiaineService.get(id, oppiaineDto.getId());
+        oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
         assertNotNull(oppiaineDto);
         assertEquals("Matematiikka", oppiaineDto.getNimi().get(Kieli.FI));
 
         oppiaineDto.setNimi(lt("Biologia"));
-        oppiaineDto = oppiaineService.update(id, oppiaineDto);
+        oppiaineDto = oppiaineService.update(opsId, oppiaineDto);
 
-        oppiaineDto = oppiaineService.get(id, oppiaineDto.getId());
+        oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
         assertNotNull(oppiaineDto);
         assertEquals("Biologia", oppiaineDto.getNimi().get(Kieli.FI));
     }
+
+    private static TekstiosaDto getTekstiosa(String suffiksi) {
+        TekstiosaDto dto = new TekstiosaDto();
+        dto.setOtsikko(Optional.of(lt("otsikko_" + suffiksi)));
+        dto.setTeksti(Optional.of(lt("teksti_" + suffiksi)));
+        return dto;
+    }
 }
+

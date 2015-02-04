@@ -16,8 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.service.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -89,6 +91,13 @@ public class OppiaineServiceImpl implements OppiaineService {
         if (dto.getOppimaarat() != null) {
             dto.getOppimaarat().forEach(o -> oppiaine.addOppimaara(mapper.map(o, Oppiaine.class)));
         }
+
+        if (dto.getVuosiluokkakokonaisuudet() != null) {
+            dto.getVuosiluokkakokonaisuudet()
+               .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
+                   mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
+        }
+
         return oppiaine;
     }
 

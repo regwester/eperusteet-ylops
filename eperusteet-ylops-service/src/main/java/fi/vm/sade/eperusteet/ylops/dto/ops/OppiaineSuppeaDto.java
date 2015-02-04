@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,5 +28,5 @@ import java.util.Set;
 @Setter
 public class OppiaineSuppeaDto extends OppiaineBaseDto {
     private Set<OppiaineSuppeaDto> oppimaarat;
-    // TODO: Lisää suppeat oppiaineen vuosiluokkakokonaisuudet
+    private Set<OppiaineenVuosiluokkakokonaisuusSuppeaDto> vuosiluokkakokonaisuudet;
 }

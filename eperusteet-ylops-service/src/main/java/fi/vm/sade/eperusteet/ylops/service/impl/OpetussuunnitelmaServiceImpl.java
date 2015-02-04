@@ -26,6 +26,8 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineenVuosiluokkaKokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineenVuosiluokkaKokonaisuusSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
@@ -37,6 +39,8 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
@@ -64,6 +68,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -248,24 +253,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             sisalto.getVuosiluokkakokonaisuudet()
                    .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
                        new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
-        }
 
-        if (sisalto.getOppiaineet() != null) {
-            sisalto.getOppiaineet().stream()
-                .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
-                .forEach(oa -> oppiaineService.add(opsId, oa));
-        }
+            final Map<EntityReference, UUID> vuosiluokkaMap =
+                sisalto.getVuosiluokkakokonaisuudet().stream()
+                       .collect(Collectors.toMap(vlk -> new EntityReference(vlk.getId()),
+                                                 vlk -> vlk.getTunniste()));
 
-        if (sisalto.getVuosiluokkakokonaisuudet() != null) {
+            if (sisalto.getOppiaineet() != null) {
+                sisalto.getOppiaineet().stream()
+                       .map(oa -> fromEperusteet(oa, vuosiluokkaMap))
+                       .forEach(oa -> oppiaineService.add(opsId, oa));
+            }
+
             sisalto.getVuosiluokkakokonaisuudet().stream()
-                .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
-                .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
+                   .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                   .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
-    private static VuosiluokkakokonaisuusDto fromEperusteet(fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto) {
+    private static VuosiluokkakokonaisuusDto fromEperusteet(
+        fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto) {
         VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new EntityReference(dto.getTunniste().toString()));
         vk.setNimi(Optional.ofNullable(dto.getNimi()));
         //TODO. laaja-alaiset osaamiset
@@ -273,7 +282,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private static OppiaineSuppeaDto fromEperusteet(
-        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineSuppeaDto oa) {
+        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineSuppeaDto oa,
+        Map<EntityReference, UUID> vuosiluokkaMap) {
         OppiaineSuppeaDto dto = new OppiaineSuppeaDto();
         dto.setTila(Tila.LUONNOS);
 
@@ -282,16 +292,23 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (oa.getOppimaarat() != null) {
             dto.setOppimaarat(
                 oa.getOppimaarat().stream()
-                .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                .map(om -> fromEperusteet(om, vuosiluokkaMap))
                 .collect(Collectors.toSet()));
         }
 
-        // TODO: Lisää oppiaineen vlk:t
+        if (oa.getVuosiluokkakokonaisuudet() != null) {
+            dto.setVuosiluokkakokonaisuudet(
+                oa.getVuosiluokkakokonaisuudet().stream()
+                  .map(oaVlk -> fromEperusteet(oaVlk, vuosiluokkaMap))
+                  .collect(Collectors.toSet()));
+        }
+
         return dto;
     }
 
     private static OppiaineDto fromEperusteet(
-        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineDto oa) {
+        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineDto oa,
+        Map<EntityReference, UUID> vuosiluokkaMap) {
         OppiaineDto dto = new OppiaineDto();
         dto.setTila(Tila.LUONNOS);
 
@@ -309,9 +326,43 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (oa.getOppimaarat() != null) {
             dto.setOppimaarat(
                 oa.getOppimaarat().stream()
-                .map(OpetussuunnitelmaServiceImpl::fromEperusteet)
+                .map(om -> fromEperusteet(om, vuosiluokkaMap))
                 .collect(Collectors.toSet()));
         }
+
+        if (oa.getVuosiluokkakokonaisuudet() != null) {
+            dto.setVuosiluokkakokonaisuudet(
+                oa.getVuosiluokkakokonaisuudet().stream()
+                  .map(oaVlk -> fromEperusteet(oaVlk, vuosiluokkaMap))
+                  .collect(Collectors.toSet()));
+        }
+
+        return dto;
+    }
+
+    private static OppiaineenVuosiluokkakokonaisuusDto fromEperusteet(OppiaineenVuosiluokkaKokonaisuusDto ovk,
+                                                                      Map<EntityReference, UUID> vuosiluokkaMap) {
+        OppiaineenVuosiluokkakokonaisuusDto dto = new OppiaineenVuosiluokkakokonaisuusDto();
+        dto.setTehtava(fromEperusteet(ovk.getTehtava()));
+        dto.setTyotavat(fromEperusteet(ovk.getTyotavat()));
+        dto.setOhjaus(fromEperusteet(ovk.getOhjaus()));
+        dto.setArviointi(fromEperusteet(ovk.getArviointi()));
+
+        EntityReference vlkRef = new EntityReference(ovk.getVuosiluokkaKokonaisuus());
+        UUID vlkTunniste = vuosiluokkaMap.get(vlkRef);
+        dto.setVuosiluokkakokonaisuus(new EntityReference(vlkTunniste));
+
+        return dto;
+    }
+
+    private static OppiaineenVuosiluokkakokonaisuusSuppeaDto fromEperusteet(
+        OppiaineenVuosiluokkaKokonaisuusSuppeaDto ovk,
+        Map<EntityReference, UUID> vuosiluokkaMap) {
+        OppiaineenVuosiluokkakokonaisuusSuppeaDto dto = new OppiaineenVuosiluokkakokonaisuusSuppeaDto();
+
+        EntityReference vlkRef = new EntityReference(ovk.getVuosiluokkaKokonaisuus());
+        UUID vlkTunniste = vuosiluokkaMap.get(vlkRef);
+        dto.setVuosiluokkakokonaisuus(new EntityReference(vlkTunniste));
 
         return dto;
     }

@@ -33,7 +33,7 @@ public class OppiaineDto extends OppiaineBaseDto {
     private TekstiosaDto tehtava;
     private Set<OppiaineSuppeaDto> oppimaarat;
     private Set<OpetuksenKohdealueDto> kohdealueet;
-    // TODO: Lisää oppiaineen vuosiluokkakokonaisuudet
+    private Set<OppiaineenVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private String koodiUri;
     private String koodiArvo;
 }
