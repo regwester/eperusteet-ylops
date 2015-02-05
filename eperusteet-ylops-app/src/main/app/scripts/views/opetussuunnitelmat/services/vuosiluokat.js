@@ -122,6 +122,10 @@ ylopsApp
     return fetch(ops);
   }
 
+  function setVuosiluokat(vlkt) {
+    vuosiluokat = vlkt;
+  }
+
   function getVuosiluokkakokonaisuus(ops, vlkId) {
     // TODO käytä varsinaista vlk APIa jos/kun sellainen tulee
     var found = null;
@@ -143,19 +147,25 @@ ylopsApp
     return OppiaineCRUD.get({opsId: opsId || OpsService.getId()}, {id: oppiaineId});
   }
 
-  function generateOppiaineItem(oppiaine, vlk) {
+  function generateOppiaineItem(oppiaine, vlk, depth) {
     return {
-      depth: 1,
+      depth: depth || 1,
       label: oppiaine.nimi,
       id: oppiaine.id,
       url: $state.href('root.opetussuunnitelmat.yksi.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id}),
     };
   }
 
+  function getTunnisteet(vlkt) {
+    return _.map(vlkt, function (item) {
+      return item._vuosiluokkakokonaisuus;
+    });
+  }
+
   function mapForMenu(ops) {
     var arr = [];
     if (ops) {
-      _.each(vuosiluokat, function (vlk, index) {
+      _.each(vuosiluokat, function (vlk) {
         var obj = vlk.vuosiluokkakokonaisuus;
         var item = {
           label: obj.nimi,
@@ -163,15 +173,31 @@ ylopsApp
           url: $state.href('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: obj.id}),
         };
         arr.push(item);
-        // TODO vlk:t ei vielä sidottu oppiaineisiin, lisää kaikki 1. vlk:n alle
-        if (index === 0) {
-          var sorted = _(ops.oppiaineet).sortBy(function (item) {
-            return Utils.sort(item.oppiaine);
-          }).map(function (oppiaine) {
-            return generateOppiaineItem(oppiaine.oppiaine, obj);
-          }).value();
-          arr = arr.concat(sorted);
-        }
+
+        var sorted = _.sortBy(ops.oppiaineet, function (item) {
+          return Utils.sort(item.oppiaine);
+        });
+        _.each(sorted, function (oppiaine) {
+          var tunnisteet = getTunnisteet(oppiaine.oppiaine.vuosiluokkakokonaisuudet);
+          var parentPushed = false;
+          if (_.indexOf(tunnisteet, obj._tunniste) > -1) {
+            arr.push(generateOppiaineItem(oppiaine.oppiaine, obj));
+            parentPushed = true;
+          }
+          if (oppiaine.oppiaine.koosteinen) {
+            var oppimaarat = _.sortBy(oppiaine.oppiaine.oppimaarat, Utils.sort);
+            _.each(oppimaarat, function (oppimaara) {
+              tunnisteet = getTunnisteet(oppimaara.vuosiluokkakokonaisuudet);
+              if (_.indexOf(tunnisteet, obj._tunniste) > -1) {
+                if (!parentPushed) {
+                  arr.push(generateOppiaineItem(oppiaine.oppiaine, obj));
+                  parentPushed = true;
+                }
+                arr.push(generateOppiaineItem(oppimaara, obj, 2));
+              }
+            });
+          }
+        });
       });
     }
     return arr;
@@ -180,6 +206,7 @@ ylopsApp
   this.setOps = setOps;
   this.fetch = fetch;
   this.getVuosiluokat = getVuosiluokat;
+  this.setVuosiluokat = setVuosiluokat;
   this.getVuosiluokkakokonaisuus = getVuosiluokkakokonaisuus;
   this.getTavoitteet = getTavoitteet;
   this.getOppiaine = getOppiaine;
