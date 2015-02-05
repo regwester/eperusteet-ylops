@@ -15,10 +15,13 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.config;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import java.lang.reflect.Type;
+import java.util.Optional;
 
 /**
  * JSON-kenttien nimeämisstrategia.
@@ -30,21 +33,26 @@ import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 public class EntityReferenceNamingStrategy extends PropertyNamingStrategy {
 
     @Override
-    public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName) {
-        return tryToconvertFromMethodName(method, defaultName);
+    public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method,
+        String defaultName) {
+        return getName(config, method.getGenericReturnType(), defaultName);
     }
 
     @Override
-    public String nameForSetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName) {
-        return tryToconvertFromMethodName(method, defaultName);
+    public String nameForSetterMethod(MapperConfig<?> config, AnnotatedMethod method,
+        String defaultName) {
+        return getName(config, method.getParameter(0).getGenericType(), defaultName);
     }
 
-    private String tryToconvertFromMethodName(AnnotatedMethod annotatedMethod, String defaultName) {
-        if ((annotatedMethod.getParameterCount() == 1 && EntityReference.class.isAssignableFrom(annotatedMethod.getParameter(0).getRawType())) ||
-            EntityReference.class.isAssignableFrom(annotatedMethod.getRawReturnType())) {
-            defaultName = '_' + defaultName;
+    private String getName(MapperConfig<?> config, Type type, String defaultName) {
+        final JavaType ot = config.getTypeFactory().constructParametrizedType(Optional.class, Optional.class, EntityReference.class);
+        final JavaType et = config.getTypeFactory().constructType(EntityReference.class);
+        final JavaType t = config.getTypeFactory().constructType(type);
+
+        if (et.equals(t) || ot.equals(t)) {
+            return "_" + defaultName;
         }
+
         return defaultName;
     }
-
 }
