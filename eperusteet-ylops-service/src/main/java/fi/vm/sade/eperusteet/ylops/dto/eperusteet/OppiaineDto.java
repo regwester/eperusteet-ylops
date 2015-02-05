@@ -32,5 +32,4 @@ public class OppiaineDto extends OppiaineBaseDto {
     private Set<OppiaineenVuosiluokkaKokonaisuusDto> vuosiluokkakokonaisuudet;
     private String koodiUri;
     private String koodiArvo;
-
 }

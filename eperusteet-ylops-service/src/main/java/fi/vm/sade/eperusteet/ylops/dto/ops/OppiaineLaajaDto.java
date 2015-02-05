@@ -13,22 +13,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
+package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import java.io.Serializable;
-import java.util.Set;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 /**
  *
- * @author nkala
+ * @author mikkom
  */
 @Getter
 @Setter
-public class PerusopetuksenPerusteenSisaltoDto implements Serializable {
-    private TekstiKappaleViiteDto sisalto;
-    private Set<LaajaalainenOsaaminenDto> laajaAlalaisetOsaamiset;
-    private Set<OppiaineLaajaDto> oppiaineet;
-    private Set<VuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
+public class OppiaineLaajaDto extends OppiaineBaseDto {
+    private TekstiosaDto tehtava;
+    private Set<OppiaineDto> oppimaarat;
+    private Set<OpetuksenKohdealueDto> kohdealueet;
+    private Set<OppiaineenVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
+    private String koodiUri;
+    private String koodiArvo;
 }

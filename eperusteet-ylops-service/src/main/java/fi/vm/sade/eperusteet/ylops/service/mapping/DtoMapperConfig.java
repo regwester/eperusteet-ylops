@@ -22,7 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.springframework.context.annotation.Bean;
@@ -64,7 +64,7 @@ public class DtoMapperConfig {
             .byDefault()
             .register();
 
-        factory.classMap(OppiaineSuppeaDto.class, Oppiaine.class)
+        factory.classMap(OppiaineLaajaDto.class, Oppiaine.class)
                .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
                .byDefault()
                .register();

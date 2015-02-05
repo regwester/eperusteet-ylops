@@ -15,20 +15,22 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.eperusteet;
 
-import java.io.Serializable;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 /**
  *
- * @author nkala
+ * @author mikkom
  */
 @Getter
 @Setter
-public class PerusopetuksenPerusteenSisaltoDto implements Serializable {
-    private TekstiKappaleViiteDto sisalto;
-    private Set<LaajaalainenOsaaminenDto> laajaAlalaisetOsaamiset;
-    private Set<OppiaineLaajaDto> oppiaineet;
-    private Set<VuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
+public class OppiaineLaajaDto extends OppiaineBaseDto {
+    private TekstiOsaDto tehtava;
+    private Set<OppiaineDto> oppimaarat;
+    private Set<OpetuksenKohdealueDto> kohdealueet;
+    private Set<OppiaineenVuosiluokkaKokonaisuusDto> vuosiluokkakokonaisuudet;
+    private String koodiUri;
+    private String koodiArvo;
 }

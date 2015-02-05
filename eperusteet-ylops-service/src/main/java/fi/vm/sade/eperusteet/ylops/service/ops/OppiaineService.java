@@ -16,12 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import org.eclipse.core.internal.content.LazyInputStream;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -36,6 +35,9 @@ public interface OppiaineService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OppiaineDto add(@P("opsId") Long opsId, OppiaineDto oppiaineDto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    OppiaineLaajaDto add(@P("opsId") Long opsId, OppiaineLaajaDto oppiaineDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OppiaineDto update(@P("opsId") Long opsId, OppiaineDto oppiaineDto);
