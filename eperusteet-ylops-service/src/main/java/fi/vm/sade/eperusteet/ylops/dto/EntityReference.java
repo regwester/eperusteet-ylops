@@ -47,4 +47,12 @@ public class EntityReference {
     public String getId() {
         return id;
     }
+
+    public Long asLong() {
+        return Long.valueOf(id);
+    }
+
+    public UUID asUUID() {
+        return UUID.fromString(id);
+    }
 }

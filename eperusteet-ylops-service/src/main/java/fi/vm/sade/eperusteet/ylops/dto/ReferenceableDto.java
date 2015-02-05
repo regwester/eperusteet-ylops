@@ -15,10 +15,12 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto;
 
+import java.io.Serializable;
+
 /**
  *
  * @author jhyoty
  */
 public interface ReferenceableDto {
-    Long getId();
+    Serializable getId();
 }
