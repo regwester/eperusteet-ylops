@@ -29,7 +29,7 @@ import lombok.Setter;
 @Setter
 public class OppiaineenVuosiluokkaKokonaisuusDto implements ReferenceableDto {
     private Long id;
-    private String vuosiluokkaKokonaisuus;
+    private EntityReference vuosiluokkaKokonaisuus;
     private TekstiOsaDto tehtava;
     private TekstiOsaDto tyotavat;
     private TekstiOsaDto ohjaus;

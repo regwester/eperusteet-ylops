@@ -351,7 +351,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         dto.setOhjaus(fromEperusteet(ovk.getOhjaus()));
         dto.setArviointi(fromEperusteet(ovk.getArviointi()));
 
-        EntityReference vlkRef = new EntityReference(ovk.getVuosiluokkaKokonaisuus());
+        EntityReference vlkRef = ovk.getVuosiluokkaKokonaisuus();
         UUID vlkTunniste = vuosiluokkaMap.get(vlkRef);
         dto.setVuosiluokkakokonaisuus(new EntityReference(vlkTunniste));
 
