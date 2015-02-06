@@ -23,7 +23,7 @@
        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <context:property-placeholder
-        location="classpath:eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/override.properties"
+        location="classpath:eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/eperusteet-ylops.properties, file:///${user.home:''}/oph-configuration/override.properties"
         ignore-resource-not-found="true"
         properties-ref="defaultProps"/>
 
