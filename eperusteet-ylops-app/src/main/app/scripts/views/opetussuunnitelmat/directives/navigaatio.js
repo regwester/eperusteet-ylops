@@ -63,10 +63,6 @@ ylopsApp
     return found;
   }
 
-  function startsWith(str1, str2) {
-    return str1.substr(0, str2.length) === str2;
-  }
-
   function stateMatch(id, paramName) {
     return '' + id === '' + $stateParams[paramName];
   }
@@ -101,7 +97,7 @@ ylopsApp
 
   function findActiveVuosiluokkaOrOppiaine(isOppiaine) {
     _.each($scope.items[$scope.chosen].items, function (item) {
-      item.active = (isOppiaine && stateMatch(item.id, 'oppiaineId')) ||
+      item.active = (isOppiaine && stateMatch(item.id, 'oppiaineId') && stateMatch(item.vlkId, 'vlkId')) ||
                     (!isOppiaine && stateMatch(item.id, 'vlkId'));
     });
   }
@@ -110,8 +106,8 @@ ylopsApp
     _.each($scope.items, function (item) {
       item.active = false;
     });
-    var inVuosiluokat = startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus');
-    var inOppiaine = startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.oppiaine');
+    var inVuosiluokat = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus');
+    var inOppiaine = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.oppiaine');
     if (inVuosiluokat || inOppiaine) {
       $scope.chosen = $scope.items.length - 1;
       MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat'});

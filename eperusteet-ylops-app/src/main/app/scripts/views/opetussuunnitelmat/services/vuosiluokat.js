@@ -152,6 +152,7 @@ ylopsApp
       depth: depth || 1,
       label: oppiaine.nimi,
       id: oppiaine.id,
+      vlkId: vlk.id,
       url: $state.href('root.opetussuunnitelmat.yksi.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id}),
     };
   }
