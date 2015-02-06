@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.service.impl.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
@@ -41,6 +40,9 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     @Autowired
     private DtoMapper mapper;
+
+    @Autowired
+    private OpsDtoMapper opsDtoMapper;
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
@@ -75,7 +77,7 @@ public class OppiaineServiceImpl implements OppiaineService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
-        Oppiaine oppiaine = fromDto(oppiaineDto);
+        Oppiaine oppiaine = opsDtoMapper.fromDto(oppiaineDto);
         oppiaine = oppiaineRepository.save(oppiaine);
         ops.addOppiaine(oppiaine);
         return mapper.map(oppiaine, OppiaineLaajaDto.class);
@@ -86,40 +88,10 @@ public class OppiaineServiceImpl implements OppiaineService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
-        Oppiaine oppiaine = fromDto(oppiaineDto);
+        Oppiaine oppiaine = opsDtoMapper.fromDto(oppiaineDto);
         oppiaine = oppiaineRepository.save(oppiaine);
         ops.addOppiaine(oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
-    }
-
-    private Oppiaine fromDto(OppiaineLaajaDto dto) {
-        Oppiaine oppiaine = mapper.map(dto, Oppiaine.class);
-        if (dto.getOppimaarat() != null) {
-            dto.getOppimaarat().forEach(o -> oppiaine.addOppimaara(fromDto(o)));
-        }
-
-        if (dto.getVuosiluokkakokonaisuudet() != null) {
-            dto.getVuosiluokkakokonaisuudet()
-               .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
-                   mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
-        }
-
-        return oppiaine;
-    }
-
-    private Oppiaine fromDto(OppiaineDto dto) {
-        Oppiaine oppiaine = mapper.map(dto, Oppiaine.class);
-        if (dto.getOppimaarat() != null) {
-            dto.getOppimaarat().forEach(o -> oppiaine.addOppimaara(mapper.map(o, Oppiaine.class)));
-        }
-
-        if (dto.getVuosiluokkakokonaisuudet() != null) {
-            dto.getVuosiluokkakokonaisuudet()
-               .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
-                   mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
-        }
-
-        return oppiaine;
     }
 
     @Override
