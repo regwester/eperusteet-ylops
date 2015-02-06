@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,12 +100,6 @@ public class MergeMapperTest {
 
         public Item(UUID id) {
             this.id = id;
-        }
-
-
-        @Override
-        public EntityReference getReference() {
-            return new EntityReference(id);
         }
 
     }

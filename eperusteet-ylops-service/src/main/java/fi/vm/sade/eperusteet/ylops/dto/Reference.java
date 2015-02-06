@@ -17,29 +17,22 @@ package fi.vm.sade.eperusteet.ylops.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
+import java.util.UUID;
 import lombok.EqualsAndHashCode;
 
-import java.util.UUID;
-
 /**
+ * Kuvaa viitettä toiseen entiteettiin.
  *
  * @author jhyoty
  */
 @EqualsAndHashCode
-public class EntityReference {
+public class Reference {
 
     private final String id;
 
-    public EntityReference(Long id) {
-        this.id = id.toString();
-    }
-
-    public EntityReference(UUID uuid) {
-        this.id = uuid.toString();
-    }
-
     @JsonCreator
-    public EntityReference(String id) {
+    public Reference(String id) {
         this.id = id;
     }
 
@@ -48,11 +41,20 @@ public class EntityReference {
         return id;
     }
 
-    public Long asLong() {
-        return Long.valueOf(id);
+    public static Reference of(ReferenceableEntity e) {
+        return new Reference(e.getId() == null ? null : e.getId().toString());
     }
 
-    public UUID asUUID() {
-        return UUID.fromString(id);
+    public static Reference of(ReferenceableDto d) {
+        return new Reference(d.getId() == null ? null : d.getId().toString());
     }
+
+    public static Reference of(Long id) {
+        return new Reference(id == null ? null : id.toString());
+    }
+
+    public static Reference of(UUID id) {
+        return new Reference(id == null ? null : id.toString());
+    }
+
 }

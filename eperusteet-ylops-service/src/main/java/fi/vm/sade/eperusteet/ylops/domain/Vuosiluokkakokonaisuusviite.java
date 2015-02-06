@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -59,11 +58,6 @@ public class Vuosiluokkakokonaisuusviite implements ReferenceableEntity, Seriali
     private Set<Vuosiluokka> vuosiluokat = EnumSet.noneOf(Vuosiluokka.class);
 
     public Vuosiluokkakokonaisuusviite() {
-    }
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(id.toString());
     }
 
     public Set<Vuosiluokka> getVuosiluokat() {

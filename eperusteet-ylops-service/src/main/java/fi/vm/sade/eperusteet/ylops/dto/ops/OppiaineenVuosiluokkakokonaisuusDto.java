@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
@@ -29,7 +29,7 @@ import lombok.Setter;
 @Setter
 public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private Long id;
-    private EntityReference vuosiluokkakokonaisuus;
+    private Reference vuosiluokkakokonaisuus;
     private TekstiosaDto tehtava;
     private TekstiosaDto tyotavat;
     private TekstiosaDto ohjaus;

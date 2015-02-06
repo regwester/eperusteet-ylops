@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheHeaderInterceptor;
 import fi.vm.sade.eperusteet.ylops.resource.util.LoggingInterceptor;
 import java.util.List;
@@ -86,7 +86,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         converter.getObjectMapper().registerModule(new Jdk8Module());
         MappingModule module = new MappingModule();
         converter.getObjectMapper().registerModule(module);
-        converter.getObjectMapper().setPropertyNamingStrategy(new EntityReferenceNamingStrategy());
+        converter.getObjectMapper().setPropertyNamingStrategy(new ReferenceNamingStrategy());
         return converter;
     }
 

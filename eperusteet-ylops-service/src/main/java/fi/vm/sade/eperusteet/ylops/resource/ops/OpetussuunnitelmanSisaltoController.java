@@ -16,7 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
@@ -71,7 +71,7 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("parentId") final Long parentId,
             @PathVariable("childId") final Long childId) {
         TekstiKappaleViiteDto.Matala viite = new TekstiKappaleViiteDto.Matala();
-        viite.setTekstiKappaleRef(new EntityReference(childId));
+        viite.setTekstiKappaleRef(Reference.of(childId));
         return new ResponseEntity<>(
                 opetussuunnitelmaService.addTekstiKappaleLapsi(opsId, parentId, viite), HttpStatus.CREATED);
     }

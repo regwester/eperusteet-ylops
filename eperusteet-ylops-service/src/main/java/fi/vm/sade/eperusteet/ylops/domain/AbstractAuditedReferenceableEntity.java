@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,10 +36,5 @@ public abstract class AbstractAuditedReferenceableEntity extends AbstractAudited
     @Setter
     @Audited
     private Long id;
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(id);
-    }
 
 }

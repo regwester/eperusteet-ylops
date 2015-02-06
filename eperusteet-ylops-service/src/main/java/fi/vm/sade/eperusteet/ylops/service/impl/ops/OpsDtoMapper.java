@@ -18,7 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.impl.ops;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineenVuosiluokkaKokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
@@ -28,14 +28,13 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -79,7 +78,7 @@ public class OpsDtoMapper {
 
     public static VuosiluokkakokonaisuusDto fromEperusteet(
         fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto) {
-        VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new EntityReference(dto.getTunniste().toString()));
+        VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new Reference(dto.getTunniste().toString()));
         vk.setNimi(Optional.ofNullable(dto.getNimi()));
         //TODO. laaja-alaiset osaamiset
         return vk;
@@ -87,7 +86,7 @@ public class OpsDtoMapper {
 
     public static OppiaineDto fromEperusteet(
         fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineDto oa,
-        Map<EntityReference, UUID> vuosiluokkaMap) {
+        Map<Reference, UUID> vuosiluokkaMap) {
         OppiaineDto dto = new OppiaineDto();
         dto.setTila(Tila.LUONNOS);
 
@@ -118,7 +117,7 @@ public class OpsDtoMapper {
 
     public static OppiaineLaajaDto fromEperusteet(
         fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineLaajaDto oa,
-        Map<EntityReference, UUID> vuosiluokkaMap) {
+        Map<Reference, UUID> vuosiluokkaMap) {
         OppiaineLaajaDto dto = new OppiaineLaajaDto();
         dto.setTila(Tila.LUONNOS);
 
@@ -151,16 +150,16 @@ public class OpsDtoMapper {
     }
 
     public static OppiaineenVuosiluokkakokonaisuusDto fromEperusteet(OppiaineenVuosiluokkaKokonaisuusDto ovk,
-                                                                     Map<EntityReference, UUID> vuosiluokkaMap) {
+        Map<Reference, UUID> vuosiluokkaMap) {
         OppiaineenVuosiluokkakokonaisuusDto dto = new OppiaineenVuosiluokkakokonaisuusDto();
         dto.setTehtava(fromEperusteet(ovk.getTehtava()));
         dto.setTyotavat(fromEperusteet(ovk.getTyotavat()));
         dto.setOhjaus(fromEperusteet(ovk.getOhjaus()));
         dto.setArviointi(fromEperusteet(ovk.getArviointi()));
 
-        EntityReference vlkRef = ovk.getVuosiluokkaKokonaisuus();
+        Reference vlkRef = ovk.getVuosiluokkaKokonaisuus();
         UUID vlkTunniste = vuosiluokkaMap.get(vlkRef);
-        dto.setVuosiluokkakokonaisuus(new EntityReference(vlkTunniste));
+        dto.setVuosiluokkakokonaisuus(Reference.of(vlkTunniste));
 
         return dto;
     }

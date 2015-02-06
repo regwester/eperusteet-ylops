@@ -26,7 +26,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -138,11 +137,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     public boolean containsViite(TekstiKappaleViite viite) {
         return viite != null && tekstit.getId().equals(viite.getRoot().getId());
-    }
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(getId());
     }
 
     public Set<OpsOppiaine> getOppiaineet() {

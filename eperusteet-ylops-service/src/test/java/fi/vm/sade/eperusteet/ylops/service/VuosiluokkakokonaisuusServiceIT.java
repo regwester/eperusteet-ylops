@@ -18,7 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
@@ -48,15 +48,15 @@ public class VuosiluokkakokonaisuusServiceIT extends AbstractIntegrationTest {
     private VuosiluokkakokonaisuusService service;
 
     private Long opsId;
-    private EntityReference viite1Ref;
-    private EntityReference viite2Ref;
+    private Reference viite1Ref;
+    private Reference viite2Ref;
 
     @Before
     public void setup() {
         Vuosiluokkakokonaisuusviite viite = new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_1, Vuosiluokka.VUOSILUOKKA_2));
-        this.viite1Ref = viitteet.save(viite).getReference();
+        this.viite1Ref = Reference.of(viitteet.save(viite));
         viite = new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_3, Vuosiluokka.VUOSILUOKKA_4, Vuosiluokka.VUOSILUOKKA_5, Vuosiluokka.VUOSILUOKKA_6));
-        this.viite2Ref = viitteet.save(viite).getReference();
+        this.viite2Ref = Reference.of(viitteet.save(viite));
         Opetussuunnitelma ops = new Opetussuunnitelma();
         ops = suunnitelmat.save(ops);
         opsId = ops.getId();

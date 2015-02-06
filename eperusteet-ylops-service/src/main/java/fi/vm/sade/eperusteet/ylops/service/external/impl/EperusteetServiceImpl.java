@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
-import fi.vm.sade.eperusteet.ylops.resource.config.EntityReferenceNamingStrategy;
+import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         converter.getObjectMapper().enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         converter.getObjectMapper().enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         converter.getObjectMapper().registerModule(new Jdk8Module());
-        converter.getObjectMapper().setPropertyNamingStrategy(new EntityReferenceNamingStrategy());
+        converter.getObjectMapper().setPropertyNamingStrategy(new ReferenceNamingStrategy());
         client = new RestTemplate(Arrays.asList(converter));
     }
 

@@ -15,14 +15,18 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.io.Serializable;
 
 /**
+ * Rajapinnan toteuttava entity on "viitattavissa" ja sillä pitää olla yksikäsitteinen avain.
  *
  * @author mikkom
  */
 public interface ReferenceableEntity {
-    EntityReference getReference();
+    /**
+     * Palauttaa viitattavissa olevan entityn yksikäsitteisen avaimen. Avain pitää olla mahdollista muuttaa merkkijonoksi (järkevä toString-methodi vaaditaan).
+     *
+     * @return
+     */
     Serializable getId();
 }

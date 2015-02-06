@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ import java.util.Optional;
  *
  * @author jhyoty
  */
-public class EntityReferenceNamingStrategy extends PropertyNamingStrategy {
+public class ReferenceNamingStrategy extends PropertyNamingStrategy {
 
     @Override
     public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method,
@@ -45,8 +45,8 @@ public class EntityReferenceNamingStrategy extends PropertyNamingStrategy {
     }
 
     private String getName(MapperConfig<?> config, Type type, String defaultName) {
-        final JavaType ot = config.getTypeFactory().constructParametrizedType(Optional.class, Optional.class, EntityReference.class);
-        final JavaType et = config.getTypeFactory().constructType(EntityReference.class);
+        final JavaType ot = config.getTypeFactory().constructParametrizedType(Optional.class, Optional.class, Reference.class);
+        final JavaType et = config.getTypeFactory().constructType(Reference.class);
         final JavaType t = config.getTypeFactory().constructType(type);
 
         if (et.equals(t) || ot.equals(t)) {

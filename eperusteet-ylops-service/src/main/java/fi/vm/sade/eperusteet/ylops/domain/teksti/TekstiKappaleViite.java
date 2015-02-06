@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -94,11 +93,6 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
 
     public TekstiKappaleViite(Omistussuhde omistussuhde) {
         this.omistussuhde = omistussuhde;
-    }
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(id);
     }
 
     public TekstiKappaleViite getRoot() {

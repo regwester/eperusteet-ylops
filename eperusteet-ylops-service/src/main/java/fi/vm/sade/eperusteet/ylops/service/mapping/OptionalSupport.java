@@ -17,7 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import java.util.Collection;
 import java.util.Optional;
 import ma.glasnost.orika.CustomConverter;
@@ -136,7 +136,7 @@ public final class OptionalSupport {
         }
     }
 
-    static final class OptionalEntitityReferenceConverter extends CustomConverter<Optional<EntityReference>, ReferenceableEntity> {
+    static final class OptionalEntitityReferenceConverter extends CustomConverter<Optional<Reference>, ReferenceableEntity> {
 
         @Override
         public boolean canConvert(Type<?> sourceType, Type<?> destinationType) {
@@ -145,7 +145,7 @@ public final class OptionalSupport {
         }
 
         @Override
-        public ReferenceableEntity convert(Optional<EntityReference> source, Type<? extends ReferenceableEntity> destinationType) {
+        public ReferenceableEntity convert(Optional<Reference> source, Type<? extends ReferenceableEntity> destinationType) {
             if (source != null && source.isPresent()) {
                 return mapperFacade.map(source.get(), destinationType.getRawType());
             }

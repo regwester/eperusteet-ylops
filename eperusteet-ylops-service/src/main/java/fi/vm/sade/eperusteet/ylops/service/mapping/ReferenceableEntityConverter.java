@@ -16,7 +16,8 @@
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import java.io.Serializable;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -35,7 +36,7 @@ import org.springframework.stereotype.Component;
  * @author teele1
  */
 @Component
-public class ReferenceableEntityConverter extends BidirectionalConverter<ReferenceableEntity, EntityReference> {
+public class ReferenceableEntityConverter extends BidirectionalConverter<ReferenceableEntity, Reference> {
 
     @PersistenceContext
     private EntityManager em;
@@ -47,12 +48,12 @@ public class ReferenceableEntityConverter extends BidirectionalConverter<Referen
     }
 
     @Override
-    public EntityReference convertTo(ReferenceableEntity s, Type<EntityReference> type) {
-        return s.getReference();
+    public Reference convertTo(ReferenceableEntity s, Type<Reference> type) {
+        return new Reference(s.getId().toString());
     }
 
     @Override
-    public ReferenceableEntity convertFrom(EntityReference reference, Type<ReferenceableEntity> type) {
+    public ReferenceableEntity convertFrom(Reference reference, Type<ReferenceableEntity> type) {
         ManagedType<ReferenceableEntity> managedType = em.getMetamodel().managedType(type.getRawType());
         if (managedType instanceof IdentifiableType) {
             final Class<?> idType = ((IdentifiableType<?>) managedType).getIdType().getJavaType();
@@ -62,10 +63,10 @@ public class ReferenceableEntityConverter extends BidirectionalConverter<Referen
         throw new ConverterException();
     }
 
-    private static final Map<Class<?>, Function<EntityReference, ?>> converters;
+    private static final Map<Class<?>, Function<Reference, Serializable>> converters;
 
-    private static Object fail(EntityReference r) {
-        throw new IllegalArgumentException("tuntematon viitetyyppi");
+    private static <T> T fail(Reference r) {
+        throw new IllegalArgumentException("Tuntematon viitetyyppi");
     }
 
     static {

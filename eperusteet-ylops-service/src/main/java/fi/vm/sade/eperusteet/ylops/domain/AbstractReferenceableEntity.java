@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,11 +31,6 @@ public abstract class AbstractReferenceableEntity implements ReferenceableEntity
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(id);
-    }
 
     @Override
     public Long getId() {
