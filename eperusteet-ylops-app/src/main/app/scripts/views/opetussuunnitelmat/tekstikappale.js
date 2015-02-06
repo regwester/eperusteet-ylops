@@ -21,6 +21,11 @@ ylopsApp
     Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
     OhjeCRUD, MurupolkuData) {
 
+    $scope.ohje = {};
+    $scope.perusteteksti = {};
+    $scope.options = {tekstiCollapsed: true};
+    var TYYPIT = ['ohje', 'perusteteksti'];
+
     $scope.opsId = $stateParams.id;
     $scope.options = {
       isCollapsed: true
@@ -32,8 +37,24 @@ ylopsApp
       }, 200);
     }
 
+    $scope.isEmpty = function (model) {
+      return _.isEmpty(model);
+    };
+
     $scope.model = {};
-    $scope.ohje = {};
+
+    function fetchOhje(model) {
+      OhjeCRUD.forTekstikappale({uuid: model.tekstiKappale.tunniste}, function (ohje) {
+        _.each(TYYPIT, function (tyyppi) {
+          var found = _.find(ohje, function (item) {
+            return item.tyyppi === tyyppi;
+          });
+          if (found) {
+            $scope[tyyppi] = found;
+          }
+        });
+      });
+    }
 
     function fetch() {
       if ($stateParams.tekstikappaleId === 'uusi') {
@@ -50,9 +71,7 @@ ylopsApp
         }, function (res) {
           $scope.model = res;
           MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
-          OhjeCRUD.forTekstikappale({uuid: res.tekstiKappale.tunniste}, function (ohje) {
-            $scope.ohje = ohje;
-          });
+          fetchOhje(res);
         }, Notifikaatiot.serverCb);
 
       }

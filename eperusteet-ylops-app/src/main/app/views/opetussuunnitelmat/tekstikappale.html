@@ -6,13 +6,28 @@
 <h2 class="tekstikappale-title" ng-bind="model.tekstiKappale.nimi | kaanna"></h2>
 
 
-<div class="tekstiosa-wrapper">
-  <div class="tekstiosa single perusteen-teksti" ng-if="ohje.teksti">
-    <a class="toggle-perusteen-teksti" ng-click="options.isCollapsed = !options.isCollapsed" ng-bind="options.isCollapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></a>
-    <div class="teksti" collapse="options.isCollapsed" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
+<div ng-if="ohje.teksti">
+  <h4><span kaanna="'ohjeistus'"></span></h4>
+  <div class="tekstiosa-wrapper">
+    <div class="tekstiosa single perusteen-teksti">
+      <a class="toggle-perusteen-teksti" ng-click="options.ohjeistusCollapsed = !options.ohjeistusCollapsed"
+         ng-bind="options.ohjeistusCollapsed && 'nayta' || 'piilota' | kaanna"></a>
+      <div class="teksti" collapse="options.ohjeistusCollapsed" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
+    </div>
   </div>
-
 </div>
+
+<div ng-if="perusteteksti.teksti">
+  <h4><span kaanna="'perusteen-teksti'"></span></h4>
+  <div class="tekstiosa-wrapper">
+    <div class="tekstiosa single perusteen-teksti">
+      <a class="toggle-perusteen-teksti" ng-click="options.perusteentekstiCollapsed = !options.perusteentekstiCollapsed"
+         ng-bind="options.perusteentekstiCollapsed && 'nayta' || 'piilota' | kaanna"></a>
+      <div class="teksti" collapse="options.perusteentekstiCollapsed" ng-bind-html="perusteteksti.teksti | kaanna | unsafe"></div>
+    </div>
+  </div>
+</div>
+
 <div class="panel-clear-fix tekstiosa single">
   <h4><span kaanna="'opsin-teksti'"></span></h4>
 
