@@ -15,12 +15,12 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  *
@@ -28,9 +28,10 @@ import java.util.Set;
  */
 @Getter
 @Setter
-public class OppiaineenVuosiluokkakokonaisuusSuppeaDto implements ReferenceableDto {
+public class OppiaineenVuosiluokkaDto implements ReferenceableDto {
     private Long id;
-    private Reference vuosiluokkakokonaisuus;
 
-    private Set<Reference> vuosiluokat;
+    private Vuosiluokka vuosiluokka;
+    private List<OpetuksenTavoiteDto> tavoitteet;
+    private List<KeskeinenSisaltoalueDto> sisaltoalueet;
 }

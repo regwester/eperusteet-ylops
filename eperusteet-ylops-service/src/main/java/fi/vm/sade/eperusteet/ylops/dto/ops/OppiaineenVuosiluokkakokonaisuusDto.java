@@ -21,6 +21,8 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 /**
  *
  * @author mikkom
@@ -35,6 +37,5 @@ public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private TekstiosaDto ohjaus;
     private TekstiosaDto arviointi;
 
-    // TODO: Vuosiluokkaistaminen
-    // private Set<OppiaineenVuosiluokkaDto> vuosiluokat;
+    private Set<OppiaineenVuosiluokkaDto> vuosiluokat;
 }
