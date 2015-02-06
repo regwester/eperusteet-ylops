@@ -13,13 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.impl;
+package fi.vm.sade.eperusteet.ylops.service.impl.ops;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -65,7 +64,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -237,7 +235,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             = eperusteetService.findPerusopetuksenPerusteet().stream()
             .max(Comparator.comparingLong(p -> p.getVoimassaoloLoppuu().getTime()))
             .orElseThrow(() -> new BusinessRuleViolationException(
-                    "Perusopetuksen perustetta ei löytynyt"));
+                "Perusopetuksen perustetta ei löytynyt"));
 
         PerusopetusPerusteKaikkiDto perusteDto
             = eperusteetService.getPerusopetuksenPeruste(perusteInfoDto.getId());
