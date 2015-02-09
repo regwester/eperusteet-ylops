@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineenVuosiluokkaKokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.LaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
@@ -28,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -54,8 +56,8 @@ public class OpsDtoMapper {
 
         if (dto.getVuosiluokkakokonaisuudet() != null) {
             dto.getVuosiluokkakokonaisuudet()
-               .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
-                   mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
+                .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
+                        mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
         }
 
         return oppiaine;
@@ -69,18 +71,33 @@ public class OpsDtoMapper {
 
         if (dto.getVuosiluokkakokonaisuudet() != null) {
             dto.getVuosiluokkakokonaisuudet()
-               .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
-                   mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
+                .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
+                        mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
         }
 
         return oppiaine;
     }
 
     public static VuosiluokkakokonaisuusDto fromEperusteet(
-        fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto) {
+        fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto,
+        Map<Long, UUID> laajaalaiset) {
         VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new Reference(dto.getTunniste().toString()));
         vk.setNimi(Optional.ofNullable(dto.getNimi()));
-        //TODO. laaja-alaiset osaamiset
+        vk.setTunniste(Optional.ofNullable(Reference.of(dto.getTunniste())));
+        vk.setTehtava(Optional.ofNullable(fromEperusteet(dto.getTehtava())));
+        vk.setSiirtymaEdellisesta(Optional.ofNullable(fromEperusteet(dto.getSiirtymaEdellisesta())));
+        vk.setSiirtymaSeuraavaan(Optional.ofNullable(fromEperusteet(dto.getSiirtymaSeuraavaan())));
+        vk.setLaajaalainenosaaminen(Optional.ofNullable(fromEperusteet(dto.getLaajaalainenOsaaminen())));
+
+        if (dto.getLaajaalaisetOsaamiset() != null) {
+            vk.setLaajaalaisetosaamiset(new HashSet<>());
+            dto.getLaajaalaisetOsaamiset().forEach(lo -> {
+                LaajaalainenosaaminenDto l = new LaajaalainenosaaminenDto();
+                l.setLaajaalainenosaaminen(Reference.of(laajaalaiset.get(lo.getId())));
+                l.setKuvaus(Optional.ofNullable(lo.getKuvaus()));
+                vk.getLaajaalaisetosaamiset().add(l);
+            });
+        }
         return vk;
     }
 
@@ -96,20 +113,20 @@ public class OpsDtoMapper {
         dto.setKoodiArvo(oa.getKoodiArvo());
         dto.setKoodiUri(oa.getKoodiUri());
 
-        Set<OpetuksenKohdealueDto> kohdealueet =
-            oa.getKohdealueet().stream()
-              .map(OpsDtoMapper::fromEperusteet)
-              .collect(Collectors.toSet());
+        Set<OpetuksenKohdealueDto> kohdealueet
+            = oa.getKohdealueet().stream()
+            .map(OpsDtoMapper::fromEperusteet)
+            .collect(Collectors.toSet());
         dto.setKohdealueet(kohdealueet);
 
         // Ollaan oppimäärässä, täällä ei pitäisi enää olla alioppimääriä
-        assert(!oa.getKoosteinen());
+        assert (!oa.getKoosteinen());
 
         if (oa.getVuosiluokkakokonaisuudet() != null) {
             dto.setVuosiluokkakokonaisuudet(
                 oa.getVuosiluokkakokonaisuudet().stream()
-                  .map(oaVlk -> fromEperusteet(oaVlk, vuosiluokkaMap))
-                  .collect(Collectors.toSet()));
+                .map(oaVlk -> fromEperusteet(oaVlk, vuosiluokkaMap))
+                .collect(Collectors.toSet()));
         }
 
         return dto;
@@ -129,21 +146,21 @@ public class OpsDtoMapper {
 
         dto.setKohdealueet(
             oa.getKohdealueet().stream()
-              .map(OpsDtoMapper::fromEperusteet)
-              .collect(Collectors.toSet()));
+            .map(OpsDtoMapper::fromEperusteet)
+            .collect(Collectors.toSet()));
 
         if (oa.getOppimaarat() != null) {
             dto.setOppimaarat(
                 oa.getOppimaarat().stream()
-                  .map(om -> fromEperusteet(om, vuosiluokkaMap))
-                  .collect(Collectors.toSet()));
+                .map(om -> fromEperusteet(om, vuosiluokkaMap))
+                .collect(Collectors.toSet()));
         }
 
         if (oa.getVuosiluokkakokonaisuudet() != null) {
             dto.setVuosiluokkakokonaisuudet(
                 oa.getVuosiluokkakokonaisuudet().stream()
-                  .map(oaVlk -> fromEperusteet(oaVlk, vuosiluokkaMap))
-                  .collect(Collectors.toSet()));
+                .map(oaVlk -> fromEperusteet(oaVlk, vuosiluokkaMap))
+                .collect(Collectors.toSet()));
         }
 
         return dto;

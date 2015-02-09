@@ -25,8 +25,12 @@ import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Profile(value = "default")
 public class EperusteetServiceImpl implements EperusteetService {
+
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String koodistoServiceUrl;
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
@@ -55,7 +60,6 @@ public class EperusteetServiceImpl implements EperusteetService {
         client = new RestTemplate(Arrays.asList(converter));
     }
 
-
     @Override
     public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
         PerusteInfoDto[] kaikki = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus", PerusteInfoDto[].class);
@@ -70,6 +74,18 @@ public class EperusteetServiceImpl implements EperusteetService {
             throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
         }
         return peruste;
+    }
+
+    //TODO, ei ole lopullinen rajapinta. Haku diaarinumeron perusteella?
+    @Override
+    @Cacheable("perusteet")
+    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste() {
+
+        // TODO: Paree olisi jos eperusteetService palauttaisi suoraan uusimman perusteen
+        PerusteInfoDto perusteInfoDto = findPerusopetuksenPerusteet().stream()
+            .max(Comparator.comparingLong(p -> Optional.ofNullable(p.getVoimassaoloLoppuu()).orElse(new Date(Long.MAX_VALUE)).getTime()))
+            .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
+        return getPerusopetuksenPeruste(perusteInfoDto.getId());
     }
 
     @Override

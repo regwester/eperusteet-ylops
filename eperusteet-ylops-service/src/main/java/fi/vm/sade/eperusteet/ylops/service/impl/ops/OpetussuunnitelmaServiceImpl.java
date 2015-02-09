@@ -248,6 +248,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .collect(Collectors.toMap(vlk -> Reference.of(vlk),
                                           vlk -> vlk.getTunniste()));
 
+            final Map<Long, UUID> laajaalaisetMap
+                = Optional.ofNullable(sisalto.getLaajaalaisetosaamiset()).orElse(Collections.emptySet()).stream()
+                .collect(Collectors.toMap(lo -> lo.getId(),
+                                          lo -> lo.getTunniste()));
+
             if (sisalto.getOppiaineet() != null) {
                 sisalto.getOppiaineet().stream()
                     .map(oa -> OpsDtoMapper.fromEperusteet(oa, vuosiluokkaMap))
@@ -255,7 +260,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
 
             sisalto.getVuosiluokkakokonaisuudet().stream()
-                .map(OpsDtoMapper::fromEperusteet)
+                .map(vk -> OpsDtoMapper.fromEperusteet(vk, laajaalaisetMap))
                 .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
         }
 

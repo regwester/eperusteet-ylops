@@ -46,6 +46,11 @@ public class EperusteetServiceMock implements EperusteetService {
     }
 
     @Override
+    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste() {
+        return null;
+    }
+
+    @Override
     public JsonNode getTiedotteet(Long jalkeen) {
         return null;
     }
