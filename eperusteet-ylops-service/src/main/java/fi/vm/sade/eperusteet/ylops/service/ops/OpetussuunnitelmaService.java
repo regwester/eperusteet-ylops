@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import java.util.List;
@@ -57,4 +58,7 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
     public List<OpetussuunnitelmaDto> getAllPohjat();
+
+    @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
+    public List<PerusteInfoDto> getPerusteet();
 }

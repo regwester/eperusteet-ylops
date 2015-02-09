@@ -21,14 +21,17 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoWrapperDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
@@ -62,8 +65,16 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
-        PerusteInfoDto[] kaikki = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus", PerusteInfoDto[].class);
-        return Arrays.asList(kaikki);
+        PerusteInfoWrapperDto wrapperDto =
+            client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi=koulutustyyppi_16&sivukoko=100",
+                                PerusteInfoWrapperDto.class);
+
+        // Filtteröi pois perusteet jotka eivät enää ole voimassa
+        Date now = new Date();
+        return wrapperDto.getData().stream()
+                         .filter(peruste -> peruste.getVoimassaoloLoppuu() == null ||
+                                            peruste.getVoimassaoloLoppuu().after(now))
+                         .collect(Collectors.toList());
     }
 
     @Override

@@ -121,6 +121,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public List<PerusteInfoDto> getPerusteet() {
+        return eperusteetService.findPerusopetuksenPerusteet();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public OpetussuunnitelmaDto getOpetussuunnitelma(@P("id") Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
@@ -241,7 +246,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
                 .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
-                        new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
+                    new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
 
             final Map<Reference, UUID> vuosiluokkaMap
                 = sisalto.getVuosiluokkakokonaisuudet().stream()
