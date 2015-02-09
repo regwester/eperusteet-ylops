@@ -23,6 +23,12 @@ button {
   }
 }
 
+.collapse-toggler {
+  cursor: pointer;
+  margin-right: 5px;
+  color: $brand-primary;
+}
+
 /* animointia varten */
 .ng-hide-add, .ng-hide-remove {
   display: block !important;
@@ -73,7 +79,12 @@ button.icon-only {
 
 .ylops-footer {
   min-height: 1px;
-  margin-bottom: 100px;
+  margin-top: 80px;
+  .version-info {
+    color: #999;
+    font-size: 10px;
+    text-align: center;
+  }
 }
 
 $backtotop-size: 48px;
@@ -114,6 +125,16 @@ $backtotop-size: 48px;
   margin-bottom: 20px;
 }
 
+.action-buttons-inline {
+  float: right;
+}
+
+.panel-title, h3, h4 {
+  .action-buttons-inline {
+    margin-top: -5px;
+  }
+}
+
 .angular-ui-tree-placeholder {
   background: #f0f9ff;
   border: 2px dashed #bed2db;
@@ -136,8 +157,9 @@ $backtotop-size: 48px;
 }
 
 label {
-  input[type="radio"] {
+  input[type="radio"], input[type="checkbox"] {
     top: 0;
+    margin-right: 5px;
   }
 }
 

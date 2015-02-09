@@ -5,8 +5,23 @@
   h2 {
     height: 50px;
   }
+  h3 {
+    margin-top: 40px;
+  }
   .luo-nappi {
     margin: 20px;
     padding: 10px 20px;
   }
+  .pohja-select {
+    max-width: 160px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+}
+
+.see-more {
+  display: block;
+  width: 100%;
+  margin-top: -10px;
+  text-align: center;
 }

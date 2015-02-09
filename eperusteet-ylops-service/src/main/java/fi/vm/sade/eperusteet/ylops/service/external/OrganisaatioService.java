@@ -26,6 +26,12 @@ import java.util.List;
 public interface OrganisaatioService {
 
     @PreAuthorize("permitAll()")
+    JsonNode getOrganisaatio(String organisaatioOid);
+
+    @PreAuthorize("permitAll()")
+    JsonNode getPeruskoulut(String kuntaId);
+
+    @PreAuthorize("permitAll()")
     JsonNode getRyhma(String organisaatioOid);
 
     @PreAuthorize("permitAll()")

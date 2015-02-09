@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.config;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -28,7 +29,7 @@ public class InitBinderControllerAdvice {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        //
+        binder.registerCustomEditor(Tyyppi.class, new EnumToUpperCaseEditor<>(Tyyppi.class));
     }
 
 }

@@ -53,4 +53,8 @@ ylopsApp
         }
       };
     }]);
+  })
+
+  .config(function(uiSelectConfig) {
+    uiSelectConfig.theme = 'bootstrap';
   });

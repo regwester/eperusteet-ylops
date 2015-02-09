@@ -21,23 +21,12 @@ ylopsApp
     $timeout, $state, OpetussuunnitelmaCRUD, opsModel, opsService, Notifikaatiot, Varmistusdialogi,
     OpetussuunnitelmanTekstit) {
 
-    $scope.editMode = false;
     $scope.rakenneEdit = false;
-    if ($stateParams.id === 'uusi') {
-      $timeout(function () {
-        $scope.edit();
-      }, 200);
-    }
-
     $scope.model = opsModel;
 
     function fetch() {
       opsService.refetch();
     }
-
-    $scope.edit = function () {
-      Editointikontrollit.startEditing();
-    };
 
     $scope.delete = function () {
       Varmistusdialogi.dialogi({
@@ -85,39 +74,5 @@ ylopsApp
       $scope.rakenneEdit = false;
       fetch();
     };
-
-    var successCb = function (res) {
-      $scope.model = res;
-      Notifikaatiot.onnistui('tallennettu-ok');
-      if ($stateParams.id === 'uusi') {
-        $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
-      }
-    };
-
-    var callbacks = {
-      edit: function () {
-        fetch();
-      },
-      save: function () {
-        if ($stateParams.id === 'uusi') {
-          OpetussuunnitelmaCRUD.save({}, $scope.model, successCb, Notifikaatiot.serverCb);
-        } else {
-          $scope.model.$save({}, successCb, Notifikaatiot.serverCb);
-        }
-      },
-      cancel: function () {
-        if ($stateParams.id === 'uusi') {
-          $timeout(function () {
-            $state.go('root.etusivu');
-          });
-        } else {
-          fetch();
-        }
-      },
-      notify: function (mode) {
-        $scope.editMode = mode;
-      }
-    };
-    Editointikontrollit.registerCallback(callbacks);
 
   });

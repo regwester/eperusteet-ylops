@@ -34,7 +34,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -66,7 +65,6 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
 
     @Getter
     @Setter
-    @Type(type="uuid")
     private UUID tunniste;
 
     @Enumerated(EnumType.STRING)

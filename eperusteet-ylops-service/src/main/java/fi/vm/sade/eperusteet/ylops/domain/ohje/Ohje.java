@@ -15,19 +15,20 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.ohje;
 
-import fi.vm.sade.eperusteet.ylops.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -49,6 +50,10 @@ public class Ohje extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
-    @Type(type = "uuid")
     private UUID kohde;
+
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private OhjeTyyppi tyyppi;
 }

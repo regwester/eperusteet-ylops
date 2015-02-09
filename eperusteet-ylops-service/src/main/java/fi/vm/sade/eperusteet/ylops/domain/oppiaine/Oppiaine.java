@@ -17,8 +17,8 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.Collections;
 import java.util.HashSet;
@@ -104,14 +104,14 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
      * @return oppimäärät (joukkoa ei voi muokata) tai null jos oppiaine ei ole koosteinen
      */
     public Set<Oppiaine> getOppimaarat() {
-        if (koosteinen == false) {
+        if (!koosteinen) {
             return null;
         }
-        return oppimaarat == null ? new HashSet<Oppiaine>() : new HashSet<>(oppimaarat);
+        return oppimaarat == null ? new HashSet<>() : new HashSet<>(oppimaarat);
     }
 
     public Set<Oppiaineenvuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
-        return vuosiluokkakokonaisuudet == null ? Collections.<Oppiaineenvuosiluokkakokonaisuus>emptySet()
+        return vuosiluokkakokonaisuudet == null ? Collections.emptySet()
             : Collections.unmodifiableSet(vuosiluokkakokonaisuudet);
     }
 
@@ -141,7 +141,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public void addOppimaara(Oppiaine oppimaara) {
-        if (koosteinen == false) {
+        if (!koosteinen) {
             throw new IllegalStateException("Oppiaine ei ole koosteinen eikä tue oppimääriä");
         }
         if (oppimaarat == null) {
@@ -154,7 +154,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public void removeOppimaara(Oppiaine aine) {
-        if (koosteinen == false) {
+        if (!koosteinen) {
             throw new IllegalStateException("Oppiaine ei ole koosteinen eikä tue oppimääriä");
         }
         if (aine.getOppiaine().equals(this) && oppimaarat.remove(aine)) {
@@ -223,5 +223,5 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public interface Strict {
-    };
+    }
 }

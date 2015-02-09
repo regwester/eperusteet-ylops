@@ -18,7 +18,7 @@
         <spring.data.jpa.version>1.7.1.RELEASE</spring.data.jpa.version>
         <logback.version>1.1.2</logback.version>
         <postgresql.version>9.3-1102-jdbc41</postgresql.version>
-        <jackson.version>2.4.4</jackson.version>
+        <jackson.version>2.5.0</jackson.version>
         <eperusteet-ylops.devdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.devdb.user}</eperusteet-ylops.devdb.jdbcurl>
         <eperusteet-ylops.ittestdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.ittestdb.user}</eperusteet-ylops.ittestdb.jdbcurl>
         <buildhelper.skipAttach>true</buildhelper.skipAttach>
@@ -80,6 +80,11 @@
             <version>3.1</version>
         </dependency>
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <exclusions>
@@ -133,6 +138,11 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
@@ -172,6 +182,16 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
             <version>${spring.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ryantenney.metrics</groupId>
+            <artifactId>metrics-spring</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.codahale.metrics</groupId>
+            <artifactId>metrics-servlets</artifactId>
+            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -305,11 +325,10 @@
             <artifactId>swagger-springmvc</artifactId>
             <version>${swagger.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjtools</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.4</version>
         </dependency>
         <dependency>
             <groupId>org.jasig.cas.client</groupId>
@@ -327,6 +346,13 @@
             <artifactId>xml-apis</artifactId>
             <version>1.4.01</version>
         </dependency>
+        <!-- swagger vaatii guavan; runtime scope estää IDE:ä tarjoamasta sitä autocompletessa -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -336,6 +362,7 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <debug>true</debug>
                 </configuration>
             </plugin>
             <plugin>
@@ -374,7 +401,7 @@
                         <ittestdb.jdbcurl>${eperusteet-ylops.ittestdb.jdbcurl}</ittestdb.jdbcurl>
                     </systemPropertyVariables>
                     <excludes>
-                        <exclude>**/service/test/*.java</exclude>
+                        <exclude>**/ylops/test/**.java</exclude>
                     </excludes>
                     <includes>
                         <include>**/*IT.java</include>
@@ -393,7 +420,7 @@
                         <ittestdb.jdbcurl>${eperusteet-ylops.ittestdb.jdbcurl}</ittestdb.jdbcurl>
                     </systemPropertyVariables>
                     <excludes>
-                        <exclude>**/service/test/*.java</exclude>
+                        <exclude>**/ylops/test/**.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

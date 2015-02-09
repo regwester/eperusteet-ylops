@@ -18,11 +18,10 @@ package fi.vm.sade.eperusteet.ylops.dto.teksti;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  *
@@ -35,11 +34,13 @@ public class TekstiKappaleViiteDto {
     private Long id;
 
     @JsonProperty("_tekstiKappale")
-    private EntityReference tekstiKappaleRef;
+    private Reference tekstiKappaleRef;
 
     private TekstiKappaleDto tekstiKappale;
 
     private Omistussuhde omistussuhde;
+
+    private boolean pakollinen;
 
     public TekstiKappaleViiteDto() { }
 
@@ -50,7 +51,7 @@ public class TekstiKappaleViiteDto {
     @Getter
     @Setter
     public static class Matala extends TekstiKappaleViiteDto {
-        private List<EntityReference> lapset;
+        private List<Reference> lapset;
 
         public Matala() {}
 

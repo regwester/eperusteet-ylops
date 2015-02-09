@@ -48,9 +48,11 @@ cas.service.organisaatio-service=https\://${host.virkailija}/organisaatio-servic
 cas.user-search-base=ou\=people
 cas.user-search-filter=(|(mail\={0})(uid\={0}))
 customAttribute.webservice.url.backend=https://${host.virkailija}/authentication-service/services/customAttributeService
+fi.vm.sade.eperusteet.ylops.eperusteet-service=https://${host.virkailija}/eperusteet-service
 flyway.initOnMigrate=true
 koodi.public.webservice.url.backend=https://${host.virkailija}/koodisto-service/services/koodiService
 koodisto.public.webservice.url.backend=https://${host.virkailija}/koodisto-service/services/koodistoService
+koodisto.service.url=https://${host.virkailija}/koodisto-service
 jpa.schemaUpdate=validate
 jpa.showSql=false
 ldap.cache.size=10000

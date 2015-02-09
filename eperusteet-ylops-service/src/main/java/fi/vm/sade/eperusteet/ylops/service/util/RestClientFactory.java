@@ -16,11 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.service.util;
 
 import fi.vm.sade.generic.rest.CachingRestClient;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -30,10 +29,10 @@ import java.util.concurrent.ConcurrentMap;
 public class RestClientFactory {
     private static final int TIMEOUT = 60000;
 
-    @Value("${fi.vm.sade.eperusteet.oph_username:''}")
+    @Value("${fi.vm.sade.eperusteet.ylops.oph_username:''}")
     private String username;
 
-    @Value("${fi.vm.sade.eperusteet.oph_password:''}")
+    @Value("${fi.vm.sade.eperusteet.ylops.oph_password:''}")
     private String password;
 
     @Value("${web.url.cas:''}")

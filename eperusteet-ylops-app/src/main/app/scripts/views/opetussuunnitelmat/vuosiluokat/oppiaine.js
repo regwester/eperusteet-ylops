@@ -17,12 +17,54 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineController', function ($scope, $state, $stateParams) {
+.controller('OppiaineBaseController', function ($scope, oppiaine, MurupolkuData) {
+  $scope.oppiaine = oppiaine;
+  MurupolkuData.set('oppiaineNimi', $scope.oppiaine.nimi);
+})
+
+.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit) {
+  $scope.vuosiluokkakokonaisuus = $scope.vuosiluokat[0];
+
+  $scope.tekstit = {
+    ohjaus: {
+      teksti: {fi: 'Oppilaan matematiikan osaamista ja taitojen kehittymistä seurataan ja tarvittaessa annetaan lisätukea heti tuen tarpeen ilmetessä. Tarjottava tuki antaa oppilaalle mahdollisuuden ymmärtää matematiikkaa ikätasonsa mukaisesti ja kehittää taitojaan niin, että oppimisen ja osaamisen ilo säilyvät. Oppilaille tarjotaan sopivia välineitä oppimisen tueksi ja hänelle tarjotaan mahdollisuuksia oivaltaa ja ymmärtää itse.'}
+    },
+    tyotavat: {
+
+    },
+    arviointi: {
+
+    }
+  };
+
+  $scope.callbacks = {
+    edit: function () {
+
+    },
+    save: function () {
+
+    },
+    cancel: function () {
+
+    },
+    notify: function (mode) {
+      $scope.callbacks.notifier(mode);
+    },
+    notifier: angular.noop
+  };
+  Editointikontrollit.registerCallback($scope.callbacks);
+
+
   $scope.goToDummy = function (id) {
-    $state.go('root.opetussuunnitelmat.yksi.vuosiluokka', {
+    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {
       vlkId: $stateParams.vlkId,
-      oppiaineId: $stateParams.oppiaineId,
       vlId: id
+    });
+  };
+
+  $scope.vuosiluokkaistaminenDemo = function () {
+    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
+      vlkId: $stateParams.vlkId,
     });
   };
 });

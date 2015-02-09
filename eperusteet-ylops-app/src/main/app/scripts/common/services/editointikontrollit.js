@@ -39,7 +39,7 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, Utils
     scope.editModeDefer = $q.defer();
 
     this.lastModified = null;
-    var cbListener = null;
+    var cbListener = angular.noop;
     var editmodeListener = null;
 
     function setEditMode(mode) {

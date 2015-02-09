@@ -1,5 +1,33 @@
-<h2>Oppiaine</h2>
-<ul>
-  <li><a ng-click="goToDummy('dummy8')">Vuosiluokka N</a></li>
-  <li><a ng-click="goToDummy('dummy9')">Vuosiluokka N+1</a></li>
-</ul>
+<h2 ng-bind="oppiaine.nimi | kaanna"></h2>
+
+<div perusteen-tekstiosa="oppiaine.tehtava"></div>
+
+<div class="tekstiosa-wrapper">
+  <h3>
+    <div class="action-buttons-inline">
+      <button class="btn btn-default" icon-role="th-list" ng-click="vuosiluokkaistaminenDemo()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"></button>
+    </div>
+    <span kaanna="'tavoitteet-ja-sisallot-vuosiluokittain'"></span>
+  </h3>
+
+  <table class="table table-striped table-hover vuosiluokat-table">
+    <tr>
+      <th kaanna="'vuosiluokka'"></th>
+      <th kaanna="'tavoitteet'"></th>
+      <th kaanna="'sisaltoalueet'"></th>
+    </tr>
+    <tr ng-repeat="vuosiluokka in oppiaine.vuosiluokat">
+      <td>
+        <a ng-click="goToDummy('dummy' + $index)"><span kaanna="'vuosiluokka'"></span> {{vuosiluokka.vuosiluokka}}</a>
+      </td>
+      <td></td>
+      <td></td>
+    </tr>
+
+  </table>
+</div>
+
+<div perusteen-tekstiosa="vuosiluokkakokonaisuus.tehtava"></div>
+<div perusteen-tekstiosa="vuosiluokkakokonaisuus.tyotavat" muokattava="tekstit.tyotavat" callbacks="callbacks"></div>
+<div perusteen-tekstiosa="vuosiluokkakokonaisuus.ohjaus" muokattava="tekstit.ohjaus" callbacks="callbacks"></div>
+<div perusteen-tekstiosa="vuosiluokkakokonaisuus.arviointi" muokattava="tekstit.arviointi" callbacks="callbacks"></div>

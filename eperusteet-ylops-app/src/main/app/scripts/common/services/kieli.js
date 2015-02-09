@@ -37,6 +37,10 @@ ylopsApp
       'en'
     ];
 
+    function orderFn(kielikoodi) {
+      return _.indexOf(SISALTOKIELET, kielikoodi);
+    }
+
     function isValidKielikoodi(kielikoodi) {
       return _.indexOf(SISALTOKIELET, kielikoodi) > -1;
     }
@@ -81,6 +85,7 @@ ylopsApp
 
     this.SISALTOKIELET = SISALTOKIELET;
     this.UIKIELET = UIKIELET;
+    this.orderFn = orderFn;
   })
 
   .directive('kielenvaihto', function () {

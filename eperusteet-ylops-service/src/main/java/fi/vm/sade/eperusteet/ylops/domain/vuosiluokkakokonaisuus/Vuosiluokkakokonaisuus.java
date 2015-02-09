@@ -17,9 +17,9 @@ package fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,8 +48,9 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
-    @ManyToOne
+    @ManyToOne(optional = false)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @NotNull
     private Vuosiluokkakokonaisuusviite tunniste;
 
     @Getter

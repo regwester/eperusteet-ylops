@@ -28,7 +28,8 @@ var ylopsApp = angular.module('ylopsApp', [
   'ui.bootstrap',
   'ui.utils',
   'ui.select',
-  'ui.tree'
+  'ui.tree',
+  'ui.sortable'
 ]);
 
 /* jshint ignore:end */

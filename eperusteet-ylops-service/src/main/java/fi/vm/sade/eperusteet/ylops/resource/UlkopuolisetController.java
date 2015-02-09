@@ -17,7 +17,10 @@ package fi.vm.sade.eperusteet.ylops.resource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,27 @@ public class UlkopuolisetController {
     @Autowired
     private KoodistoService koodistoService;
 
+    @Autowired
+    private EperusteetService eperusteetService;
+
+    @RequestMapping(value = "/perusopetusperuste", method = GET)
+    @ResponseBody
+    public ResponseEntity<List<PerusteInfoDto>> getPerusopetusperusteet() {
+        return new ResponseEntity<>(eperusteetService.findPerusopetuksenPerusteet(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/perusopetusperuste/{id}", method = GET)
+    @ResponseBody
+    public ResponseEntity<PerusopetusPerusteKaikkiDto> getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
+        return new ResponseEntity<>(eperusteetService.getPerusopetuksenPeruste(id), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/tiedotteet", method = GET)
+    @ResponseBody
+    public ResponseEntity<JsonNode> getTiedotteet(@RequestParam(value = "jalkeen", required = false) final Long jalkeen) {
+        return new ResponseEntity<>(eperusteetService.getTiedotteet(jalkeen), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/organisaatioryhmat", method = GET)
     @ResponseBody
     public ResponseEntity<JsonNode> getOrganisaatioRyhmat() {
@@ -60,6 +84,13 @@ public class UlkopuolisetController {
     public ResponseEntity<JsonNode> getOrganisaatioRyhma(@PathVariable(value = "oid") final String oid) {
         JsonNode ryhma = organisaatioService.getRyhma(oid);
         return new ResponseEntity<>(ryhma, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/organisaatiot/peruskoulut/{kuntaId}", method = GET)
+    @ResponseBody
+    public ResponseEntity<JsonNode> getPeruskoulut(@PathVariable(value = "kuntaId") final String kuntaId) {
+        JsonNode peruskoulut = organisaatioService.getPeruskoulut(kuntaId);
+        return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/koodisto/{koodisto}", method = GET)

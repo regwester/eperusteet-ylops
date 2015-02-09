@@ -16,7 +16,9 @@
         <input type="radio" ng-model="pohja.active" value="1">
         <span kaanna="'kayta-pohjaa'"></span>
       </label>
-      <select ng-model="pohja.model" ng-options="(item.nimi | kaanna) for item in pohjat">
+      <select class="pohja-select form-control" ng-model="pohja.model"
+              ng-options="(item.nimi | kaanna) for item in pohjat | orderBy:sorter"
+              ng-change="pohja.active = '1'">
         <option value="">{{'valitse-pohja' | kaanna}}</option>
       </select>
       <br/>
@@ -28,6 +30,7 @@
       <button class="btn btn-primary luo-nappi" ng-click="addNew()" ng-disabled="pohja.active === '1' && !pohja.model"
               kaanna="'luo-projekti'"></button>
     </form>
+
   </div>
 
   <div class="osio col-md-3 col-sm-12">
@@ -43,4 +46,21 @@
     </div>
   </div>
 
+</div>
+
+<div ng-controller="EtusivuController">
+  <div ng-if="isVirkailija()" class="row etusivu-osiot">
+
+    <div class="osio col-md-6 col-sm-8">
+      <h2 kaanna="'pohjat'"></h2>
+      <div ng-controller="PohjaListaController">
+        <div ng-include="'views/opetussuunnitelmat/pohja/taulukko.html'"></div>
+      </div>
+    </div>
+
+    <div class="osio col-md-3 col-sm-4">
+      <h2 kaanna="'aloita-uusi-pohja'"></h2>
+      <button class="btn btn-primary luo-nappi" ng-click="addNewPohja()" kaanna="'luo-pohja'"></button>
+    </div>
+  </div>
 </div>

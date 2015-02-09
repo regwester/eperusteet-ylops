@@ -16,42 +16,43 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import javax.persistence.Entity;
-import javax.persistence.Index;
+import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
 
 /**
  * Opetussuunnitelman oppiaine
  *
  * @author jhyoty
  */
-@Entity
-@Audited
-@Table(name = "ops_vuosiluokkakokonaisuus", indexes = {
-    @Index(unique = true, columnList = "opetussuunnitelma_id,vuosiluokkakokonaisuus_id")})
-public class OpsVuosiluokkakokonaisuus extends AbstractOpsViite {
-
+@Embeddable
+@EqualsAndHashCode(of = "vuosiluokkakokonaisuus")
+public class OpsVuosiluokkakokonaisuus implements Serializable {
 
     @Getter
     @Setter
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     @NotNull
     private Vuosiluokkakokonaisuus vuosiluokkakokonaisuus;
 
+    @Getter
+    @Setter
+    @Column(updatable = false)
+    private boolean oma;
 
     protected OpsVuosiluokkakokonaisuus() {
         //JPA
     }
 
-    public OpsVuosiluokkakokonaisuus(Opetussuunnitelma opetussuunnitelma, Vuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean oma) {
-        super(opetussuunnitelma, oma);
+    public OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean oma) {
+        this.oma = oma;
         this.vuosiluokkakokonaisuus = vuosiluokkakokonaisuus;
     }
-
 
 }

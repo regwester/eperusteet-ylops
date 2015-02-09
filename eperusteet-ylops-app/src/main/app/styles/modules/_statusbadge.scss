@@ -49,3 +49,35 @@ $statusbadge-width: 95px;
     background-color: #c44;
   }
 }
+
+.tilanvaihto {
+  li {
+    cursor: pointer;
+    border: none;
+    .statusbadge {
+      float: left;
+      margin-right: 20px;
+    }
+    &.vanha {
+      background-color: #ccc;
+    }
+    &.uusi {
+      background-color: $valinta-vari;
+    }
+  }
+  .row>div {
+    text-align: center;
+  }
+  .arrow {
+    height: $statusbadge-height;
+    .glyphicon {
+      opacity: 0.5;
+      font-size: 60px;
+      line-height: $statusbadge-height;
+    }
+  }
+  .confirmation {
+    margin-top: 20px;
+    font-size: 125%;
+  }
+}

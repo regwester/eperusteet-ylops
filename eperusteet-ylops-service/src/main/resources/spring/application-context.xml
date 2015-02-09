@@ -23,7 +23,7 @@
        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <context:property-placeholder
-        location="classpath:eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/override.properties"
+        location="classpath:eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/eperusteet-ylops.properties, file:///${user.home:''}/oph-configuration/override.properties"
         ignore-resource-not-found="true"
         properties-ref="defaultProps"/>
 
@@ -50,8 +50,15 @@
         </property>
     </bean>
 
+    <bean id="ylopsPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator"/>
+
     <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+        <property name="permissionEvaluator" ref="ylopsPermissionEvaluator"/>
     </bean>
+
+    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
+        <security:expression-handler ref="expressionHandler"/>
+    </security:global-method-security>
 
     <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
 
@@ -109,9 +116,5 @@
     <bean id="defaultExecutor" class="org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor">
         <constructor-arg ref="defaultThreadPool"/>
     </bean>
-
-    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
-      <!--security:expression-handler ref="expressionHandler"/-->
-    </security:global-method-security>
 
 </beans>

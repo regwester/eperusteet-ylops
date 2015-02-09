@@ -273,7 +273,14 @@ module.exports = function(grunt) {
           dest: '<%= yeoman.dist %>/bower_components/ckeditor',
           src: [
             '**',
-            '!samples/**',
+            '!samples/**'
+          ]
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/ckeditor-plugins',
+          dest: '<%= yeoman.dist %>/ckeditor-plugins',
+          src: [
+            '**'
           ]
         }, {
           expand: true,
@@ -340,13 +347,13 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: { mangle: false },
-//      dist: {
-//        files: {
-//          '.tmp/concat/scripts/scripts.js': [
-//            '<%= yeoman.dist %>/scripts/scripts.js'
-//          ]
-//        }
-//      }
+      dist: {
+        files: {
+          '.tmp/concat/scripts/scripts.js': [
+            '<%= yeoman.dist %>/scripts/scripts.js'
+          ]
+        }
+      }
     },
     sass: {
       dist: {
@@ -359,10 +366,10 @@ module.exports = function(grunt) {
       dist: {
         cwd: '<%= yeoman.app %>',
         src: 'views/**/*.html',
-        dest: '<%= yeoman.dist %>/scripts/scripts.js',
-        //append: true,
+        dest: '.tmp/views.js',
+        append: true,
         options:    {
-          module: 'eperusteApp',
+          module: 'ylopsApp',
           usemin: 'scripts/scripts.js',
           htmlmin: { collapseWhitespace: true, removeComments: true }
         }

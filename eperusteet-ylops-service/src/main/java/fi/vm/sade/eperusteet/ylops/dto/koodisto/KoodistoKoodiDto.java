@@ -27,9 +27,10 @@ import lombok.Setter;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KoodistoKoodiDto {
+    private Long id;
     private String koodiUri;
     private String koodiArvo;
     private String versio;
+    private String voimassaLoppuPvm;
     private KoodistoMetadataDto[] metadata;
-    private KoodistoDto koodisto;
 }

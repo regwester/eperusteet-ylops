@@ -66,13 +66,17 @@ ylopsApp
           opsModel: ['opsService', 'opsId', function(opsService, opsId) {
             return opsService.fetch(opsId);
           }],
-          vuosiluokat: ['vuosiluokatService', function (vuosiluokatService) {
-            return vuosiluokatService.getVuosiluokat();
+          vuosiluokat: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
+            return vuosiluokatService.getVuosiluokat(opsModel);
           }]
         },
-        controller: function ($scope, opsModel, vuosiluokat) {
+        controller: function ($scope, opsModel, vuosiluokat, opsService, $rootScope) {
           $scope.model = opsModel;
           $scope.vuosiluokat = vuosiluokat;
+          $scope.$on('rakenne:updated', function () {
+            $scope.model = opsService.get();
+            $rootScope.$broadcast('murupolku:update');
+          });
         }
       })
 
@@ -94,6 +98,15 @@ ylopsApp
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive(false);
+          }],
+          tiedotId: ['$stateParams', function ($stateParams) {
+            return $stateParams.id;
+          }],
+          kunnat: ['KoodistoHaku', 'tiedotId', function (KoodistoHaku, tiedotId) {
+            if (tiedotId === 'uusi') {
+              return KoodistoHaku.get({ koodistoUri: 'kunta' }).$promise;
+            }
+            return null;
           }]
         }
       })
@@ -145,12 +158,36 @@ ylopsApp
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();
+          }],
+          vuosiluokatService: 'VuosiluokatService',
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          vlk: ['vuosiluokatService', 'vlkId', 'opsModel', function (vuosiluokatService, vlkId, opsModel) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsModel, vlkId);
           }]
         }
       })
 
       .state('root.opetussuunnitelmat.yksi.oppiaine', {
         url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId',
+        template: '<div ui-view></div>',
+        abstract: true,
+        controller: 'OppiaineBaseController',
+        resolve: {
+          vuosiluokatService: 'VuosiluokatService',
+          oppiaineId: ['$stateParams', function($stateParams){
+            return $stateParams.oppiaineId;
+          }],
+          oppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
+            console.log(oppiaineId);
+            return vuosiluokatService.getOppiaine(oppiaineId).$promise;
+          }]
+        }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+        url: '',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/oppiaine.html',
         controller: 'OppiaineController',
         resolve: {
@@ -160,14 +197,85 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.vuosiluokka', {
-        url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId/vuosiluokka/:vlId',
+      .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {
+        url: '/vuosiluokka/:vlId',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokka.html',
         controller: 'VuosiluokkaController',
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();
           }]
+        }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
+        url: '/vuosiluokkaistaminen',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokkaistaminen.html',
+        controller: 'VuosiluokkaistaminenController',
+        resolve: {
+          vuosiluokatService: 'VuosiluokatService',
+          tavoitteet: ['vuosiluokatService', function (vuosiluokatService) {
+            return vuosiluokatService.getTavoitteet(/*oppiaineenVlkId*/);
+          }],
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
+          }]
+        }
+      })
+
+      .state('root.pohjat', {
+        url: '/pohjat',
+        template: '<div ui-view></div>',
+        abstract: true
+      })
+
+      .state('root.pohjat.lista', {
+        url: '',
+        templateUrl: 'views/opetussuunnitelmat/pohja/lista.html',
+        controller: 'PohjaListaController'
+      })
+
+      .state('root.pohjat.yksi', {
+        url: '/:pohjaId',
+        templateUrl: 'views/opetussuunnitelmat/pohja/base.html',
+        controller: 'PohjaController',
+        resolve: {
+          opsService: 'OpsService',
+          pohjaId: ['$stateParams', function($stateParams){
+            return $stateParams.pohjaId;
+          }],
+          pohjaModel: ['opsService', 'pohjaId', function(opsService, pohjaId) {
+            return opsService.fetchPohja(pohjaId);
+          }]
+        }
+      })
+
+      .state('root.pohjat.yksi.sisalto', {
+        url: '/sisalto',
+        templateUrl: 'views/opetussuunnitelmat/pohja/sisalto.html',
+        controller: 'PohjaSisaltoController'
+      })
+
+      .state('root.pohjat.yksi.tiedot', {
+        url: '/tiedot',
+        templateUrl: 'views/opetussuunnitelmat/pohja/tiedot.html',
+        controller: 'PohjaTiedotController'
+      })
+
+      .state('root.pohjat.yksi.tekstikappale', {
+        url: '/tekstikappale/:tekstikappaleId',
+        templateUrl: 'views/opetussuunnitelmat/pohja/tekstikappale.html',
+        controller: 'PohjaTekstikappaleController',
+        resolve: {
+          tekstikappaleId: ['$stateParams', function ($stateParams) {
+            return $stateParams.tekstikappaleId;
+          }],
+          tekstikappaleModel: ['pohjaId', 'tekstikappaleId', 'OpetussuunnitelmanTekstit', function (pohjaId, tekstikappaleId, OpetussuunnitelmanTekstit) {
+            return OpetussuunnitelmanTekstit.get({opsId: pohjaId, viiteId: tekstikappaleId}).$promise;
+          }]
+          /*naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive();
+          }]*/
         }
       });
   });

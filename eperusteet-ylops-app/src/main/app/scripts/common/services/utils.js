@@ -40,8 +40,17 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
       return hasContent;
     };
 
+    this.compareLocalizedText = function (t1, t2) {
+      var langs = _.values(Kieli.SISALTOKIELET);
+      return _.isEqual(_.pick(t1, langs), _.pick(t2, langs));
+    };
+
     this.supportsFileReader = function () {
       return !_.isUndefined($window.FormData);
+    };
+
+    this.sort = function (item) {
+      return Kaanna.kaanna(item.nimi).toLowerCase();
     };
 
     this.nameSort = function (item, key) {
@@ -112,5 +121,18 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
           window.off('scroll', scroll);
         });
       }
+    };
+  })
+
+  .directive('ngEnter', function() {
+    return function(scope, element, attrs) {
+      element.bind('keydown keypress', function(event) {
+        if (event.which === 13) {
+          scope.$apply(function(){
+            scope.$eval(attrs.ngEnter);
+          });
+          event.preventDefault();
+        }
+      });
     };
   });

@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -28,6 +27,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
@@ -43,6 +43,17 @@ import org.hibernate.envers.Audited;
 @Entity
 @Audited
 @Table(name = "tekstikappaleviite")
+@NamedNativeQuery(
+    name = "TekstiKappaleViite.findRootByTekstikappaleId",
+    query
+    = "with recursive vanhemmat(id,vanhempi_id,tekstikappale_id) as "
+    + "(select tv.id, tv.vanhempi_id, tv.tekstikappale_id from tekstikappaleviite tv "
+    + "where tv.tekstikappale_id = ?1 and tv.omistussuhde in (?2,?3) "
+    + "union all "
+    + "select tv.id, tv.vanhempi_id, v.tekstikappale_id "
+    + "from tekstikappaleviite tv, vanhemmat v where tv.id = v.vanhempi_id) "
+    + "select id from vanhemmat where vanhempi_id is null"
+)
 public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
 
     @Id
@@ -50,6 +61,10 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Getter
     @Setter
     private Long id;
+
+    @Getter
+    @Setter
+    private boolean pakollinen;
 
     @ManyToOne
     @Getter
@@ -65,7 +80,7 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @NotNull
     @Getter
     @Setter
-    private Omistussuhde omistussuhde;
+    private Omistussuhde omistussuhde = Omistussuhde.OMA;
 
     @OneToMany(mappedBy = "vanhempi", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderColumn
@@ -73,15 +88,11 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     private List<TekstiKappaleViite> lapset;
 
-    public TekstiKappaleViite() {}
+    public TekstiKappaleViite() {
+    }
 
     public TekstiKappaleViite(Omistussuhde omistussuhde) {
         this.omistussuhde = omistussuhde;
-    }
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(id);
     }
 
     public TekstiKappaleViite getRoot() {

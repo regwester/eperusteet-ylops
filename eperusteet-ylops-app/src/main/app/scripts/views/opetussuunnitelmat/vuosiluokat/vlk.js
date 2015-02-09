@@ -17,6 +17,40 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkakokonaisuusController', function () {
+.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
+  MurupolkuData, vlk) {
+
+  $scope.perusteVlk = vlk;
+  MurupolkuData.set('vlkNimi', vlk.vuosiluokkakokonaisuus.nimi);
+  $scope.laajaalaiset = _.map($scope.perusteVlk.vuosiluokkakokonaisuus.laajaalaisetOsaamiset, function (item) {
+    item.teksti = item.kuvaus;
+    item.otsikko = item.nimi;
+    item.paikallinen = {};
+    return item;
+  });
+
+  $scope.vlk = {
+    siirtymaEdellisesta: {},
+    siirtymaSeuraavaan: {},
+  };
+
+  $scope.siirtymat = ['siirtymaEdellisesta', 'siirtymaSeuraavaan'];
+
+  $scope.callbacks = {
+    edit: function () {
+
+    },
+    save: function () {
+
+    },
+    cancel: function () {
+
+    },
+    notify: function (mode) {
+      $scope.callbacks.notifier(mode);
+    },
+    notifier: angular.noop
+  };
+  Editointikontrollit.registerCallback($scope.callbacks);
 
 });

@@ -1,5 +1,5 @@
 $ops-header-background: rgba(20, 158, 203, 0.06);
-$ops-header-height: 130px;
+$ops-header-height: 120px;
 $ops-border: 1px solid #ddd;
 
 .ops-header {
@@ -7,6 +7,7 @@ $ops-border: 1px solid #ddd;
   height: $ops-header-height;
   border: $ops-border;
   padding: 15px;
+  position: relative;
   .ops-header-toiminnot {
     float: right;
   }
@@ -18,20 +19,68 @@ $ops-border: 1px solid #ddd;
     h1 {
       padding: 0;
       margin: 0;
-      max-height: 60px; // TODO parempi responsiivisuus pitkällä otsikolla niin että kaikki linkit näkyy silti
     }
   }
   .ops-header-linkit {
+    margin-bottom: 7px;
+    position: absolute;
+    bottom: 0;
+    right: -1px;
     margin-top: 20px;
+    margin-bottom: -1px;
     padding-left: 0;
     font-size: 120%;
     list-style-type: none;
     li {
+      //box-shadow: inset 0px -1px 1px 0px rgba(0,0,0,0.2);
+      border: 1px solid #ccc;
       display: inline-block;
+      padding: 5px 10px;
+      &:hover {
+        background-color: mix(#f5f5f5, $brand-primary, 90%);
+      }
       &:not(:first-child) {
-        margin-left: 20px;
+        margin-left: -1px;
       }
     }
+    .active {
+      //box-shadow: inset 0px 1px 1px 0px rgba(0,0,0,0.2);
+      border: 1px solid #ccc;
+      &:hover {
+        background-color: $brand-primary;
+      }
+      background-color: $brand-primary;
+      a {
+        color: white;
+      }
+    }
+  }
+}
+
+@media (max-width: 850px) {
+  .ops-header-tiedot {
+    h1 {
+      font-size: 24px;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .ops-header-tiedot {
+    h1 {
+      font-size: 20px;
+    }
+  }
+}
+
+h1.plain {
+  margin-top: 30px;
+}
+
+.sisalto-osio {
+  .kontrollit {
+    position: absolute;
+    right: 5px;
   }
 }
 
@@ -45,6 +94,9 @@ $ops-border: 1px solid #ddd;
     border: 1px solid #ccc;
     height: 32px;
     font-size: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     & > ul {
       margin-top: 11px;
     }
@@ -52,8 +104,87 @@ $ops-border: 1px solid #ddd;
 }
 
 .list-group-header {
+  position: relative;
   text-align: center;
   background-color: #f0f0f0;
   font-weight: 700;
   font-size: 110%;
+}
+
+.ops-edit-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1000px;
+  .muokkaustiedot {
+    color: #999;
+  }
+  .data-container {
+    margin-top: 40px;
+  }
+}
+
+.formfield-label {
+  padding-top: 5px;
+  margin-bottom: 5px;
+  & > label {
+    font-size: 120%;
+  }
+}
+
+.formfield-data {
+  padding-bottom: 30px;
+  &.viewmode {
+    padding-top: 5px;
+  }
+}
+
+.organisaatio-label {
+  padding-top: 5px;
+  float: left;
+}
+
+.organisaatio-input {
+  margin-left: 100px;
+  margin-bottom: 10px;
+  &.viewmode {
+    padding-top: 5px;
+  }
+  min-height: 20px;
+}
+
+.organisaatio-spacer {
+  margin-bottom: 120px;
+}
+
+.ui-select-search {
+  box-shadow: none;
+}
+
+.ui-select {
+  min-height: 32px;
+}
+
+.julkaisukieli-label {
+  padding-top: 5px;
+  float: right;
+}
+
+.muokattu-viimeksi {
+  float: right;
+}
+
+.muokkaa-button {
+  float: right;
+  margin-top: 50px;
+}
+
+.tallenna-peruuta-nappi {
+  margin-top: 20px;
+  margin-right: 20px;
+  padding: 10px 20px;
+}
+
+.julkaisukieli {
+  margin-top: 5px;
+  margin-right: 20px;
 }

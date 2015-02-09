@@ -18,29 +18,27 @@
 
 ylopsApp
   .controller('OpetussuunnitelmatListaController', function ($scope, $state,
-    OpetussuunnitelmaCRUD) {
-    $scope.items = OpetussuunnitelmaCRUD.query();
+    OpsListaService) {
+    $scope.items = OpsListaService.query();
+    $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
 
     $scope.addNew = function () {
-      $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma', {id: 'uusi'});
+      $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi'});
     };
   })
 
-  .controller('UusiOpsController', function ($scope, $state) {
+  .controller('UusiOpsController', function ($scope, $state, OpsListaService, Utils) {
     $scope.pohja = {
       active: 0,
       model: null
     };
 
     $scope.addNew = function () {
-      $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma', {id: 'uusi'});
+      $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi'});
     };
 
-    $scope.pohjat = [
-      {nimi: {fi: 'Dummypohja 1'}},
-      {nimi: {fi: 'Dummypohja 2'}},
-      {nimi: {fi: 'Dummypohja 3'}},
-    ];
+    $scope.pohjat = OpsListaService.query(true);
+    $scope.sorter = Utils.sort;
   })
 
   .controller('TiedotteetController', function ($scope) {

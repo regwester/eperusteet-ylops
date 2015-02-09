@@ -1,0 +1,29 @@
+.teksti-node-actions {
+  display: none;
+}
+
+.pohjan-muokkaus {
+  .rakenne {
+    margin-top: 20px;
+  }
+
+  .tekstikappaleet {
+    padding-left: 20px;
+    .teksti-node {
+      position: relative;
+      font-size: 14px;
+      padding-right: 50px;
+      &.editmode {
+        height: 50px;
+        padding-right: 5px;
+      }
+      .teksti-node-actions {
+        display: block;
+        position: absolute;
+        right: 0;
+      }
+    }
+    margin-bottom: 50px;
+  }
+
+}

@@ -15,28 +15,39 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
-import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
-import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lt;
-import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.uniikkiString;
+import java.util.Collections;
+import java.util.HashSet;
+
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
  * @author mikkom
  */
-@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Autowired
@@ -45,13 +56,39 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     @Autowired
     TekstiKappaleViiteService tekstiKappaleViiteService;
 
+    @Autowired
+    OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    private DtoMapper mapper;
+
     @Before
     public void setUp() {
         OpetussuunnitelmaDto ops;
         ops = new OpetussuunnitelmaDto();
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
+        ops.setTyyppi(Tyyppi.POHJA);
+        ops = opetussuunnitelmaService.addPohja(ops);
+
+        ops.setTila(Tila.VALMIS);
+        opetussuunnitelmaRepository.save(mapper.map(ops, Opetussuunnitelma.class));
+
+
+        ops = new OpetussuunnitelmaDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
         ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.OPS);
+
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.15252345624572462");
+        ops.setKoulut(new HashSet<>(Collections.singleton(kouluDto)));
         opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }
 

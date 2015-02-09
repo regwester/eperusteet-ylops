@@ -35,11 +35,4 @@ public enum Tila {
 
     @Override
     public String toString() { return tila; }
-
-    @JsonCreator
-    public static Tila of(String tila) {
-        return Stream.of(values()).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(tila +
-                        " ei ole kelvollinen tila"));
-   }
 }

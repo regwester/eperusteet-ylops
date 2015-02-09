@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.dto.ohje;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,4 +40,5 @@ public class OhjeDto {
 
     private LokalisoituTekstiDto teksti;
     private UUID kohde;
+    private OhjeTyyppi tyyppi;
 }

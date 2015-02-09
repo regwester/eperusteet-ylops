@@ -17,32 +17,73 @@
 'use strict';
 
 ylopsApp
-.service('OpsService', function (OpetussuunnitelmaCRUD, Notifikaatiot) {
+.service('OpsListaService', function (OpetussuunnitelmaCRUD) {
+  var cached = null;
+  this.query = function (useCache) {
+    if (useCache && cached) {
+      return cached;
+    }
+    cached = OpetussuunnitelmaCRUD.query();
+    return cached;
+  };
+})
+
+.service('OpsService', function (OpetussuunnitelmaCRUD, Notifikaatiot, MurupolkuData) {
   var opsId = null;
   var ops = null;
+  var deferred = null;
 
   function uusi() {
     return {
       nimi: {},
-      kuvaus: {}
+      kuvaus: {},
+      kunnat: [],
+      koulut: [],
+      tekstit: {lapset: []}
     };
   }
 
-  function refetch() {
+  function refetch(cb) {
     if (opsId !== 'uusi') {
-      return OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+      deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+        MurupolkuData.set('opsNimi', angular.copy(res.nimi));
         ops = res;
+        (cb || angular.noop)(res);
       }, Notifikaatiot.serverCb);
+      return deferred;
     }
   }
 
   function fetch(id) {
     opsId = id;
-    return opsId === 'uusi' ? uusi() : OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+
+    if (opsId === 'uusi') {
+      MurupolkuData.set('opsNimi', 'uusi');
+      return uusi();
+    }
+    deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
+      MurupolkuData.set('opsNimi', angular.copy(res.nimi));
       ops = res;
     }, Notifikaatiot.serverCb);
+    return deferred;
+  }
+
+  function get(validateId) {
+    if (validateId && validateId !== opsId) {
+      opsId = null;
+      ops = null;
+      return null;
+    }
+    return deferred;
   }
 
   this.fetch = fetch;
+  this.fetchPohja = fetch;
   this.refetch = refetch;
+  this.refetchPohja = refetch;
+  this.get = get;
+  this.getPohja = get;
+  this.getId = function () {
+    return opsId;
+  };
 });

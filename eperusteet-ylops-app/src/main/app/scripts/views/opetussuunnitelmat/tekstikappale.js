@@ -19,8 +19,17 @@
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
-    OhjeCRUD) {
+    OhjeCRUD, MurupolkuData) {
 
+    $scope.ohje = {};
+    $scope.perusteteksti = {};
+    $scope.options = {tekstiCollapsed: true};
+    var TYYPIT = ['ohje', 'perusteteksti'];
+
+    $scope.opsId = $stateParams.id;
+    $scope.options = {
+      isCollapsed: true
+    };
     $scope.editMode = false;
     if ($stateParams.tekstikappaleId === 'uusi') {
       $timeout(function () {
@@ -28,8 +37,24 @@ ylopsApp
       }, 200);
     }
 
+    $scope.isEmpty = function (model) {
+      return _.isEmpty(model);
+    };
+
     $scope.model = {};
-    $scope.ohje = {};
+
+    function fetchOhje(model) {
+      OhjeCRUD.forTekstikappale({uuid: model.tekstiKappale.tunniste}, function (ohje) {
+        _.each(TYYPIT, function (tyyppi) {
+          var found = _.find(ohje, function (item) {
+            return item.tyyppi === tyyppi;
+          });
+          if (found) {
+            $scope[tyyppi] = found;
+          }
+        });
+      });
+    }
 
     function fetch() {
       if ($stateParams.tekstikappaleId === 'uusi') {
@@ -45,9 +70,8 @@ ylopsApp
           viiteId: $stateParams.tekstikappaleId
         }, function (res) {
           $scope.model = res;
-          OhjeCRUD.forTekstikappale({uuid: res.tekstiKappale.tunniste}, function (ohje) {
-            $scope.ohje = ohje;
-          });
+          MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
+          fetchOhje(res);
         }, Notifikaatiot.serverCb);
 
       }
@@ -108,32 +132,5 @@ ylopsApp
       }
     };
     Editointikontrollit.registerCallback(callbacks);
-
-    $scope.ohjeOps = {
-      editing: false,
-      edit: function () {
-        $scope.ohjeOps.editing = true;
-      },
-      ok: function () {
-        $scope.ohjeOps.editing = false;
-        if (!$scope.ohje.$save) {
-          $scope.ohje.kohde = $scope.model.tekstiKappale.tunniste;
-          OhjeCRUD.save({}, $scope.ohje, function (res) {
-            $scope.ohje = res;
-          }, Notifikaatiot.serverCb);
-        } else {
-          $scope.ohje.$save();
-        }
-
-      },
-      cancel: function () {
-        $scope.ohjeOps.editing = false;
-      },
-      delete: function () {
-        $scope.ohje.$delete(function () {
-          $scope.ohje = {};
-        });
-      }
-    };
 
   });

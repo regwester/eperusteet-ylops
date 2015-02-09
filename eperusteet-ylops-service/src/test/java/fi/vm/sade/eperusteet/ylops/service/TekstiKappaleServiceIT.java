@@ -21,13 +21,13 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
-import fi.vm.sade.eperusteet.ylops.service.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import static fi.vm.sade.eperusteet.ylops.service.test.util.TestUtils.lokalisoituTekstiOf;
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lokalisoituTekstiOf;
 
 /**
  *

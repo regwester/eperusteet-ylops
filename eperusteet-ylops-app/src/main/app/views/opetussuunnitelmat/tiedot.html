@@ -1,13 +1,142 @@
-<h2 kaanna="'opsn-tiedot'"></h2>
+<div class="ops-edit-container">
+  <h2 ng-hide="luonnissa">
+    <div class="action-buttons-inline">
+      <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+    </div>
+    <span kaanna="'opsn-tiedot'"></span>
+  </h2>
+  <div class="muokkaustiedot" ng-hide="editMode || luonnissa">
+    <span kaanna="'luotu'"></span> <span ng-bind="model.luotu | aikaleima"></span><span ng-if="model.luotu != model.muokattu">,
+    <span kaanna="'muokattu-viimeksi'"></span>  <span ng-bind="model.muokattu | aikaleima"></span></span>
+  </div>
 
-<h3 kaanna="'nimi'"></h3>
-<div ng-bind="model.nimi | kaanna"></div>
+  <div ng-if="!(editMode || luonnissa)" class="data-container">
 
-<h3 kaanna="'kuvaus'"></h3>
-<div ng-bind-html="model.kuvaus | kaanna | unsafe"></div>
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-nimi" kaanna="'nimi'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div ng-bind="model.nimi | kaanna"></div>
+      </div>
+    </div>
 
-<h3 kaanna="'luotu'"></h3>
-<div ng-bind="model.luotu | aikaleima"></div>
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'organisaatio'"></label>
+      </div>
 
-<h3 kaanna="'muokattu-viimeksi'"></h3>
-<div ng-bind="model.luotu | aikaleima"></div>
+      <div class="col-sm-9 formfield-data">
+        <div>
+          <div class="organisaatio-label"><label kaanna="'kunta'"></label></div>
+          <div class="organisaatio-input viewmode">
+            <span ng-repeat="kunta in model.kunnat">{{kunta.nimi | kaanna}}<span ng-show="!$last">, </span></span>
+          </div>
+        </div>
+
+        <div>
+          <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
+          <div class="organisaatio-input viewmode">
+            <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna}}<span ng-show="!$last">, </span></span>
+            <span ng-if="!model.koulut || model.koulut.length === 0">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'julkaisukielet'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data viewmode">
+        <span ng-repeat="kielikoodi in model.julkaisukielet | orderBy:kieliOrderFn">
+          <span ng-bind="kielikoodi | kaanna"></span><span ng-show="!$last">, </span>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-nimi"><span kaanna="'nimi'"></span>*</label>
+      </div>
+      <div class="col-sm-9 formfield-data">
+        <input id="ops-field-nimi" ng-model="editableModel.nimi" slocalized class="form-control">
+      </div>
+    </div>
+
+    <!-- <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-kuvaus" kaanna="'kuvaus'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data">
+        <div id="ops-field-kuvaus" ckeditor ng-model="editableModel.kuvaus" slocalized></div>
+      </div>
+    </div> -->
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'organisaatio'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <div>
+          <div class="organisaatio-label"><label><span kaanna="'kunta'"></span>*</label></div>
+          <div class="organisaatio-input">
+            <ui-select class="ui-select" multiple ng-model="editableModel.kuntaUrit" on-select="$select.search = ''">
+              <ui-select-choices repeat="kunta.koodiUri as kunta in kuntalista | filter: $select.search">
+                <span ng-bind-html="kunta.nimi | kaanna | highlight: $select.search"></span>
+              </ui-select-choices>
+              <ui-select-match class="ui-select-match" placeholder="{{'valitse-kunnat' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
+            </ui-select>
+          </div>
+        </div>
+
+        <div>
+          <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
+          <div class="organisaatio-input">
+            <ui-select class="ui-select" multiple ng-model="editableModel.kouluOidit" on-select="$select.search = ''"
+                       ng-disabled="editableModel.kuntaUrit.length !== 1 || koululista.length === 0">
+              <ui-select-choices repeat="koulu.oid as koulu in koululista | filter: $select.search">
+                <span ng-bind-html="koulu.nimi | kaanna | highlight: $select.search"></span>
+              </ui-select-choices>
+              <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
+            </ui-select>
+            <p ng-if="!loadingKoulut && eiKoulujaVaroitus" kaanna="'kunnalla-ei-kouluja'"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'julkaisukielet'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <label ng-repeat="kielikoodi in kielivalinnat" class="julkaisukieli">
+          <input type="checkbox" ng-model="julkaisukielet[kielikoodi]">
+          <span ng-bind="kielikoodi | kaanna"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="row" ng-if="luonnissa">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-9">
+        <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
+        <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-opetussuunnitelma'" ng-click="uusi.create()"
+                ng-disabled="!hasRequiredFields()"></button>
+      </div>
+    </div>
+
+    <!-- tilaa kunta/koulu-dropdowneille -->
+    <div ng-if="editMode" class="organisaatio-spacer"></div>
+
+  </div>
+
+</div>

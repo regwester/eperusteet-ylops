@@ -19,7 +19,6 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -39,7 +38,6 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.Column;
-import org.hibernate.annotations.Type;
 
 /**
  *
@@ -59,7 +57,6 @@ public class TekstiKappale extends AbstractAuditedEntity
 
     @Getter
     @Column(updatable = false)
-    @Type(type = "uuid")
     private UUID tunniste;
 
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
@@ -88,11 +85,6 @@ public class TekstiKappale extends AbstractAuditedEntity
     public TekstiKappale(TekstiKappale other) {
         this.tunniste = other.tunniste;
         copyState(other);
-    }
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(getId());
     }
 
     public void setTila(Tila tila) {

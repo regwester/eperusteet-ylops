@@ -57,7 +57,7 @@ ylopsApp
 
   var doRefresh = function (items) {
     var levels = {};
-    if (items.length && !items[0].root) {
+    if (items && items.length && !items[0].root) {
       items.unshift({root: true, depth: -1});
     }
     _.each(items, function (item, index) {

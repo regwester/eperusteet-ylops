@@ -82,7 +82,7 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
 
     @Override
     public T lock(T entity) {
-        entityManager.refresh(entity, LockModeType.PESSIMISTIC_WRITE);
+        entityManager.lock(entity, LockModeType.PESSIMISTIC_WRITE);
         return entity;
     }
 

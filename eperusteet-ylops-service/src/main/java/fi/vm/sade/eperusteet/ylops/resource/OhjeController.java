@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource;
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,12 +51,12 @@ public class OhjeController {
 
     @RequestMapping(value = "/tekstikappale/{uuid}", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<OhjeDto> getTekstiKappaleOhje(@PathVariable("uuid") final UUID uuid) {
-        OhjeDto ohjeDto = service.getTekstiKappaleOhje(uuid);
-        if (ohjeDto == null) {
+    public ResponseEntity<List<OhjeDto>> getTekstiKappaleOhje(@PathVariable("uuid") final UUID uuid) {
+        List<OhjeDto> ohjeDtos = service.getTekstiKappaleOhjeet(uuid);
+        if (ohjeDtos == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(ohjeDto, HttpStatus.OK);
+        return new ResponseEntity<>(ohjeDtos, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

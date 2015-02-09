@@ -18,15 +18,21 @@ package fi.vm.sade.eperusteet.ylops.domain.ops;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.dto.EntityReference;
+import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,7 +44,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -82,37 +87,56 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     private Tila tila = Tila.LUONNOS;
 
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    @Getter
+    @Setter
+    private Tyyppi tyyppi = Tyyppi.OPS;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @Getter
     @Setter
     @JoinColumn
     private TekstiKappaleViite tekstit = new TekstiKappaleViite();
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<KoodistoKoodi> kunnat = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY, orphanRemoval = true)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = {
+        @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
     private Set<OpsOppiaine> oppiaineet = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY, orphanRemoval = true)
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = {
+        @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
     private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
 
     @ElementCollection
     @Getter
     @Setter
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<String> koulut = new HashSet<>();
+
+    @ElementCollection
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private Set<Kieli> julkaisukielet = new HashSet<>();
+
+    public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
+        vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
+    }
+
+    public void attachVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
+        vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, false));
+    }
 
     public boolean containsViite(TekstiKappaleViite viite) {
         return viite != null && tekstit.getId().equals(viite.getRoot().getId());
-    }
-
-    @Override
-    public EntityReference getReference() {
-        return new EntityReference(getId());
     }
 
     public Set<OpsOppiaine> getOppiaineet() {
@@ -125,10 +149,44 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         } else {
             this.oppiaineet.addAll(oppiaineet);
             this.oppiaineet.retainAll(oppiaineet);
-            for ( OpsOppiaine o : oppiaineet ) {
-                o.setOpetussuunnitelma(this);
-            }
         }
+    }
+
+    public void addOppiaine(Oppiaine oppiaine) {
+        if (oppiaine.getOppiaine() != null) {
+            // Oppimäärä
+            if (containsOppiaine(oppiaine.getOppiaine())) {
+                oppiaine.getOppiaine().addOppimaara(oppiaine);
+            } else {
+                throw new IllegalArgumentException("Ei voida lisätä oppimäärää jonka oppiaine ei kuulu sisältöön");
+            }
+        } else {
+            // Simppeli oppiaine
+            oppiaineet.add(new OpsOppiaine(oppiaine, true));
+        }
+    }
+
+    public void removeOppiaine(Oppiaine oppiaine) {
+        List<OpsOppiaine> poistettavat = oppiaineet.stream()
+                  .filter(opsOppiaine -> opsOppiaine.getOppiaine().equals(oppiaine))
+                  .collect(Collectors.toList());
+        for (OpsOppiaine opsOppiaine : poistettavat) {
+            // TODO: Tarkista onko opsOppiaineen alla oleva oppiaine enää käytössä missään
+            oppiaineet.remove(opsOppiaine);
+        }
+    }
+
+    public boolean containsOppiaine(Oppiaine oppiaine) {
+        if (oppiaine == null) {
+            return false;
+        }
+
+        if (oppiaine.getOppiaine() != null) {
+            return containsOppiaine(oppiaine.getOppiaine());
+        }
+
+        return oppiaineet.stream()
+                         .anyMatch(opsOppiaine -> opsOppiaine.getOppiaine().equals(oppiaine));
     }
 
     public Set<OpsVuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
@@ -141,9 +199,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         } else {
             this.vuosiluokkakokonaisuudet.addAll(vuosiluokkakokonaisuudet);
             this.vuosiluokkakokonaisuudet.retainAll(vuosiluokkakokonaisuudet);
-            for (OpsVuosiluokkakokonaisuus v : vuosiluokkakokonaisuudet) {
-                v.setOpetussuunnitelma(this);
-            }
         }
     }
+
+    public boolean removeVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus vk) {
+        return vuosiluokkakokonaisuudet.remove(new OpsVuosiluokkakokonaisuus(vk, false));
+    }
+
 }

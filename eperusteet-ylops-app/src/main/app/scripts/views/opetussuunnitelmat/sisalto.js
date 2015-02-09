@@ -17,6 +17,67 @@
 'use strict';
 
 ylopsApp
-.controller('OpetussuunnitelmaSisaltoController', function () {
+.controller('OpetussuunnitelmaSisaltoController', function ($scope, OpetussuunnitelmanTekstit,
+  Notifikaatiot, opsService, opsModel, $rootScope, $stateParams) {
+  $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
 
+  $scope.model = opsService.get($stateParams.id) || opsModel;
+
+  function mapModel() {
+    $scope.model.jarjestaminen = $scope.model.tekstit ? $scope.model.tekstit.lapset[0] : [];
+    $scope.model.lahtokohdat = $scope.model.tekstit ? $scope.model.tekstit.lapset[1] : [];
+  }
+
+  $scope.$watch('model', function () {
+    mapModel();
+  }, true);
+
+  function fetch(cb, notify) {
+    opsService.refetch(function (res) {
+      $scope.model = res;
+      (cb || angular.noop)(res);
+      if (notify) {
+        $rootScope.$broadcast('rakenne:updated');
+      }
+    });
+  }
+
+  function mapSisalto(root) {
+    return {
+      id: root.id,
+      lapset: _.map(root.lapset, mapSisalto)
+    };
+  }
+
+  function saveRakenne(osio) {
+    var postdata = mapSisalto($scope.model.tekstit);
+    OpetussuunnitelmanTekstit.save({
+      opsId: $scope.model.id,
+      viiteId: $scope.model.tekstit.id
+    }, postdata, function () {
+      Notifikaatiot.onnistui('tallennettu-ok');
+      $scope.rakenneEdit[osio] = false;
+      fetch(angular.noop, true);
+    }, Notifikaatiot.serverCb);
+  }
+
+  var original = null;
+
+  $scope.rakenne = {
+    edit: function (osio, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      fetch();
+      $scope.rakenneEdit[osio] = true;
+      original = _.cloneDeep($scope.model[osio].lapset);
+    },
+    cancel: function (osio) {
+      $scope.rakenneEdit[osio] = false;
+      $scope.model[osio].lapset = _.cloneDeep(original);
+      fetch();
+    },
+    save: function (osio) {
+      saveRakenne(osio);
+    }
+  };
 });
