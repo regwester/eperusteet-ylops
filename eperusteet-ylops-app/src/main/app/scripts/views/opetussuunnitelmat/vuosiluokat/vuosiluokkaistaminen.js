@@ -17,17 +17,41 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkaistaminenController', function ($scope, tavoitteet, $filter) {
+.controller('VuosiluokkaistaminenController', function ($scope, tavoitteet, $filter, VariHyrra, ColorCalculator) {
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
   $scope.singleVuosiluokat = [3, 4, 5, 6];
   $scope.tavoitteet = tavoitteet;
   $scope.allDragged = false;
   $scope.collapsedMode = false;
+  $scope.showKohdealueet = true;
 
-  _.each($scope.tavoitteet, function (tavoite, index) {
-    tavoite.koodi = 'T' + (index + 8);
+  var kohdealueet = [
+    {id: 1, nimi: 'Merkitys, arvot ja asenteet'},
+    {id: 2, nimi: 'Työskentelyn taidot'},
+    {id: 3, nimi: 'Käsitteelliset ja tiedonalakohtaiset tavoitteet'},
+    {id: 4, nimi: 'Tutkimisen ja toimimisen taidot'},
+  ];
+
+  _.each(kohdealueet, function (alue) {
+    var vari = VariHyrra.next();
+    alue.styles = {
+      'background-color': '#' + vari,
+      color: ColorCalculator.readableTextColorForBg(vari)
+    };
   });
+
+  function processTavoitteet() {
+    _.each($scope.tavoitteet, function (tavoite, index) {
+      // TODO remove dummy data
+      tavoite.koodi = 'T' + (index + 8);
+      //var kohdealueId = _.first(tavoite.kohdealueet);
+      var kohdealueId = _.sample(_.map(kohdealueet, 'id'));
+      tavoite.kohdealue = _.find(kohdealueet, {id: kohdealueId});
+    });
+  }
+
+  processTavoitteet();
 
   $scope.containers = {
     tavoitteet: {

@@ -1,6 +1,7 @@
 <h2>
   <span kaanna="'vuosiluokkaistaminen'"></span>
-  <a class="inline-toggle-link" icon-role="ep-open-close" ng-click="collapsedMode = !collapsedMode" kaanna="'isot-pienet-tavoitteet'"></a>
+  <label class="inline-toggle-link"><input type="checkbox" ng-model="collapsedMode"><span kaanna="'pienet-tavoitteet'"></span></label>
+  <label class="inline-toggle-link"><input type="checkbox" ng-model="showKohdealueet"><span kaanna="'nayta-kohdealueet'"></span></label>
 </h2>
 
 <div class="vuosiluokkaistaminen-container-outer">
@@ -21,6 +22,8 @@
         <li ng-repeat="item in container.items | orderBy:tavoiteSorter track by $index"
             ng-class="{'not-used': !item.$kaytossa, 'collapsed-mode': collapsedMode}"
             class="container-item" id="{{container.id + '-' + item.koodi}}">
+          <span ng-show="showKohdealueet" ng-style="item.kohdealue.styles" class="kohdealue"
+                ng-bind="item.kohdealue.nimi | kaanna"></span>
           <span class="koodi" ng-bind="item.koodi"></span>
           <span ng-bind="item.tavoite | kaanna" ng-attr-title="{{item.tavoite | kaanna}}"></span>
         </li>
