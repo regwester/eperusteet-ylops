@@ -1,8 +1,14 @@
-<h2>
-  <span kaanna="'vuosiluokkaistaminen'"></span>
-  <label class="inline-toggle-link"><input type="checkbox" ng-model="collapsedMode"><span kaanna="'pienet-tavoitteet'"></span></label>
-  <label class="inline-toggle-link"><input type="checkbox" ng-model="showKohdealueet"><span kaanna="'nayta-kohdealueet'"></span></label>
-</h2>
+<div class="vuosiluokkaistaminen-header">
+  <h2 kaanna="'vuosiluokkaistaminen'"></h2>
+  <label><input type="checkbox" ng-model="collapsedMode"><span kaanna="'pienet-tavoitteet'"></span></label>
+  <label><input type="checkbox" ng-model="showKohdealueet"><span kaanna="'nayta-kohdealueet'"></span></label>
+  <div class="buttons">
+    <button class="btn btn-default" kaanna="'peruuta'" ng-click="cancel()"></button>
+    <span ng-attr-title="{{(allDragged ? '' : 'kaikkia-ei-vuosiluokkaistettu') | kaanna}}">
+      <button class="btn btn-primary" kaanna="'tallenna'" ng-disabled="!allDragged" ng-click="save()"></button>
+    </span>
+  </div>
+</div>
 
 <div class="vuosiluokkaistaminen-container-outer">
   <div class="vuosiluokkaistaminen-container">

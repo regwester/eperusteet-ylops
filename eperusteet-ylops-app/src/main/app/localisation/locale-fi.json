@@ -4,6 +4,7 @@
   "tallenna": "Tallenna",
   "valitse": "Valitse",
   "ok": "OK",
+  "aloita-uudelleen": "Aloita uudelleen",
   "lisaa": "Lisää",
   "tallennettu-ok": "Tallennus onnistui",
   "varmista-poisto": "Varmista poisto",
@@ -105,9 +106,13 @@
   "laaja-alaiset-osaamiset": "Laaja-alaiset osaamiset",
 
   "vuosiluokkaistaminen": "Vuosiluokkaistaminen",
+  "vuosiluokkaistaminen-on-jo-tehty": "Vuosiluokkaistaminen on jo tehty",
+  "vuosiluokkaistamista-ei-viela-tehty": "Tavoitteita ei ole vielä vuosiluokkaistettu. Aloita valitsemalla 'Vuosiluokkaista tavoitteet'.",
+  "vuosiluokkaistaminen-varoitus": "Vuosiluokkaistaminen on jo tehty. Haluatko aloittaa uudelleen? Kaikki paikalliset vuosiluokkakohtaiset muokkaukset katoavat.",
   "pienet-tavoitteet": "Tiivis näkymä",
   "nayta-kohdealueet": "Näytä kohdealueet",
   "kaikki-vuosiluokkaistettu": "Kaikki tavoitteet vuosiluokkaistettu",
+  "kaikkia-ei-vuosiluokkaistettu": "Kaikkia tavoitteita ei ole vuosiluokkaistettu",
   "tavoitteiden-vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet",
   "vuosiluokka": "Vuosiluokka",
   "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt"

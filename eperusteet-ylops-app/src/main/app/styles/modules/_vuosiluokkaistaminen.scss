@@ -1,5 +1,31 @@
 $vl-container-width: 255px;
 
+.vuosiluokkaistaminen-header {
+  position: relative;
+  max-width: 500px;
+  .buttons {
+    position: absolute;
+    right: 0;
+    top: 0;
+    .btn {
+      padding: 10px 16px;
+    }
+  }
+  label + label {
+    margin-left: 20px;
+  }
+}
+
+@media (max-width: 800px) {
+  .vuosiluokkaistaminen-header {
+    max-width: 300px;
+    .buttons {
+      margin-top: 10px;
+      position: relative;
+    }
+  }
+}
+
 .vuosiluokkaistaminen-container-outer {
   position: relative;
   width: 100%;

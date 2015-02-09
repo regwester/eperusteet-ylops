@@ -17,7 +17,8 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkaistaminenController', function ($scope, tavoitteet, $filter, VariHyrra, ColorCalculator) {
+.controller('VuosiluokkaistaminenController', function ($scope, tavoitteet, $filter, VariHyrra, ColorCalculator,
+  $state) {
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
   $scope.singleVuosiluokat = [3, 4, 5, 6];
@@ -33,6 +34,7 @@ ylopsApp
     {id: 4, nimi: 'Tutkimisen ja toimimisen taidot'},
   ];
 
+  VariHyrra.reset();
   _.each(kohdealueet, function (alue) {
     var vari = VariHyrra.next();
     alue.styles = {
@@ -40,6 +42,23 @@ ylopsApp
       color: ColorCalculator.readableTextColorForBg(vari)
     };
   });
+
+  function goBack() {
+    $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine');
+  }
+
+  $scope.cancel = function () {
+    goBack();
+  };
+
+  function saveCb() {
+    goBack();
+  }
+
+  $scope.save = function () {
+    // TODO save
+    saveCb();
+  };
 
   function processTavoitteet() {
     _.each($scope.tavoitteet, function (tavoite, index) {
