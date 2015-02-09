@@ -44,40 +44,21 @@ ylopsApp
   initTexts();
 
   function initPeruste() {
-    // TODO oikea perusteen data
-    $scope.perusteVlk = {
-      siirtymaEdellisesta: {
-        otsikko: {fi: 'Siirtymä edellisestä vaiheesta'},
-        teksti: {fi: 'Placeholder-teksti edellisestä'}
-      },
-      siirtymaSeuraavaan: {
-        otsikko: {fi: 'Siirtymä seuraavaan vaiheeseen'},
-        teksti: {fi: 'Placeholder-teksti seuraavaan'}
-      },
-      laajaalaisetOsaamiset: [
-        {
-          tunniste: '1234',
-          nimi: {fi: 'Joku osaamiskokonaisuus (LX)'},
-          kuvaus: {fi: 'Kuvausteksti'}
-        },
-        {
-          tunniste: '5678',
-          nimi: {fi: 'Ajattelu ja oppimaan oppiminen (L1)'},
-          kuvaus: {fi: '<p>Ajattelun ja oppimisen taidot muodostavat perustan muun osaamisen kehittymiselle ja elinikäiselle oppimiselle. Ajatteluun ja oppimiseen vaikuttaa se, miten oppilas hahmottaa itsensä oppijana ja on vuorovaikutuksessa ympäristönsä kanssa. Olennaista on myös, miten hän oppii tekemään havaintoja ja hakemaan, arvioimaan, muokkaamaan, tuottamaan sekä jakamaan tietoa ja ideoita. Tutkiva ja luova työskentelyote, yhdessä tekeminen sekä mahdollisuus syventymiseen ja keskittymiseen edistävät ajattelun ja oppimaan oppimisen kehittymistä.</p>\n\n<p>Opettajien on tärkeä rohkaista oppilaita luottamaan itseensä ja näkemyksiinsä ja olemaan samalla avoimia uusille ratkaisuille. Oppilaita ohjataan pohtimaan asioita eri näkökulmista, hakemaan uutta tietoa ja siltä pohjalta tarkastelemaan ajattelutapojaan. Heidän kysymyksilleen annetaan tilaa, heitä innostetaan etsimään vastauksia ja kuuntelemaan toisten näkemyksiä ja rakentamaan uutta tietoa. Koulun muodostaman oppivan yhteisön jäseninä oppilaat saavat tukea ja kannustusta ideoilleen ja aloitteilleen, jolloin heidän toimijuutensa voi vahvistua.</p>\n\n<p>Oppilaita ohjataan käyttämään hankkimaansa tietoa itsenäisesti ja vuorovaikutuksessa toisten kanssa ongelmanratkaisuun, argumentointiin, päättelyyn ja johtopäätösten tekemiseen. Oppilailla tulee olla mahdollisuus analysoida käsillä olevaa asiaa kriittisesti eri näkökulmista. Innovatiivisten ratkaisujen löytäminen edellyttää, että oppilaat voivat käyttää kuvittelukykyään ja oppivat näkemään vaihtoehtoja ja yhdistelemään näkökulmia ennakkoluulottomasti. Leikit, pelillisyys, fyysinen aktiivisuus, kokeellisuus ja muut toiminnalliset työtavat sekä taiteen eri muodot edistävät oppimisen iloa ja vahvistavat edellytyksiä luovaan ajatteluun. Valmiudet systeemiseen ja eettiseen ajatteluun kehittyvät vähitellen, kun oppilaat oppivat näkemään asioiden välisiä vuorovaikutus suhteita ja keskinäisiä yhteyksiä sekä hahmottamaan kokonaisuuksia.</p>\n\n<p>Jokaista oppilasta autetaan tunnistamaan oma tapansa oppia ja kehittämään oppimisstrategioitaan. Oppimaan oppimisen taidot karttuvat, kun oppilaita ohjataan ikäkaudelleen sopivalla tavalla asettamaan tavoitteita, suunnittelemaan työtään, arvioimaan edistymistään sekä hyödyntämään teknologisia ja muita apuvälineitä opiskelussaan. Oppilaita tuetaan rakentamaan perusopetuksen aikana hyvä tiedollinen perusta ja kestävä motivaatio jatkoopinnoille ja elinikäiselle oppimiselle.</p>'}
-        }
-      ]
-    };
+    VuosiluokatService.getVlkPeruste($stateParams.id, $stateParams.vlkId, function (res) {
+      $scope.perusteVlk = res;
 
-    $scope.tunnisteet = _.map($scope.perusteVlk.laajaalaisetOsaamiset, 'tunniste');
-    var decorated = _.map($scope.perusteVlk.laajaalaisetOsaamiset, function (item) {
-      item.teksti = item.kuvaus;
-      item.otsikko = item.nimi;
-      return item;
-    });
-    $scope.laajaalaiset = _.indexBy(decorated, 'tunniste');
-    $scope.paikalliset = _.mapValues($scope.laajaalaiset, function () {
-      // TODO olemassaolevat
-      return {};
+      // TODO tunnisteet pitää olla uideja
+      $scope.tunnisteet = _.map($scope.perusteVlk.laajaalaisetOsaamiset, 'id');
+      var decorated = _.map($scope.perusteVlk.laajaalaisetOsaamiset, function (item) {
+        item.teksti = item.kuvaus;
+        item.otsikko = item.nimi || {fi: '[Ei nimeä]'};
+        return item;
+      });
+      $scope.laajaalaiset = _.indexBy(decorated, 'id');
+      $scope.paikalliset = _.mapValues($scope.laajaalaiset, function () {
+        // TODO olemassaolevat
+        return {};
+      });
     });
   }
   initPeruste();
@@ -85,7 +66,7 @@ ylopsApp
   MurupolkuData.set('vlkNimi', vlk.nimi);
 
   $scope.hasSiirtymat = function () {
-    return $scope.perusteVlk.siirtymaEdellisesta || $scope.perusteVlk.siirtymaSeuraavaan;
+    return $scope.perusteVlk && ($scope.perusteVlk.siirtymaEdellisesta || $scope.perusteVlk.siirtymaSeuraavaan);
   };
 
   function commitLaajaalaiset() {

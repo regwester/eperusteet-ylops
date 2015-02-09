@@ -132,6 +132,11 @@ ylopsApp
       successCb || angular.noop, errorCb || angular.noop);
   }
 
+  function getVlkPeruste(opetussuunnitelmaId, vlkId, successCb, errorCb) {
+    return VuosiluokkakokonaisuusCRUD.peruste({opsId: opetussuunnitelmaId, vlkId: vlkId},
+      successCb || angular.noop, errorCb || angular.noop);
+  }
+
   function getTavoitteet(/*oppiaineenVlkId*/) {
     return promisify(DummyData.getTavoitteet());
   }
@@ -202,6 +207,7 @@ ylopsApp
   this.getVuosiluokat = getVuosiluokat;
   this.setVuosiluokat = setVuosiluokat;
   this.getVuosiluokkakokonaisuus = getVuosiluokkakokonaisuus;
+  this.getVlkPeruste = getVlkPeruste;
   this.getTavoitteet = getTavoitteet;
   this.getOppiaine = getOppiaine;
   this.mapForMenu = mapForMenu;

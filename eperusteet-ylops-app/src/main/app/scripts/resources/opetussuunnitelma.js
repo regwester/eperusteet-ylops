@@ -46,5 +46,7 @@ ylopsApp
   .factory('VuosiluokkakokonaisuusCRUD', function ($resource, YlopsResources) {
     return $resource(YlopsResources.VLK, {
       vlkId: '@id'
+    }, {
+      peruste: {method: 'GET', url: YlopsResources.VLK + '/peruste'}
     });
   });
