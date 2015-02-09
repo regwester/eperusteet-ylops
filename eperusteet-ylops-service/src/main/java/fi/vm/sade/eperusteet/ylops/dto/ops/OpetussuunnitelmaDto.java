@@ -44,7 +44,7 @@ public class OpetussuunnitelmaDto implements Serializable {
 
     private Optional<TekstiKappaleViiteDto.Puu> tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
-    private Set<OpsOpiaineDto> oppiaineet;
+    private Set<OpsOppiaineDto> oppiaineet;
 
     private Set<KoodistoDto> kunnat;
     private Set<OrganisaatioDto> koulut;

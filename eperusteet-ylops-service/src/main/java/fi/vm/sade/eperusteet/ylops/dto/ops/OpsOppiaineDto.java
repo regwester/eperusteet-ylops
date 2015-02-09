@@ -24,7 +24,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class OpsOpiaineDto {
+public class OpsOppiaineDto {
 
     private boolean oma;
     private OppiaineDto oppiaine;
