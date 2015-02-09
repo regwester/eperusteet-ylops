@@ -163,8 +163,8 @@ ylopsApp
           vlkId: ['$stateParams', function($stateParams){
             return $stateParams.vlkId;
           }],
-          vlk: ['vuosiluokatService', 'vlkId', 'opsModel', function (vuosiluokatService, vlkId, opsModel) {
-            return vuosiluokatService.getVuosiluokkakokonaisuus(opsModel, vlkId);
+          vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
           }]
         }
       })

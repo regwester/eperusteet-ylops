@@ -76,7 +76,8 @@ ylopsApp
   };
 })
 
-.service('VuosiluokatService', function ($q, DummyData, $state, OppiaineCRUD, Utils, OpsService) {
+.service('VuosiluokatService', function ($q, DummyData, $state, OppiaineCRUD, Utils, OpsService,
+  VuosiluokkakokonaisuusCRUD) {
   var opsId = null;
   var vuosiluokat = null;
 
@@ -126,17 +127,9 @@ ylopsApp
     vuosiluokat = vlkt;
   }
 
-  function getVuosiluokkakokonaisuus(ops, vlkId) {
-    // TODO käytä varsinaista vlk APIa jos/kun sellainen tulee
-    var found = null;
-    var promise = $q.defer();
-    onCompletion(ops, function (model) {
-      found = _.find(model.vuosiluokkakokonaisuudet, function (item) {
-        return '' + item.vuosiluokkakokonaisuus.id === '' + vlkId;
-      });
-      promise.resolve(found);
-    });
-    return promise.promise;
+  function getVuosiluokkakokonaisuus(opetussuunnitelmaId, vlkId, successCb, errorCb) {
+    return VuosiluokkakokonaisuusCRUD.get({opsId: opetussuunnitelmaId, vlkId: vlkId},
+      successCb || angular.noop, errorCb || angular.noop);
   }
 
   function getTavoitteet(/*oppiaineenVlkId*/) {

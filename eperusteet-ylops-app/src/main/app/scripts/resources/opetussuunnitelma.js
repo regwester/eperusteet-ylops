@@ -20,6 +20,7 @@ ylopsApp
   .service('YlopsResources', function (SERVICE_LOC) {
     this.OPS = SERVICE_LOC + '/opetussuunnitelmat/:opsId';
     this.OPPIAINE = this.OPS + '/oppiaineet/:oppiaineId';
+    this.VLK = this.OPS + '/vuosiluokkakokonaisuudet/:vlkId';
   })
 
   .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {
@@ -39,5 +40,11 @@ ylopsApp
   .factory('OppiaineCRUD', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPPIAINE, {
       oppiaineId: '@id'
+    });
+  })
+
+  .factory('VuosiluokkakokonaisuusCRUD', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.VLK, {
+      vlkId: '@id'
     });
   });
