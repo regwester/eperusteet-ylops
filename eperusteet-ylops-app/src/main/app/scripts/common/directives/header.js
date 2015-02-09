@@ -43,7 +43,7 @@ ylopsApp
     };
   })
 
-  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData) {
+  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData, Kaanna) {
     var currentState = null;
     var STATE_ROOTS = {
       'root.opetussuunnitelmat.yksi': {
@@ -115,6 +115,13 @@ ylopsApp
       return tree;
     }
 
+    function setTitle() {
+      var titleEl = angular.element('head > title');
+      var leaf = _.last($scope.crumbs);
+      var last = leaf ? Kaanna.kaanna(leaf.label) : null;
+      titleEl.html(Kaanna.kaanna('ops-tyokalu') + (last ? ' – ' + last : ''));
+    }
+
     function update() {
       var toState = currentState;
       if (!toState) {
@@ -143,6 +150,8 @@ ylopsApp
                  (item.label ? item.label : _.last(item.state.split('.')))
         });
       }).value();
+
+      setTitle();
     }
 
     $scope.isVirkailija = Oikeudet.isVirkailija();
