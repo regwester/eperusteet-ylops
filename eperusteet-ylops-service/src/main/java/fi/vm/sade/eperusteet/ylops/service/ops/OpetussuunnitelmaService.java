@@ -65,10 +65,6 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
     public List<OpetussuunnitelmaDto> getAllPohjat();
 
-    //XXX: duplikaatti-api, perusteet saa haettua toistakin kautta
-    @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
-    public List<PerusteInfo> getPerusteet();
-
     /**
      * Hakee opetussuunnitelmaan liittyvän opetussuunnitelman perusteen
      *

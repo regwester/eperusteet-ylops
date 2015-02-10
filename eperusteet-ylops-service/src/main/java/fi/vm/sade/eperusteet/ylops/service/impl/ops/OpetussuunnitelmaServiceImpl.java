@@ -23,7 +23,6 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
@@ -119,11 +118,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public List<OpetussuunnitelmaDto> getAllPohjat() {
         List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(Tyyppi.POHJA);
         return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaDto.class);
-    }
-
-    @Override
-    public List<PerusteInfo> getPerusteet() {
-        return eperusteetService.findPerusopetuksenPerusteet();
     }
 
     @Override
