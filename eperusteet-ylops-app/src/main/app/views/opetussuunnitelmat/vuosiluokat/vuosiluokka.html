@@ -1,1 +1,19 @@
-<h2>Vuosiluokka</h2>
+<div class="vuosiluokka">
+  <h2>
+    <span ng-bind="oppiaine.nimi | kaanna"></span>, <span ng-bind="vuosiluokka.nimi | kaanna"></span>
+  </h2>
+
+  <ul class="nav nav-tabs vl-tabit">
+    <li role="presentation" ng-class="{active: isState('tavoitteet')}">
+      <a ui-sref="root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet" kaanna="'tavoitteet'"></a>
+    </li>
+    <li role="presentation" ng-class="{active: isState('sisaltoalueet')}">
+      <a ui-sref="root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.sisaltoalueet" kaanna="'sisaltoalueet'"></a>
+    </li>
+  </ul>
+
+  <div class="content">
+    <div ui-view></div>
+  </div>
+
+</div>

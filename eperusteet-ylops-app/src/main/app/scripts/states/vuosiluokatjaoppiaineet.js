@@ -49,7 +49,6 @@ ylopsApp
             return $stateParams.oppiaineId;
           }],
           oppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
-            console.log(oppiaineId);
             return vuosiluokatService.getOppiaine(oppiaineId).$promise;
           }]
         }
@@ -69,12 +68,30 @@ ylopsApp
       .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {
         url: '/vuosiluokka/:vlId',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokka.html',
-        controller: 'VuosiluokkaController',
+        controller: 'VuosiluokkaBaseController',
         resolve: {
+          vuosiluokkaId: ['$stateParams', function($stateParams){
+            return $stateParams.vuosiluokkaId;
+          }],
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();
+          }],
+          vuosiluokka: ['vuosiluokatService', 'vuosiluokkaId', function (vuosiluokatService, vuosiluokkaId) {
+            return vuosiluokatService.getVuosiluokka(vuosiluokkaId);
           }]
         }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet', {
+        url: '/tavoitteet',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokantavoitteet.html',
+        controller: 'VuosiluokkaTavoitteetController',
+      })
+
+      .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.sisaltoalueet', {
+        url: '/sisaltoalueet',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokansisaltoalueet.html',
+        controller: 'VuosiluokkaSisaltoalueetController',
       })
 
       .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {

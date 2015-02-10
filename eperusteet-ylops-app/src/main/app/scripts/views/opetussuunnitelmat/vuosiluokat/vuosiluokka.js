@@ -17,6 +17,42 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkaController', function () {
+.controller('VuosiluokkaBaseController', function ($scope, vuosiluokka, MurupolkuData, $state) {
+  $scope.vuosiluokka = vuosiluokka;
+  MurupolkuData.set('vuosiluokkaNimi', vuosiluokka.nimi);
+
+  $scope.isState = function (name) {
+    return _.endsWith($state.current.name, 'vuosiluokka.' + name);
+  };
+
+  if ($state.is('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka')) {
+    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet');
+  }
+})
+
+.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService) {
+  $scope.tavoitteet = [];
+  $scope.collapsed = {};
+
+  // TODO oikea data
+  var kohdealueet = [
+    {fi: 'Työskentelyn taidot'},
+    {fi: 'Toinen kohdealue'},
+  ];
+
+  function processTavoitteet() {
+    _.each($scope.tavoitteet, function (item) {
+      item.kohdealue = _.sample(kohdealueet);
+    });
+  }
+
+  VuosiluokatService.getTavoitteet().then(function (res) {
+    $scope.tavoitteet = res;
+    processTavoitteet();
+  });
+
+})
+
+.controller('VuosiluokkaSisaltoalueetController', function () {
 
 });

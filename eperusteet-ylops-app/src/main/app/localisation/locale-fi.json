@@ -115,5 +115,10 @@
   "kaikkia-ei-vuosiluokkaistettu": "Kaikkia tavoitteita ei ole vuosiluokkaistettu",
   "tavoitteiden-vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet",
   "vuosiluokka": "Vuosiluokka",
-  "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt"
+  "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt",
+
+  "arviointi-vuosiluokan-paatteeksi": "Arviointikriteerit vuosiluokkakokonaisuuden päätteeksi",
+  "arvioinnin-kohde": "Arvioinnin kohde",
+  "arvion-hyva-osaaminen": "Arvion \"hyvä\" / arvosanan 8 osaaminen"
+
 }

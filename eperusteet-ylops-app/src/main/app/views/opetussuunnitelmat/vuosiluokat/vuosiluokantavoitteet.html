@@ -1,0 +1,57 @@
+<div class="tavoitteet">
+  <div class="tavoite" ng-repeat="tavoite in tavoitteet">
+
+    <div class="header">
+      <span class="kohdealue" ng-bind="tavoite.kohdealue | kaanna"></span>
+      <span class="toggle" collapse-toggler="collapsed[$index]"></span>
+      <span class="nimi" ng-bind="tavoite.tavoite | kaanna"></span>
+    </div>
+
+    <div class="peruste-body" collapse="collapsed[$index]">
+      <div class="listat">
+        <div class="lista">
+          <h4 kaanna="'sisaltoalueet'"></h4>
+          <ul>
+            <li>
+              <a>joku</a>
+            </li>
+          </ul>
+        </div>
+        <div class="lista">
+          <h4 kaanna="'laaja-alaiset-osaamiset'"></h4>
+          <ul>
+            <li>
+              <a>joku</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="arviointi">
+        <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
+        <table class="table table-hover table-bordered kriteerit">
+          <tr>
+            <th width="30%" kaanna="'arvioinnin-kohde'"></th>
+            <th kaanna="'arvion-hyva-osaaminen'"></th>
+          </tr>
+          <tr>
+            <td>joku kohde tähän</td>
+            <td>Jotain diipadaapaa lorem ipsum. Oppilas osaa asian x.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="ops-body">
+      <h4><span kaanna="'opsin-teksti'"></span></h4>
+
+      <div ng-if="editMode">
+        <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
+      </div>
+      <div ng-if="!editMode">
+        <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></div>
+        <p class="empty-notice" ng-show="!model.tekstiKappale.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
+      </div>
+    </div>
+
+  </div>
+</div>

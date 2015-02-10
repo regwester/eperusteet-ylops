@@ -1,3 +1,4 @@
+$peruste-color: lighten(#a38566, 40%);
 .tekstikappale-ohje {
   h3 {
     margin-top: 0;
@@ -21,7 +22,7 @@
 
 .perusteen-teksti {
   padding: 10px;
-  background-color: lighten(#a38566, 40%);
+  background-color: $peruste-color;
   .teksti {
     margin-top: 10px;
   }

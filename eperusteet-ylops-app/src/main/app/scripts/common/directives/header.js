@@ -89,11 +89,20 @@ ylopsApp
       },
       'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus': {
         useData: 'vlkNimi',
+        useId: 'vlkId',
         parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
       },
       'root.opetussuunnitelmat.yksi.oppiaine.oppiaine': {
         useData: 'oppiaineNimi',
         parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus'
+      },
+      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet': {
+        useData: 'vuosiluokkaNimi',
+        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
+      },
+      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.sisaltoalueet': {
+        useData: 'vuosiluokkaNimi',
+        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
       }
     };
 
