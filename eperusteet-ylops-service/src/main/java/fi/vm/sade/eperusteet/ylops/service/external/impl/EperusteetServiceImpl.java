@@ -19,21 +19,20 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoWrapperDto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfoWrapperDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
@@ -54,6 +53,9 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
     private String koulutustyyppiPerusopetus;
 
+    @Autowired
+    private DtoMapper mapper;
+
     private final RestTemplate client;
 
     public EperusteetServiceImpl() {
@@ -66,7 +68,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
-    public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
+    public List<PerusteInfo> findPerusopetuksenPerusteet() {
         PerusteInfoWrapperDto wrapperDto
             = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi=koulutustyyppi_16&sivukoko=100",
                                   PerusteInfoWrapperDto.class);
@@ -79,34 +81,24 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
-    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste(final Long id) {
-        PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl + "/api/perusteet/{id}/kaikki", PerusopetusPerusteKaikkiDto.class, id);
+    public Peruste getPerusopetuksenPeruste(final Long id) {
+        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl
+            + "/api/perusteet/{id}/kaikki", fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteKaikkiDto.class, id);
 
         if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
         }
 
-        final Map<Reference, Reference> laajaalaisetMap
-            = Optional.ofNullable(peruste.getPerusopetus().getLaajaalaisetosaamiset()).orElse(Collections.emptySet()).stream()
-            .collect(Collectors.toMap(lo -> Reference.of(lo.getId()),
-                                      lo -> Reference.of(lo.getTunniste())));
-
-        Optional.ofNullable(peruste.getPerusopetus().getVuosiluokkakokonaisuudet()).ifPresent(k -> k.forEach(vk -> {
-            Optional.ofNullable(vk.getLaajaalaisetOsaamiset()).ifPresent(l -> l.forEach(lo -> {
-                lo.setLaajaalainenOsaaminen(laajaalaisetMap.get(lo.getLaajaalainenOsaaminen()));
-            }));
-        }));
-
-        return peruste;
+        return mapper.map(peruste, Peruste.class);
     }
 
     //TODO, ei ole lopullinen rajapinta. Haku diaarinumeron perusteella?
     @Override
     @Cacheable("perusteet")
-    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste() {
+    public Peruste getPerusopetuksenPeruste() {
 
         // TODO: Paree olisi jos eperusteetService palauttaisi suoraan uusimman perusteen
-        PerusteInfoDto perusteInfoDto = findPerusopetuksenPerusteet().stream()
+        PerusteInfo perusteInfoDto = findPerusopetuksenPerusteet().stream()
             .max(Comparator.comparingLong(p -> Optional.ofNullable(p.getVoimassaoloLoppuu()).orElse(new Date(Long.MAX_VALUE)).getTime()))
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
 

@@ -17,7 +17,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
@@ -59,12 +59,12 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
-    public fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         //XXX: väliaikainen toteutus
         final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id);
 
-        PerusopetusPerusteKaikkiDto peruste = perusteet.getPerusopetuksenPeruste();
-        Optional<fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet().stream()
+        Peruste peruste = perusteet.getPerusopetuksenPeruste();
+        Optional<fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
             .findAny();
 

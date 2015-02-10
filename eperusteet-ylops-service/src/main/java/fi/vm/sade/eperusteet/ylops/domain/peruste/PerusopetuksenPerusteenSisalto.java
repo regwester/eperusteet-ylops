@@ -13,22 +13,23 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.external;
+package fi.vm.sade.eperusteet.ylops.domain.peruste;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
-import java.util.List;
+import java.io.Serializable;
+import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author nkala
  */
-public interface EperusteetService {
+@Getter
+@Setter
+public class PerusopetuksenPerusteenSisalto implements Serializable {
 
-    Peruste getPerusopetuksenPeruste();
-
-    List<PerusteInfo> findPerusopetuksenPerusteet();
-    Peruste getPerusopetuksenPeruste(final Long id);
-    JsonNode getTiedotteet(Long jalkeen);
+    private PerusteTekstiKappaleViite sisalto;
+    private Set<PerusteLaajaalainenosaaminen> laajaalaisetosaamiset;
+    private Set<PerusteVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
+    private Set<PerusteOppiaine> oppiaineet;
 }

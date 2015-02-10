@@ -16,9 +16,9 @@
 package fi.vm.sade.eperusteet.ylops.service.mocks;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetuksenPerusteenSisaltoDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import java.util.Collections;
 import java.util.List;
@@ -32,21 +32,21 @@ import org.springframework.stereotype.Service;
 public class EperusteetServiceMock implements EperusteetService {
 
     @Override
-    public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
-        return Collections.singletonList(new PerusteInfoDto());
+    public List<PerusteInfo> findPerusopetuksenPerusteet() {
+        return Collections.singletonList(new PerusteInfo());
     }
 
     @Override
-    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste(Long id) {
-        PerusopetusPerusteKaikkiDto peruste = new PerusopetusPerusteKaikkiDto();
-        PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
+    public Peruste getPerusopetuksenPeruste(Long id) {
+        Peruste peruste = new Peruste();
+        PerusopetuksenPerusteenSisalto sisalto = new PerusopetuksenPerusteenSisalto();
         sisalto.setOppiaineet(Collections.emptySet());
         peruste.setPerusopetus(sisalto);
         return peruste;
     }
 
     @Override
-    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste() {
+    public Peruste getPerusopetuksenPeruste() {
         return getPerusopetuksenPeruste(0L);
     }
 

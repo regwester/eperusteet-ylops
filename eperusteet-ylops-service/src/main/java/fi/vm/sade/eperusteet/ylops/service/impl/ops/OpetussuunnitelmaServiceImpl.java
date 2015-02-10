@@ -25,9 +25,9 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetuksenPerusteenSisaltoDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
@@ -118,7 +118,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public List<PerusteInfoDto> getPerusteet() {
+    public List<PerusteInfo> getPerusteet() {
         return eperusteetService.findPerusopetuksenPerusteet();
     }
 
@@ -227,12 +227,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops = repository.save(ops);
         lisaaTekstipuunLapset(ops);
 
-        PerusopetusPerusteKaikkiDto perusteDto
+        Peruste perusteDto
             = eperusteetService.getPerusopetuksenPeruste();
 
         Long opsId = ops.getId();
 
-        PerusopetuksenPerusteenSisaltoDto sisalto
+        PerusopetuksenPerusteenSisalto sisalto
             = perusteDto.getPerusopetus();
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {

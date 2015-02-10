@@ -18,8 +18,13 @@ package fi.vm.sade.eperusteet.ylops.service.impl.ops;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksenkohdealue;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineLaaja;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteTekstiOsa;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineenVuosiluokkaKokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.LaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
@@ -79,7 +84,7 @@ public class OpsDtoMapper {
     }
 
     public static VuosiluokkakokonaisuusDto fromEperusteet(
-        fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto) {
+        PerusteVuosiluokkakokonaisuus dto) {
         VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new Reference(dto.getTunniste().toString()));
         vk.setNimi(Optional.ofNullable(dto.getNimi()));
         vk.setTunniste(Optional.ofNullable(Reference.of(dto.getTunniste())));
@@ -87,7 +92,7 @@ public class OpsDtoMapper {
             vk.setLaajaalaisetosaamiset(new HashSet<>());
             dto.getLaajaalaisetOsaamiset().forEach(lo -> {
                 LaajaalainenosaaminenDto l = new LaajaalainenosaaminenDto();
-                l.setLaajaalainenosaaminen(lo.getLaajaalainenOsaaminen());
+                l.setLaajaalainenosaaminen(Reference.of(lo.getLaajaalainenOsaaminen().getTunniste()));
                 vk.getLaajaalaisetosaamiset().add(l);
             });
         }
@@ -95,7 +100,7 @@ public class OpsDtoMapper {
     }
 
     public static OppiaineDto fromEperusteet(
-        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineDto oa,
+        PerusteOppiaine oa,
         Map<Reference, UUID> vuosiluokkaMap) {
         OppiaineDto dto = new OppiaineDto();
         dto.setTila(Tila.LUONNOS);
@@ -126,7 +131,7 @@ public class OpsDtoMapper {
     }
 
     public static OppiaineLaajaDto fromEperusteet(
-        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OppiaineLaajaDto oa,
+        PerusteOppiaineLaaja oa,
         Map<Reference, UUID> vuosiluokkaMap) {
         OppiaineLaajaDto dto = new OppiaineLaajaDto();
         dto.setTila(Tila.LUONNOS);
@@ -159,7 +164,7 @@ public class OpsDtoMapper {
         return dto;
     }
 
-    public static OppiaineenVuosiluokkakokonaisuusDto fromEperusteet(OppiaineenVuosiluokkaKokonaisuusDto ovk,
+    public static OppiaineenVuosiluokkakokonaisuusDto fromEperusteet(PerusteOppiaineenVuosiluokkakokonaisuus ovk,
         Map<Reference, UUID> vuosiluokkaMap) {
         OppiaineenVuosiluokkakokonaisuusDto dto = new OppiaineenVuosiluokkakokonaisuusDto();
         dto.setTehtava(fromEperusteet(ovk.getTehtava()));
@@ -167,14 +172,12 @@ public class OpsDtoMapper {
         dto.setOhjaus(fromEperusteet(ovk.getOhjaus()));
         dto.setArviointi(fromEperusteet(ovk.getArviointi()));
 
-        Reference vlkRef = ovk.getVuosiluokkaKokonaisuus();
-        UUID vlkTunniste = vuosiluokkaMap.get(vlkRef);
-        dto.setVuosiluokkakokonaisuus(Reference.of(vlkTunniste));
+        dto.setVuosiluokkakokonaisuus(Reference.of(ovk.getVuosiluokkaKokonaisuus().getTunniste()));
 
         return dto;
     }
 
-    public static TekstiosaDto fromEperusteet(fi.vm.sade.eperusteet.ylops.dto.eperusteet.TekstiOsaDto dto) {
+    public static TekstiosaDto fromEperusteet(PerusteTekstiOsa dto) {
         if (dto == null) {
             return null;
         }
@@ -185,7 +188,7 @@ public class OpsDtoMapper {
     }
 
     public static OpetuksenKohdealueDto fromEperusteet(
-        fi.vm.sade.eperusteet.ylops.dto.eperusteet.OpetuksenKohdealueDto dto) {
+        PerusteOpetuksenkohdealue dto) {
         return new OpetuksenKohdealueDto(dto.getNimi());
     }
 }

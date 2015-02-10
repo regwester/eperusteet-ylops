@@ -18,7 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import com.codahale.metrics.annotation.Timed;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import java.util.List;
@@ -65,7 +65,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/perusteet", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public List<PerusteInfoDto> getPerusteet() {
+    public List<PerusteInfo> getPerusteet() {
         return opetussuunnitelmaService.getPerusteet();
     }
 
