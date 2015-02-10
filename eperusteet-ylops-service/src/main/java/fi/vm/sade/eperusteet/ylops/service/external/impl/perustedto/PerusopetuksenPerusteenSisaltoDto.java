@@ -30,5 +30,5 @@ public class PerusopetuksenPerusteenSisaltoDto implements Serializable {
     private TekstiKappaleViiteDto sisalto;
     private Set<LaajaalainenOsaaminenDto> laajaalaisetosaamiset;
     private Set<VuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
-    private Set<OppiaineLaajaDto> oppiaineet;
+    private Set<OppiaineDto> oppiaineet;
 }

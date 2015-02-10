@@ -21,7 +21,7 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
-import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import java.util.Optional;
 import java.util.Set;
@@ -46,7 +46,7 @@ public class VuosiluokkakokonaisuusController {
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
 
     @Autowired
-    private EperusteetService perusteet;
+    private OpetussuunnitelmaService opetussuunnitelmat;
 
     @RequestMapping(method = RequestMethod.POST)
     public VuosiluokkakokonaisuusDto add(@PathVariable("opsId") final Long opsId, @RequestBody VuosiluokkakokonaisuusDto dto) {
@@ -60,11 +60,12 @@ public class VuosiluokkakokonaisuusController {
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     public fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        //XXX: väliaikainen toteutus
+
+        final Peruste peruste = opetussuunnitelmat.getPeruste(opsId);
         final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id);
 
-        Peruste peruste = perusteet.getPerusopetuksenPeruste("TODO DIAARINUMERO");
-        Optional<fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet().stream()
+        Optional<fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet()
+            .stream()
             .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
             .findAny();
 

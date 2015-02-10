@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
@@ -64,6 +65,16 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
     public List<OpetussuunnitelmaDto> getAllPohjat();
 
+    //XXX: duplikaatti-api, perusteet saa haettua toistakin kautta
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
     public List<PerusteInfo> getPerusteet();
+
+    /**
+     * Hakee opetussuunnitelmaan liittyvän opetussuunnitelman perusteen
+     *
+     * @param opsId
+     * @return Peruste
+     */
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    public Peruste getPeruste(@P("opsId") Long opsId);
 }

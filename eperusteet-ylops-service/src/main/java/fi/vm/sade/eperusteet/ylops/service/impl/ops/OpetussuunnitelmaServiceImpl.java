@@ -125,6 +125,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public Peruste getPeruste(Long opsId) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        return eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public OpetussuunnitelmaDto getOpetussuunnitelma(@P("id") Long id) {
         Opetussuunnitelma ops = repository.findOne(id);

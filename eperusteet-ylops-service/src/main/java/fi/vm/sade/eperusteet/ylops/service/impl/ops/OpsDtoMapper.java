@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksenkohdealue;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineLaaja;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteTekstiOsa;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus;
@@ -99,7 +98,7 @@ public class OpsDtoMapper {
         return vk;
     }
 
-    public static OppiaineDto fromEperusteet(
+    public static OppiaineDto oppimaaraFromEperusteet(
         PerusteOppiaine oa,
         Map<Reference, UUID> vuosiluokkaMap) {
         OppiaineDto dto = new OppiaineDto();
@@ -131,7 +130,7 @@ public class OpsDtoMapper {
     }
 
     public static OppiaineLaajaDto fromEperusteet(
-        PerusteOppiaineLaaja oa,
+        PerusteOppiaine oa,
         Map<Reference, UUID> vuosiluokkaMap) {
         OppiaineLaajaDto dto = new OppiaineLaajaDto();
         dto.setTila(Tila.LUONNOS);
@@ -150,7 +149,7 @@ public class OpsDtoMapper {
         if (oa.getOppimaarat() != null) {
             dto.setOppimaarat(
                 oa.getOppimaarat().stream()
-                .map(om -> fromEperusteet(om, vuosiluokkaMap))
+                .map(om -> oppimaaraFromEperusteet(om, vuosiluokkaMap))
                 .collect(Collectors.toSet()));
         }
 

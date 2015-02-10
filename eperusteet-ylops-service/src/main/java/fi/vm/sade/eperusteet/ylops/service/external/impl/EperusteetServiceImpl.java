@@ -24,7 +24,7 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -84,8 +84,8 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public Peruste getPerusopetuksenPeruste(final Long id) {
-        PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl
-            + "/api/perusteet/{id}/kaikki", PerusopetusPerusteKaikkiDto.class, id);
+        PerusopetusPerusteDto peruste = client.getForObject(koodistoServiceUrl
+            + "/api/perusteet/{id}/kaikki", PerusopetusPerusteDto.class, id);
 
         if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
@@ -94,12 +94,11 @@ public class EperusteetServiceImpl implements EperusteetService {
         return mapper.map(peruste, Peruste.class);
     }
 
-    //TODO, ei ole lopullinen rajapinta. Haku diaarinumeron perusteella?
     @Override
     @Cacheable("perusteet")
     public Peruste getPerusopetuksenPeruste(String diaarinumero) {
 
-        // TODO: Paree olisi jos eperusteetService palauttaisi suoraan uusimman perusteen
+        // TODO: filtteröi diaarinumerolla
         PerusteInfo perusteInfoDto = findPerusopetuksenPerusteet().stream()
             .max(Comparator.comparingLong(p -> Optional.ofNullable(p.getVoimassaoloLoppuu()).orElse(new Date(Long.MAX_VALUE)).getTime()))
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));

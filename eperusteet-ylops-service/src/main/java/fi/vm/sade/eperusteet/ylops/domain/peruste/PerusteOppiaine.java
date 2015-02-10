@@ -15,6 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.peruste;
 
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,12 +27,16 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusteOppiaine extends PerusteOppiaineBase {
+public class PerusteOppiaine implements ReferenceableDto {
 
+    private Long id;
+    private String koodiUri;
+    private String koodiArvo;
+    private Boolean koosteinen;
+    private Boolean abstrakti;
+    private LokalisoituTekstiDto nimi;
     private PerusteTekstiOsa tehtava;
     private Set<PerusteOppiaine> oppimaarat;
     private Set<PerusteOpetuksenkohdealue> kohdealueet;
     private Set<PerusteOppiaineenVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
-    private String koodiUri;
-    private String koodiArvo;
 }

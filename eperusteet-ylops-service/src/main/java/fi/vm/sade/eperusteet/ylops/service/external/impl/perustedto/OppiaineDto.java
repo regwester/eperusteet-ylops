@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,9 +26,14 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class OppiaineDto extends OppiaineBaseDto {
+public class OppiaineDto {
+
+    private Long id;
+    private Boolean koosteinen;
+    private Boolean abstrakti;
+    private LokalisoituTekstiDto nimi;
     private TekstiOsaDto tehtava;
-    private Set<OppiaineSuppeaDto> oppimaarat;
+    private Set<OppiaineDto> oppimaarat;
     private Set<OpetuksenKohdealueDto> kohdealueet;
     private Set<OppiaineenVuosiluokkaKokonaisuusDto> vuosiluokkakokonaisuudet;
     private String koodiUri;
