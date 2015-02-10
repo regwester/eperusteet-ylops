@@ -21,6 +21,7 @@ ylopsApp
   MurupolkuData, vlk, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope) {
 
   $scope.siirtymat = ['siirtymaEdellisesta', 'siirtymaSeuraavaan'];
+  var editoitavat = ['tehtava'].concat($scope.siirtymat);
   $scope.vlk = vlk;
   $scope.temp = {};
   $scope.paikalliset = {};
@@ -37,7 +38,7 @@ ylopsApp
   }
 
   function initTexts() {
-    _.each($scope.siirtymat, function (key) {
+    _.each(editoitavat, function (key) {
       $scope.temp[key] = $scope.vlk[key] || {};
     });
   }

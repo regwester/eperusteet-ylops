@@ -2,7 +2,7 @@
 
 <div class="vuosiluokkakokonaisuus">
 
-  <div perusteen-tekstiosa="perusteVlk.tehtava"></div>
+  <div perusteen-tekstiosa="perusteVlk.tehtava" muokattava="temp.tehtava" callbacks="callbacks"></div>
 
   <h2 ng-if="hasSiirtymat()" kaanna="'siirtymavaiheet'"></h2>
   <div ng-repeat="osio in siirtymat">
