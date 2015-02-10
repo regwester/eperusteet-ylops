@@ -77,7 +77,7 @@ ylopsApp
 })
 
 .service('VuosiluokatService', function ($q, DummyData, $state, OppiaineCRUD, Utils, OpsService,
-  VuosiluokkakokonaisuusCRUD) {
+  VuosiluokkakokonaisuusCRUD, OpetussuunnitelmaCRUD) {
   var opsId = null;
   var vuosiluokat = null;
 
@@ -139,6 +139,10 @@ ylopsApp
 
   function getTavoitteet(/*oppiaineenVlkId*/) {
     return promisify(DummyData.getTavoitteet());
+  }
+
+  function getLaajaalaiset(opetussuunnitelmaId) {
+    return OpetussuunnitelmaCRUD.laajaalaiset({opsId: opetussuunnitelmaId});
   }
 
   function getOppiaine(oppiaineId) {
@@ -212,6 +216,7 @@ ylopsApp
 
   this.setOps = setOps;
   this.fetch = fetch;
+  this.getLaajaalaiset = getLaajaalaiset;
   this.getVuosiluokat = getVuosiluokat;
   this.setVuosiluokat = setVuosiluokat;
   this.getVuosiluokkakokonaisuus = getVuosiluokkakokonaisuus;

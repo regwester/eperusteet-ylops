@@ -26,6 +26,8 @@ ylopsApp
   .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS, {
       opsId: '@id'
+    }, {
+      laajaalaiset: {method: 'GET', url: YlopsResources.OPS + '/laajaalaisetosaamiset', isArray: true}
     });
   })
 

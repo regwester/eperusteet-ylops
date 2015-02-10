@@ -34,7 +34,10 @@ ylopsApp
           }],
           vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
             return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
-          }]
+          }],
+          baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
+            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+          }],
         }
       })
 

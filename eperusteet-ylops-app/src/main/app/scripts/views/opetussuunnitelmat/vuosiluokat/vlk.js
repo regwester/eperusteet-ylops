@@ -18,8 +18,10 @@
 
 ylopsApp
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
-  MurupolkuData, vlk, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope) {
+  MurupolkuData, vlk, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
+  baseLaajaalaiset) {
 
+  var laajaalaisetosaamiset = _.indexBy(baseLaajaalaiset, 'tunniste');
   $scope.siirtymat = ['siirtymaEdellisesta', 'siirtymaSeuraavaan'];
   var editoitavat = ['tehtava'].concat($scope.siirtymat);
   $scope.vlk = vlk;
@@ -50,8 +52,9 @@ ylopsApp
 
       $scope.tunnisteet = _.map($scope.perusteVlk.laajaalaisetosaamiset, '_laajaalainenosaaminen');
       var decorated = _.map($scope.perusteVlk.laajaalaisetosaamiset, function (item) {
+        var base = laajaalaisetosaamiset[item._laajaalainenosaaminen];
         item.teksti = item.kuvaus;
-        item.otsikko = item.nimi || {fi: '[Ei nimeä]'};
+        item.otsikko = base ? base.nimi : {fi: '[Ei nimeä]'};
         return item;
       });
       $scope.laajaalaiset = _.indexBy(decorated, '_laajaalainenosaaminen');
