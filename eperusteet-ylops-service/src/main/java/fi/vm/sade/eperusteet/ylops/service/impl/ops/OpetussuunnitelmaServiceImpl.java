@@ -192,6 +192,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Transactional
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
+        ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
         kopioiTekstit(pohja.getTekstit(), ops.getTekstit());
 
         ops.setOppiaineet(pohja.getOppiaineet().stream()

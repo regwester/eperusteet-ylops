@@ -66,6 +66,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     public void setUp() {
         OpetussuunnitelmaDto ops;
         ops = new OpetussuunnitelmaDto();
+        ops.setPerusteenDiaarinumero("diaarinumero123");
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTyyppi(Tyyppi.POHJA);
@@ -108,6 +109,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertNotNull(ops);
         assertEquals(id, ops.getId());
+        assertEquals("diaarinumero123", ops.getPerusteenDiaarinumero());
     }
 
     @Test

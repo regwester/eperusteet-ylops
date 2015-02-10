@@ -67,6 +67,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     private Long id;
 
+    @Getter
+    @Setter
+    private String perusteenDiaarinumero;
+
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Getter
