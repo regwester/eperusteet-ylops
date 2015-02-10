@@ -30,9 +30,11 @@ ylopsApp
   }
 })
 
-.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService) {
+.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit) {
   $scope.tavoitteet = [];
+  $scope.tunnisteet = [];
   $scope.collapsed = {};
+  $scope.muokattavat = {};
 
   // TODO oikea data
   var kohdealueet = [
@@ -40,9 +42,20 @@ ylopsApp
     {fi: 'Toinen kohdealue'},
   ];
 
+  function fetch() {
+
+  }
+
   function processTavoitteet() {
-    _.each($scope.tavoitteet, function (item) {
+    _.each($scope.tavoitteet, function (item, index) {
       item.kohdealue = _.sample(kohdealueet);
+      item.tunniste = index;
+    });
+    $scope.perusteTavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
+    $scope.tunnisteet = _.keys($scope.perusteTavoiteMap);
+    _.each($scope.tunnisteet, function (tunniste) {
+      // TODO map existing
+      $scope.muokattavat[tunniste] = {};
     });
   }
 
@@ -51,8 +64,83 @@ ylopsApp
     processTavoitteet();
   });
 
+  $scope.callbacks = {
+    edit: function () {
+      fetch();
+    },
+    save: function () {
+    },
+    cancel: function () {
+      fetch();
+    },
+    notify: function (mode) {
+      $scope.callbacks.notifier(mode);
+    },
+    notifier: angular.noop
+  };
+  Editointikontrollit.registerCallback($scope.callbacks);
+
 })
 
-.controller('VuosiluokkaSisaltoalueetController', function () {
+.controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit) {
+  $scope.tunnisteet = [];
+  $scope.sisaltoalueet = {};
+  $scope.perusteMap = {};
 
+  $scope.perusteSisaltoalueet = [
+    {id: '1', nimi: {fi: 'Ajattelun taidot'}, kuvaus: {fi: 'S1 kuvaus'}},
+    {id: '2', nimi: {fi: 'Toinen sisältöalue'}, kuvaus: {fi: 'S2 kuvaus'}},
+  ];
+
+  function fetch() {
+    $scope.tunnisteet = ['1', '2'];
+    mapPeruste();
+  }
+
+  function mapPeruste() {
+    $scope.perusteMap = _.indexBy($scope.perusteSisaltoalueet, 'id');
+    _.each($scope.tunnisteet, function (tunniste) {
+      // TODO map existing
+      $scope.sisaltoalueet[tunniste] = {};
+    });
+  }
+
+  // TODO remove fetch here, initial data from resolve
+  fetch();
+  mapPeruste();
+
+  $scope.callbacks = {
+    edit: function () {
+      fetch();
+    },
+    save: function () {
+    },
+    cancel: function () {
+      fetch();
+    },
+    notify: function (mode) {
+      $scope.callbacks.notifier(mode);
+    },
+    notifier: angular.noop
+  };
+  Editointikontrollit.registerCallback($scope.callbacks);
+
+})
+
+.directive('opsTeksti', function () {
+  return {
+    restrict: 'A',
+    scope: {
+      muokattava: '=opsTeksti',
+      callbacks: '=',
+    },
+    templateUrl: 'views/opetussuunnitelmat/vuosiluokat/directives/opsteksti.html',
+    controller: 'TekstiosaController',
+    link: function (scope, element, attrs) {
+      scope.editable = !!attrs.opsTeksti;
+      scope.options = {
+        collapsed: scope.editable
+      };
+    }
+  };
 });

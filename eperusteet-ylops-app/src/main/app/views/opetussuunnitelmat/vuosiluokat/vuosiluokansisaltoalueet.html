@@ -1,1 +1,19 @@
-sisältöalueet
+<div class="tavoitteet">
+  <div class="tavoite" ng-repeat="tunniste in tunnisteet">
+
+    <div class="header">
+      <span class="toggle" collapse-toggler="collapsed[$index]"></span>
+      <span class="nimi" ng-bind="perusteMap[tunniste].nimi | kaanna"></span>
+    </div>
+
+    <div class="peruste-body" collapse="collapsed[$index]">
+      <h4 kaanna="'perusteen-teksti'"></h4>
+      <div ng-bind-html="perusteMap[tunniste].kuvaus | kaanna | unsafe"></div>
+    </div>
+
+    <div class="ops-body">
+      <div ops-teksti="sisaltoalueet[tunniste]" callbacks="callbacks"></div>
+    </div>
+
+  </div>
+</div>
