@@ -48,17 +48,20 @@ ylopsApp
     VuosiluokatService.getVlkPeruste($stateParams.id, $stateParams.vlkId, function (res) {
       $scope.perusteVlk = res;
 
-      // TODO tunnisteet pitää olla uideja
-      $scope.tunnisteet = _.map($scope.perusteVlk.laajaalaisetOsaamiset, 'id');
+      $scope.tunnisteet = _.map($scope.perusteVlk.laajaalaisetOsaamiset, '_laajaalainenOsaaminen');
       var decorated = _.map($scope.perusteVlk.laajaalaisetOsaamiset, function (item) {
         item.teksti = item.kuvaus;
         item.otsikko = item.nimi || {fi: '[Ei nimeä]'};
         return item;
       });
-      $scope.laajaalaiset = _.indexBy(decorated, 'id');
-      $scope.paikalliset = _.mapValues($scope.laajaalaiset, function () {
-        // TODO olemassaolevat
-        return {};
+      $scope.laajaalaiset = _.indexBy(decorated, '_laajaalainenOsaaminen');
+      $scope.paikalliset = _.mapValues($scope.laajaalaiset, function (item) {
+        var newItem = _.cloneDeep(item);
+        var model = _.find($scope.vlk.laajaalaisetosaamiset, function (osaaminen) {
+          return '' + osaaminen._laajaalainenosaaminen === '' + item._laajaalainenOsaaminen;
+        });
+        newItem.teksti = model ? model.kuvaus : {};
+        return newItem;
       });
     });
   }
@@ -77,17 +80,16 @@ ylopsApp
     _.each($scope.paikalliset, function (value, tunniste) {
       if (value.teksti) {
         var model = _.find($scope.vlk.laajaalaisetosaamiset, function (item) {
-          return '' + item.tunniste === '' + tunniste;
+          return '' + item._laajaalainenosaaminen === '' + tunniste;
         });
         if (model) {
-          model.teksti = value.teksti;
+          model.kuvaus = value.teksti;
         } else {
           model = {
-            tunniste: tunniste,
-            teksti: value.teksti
+            '_laajaalainenosaaminen': tunniste,
+            kuvaus: value.teksti
           };
-          // TODO enable
-          //$scope.vlk.laajaalaisetosaamiset.push(model);
+          $scope.vlk.laajaalaisetosaamiset.push(model);
         }
       }
     });
