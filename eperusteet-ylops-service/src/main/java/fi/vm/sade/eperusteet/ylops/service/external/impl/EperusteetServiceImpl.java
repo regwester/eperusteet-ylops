@@ -70,6 +70,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
+    @Cacheable("perusteet")
     public List<PerusteInfo> findPerusopetuksenPerusteet() {
         PerusteInfoWrapperDto wrapperDto
             = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi=koulutustyyppi_16&sivukoko=100",
