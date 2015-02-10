@@ -14,7 +14,7 @@
   <div class="data-container">
     <div class="row">
       <div class="col-sm-3 formfield-label">
-        <label for="ops-field-nimi" kaanna="'nimi'"></label>
+        <label for="ops-field-nimi"><span kaanna="'nimi'"></span><span ng-if="(editMode || luonnissa)">*</span></label>
       </div>
       <div class="col-sm-9 formfield-data" ng-class="{viewmode: !(editMode || luonnissa)}">
         <div ng-if="!(editMode || luonnissa)" ng-bind="model.nimi | kaanna"></div>
@@ -24,7 +24,7 @@
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
-        <label kaanna="'julkaisukielet'"></label>
+        <label><span kaanna="'julkaisukielet'"></span><span ng-if="(editMode || luonnissa)">*</span></label>
       </div>
 
       <div class="col-sm-9 formfield-data" ng-class="{viewmode: !(editMode || luonnissa)}">
