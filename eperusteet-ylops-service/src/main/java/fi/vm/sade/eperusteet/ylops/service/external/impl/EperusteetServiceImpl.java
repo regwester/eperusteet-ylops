@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoWrapperDto;
@@ -26,12 +27,13 @@ import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
@@ -65,16 +67,15 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
-        PerusteInfoWrapperDto wrapperDto =
-            client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi=koulutustyyppi_16&sivukoko=100",
-                                PerusteInfoWrapperDto.class);
+        PerusteInfoWrapperDto wrapperDto
+            = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi=koulutustyyppi_16&sivukoko=100",
+                                  PerusteInfoWrapperDto.class);
 
         // Filtteröi pois perusteet jotka eivät enää ole voimassa
         Date now = new Date();
         return wrapperDto.getData().stream()
-                         .filter(peruste -> peruste.getVoimassaoloLoppuu() == null ||
-                                            peruste.getVoimassaoloLoppuu().after(now))
-                         .collect(Collectors.toList());
+            .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -84,6 +85,18 @@ public class EperusteetServiceImpl implements EperusteetService {
         if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
         }
+
+        final Map<Reference, Reference> laajaalaisetMap
+            = Optional.ofNullable(peruste.getPerusopetus().getLaajaalaisetosaamiset()).orElse(Collections.emptySet()).stream()
+            .collect(Collectors.toMap(lo -> Reference.of(lo.getId()),
+                                      lo -> Reference.of(lo.getTunniste())));
+
+        Optional.ofNullable(peruste.getPerusopetus().getVuosiluokkakokonaisuudet()).ifPresent(k -> k.forEach(vk -> {
+            Optional.ofNullable(vk.getLaajaalaisetOsaamiset()).ifPresent(l -> l.forEach(lo -> {
+                lo.setLaajaalainenOsaaminen(laajaalaisetMap.get(lo.getLaajaalainenOsaaminen()));
+            }));
+        }));
+
         return peruste;
     }
 
@@ -96,6 +109,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         PerusteInfoDto perusteInfoDto = findPerusopetuksenPerusteet().stream()
             .max(Comparator.comparingLong(p -> Optional.ofNullable(p.getVoimassaoloLoppuu()).orElse(new Date(Long.MAX_VALUE)).getTime()))
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
+
         return getPerusopetuksenPeruste(perusteInfoDto.getId());
     }
 

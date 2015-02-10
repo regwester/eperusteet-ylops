@@ -79,22 +79,15 @@ public class OpsDtoMapper {
     }
 
     public static VuosiluokkakokonaisuusDto fromEperusteet(
-        fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto,
-        Map<Long, UUID> laajaalaiset) {
+        fi.vm.sade.eperusteet.ylops.dto.eperusteet.VuosiluokkakokonaisuusDto dto) {
         VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new Reference(dto.getTunniste().toString()));
         vk.setNimi(Optional.ofNullable(dto.getNimi()));
         vk.setTunniste(Optional.ofNullable(Reference.of(dto.getTunniste())));
-        vk.setTehtava(Optional.ofNullable(fromEperusteet(dto.getTehtava())));
-        vk.setSiirtymaEdellisesta(Optional.ofNullable(fromEperusteet(dto.getSiirtymaEdellisesta())));
-        vk.setSiirtymaSeuraavaan(Optional.ofNullable(fromEperusteet(dto.getSiirtymaSeuraavaan())));
-        vk.setLaajaalainenosaaminen(Optional.ofNullable(fromEperusteet(dto.getLaajaalainenOsaaminen())));
-
         if (dto.getLaajaalaisetOsaamiset() != null) {
             vk.setLaajaalaisetosaamiset(new HashSet<>());
             dto.getLaajaalaisetOsaamiset().forEach(lo -> {
                 LaajaalainenosaaminenDto l = new LaajaalainenosaaminenDto();
-                l.setLaajaalainenosaaminen(Reference.of(laajaalaiset.get(lo.getId())));
-                l.setKuvaus(Optional.ofNullable(lo.getKuvaus()));
+                l.setLaajaalainenosaaminen(lo.getLaajaalainenOsaaminen());
                 vk.getLaajaalaisetosaamiset().add(l);
             });
         }

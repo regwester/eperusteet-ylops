@@ -51,13 +51,10 @@ import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -230,14 +227,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops = repository.save(ops);
         lisaaTekstipuunLapset(ops);
 
-        // TODO: Paree olisi jos eperusteetService palauttaisi suoraan uusimman perusteen
-        PerusteInfoDto perusteInfoDto
-            = eperusteetService.findPerusopetuksenPerusteet().stream()
-            .max(Comparator.comparingLong(p -> Optional.ofNullable(p.getVoimassaoloLoppuu()).orElse(new Date(Long.MAX_VALUE)).getTime()))
-            .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
-
         PerusopetusPerusteKaikkiDto perusteDto
-            = eperusteetService.getPerusopetuksenPeruste(perusteInfoDto.getId());
+            = eperusteetService.getPerusopetuksenPeruste();
 
         Long opsId = ops.getId();
 
@@ -254,11 +245,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .collect(Collectors.toMap(vlk -> Reference.of(vlk),
                                           vlk -> vlk.getTunniste()));
 
-            final Map<Long, UUID> laajaalaisetMap
-                = Optional.ofNullable(sisalto.getLaajaalaisetosaamiset()).orElse(Collections.emptySet()).stream()
-                .collect(Collectors.toMap(lo -> lo.getId(),
-                                          lo -> lo.getTunniste()));
-
             if (sisalto.getOppiaineet() != null) {
                 sisalto.getOppiaineet().stream()
                     .map(oa -> OpsDtoMapper.fromEperusteet(oa, vuosiluokkaMap))
@@ -266,7 +252,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
 
             sisalto.getVuosiluokkakokonaisuudet().stream()
-                .map(vk -> OpsDtoMapper.fromEperusteet(vk, laajaalaisetMap))
+                .map(OpsDtoMapper::fromEperusteet)
                 .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
         }
 

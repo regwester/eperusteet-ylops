@@ -47,7 +47,7 @@ public class EperusteetServiceMock implements EperusteetService {
 
     @Override
     public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste() {
-        return null;
+        return getPerusopetuksenPeruste(0L);
     }
 
     @Override

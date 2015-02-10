@@ -46,6 +46,7 @@ public class DtoMapperConfig {
         factory.getConverterFactory().registerConverter(referenceableEntityConverter);
         factory.getConverterFactory().registerConverter(lokalisoituTekstiConverter);
         factory.getConverterFactory().registerConverter(koodistoKoodiConverter);
+        factory.getConverterFactory().registerConverter(new LaajaalainenosaaminenViiteConverter());
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTeksti.class));
         factory.getConverterFactory().registerConverter(new OrganisaatioConverter());
         OptionalSupport.register(factory);
