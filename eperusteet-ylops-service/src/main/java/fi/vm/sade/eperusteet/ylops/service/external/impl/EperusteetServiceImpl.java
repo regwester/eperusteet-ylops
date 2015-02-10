@@ -21,10 +21,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfoWrapperDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -82,8 +84,8 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public Peruste getPerusopetuksenPeruste(final Long id) {
-        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl
-            + "/api/perusteet/{id}/kaikki", fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteKaikkiDto.class, id);
+        PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl
+            + "/api/perusteet/{id}/kaikki", PerusopetusPerusteKaikkiDto.class, id);
 
         if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
@@ -95,7 +97,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     //TODO, ei ole lopullinen rajapinta. Haku diaarinumeron perusteella?
     @Override
     @Cacheable("perusteet")
-    public Peruste getPerusopetuksenPeruste() {
+    public Peruste getPerusopetuksenPeruste(String diaarinumero) {
 
         // TODO: Paree olisi jos eperusteetService palauttaisi suoraan uusimman perusteen
         PerusteInfo perusteInfoDto = findPerusopetuksenPerusteet().stream()
@@ -113,5 +115,11 @@ public class EperusteetServiceImpl implements EperusteetService {
         }
         JsonNode tiedotteet = client.getForObject(koodistoServiceUrl + "/api/tiedotteet" + params, JsonNode.class);
         return tiedotteet;
+    }
+
+    @Getter
+    @Setter
+    private static class PerusteInfoWrapperDto {
+        private List<PerusteInfo> data;
     }
 }

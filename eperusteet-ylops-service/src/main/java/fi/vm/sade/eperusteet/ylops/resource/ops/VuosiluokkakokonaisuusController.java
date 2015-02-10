@@ -16,8 +16,8 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.wordnik.swagger.annotations.Api;
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
@@ -63,7 +63,7 @@ public class VuosiluokkakokonaisuusController {
         //XXX: väliaikainen toteutus
         final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id);
 
-        Peruste peruste = perusteet.getPerusopetuksenPeruste();
+        Peruste peruste = perusteet.getPerusopetuksenPeruste("TODO DIAARINUMERO");
         Optional<fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
             .findAny();

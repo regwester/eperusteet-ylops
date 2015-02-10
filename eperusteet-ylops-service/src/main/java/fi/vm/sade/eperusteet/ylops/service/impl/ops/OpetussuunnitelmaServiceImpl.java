@@ -21,13 +21,14 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
@@ -55,6 +56,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +135,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         fetchKouluNimet(dto);
 
         return dto;
+    }
+
+    @Override
+    public Set<PerusteLaajaalainenosaaminen> getLaajaalaisetosaamiset(Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        //TODO hae peruste diaarinumeron perusteella.
+        return eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus().getLaajaalaisetosaamiset();
     }
 
     private void fetchKuntaNimet(OpetussuunnitelmaDto opetussuunnitelmaDto) {
@@ -227,8 +237,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops = repository.save(ops);
         lisaaTekstipuunLapset(ops);
 
-        Peruste perusteDto
-            = eperusteetService.getPerusopetuksenPeruste();
+        Peruste perusteDto = eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
 
         Long opsId = ops.getId();
 
@@ -238,7 +247,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
                 .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
-                    new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
+                        new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
 
             final Map<Reference, UUID> vuosiluokkaMap
                 = sisalto.getVuosiluokkakokonaisuudet().stream()

@@ -46,7 +46,7 @@ public class EperusteetServiceMock implements EperusteetService {
     }
 
     @Override
-    public Peruste getPerusopetuksenPeruste() {
+    public Peruste getPerusopetuksenPeruste(String diaariNumero) {
         return getPerusopetuksenPeruste(0L);
     }
 

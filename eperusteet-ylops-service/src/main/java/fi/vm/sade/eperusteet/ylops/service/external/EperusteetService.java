@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface EperusteetService {
 
-    Peruste getPerusopetuksenPeruste();
+    Peruste getPerusopetuksenPeruste(String diaariNumero);
 
     List<PerusteInfo> findPerusopetuksenPerusteet();
     Peruste getPerusopetuksenPeruste(final Long id);

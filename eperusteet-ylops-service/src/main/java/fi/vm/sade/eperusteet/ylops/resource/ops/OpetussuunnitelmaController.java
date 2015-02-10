@@ -19,9 +19,11 @@ import com.codahale.metrics.annotation.Timed;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +62,13 @@ public class OpetussuunnitelmaController {
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> get(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelma(id), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/laajaalaisetosaamiset", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public Set<PerusteLaajaalainenosaaminen> getLaajalaisetosamiset(@PathVariable("id") final Long id) {
+        return opetussuunnitelmaService.getLaajaalaisetosaamiset(id);
     }
 
     @RequestMapping(value = "/perusteet", method = RequestMethod.GET)
