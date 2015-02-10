@@ -48,17 +48,17 @@ ylopsApp
     VuosiluokatService.getVlkPeruste($stateParams.id, $stateParams.vlkId, function (res) {
       $scope.perusteVlk = res;
 
-      $scope.tunnisteet = _.map($scope.perusteVlk.laajaalaisetOsaamiset, '_laajaalainenOsaaminen');
-      var decorated = _.map($scope.perusteVlk.laajaalaisetOsaamiset, function (item) {
+      $scope.tunnisteet = _.map($scope.perusteVlk.laajaalaisetosaamiset, '_laajaalainenosaaminen');
+      var decorated = _.map($scope.perusteVlk.laajaalaisetosaamiset, function (item) {
         item.teksti = item.kuvaus;
         item.otsikko = item.nimi || {fi: '[Ei nimeä]'};
         return item;
       });
-      $scope.laajaalaiset = _.indexBy(decorated, '_laajaalainenOsaaminen');
+      $scope.laajaalaiset = _.indexBy(decorated, '_laajaalainenosaaminen');
       $scope.paikalliset = _.mapValues($scope.laajaalaiset, function (item) {
         var newItem = _.cloneDeep(item);
         var model = _.find($scope.vlk.laajaalaisetosaamiset, function (osaaminen) {
-          return '' + osaaminen._laajaalainenosaaminen === '' + item._laajaalainenOsaaminen;
+          return '' + osaaminen._laajaalainenosaaminen === '' + item._laajaalainenosaaminen;
         });
         newItem.teksti = model ? model.kuvaus : {};
         return newItem;
