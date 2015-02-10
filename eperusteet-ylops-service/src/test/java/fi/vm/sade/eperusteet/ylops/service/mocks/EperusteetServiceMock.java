@@ -31,14 +31,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class EperusteetServiceMock implements EperusteetService {
 
+    public static final String DIAARINUMERO = "mock-diaarinumero";
+
     @Override
     public List<PerusteInfo> findPerusopetuksenPerusteet() {
-        return Collections.singletonList(new PerusteInfo());
+        PerusteInfo perusteInfo = new PerusteInfo();
+        perusteInfo.setDiaarinumero(DIAARINUMERO);
+        return Collections.singletonList(perusteInfo);
     }
 
     @Override
     public Peruste getPerusopetuksenPeruste(Long id) {
         Peruste peruste = new Peruste();
+        peruste.setDiaarinumero(DIAARINUMERO);
         PerusopetuksenPerusteenSisalto sisalto = new PerusopetuksenPerusteenSisalto();
         sisalto.setOppiaineet(Collections.emptySet());
         peruste.setPerusopetus(sisalto);

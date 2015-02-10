@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
+import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
@@ -66,7 +67,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     public void setUp() {
         OpetussuunnitelmaDto ops;
         ops = new OpetussuunnitelmaDto();
-        ops.setPerusteenDiaarinumero("diaarinumero123");
+        ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTyyppi(Tyyppi.POHJA);
@@ -109,7 +110,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertNotNull(ops);
         assertEquals(id, ops.getId());
-        assertEquals("diaarinumero123", ops.getPerusteenDiaarinumero());
+        assertEquals(EperusteetServiceMock.DIAARINUMERO, ops.getPerusteenDiaarinumero());
     }
 
     @Test

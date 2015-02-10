@@ -59,6 +59,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -237,6 +239,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
+
+        final String diaarinumero = ops.getPerusteenDiaarinumero();
+        if (StringUtils.isBlank(diaarinumero)) {
+            throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei ole määritelty");
+        } else if (eperusteetService.findPerusopetuksenPerusteet().stream()
+                                    .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
+            throw new BusinessRuleViolationException("Diaarinumerolla " + diaarinumero +
+                                                     " ei löydy voimassaolevaa perustetta");
+        }
 
         ops.setTila(Tila.LUONNOS);
         lisaaTekstipuunJuuri(ops);
