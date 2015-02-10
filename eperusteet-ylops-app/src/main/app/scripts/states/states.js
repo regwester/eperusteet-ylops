@@ -187,7 +187,18 @@ ylopsApp
       .state('root.pohjat.yksi.tiedot', {
         url: '/tiedot',
         templateUrl: 'views/opetussuunnitelmat/pohja/tiedot.html',
-        controller: 'PohjaTiedotController'
+        controller: 'PohjaTiedotController',
+        resolve: {
+          pohjaId: ['$stateParams', function ($stateParams) {
+            return $stateParams.pohjaId;
+          }],
+          perusteet: ['EperusteetPerusopetus', 'pohjaId', function (EperusteetPerusopetus, pohjaId) {
+            if (pohjaId === 'uusi') {
+              return EperusteetPerusopetus.query({}).$promise;
+            }
+            return null;
+          }]
+        }
       })
 
       .state('root.pohjat.yksi.tekstikappale', {
