@@ -56,13 +56,13 @@ public class UlkopuolisetController {
     @Autowired
     private EperusteetService eperusteetService;
 
-    @RequestMapping(value = "/perusopetusperuste", method = GET)
+    @RequestMapping(value = "/perusopetusperusteet", method = GET)
     @ResponseBody
     public ResponseEntity<List<PerusteInfo>> getPerusopetusperusteet() {
         return new ResponseEntity<>(eperusteetService.findPerusopetuksenPerusteet(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/perusopetusperuste/{id}", method = GET)
+    @RequestMapping(value = "/perusopetusperusteet/{id}", method = GET)
     @ResponseBody
     public ResponseEntity<Peruste> getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
         return new ResponseEntity<>(eperusteetService.getPerusopetuksenPeruste(id), HttpStatus.OK);
