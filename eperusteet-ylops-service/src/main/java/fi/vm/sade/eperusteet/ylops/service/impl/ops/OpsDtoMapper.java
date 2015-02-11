@@ -109,6 +109,7 @@ public class OpsDtoMapper {
         dto.setTila(Tila.LUONNOS);
 
         dto.setNimi(oa.getNimi());
+        dto.setTunniste(oa.getTunniste());
         dto.setKoosteinen(oa.getKoosteinen());
         dto.setKoodiArvo(oa.getKoodiArvo());
         dto.setKoodiUri(oa.getKoodiUri());

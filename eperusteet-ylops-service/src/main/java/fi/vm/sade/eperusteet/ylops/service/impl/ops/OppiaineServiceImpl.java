@@ -15,21 +15,40 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.impl.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * @author mikkom
@@ -49,6 +68,29 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     @Autowired
     private OppiaineRepository oppiaineRepository;
+
+    @Autowired
+    private EperusteetService perusteet;
+
+    public OppiaineServiceImpl() {
+    }
+
+    @Override
+    public void updateVuosiluokkienTavoitteet(Long opsId, Long id, Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        Peruste peruste = perusteet.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
+        Oppiaine oppiaine = oppiaineRepository.findOne(id);
+
+        if (!ops.containsOppiaine(oppiaine)) {
+            throw new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa");
+        }
+
+        PerusteOppiaine po = peruste.getPerusopetus().getOppiaine(oppiaine.getTunniste()).get();
+
+        oppiaine.getVuosiluokkakokonaisuudet().forEach(v -> {
+            updateTavoitteet(v, po.getVuosiluokkakokonaisuus(v.getVuosiluokkakokonaisuus().getId()), tavoitteet);
+        });
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -139,4 +181,64 @@ public class OppiaineServiceImpl implements OppiaineService {
             throw new BusinessRuleViolationException(msg);
         }
     }
+
+    private void updateTavoitteet(
+        Oppiaineenvuosiluokkakokonaisuus v,
+        Optional<PerusteOppiaineenVuosiluokkakokonaisuus> vuosiluokkakokonaisuus,
+        Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+
+        tavoitteet.entrySet().stream()
+            .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))
+            .forEach(e -> {
+
+                Oppiaineenvuosiluokka ov = v.getVuosiluokka(e.getKey()).orElseGet(() -> {
+                    Oppiaineenvuosiluokka tmp = new Oppiaineenvuosiluokka(e.getKey());
+                    v.addVuosiluokka(tmp);
+                    return tmp;
+            });
+            mergePerusteTavoitteet(ov, vuosiluokkakokonaisuus.get(), e.getValue());
+            });
+
+    }
+
+    private void mergePerusteTavoitteet(Oppiaineenvuosiluokka ov, PerusteOppiaineenVuosiluokkakokonaisuus pvk, Set<UUID> tavoiteIds) {
+        Set<PerusteOpetuksentavoite> filtered = pvk.getTavoitteet().stream()
+            .filter(t -> tavoiteIds.contains(t.getTunniste()))
+            .collect(Collectors.toSet());
+
+        LinkedHashMap<UUID, Keskeinensisaltoalue> alueet = pvk.getSisaltoalueet().stream()
+            .filter(s -> filtered.stream().flatMap(t -> t.getSisaltoalueet().stream()).anyMatch(Predicate.isEqual(s)))
+            .map(ps -> {
+                return ov.getSisaltoalue(ps.getTunniste()).orElseGet(() -> {
+                    Keskeinensisaltoalue k = new Keskeinensisaltoalue();
+                    k.setTunniste(ps.getTunniste());
+                    k.setKuvaus(LokalisoituTeksti.of(ps.getKuvaus().getTekstit()));
+                    k.setNimi(LokalisoituTeksti.of(ps.getNimi().getTekstit()));
+                    return k;
+                });
+            })
+            .collect(Collectors.toMap(k -> k.getTunniste(), k -> k, (u, v) -> u, LinkedHashMap::new));
+
+        ov.setSisaltoalueet(new ArrayList<>(alueet.values()));
+
+        List<Opetuksentavoite> tmp = filtered.stream()
+            .map(t -> {
+                Opetuksentavoite opst = ov.getTavoite(t.getTunniste()).orElseGet(() -> {
+                    Opetuksentavoite uusi = new Opetuksentavoite();
+                    uusi.setTavoite(LokalisoituTeksti.of(t.getTavoite().getTekstit()));
+                    uusi.setTunniste(t.getTunniste());
+                    return uusi;
+                });
+                opst.setLaajattavoitteet(t.getLaajattavoitteet().stream()
+                    .map(l -> new LaajaalainenosaaminenViite(l.getTunniste().toString()))
+                    .collect(Collectors.toSet()));
+                opst.setSisaltoalueet(t.getSisaltoalueet().stream()
+                    .map(s -> alueet.get(s.getTunniste()))
+                    .collect(Collectors.toSet()));
+                return opst;
+            })
+            .collect(Collectors.toList());
+        ov.setTavoitteet(tmp);
+    }
+
 }

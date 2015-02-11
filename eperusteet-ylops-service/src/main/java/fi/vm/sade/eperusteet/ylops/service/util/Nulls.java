@@ -13,29 +13,34 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.ops;
+package fi.vm.sade.eperusteet.ylops.service.util;
 
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.util.Set;
-import java.util.UUID;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
+ * Apumetodeja null-arvojen kanssa temppuiluun
  *
- * @author mikkom
+ * @author jhyoty
  */
-@Getter
-@Setter
-public class OpetuksenTavoiteDto implements ReferenceableDto {
-    private Long id;
-    private UUID tunniste;
+public final class Nulls {
 
-    private LokalisoituTekstiDto tavoite;
-    private Set<Reference> sisaltoalueet;
-    private Set<Reference> laajattavoitteet;
-    private Set<Reference> kohdealueet;
-    private Set<TavoitteenArviointiDto> arvioinninkohteet;
+    private Nulls() {
+        //Apuluokka
+    }
+
+    public static <T> Collection<T> nullToEmpty(Collection<T> s) {
+        if (s == null) {
+            return Collections.emptySet();
+        }
+        return s;
+    }
+
+    public static String nullToEmpty(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s;
+    }
+
 }

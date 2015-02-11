@@ -15,11 +15,12 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.peruste;
 
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.*;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,4 +41,10 @@ public class PerusteOppiaineenVuosiluokkakokonaisuus implements ReferenceableDto
     private PerusteTekstiOsa arviointi;
     private List<PerusteOpetuksentavoite> tavoitteet;
     private List<PerusteKeskeinensisaltoalue> sisaltoalueet;
+
+    public Optional<PerusteOpetuksentavoite> getTavoite(UUID tunniste) {
+        return tavoitteet.stream()
+            .filter(t -> t.getTunniste().equals(tunniste))
+            .findAny();
+    }
 }

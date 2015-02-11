@@ -16,9 +16,12 @@
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -88,21 +91,21 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     }
 
     public void setVuosiluokat(Set<Oppiaineenvuosiluokka> vuosiluokat) {
-        if ( vuosiluokat == null ) {
+        if (vuosiluokat == null) {
             this.vuosiluokat.clear();
         } else {
             this.vuosiluokat.addAll(vuosiluokat);
             this.vuosiluokat.retainAll(vuosiluokat);
         }
 
-        for ( Oppiaineenvuosiluokka o : vuosiluokat ) {
+        for (Oppiaineenvuosiluokka o : vuosiluokat) {
             o.setKokonaisuus(this);
         }
 
     }
 
     public void addVuosiluokka(Oppiaineenvuosiluokka vuosiluokka) {
-        if ( !vuosiluokkakokonaisuus.contains(vuosiluokka.getVuosiluokka()) ) {
+        if (!vuosiluokkakokonaisuus.contains(vuosiluokka.getVuosiluokka())) {
             throw new IllegalArgumentException("Vuosiluokka ei kelpaa");
         }
         vuosiluokka.setKokonaisuus(this);
@@ -117,6 +120,12 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
         }
 
         return false;
+    }
+
+    public Optional<Oppiaineenvuosiluokka> getVuosiluokka(Vuosiluokka luokka) {
+        return vuosiluokat.stream()
+            .filter(l -> Objects.equals(l.getVuosiluokka(), luokka))
+            .findAny();
     }
 
 }

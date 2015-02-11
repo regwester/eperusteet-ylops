@@ -16,17 +16,23 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +69,25 @@ public class OppiaineController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         return Responses.ofNullable(oppiaineService.get(opsId, id));
+    }
+
+    @RequestMapping(value = "/{id}/tavoitteet", method = RequestMethod.GET)
+    public Map<Vuosiluokka, Set<UUID>> getVuosiluokkienTavoitteet(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        OppiaineDto oa = oppiaineService.get(opsId, id);
+        return oa.getVuosiluokkakokonaisuudet().stream()
+            .flatMap(vk -> vk.getVuosiluokat().stream())
+            .collect(Collectors.toMap(OppiaineenVuosiluokkaDto::getVuosiluokka, l -> {
+                return l.getTavoitteet().stream().map(t -> t.getTunniste()).collect(Collectors.toSet());
+            }));
+    }
+
+    @RequestMapping(value = "/{id}/tavoitteet", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateVuosiluokkienTavoitteet(
+        @PathVariable("opsId") final Long opsId,
+        @PathVariable("id") final Long id,
+        @RequestBody Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+        oppiaineService.updateVuosiluokkienTavoitteet(opsId, id, tavoitteet);
     }
 
     @RequestMapping(method = RequestMethod.GET)

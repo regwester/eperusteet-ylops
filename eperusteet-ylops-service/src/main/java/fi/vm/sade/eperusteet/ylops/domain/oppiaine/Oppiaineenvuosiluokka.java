@@ -19,6 +19,9 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -63,6 +66,25 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
     @JoinTable
     @OrderColumn
     private List<Keskeinensisaltoalue> sisaltoalueet = new ArrayList<>();
+
+    public Oppiaineenvuosiluokka() {
+    }
+
+    public Oppiaineenvuosiluokka(Vuosiluokka vuosiluokka) {
+        this.vuosiluokka = vuosiluokka;
+    }
+
+    public Optional<Keskeinensisaltoalue> getSisaltoalue(UUID tunniste) {
+        return this.sisaltoalueet.stream()
+            .filter(k -> Objects.equals(k.getTunniste(), tunniste))
+            .findAny();
+    }
+
+    public Optional<Opetuksentavoite> getTavoite(UUID tunniste) {
+        return this.tavoitteet.stream()
+            .filter(k -> Objects.equals(k.getTunniste(), tunniste))
+            .findAny();
+    }
 
     public List<Opetuksentavoite> getTavoitteet() {
         return new ArrayList<>(tavoitteet);
