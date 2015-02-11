@@ -64,13 +64,14 @@ public class DtoMapperConfig {
 
         factory.classMap(OppiaineDto.class, Oppiaine.class)
             .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
+            .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
             .byDefault()
             .register();
 
         factory.classMap(OppiaineLaajaDto.class, Oppiaine.class)
-               .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
-               .byDefault()
-               .register();
+            .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
+            .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
+            .register();
 
         return new DtoMapperImpl(factory.getMapperFacade());
     }

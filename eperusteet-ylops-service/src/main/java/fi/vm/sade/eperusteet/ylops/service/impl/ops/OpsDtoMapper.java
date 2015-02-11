@@ -53,7 +53,9 @@ public class OpsDtoMapper {
     private DtoMapper mapper;
 
     public Oppiaine fromDto(OppiaineLaajaDto dto) {
-        Oppiaine oppiaine = mapper.map(dto, Oppiaine.class);
+        Oppiaine oppiaine = new Oppiaine(dto.getTunniste());
+
+        mapper.map(dto, oppiaine);
         if (dto.getOppimaarat() != null) {
             dto.getOppimaarat().forEach(o -> oppiaine.addOppimaara(fromDto(o)));
         }
@@ -68,7 +70,9 @@ public class OpsDtoMapper {
     }
 
     public Oppiaine fromDto(OppiaineDto dto) {
-        Oppiaine oppiaine = mapper.map(dto, Oppiaine.class);
+
+        Oppiaine oppiaine = new Oppiaine(dto.getTunniste());
+        mapper.map(dto, oppiaine);
         if (dto.getOppimaarat() != null) {
             dto.getOppimaarat().forEach(o -> oppiaine.addOppimaara(mapper.map(o, Oppiaine.class)));
         }
@@ -106,7 +110,6 @@ public class OpsDtoMapper {
 
         dto.setNimi(oa.getNimi());
         dto.setKoosteinen(oa.getKoosteinen());
-        dto.setTehtava(fromEperusteet(oa.getTehtava()));
         dto.setKoodiArvo(oa.getKoodiArvo());
         dto.setKoodiUri(oa.getKoodiUri());
 
@@ -137,7 +140,7 @@ public class OpsDtoMapper {
 
         dto.setNimi(oa.getNimi());
         dto.setKoosteinen(oa.getKoosteinen());
-        dto.setTehtava(fromEperusteet(oa.getTehtava()));
+        dto.setTunniste(oa.getTunniste());
         dto.setKoodiArvo(oa.getKoodiArvo());
         dto.setKoodiUri(oa.getKoodiUri());
 

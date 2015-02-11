@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.peruste;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +31,7 @@ import lombok.Setter;
 public class PerusteOppiaine implements ReferenceableDto {
 
     private Long id;
+    private UUID tunniste;
     private String koodiUri;
     private String koodiArvo;
     private Boolean koosteinen;

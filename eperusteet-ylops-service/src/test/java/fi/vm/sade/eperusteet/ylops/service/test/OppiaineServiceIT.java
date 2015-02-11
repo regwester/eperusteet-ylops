@@ -23,9 +23,9 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
@@ -42,7 +42,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +116,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OppiaineDto oppiaineDto = new OppiaineDto();
         oppiaineDto.setNimi(lt("Uskonto"));
         oppiaineDto.setKoodiUri("koodikoodi");
+        oppiaineDto.setTunniste(UUID.randomUUID());
         oppiaineDto.setKoosteinen(false);
 
         oppiaineDto = oppiaineService.add(opsId, oppiaineDto);
@@ -125,10 +125,12 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto = new OppiaineDto();
         oppiaineDto.setNimi(lt("Äidinkieli"));
         oppiaineDto.setKoodiUri("koodi_123");
+        oppiaineDto.setTunniste(UUID.randomUUID());
 
         OppiaineSuppeaDto oppimaaraDto = new OppiaineSuppeaDto();
         oppimaaraDto.setNimi(lt("Suomen kieli ja kirjallisuus"));
         oppimaaraDto.setKoosteinen(false);
+        oppimaaraDto.setTunniste(UUID.randomUUID());
 
         oppiaineDto.setOppimaarat(Collections.singleton(oppimaaraDto));
         oppiaineDto.setKoosteinen(true);
@@ -142,6 +144,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto.setNimi(lt("Matematiikka"));
         oppiaineDto.setKoodiUri("jaa-a");
         oppiaineDto.setKoosteinen(false);
+        oppiaineDto.setTunniste(UUID.randomUUID());
 
         OppiaineenVuosiluokkakokonaisuusDto ovk = new OppiaineenVuosiluokkakokonaisuusDto();
         ovk.setArviointi(getTekstiosa("Arviointi"));

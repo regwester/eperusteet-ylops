@@ -18,11 +18,11 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +62,7 @@ public class OppiaineController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        return response(oppiaineService.get(opsId, id));
+        return Responses.ofNullable(oppiaineService.get(opsId, id));
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -93,12 +93,8 @@ public class OppiaineController {
         if (peruste != null && aine != null) {
             oppiaine = peruste.getPerusopetus().getOppiaineet()
                 .stream()
-                .flatMap(oa -> Stream.concat(Stream.of(oa), Optional.ofNullable(oa.getOppimaarat()).orElse(Collections.emptySet()).stream()))
-                .peek(oa -> LOG.debug(oa.toString()))
-                //TODO --koodiuri ei ole riittävän yksilöivä. tarvitaan tunniste oppiaineisiinkin
-                //.filter(oa -> Objects.equals(oa.getKoodiUri(), aine.getKoodiUri()))
-                //XXX:
-                .filter(oa -> Objects.equals(oa.getNimi().get(Kieli.FI), aine.getNimi().get(Kieli.FI)))
+                .flatMap(oa -> Stream.concat(Stream.of(oa), nullToEmpty(oa.getOppimaarat()).stream()))
+                .filter(oa -> Objects.equals(oa.getTunniste(), aine.getTunniste()))
                 .findAny();
         } else {
             oppiaine = Optional.empty();
@@ -106,12 +102,13 @@ public class OppiaineController {
         return Responses.of(oppiaine);
     }
 
+    private static <T> Collection<T> nullToEmpty(Collection<T> s) {
+        if (s == null) {
+            return Collections.emptySet();
+        }
+        return s;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(OppiaineController.class);
 
-    private static <T> ResponseEntity<T> response(T data) {
-        if (data == null) {
-            return new ResponseEntity<>((T) null, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(data, HttpStatus.OK);
-    }
 }

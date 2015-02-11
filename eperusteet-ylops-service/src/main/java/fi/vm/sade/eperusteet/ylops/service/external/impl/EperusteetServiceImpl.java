@@ -27,10 +27,8 @@ import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
@@ -101,7 +99,8 @@ public class EperusteetServiceImpl implements EperusteetService {
 
         // TODO: filtteröi diaarinumerolla
         PerusteInfo perusteInfoDto = findPerusopetuksenPerusteet().stream()
-            .max(Comparator.comparingLong(p -> Optional.ofNullable(p.getVoimassaoloLoppuu()).orElse(new Date(Long.MAX_VALUE)).getTime()))
+            .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
+            .findAny()
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
 
         return getPerusopetuksenPeruste(perusteInfoDto.getId());
