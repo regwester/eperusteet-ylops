@@ -41,6 +41,7 @@ public class OpetussuunnitelmaDto implements Serializable {
     private Long id;
     private String perusteenDiaarinumero;
     private Tyyppi tyyppi;
+    private Reference pohja;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;
 

@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
@@ -183,9 +184,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
-        //Opetussuunnitelma pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
-        // TODO: Keksi tapa valita oikea pohja
-        Opetussuunnitelma pohja = repository.findFirst1ByTyyppi(Tyyppi.POHJA);
+
+        Opetussuunnitelma pohja = ops.getPohja();
+
+        if (pohja == null) {
+            //Opetussuunnitelma pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
+            // TODO: Keksi tapa valita oikea pohja
+            pohja = repository.findFirst1ByTyyppi(Tyyppi.POHJA);
+        }
 
         if (pohja != null) {
             ops.setTekstit(new TekstiKappaleViite(Omistussuhde.OMA));
@@ -205,11 +211,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
         kopioiTekstit(pohja.getTekstit(), ops.getTekstit());
 
-        ops.setOppiaineet(pohja.getOppiaineet().stream()
-            .map(ooa -> new OpsOppiaine(ooa.getOppiaine(), false))
-            .collect(Collectors.toSet()));
+        ops.setOppiaineet(
+            pohja.getOppiaineet().stream()
+                 .map(ooa -> new OpsOppiaine(ooa.getOppiaine(), false))
+                 .collect(Collectors.toSet()));
 
-        // TODO: Toteuttamatta ainakin vuosiluokkakokonaisuuksien kopiointi
+        ops.setVuosiluokkakokonaisuudet(
+            pohja.getVuosiluokkakokonaisuudet().stream()
+                 .map(ovlk -> new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
+                 .collect(Collectors.toSet()));
     }
 
     @Transactional
@@ -241,6 +251,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                                     .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
             throw new BusinessRuleViolationException("Diaarinumerolla " + diaarinumero +
                                                      " ei löydy voimassaolevaa perustetta");
+        }
+
+        if (ops.getPohja() != null) {
+            throw new BusinessRuleViolationException("Opetussuunnitelman pohjalla ei voi olla pohjaa");
         }
 
         ops.setTila(Tila.LUONNOS);
