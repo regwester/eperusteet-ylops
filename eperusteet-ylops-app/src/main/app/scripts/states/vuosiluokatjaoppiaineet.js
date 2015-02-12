@@ -53,7 +53,10 @@ ylopsApp
           }],
           oppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
             return vuosiluokatService.getOppiaine(oppiaineId).$promise;
-          }]
+          }],
+          perusteOppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
+            return vuosiluokatService.getPerusteOppiaine(oppiaineId).$promise;
+          }],
         }
       })
 
@@ -103,9 +106,9 @@ ylopsApp
         controller: 'VuosiluokkaistaminenController',
         resolve: {
           vuosiluokatService: 'VuosiluokatService',
-          tavoitteet: ['vuosiluokatService', function (vuosiluokatService) {
-            return vuosiluokatService.getTavoitteet(/*oppiaineenVlkId*/);
-          }],
+          /*tavoitteet: ['vuosiluokatService', function (vuosiluokatService) {
+            return vuosiluokatService.getTavoitteet(oppiaineenVlkId);
+          }],*/
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive(false);
           }]

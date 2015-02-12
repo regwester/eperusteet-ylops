@@ -21,6 +21,7 @@ ylopsApp
     this.OPS = SERVICE_LOC + '/opetussuunnitelmat/:opsId';
     this.OPPIAINE = this.OPS + '/oppiaineet/:oppiaineId';
     this.VLK = this.OPS + '/vuosiluokkakokonaisuudet/:vlkId';
+    this.OPVLK = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId';
   })
 
   .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {
@@ -42,6 +43,8 @@ ylopsApp
   .factory('OppiaineCRUD', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPPIAINE, {
       oppiaineId: '@id'
+    }, {
+      peruste: {method: 'GET', url: YlopsResources.OPPIAINE + '/peruste'}
     });
   })
 
@@ -50,5 +53,14 @@ ylopsApp
       vlkId: '@id'
     }, {
       peruste: {method: 'GET', url: YlopsResources.VLK + '/peruste'}
+    });
+  })
+
+  .factory('OppiaineenVlk', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPVLK, {
+      vlkId: '@id'
+    }, {
+      getTavoitteet: {method: 'GET', isArray: false, url: YlopsResources.OPVLK + '/tavoitteet'},
+      peruste: {method: 'GET', url: YlopsResources.OPVLK + '/peruste'}
     });
   });

@@ -100,6 +100,10 @@ ylopsApp
         useData: 'vuosiluokkaNimi',
         parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
       },
+      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen': {
+        label: 'vuosiluokkaistaminen',
+        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
+      },
       'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.sisaltoalueet': {
         useData: 'vuosiluokkaNimi',
         parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'

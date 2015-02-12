@@ -17,31 +17,84 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkaistaminenController', function ($scope, tavoitteet, $filter, VariHyrra, ColorCalculator,
-  $state) {
+.controller('VuosiluokkaistaminenController', function ($scope, $filter, VariHyrra, ColorCalculator,
+  $state, OppiaineenVlk, $stateParams, OpsService, Kaanna) {
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
+  $scope.perusteOpVlk = {};
+
+  function colorizeKohdealueet() {
+    VariHyrra.reset();
+    _.each(kohdealueet, function (alue) {
+      var vari = VariHyrra.next();
+      alue.styles = {
+        'background-color': '#' + vari,
+        color: ColorCalculator.readableTextColorForBg(vari)
+      };
+    });
+  }
+
+  var kohdealueet = $scope.perusteOppiaine.kohdealueet;
+  colorizeKohdealueet();
+
+  var ops = OpsService.get();
+  var opVlk = {};
+  var vlk = {};
+  if (ops) {
+    vlk = _.find(ops.vuosiluokkakokonaisuudet, function (item) {
+      return '' + item.vuosiluokkakokonaisuus.id === $stateParams.vlkId;
+    });
+    if (vlk) {
+      var tunniste = vlk.vuosiluokkakokonaisuus._tunniste;
+      opVlk = _.find($scope.oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
+        return opVlk._vuosiluokkakokonaisuus === tunniste;
+      });
+    }
+  }
+
+  function processTavoitteet() {
+    _.each($scope.tavoitteet, function (tavoite) {
+      var kohdealueId = _.first(tavoite.kohdealueet);
+      tavoite.kohdealue = _.find(kohdealueet, {id: kohdealueId});
+    });
+  }
+
+  function resetTavoitteet() {
+    $scope.containers.tavoitteet.items = _.clone($scope.tavoitteet);
+    var usedTavoitteet = {};
+    var unused = [];
+    _.each($scope.containers, function (container, key) {
+      if (key !== 'tavoitteet') {
+        _.each(container.items, function (tavoite) {
+          usedTavoitteet[tavoite.tunniste] = true;
+        });
+      }
+    });
+    _.each($scope.containers.tavoitteet.items, function (tavoite) {
+      tavoite.$kaytossa = usedTavoitteet[tavoite.tunniste];
+      if (!tavoite.$kaytossa) {
+        unused.push(tavoite);
+      }
+    });
+    $scope.allDragged = unused.length === 0;
+  }
+
+  // TODO siirrä perusteen oppiaineen vlk:n haku oppiainebasen resolveen
+  OppiaineenVlk.peruste({
+    opsId: $stateParams.id,
+    oppiaineId: $stateParams.oppiaineId,
+    vlkId: opVlk.id
+  }, function (res) {
+    $scope.perusteOpVlk = res;
+    $scope.tavoitteet = $scope.perusteOpVlk.tavoitteet;
+    processTavoitteet();
+    resetTavoitteet();
+  });
+
   $scope.singleVuosiluokat = [3, 4, 5, 6];
-  $scope.tavoitteet = tavoitteet;
   $scope.allDragged = false;
   $scope.collapsedMode = false;
   $scope.showKohdealueet = true;
-
-  var kohdealueet = [
-    {id: 1, nimi: 'Merkitys, arvot ja asenteet'},
-    {id: 2, nimi: 'Työskentelyn taidot'},
-    {id: 3, nimi: 'Käsitteelliset ja tiedonalakohtaiset tavoitteet'},
-    {id: 4, nimi: 'Tutkimisen ja toimimisen taidot'},
-  ];
-
-  VariHyrra.reset();
-  _.each(kohdealueet, function (alue) {
-    var vari = VariHyrra.next();
-    alue.styles = {
-      'background-color': '#' + vari,
-      color: ColorCalculator.readableTextColorForBg(vari)
-    };
-  });
 
   function goBack() {
     $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine');
@@ -60,18 +113,6 @@ ylopsApp
     saveCb();
   };
 
-  function processTavoitteet() {
-    _.each($scope.tavoitteet, function (tavoite, index) {
-      // TODO remove dummy data
-      tavoite.koodi = 'T' + (index + 8);
-      //var kohdealueId = _.first(tavoite.kohdealueet);
-      var kohdealueId = _.sample(_.map(kohdealueet, 'id'));
-      tavoite.kohdealue = _.find(kohdealueet, {id: kohdealueId});
-    });
-  }
-
-  processTavoitteet();
-
   $scope.containers = {
     tavoitteet: {
       type: 'tavoitteet',
@@ -80,28 +121,6 @@ ylopsApp
       items: []
     }
   };
-
-  function resetTavoitteet() {
-    $scope.containers.tavoitteet.items = _.clone($scope.tavoitteet);
-    var usedTavoitteet = {};
-    var unused = [];
-    _.each($scope.containers, function (container, key) {
-      if (key !== 'tavoitteet') {
-        _.each(container.items, function (tavoite) {
-          usedTavoitteet[tavoite.koodi] = true;
-        });
-      }
-    });
-    _.each($scope.containers.tavoitteet.items, function (tavoite) {
-      tavoite.$kaytossa = usedTavoitteet[tavoite.koodi];
-      if (!tavoite.$kaytossa) {
-        unused.push(tavoite);
-      }
-    });
-    $scope.allDragged = unused.length === 0;
-  }
-
-  resetTavoitteet();
 
   _.each($scope.singleVuosiluokat, function (item) {
     $scope.containers[item] = {
@@ -128,7 +147,11 @@ ylopsApp
   }
 
   $scope.tavoiteSorter = function (item) {
-    return parseInt(item.koodi.substr(1), 10);
+    return item.kohdealue ? item.kohdealue.id : null;
+  };
+
+  $scope.nimiSorter = function (item) {
+    return Kaanna.kaanna(item.tavoite).toLowerCase();
   };
 
   function modelFromTarget(target) {
@@ -148,7 +171,7 @@ ylopsApp
       // Must use same sorter(s) as in ng-repeat template
       var model = modelFromTarget(event.target);
       if (model) {
-        var sortedIndex = adjustIndex(model.items, [$scope.tavoiteSorter], ui.item.sortable.index);
+        var sortedIndex = adjustIndex(model.items, [$scope.tavoiteSorter, $scope.nimiSorter], ui.item.sortable.index);
         ui.item.sortable.index = sortedIndex;
       }
     },

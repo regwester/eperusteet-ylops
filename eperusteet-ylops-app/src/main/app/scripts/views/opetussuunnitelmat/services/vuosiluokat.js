@@ -149,6 +149,10 @@ ylopsApp
     return OppiaineCRUD.get({opsId: opsId || OpsService.getId()}, {id: oppiaineId});
   }
 
+  function getPerusteOppiaine(oppiaineId) {
+    return OppiaineCRUD.peruste({opsId: opsId || OpsService.getId()}, {id: oppiaineId});
+  }
+
   function getVuosiluokka(vuosiluokkaId) {
     var vuosiluokka = {
       id: vuosiluokkaId,
@@ -224,5 +228,6 @@ ylopsApp
   this.getVuosiluokka = getVuosiluokka;
   this.getTavoitteet = getTavoitteet;
   this.getOppiaine = getOppiaine;
+  this.getPerusteOppiaine = getPerusteOppiaine;
   this.mapForMenu = mapForMenu;
 });
