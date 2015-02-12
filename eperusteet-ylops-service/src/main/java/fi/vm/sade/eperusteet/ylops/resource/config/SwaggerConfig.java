@@ -39,7 +39,7 @@ import org.springframework.http.ResponseEntity;
  */
 @Configuration
 @EnableSwagger
-@Profile("default")
+@Profile(value = {"!dev"})
 public class SwaggerConfig {
 
     @Autowired
