@@ -1,5 +1,31 @@
 $vl-container-width: 255px;
 
+.vuosiluokkaistaminen-header {
+  position: relative;
+  max-width: 500px;
+  .buttons {
+    position: absolute;
+    right: 0;
+    top: 0;
+    .btn {
+      padding: 10px 16px;
+    }
+  }
+  label + label {
+    margin-left: 20px;
+  }
+}
+
+@media (max-width: 800px) {
+  .vuosiluokkaistaminen-header {
+    max-width: 300px;
+    .buttons {
+      margin-top: 10px;
+      position: relative;
+    }
+  }
+}
+
 .vuosiluokkaistaminen-container-outer {
   position: relative;
   width: 100%;
@@ -23,6 +49,17 @@ $vl-container-width: 255px;
   .koodi {
     font-weight: 700;
   }
+  .kohdealue {
+    display: block;
+    font-weight: 700;
+    font-size: 80%;
+    width: 50%;
+    float: right;
+    padding: 3px;
+    margin-left: 2px;
+    margin-right: -2px;
+    margin-top: -2px;
+  }
   .panel-body {
     padding: 5px 5px 15px 5px;
     background-color: lighten($brand-primary, 70%);
@@ -40,6 +77,7 @@ $vl-container-width: 255px;
       margin-right: 10px;
     }
   }
+
   .tavoitteet {
     float: none;
     position: absolute;
@@ -64,15 +102,21 @@ $vl-container-width: 255px;
     min-height: 200px;
 
     &.tavoite-list {
+      font-style: italic;
       .not-used {
-        background-color: #ffd400;
+        background-color: white;
         color: black;
-        font-style: italic;
+        font-style: normal;
+      }
+    }
+    &.vuosiluokka-list {
+      .container-item {
+        background-color: white;
       }
     }
 
     .container-item {
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: lighten(#3a8fbe, 30%);
       border: 1px solid #777;
       box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3);
       padding: 5px;
@@ -84,6 +128,9 @@ $vl-container-width: 255px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        .kohdealue {
+          display: none;
+        }
       }
 
       &:not(:first-child) {

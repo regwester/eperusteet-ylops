@@ -15,9 +15,14 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import java.util.List;
+import java.util.Set;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -27,8 +32,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
  */
 public interface OpetussuunnitelmaService {
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Set<PerusteLaajaalainenosaaminen> getLaajaalaisetosaamiset(@P("opsId") Long id);
+
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
-    List<OpetussuunnitelmaDto> getAll();
+    List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaDto getOpetussuunnitelma(@P("opsId") Long id);
@@ -55,6 +63,12 @@ public interface OpetussuunnitelmaService {
     TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
                                                        TekstiKappaleViiteDto.Matala viite);
 
-    @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
-    public List<OpetussuunnitelmaDto> getAllPohjat();
+    /**
+     * Hakee opetussuunnitelmaan liittyvän opetussuunnitelman perusteen
+     *
+     * @param opsId
+     * @return Peruste
+     */
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    public Peruste getPeruste(@P("opsId") Long opsId);
 }

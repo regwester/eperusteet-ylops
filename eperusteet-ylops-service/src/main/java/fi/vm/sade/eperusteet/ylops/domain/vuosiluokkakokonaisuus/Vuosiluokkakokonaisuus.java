@@ -89,11 +89,11 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
     private Tila tila = Tila.LUONNOS;
 
 
-    public Set<Laajaalainenosaaminen> getLaajaalaisetOsaamiset() {
+    public Set<Laajaalainenosaaminen> getLaajaalaisetosaamiset() {
         return new HashSet<>(laajaalaisetosaamiset);
     }
 
-    public void setLaajaalaisetOsaamiset(Set<Laajaalainenosaaminen> osaamiset) {
+    public void setLaajaalaisetosaamiset(Set<Laajaalainenosaaminen> osaamiset) {
 
         if (osaamiset == null) {
             this.laajaalaisetosaamiset.clear();

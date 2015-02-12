@@ -19,7 +19,7 @@
 ylopsApp
 .controller('PohjaTiedotController', function ($scope, $stateParams, $state,
   OpetussuunnitelmaCRUD, Notifikaatiot, Utils, OpsService, $rootScope,
-  Editointikontrollit, $timeout, Kieli, Varmistusdialogi) {
+  Editointikontrollit, $timeout, Kieli, Varmistusdialogi, EperusteetPerusopetus, perusteet) {
 
     $scope.luonnissa = $stateParams.pohjaId === 'uusi';
     $scope.kieliOrderFn = Kieli.orderFn;
@@ -31,12 +31,18 @@ ylopsApp
 
     $scope.editMode = false;
     $scope.kielivalinnat = ['fi', 'sv', 'se'];
+    $scope.perustelista = [];
 
     $scope.hasRequiredFields = function () {
       var model = $scope.model;
       return Utils.hasLocalizedText(model.nimi) &&
+        model.perusteenDiaarinumero &&
       _.any(_.values($scope.julkaisukielet));
     };
+
+    if (perusteet) {
+      $scope.perustelista = perusteet;
+    }
 
     function fetch(notify) {
       OpsService.refetchPohja(function (res) {
@@ -82,6 +88,9 @@ ylopsApp
       },
       notify: function (mode) {
         $scope.editMode = mode;
+        if (mode) {
+          $scope.haePerusteet();
+        }
       }
     };
     Editointikontrollit.registerCallback(callbacks);
@@ -99,6 +108,16 @@ ylopsApp
 
     $scope.edit = function () {
       Editointikontrollit.startEditing();
+    };
+
+    $scope.haePerusteet = function () {
+      if (!($scope.editMode || $scope.luonnissa)) {
+        return;
+      }
+
+      EperusteetPerusopetus.query({}, function (perusteet) {
+        $scope.perustelista = perusteet;
+      }, Notifikaatiot.serverCb);
     };
 
     $scope.delete = function () {

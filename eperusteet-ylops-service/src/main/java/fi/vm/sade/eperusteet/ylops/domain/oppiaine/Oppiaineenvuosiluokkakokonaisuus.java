@@ -16,18 +16,23 @@
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,13 +47,15 @@ import org.hibernate.envers.RelationTargetAuditMode;
  */
 @Entity
 @Audited
-@Table(name = "oppiaineen_vlkok")
+@Table(name = "oppiaineen_vlkok", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"oppiaine_id", "vuosiluokkakokonaisuus_id"})})
 public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter(AccessLevel.PACKAGE)
     @ManyToOne(optional = false)
     @NotNull
+    @JoinColumn(name = "oppiaine_id")
     private Oppiaine oppiaine;
 
     @Getter
@@ -56,6 +63,7 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     @NotNull
     @ManyToOne
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @JoinColumn(name = "vuosiluokkakokonaisuus_id")
     private Vuosiluokkakokonaisuusviite vuosiluokkakokonaisuus;
 
     @Getter
@@ -88,21 +96,21 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     }
 
     public void setVuosiluokat(Set<Oppiaineenvuosiluokka> vuosiluokat) {
-        if ( vuosiluokat == null ) {
+        if (vuosiluokat == null) {
             this.vuosiluokat.clear();
         } else {
             this.vuosiluokat.addAll(vuosiluokat);
             this.vuosiluokat.retainAll(vuosiluokat);
         }
 
-        for ( Oppiaineenvuosiluokka o : vuosiluokat ) {
+        for (Oppiaineenvuosiluokka o : vuosiluokat) {
             o.setKokonaisuus(this);
         }
 
     }
 
     public void addVuosiluokka(Oppiaineenvuosiluokka vuosiluokka) {
-        if ( !vuosiluokkakokonaisuus.contains(vuosiluokka.getVuosiluokka()) ) {
+        if (!vuosiluokkakokonaisuus.contains(vuosiluokka.getVuosiluokka())) {
             throw new IllegalArgumentException("Vuosiluokka ei kelpaa");
         }
         vuosiluokka.setKokonaisuus(this);
@@ -117,6 +125,12 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
         }
 
         return false;
+    }
+
+    public Optional<Oppiaineenvuosiluokka> getVuosiluokka(Vuosiluokka luokka) {
+        return vuosiluokat.stream()
+            .filter(l -> Objects.equals(l.getVuosiluokka(), luokka))
+            .findAny();
     }
 
 }

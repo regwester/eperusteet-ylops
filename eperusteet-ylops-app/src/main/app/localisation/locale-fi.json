@@ -4,6 +4,7 @@
   "tallenna": "Tallenna",
   "valitse": "Valitse",
   "ok": "OK",
+  "aloita-uudelleen": "Aloita uudelleen",
   "lisaa": "Lisää",
   "tallennettu-ok": "Tallennus onnistui",
   "varmista-poisto": "Varmista poisto",
@@ -77,6 +78,11 @@
   "tallenna-rakenne": "Tallenna rakenne",
   "muokkaa-rakennetta": "Muokkaa rakennetta",
   "peru-rakenne": "Peruuta rakenteen muokkaus",
+  "peruste": "Peruste",
+  "valitse-peruste": "Valitse peruste",
+  "diaarinumero": "Diaarinumero",
+  "voimassaolo-loppuu": "Voimassaolo loppuu",
+  "toistaiseksi-voimassa": "Toistaiseksi voimassa",
   "organisaatio": "Organisaatio",
   "kunta": "Kunta",
   "koulu": "Koulu",
@@ -102,11 +108,22 @@
 
   "siirtymavaiheet": "Siirtymävaiheet",
   "laaja-alainen-osaaminen": "Laaja-alainen osaaminen",
+  "laaja-alaiset-osaamiset": "Laaja-alaiset osaamiset",
 
   "vuosiluokkaistaminen": "Vuosiluokkaistaminen",
-  "isot-pienet-tavoitteet": "Pienennä/suurenna tavoitelaatikot",
+  "vuosiluokkaistaminen-on-jo-tehty": "Vuosiluokkaistaminen on jo tehty",
+  "vuosiluokkaistamista-ei-viela-tehty": "Tavoitteita ei ole vielä vuosiluokkaistettu. Aloita valitsemalla 'Vuosiluokkaista tavoitteet'.",
+  "vuosiluokkaistaminen-varoitus": "Vuosiluokkaistaminen on jo tehty. Haluatko aloittaa uudelleen? Kaikki paikalliset vuosiluokkakohtaiset muokkaukset katoavat.",
+  "pienet-tavoitteet": "Tiivis näkymä",
+  "nayta-kohdealueet": "Näytä kohdealueet",
   "kaikki-vuosiluokkaistettu": "Kaikki tavoitteet vuosiluokkaistettu",
+  "kaikkia-ei-vuosiluokkaistettu": "Kaikkia tavoitteita ei ole vuosiluokkaistettu",
   "tavoitteiden-vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet",
   "vuosiluokka": "Vuosiluokka",
-  "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt"
+  "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt",
+
+  "arviointi-vuosiluokan-paatteeksi": "Arviointikriteerit vuosiluokkakokonaisuuden päätteeksi",
+  "arvioinnin-kohde": "Arvioinnin kohde",
+  "arvion-hyva-osaaminen": "Arvion \"hyvä\" / arvosanan 8 osaaminen"
+
 }

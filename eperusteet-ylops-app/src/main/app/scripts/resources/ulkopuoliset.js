@@ -26,7 +26,9 @@ ylopsApp
     });
   })
   .factory('EperusteetPerusopetus', function(UlkopuolisetResources, $resource) {
-    return $resource(UlkopuolisetResources.ULKOPUOLISET + 'perusopetusperuste/:id');
+    return $resource(UlkopuolisetResources.ULKOPUOLISET + 'perusopetusperusteet/:perusteId', {
+      perusteId: '@id'
+    });
   })
   .factory('KoodistoHaku', function(UlkopuolisetResources, $resource) {
     return $resource(UlkopuolisetResources.ULKOPUOLISET + 'koodisto/:koodistoUri', {

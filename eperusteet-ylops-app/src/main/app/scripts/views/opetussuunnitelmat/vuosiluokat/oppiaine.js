@@ -17,12 +17,13 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineBaseController', function ($scope, oppiaine, MurupolkuData) {
+.controller('OppiaineBaseController', function ($scope, oppiaine, perusteOppiaine, MurupolkuData) {
   $scope.oppiaine = oppiaine;
+  $scope.perusteOppiaine = perusteOppiaine;
   MurupolkuData.set('oppiaineNimi', $scope.oppiaine.nimi);
 })
 
-.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit) {
+.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi) {
   $scope.vuosiluokkakokonaisuus = $scope.vuosiluokat[0];
 
   $scope.tekstit = {
@@ -62,9 +63,28 @@ ylopsApp
     });
   };
 
-  $scope.vuosiluokkaistaminenDemo = function () {
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
-      vlkId: $stateParams.vlkId,
-    });
+  function vuosiluokkaistamisVaroitus(cb) {
+    Varmistusdialogi.dialogi({
+      otsikko: 'vuosiluokkaistaminen-on-jo-tehty',
+      teksti: 'vuosiluokkaistaminen-varoitus',
+      primaryBtn: 'aloita-uudelleen',
+      successCb: cb
+    })();
+  }
+
+  $scope.startVuosiluokkaistaminen = function () {
+    function start() {
+      $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
+        vlkId: $stateParams.vlkId,
+      });
+    }
+    if (_.isArray($scope.oppiaine.vuosiluokat) && $scope.oppiaine.vuosiluokat.length > 0) {
+      vuosiluokkaistamisVaroitus(function () {
+        // TODO reset vuosiluokat
+        start();
+      });
+    } else {
+      start();
+    }
   };
 });

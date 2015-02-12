@@ -23,7 +23,9 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -49,6 +51,11 @@ import org.hibernate.envers.RelationTargetAuditMode;
 @Audited
 @Table(name = "oppiaine")
 public class Oppiaine extends AbstractAuditedReferenceableEntity {
+
+    @Getter
+    @NotNull
+    @Column(updatable = false)
+    private UUID tunniste;
 
     @Getter
     @Setter
@@ -98,6 +105,14 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Getter
     private Tila tila = Tila.LUONNOS;
 
+    public Oppiaine(UUID tunniste) {
+        this.tunniste = tunniste;
+    }
+
+    protected Oppiaine() {
+        //for JPA
+    }
+
     /**
      * Palauttaa oppimäärät jos kyseessä on koosteinen oppiaine.
      *
@@ -126,7 +141,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public void setKoosteinen(boolean koosteinen) {
-        if ( this.oppiaine != null) {
+        if (this.oppiaine != null) {
             throw new IllegalStateException("Oppimäärä ei voi olla koosteinen");
         }
         this.koosteinen = koosteinen;
@@ -182,7 +197,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         } else {
             Set<Opetuksenkohdealue> added = new HashSet<>(kohdealueet.size());
             //kohdealueita ei ole paljon (<10), joten O(n^2) OK tässä
-            for ( Opetuksenkohdealue k : kohdealueet ) {
+            for (Opetuksenkohdealue k : kohdealueet) {
                 added.add(addKohdealue(k));
             }
             //TODO: tarkista onko jokin poistettava kohdealue käytössä

@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,7 @@ import lombok.Setter;
 @Setter
 public abstract class OppiaineBaseDto {
     private Long id;
+    private UUID tunniste;
     private Tila tila;
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;

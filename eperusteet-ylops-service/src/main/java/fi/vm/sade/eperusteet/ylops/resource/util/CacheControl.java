@@ -28,6 +28,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CacheControl {
+    /***
+     * Expires-aika sekunteina
+     */
     int age() default 0;
     boolean nonpublic() default true;
     boolean nocache() default false;

@@ -1,0 +1,49 @@
+<div class="tavoitteet">
+  <div class="tavoite" ng-repeat="tunniste in tunnisteet">
+
+    <div class="header">
+      <span class="kohdealue" ng-bind="perusteTavoiteMap[tunniste].kohdealue | kaanna"></span>
+      <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
+      <span class="nimi" ng-bind="perusteTavoiteMap[tunniste].tavoite | kaanna"></span>
+    </div>
+
+    <div class="peruste-body" collapse="collapsed[tunniste]">
+      <div class="listat">
+        <div class="lista">
+          <h4 kaanna="'sisaltoalueet'"></h4>
+          <ul>
+            <li>
+              <a>joku</a>
+            </li>
+          </ul>
+        </div>
+        <div class="lista">
+          <h4 kaanna="'laaja-alaiset-osaamiset'"></h4>
+          <ul>
+            <li>
+              <a>joku</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="arviointi">
+        <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
+        <table class="table table-hover table-bordered kriteerit">
+          <tr>
+            <th width="30%" kaanna="'arvioinnin-kohde'"></th>
+            <th kaanna="'arvion-hyva-osaaminen'"></th>
+          </tr>
+          <tr>
+            <td>joku kohde tähän</td>
+            <td>kohteen osaaminen tähän</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="ops-body">
+      <div ops-teksti="muokattavat[tunniste]" callbacks="callbacks"></div>
+    </div>
+
+  </div>
+</div>
