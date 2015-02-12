@@ -19,11 +19,24 @@
         </div>
         <div class="clearfix"></div>
       </div>
-      <a ng-if="!rakenneEdit[osio]" class="list-group-item" ng-repeat="item in model[osio].lapset"
-         ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: item.id})">
-        <span ng-bind="item.tekstiKappale.nimi | kaanna"></span>
-        <span class="pull-right" ng-if="canRemove(item)" ng-click="rakenne.deleteKappale(osio, item, $event)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></span>
-      </a>
+
+      <div ng-if="!rakenneEdit[osio]" class="list-group-item" ng-repeat="item in model[osio].lapset">
+        <a ng-if="kappaleEdit !== item" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: item.id})"
+           ng-class="{editable: canRemove(item)}">
+          <span ng-bind="item.tekstiKappale.nimi | kaanna"></span>
+        </a>
+        <div class="input-group" ng-if="kappaleEdit === item">
+          <input ng-model="item.tekstiKappale.nimi" slocalized class="form-control">
+          <span class="input-group-btn">
+            <button class="btn btn-default" ng-click="rakenne.cancelTitle(item)" kaanna="'peruuta'"></button>
+            <button class="btn btn-primary" ng-click="rakenne.saveTitle(item)" kaanna="'tallenna'"></button>
+          </span>
+        </div>
+        <div class="floater-ops" ng-if="canRemove(item) && !kappaleEdit">
+          <span class="kappale-ops" ng-click="rakenne.editTitle(osio, item)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}"></span>
+          <span class="kappale-ops" ng-click="rakenne.deleteKappale(osio, item)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></span>
+        </div>
+      </div>
 
       <div ng-if="rakenneEdit[osio]" class="list-group-item pohjan-muokkaus">
         <div class="rakenne">

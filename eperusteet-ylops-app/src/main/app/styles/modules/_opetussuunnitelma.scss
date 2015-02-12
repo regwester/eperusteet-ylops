@@ -82,6 +82,27 @@ h1.plain {
     position: absolute;
     right: 5px;
   }
+  .kappale-ops {
+    visibility: hidden;
+    font-size: 120%;
+    cursor: pointer;
+    color: $brand-primary;
+  }
+  .floater-ops {
+    position: absolute;
+    right: 0;
+    top: 8px;
+  }
+  .list-group-item a {
+    display: inline-block;
+    min-width: 80%;
+    &.editable {
+      padding-right: 40px;
+    }
+  }
+  .list-group-item:hover .kappale-ops {
+    visibility: visible;
+  }
 }
 
 .tekstikappaleet {

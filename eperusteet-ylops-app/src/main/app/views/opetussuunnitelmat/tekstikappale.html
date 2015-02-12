@@ -4,7 +4,12 @@
   <button class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
 </div>
 
-<h2 class="tekstikappale-title" ng-bind="model.tekstiKappale.nimi | kaanna"></h2>
+<h2 class="tekstikappale-title">
+  <span ng-if="editMode && canRemove()">
+    <input ng-model="model.tekstiKappale.nimi" slocalized class="form-control" placeholder="{{'kappaleen-otsikko'|kaanna}}">
+  </span>
+  <span ng-if="!editMode || !canRemove()" ng-bind="model.tekstiKappale.nimi | kaanna"></span>
+</h2>
 
 
 <div ng-if="ohje.teksti">

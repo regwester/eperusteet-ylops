@@ -30,6 +30,11 @@ $peruste-color: lighten(#a38566, 40%);
 
 .tekstikappale-title {
   margin-bottom: 30px;
+  .form-control {
+    width: 67%;
+    font-size: 105%;
+    height: 40px;
+  }
 }
 
 .tekstiosa-wrapper {

@@ -117,6 +117,7 @@ ylopsApp
   }
 
   var original = null;
+  $scope.kappaleEdit = null;
 
   function stopEvent(event) {
     event.preventDefault();
@@ -138,8 +139,7 @@ ylopsApp
       $scope.adding[osio] = false;
       $scope.uusi = {nimi: {}};
     },
-    deleteKappale: function (osio, item, event) {
-      stopEvent(event);
+    deleteKappale: function (osio, item) {
       Varmistusdialogi.dialogi({
         otsikko: 'varmista-poisto',
         primaryBtn: 'poista',
@@ -147,6 +147,23 @@ ylopsApp
           TekstikappaleOps.delete($scope.model, osio, $stateParams.id, item);
         }
       })();
+    },
+    editTitle: function (osio, kappale) {
+      $scope.kappaleEdit = kappale;
+      kappale.$original = _.cloneDeep(kappale.tekstiKappale);
+    },
+    cancelTitle: function (kappale) {
+      $scope.kappaleEdit = null;
+      kappale.tekstiKappale = _.cloneDeep(kappale.$original);
+      delete kappale.$original;
+    },
+    saveTitle: function (kappale) {
+      $scope.kappaleEdit = null;
+      var params = {opsId: $stateParams.id};
+      OpetussuunnitelmanTekstit.save(params, _.omit(kappale, 'lapset'), function () {
+        Notifikaatiot.onnistui('tallennettu-ok');
+        delete kappale.$original;
+      }, Notifikaatiot.serverCb);
     },
     edit: function (osio, event) {
       stopEvent(event);
