@@ -24,7 +24,7 @@ import org.springframework.test.annotation.DirtiesContext;
  * @author jhyoty
  */
 @DirtiesContext
-public class MigrationTestIT extends AbstractDbIntegrationTest {
+public class MigrationTestDbIT extends AbstractDbIntegrationTest {
 
     @Test
     public void testMigration() {
