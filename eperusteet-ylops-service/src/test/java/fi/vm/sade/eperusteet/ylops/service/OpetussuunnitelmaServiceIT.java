@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -60,7 +61,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private DtoMapper mapper;
-    
+
     @Before
     public void setUp() {
         OpetussuunnitelmaDto ops;
@@ -94,13 +95,13 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testGetAll() {
-        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAll();
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
         assertEquals(1, opsit.size());
     }
 
     @Test
     public void testGetById() {
-        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAll();
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
         assertEquals(1, opsit.size());
 
         Long id = opsit.get(0).getId();
@@ -113,7 +114,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testUpdate() {
-        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAll();
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
         assertEquals(1, opsit.size());
 
         Long id = opsit.get(0).getId();
@@ -128,18 +129,18 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testDelete() {
-        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAll();
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
         assertEquals(1, opsit.size());
 
         Long id = opsit.get(0).getId();
         opetussuunnitelmaService.removeOpetussuunnitelma(id);
 
-        assertEquals(0, opetussuunnitelmaService.getAll().size());
+        assertEquals(0, opetussuunnitelmaService.getAll(Tyyppi.OPS).size());
     }
 
     @Test
     public void testAddTekstiKappale() {
-        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAll();
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
         assertEquals(1, opsit.size());
 
         Long opsId = opsit.get(0).getId();

@@ -34,6 +34,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -59,7 +60,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -109,16 +109,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OpetussuunnitelmaDto> getAll() {
-        List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(Tyyppi.OPS);
-        return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaDto.class);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<OpetussuunnitelmaDto> getAllPohjat() {
-        List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(Tyyppi.POHJA);
-        return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaDto.class);
+    public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
+        List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(tyyppi);
+        return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class);
     }
 
     @Override

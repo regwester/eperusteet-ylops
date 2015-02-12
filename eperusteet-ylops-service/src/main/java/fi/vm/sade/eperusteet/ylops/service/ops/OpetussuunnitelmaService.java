@@ -15,10 +15,11 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +36,7 @@ public interface OpetussuunnitelmaService {
     Set<PerusteLaajaalainenosaaminen> getLaajaalaisetosaamiset(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
-    List<OpetussuunnitelmaDto> getAll();
+    List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaDto getOpetussuunnitelma(@P("opsId") Long id);
@@ -61,9 +62,6 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
                                                        TekstiKappaleViiteDto.Matala viite);
-
-    @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
-    public List<OpetussuunnitelmaDto> getAllPohjat();
 
     /**
      * Hakee opetussuunnitelmaan liittyvän opetussuunnitelman perusteen

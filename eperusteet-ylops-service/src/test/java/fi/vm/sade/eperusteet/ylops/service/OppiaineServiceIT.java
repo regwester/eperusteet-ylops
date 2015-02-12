@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.test;
+package fi.vm.sade.eperusteet.ylops.service;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
@@ -95,7 +96,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         ops.setKoulut(new HashSet<>(Collections.singleton(kouluDto)));
         opetussuunnitelmaService.addPohja(ops);
 
-        List<OpetussuunnitelmaDto> opsit = opetussuunnitelmaService.getAllPohjat();
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);
         assertEquals(1, opsit.size());
 
         this.opsId = opsit.get(0).getId();

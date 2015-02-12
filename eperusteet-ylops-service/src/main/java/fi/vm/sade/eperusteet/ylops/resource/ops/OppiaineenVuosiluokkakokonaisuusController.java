@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkako
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
@@ -100,6 +101,7 @@ public class OppiaineenVuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
+    @CacheControl(nonpublic = false, age = 3600)
     public ResponseEntity<PerusteOppiaineenVuosiluokkakokonaisuus> getPerusteSisalto(
         @PathVariable("opsId") final Long opsId,
         @PathVariable("oppiaineId") final Long oppiaineId,

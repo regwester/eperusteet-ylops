@@ -20,6 +20,7 @@ import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import java.util.List;
 import java.util.Set;
@@ -48,12 +49,8 @@ public class OpetussuunnitelmaController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public List<OpetussuunnitelmaDto> getAll(@RequestParam(value="tyyppi", required=false) Tyyppi tyyppi) {
-        if (tyyppi == null || tyyppi.equals(Tyyppi.OPS)) {
-            return opetussuunnitelmaService.getAll();
-        } else {
-            return opetussuunnitelmaService.getAllPohjat();
-        }
+    public List<OpetussuunnitelmaInfoDto> getAll(@RequestParam(value="tyyppi", required=false) Tyyppi tyyppi) {
+        return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

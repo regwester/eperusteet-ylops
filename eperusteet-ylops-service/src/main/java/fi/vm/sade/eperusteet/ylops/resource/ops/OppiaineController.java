@@ -16,17 +16,14 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
-import fi.vm.sade.eperusteet.ylops.service.util.Nulls;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,22 +78,13 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
+    @CacheControl(nonpublic = false, age = 3600)
     public ResponseEntity<PerusteOppiaine> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
 
-        final Peruste peruste = ops.getPeruste(opsId);
-        final OppiaineDto aine = oppiaineService.get(opsId, id);
+        return Responses.of(Optional.ofNullable(ops.getPeruste(opsId))
+            .flatMap(p -> Optional.ofNullable(oppiaineService.get(opsId, id))
+                .flatMap(a -> p.getPerusopetus().getOppiaine(a.getTunniste()))));
 
-        Optional<PerusteOppiaine> oppiaine;
-        if (peruste != null && aine != null) {
-            oppiaine = peruste.getPerusopetus().getOppiaineet()
-                .stream()
-                .flatMap(oa -> Stream.concat(Stream.of(oa), Nulls.nullToEmpty(oa.getOppimaarat()).stream()))
-                .filter(oa -> Objects.equals(oa.getTunniste(), aine.getTunniste()))
-                .findAny();
-        } else {
-            oppiaine = Optional.empty();
-        }
-        return Responses.of(oppiaine);
     }
 
 }
