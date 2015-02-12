@@ -15,30 +15,28 @@
  */
 package fi.vm.sade.eperusteet.ylops.service;
 
-import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import javax.transaction.Transactional;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.Collections;
-import java.util.HashSet;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
@@ -62,7 +60,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private DtoMapper mapper;
-
+    
     @Before
     public void setUp() {
         OpetussuunnitelmaDto ops;
