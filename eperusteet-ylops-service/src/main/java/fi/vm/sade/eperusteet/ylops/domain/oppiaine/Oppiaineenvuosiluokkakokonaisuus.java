@@ -25,12 +25,14 @@ import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -45,13 +47,15 @@ import org.hibernate.envers.RelationTargetAuditMode;
  */
 @Entity
 @Audited
-@Table(name = "oppiaineen_vlkok")
+@Table(name = "oppiaineen_vlkok", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"oppiaine_id", "vuosiluokkakokonaisuus_id"})})
 public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter(AccessLevel.PACKAGE)
     @ManyToOne(optional = false)
     @NotNull
+    @JoinColumn(name = "oppiaine_id")
     private Oppiaine oppiaine;
 
     @Getter
@@ -59,6 +63,7 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     @NotNull
     @ManyToOne
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @JoinColumn(name = "vuosiluokkakokonaisuus_id")
     private Vuosiluokkakokonaisuusviite vuosiluokkakokonaisuus;
 
     @Getter

@@ -31,6 +31,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -43,7 +44,8 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Audited
-@Table(name = "oppiaineenvuosiluokka")
+@Table(name = "oppiaineenvuosiluokka", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"kokonaisuus_id", "vuosiluokka"})})
 public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
 
     @Getter

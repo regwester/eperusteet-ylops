@@ -25,7 +25,6 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonais
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -76,20 +74,28 @@ public class OppiaineServiceImpl implements OppiaineService {
     }
 
     @Override
-    public void updateVuosiluokkienTavoitteet(Long opsId, Long id, Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+    public void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long id, Map<Vuosiluokka, Set<UUID>> tavoitteet) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Peruste peruste = perusteet.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
-        Oppiaine oppiaine = oppiaineRepository.findOne(id);
+        Oppiaine oppiaine = oppiaineRepository.findOne(oppiaineId);
 
         if (!ops.containsOppiaine(oppiaine)) {
             throw new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa");
         }
 
-        PerusteOppiaine po = peruste.getPerusopetus().getOppiaine(oppiaine.getTunniste()).get();
+        Oppiaineenvuosiluokkakokonaisuus ovk = oppiaine.getVuosiluokkakokonaisuudet().stream()
+            .filter(vk -> vk.getId().equals(id))
+            .findAny()
+            .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa"));
 
-        oppiaine.getVuosiluokkakokonaisuudet().forEach(v -> {
-            updateTavoitteet(v, po.getVuosiluokkakokonaisuus(v.getVuosiluokkakokonaisuus().getId()), tavoitteet);
-        });
+        PerusteOppiaineenVuosiluokkakokonaisuus pov
+            = peruste.getPerusopetus().getOppiaine(oppiaine.getTunniste())
+            .flatMap(po -> po.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus().getId()))
+            .orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta tai vuosiluokkakokonaisuutta ei ole perusteessa"));
+
+        oppiaineRepository.lock(oppiaine);
+        updateVuosiluokkakokonaisuudenTavoitteet(ovk, pov, tavoitteet);
+
     }
 
     @Override
@@ -163,7 +169,6 @@ public class OppiaineServiceImpl implements OppiaineService {
         oppiaineRepository.lock(oppiaine);
 
         if (oppiaine.isKoosteinen()) {
-            // Lukitukset...
             oppiaine.getOppimaarat().forEach(oppimaara -> delete(opsId, oppimaara.getId()));
         }
 
@@ -182,29 +187,36 @@ public class OppiaineServiceImpl implements OppiaineService {
         }
     }
 
-    private void updateTavoitteet(
+    private void updateVuosiluokkakokonaisuudenTavoitteet(
         Oppiaineenvuosiluokkakokonaisuus v,
-        Optional<PerusteOppiaineenVuosiluokkakokonaisuus> vuosiluokkakokonaisuus,
+        PerusteOppiaineenVuosiluokkakokonaisuus vuosiluokkakokonaisuus,
         Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+
+        if ( !vuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet()) ) {
+            throw new BusinessRuleViolationException("Yksi tai useampi vuosiluokka ei kuulu tähän vuosiluokkakokonaisuuteen");
+        }
 
         tavoitteet.entrySet().stream()
             .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))
             .forEach(e -> {
-
                 Oppiaineenvuosiluokka ov = v.getVuosiluokka(e.getKey()).orElseGet(() -> {
                     Oppiaineenvuosiluokka tmp = new Oppiaineenvuosiluokka(e.getKey());
                     v.addVuosiluokka(tmp);
                     return tmp;
-            });
-            mergePerusteTavoitteet(ov, vuosiluokkakokonaisuus.get(), e.getValue());
+                });
+                mergePerusteTavoitteet(ov, vuosiluokkakokonaisuus, e.getValue());
             });
 
     }
 
     private void mergePerusteTavoitteet(Oppiaineenvuosiluokka ov, PerusteOppiaineenVuosiluokkakokonaisuus pvk, Set<UUID> tavoiteIds) {
-        Set<PerusteOpetuksentavoite> filtered = pvk.getTavoitteet().stream()
+        List<PerusteOpetuksentavoite> filtered = pvk.getTavoitteet().stream()
             .filter(t -> tavoiteIds.contains(t.getTunniste()))
-            .collect(Collectors.toSet());
+            .collect(Collectors.toList());
+
+        if ( tavoiteIds.size() > filtered.size() ) {
+            throw new BusinessRuleViolationException("Yksi tai useampi tavoite ei kuulu oppiaineen vuosiluokkakokonaisuuden tavoitteisiin");
+        }
 
         LinkedHashMap<UUID, Keskeinensisaltoalue> alueet = pvk.getSisaltoalueet().stream()
             .filter(s -> filtered.stream().flatMap(t -> t.getSisaltoalueet().stream()).anyMatch(Predicate.isEqual(s)))

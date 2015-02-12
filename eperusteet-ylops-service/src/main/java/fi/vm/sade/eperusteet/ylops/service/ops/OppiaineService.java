@@ -32,7 +32,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface OppiaineService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateVuosiluokkienTavoitteet(Long opsId, Long id, Map<Vuosiluokka, Set<UUID>> tavoitteet);
+    void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long id, Map<Vuosiluokka, Set<UUID>> tavoitteet);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<OppiaineDto> getAll(@P("opsId") Long opsId);
