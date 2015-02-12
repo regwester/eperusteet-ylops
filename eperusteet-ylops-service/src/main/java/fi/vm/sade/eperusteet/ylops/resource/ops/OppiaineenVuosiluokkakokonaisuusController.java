@@ -19,21 +19,17 @@ import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
-import fi.vm.sade.eperusteet.ylops.service.util.Nulls;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +54,6 @@ public class OppiaineenVuosiluokkakokonaisuusController {
 
     @Autowired
     private OpetussuunnitelmaService ops;
-
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineenVuosiluokkakokonaisuusDto> get(
@@ -110,24 +105,15 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id) {
 
-        final Peruste peruste = ops.getPeruste(opsId);
-        final OppiaineenVuosiluokkakokonaisuusDto ovk
-            = oppiaineService.get(opsId, oppiaineId).getVuosiluokkakokonaisuudet().stream()
-            .filter(vk -> vk.getId().equals(id))
-            .findAny().orElse(null);
+        final Optional<Peruste> peruste = Optional.ofNullable(ops.getPeruste(opsId));
+        final Optional<OppiaineDto> aine = Optional.ofNullable(oppiaineService.get(opsId, oppiaineId));
 
-        Optional<PerusteOppiaineenVuosiluokkakokonaisuus> kokonaisuus;
-        if (peruste != null && ovk != null) {
-            kokonaisuus = peruste.getPerusopetus().getOppiaineet()
-                .stream()
-                .flatMap(oa -> Stream.concat(Stream.of(oa), Nulls.nullToEmpty(oa.getOppimaarat()).stream()))
-                .flatMap(oa -> oa.getVuosiluokkakokonaisuudet().stream())
-                .filter(oa -> Objects.equals(Reference.of(oa.getVuosiluokkaKokonaisuus().getTunniste()), ovk.getVuosiluokkakokonaisuus()))
-                .findAny();
-        } else {
-            kokonaisuus = Optional.empty();
-        }
-        return Responses.of(kokonaisuus);
+        return Responses.of(peruste.flatMap(p -> aine.flatMap(a -> a.getVuosiluokkakokonaisuudet().stream()
+            .filter(vk -> vk.getId().equals(id))
+            .findAny()
+            .flatMap(ovk -> p.getPerusopetus().getOppiaine(a.getTunniste())
+                .flatMap(poa -> poa.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus()))))));
+
     }
 
 }
