@@ -4,13 +4,26 @@
       <a class="list-group-item list-group-header"
          ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: model[osio].id})">
          <div class="kontrollit" ng-hide="rakenneEdit[osio]">
+           <span ng-hide="isAdding()" ng-click="rakenne.add(osio, $event)" icon-role="add" ng-attr-title="{{'luo-uusi-tekstikappale' | kaanna}}"></span>
            <span ng-click="rakenne.edit(osio, $event)" icon-role="edit" ng-attr-title="{{'muokkaa-rakennetta' | kaanna}}"></span>
          </div>
         <span ng-bind="model[osio].tekstiKappale.nimi | kaanna"></span>
       </a>
 
-      <a ng-if="!rakenneEdit[osio]" class="list-group-item" ng-repeat="item in model[osio].lapset" ng-bind="item.tekstiKappale.nimi | kaanna"
-         ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: item.id})"></a>
+      <div ng-if="adding[osio]" class="list-group-item">
+        <input class="form-control" ng-model="uusi.nimi" slocalized ng-enter="hasText() && rakenne.doAdd(osio)"
+               placeholder="{{'luo-uusi-tekstikappale'|kaanna}}">
+        <div class="pull-right">
+          <button class="btn btn-default" kaanna="'peruuta'" ng-click="rakenne.cancelAdd(osio)"></button>
+          <button class="btn btn-primary" kaanna="'lisaa'" ng-click="rakenne.doAdd(osio)" ng-disabled="!hasText()"></button>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      <a ng-if="!rakenneEdit[osio]" class="list-group-item" ng-repeat="item in model[osio].lapset"
+         ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: item.id})">
+        <span ng-bind="item.tekstiKappale.nimi | kaanna"></span>
+        <span class="pull-right" ng-if="canRemove(item)" ng-click="rakenne.deleteKappale(osio, item, $event)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></span>
+      </a>
 
       <div ng-if="rakenneEdit[osio]" class="list-group-item pohjan-muokkaus">
         <div class="rakenne">

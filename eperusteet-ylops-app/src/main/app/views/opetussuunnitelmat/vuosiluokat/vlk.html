@@ -12,7 +12,7 @@
   <h2 ng-if="perusteVlk.laajaalainenOsaaminen" kaanna="'laaja-alainen-osaaminen'"></h2>
   <div perusteen-tekstiosa="perusteVlk.laajaalainenOsaaminen"></div>
 
-  <h2 kaanna="'laaja-alaiset-osaamiset'"></h2>
+  <h2 ng-if="tunnisteet.length > 0" kaanna="'laaja-alaiset-osaamiset'"></h2>
   <div ng-repeat="tunniste in tunnisteet | orderBy:orderFn">
     <div perusteen-tekstiosa="laajaalaiset[tunniste]" muokattava="paikalliset[tunniste]" callbacks="callbacks"></div>
   </div>

@@ -123,7 +123,7 @@ ylopsApp
       })
 
       /* väliaikainen (proto) muokkaustila */
-      .state('root.opetussuunnitelmat.yksi.opetussuunnitelma', {
+      /*.state('root.opetussuunnitelmat.yksi.opetussuunnitelma', {
         url: '/ops',
         templateUrl: 'views/opetussuunnitelmat/opetussuunnitelma.html',
         controller: 'OpetussuunnitelmaController',
@@ -132,7 +132,7 @@ ylopsApp
             OpsNavigaatio.setActive(false);
           }]
         }
-      })
+      })*/
 
       .state('root.opetussuunnitelmat.yksi.tekstikappale', {
         url: '/tekstikappale/:tekstikappaleId',
