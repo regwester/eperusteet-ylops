@@ -97,8 +97,12 @@ ylopsApp
 
   function findActiveVuosiluokkaOrOppiaine(isOppiaine) {
     _.each($scope.items[$scope.chosen].items, function (item) {
+      var vlkMatch = stateMatch(item.id, 'vlkId');
       item.active = (isOppiaine && stateMatch(item.id, 'oppiaineId') && stateMatch(item.vlkId, 'vlkId')) ||
-                    (!isOppiaine && stateMatch(item.id, 'vlkId'));
+                    (!isOppiaine && vlkMatch);
+      if (!item.active && vlkMatch) {
+        MurupolkuData.set({vlkNimi: item.label, vlkId: item.id});
+      }
     });
   }
 

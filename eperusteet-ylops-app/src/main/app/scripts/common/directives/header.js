@@ -43,7 +43,7 @@ ylopsApp
     };
   })
 
-  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData) {
+  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData, Kaanna) {
     var currentState = null;
     var STATE_ROOTS = {
       'root.opetussuunnitelmat.yksi': {
@@ -89,11 +89,24 @@ ylopsApp
       },
       'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus': {
         useData: 'vlkNimi',
+        useId: 'vlkId',
         parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
       },
       'root.opetussuunnitelmat.yksi.oppiaine.oppiaine': {
         useData: 'oppiaineNimi',
         parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus'
+      },
+      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet': {
+        useData: 'vuosiluokkaNimi',
+        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
+      },
+      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen': {
+        label: 'vuosiluokkaistaminen',
+        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
+      },
+      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.sisaltoalueet': {
+        useData: 'vuosiluokkaNimi',
+        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
       }
     };
 
@@ -113,6 +126,13 @@ ylopsApp
         }
       }
       return tree;
+    }
+
+    function setTitle() {
+      var titleEl = angular.element('head > title');
+      var leaf = _.last($scope.crumbs);
+      var last = leaf ? Kaanna.kaanna(leaf.label) : null;
+      titleEl.html(Kaanna.kaanna('ops-tyokalu') + (last ? ' – ' + last : ''));
     }
 
     function update() {
@@ -143,6 +163,8 @@ ylopsApp
                  (item.label ? item.label : _.last(item.state.split('.')))
         });
       }).value();
+
+      setTitle();
     }
 
     $scope.isVirkailija = Oikeudet.isVirkailija();

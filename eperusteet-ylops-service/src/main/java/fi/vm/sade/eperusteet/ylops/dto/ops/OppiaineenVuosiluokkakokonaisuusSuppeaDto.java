@@ -20,6 +20,8 @@ import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 /**
  *
  * @author mikkom
@@ -29,4 +31,6 @@ import lombok.Setter;
 public class OppiaineenVuosiluokkakokonaisuusSuppeaDto implements ReferenceableDto {
     private Long id;
     private Reference vuosiluokkakokonaisuus;
+
+    private Set<Reference> vuosiluokat;
 }

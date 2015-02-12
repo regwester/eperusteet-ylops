@@ -16,11 +16,17 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.wordnik.swagger.annotations.Api;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import java.util.Optional;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +45,9 @@ public class VuosiluokkakokonaisuusController {
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
 
+    @Autowired
+    private OpetussuunnitelmaService opetussuunnitelmat;
+
     @RequestMapping(method = RequestMethod.POST)
     public VuosiluokkakokonaisuusDto add(@PathVariable("opsId") final Long opsId, @RequestBody VuosiluokkakokonaisuusDto dto) {
         return vuosiluokkakokonaisuudet.add(opsId, dto);
@@ -47,6 +56,20 @@ public class VuosiluokkakokonaisuusController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<VuosiluokkakokonaisuusDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         return Responses.ofNullable(vuosiluokkakokonaisuudet.get(opsId, id));
+    }
+
+    @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
+    public fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+
+        final Peruste peruste = opetussuunnitelmat.getPeruste(opsId);
+        final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id);
+
+        Optional<fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet()
+            .stream()
+            .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
+            .findAny();
+
+        return vkDto.get();
     }
 
     @RequestMapping(value = "/{id}/oppiaineet", method = RequestMethod.GET)
@@ -73,4 +96,5 @@ public class VuosiluokkakokonaisuusController {
         vuosiluokkakokonaisuudet.delete(opsId, id);
     }
 
+    private static final Logger LOG = LoggerFactory.getLogger(VuosiluokkakokonaisuusController.class);
 }

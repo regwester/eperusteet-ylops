@@ -23,8 +23,13 @@ ylopsApp
     };
   })
 
-  .filter('aikaleima', function ($filter) {
-    return function (val) {
-      return $filter('date')(val, 'dd.MM.yyyy HH:mm:ss');
+  .filter('aikaleima', function ($filter, Kaanna) {
+    return function (input, format, defaultKey) {
+      if (!input) {
+        return defaultKey ? Kaanna.kaanna(defaultKey) : '';
+      }
+
+      var dateFormat = format === 'date' ? 'd.M.yyyy' : 'dd.MM.yyyy HH:mm:ss';
+      return $filter('date')(input, dateFormat);
     };
   });

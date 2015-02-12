@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -36,23 +37,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OpetussuunnitelmaDto implements Serializable {
-    private Long id;
-    private Tyyppi tyyppi;
-    private LokalisoituTekstiDto nimi;
-    private LokalisoituTekstiDto kuvaus;
+public class OpetussuunnitelmaDto extends OpetussuunnitelmaBaseDto {
 
     private Optional<TekstiKappaleViiteDto.Puu> tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
-    private Set<OpsOpiaineDto> oppiaineet;
+    private Set<OpsOppiaineDto> oppiaineet;
 
-    private Set<KoodistoDto> kunnat;
-    private Set<OrganisaatioDto> koulut;
-    private Set<Kieli> julkaisukielet;
-    private Tila tila;
-
-    private Date luotu;
-    private String luoja;
-    private Date muokattu;
-    private String muokkaaja;
 }

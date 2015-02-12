@@ -16,8 +16,14 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
+import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -43,6 +46,9 @@ public class OppiaineController {
     @Autowired
     private OppiaineService oppiaineService;
 
+    @Autowired
+    private OpetussuunnitelmaService ops;
+
     @RequestMapping(method = RequestMethod.POST)
     public OppiaineDto add(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineDto dto) {
         return oppiaineService.add(opsId, dto);
@@ -50,7 +56,7 @@ public class OppiaineController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        return response(oppiaineService.get(opsId, id));
+        return Responses.ofNullable(oppiaineService.get(opsId, id));
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -60,7 +66,7 @@ public class OppiaineController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public OppiaineDto update(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id,
-                              @RequestBody OppiaineDto dto) {
+        @RequestBody OppiaineDto dto) {
         dto.setId(id);
         return oppiaineService.update(opsId, dto);
     }
@@ -71,10 +77,14 @@ public class OppiaineController {
         oppiaineService.delete(opsId, id);
     }
 
-    private static <T> ResponseEntity<T> response(T data) {
-        if (data == null) {
-            return new ResponseEntity<>((T)null, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(data, HttpStatus.OK);
+    @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
+    @CacheControl(nonpublic = false, age = 3600)
+    public ResponseEntity<PerusteOppiaine> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+
+        return Responses.of(Optional.ofNullable(ops.getPeruste(opsId))
+            .flatMap(p -> Optional.ofNullable(oppiaineService.get(opsId, id))
+                .flatMap(a -> p.getPerusopetus().getOppiaine(a.getTunniste()))));
+
     }
+
 }

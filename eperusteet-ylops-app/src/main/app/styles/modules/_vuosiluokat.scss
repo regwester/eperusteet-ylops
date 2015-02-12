@@ -1,5 +1,94 @@
 .vuosiluokkakokonaisuus {
   h2 {
-    margin-top: 50px;
+    margin-top: 60px;
+    margin-bottom: 10px;
+    padding: 7px;
+    background-color: $ops-header-background;
+  }
+}
+
+.vuosiluokka {
+  h2 {
+    margin-bottom: 40px;
+  }
+  .vl-tabit {
+    font-size: 110%;
+    cursor: pointer;
+    float: left;
+    border-bottom: none;
+    li a {
+      padding: 10px 15px;
+    }
+    li.active a {
+      border-bottom: none;
+    }
+  }
+  .content {
+    padding-top: 60px;
+  }
+
+  $tavoite-border: 1px solid #ccc;
+
+  .tavoite {
+    position: relative;
+    border: $tavoite-border;
+    .header {
+      padding: 10px;
+      font-size: 130%;
+      .toggle {
+        display: inline-block;
+        margin-top: 2px;
+        vertical-align: top;
+      }
+      .nimi {
+        display: inline-block;
+        max-width: 75%;
+      }
+      .kohdealue {
+        //border: 1px solid red;
+        padding: 5px;
+        color: #777;
+        position: absolute;
+        right: 0;
+        top: 0;
+        max-width: 25%;
+        font-size: 14px;
+        text-align: right;
+      }
+    }
+
+    .peruste-body {
+      padding: 10px;
+      border-top: $tavoite-border;
+      background-color: $peruste-color;
+
+      .listat {
+        .lista {
+          float: left;
+          width: 50%;
+          padding-left: 20px;
+        }
+        overflow: auto;
+      }
+    }
+
+    .arviointi {
+      margin-top: 20px;
+      .kriteerit {
+        width: 97%;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: white;
+      }
+    }
+
+    .ops-body {
+      padding: 10px;
+      border-top: $tavoite-border;
+    }
+
+  }
+  .tavoite + .tavoite {
+    margin-top: 20px;
   }
 }

@@ -19,14 +19,22 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusopetusPerusteKaikkiDto;
-import fi.vm.sade.eperusteet.ylops.dto.eperusteet.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteDto;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
@@ -39,10 +47,14 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Profile(value = "default")
 public class EperusteetServiceImpl implements EperusteetService {
+
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String koodistoServiceUrl;
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
     private String koulutustyyppiPerusopetus;
+
+    @Autowired
+    private DtoMapper mapper;
 
     private final RestTemplate client;
 
@@ -55,21 +67,43 @@ public class EperusteetServiceImpl implements EperusteetService {
         client = new RestTemplate(Arrays.asList(converter));
     }
 
-
     @Override
-    public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
-        PerusteInfoDto[] kaikki = client.getForObject(koodistoServiceUrl + "/api/perusteet/perusopetus", PerusteInfoDto[].class);
-        return Arrays.asList(kaikki);
+    @Cacheable("perusteet")
+    public List<PerusteInfo> findPerusopetuksenPerusteet() {
+        PerusteInfoWrapperDto wrapperDto
+            = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi=koulutustyyppi_16&sivukoko=100",
+                                  PerusteInfoWrapperDto.class);
+
+        // Filtteröi pois perusteet jotka eivät enää ole voimassa
+        Date now = new Date();
+        return wrapperDto.getData().stream()
+            .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
+            .collect(Collectors.toList());
     }
 
     @Override
-    public PerusopetusPerusteKaikkiDto getPerusopetuksenPeruste(final Long id) {
-        PerusopetusPerusteKaikkiDto peruste = client.getForObject(koodistoServiceUrl + "/api/perusteet/{id}/kaikki", PerusopetusPerusteKaikkiDto.class, id);
+    public Peruste getPerusopetuksenPeruste(final Long id) {
+        PerusopetusPerusteDto peruste = client.getForObject(koodistoServiceUrl
+            + "/api/perusteet/{id}/kaikki", PerusopetusPerusteDto.class, id);
 
         if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
         }
-        return peruste;
+
+        return mapper.map(peruste, Peruste.class);
+    }
+
+    @Override
+    @Cacheable("perusteet")
+    public Peruste getPerusopetuksenPeruste(String diaarinumero) {
+
+        // TODO: filtteröi diaarinumerolla
+        PerusteInfo perusteInfoDto = findPerusopetuksenPerusteet().stream()
+            .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
+            .findAny()
+            .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
+
+        return getPerusopetuksenPeruste(perusteInfoDto.getId());
     }
 
     @Override
@@ -80,5 +114,11 @@ public class EperusteetServiceImpl implements EperusteetService {
         }
         JsonNode tiedotteet = client.getForObject(koodistoServiceUrl + "/api/tiedotteet" + params, JsonNode.class);
         return tiedotteet;
+    }
+
+    @Getter
+    @Setter
+    private static class PerusteInfoWrapperDto {
+        private List<PerusteInfo> data;
     }
 }

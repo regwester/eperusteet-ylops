@@ -19,7 +19,7 @@
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
-    OhjeCRUD, MurupolkuData) {
+    OhjeCRUD, MurupolkuData, $rootScope, OpsService) {
 
     $scope.ohje = {};
     $scope.perusteteksti = {};
@@ -36,6 +36,10 @@ ylopsApp
         $scope.edit();
       }, 200);
     }
+
+    $scope.canRemove = function () {
+      return $scope.model && $scope.model.omistussuhde === 'oma';
+    };
 
     $scope.isEmpty = function (model) {
       return _.isEmpty(model);
@@ -82,15 +86,18 @@ ylopsApp
       Editointikontrollit.startEditing();
     };
 
-    $scope.delete = function () {
+    $scope.remove = function () {
       Varmistusdialogi.dialogi({
         otsikko: 'varmista-poisto',
         primaryBtn: 'poista',
         successCb: function () {
           $scope.model.$delete({opsId: $stateParams.id}, function () {
             Notifikaatiot.onnistui('poisto-onnistui');
+            OpsService.refetch(function () {
+              $rootScope.$broadcast('rakenne:updated');
+            });
             $timeout(function () {
-              $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma');
+              $state.go('root.opetussuunnitelmat.yksi.sisalto');
             });
           }, Notifikaatiot.serverCb);
         }
@@ -121,7 +128,7 @@ ylopsApp
       cancel: function () {
         if ($stateParams.tekstikappaleId === 'uusi') {
           $timeout(function () {
-            $state.go('root.opetussuunnitelmat.yksi.opetussuunnitelma');
+            $state.go('root.opetussuunnitelmat.yksi.sisalto');
           });
         } else {
           fetch();

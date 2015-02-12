@@ -16,28 +16,19 @@
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
-import fi.vm.sade.eperusteet.ylops.service.mapping.LokalisoituTekstiConverter;
-import fi.vm.sade.eperusteet.ylops.service.mapping.OrganisaatioConverter;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import java.util.Collections;
 import java.util.Set;
-
 import lombok.Getter;
 import lombok.Setter;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
-import static org.junit.Assert.assertNotNull;
 
 /**
  *

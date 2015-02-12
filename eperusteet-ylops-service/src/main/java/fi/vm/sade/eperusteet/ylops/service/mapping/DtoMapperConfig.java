@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +47,9 @@ public class DtoMapperConfig {
         factory.getConverterFactory().registerConverter(referenceableEntityConverter);
         factory.getConverterFactory().registerConverter(lokalisoituTekstiConverter);
         factory.getConverterFactory().registerConverter(koodistoKoodiConverter);
+        factory.getConverterFactory().registerConverter(new LaajaalainenosaaminenViiteConverter());
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTeksti.class));
+        factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTekstiDto.class));
         factory.getConverterFactory().registerConverter(new OrganisaatioConverter());
         OptionalSupport.register(factory);
         factory.registerMapper(new ReferenceableCollectionMergeMapper());
@@ -61,13 +64,14 @@ public class DtoMapperConfig {
 
         factory.classMap(OppiaineDto.class, Oppiaine.class)
             .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
+            .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
             .byDefault()
             .register();
 
         factory.classMap(OppiaineLaajaDto.class, Oppiaine.class)
-               .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
-               .byDefault()
-               .register();
+            .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
+            .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
+            .register();
 
         return new DtoMapperImpl(factory.getMapperFacade());
     }
