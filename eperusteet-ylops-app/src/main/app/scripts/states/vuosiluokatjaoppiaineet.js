@@ -51,8 +51,11 @@ ylopsApp
           oppiaineId: ['$stateParams', function($stateParams){
             return $stateParams.oppiaineId;
           }],
-          oppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
-            return vuosiluokatService.getOppiaine(oppiaineId).$promise;
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          oppiaineInit: ['OppiaineService', 'oppiaineId', 'opsModel', 'vlkId', function (OppiaineService, oppiaineId, opsModel, vlkId) {
+            return OppiaineService.refresh(opsModel, oppiaineId, vlkId);
           }],
           perusteOppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
             return vuosiluokatService.getPerusteOppiaine(oppiaineId).$promise;

@@ -19,7 +19,8 @@
 ylopsApp
 .controller('VuosiluokkaistaminenController', function ($scope, $filter, VariHyrra, ColorCalculator,
   $state, OppiaineenVlk, $stateParams, OpsService, Kaanna, Notifikaatiot, VuosiluokatService,
-  $rootScope) {
+  $rootScope, OppiaineService) {
+
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
   $scope.perusteOpVlk = {};
@@ -38,8 +39,6 @@ ylopsApp
 
   var kohdealueet = $scope.perusteOppiaine.kohdealueet;
   colorizeKohdealueet();
-
-  var opVlk = $scope.oppiaineenVlk;
 
   $scope.containerClasses = function (container) {
     var classes = ['width' + _.size($scope.containers)];
@@ -103,19 +102,25 @@ ylopsApp
     });
   }
 
-  // TODO siirrä perusteen oppiaineen vlk:n haku oppiainebasen resolveen
-  OppiaineenVlk.peruste({
-    opsId: $stateParams.id,
-    oppiaineId: $stateParams.oppiaineId,
-    vlkId: opVlk.id
-  }, function (res) {
-    $scope.perusteOpVlk = res;
-    $scope.tavoitteet = $scope.perusteOpVlk.tavoitteet;
-    $scope.tavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
-    initVuosiluokkaContainers();
-    processTavoitteet();
-    resetTavoitteet();
-  });
+  function fetch() {
+    OppiaineenVlk.peruste({
+      opsId: $stateParams.id,
+      oppiaineId: $stateParams.oppiaineId,
+      vlkId: $scope.oppiaineenVlk.id
+    }, function (res) {
+      $scope.perusteOpVlk = res;
+      $scope.tavoitteet = $scope.perusteOpVlk.tavoitteet;
+      $scope.tavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
+
+      OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId).then(function () {
+        $scope.oppiaineenVlk = OppiaineService.getOpVlk();
+        initVuosiluokkaContainers();
+        processTavoitteet();
+        resetTavoitteet();
+      });
+    });
+  }
+  fetch();
 
   $scope.allDragged = false;
   $scope.collapsedMode = false;
@@ -137,7 +142,7 @@ ylopsApp
     OppiaineenVlk.vuosiluokkaista({
       opsId: $stateParams.id,
       oppiaineId: $stateParams.oppiaineId,
-      vlkId: opVlk.id
+      vlkId: $scope.oppiaineenVlk.id
     }, postdata, function () {
       Notifikaatiot.onnistui('tallennettu-ok');
       $rootScope.$broadcast('oppiaine:reload');

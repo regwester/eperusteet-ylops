@@ -64,7 +64,8 @@ ylopsApp
             return $stateParams.id;
           }],
           opsModel: ['opsService', 'opsId', function(opsService, opsId) {
-            return opsService.fetch(opsId);
+            var fetched = opsService.fetch(opsId);
+            return fetched.$promise ? fetched.$promise : fetched;
           }],
           vuosiluokkakokonaisuudet: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
             return vuosiluokatService.getVuosiluokkakokonaisuudet(opsModel);

@@ -17,31 +17,60 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineBaseController', function ($scope, oppiaine, perusteOppiaine, MurupolkuData, $stateParams,
-  VuosiluokatService, $rootScope) {
-  $scope.perusteOppiaine = perusteOppiaine;
-  function setup(oppiaineModel) {
-    $scope.oppiaine = oppiaineModel;
-    MurupolkuData.set('oppiaineNimi', $scope.oppiaine.nimi);
-    var opsVlk = _.find($scope.model.vuosiluokkakokonaisuudet, function (vlk) {
-      return '' + vlk.vuosiluokkakokonaisuus.id === $stateParams.vlkId;
+.service('OppiaineService', function (VuosiluokatService, $rootScope, MurupolkuData, $q) {
+  var vlkTunniste = null;
+  var oppiaineenVlk = null;
+  var oppiaine = null;
+
+  function setup(ops, vlkId, oppiaineModel, promise) {
+    oppiaine = oppiaineModel;
+    MurupolkuData.set('oppiaineNimi', oppiaine.nimi);
+    var opsVlk = _.find(ops.vuosiluokkakokonaisuudet, function (vlk) {
+      return '' + vlk.vuosiluokkakokonaisuus.id === vlkId;
     });
-    $scope.vlkTunniste = opsVlk ? opsVlk.vuosiluokkakokonaisuus._tunniste : null;
-    $scope.oppiaineenVlk = _.find($scope.oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
-      return opVlk._vuosiluokkakokonaisuus === $scope.vlkTunniste;
+    vlkTunniste = opsVlk ? opsVlk.vuosiluokkakokonaisuus._tunniste : null;
+    oppiaineenVlk = _.find(oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
+      return opVlk._vuosiluokkakokonaisuus === vlkTunniste;
     });
+    promise.resolve();
   }
-  setup(oppiaine);
-  $scope.$on('oppiaine:reload', function () {
-    VuosiluokatService.getOppiaine($stateParams.oppiaineId).$promise.then(function (res) {
-      setup(res);
-      $rootScope.$broadcast('oppiaine:updated');
+
+  this.refresh = function (ops, oppiaineId, vlkId) {
+    var promise = $q.defer();
+    VuosiluokatService.getOppiaine(oppiaineId).$promise.then(function (res) {
+      setup(ops, vlkId, res, promise);
+      $rootScope.$broadcast('oppiainevlk:updated', oppiaineenVlk);
     });
+    return promise.promise;
+  };
+  this.getOpVlk = function () {
+    return oppiaineenVlk;
+  };
+  this.getOppiaine = function () {
+    return oppiaine;
+  };
+})
+
+.controller('OppiaineBaseController', function ($scope, perusteOppiaine, MurupolkuData, $stateParams,
+  $rootScope, OppiaineService) {
+
+  $scope.perusteOppiaine = perusteOppiaine;
+  $scope.oppiaine = OppiaineService.getOppiaine();
+  $scope.oppiaineenVlk = OppiaineService.getOpVlk();
+
+  $scope.$on('oppiainevlk:updated', function (event, value) {
+    $scope.oppiaineenVlk = value;
+    $scope.oppiaine = OppiaineService.getOppiaine();
+  });
+
+  $scope.$on('oppiaine:reload', function () {
+    OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId);
   });
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna) {
+  VuosiluokatService, Kaanna, OppiaineService) {
+
   $scope.vuosiluokat = [];
 
   function toPlaintext(text) {
@@ -54,7 +83,7 @@ ylopsApp
   }
 
   function updateVuosiluokat() {
-    $scope.vuosiluokat = $scope.$parent.oppiaineenVlk.vuosiluokat;
+    $scope.vuosiluokat = $scope.oppiaineenVlk.vuosiluokat;
     _.each($scope.vuosiluokat, function (vlk) {
       vlk.$numero = VuosiluokatService.fromEnum(vlk.vuosiluokka);
       _.each(vlk.tavoitteet, function (tavoite) {
@@ -68,10 +97,10 @@ ylopsApp
   }
   updateVuosiluokat();
 
-  $scope.$on('oppiaine:updated', function () {
-    // TODO päivitä data
+  $scope.$on('oppiainevlk:updated', function (event, value) {
+    $scope.oppiaineenVlk = value;
     updateVuosiluokat();
-  }, true);
+  });
 
   $scope.tekstit = {
     ohjaus: {
