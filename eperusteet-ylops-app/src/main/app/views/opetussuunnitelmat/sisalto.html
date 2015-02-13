@@ -58,7 +58,7 @@
     <div class="list-group">
       <a class="list-group-item list-group-header" kaanna="'vuosiluokat-ja-oppiaineet'"
          ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: 'vuosiluokat'})"></a>
-      <a class="list-group-item" ng-repeat="item in vuosiluokat" ng-bind="item.vuosiluokkakokonaisuus.nimi | kaanna"
+      <a class="list-group-item" ng-repeat="item in vuosiluokkakokonaisuudet" ng-bind="item.vuosiluokkakokonaisuus.nimi | kaanna"
          ui-sref="root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus({vlkId: item.vuosiluokkakokonaisuus.id})"></a>
     </div>
   </div>

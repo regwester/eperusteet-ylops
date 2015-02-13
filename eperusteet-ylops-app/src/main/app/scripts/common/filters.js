@@ -23,6 +23,12 @@ ylopsApp
     };
   })
 
+  .filter('stripTags', function () {
+    return function (val) {
+      return String(val).replace(/<[^>]+>/gm, '');
+    };
+  })
+
   .filter('aikaleima', function ($filter, Kaanna) {
     return function (input, format, defaultKey) {
       if (!input) {

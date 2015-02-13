@@ -56,7 +56,7 @@ ylopsApp
           }],
           perusteOppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
             return vuosiluokatService.getPerusteOppiaine(oppiaineId).$promise;
-          }],
+          }]
         }
       })
 

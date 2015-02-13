@@ -17,14 +17,61 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineBaseController', function ($scope, oppiaine, perusteOppiaine, MurupolkuData) {
-  $scope.oppiaine = oppiaine;
+.controller('OppiaineBaseController', function ($scope, oppiaine, perusteOppiaine, MurupolkuData, $stateParams,
+  VuosiluokatService, $rootScope) {
   $scope.perusteOppiaine = perusteOppiaine;
-  MurupolkuData.set('oppiaineNimi', $scope.oppiaine.nimi);
+  function setup(oppiaineModel) {
+    $scope.oppiaine = oppiaineModel;
+    MurupolkuData.set('oppiaineNimi', $scope.oppiaine.nimi);
+    var opsVlk = _.find($scope.model.vuosiluokkakokonaisuudet, function (vlk) {
+      return '' + vlk.vuosiluokkakokonaisuus.id === $stateParams.vlkId;
+    });
+    $scope.vlkTunniste = opsVlk ? opsVlk.vuosiluokkakokonaisuus._tunniste : null;
+    $scope.oppiaineenVlk = _.find($scope.oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
+      return opVlk._vuosiluokkakokonaisuus === $scope.vlkTunniste;
+    });
+  }
+  setup(oppiaine);
+  $scope.$on('oppiaine:reload', function () {
+    VuosiluokatService.getOppiaine($stateParams.oppiaineId).$promise.then(function (res) {
+      setup(res);
+      $rootScope.$broadcast('oppiaine:updated');
+    });
+  });
 })
 
-.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi) {
-  $scope.vuosiluokkakokonaisuus = $scope.vuosiluokat[0];
+.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
+  VuosiluokatService, Kaanna) {
+  $scope.vuosiluokat = [];
+
+  function toPlaintext(text) {
+    return String(text).replace(/<[^>]+>/gm, '');
+  }
+
+  function getCode(text) {
+    var match = text.match(/([A-Za-z]\d+)\s+/);
+    return match ? match[1] : null;
+  }
+
+  function updateVuosiluokat() {
+    $scope.vuosiluokat = $scope.$parent.oppiaineenVlk.vuosiluokat;
+    _.each($scope.vuosiluokat, function (vlk) {
+      vlk.$numero = VuosiluokatService.fromEnum(vlk.vuosiluokka);
+      _.each(vlk.tavoitteet, function (tavoite) {
+        var tavoiteTeksti = toPlaintext(Kaanna.kaanna(tavoite.tavoite));
+        tavoite.$short = getCode(tavoiteTeksti);
+      });
+      _.each(vlk.sisaltoalueet, function (alue) {
+        alue.$short = getCode(Kaanna.kaanna(alue.nimi));
+      });
+    });
+  }
+  updateVuosiluokat();
+
+  $scope.$on('oppiaine:updated', function () {
+    // TODO päivitä data
+    updateVuosiluokat();
+  }, true);
 
   $scope.tekstit = {
     ohjaus: {
@@ -67,7 +114,7 @@ ylopsApp
     Varmistusdialogi.dialogi({
       otsikko: 'vuosiluokkaistaminen-on-jo-tehty',
       teksti: 'vuosiluokkaistaminen-varoitus',
-      primaryBtn: 'aloita-uudelleen',
+      primaryBtn: 'jatka',
       successCb: cb
     })();
   }
@@ -78,7 +125,7 @@ ylopsApp
         vlkId: $stateParams.vlkId,
       });
     }
-    if (_.isArray($scope.oppiaine.vuosiluokat) && $scope.oppiaine.vuosiluokat.length > 0) {
+    if (_.isArray($scope.vuosiluokat) && $scope.vuosiluokat.length > 0) {
       vuosiluokkaistamisVaroitus(function () {
         // TODO reset vuosiluokat
         start();

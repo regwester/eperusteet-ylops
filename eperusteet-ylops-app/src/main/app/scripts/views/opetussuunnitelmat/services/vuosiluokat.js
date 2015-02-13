@@ -79,7 +79,7 @@ ylopsApp
 .service('VuosiluokatService', function ($q, DummyData, $state, OppiaineCRUD, Utils, OpsService,
   VuosiluokkakokonaisuusCRUD, OpetussuunnitelmaCRUD) {
   var opsId = null;
-  var vuosiluokat = null;
+  var vuosiluokkakokonaisuudet = null;
 
   function promisify(data) {
     var deferred = $q.defer();
@@ -111,20 +111,20 @@ ylopsApp
     function processVuosiluokkakokonaisuudet(model) {
       opsId = model.id;
       var vlkt = model.vuosiluokkakokonaisuudet;
-      vuosiluokat = _.sortBy(vlkt, vlkSorter);
-      promise.resolve(vuosiluokat);
+      vuosiluokkakokonaisuudet = _.sortBy(vlkt, vlkSorter);
+      promise.resolve(vuosiluokkakokonaisuudet);
     }
     var opsModel = (ops || OpsService.get());
     onCompletion(opsModel, processVuosiluokkakokonaisuudet);
     return promise.promise;
   }
 
-  function getVuosiluokat(ops) {
+  function getVuosiluokkakokonaisuudet(ops) {
     return fetch(ops);
   }
 
-  function setVuosiluokat(vlkt) {
-    vuosiluokat = vlkt;
+  function setVuosiluokkakokonaisuudet(vlkt) {
+    vuosiluokkakokonaisuudet = vlkt;
   }
 
   function getVuosiluokkakokonaisuus(opetussuunnitelmaId, vlkId, successCb, errorCb) {
@@ -180,7 +180,7 @@ ylopsApp
   function mapForMenu(ops) {
     var arr = [];
     if (ops) {
-      _.each(vuosiluokat, function (vlk) {
+      _.each(vuosiluokkakokonaisuudet, function (vlk) {
         var obj = vlk.vuosiluokkakokonaisuus;
         var item = {
           label: obj.nimi,
@@ -221,8 +221,8 @@ ylopsApp
   this.setOps = setOps;
   this.fetch = fetch;
   this.getLaajaalaiset = getLaajaalaiset;
-  this.getVuosiluokat = getVuosiluokat;
-  this.setVuosiluokat = setVuosiluokat;
+  this.getVuosiluokkakokonaisuudet = getVuosiluokkakokonaisuudet;
+  this.setVuosiluokkakokonaisuudet = setVuosiluokkakokonaisuudet;
   this.getVuosiluokkakokonaisuus = getVuosiluokkakokonaisuus;
   this.getVlkPeruste = getVlkPeruste;
   this.getVuosiluokka = getVuosiluokka;
@@ -230,4 +230,7 @@ ylopsApp
   this.getOppiaine = getOppiaine;
   this.getPerusteOppiaine = getPerusteOppiaine;
   this.mapForMenu = mapForMenu;
+  this.fromEnum = function (vuosiluokkaEnum) {
+    return parseInt(_.last(vuosiluokkaEnum.split('_')), 10);
+  };
 });

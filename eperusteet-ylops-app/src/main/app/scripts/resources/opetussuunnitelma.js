@@ -61,6 +61,7 @@ ylopsApp
       vlkId: '@id'
     }, {
       getTavoitteet: {method: 'GET', isArray: false, url: YlopsResources.OPVLK + '/tavoitteet'},
+      vuosiluokkaista: {method: 'POST', url: YlopsResources.OPVLK + '/tavoitteet'},
       peruste: {method: 'GET', url: YlopsResources.OPVLK + '/peruste'}
     });
   });
