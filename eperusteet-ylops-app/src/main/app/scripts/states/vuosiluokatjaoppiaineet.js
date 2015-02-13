@@ -79,15 +79,9 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokka.html',
         controller: 'VuosiluokkaBaseController',
         resolve: {
-          vuosiluokkaId: ['$stateParams', function($stateParams){
-            return $stateParams.vuosiluokkaId;
-          }],
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();
           }],
-          vuosiluokka: ['vuosiluokatService', 'vuosiluokkaId', function (vuosiluokatService, vuosiluokkaId) {
-            return vuosiluokatService.getVuosiluokka(vuosiluokkaId);
-          }]
         }
       })
 

@@ -4,7 +4,7 @@
     <div class="header">
       <span class="kohdealue" ng-bind="perusteTavoiteMap[tunniste].kohdealue | kaanna"></span>
       <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
-      <span class="nimi" ng-bind="perusteTavoiteMap[tunniste].tavoite | kaanna"></span>
+      <span class="nimi" ng-bind="perusteTavoiteMap[tunniste].tavoite | kaanna | stripTags"></span>
     </div>
 
     <div class="peruste-body" collapse="collapsed[tunniste]">

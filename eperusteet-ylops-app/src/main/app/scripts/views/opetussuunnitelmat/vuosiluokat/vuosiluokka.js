@@ -17,9 +17,13 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkaBaseController', function ($scope, vuosiluokka, MurupolkuData, $state) {
-  $scope.vuosiluokka = vuosiluokka;
-  MurupolkuData.set('vuosiluokkaNimi', vuosiluokka.nimi);
+.controller('VuosiluokkaBaseController', function ($scope, $stateParams, MurupolkuData, $state, Kaanna,
+  VuosiluokatService) {
+  $scope.vuosiluokka = _.find($scope.oppiaineenVlk.vuosiluokat, function (vuosiluokka) {
+    return '' + vuosiluokka.id === $stateParams.vlId;
+  });
+  $scope.vuosiluokkaNro = VuosiluokatService.fromEnum($scope.vuosiluokka.vuosiluokka);
+  MurupolkuData.set('vuosiluokkaNimi', Kaanna.kaanna('vuosiluokka') + ' ' + $scope.vuosiluokkaNro);
 
   $scope.isState = function (name) {
     return _.endsWith($state.current.name, 'vuosiluokka.' + name);
@@ -31,25 +35,23 @@ ylopsApp
 })
 
 .controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit) {
-  $scope.tavoitteet = [];
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.muokattavat = {};
 
-  // TODO oikea data
-  var kohdealueet = [
-    {fi: 'Työskentelyn taidot'},
-    {fi: 'Toinen kohdealue'},
-  ];
+  // TODO get peruste oppiaine vlk
+  // sisältöalueet & laaja-alaiset osaamiset & arviointi
 
   function fetch() {
-
+    $scope.tavoitteet = $scope.vuosiluokka.tavoitteet;
+    processTavoitteet();
   }
+  fetch();
 
   function processTavoitteet() {
-    _.each($scope.tavoitteet, function (item, index) {
-      item.kohdealue = _.sample(kohdealueet);
-      item.tunniste = index;
+    _.each($scope.tavoitteet, function (/*item*/) {
+      //console.log(item);
+      // TODO kohdealueet
     });
     $scope.perusteTavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
     $scope.tunnisteet = _.keys($scope.perusteTavoiteMap);
@@ -58,11 +60,6 @@ ylopsApp
       $scope.muokattavat[tunniste] = {};
     });
   }
-
-  VuosiluokatService.getTavoitteet().then(function (res) {
-    $scope.tavoitteet = res;
-    processTavoitteet();
-  });
 
   $scope.callbacks = {
     edit: function () {

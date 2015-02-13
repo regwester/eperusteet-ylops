@@ -1,6 +1,6 @@
 <div class="vuosiluokka">
   <h2>
-    <span ng-bind="oppiaine.nimi | kaanna"></span>, <span ng-bind="vuosiluokka.nimi | kaanna"></span>
+    <span ng-bind="oppiaine.nimi | kaanna"></span>, {{'vuosiluokka' | kaanna}} {{vuosiluokkaNro}}
   </h2>
 
   <ul class="nav nav-tabs vl-tabit">
