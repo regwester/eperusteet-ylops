@@ -73,6 +73,10 @@ ylopsApp
 
   $scope.vuosiluokat = [];
 
+  $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
+    return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
+  });
+
   function toPlaintext(text) {
     return String(text).replace(/<[^>]+>/gm, '');
   }
@@ -102,18 +106,6 @@ ylopsApp
     updateVuosiluokat();
   });
 
-  $scope.tekstit = {
-    ohjaus: {
-      teksti: {fi: 'Oppilaan matematiikan osaamista ja taitojen kehittymistä seurataan ja tarvittaessa annetaan lisätukea heti tuen tarpeen ilmetessä. Tarjottava tuki antaa oppilaalle mahdollisuuden ymmärtää matematiikkaa ikätasonsa mukaisesti ja kehittää taitojaan niin, että oppimisen ja osaamisen ilo säilyvät. Oppilaille tarjotaan sopivia välineitä oppimisen tueksi ja hänelle tarjotaan mahdollisuuksia oivaltaa ja ymmärtää itse.'}
-    },
-    tyotavat: {
-
-    },
-    arviointi: {
-
-    }
-  };
-
   $scope.callbacks = {
     edit: function () {
 
@@ -130,14 +122,6 @@ ylopsApp
     notifier: angular.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
-
-
-  $scope.goToDummy = function (id) {
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {
-      vlkId: $stateParams.vlkId,
-      vlId: id
-    });
-  };
 
   function vuosiluokkaistamisVaroitus(cb) {
     Varmistusdialogi.dialogi({
@@ -156,7 +140,6 @@ ylopsApp
     }
     if (_.isArray($scope.vuosiluokat) && $scope.vuosiluokat.length > 0) {
       vuosiluokkaistamisVaroitus(function () {
-        // TODO reset vuosiluokat
         start();
       });
     } else {
