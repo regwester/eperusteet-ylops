@@ -27,7 +27,7 @@
         <span kaanna="'tyhja-pohja'"></span>
       </label>
       <br/>
-      <button class="btn btn-primary luo-nappi" ng-click="addNew()" ng-disabled="pohja.active === '1' && !pohja.model"
+      <button class="btn btn-primary luo-nappi" ng-click="addNew(pohja.model)" ng-disabled="pohja.active === '1' && !pohja.model"
               kaanna="'luo-projekti'"></button>
     </form>
 

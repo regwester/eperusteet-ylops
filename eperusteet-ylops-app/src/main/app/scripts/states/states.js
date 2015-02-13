@@ -92,7 +92,7 @@ ylopsApp
       })
 
       .state('root.opetussuunnitelmat.yksi.tiedot', {
-        url: '/tiedot',
+        url: '/tiedot?:pohjaId',
         templateUrl: 'views/opetussuunnitelmat/tiedot.html',
         controller: 'OpetussuunnitelmaTiedotController',
         resolve: {
