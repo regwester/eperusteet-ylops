@@ -26,21 +26,6 @@ ylopsApp
       $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi'});
     };
   })
-
-  .controller('UusiOpsController', function ($scope, $state, OpsListaService, Utils) {
-    $scope.pohja = {
-      active: 0,
-      model: null
-    };
-
-    $scope.addNew = function () {
-      $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi'});
-    };
-
-    $scope.pohjat = OpsListaService.query(true);
-    $scope.sorter = Utils.sort;
-  })
-
   .controller('TiedotteetController', function ($scope) {
     $scope.tiedotteet = [
       {nimi: {fi: 'Tiedote 1'}, muokattu: '14.1.2015'},

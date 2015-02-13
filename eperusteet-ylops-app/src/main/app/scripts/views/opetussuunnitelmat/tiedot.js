@@ -15,6 +15,7 @@
 */
 
 'use strict';
+/*global _*/
 
 ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function ($scope, Editointikontrollit, $stateParams, $state,
@@ -25,6 +26,7 @@ ylopsApp
   $scope.editableModel = $scope.model;
   if ($scope.luonnissa) {
     $scope.editableModel.julkaisukielet = ['fi'];
+    $scope.editableModel._pohja = $stateParams.pohjaId === '' ? null : $stateParams.pohjaId;
   }
   $scope.editMode = false;
   $scope.kielivalinnat = ['fi', 'sv', 'se'];
@@ -32,6 +34,8 @@ ylopsApp
   $scope.kuntalista = [];
   $scope.koululista = [];
   $scope.eiKoulujaVaroitus = false;
+
+
 
   $scope.hasRequiredFields = function () {
     var model = $scope.editableModel;
@@ -54,6 +58,17 @@ ylopsApp
 
   if (kunnat) {
     $scope.kuntalista = mapKunnat(kunnat);
+  }
+
+  //Jos luodaan uutta ops:ia toisesta opetussuunnitelmasta,
+  // niin haetaan pohja opetussuunnitelmasta kunnat ja koulut
+  if ($scope.luonnissa && $scope.editableModel._pohja) {
+    OpetussuunnitelmaCRUD.get({opsId: $scope.editableModel._pohja}, function (res) {
+       $scope.editableModel.kuntaUrit = _.map(res.kunnat, 'koodiUri');
+       $scope.editableModel.koulut = res.koulut;
+       $scope.editableModel.kouluOidit = _.map(res.koulut, 'oid');
+       $scope.haeKoulut($scope.editableModel.kuntaUrit);
+    }, Notifikaatiot.serverCb);
   }
 
   $scope.kieliOrderFn = Kieli.orderFn;
@@ -185,9 +200,9 @@ ylopsApp
 
   $scope.$watch('editableModel.julkaisukielet', mapJulkaisukielet);
 
-  $scope.haeKoulut = function () {
+  $scope.haeKoulut = function (kuntaUrit) {
     $scope.loadingKoulut = true;
-    var kunnat = $scope.editableModel.kuntaUrit;
+    var kunnat = kuntaUrit ? kuntaUrit : $scope.editableModel.kuntaUrit;
     if (!($scope.editMode || $scope.luonnissa) || !kunnat) {
       $scope.loadingKoulut = false;
       return;
