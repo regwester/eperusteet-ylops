@@ -69,7 +69,7 @@ ylopsApp
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna, OppiaineService) {
+  VuosiluokatService, Kaanna) {
 
   $scope.vuosiluokat = [];
 
