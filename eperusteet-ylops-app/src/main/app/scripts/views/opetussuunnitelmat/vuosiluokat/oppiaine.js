@@ -17,12 +17,15 @@
 'use strict';
 
 ylopsApp
-.service('OppiaineService', function (VuosiluokatService, $rootScope, MurupolkuData, $q) {
+.service('OppiaineService', function (VuosiluokatService, $rootScope, MurupolkuData, $q, OppiaineenVlk,
+  Notifikaatiot) {
   var vlkTunniste = null;
   var oppiaineenVlk = null;
   var oppiaine = null;
+  var opetussuunnitelma = null;
 
   function setup(ops, vlkId, oppiaineModel, promise) {
+    opetussuunnitelma = ops;
     oppiaine = oppiaineModel;
     MurupolkuData.set('oppiaineNimi', oppiaine.nimi);
     var opsVlk = _.find(ops.vuosiluokkakokonaisuudet, function (vlk) {
@@ -49,6 +52,22 @@ ylopsApp
   this.getOppiaine = function () {
     return oppiaine;
   };
+  this.saveVlk = function (model) {
+    OppiaineenVlk.save({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id
+    }, model, function () {
+      Notifikaatiot.onnistui('tallennettu-ok');
+      $rootScope.$broadcast('oppiaine:reload');
+    }, Notifikaatiot.serverCb);
+  };
+  this.fetchVlk = function (vlkId, cb) {
+    OppiaineenVlk.get({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id,
+      vlkId: vlkId
+    }, cb, Notifikaatiot.serverCb);
+  };
 })
 
 .controller('OppiaineBaseController', function ($scope, perusteOppiaine, MurupolkuData, $stateParams,
@@ -69,7 +88,7 @@ ylopsApp
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna) {
+  VuosiluokatService, Kaanna, OppiaineService) {
 
   $scope.vuosiluokat = [];
 
@@ -106,15 +125,22 @@ ylopsApp
     updateVuosiluokat();
   });
 
+  function refetch() {
+    OppiaineService.fetchVlk($scope.oppiaineenVlk.id, function (res) {
+      $scope.oppiaineenVlk = res;
+      updateVuosiluokat();
+    });
+  }
+
   $scope.callbacks = {
     edit: function () {
-
+      refetch();
     },
     save: function () {
-
+      OppiaineService.saveVlk($scope.oppiaineenVlk);
     },
     cancel: function () {
-
+      refetch();
     },
     notify: function (mode) {
       $scope.callbacks.notifier(mode);
