@@ -17,6 +17,10 @@
 'use strict';
 
 ylopsApp
-.controller('OpetussuunnitelmaSisaltoAlueController', function (/*$scope*/) {
-
+.controller('OpetussuunnitelmaSisaltoAlueController', function ($state, $timeout, OpsNavigaatio) {
+  if ($state.is('root.opetussuunnitelmat.yksi.sisaltoalue')) {
+    $timeout(function () {
+      OpsNavigaatio.selectFirst();
+    }, 100);
+  }
 });
