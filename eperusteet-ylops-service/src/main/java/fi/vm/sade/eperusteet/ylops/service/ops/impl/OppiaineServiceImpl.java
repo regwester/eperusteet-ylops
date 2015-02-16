@@ -201,12 +201,16 @@ public class OppiaineServiceImpl implements OppiaineService {
             throw new BusinessRuleViolationException("Annetun vuosiluokan ID ei vastaa olemassaolevan vuosiluokan vastaavaa");
         }
 
-        // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden kuvaukset,
-        // noin muutoin sisältöön tai edes sisältöaluelistaan ei pidä kajoaman
+        // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden ja tavoitteiden kuvaukset,
+        // noin muutoin sisältöön ei pidä kajoaman
         dto.getSisaltoalueet().forEach(
             sisaltoalueDto ->
                 oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
                                      .ifPresent(sa -> sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class))));
+        dto.getTavoitteet().forEach(
+            tavoiteDto ->
+                oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
+                                     .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
         mapper.map(oppiaineenVuosiluokka, dto);
         return dto;
@@ -262,16 +266,14 @@ public class OppiaineServiceImpl implements OppiaineService {
 
         LinkedHashMap<UUID, Keskeinensisaltoalue> alueet = pvk.getSisaltoalueet().stream()
             .filter(s -> filtered.stream().flatMap(t -> t.getSisaltoalueet().stream()).anyMatch(Predicate.isEqual(s)))
-            .map(ps -> {
-                return ov.getSisaltoalue(ps.getTunniste()).orElseGet(() -> {
-                    Keskeinensisaltoalue k = new Keskeinensisaltoalue();
-                    k.setTunniste(ps.getTunniste());
-                    k.setKuvaus(LokalisoituTeksti.of(ps.getKuvaus().getTekstit()));
-                    k.setNimi(LokalisoituTeksti.of(ps.getNimi().getTekstit()));
-                    return k;
-                });
-            })
-            .collect(Collectors.toMap(k -> k.getTunniste(), k -> k, (u, v) -> u, LinkedHashMap::new));
+            .map(ps -> ov.getSisaltoalue(ps.getTunniste()).orElseGet(() -> {
+                Keskeinensisaltoalue k = new Keskeinensisaltoalue();
+                k.setTunniste(ps.getTunniste());
+                k.setNimi(LokalisoituTeksti.of(ps.getNimi().getTekstit()));
+                // Kuvaus-kenttä on paikaillisesti määritettävää sisältöä joten sitä ei tässä aseteta
+                return k;
+            }))
+            .collect(Collectors.toMap(Keskeinensisaltoalue::getTunniste, k -> k, (u, v) -> u, LinkedHashMap::new));
 
         ov.setSisaltoalueet(new ArrayList<>(alueet.values()));
 
@@ -279,7 +281,7 @@ public class OppiaineServiceImpl implements OppiaineService {
             .map(t -> {
                 Opetuksentavoite opst = ov.getTavoite(t.getTunniste()).orElseGet(() -> {
                     Opetuksentavoite uusi = new Opetuksentavoite();
-                    uusi.setTavoite(LokalisoituTeksti.of(t.getTavoite().getTekstit()));
+                    // Tavoite-kenttä on paikaillisesti määritettävää sisältöä joten sitä ei tässä aseteta
                     uusi.setTunniste(t.getTunniste());
                     return uusi;
                 });
