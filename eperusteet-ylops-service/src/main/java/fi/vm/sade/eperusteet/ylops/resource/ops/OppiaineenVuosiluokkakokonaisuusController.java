@@ -93,6 +93,26 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         oppiaineService.updateVuosiluokkienTavoitteet(opsId, oppiaineId, id, tavoitteet);
     }
 
+    @RequestMapping(value = "/{id}/sisalto", method = RequestMethod.GET)
+    public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(
+        @PathVariable("opsId") final Long opsId,
+        @PathVariable("oppiaineId") final Long oppiaineId,
+        @PathVariable("id") final Long id,
+        @RequestBody OppiaineenVuosiluokkakokonaisuusDto dto) {
+        dto.setId(id);
+        return oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineId, dto);
+    }
+
+    @RequestMapping(value = "/vuosiluokat/{id}/sisalto", method = RequestMethod.POST)
+    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(
+        @PathVariable("opsId") final Long opsId,
+        @PathVariable("oppiaineId") final Long oppiaineId,
+        @PathVariable("id") final Long id,
+        @RequestBody OppiaineenVuosiluokkaDto dto) {
+        dto.setId(id);
+        return oppiaineService.updateVuosiluokanSisalto(opsId, oppiaineId, dto);
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public Set<OppiaineenVuosiluokkakokonaisuusDto> getAll(
         @PathVariable("opsId") final Long opsId,
