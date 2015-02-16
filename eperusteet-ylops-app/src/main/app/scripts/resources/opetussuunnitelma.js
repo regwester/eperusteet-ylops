@@ -22,6 +22,7 @@ ylopsApp
     this.OPPIAINE = this.OPS + '/oppiaineet/:oppiaineId';
     this.VLK = this.OPS + '/vuosiluokkakokonaisuudet/:vlkId';
     this.OPVLK = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId';
+    this.VUOSILUOKKA = this.OPPIAINE + '/vuosiluokat/:vlId';
   })
 
   .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {
@@ -63,5 +64,11 @@ ylopsApp
       getTavoitteet: {method: 'GET', isArray: false, url: YlopsResources.OPVLK + '/tavoitteet'},
       vuosiluokkaista: {method: 'POST', url: YlopsResources.OPVLK + '/tavoitteet'},
       peruste: {method: 'GET', url: YlopsResources.OPVLK + '/peruste'}
+    });
+  })
+
+  .factory('VuosiluokkaCRUD', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.VUOSILUOKKA, {
+      vlId: '@id'
     });
   });

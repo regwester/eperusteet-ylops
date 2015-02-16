@@ -40,17 +40,24 @@ ylopsApp
 })
 
 .controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils,
-  $state) {
+  $state, OppiaineService) {
   $scope.tunnisteet = [];
   $scope.collapsed = {};
-  $scope.muokattavat = {};
   $scope.nimiOrder = Utils.sort;
+  $scope.muokattavat = {};
 
-  function fetch() {
+  function mapModel() {
     $scope.tavoitteet = $scope.vuosiluokka.tavoitteet;
     processTavoitteet();
   }
-  fetch();
+  mapModel();
+
+  function refetch() {
+    OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
+      $scope.vuosiluokka = res;
+      mapModel();
+    });
+  }
 
   function processTavoitteet() {
     var perusteKohdealueet = _.indexBy($scope.perusteOppiaine.kohdealueet, 'id');
@@ -58,6 +65,7 @@ ylopsApp
       var perusteTavoite = _.find($scope.perusteOpVlk.tavoitteet, function (pTavoite) {
         return pTavoite.tunniste === item.tunniste;
       });
+      item.$tavoite = perusteTavoite.tavoite;
       item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, function (tunniste) {
         var sisaltoalue = $scope.perusteSisaltoalueet[tunniste] || {};
         sisaltoalue.$url = $state.href('^.sisaltoalueet') + '#' + tunniste;
@@ -69,22 +77,35 @@ ylopsApp
       });
       item.$arvioinninkohteet = perusteTavoite.arvioinninkohteet;
     });
-    $scope.perusteTavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
-    $scope.tunnisteet = _.keys($scope.perusteTavoiteMap);
+    $scope.tavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
+    $scope.tunnisteet = _.keys($scope.tavoiteMap);
     _.each($scope.tunnisteet, function (tunniste) {
-      // TODO map existing
-      $scope.muokattavat[tunniste] = {};
+      var paikallinen = _.find($scope.tavoitteet, function (tavoite) {
+        return tavoite.tunniste === tunniste;
+      });
+      $scope.muokattavat[tunniste] = paikallinen ? {teksti: paikallinen.tavoite} : {teksti: {}};
     });
   }
 
   $scope.callbacks = {
     edit: function () {
-      fetch();
+      refetch();
     },
     save: function () {
+      var postdata = angular.copy($scope.vuosiluokka);
+      _.each(postdata.tavoitteet, function (tavoite) {
+        tavoite.tavoite = $scope.muokattavat[tavoite.tunniste].teksti;
+        delete tavoite.$sisaltoalueet;
+        delete tavoite.$kohdealue;
+        delete tavoite.$laajaalaiset;
+      });
+      OppiaineService.saveVuosiluokka(postdata, function (res) {
+        $scope.vuosiluokka = res;
+        mapModel();
+      });
     },
     cancel: function () {
-      fetch();
+      refetch();
     },
     notify: function (mode) {
       $scope.callbacks.notifier(mode);
@@ -96,21 +117,44 @@ ylopsApp
 })
 
 .controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit,
-  $timeout, $location, $anchorScroll) {
+  $timeout, $location, $anchorScroll, OppiaineService) {
   $scope.tunnisteet = [];
   $scope.muokattavat = {};
 
-  $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
-  $scope.tunnisteet = _.map($scope.sisaltoalueet, 'tunniste');
+  function mapModel() {
+    $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
+    $scope.tunnisteet = _.map($scope.sisaltoalueet, 'tunniste');
+    _.each($scope.tunnisteet, function (tunniste) {
+      var paikallinen = _.find($scope.sisaltoalueet, function (alue) {
+        return alue.tunniste === tunniste;
+      });
+      $scope.muokattavat[tunniste] = paikallinen ? {teksti: paikallinen.kuvaus} : {teksti: {}};
+    });
+  }
+  mapModel();
+
+  function refetch() {
+    OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
+      $scope.vuosiluokka = res;
+      mapModel();
+    });
+  }
 
   $scope.callbacks = {
     edit: function () {
-      //fetch();
+      refetch();
     },
     save: function () {
+      _.each($scope.vuosiluokka.sisaltoalueet, function (alue) {
+        alue.kuvaus = $scope.muokattavat[alue.tunniste].teksti;
+      });
+      OppiaineService.saveVuosiluokka($scope.vuosiluokka, function (res) {
+        $scope.vuosiluokka = res;
+        mapModel();
+      });
     },
     cancel: function () {
-      //fetch();
+      refetch();
     },
     notify: function (mode) {
       $scope.callbacks.notifier(mode);

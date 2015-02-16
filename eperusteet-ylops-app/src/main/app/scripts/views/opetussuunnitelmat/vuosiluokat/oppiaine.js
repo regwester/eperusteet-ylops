@@ -18,7 +18,7 @@
 
 ylopsApp
 .service('OppiaineService', function (VuosiluokatService, $rootScope, MurupolkuData, $q, OppiaineenVlk,
-  Notifikaatiot) {
+  Notifikaatiot, VuosiluokkaCRUD) {
   var vlkTunniste = null;
   var oppiaineenVlk = null;
   var oppiaine = null;
@@ -66,6 +66,22 @@ ylopsApp
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id,
       vlkId: vlkId
+    }, cb, Notifikaatiot.serverCb);
+  };
+  this.saveVuosiluokka = function (model, cb) {
+    VuosiluokkaCRUD.save({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id,
+    }, model, function (res) {
+      Notifikaatiot.onnistui('tallennettu-ok');
+      cb(res);
+    }, Notifikaatiot.serverCb);
+  };
+  this.fetchVuosiluokka = function (vlId, cb) {
+    VuosiluokkaCRUD.get({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id,
+      vlId: vlId
     }, cb, Notifikaatiot.serverCb);
   };
 })

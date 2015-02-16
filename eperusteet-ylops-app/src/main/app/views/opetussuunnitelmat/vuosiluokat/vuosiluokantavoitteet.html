@@ -2,10 +2,10 @@
   <div class="tavoite" ng-repeat="tunniste in tunnisteet">
 
     <div class="header">
-      <span class="kohdealue" ng-bind="perusteTavoiteMap[tunniste].$kohdealue.nimi | kaanna"></span>
+      <span class="kohdealue" ng-bind="tavoiteMap[tunniste].$kohdealue.nimi | kaanna"></span>
       <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
       <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
-            ng-bind="perusteTavoiteMap[tunniste].tavoite | kaanna | stripTags"></span>
+            ng-bind="tavoiteMap[tunniste].$tavoite | kaanna | stripTags"></span>
     </div>
 
     <div class="peruste-body" collapse="collapsed[tunniste]">
@@ -13,7 +13,7 @@
         <div class="lista">
           <h4 kaanna="'sisaltoalueet'"></h4>
           <ul>
-            <li ng-repeat="sisaltoalue in perusteTavoiteMap[tunniste].$sisaltoalueet | orderBy:nimiOrder">
+            <li ng-repeat="sisaltoalue in tavoiteMap[tunniste].$sisaltoalueet | orderBy:nimiOrder">
               <a ng-bind="sisaltoalue.nimi | kaanna" ng-href="{{sisaltoalue.$url}}"></a>
             </li>
           </ul>
@@ -21,21 +21,21 @@
         <div class="lista">
           <h4 kaanna="'laaja-alaiset-osaamiset'"></h4>
           <ul>
-            <li ng-repeat="laajaalainen in perusteTavoiteMap[tunniste].$laajaalaiset | orderBy:nimiOrder">
+            <li ng-repeat="laajaalainen in tavoiteMap[tunniste].$laajaalaiset | orderBy:nimiOrder">
               <a class="laajaalainen-popover" popover-html data-content="{{laajaalainen.kuvaus | kaanna}}"
                  ng-bind="laajaalainen.nimi | kaanna"></a>
             </li>
           </ul>
         </div>
       </div>
-      <div class="arviointi" ng-if="perusteTavoiteMap[tunniste].$arvioinninkohteet.length > 0">
+      <div class="arviointi" ng-if="tavoiteMap[tunniste].$arvioinninkohteet.length > 0">
         <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
         <table class="table table-hover table-bordered kriteerit">
           <tr>
             <th width="30%" kaanna="'arvioinnin-kohde'"></th>
             <th kaanna="'arvion-hyva-osaaminen'"></th>
           </tr>
-          <tr ng-repeat="kohde in perusteTavoiteMap[tunniste].$arvioinninkohteet">
+          <tr ng-repeat="kohde in tavoiteMap[tunniste].$arvioinninkohteet">
             <td ng-bind="kohde.arvioinninKohde | kaanna"></td>
             <td ng-bind="kohde.hyvanOsaamisenKuvaus | kaanna"></td>
           </tr>
