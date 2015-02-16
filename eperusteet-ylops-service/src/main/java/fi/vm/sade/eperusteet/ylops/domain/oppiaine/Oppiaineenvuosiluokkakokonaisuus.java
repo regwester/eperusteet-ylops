@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -132,5 +133,22 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
             .filter(l -> Objects.equals(l.getVuosiluokka(), luokka))
             .findAny();
     }
+
+    static Oppiaineenvuosiluokkakokonaisuus copyOf(final Oppiaineenvuosiluokkakokonaisuus other, Map<Long, Opetuksenkohdealue> kohdealueet) {
+        Oppiaineenvuosiluokkakokonaisuus ovk = new Oppiaineenvuosiluokkakokonaisuus();
+
+        ovk.setVuosiluokkakokonaisuus(other.getVuosiluokkakokonaisuus());
+        ovk.setArviointi(Tekstiosa.copyOf(other.getArviointi()));
+        ovk.setOhjaus(Tekstiosa.copyOf(other.getOhjaus()));
+        ovk.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
+        ovk.setTyotavat(Tekstiosa.copyOf(other.getTyotavat()));
+
+        other.getVuosiluokat().forEach(vl -> {
+            ovk.addVuosiluokka(Oppiaineenvuosiluokka.copyOf(vl, kohdealueet));
+        });
+
+        return ovk;
+    }
+
 
 }

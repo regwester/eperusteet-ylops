@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
+ * Copyright (c) 2013 The Finnish Board copyOf Education - Opetushallitus
  *
  * This program is free software: Licensed under the EUPL, Version 1.1 or - as
  * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
+ * copyOf the EUPL (the "Licence");
  *
  * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
+ * You may obtain a copy copyOf the Licence at: http://ec.europa.eu/idabc/eupl
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * but WITHOUT ANY WARRANTY; without even the implied warranty copyOf
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
@@ -88,6 +88,24 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
     @Getter
     private Tila tila = Tila.LUONNOS;
 
+    public Vuosiluokkakokonaisuus() {
+    }
+
+    private Vuosiluokkakokonaisuus(Vuosiluokkakokonaisuus other) {
+        this.tunniste = other.getTunniste();
+        this.nimi = other.getNimi();
+        this.siirtymaEdellisesta = Tekstiosa.copyOf(other.getSiirtymaEdellisesta());
+        this.siirtymaSeuraavaan = Tekstiosa.copyOf(other.getSiirtymaSeuraavaan());
+        this.tehtava = Tekstiosa.copyOf(other.getTehtava());
+        this.tila = Tila.LUONNOS;
+
+        other.getLaajaalaisetosaamiset().forEach(l -> {
+            Laajaalainenosaaminen lo = new Laajaalainenosaaminen(l);
+            lo.setVuosiluokkaKokonaisuus(this);
+            laajaalaisetosaamiset.add(lo);
+        });
+
+    }
 
     public Set<Laajaalainenosaaminen> getLaajaalaisetosaamiset() {
         return new HashSet<>(laajaalaisetosaamiset);
@@ -123,6 +141,10 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
     @Override
     public int hashCode() {
         return System.identityHashCode(this);
+    }
+
+    public static Vuosiluokkakokonaisuus copyOf(Vuosiluokkakokonaisuus vuosiluokkakokonaisuus) {
+        return new Vuosiluokkakokonaisuus(vuosiluokkakokonaisuus);
     }
 
 }

@@ -49,4 +49,10 @@ public class Tavoitteenarviointi extends AbstractReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     private LokalisoituTeksti hyvanOsaamisenKuvaus;
 
+    static Tavoitteenarviointi copyOf(Tavoitteenarviointi other) {
+        Tavoitteenarviointi ta = new Tavoitteenarviointi();
+        ta.setArvioinninKohde(other.getArvioinninKohde());
+        ta.setHyvanOsaamisenKuvaus(other.getHyvanOsaamisenKuvaus());
+        return ta;
+    }
 }

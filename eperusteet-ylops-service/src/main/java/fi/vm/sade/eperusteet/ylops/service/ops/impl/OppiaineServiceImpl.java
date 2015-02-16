@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksenkohdealue;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
@@ -291,6 +292,10 @@ public class OppiaineServiceImpl implements OppiaineService {
                 opst.setSisaltoalueet(t.getSisaltoalueet().stream()
                     .map(s -> alueet.get(s.getTunniste()))
                     .collect(Collectors.toSet()));
+                opst.setKohdealueet(t.getKohdealueet().stream()
+                    .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(LokalisoituTeksti.of(k.getNimi().getTekstit()))))
+                    .collect(Collectors.toSet()));
+                //TODO: arviointi!
                 return opst;
             })
             .collect(Collectors.toList());
