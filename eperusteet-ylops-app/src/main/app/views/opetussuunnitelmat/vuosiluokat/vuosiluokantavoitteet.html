@@ -14,7 +14,7 @@
           <h4 kaanna="'sisaltoalueet'"></h4>
           <ul>
             <li ng-repeat="sisaltoalue in perusteTavoiteMap[tunniste].$sisaltoalueet | orderBy:nimiOrder">
-              <a ng-bind="sisaltoalue.nimi | kaanna" ui-sref="^.sisaltoalueet"></a>
+              <a ng-bind="sisaltoalue.nimi | kaanna" ng-href="{{sisaltoalue.$url}}"></a>
             </li>
           </ul>
         </div>

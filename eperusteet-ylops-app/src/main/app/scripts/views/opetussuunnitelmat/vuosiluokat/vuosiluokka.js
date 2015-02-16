@@ -35,11 +35,12 @@ ylopsApp
   };
 
   if ($state.is('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka')) {
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet');
+    $state.go('.tavoitteet');
   }
 })
 
-.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils) {
+.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils,
+  $state) {
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.muokattavat = {};
@@ -58,7 +59,9 @@ ylopsApp
         return pTavoite.tunniste === item.tunniste;
       });
       item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, function (tunniste) {
-        return $scope.perusteSisaltoalueet[tunniste];
+        var sisaltoalue = $scope.perusteSisaltoalueet[tunniste] || {};
+        sisaltoalue.$url = $state.href('^.sisaltoalueet') + '#' + tunniste;
+        return sisaltoalue;
       });
       item.$kohdealue = perusteKohdealueet[_.first(perusteTavoite.kohdealueet)];
       item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, function (tunniste) {
@@ -92,7 +95,8 @@ ylopsApp
 
 })
 
-.controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit) {
+.controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit,
+  $timeout, $location, $anchorScroll) {
   $scope.tunnisteet = [];
   $scope.muokattavat = {};
 
@@ -114,6 +118,10 @@ ylopsApp
     notifier: angular.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
+
+  $timeout(function () {
+    $anchorScroll();
+  }, 1000);
 
 })
 
