@@ -81,13 +81,9 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     @Override
     public void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long vlkId, Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+        Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Peruste peruste = perusteet.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
-        Oppiaine oppiaine = oppiaineRepository.findOne(oppiaineId);
-
-        if (!ops.containsOppiaine(oppiaine)) {
-            throw new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa");
-        }
 
         Oppiaineenvuosiluokkakokonaisuus ovk = oppiaine.getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> vk.getId().equals(vlkId))
@@ -115,14 +111,7 @@ public class OppiaineServiceImpl implements OppiaineService {
     @Override
     @Transactional(readOnly = true)
     public OppiaineDto get(@P("opsId") Long opsId, Long id) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        Oppiaine oppiaine = oppiaineRepository.findOne(id);
-        assertExists(ops, "Pyydettyä oppiainetta ei ole olemassa");
-        if (!ops.containsOppiaine(oppiaine)) {
-            throw new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa");
-        }
-
+        Oppiaine oppiaine = getOppiaine(opsId, id);
         return mapper.map(oppiaine, OppiaineDto.class);
     }
 
@@ -150,8 +139,7 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     @Override
     public OppiaineDto update(@P("opsId") Long opsId, OppiaineDto oppiaineDto) {
-        Oppiaine oppiaine = oppiaineRepository.findOne(oppiaineDto.getId());
-        assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
+        Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
 
         // lockService.assertLock ( opsId ) ... ?
         oppiaineRepository.lock(oppiaine);
@@ -164,14 +152,7 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     @Override
     public void delete(@P("opsId") Long opsId, Long id) {
-        Oppiaine oppiaine = oppiaineRepository.findOne(id);
-        assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        if (!ops.containsOppiaine(oppiaine)) {
-            throw new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa");
-        }
-
+        Oppiaine oppiaine = getOppiaine(opsId, id);
         oppiaineRepository.lock(oppiaine);
 
         if (oppiaine.isKoosteinen()) {
@@ -181,6 +162,7 @@ public class OppiaineServiceImpl implements OppiaineService {
         if (oppiaine.getOppiaine() != null) {
             oppiaine.getOppiaine().removeOppimaara(oppiaine);
         } else {
+            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
             ops.removeOppiaine(oppiaine);
         }
 
@@ -189,10 +171,7 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     @Override
     public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkakokonaisuusDto dto) {
-        Oppiaine oppiaine = oppiaineRepository.findOne(id);
-        assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Oppiaine oppiaine = getOppiaine(opsId, id);
         Oppiaineenvuosiluokkakokonaisuus oavlk =
             oppiaine.getVuosiluokkakokonaisuudet().stream()
                     .filter(ov -> ov.getId().equals(dto.getId()))
@@ -210,10 +189,7 @@ public class OppiaineServiceImpl implements OppiaineService {
 
     @Override
     public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkaDto dto) {
-        Oppiaine oppiaine = oppiaineRepository.findOne(id);
-        assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Oppiaine oppiaine = getOppiaine(opsId, id);
         Oppiaineenvuosiluokka oppiaineenVuosiluokka =
             oppiaine.getVuosiluokkakokonaisuudet().stream()
                     .map(oavlk -> oavlk.getVuosiluokka(dto.getVuosiluokka()))
@@ -229,6 +205,17 @@ public class OppiaineServiceImpl implements OppiaineService {
 
         mapper.map(oppiaineenVuosiluokka, dto);
         return dto;
+    }
+
+    private Oppiaine getOppiaine(Long opsId, Long oppiaineId) {
+        Oppiaine oppiaine = oppiaineRepository.findOne(oppiaineId);
+        assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        if (!ops.containsOppiaine(oppiaine)) {
+            throw new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa");
+        }
+        return oppiaine;
     }
 
     private static void assertExists(Object o, String msg) {
