@@ -42,7 +42,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author mikkom
@@ -150,6 +152,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         tekstiKappale.setTeksti(lt("Leipää ja tekstiä"));
 
         TekstiKappaleViiteDto.Matala viiteDto = new TekstiKappaleViiteDto.Matala();
+        viiteDto.setPakollinen(true);
         viiteDto.setTekstiKappale(tekstiKappale);
 
         TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsId);
@@ -163,6 +166,15 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         TekstiKappaleViiteDto.Matala dto = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, viiteDto.getId());
         assertNotNull(dto);
+        assertTrue(dto.isPakollinen());
+
+        dto.setPakollinen(false);
+        TekstiKappaleViiteDto updatedDto =
+            tekstiKappaleViiteService.updateTekstiKappaleViite(opsId, viiteDto.getId(), dto);
+        assertFalse(updatedDto.isPakollinen());
+        dto = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, viiteDto.getId());
+        assertNotNull(dto);
+        assertFalse(dto.isPakollinen());
 
         tekstiKappale = new TekstiKappaleDto();
         tekstiKappale.setNimi(lt("Aliotsake"));
