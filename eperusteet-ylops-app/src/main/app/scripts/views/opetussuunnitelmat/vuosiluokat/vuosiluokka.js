@@ -164,7 +164,9 @@ ylopsApp
   Editointikontrollit.registerCallback($scope.callbacks);
 
   $timeout(function () {
-    $anchorScroll();
+    if ($location.hash()) {
+      $anchorScroll();
+    }
   }, 1000);
 
 })
