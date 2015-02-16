@@ -201,7 +201,12 @@ public class OppiaineServiceImpl implements OppiaineService {
             throw new BusinessRuleViolationException("Annetun vuosiluokan ID ei vastaa olemassaolevan vuosiluokan vastaavaa");
         }
 
-        oppiaineenVuosiluokka.setSisaltoalueet(mapper.mapAsList(dto.getSisaltoalueet(), Keskeinensisaltoalue.class));
+        // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden kuvaukset,
+        // noin muutoin sisältöön tai edes sisältöaluelistaan ei pidä kajoaman
+        dto.getSisaltoalueet().forEach(
+            sisaltoalueDto ->
+                oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
+                                     .ifPresent(sa -> sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class))));
 
         mapper.map(oppiaineenVuosiluokka, dto);
         return dto;
