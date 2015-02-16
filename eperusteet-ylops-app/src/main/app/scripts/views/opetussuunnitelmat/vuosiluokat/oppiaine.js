@@ -111,6 +111,7 @@ ylopsApp
   $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
   });
+  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk.tavoitteet, 'tunniste');
 
   function toPlaintext(text) {
     return String(text).replace(/<[^>]+>/gm, '');
@@ -126,7 +127,9 @@ ylopsApp
     _.each($scope.vuosiluokat, function (vlk) {
       vlk.$numero = VuosiluokatService.fromEnum(vlk.vuosiluokka);
       _.each(vlk.tavoitteet, function (tavoite) {
-        var tavoiteTeksti = toPlaintext(Kaanna.kaanna(tavoite.tavoite));
+        var perusteTavoite = perusteTavoitteet[tavoite.tunniste] || {};
+        tavoite.$tavoite = perusteTavoite.tavoite;
+        var tavoiteTeksti = toPlaintext(Kaanna.kaanna(perusteTavoite.tavoite));
         tavoite.$short = getCode(tavoiteTeksti);
       });
       _.each(vlk.sisaltoalueet, function (alue) {

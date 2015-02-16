@@ -26,7 +26,7 @@
       <td>
         <span ng-repeat="tavoite in vuosiluokka.tavoitteet" ng-class="{short: tavoite.$short}">
           <span ng-if="tavoite.$short" ng-bind="tavoite.$short"></span>
-          <span class="long" ng-if="!tavoite.$short" ng-bind="tavoite.tavoite | kaanna | stripTags"></span></span>
+          <span class="long" ng-if="!tavoite.$short" ng-bind="tavoite.$tavoite | kaanna | stripTags"></span></span>
         </span>
       </td>
       <td>

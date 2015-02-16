@@ -50,7 +50,6 @@ ylopsApp
     $scope.tavoitteet = $scope.vuosiluokka.tavoitteet;
     processTavoitteet();
   }
-  mapModel();
 
   function refetch() {
     OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
@@ -58,6 +57,7 @@ ylopsApp
       mapModel();
     });
   }
+  refetch();
 
   function processTavoitteet() {
     var perusteKohdealueet = _.indexBy($scope.perusteOppiaine.kohdealueet, 'id');
@@ -83,7 +83,7 @@ ylopsApp
       var paikallinen = _.find($scope.tavoitteet, function (tavoite) {
         return tavoite.tunniste === tunniste;
       });
-      $scope.muokattavat[tunniste] = paikallinen ? {teksti: paikallinen.tavoite} : {teksti: {}};
+      $scope.muokattavat[tunniste] = (paikallinen && _.isObject(paikallinen.tavoite)) ? {teksti: paikallinen.tavoite} : {teksti: {}};
     });
   }
 
@@ -128,10 +128,9 @@ ylopsApp
       var paikallinen = _.find($scope.sisaltoalueet, function (alue) {
         return alue.tunniste === tunniste;
       });
-      $scope.muokattavat[tunniste] = paikallinen ? {teksti: paikallinen.kuvaus} : {teksti: {}};
+      $scope.muokattavat[tunniste] = (paikallinen && _.isObject(paikallinen.kuvaus)) ? {teksti: paikallinen.kuvaus} : {teksti: {}};
     });
   }
-  mapModel();
 
   function refetch() {
     OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
@@ -139,6 +138,7 @@ ylopsApp
       mapModel();
     });
   }
+  refetch();
 
   $scope.callbacks = {
     edit: function () {
@@ -185,6 +185,7 @@ ylopsApp
       scope.options = {
         collapsed: scope.editable
       };
+      scope.isEmpty = _.isEmpty;
     }
   };
 })
