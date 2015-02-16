@@ -4,7 +4,8 @@
     <div class="header">
       <span class="kohdealue" ng-bind="perusteTavoiteMap[tunniste].$kohdealue.nimi | kaanna"></span>
       <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
-      <span class="nimi" ng-bind="perusteTavoiteMap[tunniste].tavoite | kaanna | stripTags"></span>
+      <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
+            ng-bind="perusteTavoiteMap[tunniste].tavoite | kaanna | stripTags"></span>
     </div>
 
     <div class="peruste-body" collapse="collapsed[tunniste]">
@@ -13,7 +14,7 @@
           <h4 kaanna="'sisaltoalueet'"></h4>
           <ul>
             <li ng-repeat="sisaltoalue in perusteTavoiteMap[tunniste].$sisaltoalueet | orderBy:nimiOrder">
-              <a ng-bind="sisaltoalue.nimi | kaanna"></a>
+              <a ng-bind="sisaltoalue.nimi | kaanna" ui-sref="^.sisaltoalueet"></a>
             </li>
           </ul>
         </div>
@@ -21,7 +22,8 @@
           <h4 kaanna="'laaja-alaiset-osaamiset'"></h4>
           <ul>
             <li ng-repeat="laajaalainen in perusteTavoiteMap[tunniste].$laajaalaiset | orderBy:nimiOrder">
-              <a ng-bind="laajaalainen.nimi | kaanna"></a>
+              <a class="laajaalainen-popover" popover-html data-content="{{laajaalainen.kuvaus | kaanna}}"
+                 ng-bind="laajaalainen.nimi | kaanna"></a>
             </li>
           </ul>
         </div>

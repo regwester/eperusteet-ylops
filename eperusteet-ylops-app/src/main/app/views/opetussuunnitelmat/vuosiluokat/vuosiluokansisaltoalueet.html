@@ -3,16 +3,17 @@
 
     <div class="header">
       <span class="toggle" collapse-toggler="collapsed[$index]"></span>
-      <span class="nimi" ng-bind="perusteMap[tunniste].nimi | kaanna"></span>
+      <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
+            ng-bind="perusteSisaltoalueet[tunniste].nimi | kaanna"></span>
     </div>
 
     <div class="peruste-body" collapse="collapsed[$index]">
       <h4 kaanna="'perusteen-teksti'"></h4>
-      <div ng-bind-html="perusteMap[tunniste].kuvaus | kaanna | unsafe"></div>
+      <div ng-bind-html="perusteSisaltoalueet[tunniste].kuvaus | kaanna | unsafe"></div>
     </div>
 
     <div class="ops-body">
-      <div ops-teksti="sisaltoalueet[tunniste]" callbacks="callbacks"></div>
+      <div ops-teksti="muokattavat[tunniste]" callbacks="callbacks"></div>
     </div>
 
   </div>

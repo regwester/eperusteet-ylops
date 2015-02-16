@@ -28,6 +28,7 @@ ylopsApp
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
   });
   $scope.laajaalaiset = _.indexBy(baseLaajaalaiset, 'tunniste');
+  $scope.perusteSisaltoalueet = _.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste');
 
   $scope.isState = function (name) {
     return _.endsWith($state.current.name, 'vuosiluokka.' + name);
@@ -51,14 +52,13 @@ ylopsApp
   fetch();
 
   function processTavoitteet() {
-    var perusteSisaltoalueet = _.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste');
     var perusteKohdealueet = _.indexBy($scope.perusteOppiaine.kohdealueet, 'id');
     _.each($scope.tavoitteet, function (item) {
       var perusteTavoite = _.find($scope.perusteOpVlk.tavoitteet, function (pTavoite) {
         return pTavoite.tunniste === item.tunniste;
       });
       item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, function (tunniste) {
-        return perusteSisaltoalueet[tunniste];
+        return $scope.perusteSisaltoalueet[tunniste];
       });
       item.$kohdealue = perusteKohdealueet[_.first(perusteTavoite.kohdealueet)];
       item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, function (tunniste) {
@@ -94,39 +94,19 @@ ylopsApp
 
 .controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit) {
   $scope.tunnisteet = [];
-  $scope.sisaltoalueet = {};
-  $scope.perusteMap = {};
+  $scope.muokattavat = {};
 
-  $scope.perusteSisaltoalueet = [
-    {id: '1', nimi: {fi: 'Ajattelun taidot'}, kuvaus: {fi: 'S1 kuvaus'}},
-    {id: '2', nimi: {fi: 'Toinen sisältöalue'}, kuvaus: {fi: 'S2 kuvaus'}},
-  ];
-
-  function fetch() {
-    $scope.tunnisteet = ['1', '2'];
-    mapPeruste();
-  }
-
-  function mapPeruste() {
-    $scope.perusteMap = _.indexBy($scope.perusteSisaltoalueet, 'id');
-    _.each($scope.tunnisteet, function (tunniste) {
-      // TODO map existing
-      $scope.sisaltoalueet[tunniste] = {};
-    });
-  }
-
-  // TODO remove fetch here, initial data from resolve
-  fetch();
-  mapPeruste();
+  $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
+  $scope.tunnisteet = _.map($scope.sisaltoalueet, 'tunniste');
 
   $scope.callbacks = {
     edit: function () {
-      fetch();
+      //fetch();
     },
     save: function () {
     },
     cancel: function () {
-      fetch();
+      //fetch();
     },
     notify: function (mode) {
       $scope.callbacks.notifier(mode);
@@ -151,6 +131,34 @@ ylopsApp
       scope.options = {
         collapsed: scope.editable
       };
+    }
+  };
+})
+
+.directive('popoverHtml', function ($document) {
+  var OPTIONS = {
+    html: true,
+    placement: 'bottom'
+  };
+  return {
+    restrict: 'A',
+    link: function (scope, element) {
+      element.popover(OPTIONS);
+
+      // Click anywhere else to close
+      $document.on('click', function (event) {
+        var clickedParent = angular.element(event.target).hasClass('laajaalainen-popover');
+        var clickedContent = angular.element(event.target).closest('.popover').length > 0;
+        if (clickedParent || clickedContent || element.find(event.target).length > 0) {
+          return;
+        }
+        element.popover('hide');
+      });
+
+      scope.$on('$destroy', function () {
+        $document.off('click');
+        element.popover('destroy');
+      });
     }
   };
 });
