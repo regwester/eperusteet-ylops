@@ -82,6 +82,9 @@ ylopsApp
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();
           }],
+          baseLaajaalaiset: ['VuosiluokatService', 'opsId', function (VuosiluokatService, opsId) {
+            return VuosiluokatService.getLaajaalaiset(opsId).$promise;
+          }],
         }
       })
 

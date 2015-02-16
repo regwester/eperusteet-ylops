@@ -18,12 +18,16 @@
 
 ylopsApp
 .controller('VuosiluokkaBaseController', function ($scope, $stateParams, MurupolkuData, $state, Kaanna,
-  VuosiluokatService) {
+  VuosiluokatService, baseLaajaalaiset) {
   $scope.vuosiluokka = _.find($scope.oppiaineenVlk.vuosiluokat, function (vuosiluokka) {
     return '' + vuosiluokka.id === $stateParams.vlId;
   });
   $scope.vuosiluokkaNro = VuosiluokatService.fromEnum($scope.vuosiluokka.vuosiluokka);
   MurupolkuData.set('vuosiluokkaNimi', Kaanna.kaanna('vuosiluokka') + ' ' + $scope.vuosiluokkaNro);
+  $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
+    return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
+  });
+  $scope.laajaalaiset = _.indexBy(baseLaajaalaiset, 'tunniste');
 
   $scope.isState = function (name) {
     return _.endsWith($state.current.name, 'vuosiluokka.' + name);
@@ -34,13 +38,11 @@ ylopsApp
   }
 })
 
-.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit) {
+.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils) {
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.muokattavat = {};
-
-  // TODO get peruste oppiaine vlk
-  // sisältöalueet & laaja-alaiset osaamiset & arviointi
+  $scope.nimiOrder = Utils.sort;
 
   function fetch() {
     $scope.tavoitteet = $scope.vuosiluokka.tavoitteet;
@@ -49,9 +51,20 @@ ylopsApp
   fetch();
 
   function processTavoitteet() {
-    _.each($scope.tavoitteet, function (/*item*/) {
-      //console.log(item);
-      // TODO kohdealueet
+    var perusteSisaltoalueet = _.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste');
+    var perusteKohdealueet = _.indexBy($scope.perusteOppiaine.kohdealueet, 'id');
+    _.each($scope.tavoitteet, function (item) {
+      var perusteTavoite = _.find($scope.perusteOpVlk.tavoitteet, function (pTavoite) {
+        return pTavoite.tunniste === item.tunniste;
+      });
+      item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, function (tunniste) {
+        return perusteSisaltoalueet[tunniste];
+      });
+      item.$kohdealue = perusteKohdealueet[_.first(perusteTavoite.kohdealueet)];
+      item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, function (tunniste) {
+        return $scope.laajaalaiset[tunniste];
+      });
+      item.$arvioinninkohteet = perusteTavoite.arvioinninkohteet;
     });
     $scope.perusteTavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
     $scope.tunnisteet = _.keys($scope.perusteTavoiteMap);
