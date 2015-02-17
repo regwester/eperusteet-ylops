@@ -99,8 +99,13 @@
 
   "luonnos": "Luonnos",
   "tila-luonnos": "luonnos",
+  "tilakuvaus-luonnos": "Kuvaus luonnos-tilalle",
   "valmis": "Valmis",
   "tila-valmis": "Valmis",
+  "tilakuvaus-valmis": "Kuvaus valmis-tilalle",
+  "tila-poistettu": "Arkistoitu",
+  "poistettu": "Arkistoitu",
+  "tilakuvaus-poistettu": "Kuvaus poistettu-tilalle",
   "aseta-pohjan-tila": "Aseta pohjan tila",
   "aseta-opsin-tila": "Aseta opetussuunnitelman tila",
 

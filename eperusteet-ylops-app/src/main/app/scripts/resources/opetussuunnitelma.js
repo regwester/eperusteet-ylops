@@ -29,7 +29,8 @@ ylopsApp
     return $resource(YlopsResources.OPS, {
       opsId: '@id'
     }, {
-      laajaalaiset: {method: 'GET', url: YlopsResources.OPS + '/laajaalaisetosaamiset', isArray: true}
+      laajaalaiset: {method: 'GET', url: YlopsResources.OPS + '/laajaalaisetosaamiset', isArray: true},
+      setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'}
     });
   })
 
