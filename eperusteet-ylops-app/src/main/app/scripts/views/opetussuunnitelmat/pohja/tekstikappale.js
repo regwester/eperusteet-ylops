@@ -178,6 +178,7 @@ ylopsApp
       var tyyppi = ohje.tyyppi;
       ohje.$delete(function () {
         $scope[tyyppi] = {};
+        saveOriginal(tyyppi, null);
       });
     }
   };
