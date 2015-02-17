@@ -49,7 +49,8 @@ ylopsApp
   function update() {
     $scope.luonnissa = ($state.is('root.opetussuunnitelmat.yksi.tiedot') && $stateParams.id === 'uusi') ||
       ($state.is('root.pohjat.yksi.tiedot') && $stateParams.pohjaId === 'uusi');
-    $scope.isPohja = $state.current.name.substr(0, 12) === 'root.pohjat.';
+    $scope.isPohjaState = $state.current.name.substr(0, 12) === 'root.pohjat.';
+    $scope.isPohjaTyyppi = $scope.model.tyyppi === 'pohja';
     $scope.linkit = mapUrls($scope.isPohja ? POHJALINKIT : OPSLINKIT);
     $scope.opsId = $stateParams.id;
     $scope.pohjaId = $stateParams.pohjaId;
