@@ -103,8 +103,18 @@ ylopsApp
   });
 })
 
+.service('TextUtils', function () {
+  this.toPlaintext = function (text) {
+    return String(text).replace(/<[^>]+>/gm, '');
+  };
+  this.getCode = function (text) {
+    var match = text.match(/(^|[^A-Za-z])([A-Za-z]\d{1,2})($|[^0-9])/);
+    return match ? match[2] : null;
+  };
+})
+
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna, OppiaineService) {
+  VuosiluokatService, Kaanna, OppiaineService, TextUtils) {
 
   $scope.vuosiluokat = [];
 
@@ -113,15 +123,6 @@ ylopsApp
   });
   var perusteTavoitteet = _.indexBy($scope.perusteOpVlk.tavoitteet, 'tunniste');
 
-  function toPlaintext(text) {
-    return String(text).replace(/<[^>]+>/gm, '');
-  }
-
-  function getCode(text) {
-    var match = text.match(/([A-Za-z]\d+)\s+/);
-    return match ? match[1] : null;
-  }
-
   function updateVuosiluokat() {
     $scope.vuosiluokat = $scope.oppiaineenVlk.vuosiluokat;
     _.each($scope.vuosiluokat, function (vlk) {
@@ -129,11 +130,11 @@ ylopsApp
       _.each(vlk.tavoitteet, function (tavoite) {
         var perusteTavoite = perusteTavoitteet[tavoite.tunniste] || {};
         tavoite.$tavoite = perusteTavoite.tavoite;
-        var tavoiteTeksti = toPlaintext(Kaanna.kaanna(perusteTavoite.tavoite));
-        tavoite.$short = getCode(tavoiteTeksti);
+        var tavoiteTeksti = TextUtils.toPlaintext(Kaanna.kaanna(perusteTavoite.tavoite));
+        tavoite.$short = TextUtils.getCode(tavoiteTeksti);
       });
       _.each(vlk.sisaltoalueet, function (alue) {
-        alue.$short = getCode(Kaanna.kaanna(alue.nimi));
+        alue.$short = TextUtils.getCode(Kaanna.kaanna(alue.nimi));
       });
     });
   }
