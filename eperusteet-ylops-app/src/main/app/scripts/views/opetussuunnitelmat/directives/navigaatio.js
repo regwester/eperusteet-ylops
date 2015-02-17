@@ -205,6 +205,7 @@ ylopsApp
       }).first();
       if (first && _.isString(first.url)) {
         $location.path(first.url.substr(1));
+        $location.replace();
       }
     }
   };

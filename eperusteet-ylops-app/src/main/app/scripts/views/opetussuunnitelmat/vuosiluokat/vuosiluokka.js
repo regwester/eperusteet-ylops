@@ -35,7 +35,7 @@ ylopsApp
   };
 
   if ($state.is('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka')) {
-    $state.go('.tavoitteet');
+    $state.go('.tavoitteet', {}, {location: 'replace'});
   }
 })
 
