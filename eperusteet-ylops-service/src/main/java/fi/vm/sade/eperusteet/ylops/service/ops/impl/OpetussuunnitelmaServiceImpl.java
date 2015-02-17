@@ -183,11 +183,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         if (pohja == null) {
             pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
-
-            // TODO: Poista tämä
-            if (pohja == null) {
-                pohja = repository.findFirst1ByTyyppi(Tyyppi.POHJA);
-            }
         }
 
         if (pohja != null) {
@@ -197,7 +192,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ops.setTila(Tila.LUONNOS);
             ops = repository.save(ops);
         } else {
-            throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei ole olemassa");
+            throw new BusinessRuleViolationException("Valmista opetussuunnitelman pohjaa ei löytynyt");
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
