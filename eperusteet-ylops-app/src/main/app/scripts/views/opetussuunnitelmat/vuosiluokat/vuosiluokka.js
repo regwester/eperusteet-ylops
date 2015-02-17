@@ -40,7 +40,7 @@ ylopsApp
 })
 
 .controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils,
-  $state, OppiaineService) {
+  $state, OppiaineService, $stateParams) {
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.nimiOrder = Utils.sort;
@@ -73,7 +73,10 @@ ylopsApp
       });
       item.$kohdealue = perusteKohdealueet[_.first(perusteTavoite.kohdealueet)];
       item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, function (tunniste) {
-        return $scope.laajaalaiset[tunniste];
+        var laajaalainen = $scope.laajaalaiset[tunniste];
+        laajaalainen.$url = $state.href('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+          {vlkId: $stateParams.vlkId}) + '#' + tunniste;
+        return laajaalainen;
       });
       item.$arvioinninkohteet = perusteTavoite.arvioinninkohteet;
     });

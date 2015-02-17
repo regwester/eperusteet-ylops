@@ -22,8 +22,7 @@
           <h4 kaanna="'laaja-alaiset-osaamiset'"></h4>
           <ul>
             <li ng-repeat="laajaalainen in tavoiteMap[tunniste].$laajaalaiset | orderBy:nimiOrder">
-              <a class="laajaalainen-popover" popover-html data-content="{{laajaalainen.kuvaus | kaanna}}"
-                 ng-bind="laajaalainen.nimi | kaanna"></a>
+              <a ng-href="{{laajaalainen.$url}}" ng-bind="laajaalainen.nimi | kaanna"></a>
             </li>
           </ul>
         </div>
