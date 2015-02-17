@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -310,14 +311,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
+    private static Long getPohjaId(Opetussuunnitelma ops) {
+        return ops != null ? ops.getId() : null;
+    }
+
     @Override
     public OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
-        Tila vanhaTila = ops.getTila();
+
+        Opetussuunnitelma alkuperainenOps = mapper.map(ops, Opetussuunnitelma.class);
         mapper.map(opetussuunnitelmaDto, ops);
+
+        if (alkuperainenOps.getTyyppi() != ops.getTyyppi()) {
+            throw new BusinessRuleViolationException("Opetussuunnitelman tyyppiä ei voi vaihtaa");
+        }
+
+        if (!Objects.equals(getPohjaId(alkuperainenOps), getPohjaId(ops))) {
+            throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
+        }
+
         // Tilan muuttamiseen on oma erillinen endpointtinsa
-        ops.setTila(vanhaTila);
+        ops.setTila(alkuperainenOps.getTila());
         ops = repository.save(ops);
 
         if (opetussuunnitelmaDto.getTekstit() != null) {
