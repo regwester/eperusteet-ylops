@@ -84,13 +84,13 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
   })
 
   /* Shows "back to top" link when scrolled beyond cutoff point */
-  .directive('backtotop', function ($window, $document, Utils) {
+  .directive('backtotop', function ($window, $document, Utils, $timeout) {
     var CUTOFF_PERCENTAGE = 33;
 
     return {
       restrict: 'AE',
       scope: {},
-      template: '<div id="backtotop" ng-hide="hidden" title="{{\'takaisin-ylos\' | kaanna}}">' +
+      template: '<div id="backtotop" ng-hide="hidden" title="{{tooltip.label | kaanna}}">' +
         '<a class="action-link" icon-role="arrow-up" ng-click="backToTop()"></a></div>',
       link: function (scope) {
         var active = true;
@@ -120,6 +120,18 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
         scope.$on('$destroy', function() {
           window.off('scroll', scroll);
         });
+        scope.$on('localisation:loaded', function () {
+          // Force digest
+          scope.tooltip.label = '';
+          $timeout(function () {
+            scope.tooltip.label = 'takaisin-ylos';
+          });
+        });
+      },
+      controller: function ($scope) {
+        $scope.tooltip = {
+          label: 'takaisin-ylos'
+        };
       }
     };
   })

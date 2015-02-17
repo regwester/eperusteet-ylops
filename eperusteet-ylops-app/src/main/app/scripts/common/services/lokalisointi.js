@@ -27,7 +27,8 @@ ylopsApp.factory('LokalisointiResource', function(LOKALISOINTI_SERVICE_LOC, $res
     });
   })
 
-  .factory('LokalisointiLoader', function ($q, $http, LokalisointiResource, $window) {
+  .factory('LokalisointiLoader', function ($q, $http, LokalisointiResource, $window,
+    $rootScope) {
     var PREFIX = 'localisation/locale-',
         SUFFIX = '.json',
         BYPASS_REMOTE = $window.location.host.indexOf('localhost') === 0;
@@ -42,11 +43,13 @@ ylopsApp.factory('LokalisointiResource', function(LOKALISOINTI_SERVICE_LOC, $res
         _.extend(translations, data);
         if (BYPASS_REMOTE) {
           deferred.resolve(translations);
+          $rootScope.$broadcast('localisation:loaded');
         } else {
           LokalisointiResource.get({locale: options.key}, function (res) {
             var remotes = _.zipObject(_.map(res, 'key'), _.map(res, 'value'));
             _.extend(translations, remotes);
             deferred.resolve(translations);
+            $rootScope.$broadcast('localisation:loaded');
           }, function () {
             deferred.reject(options.key);
           });

@@ -16,7 +16,7 @@
 
 'use strict';
 
-ylopsApp.directive('editointikontrollit', function($window) {
+ylopsApp.directive('editointikontrollit', function($window, $timeout) {
     return {
       templateUrl: 'views/common/directives/editointikontrollit.html',
       restrict: 'E',
@@ -57,12 +57,21 @@ ylopsApp.directive('editointikontrollit', function($window) {
           }
         };
         scope.setMargins();
+
+        scope.$on('localisation:loaded', function () {
+          // Force digest
+          scope.forced = false;
+          $timeout(function () {
+            scope.forced = true;
+          });
+        });
       }
     };
   })
   .controller('EditointiController', function($scope, $rootScope, Editointikontrollit, $timeout) {
 
     $scope.kommentti = '';
+    $scope.forced = true;
     $scope.hideControls = true;
     function setEditControls() {
       if(Editointikontrollit.editingEnabled()) {
