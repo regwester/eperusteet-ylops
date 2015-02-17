@@ -127,15 +127,25 @@ ylopsApp
     $scope.vuosiluokat = $scope.oppiaineenVlk.vuosiluokat;
     _.each($scope.vuosiluokat, function (vlk) {
       vlk.$numero = VuosiluokatService.fromEnum(vlk.vuosiluokka);
+      var allShort = true;
       _.each(vlk.tavoitteet, function (tavoite) {
         var perusteTavoite = perusteTavoitteet[tavoite.tunniste] || {};
         tavoite.$tavoite = perusteTavoite.tavoite;
         var tavoiteTeksti = TextUtils.toPlaintext(Kaanna.kaanna(perusteTavoite.tavoite));
         tavoite.$short = TextUtils.getCode(tavoiteTeksti);
+        if (!tavoite.$short) {
+          allShort = false;
+        }
       });
+      vlk.$tavoitteetShort = allShort;
+      allShort = true;
       _.each(vlk.sisaltoalueet, function (alue) {
         alue.$short = TextUtils.getCode(Kaanna.kaanna(alue.nimi));
+        if (!alue.$short) {
+          allShort = false;
+        }
       });
+      vlk.$sisaltoalueetShort = allShort;
     });
   }
   updateVuosiluokat();

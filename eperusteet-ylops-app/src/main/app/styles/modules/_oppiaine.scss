@@ -2,11 +2,7 @@
   margin-top: 20px;
   margin-left: 25px;
   max-width: 95%;
-  .long {
-    display: inline-block;
-    max-width: 10em;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  ul {
+    padding-left: 1em;
   }
 }

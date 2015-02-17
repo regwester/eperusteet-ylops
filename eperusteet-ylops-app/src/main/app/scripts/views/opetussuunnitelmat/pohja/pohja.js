@@ -19,7 +19,7 @@
 ylopsApp
 .controller('PohjaController', function ($scope, $state, pohjaModel, opsService) {
   if ($state.current.name === 'root.pohjat.yksi') {
-    $state.go('root.pohjat.yksi.sisalto');
+    $state.go('root.pohjat.yksi.sisalto', {}, {location: 'replace'});
   }
   $scope.model = pohjaModel;
   $scope.$on('rakenne:updated', function () {
