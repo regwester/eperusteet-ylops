@@ -51,6 +51,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -113,6 +114,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
         vlk.setNimi(Optional.of(lt("ykköskakkoset")));
         vlk = vuosiluokkakokonaisuusService.add(ops.getId(), vlk);
+        assertNotNull(vlk);
 
         OppiaineDto oppiaineDto = new OppiaineDto();
         oppiaineDto.setNimi(lt("Uskonto"));
@@ -172,6 +174,19 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
         assertNotNull(oppiaineDto);
         assertEquals("Biologia", oppiaineDto.getNimi().get(Kieli.FI));
+
+        assertEquals(1, oppiaineDto.getVuosiluokkakokonaisuudet().size());
+        ovk = oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
+        final String TYOTAVAT = "Uudet työtavat";
+        ovk.setTyotavat(getTekstiosa(TYOTAVAT));
+        ovk = oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineDto.getId(), ovk);
+        assertNotNull(ovk);
+        final String TYOTAVAT_OTSIKKO = "otsikko_" + TYOTAVAT;
+        assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get().get(Kieli.FI));
+
+        oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
+        ovk = oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
+        assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get().get(Kieli.FI));
     }
 
     private static TekstiosaDto getTekstiosa(String suffiksi) {

@@ -17,61 +17,98 @@
 'use strict';
 
 ylopsApp
-.controller('VuosiluokkaBaseController', function ($scope, vuosiluokka, MurupolkuData, $state) {
-  $scope.vuosiluokka = vuosiluokka;
-  MurupolkuData.set('vuosiluokkaNimi', vuosiluokka.nimi);
+.controller('VuosiluokkaBaseController', function ($scope, $stateParams, MurupolkuData, $state, Kaanna,
+  VuosiluokatService, baseLaajaalaiset) {
+  $scope.vuosiluokka = _.find($scope.oppiaineenVlk.vuosiluokat, function (vuosiluokka) {
+    return '' + vuosiluokka.id === $stateParams.vlId;
+  });
+  $scope.vuosiluokkaNro = VuosiluokatService.fromEnum($scope.vuosiluokka.vuosiluokka);
+  MurupolkuData.set('vuosiluokkaNimi', Kaanna.kaanna('vuosiluokka') + ' ' + $scope.vuosiluokkaNro);
+  $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
+    return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
+  });
+  $scope.laajaalaiset = _.indexBy(baseLaajaalaiset, 'tunniste');
+  $scope.perusteSisaltoalueet = _.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste');
 
   $scope.isState = function (name) {
     return _.endsWith($state.current.name, 'vuosiluokka.' + name);
   };
 
   if ($state.is('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka')) {
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet');
+    $state.go('.tavoitteet', {}, {location: 'replace'});
   }
 })
 
-.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit) {
-  $scope.tavoitteet = [];
+.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils,
+  $state, OppiaineService, $stateParams) {
   $scope.tunnisteet = [];
   $scope.collapsed = {};
+  $scope.nimiOrder = Utils.sort;
   $scope.muokattavat = {};
 
-  // TODO oikea data
-  var kohdealueet = [
-    {fi: 'Työskentelyn taidot'},
-    {fi: 'Toinen kohdealue'},
-  ];
-
-  function fetch() {
-
+  function mapModel() {
+    $scope.tavoitteet = $scope.vuosiluokka.tavoitteet;
+    processTavoitteet();
   }
+
+  function refetch() {
+    OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
+      $scope.vuosiluokka = res;
+      mapModel();
+    });
+  }
+  refetch();
 
   function processTavoitteet() {
-    _.each($scope.tavoitteet, function (item, index) {
-      item.kohdealue = _.sample(kohdealueet);
-      item.tunniste = index;
+    var perusteKohdealueet = _.indexBy($scope.perusteOppiaine.kohdealueet, 'id');
+    _.each($scope.tavoitteet, function (item) {
+      var perusteTavoite = _.find($scope.perusteOpVlk.tavoitteet, function (pTavoite) {
+        return pTavoite.tunniste === item.tunniste;
+      });
+      item.$tavoite = perusteTavoite.tavoite;
+      item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, function (tunniste) {
+        var sisaltoalue = $scope.perusteSisaltoalueet[tunniste] || {};
+        sisaltoalue.$url = $state.href('^.sisaltoalueet') + '#' + tunniste;
+        return sisaltoalue;
+      });
+      item.$kohdealue = perusteKohdealueet[_.first(perusteTavoite.kohdealueet)];
+      item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, function (tunniste) {
+        var laajaalainen = $scope.laajaalaiset[tunniste];
+        laajaalainen.$url = $state.href('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+          {vlkId: $stateParams.vlkId}) + '#' + tunniste;
+        return laajaalainen;
+      });
+      item.$arvioinninkohteet = perusteTavoite.arvioinninkohteet;
     });
-    $scope.perusteTavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
-    $scope.tunnisteet = _.keys($scope.perusteTavoiteMap);
+    $scope.tavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
+    $scope.tunnisteet = _.keys($scope.tavoiteMap);
     _.each($scope.tunnisteet, function (tunniste) {
-      // TODO map existing
-      $scope.muokattavat[tunniste] = {};
+      var paikallinen = _.find($scope.tavoitteet, function (tavoite) {
+        return tavoite.tunniste === tunniste;
+      });
+      $scope.muokattavat[tunniste] = (paikallinen && _.isObject(paikallinen.tavoite)) ? {teksti: paikallinen.tavoite} : {teksti: {}};
     });
   }
-
-  VuosiluokatService.getTavoitteet().then(function (res) {
-    $scope.tavoitteet = res;
-    processTavoitteet();
-  });
 
   $scope.callbacks = {
     edit: function () {
-      fetch();
+      refetch();
     },
     save: function () {
+      var postdata = angular.copy($scope.vuosiluokka);
+      _.each(postdata.tavoitteet, function (tavoite) {
+        tavoite.tavoite = $scope.muokattavat[tavoite.tunniste].teksti;
+        delete tavoite.$sisaltoalueet;
+        delete tavoite.$kohdealue;
+        delete tavoite.$laajaalaiset;
+      });
+      OppiaineService.saveVuosiluokka(postdata, function (res) {
+        $scope.vuosiluokka = res;
+        mapModel();
+      });
     },
     cancel: function () {
-      fetch();
+      refetch();
     },
     notify: function (mode) {
       $scope.callbacks.notifier(mode);
@@ -82,41 +119,45 @@ ylopsApp
 
 })
 
-.controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit) {
+.controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit,
+  $timeout, $location, $anchorScroll, OppiaineService) {
   $scope.tunnisteet = [];
-  $scope.sisaltoalueet = {};
-  $scope.perusteMap = {};
+  $scope.muokattavat = {};
 
-  $scope.perusteSisaltoalueet = [
-    {id: '1', nimi: {fi: 'Ajattelun taidot'}, kuvaus: {fi: 'S1 kuvaus'}},
-    {id: '2', nimi: {fi: 'Toinen sisältöalue'}, kuvaus: {fi: 'S2 kuvaus'}},
-  ];
-
-  function fetch() {
-    $scope.tunnisteet = ['1', '2'];
-    mapPeruste();
-  }
-
-  function mapPeruste() {
-    $scope.perusteMap = _.indexBy($scope.perusteSisaltoalueet, 'id');
+  function mapModel() {
+    $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
+    $scope.tunnisteet = _.map($scope.sisaltoalueet, 'tunniste');
     _.each($scope.tunnisteet, function (tunniste) {
-      // TODO map existing
-      $scope.sisaltoalueet[tunniste] = {};
+      var paikallinen = _.find($scope.sisaltoalueet, function (alue) {
+        return alue.tunniste === tunniste;
+      });
+      $scope.muokattavat[tunniste] = (paikallinen && _.isObject(paikallinen.kuvaus)) ? {teksti: paikallinen.kuvaus} : {teksti: {}};
     });
   }
 
-  // TODO remove fetch here, initial data from resolve
-  fetch();
-  mapPeruste();
+  function refetch() {
+    OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
+      $scope.vuosiluokka = res;
+      mapModel();
+    });
+  }
+  refetch();
 
   $scope.callbacks = {
     edit: function () {
-      fetch();
+      refetch();
     },
     save: function () {
+      _.each($scope.vuosiluokka.sisaltoalueet, function (alue) {
+        alue.kuvaus = $scope.muokattavat[alue.tunniste].teksti;
+      });
+      OppiaineService.saveVuosiluokka($scope.vuosiluokka, function (res) {
+        $scope.vuosiluokka = res;
+        mapModel();
+      });
     },
     cancel: function () {
-      fetch();
+      refetch();
     },
     notify: function (mode) {
       $scope.callbacks.notifier(mode);
@@ -124,6 +165,12 @@ ylopsApp
     notifier: angular.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
+
+  $timeout(function () {
+    if ($location.hash()) {
+      $anchorScroll();
+    }
+  }, 1000);
 
 })
 
@@ -141,6 +188,35 @@ ylopsApp
       scope.options = {
         collapsed: scope.editable
       };
+      scope.isEmpty = _.isEmpty;
+    }
+  };
+})
+
+.directive('popoverHtml', function ($document) {
+  var OPTIONS = {
+    html: true,
+    placement: 'bottom'
+  };
+  return {
+    restrict: 'A',
+    link: function (scope, element) {
+      element.popover(OPTIONS);
+
+      // Click anywhere else to close
+      $document.on('click', function (event) {
+        var clickedParent = angular.element(event.target).hasClass('laajaalainen-popover');
+        var clickedContent = angular.element(event.target).closest('.popover').length > 0;
+        if (clickedParent || clickedContent || element.find(event.target).length > 0) {
+          return;
+        }
+        element.popover('hide');
+      });
+
+      scope.$on('$destroy', function () {
+        $document.off('click');
+        element.popover('destroy');
+      });
     }
   };
 });

@@ -51,12 +51,15 @@ ylopsApp
           oppiaineId: ['$stateParams', function($stateParams){
             return $stateParams.oppiaineId;
           }],
-          oppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
-            return vuosiluokatService.getOppiaine(oppiaineId).$promise;
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          oppiaineInit: ['OppiaineService', 'oppiaineId', 'opsModel', 'vlkId', function (OppiaineService, oppiaineId, opsModel, vlkId) {
+            return OppiaineService.refresh(opsModel, oppiaineId, vlkId);
           }],
           perusteOppiaine: ['vuosiluokatService', 'oppiaineId', function (vuosiluokatService, oppiaineId) {
             return vuosiluokatService.getPerusteOppiaine(oppiaineId).$promise;
-          }],
+          }]
         }
       })
 
@@ -76,15 +79,12 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokka.html',
         controller: 'VuosiluokkaBaseController',
         resolve: {
-          vuosiluokkaId: ['$stateParams', function($stateParams){
-            return $stateParams.vuosiluokkaId;
-          }],
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();
           }],
-          vuosiluokka: ['vuosiluokatService', 'vuosiluokkaId', function (vuosiluokatService, vuosiluokkaId) {
-            return vuosiluokatService.getVuosiluokka(vuosiluokkaId);
-          }]
+          baseLaajaalaiset: ['VuosiluokatService', 'opsId', function (VuosiluokatService, opsId) {
+            return VuosiluokatService.getLaajaalaiset(opsId).$promise;
+          }],
         }
       })
 

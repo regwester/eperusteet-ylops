@@ -19,6 +19,7 @@ import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
@@ -78,9 +79,9 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         return oa.getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> vk.getId().equals(id))
             .flatMap(vk -> vk.getVuosiluokat().stream())
-            .collect(Collectors.toMap(OppiaineenVuosiluokkaDto::getVuosiluokka, l -> {
-                return l.getTavoitteet().stream().map(t -> t.getTunniste()).collect(Collectors.toSet());
-            }));
+            .collect(Collectors.toMap(
+                OppiaineenVuosiluokkaDto::getVuosiluokka,
+                l -> l.getTavoitteet().stream().map(OpetuksenTavoiteDto::getTunniste).collect(Collectors.toSet())));
     }
 
     @RequestMapping(value = "/{id}/tavoitteet", method = RequestMethod.POST)
@@ -91,6 +92,16 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         @PathVariable("id") final Long id,
         @RequestBody Map<Vuosiluokka, Set<UUID>> tavoitteet) {
         oppiaineService.updateVuosiluokkienTavoitteet(opsId, oppiaineId, id, tavoitteet);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(
+        @PathVariable("opsId") final Long opsId,
+        @PathVariable("oppiaineId") final Long oppiaineId,
+        @PathVariable("id") final Long id,
+        @RequestBody OppiaineenVuosiluokkakokonaisuusDto dto) {
+        dto.setId(id);
+        return oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineId, dto);
     }
 
     @RequestMapping(method = RequestMethod.GET)

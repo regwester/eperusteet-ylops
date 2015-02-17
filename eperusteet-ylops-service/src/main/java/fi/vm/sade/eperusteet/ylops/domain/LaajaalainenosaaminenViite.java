@@ -36,6 +36,10 @@ public class LaajaalainenosaaminenViite {
         this.viite = viite;
     }
 
+    public LaajaalainenosaaminenViite(LaajaalainenosaaminenViite other) {
+        this.viite = other.getViite();
+    }
+    
     protected LaajaalainenosaaminenViite() {
         //JPA
     }

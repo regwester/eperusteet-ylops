@@ -80,7 +80,7 @@ describe('Service: Vuosiluokat', function () {
 
     // Add specs
     it('should map vuosiluokat and oppiaineet', function () {
-      mySvc.setVuosiluokat(vuosiluokat);
+      mySvc.setVuosiluokkakokonaisuudet(vuosiluokat);
       var app = mySvc.mapForMenu(ops);
 
       var labels = _.map(app, function (item) { return item.label.fi; });

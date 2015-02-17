@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -63,6 +62,16 @@ public class Tekstiosa implements Serializable {
     public Tekstiosa(LokalisoituTeksti otsikko, LokalisoituTeksti teksti) {
         this.otsikko = otsikko;
         this.teksti = teksti;
+    }
+
+    public Tekstiosa(Tekstiosa other) {
+        this.otsikko = other.getOtsikko();
+        this.teksti = other.getTeksti();
+    }
+
+    public static Tekstiosa copyOf(Tekstiosa other) {
+        if ( other == null ) return null;
+        return new Tekstiosa(other);
     }
 
 }

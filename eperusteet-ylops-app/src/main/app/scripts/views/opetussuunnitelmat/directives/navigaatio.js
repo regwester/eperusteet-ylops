@@ -120,6 +120,7 @@ ylopsApp
     } else {
       findActiveTeksti();
     }
+    OpsNavigaatio.setItems($scope.items[$scope.chosen]);
   }
 
   function createNavimenu(node) {
@@ -171,13 +172,18 @@ ylopsApp
 
 })
 
-.service('OpsNavigaatio', function () {
+.service('OpsNavigaatio', function ($location) {
   var active = true;
   var callback = angular.noop;
+  var items = null;
 
   this.setActive = function (value) {
     active = _.isUndefined(value) || !!value;
     callback(active);
+  };
+
+  this.setItems = function (newItems) {
+    items = newItems;
   };
 
   this.listen = function (cb) {
@@ -190,5 +196,17 @@ ylopsApp
 
   this.stopListening = function () {
     callback = angular.noop;
+  };
+
+  this.selectFirst = function () {
+    if (_.isObject(items)) {
+      var first = _(items.items).filter(function (item) {
+        return _.isUndefined(item.depth) || item.depth === 0;
+      }).first();
+      if (first && _.isString(first.url)) {
+        $location.path(first.url.substr(1));
+        $location.replace();
+      }
+    }
   };
 });

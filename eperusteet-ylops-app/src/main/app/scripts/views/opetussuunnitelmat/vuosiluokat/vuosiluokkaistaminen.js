@@ -18,10 +18,13 @@
 
 ylopsApp
 .controller('VuosiluokkaistaminenController', function ($scope, $filter, VariHyrra, ColorCalculator,
-  $state, OppiaineenVlk, $stateParams, OpsService, Kaanna) {
+  $state, OppiaineenVlk, $stateParams, OpsService, Kaanna, Notifikaatiot, VuosiluokatService,
+  $rootScope, OppiaineService) {
+
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
   $scope.perusteOpVlk = {};
+  $scope.containers = {};
 
   function colorizeKohdealueet() {
     VariHyrra.reset();
@@ -37,20 +40,13 @@ ylopsApp
   var kohdealueet = $scope.perusteOppiaine.kohdealueet;
   colorizeKohdealueet();
 
-  var ops = OpsService.get();
-  var opVlk = {};
-  var vlk = {};
-  if (ops) {
-    vlk = _.find(ops.vuosiluokkakokonaisuudet, function (item) {
-      return '' + item.vuosiluokkakokonaisuus.id === $stateParams.vlkId;
-    });
-    if (vlk) {
-      var tunniste = vlk.vuosiluokkakokonaisuus._tunniste;
-      opVlk = _.find($scope.oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
-        return opVlk._vuosiluokkakokonaisuus === tunniste;
-      });
+  $scope.containerClasses = function (container) {
+    var classes = ['width' + _.size($scope.containers)];
+    if (container.type === 'tavoitteet') {
+      classes.push('tavoitteet');
     }
-  }
+    return classes;
+  };
 
   function processTavoitteet() {
     _.each($scope.tavoitteet, function (tavoite) {
@@ -79,19 +75,53 @@ ylopsApp
     $scope.allDragged = unused.length === 0;
   }
 
-  // TODO siirrä perusteen oppiaineen vlk:n haku oppiainebasen resolveen
-  OppiaineenVlk.peruste({
-    opsId: $stateParams.id,
-    oppiaineId: $stateParams.oppiaineId,
-    vlkId: opVlk.id
-  }, function (res) {
-    $scope.perusteOpVlk = res;
-    $scope.tavoitteet = $scope.perusteOpVlk.tavoitteet;
-    processTavoitteet();
-    resetTavoitteet();
-  });
+  function initVuosiluokkaContainers() {
+    $scope.singleVuosiluokat = _.map($scope.perusteOpVlk.vuosiluokat, VuosiluokatService.fromEnum);
+    $scope.containers = {
+      tavoitteet: {
+        type: 'tavoitteet',
+        id: 'container-list-tavoitteet',
+        label: 'tavoitteet-ja-sisallot',
+        items: []
+      }
+    };
+    var existing = {};
+    _.each($scope.oppiaineenVlk.vuosiluokat, function (vuosiluokka) {
+      existing[VuosiluokatService.fromEnum(vuosiluokka.vuosiluokka)] = _.map(vuosiluokka.tavoitteet, function (tavoite) {
+        return tavoite.tunniste;
+      });
+    });
+    _.each($scope.singleVuosiluokat, function (item) {
+      $scope.containers[item] = {
+        items: _.map(existing[item], function (tunniste) {
+          return $scope.tavoiteMap[tunniste];
+        }),
+        vuosiluokka: item,
+        id: 'container-list-vuosiluokka-' + item
+      };
+    });
+  }
 
-  $scope.singleVuosiluokat = [3, 4, 5, 6];
+  function fetch() {
+    OppiaineenVlk.peruste({
+      opsId: $stateParams.id,
+      oppiaineId: $stateParams.oppiaineId,
+      vlkId: $scope.oppiaineenVlk.id
+    }, function (res) {
+      $scope.perusteOpVlk = res;
+      $scope.tavoitteet = $scope.perusteOpVlk.tavoitteet;
+      $scope.tavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
+
+      OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId).then(function () {
+        $scope.oppiaineenVlk = OppiaineService.getOpVlk();
+        initVuosiluokkaContainers();
+        processTavoitteet();
+        resetTavoitteet();
+      });
+    });
+  }
+  fetch();
+
   $scope.allDragged = false;
   $scope.collapsedMode = false;
   $scope.showKohdealueet = true;
@@ -104,31 +134,26 @@ ylopsApp
     goBack();
   };
 
-  function saveCb() {
-    goBack();
+  function saveCb(success) {
+    var postdata = {};
+    _.each($scope.perusteOpVlk.vuosiluokat, function (vuosiluokkaEnum) {
+      postdata[vuosiluokkaEnum] = _.map($scope.containers[VuosiluokatService.fromEnum(vuosiluokkaEnum)].items, 'tunniste');
+    });
+    OppiaineenVlk.vuosiluokkaista({
+      opsId: $stateParams.id,
+      oppiaineId: $stateParams.oppiaineId,
+      vlkId: $scope.oppiaineenVlk.id
+    }, postdata, function () {
+      Notifikaatiot.onnistui('tallennettu-ok');
+      $rootScope.$broadcast('oppiaine:reload');
+      success();
+    }, Notifikaatiot.serverCb);
   }
 
   $scope.save = function () {
     // TODO save
-    saveCb();
+    saveCb(goBack);
   };
-
-  $scope.containers = {
-    tavoitteet: {
-      type: 'tavoitteet',
-      id: 'container-list-tavoitteet',
-      label: 'tavoitteet-ja-sisallot',
-      items: []
-    }
-  };
-
-  _.each($scope.singleVuosiluokat, function (item) {
-    $scope.containers[item] = {
-      items: [],
-      vuosiluokka: item,
-      id: 'container-list-vuosiluokka-' + item
-    };
-  });
 
   function sourceIs(event, className) {
     return angular.element(event.target).hasClass(className);

@@ -74,7 +74,11 @@ public class OpsDtoMapper {
         Oppiaine oppiaine = new Oppiaine(dto.getTunniste());
         mapper.map(dto, oppiaine);
         if (dto.getOppimaarat() != null) {
-            dto.getOppimaarat().forEach(o -> oppiaine.addOppimaara(mapper.map(o, Oppiaine.class)));
+            dto.getOppimaarat().forEach(o -> {
+                Oppiaine om = new Oppiaine(o.getTunniste());
+                mapper.map(o, om);
+                oppiaine.addOppimaara(om);
+            });
         }
 
         if (dto.getVuosiluokkakokonaisuudet() != null) {

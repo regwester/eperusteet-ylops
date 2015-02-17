@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div class="osio col-md-3 col-sm-4">
+  <div class="osio col-md-6 col-sm-4">
     <h2 kaanna="'aloita-uusi-ops'"></h2>
     <form name="aloitauusiForm" ng-controller="UusiOpsController">
       <label>
@@ -27,13 +27,13 @@
         <span kaanna="'tyhja-pohja'"></span>
       </label>
       <br/>
-      <button class="btn btn-primary luo-nappi" ng-click="addNew()" ng-disabled="pohja.active === '1' && !pohja.model"
+      <button class="btn btn-primary luo-nappi" ng-click="addNew(pohja.model)" ng-disabled="pohja.active === '1' && !pohja.model"
               kaanna="'luo-projekti'"></button>
     </form>
 
   </div>
 
-  <div class="osio col-md-3 col-sm-12">
+  <!-- <div class="osio col-md-3 col-sm-12">
     <h2></h2>
     <div ng-controller="TiedotteetController" class="etusivu-tiedotteet">
       <h3 kaanna="'tiedotteet'"></h3>
@@ -44,7 +44,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
 </div>
 

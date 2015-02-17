@@ -17,17 +17,16 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -67,11 +66,6 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @Setter
     private UUID tunniste;
 
-    @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
-    private Vuosiluokka vuosiluokka;
-
     @Getter
     @Setter
     @ManyToMany(cascade = CascadeType.PERSIST)
@@ -101,4 +95,30 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
         }
     }
 
+    static Opetuksentavoite copyOf(Opetuksentavoite other, Map<Long, Opetuksenkohdealue> kohdealueet, Map<Long, Keskeinensisaltoalue> sisaltoalueet) {
+        Opetuksentavoite ot = new Opetuksentavoite();
+        ot.setTunniste(other.getTunniste());
+        ot.setTavoite(other.getTavoite());
+        ot.setLaajattavoitteet(
+            other.getLaajattavoitteet().stream()
+            .map(lt -> new LaajaalainenosaaminenViite(lt))
+            .collect(Collectors.toSet())
+        );
+        ot.setSisaltoalueet(
+            other.getSisaltoalueet().stream()
+            .map(s -> sisaltoalueet.get(s.getId()))
+            .collect(Collectors.toSet())
+        );
+        ot.setKohdealueet(
+            other.getKohdealueet().stream()
+            .map(k -> kohdealueet.get(k.getId()))
+            .collect(Collectors.toSet())
+        );
+        ot.setArvioinninkohteet(
+            other.getArvioinninkohteet().stream()
+            .map(a -> Tavoitteenarviointi.copyOf(a))
+            .collect(Collectors.toSet())
+        );
+        return ot;
+    }
 }

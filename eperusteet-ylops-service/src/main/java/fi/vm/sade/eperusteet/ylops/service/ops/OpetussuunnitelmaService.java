@@ -35,7 +35,8 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Set<PerusteLaajaalainenosaaminen> getLaajaalaisetosaamiset(@P("opsId") Long id);
 
-    @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUKU')")
+    @PreAuthorize("(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and hasPermission(null, 'opetussuunnitelma', 'LUKU')) || " +
+        "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
@@ -62,7 +63,6 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
                                                        TekstiKappaleViiteDto.Matala viite);
-
     /**
      * Hakee opetussuunnitelmaan liittyvän opetussuunnitelman perusteen
      *
