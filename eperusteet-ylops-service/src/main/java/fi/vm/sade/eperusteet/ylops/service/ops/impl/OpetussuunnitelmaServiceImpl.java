@@ -182,9 +182,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma pohja = ops.getPohja();
 
         if (pohja == null) {
-            //Opetussuunnitelma pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
-            // TODO: Keksi tapa valita oikea pohja
-            pohja = repository.findFirst1ByTyyppi(Tyyppi.POHJA);
+            pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
+
+            // TODO: Poista tämä
+            if (pohja == null) {
+                pohja = repository.findFirst1ByTyyppi(Tyyppi.POHJA);
+            }
         }
 
         if (pohja != null) {
@@ -316,13 +319,37 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
+        Tila vanhaTila = ops.getTila();
         mapper.map(opetussuunnitelmaDto, ops);
+        // Tilan muuttamiseen on oma erillinen endpointtinsa
+        ops.setTila(vanhaTila);
         ops = repository.save(ops);
 
         if (opetussuunnitelmaDto.getTekstit() != null) {
             tekstiKappaleViiteService.reorderSubTree(ops.getId(), ops.getTekstit().getId(), opetussuunnitelmaDto.getTekstit().get());
         }
 
+        return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    @Override
+    public OpetussuunnitelmaDto updateTila(@P("id") Long id, Tila tila) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
+
+        // Sallitaan tilasiirtymät vain yhteen suuntaan
+        if (tila.ordinal() > ops.getTila().ordinal()) {
+            if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
+                List<Opetussuunnitelma> pohjat = repository.findAllByTyyppi(Tyyppi.POHJA);
+                if (pohjat.size() > 0) {
+                    // Arkistoidaan vanhat pohjat
+                    pohjat.forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
+                }
+            }
+
+            ops.setTila(tila);
+            ops = repository.save(ops);
+        }
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
