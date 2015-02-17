@@ -342,8 +342,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
                 List<Opetussuunnitelma> pohjat = repository.findAllByTyyppi(Tyyppi.POHJA);
                 if (pohjat.size() > 0) {
-                    // Arkistoidaan vanhat pohjat
-                    pohjat.forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
+                    // Arkistoidaan vanhat valmiit pohjat
+                    pohjat.stream().filter(pohja -> pohja.getTila() == Tila.VALMIS)
+                          .forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
                 }
             }
 
