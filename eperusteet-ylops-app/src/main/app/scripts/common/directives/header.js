@@ -167,7 +167,18 @@ ylopsApp
       setTitle();
     }
 
+    $scope.isLocal = Oikeudet.isLocal();
+    if ($scope.isLocal) {
+      Oikeudet.setVirkailija(true);
+    }
     $scope.isVirkailija = Oikeudet.isVirkailija();
+    $scope.$on('fetched:casTiedot', function () {
+      $scope.isLocal = Oikeudet.isLocal();
+      if ($scope.isLocal) {
+        Oikeudet.setVirkailija(true);
+      }
+      $scope.isVirkailija = Oikeudet.isVirkailija();
+    });
 
     $scope.$on('murupolku:update', update);
 
