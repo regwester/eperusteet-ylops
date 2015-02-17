@@ -34,7 +34,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
  */
 @Entity
 @Audited
-@Table(name="keskeinen_sisaltoalue")
+@Table(name = "keskeinen_sisaltoalue")
 public class Keskeinensisaltoalue extends AbstractReferenceableEntity {
 
     @Getter
@@ -54,5 +54,13 @@ public class Keskeinensisaltoalue extends AbstractReferenceableEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
     private LokalisoituTeksti kuvaus;
+
+    static Keskeinensisaltoalue copyOf(Keskeinensisaltoalue other) {
+        Keskeinensisaltoalue ks = new Keskeinensisaltoalue();
+        ks.setTunniste(other.getTunniste());
+        ks.setNimi(other.getNimi());
+        ks.setKuvaus(other.getKuvaus());
+        return ks;
+    }
 
 }

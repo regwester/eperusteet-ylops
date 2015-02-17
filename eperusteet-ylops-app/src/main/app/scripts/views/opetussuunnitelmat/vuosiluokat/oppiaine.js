@@ -17,36 +17,150 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineBaseController', function ($scope, oppiaine, perusteOppiaine, MurupolkuData) {
-  $scope.oppiaine = oppiaine;
-  $scope.perusteOppiaine = perusteOppiaine;
-  MurupolkuData.set('oppiaineNimi', $scope.oppiaine.nimi);
+.service('OppiaineService', function (VuosiluokatService, $rootScope, MurupolkuData, $q, OppiaineenVlk,
+  Notifikaatiot, VuosiluokkaCRUD) {
+  var vlkTunniste = null;
+  var oppiaineenVlk = null;
+  var oppiaine = null;
+  var opetussuunnitelma = null;
+
+  function setup(ops, vlkId, oppiaineModel, promise) {
+    opetussuunnitelma = ops;
+    oppiaine = oppiaineModel;
+    MurupolkuData.set('oppiaineNimi', oppiaine.nimi);
+    var opsVlk = _.find(ops.vuosiluokkakokonaisuudet, function (vlk) {
+      return '' + vlk.vuosiluokkakokonaisuus.id === vlkId;
+    });
+    vlkTunniste = opsVlk ? opsVlk.vuosiluokkakokonaisuus._tunniste : null;
+    oppiaineenVlk = _.find(oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
+      return opVlk._vuosiluokkakokonaisuus === vlkTunniste;
+    });
+    promise.resolve();
+  }
+
+  this.refresh = function (ops, oppiaineId, vlkId) {
+    var promise = $q.defer();
+    VuosiluokatService.getOppiaine(oppiaineId).$promise.then(function (res) {
+      setup(ops, vlkId, res, promise);
+      $rootScope.$broadcast('oppiainevlk:updated', oppiaineenVlk);
+    });
+    return promise.promise;
+  };
+  this.getOpVlk = function () {
+    return oppiaineenVlk;
+  };
+  this.getOppiaine = function () {
+    return oppiaine;
+  };
+  this.saveVlk = function (model) {
+    OppiaineenVlk.save({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id
+    }, model, function () {
+      Notifikaatiot.onnistui('tallennettu-ok');
+      $rootScope.$broadcast('oppiaine:reload');
+    }, Notifikaatiot.serverCb);
+  };
+  this.fetchVlk = function (vlkId, cb) {
+    OppiaineenVlk.get({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id,
+      vlkId: vlkId
+    }, cb, Notifikaatiot.serverCb);
+  };
+  this.saveVuosiluokka = function (model, cb) {
+    VuosiluokkaCRUD.save({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id,
+    }, model, function (res) {
+      Notifikaatiot.onnistui('tallennettu-ok');
+      cb(res);
+    }, Notifikaatiot.serverCb);
+  };
+  this.fetchVuosiluokka = function (vlId, cb) {
+    VuosiluokkaCRUD.get({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id,
+      vlId: vlId
+    }, cb, Notifikaatiot.serverCb);
+  };
 })
 
-.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi) {
-  $scope.vuosiluokkakokonaisuus = $scope.vuosiluokat[0];
+.controller('OppiaineBaseController', function ($scope, perusteOppiaine, MurupolkuData, $stateParams,
+  $rootScope, OppiaineService) {
 
-  $scope.tekstit = {
-    ohjaus: {
-      teksti: {fi: 'Oppilaan matematiikan osaamista ja taitojen kehittymistä seurataan ja tarvittaessa annetaan lisätukea heti tuen tarpeen ilmetessä. Tarjottava tuki antaa oppilaalle mahdollisuuden ymmärtää matematiikkaa ikätasonsa mukaisesti ja kehittää taitojaan niin, että oppimisen ja osaamisen ilo säilyvät. Oppilaille tarjotaan sopivia välineitä oppimisen tueksi ja hänelle tarjotaan mahdollisuuksia oivaltaa ja ymmärtää itse.'}
-    },
-    tyotavat: {
+  $scope.perusteOppiaine = perusteOppiaine;
+  $scope.oppiaine = OppiaineService.getOppiaine();
+  $scope.oppiaineenVlk = OppiaineService.getOpVlk();
 
-    },
-    arviointi: {
+  $scope.$on('oppiainevlk:updated', function (event, value) {
+    $scope.oppiaineenVlk = value;
+    $scope.oppiaine = OppiaineService.getOppiaine();
+  });
 
-    }
+  $scope.$on('oppiaine:reload', function () {
+    OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId);
+  });
+})
+
+.service('TextUtils', function () {
+  this.toPlaintext = function (text) {
+    return String(text).replace(/<[^>]+>/gm, '');
   };
+  this.getCode = function (text) {
+    var match = text.match(/(^|[^A-Za-z])([A-Za-z]\d{1,2})($|[^0-9])/);
+    return match ? match[2] : null;
+  };
+})
+
+.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
+  VuosiluokatService, Kaanna, OppiaineService, TextUtils) {
+
+  $scope.vuosiluokat = [];
+
+  $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
+    return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
+  });
+  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk.tavoitteet, 'tunniste');
+
+  function updateVuosiluokat() {
+    $scope.vuosiluokat = $scope.oppiaineenVlk.vuosiluokat;
+    _.each($scope.vuosiluokat, function (vlk) {
+      vlk.$numero = VuosiluokatService.fromEnum(vlk.vuosiluokka);
+      _.each(vlk.tavoitteet, function (tavoite) {
+        var perusteTavoite = perusteTavoitteet[tavoite.tunniste] || {};
+        tavoite.$tavoite = perusteTavoite.tavoite;
+        var tavoiteTeksti = TextUtils.toPlaintext(Kaanna.kaanna(perusteTavoite.tavoite));
+        tavoite.$short = TextUtils.getCode(tavoiteTeksti);
+      });
+      _.each(vlk.sisaltoalueet, function (alue) {
+        alue.$short = TextUtils.getCode(Kaanna.kaanna(alue.nimi));
+      });
+    });
+  }
+  updateVuosiluokat();
+
+  $scope.$on('oppiainevlk:updated', function (event, value) {
+    $scope.oppiaineenVlk = value;
+    updateVuosiluokat();
+  });
+
+  function refetch() {
+    OppiaineService.fetchVlk($scope.oppiaineenVlk.id, function (res) {
+      $scope.oppiaineenVlk = res;
+      updateVuosiluokat();
+    });
+  }
 
   $scope.callbacks = {
     edit: function () {
-
+      refetch();
     },
     save: function () {
-
+      OppiaineService.saveVlk($scope.oppiaineenVlk);
     },
     cancel: function () {
-
+      refetch();
     },
     notify: function (mode) {
       $scope.callbacks.notifier(mode);
@@ -55,19 +169,11 @@ ylopsApp
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 
-
-  $scope.goToDummy = function (id) {
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {
-      vlkId: $stateParams.vlkId,
-      vlId: id
-    });
-  };
-
   function vuosiluokkaistamisVaroitus(cb) {
     Varmistusdialogi.dialogi({
       otsikko: 'vuosiluokkaistaminen-on-jo-tehty',
       teksti: 'vuosiluokkaistaminen-varoitus',
-      primaryBtn: 'aloita-uudelleen',
+      primaryBtn: 'jatka',
       successCb: cb
     })();
   }
@@ -78,9 +184,8 @@ ylopsApp
         vlkId: $stateParams.vlkId,
       });
     }
-    if (_.isArray($scope.oppiaine.vuosiluokat) && $scope.oppiaine.vuosiluokat.length > 0) {
+    if (_.isArray($scope.vuosiluokat) && $scope.vuosiluokat.length > 0) {
       vuosiluokkaistamisVaroitus(function () {
-        // TODO reset vuosiluokat
         start();
       });
     } else {

@@ -58,6 +58,14 @@ public class Laajaalainenosaaminen extends AbstractReferenceableEntity {
     @ValidHtml
     private LokalisoituTeksti kuvaus;
 
+    public Laajaalainenosaaminen() {
+    }
+
+    public Laajaalainenosaaminen(Laajaalainenosaaminen other) {
+        this.laajaalainenosaaminen = new LaajaalainenosaaminenViite(other.getLaajaalainenosaaminen());
+        this.kuvaus = other.getKuvaus();
+    }
+
     public void setVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vuosiluokkakokonaisuus) {
         if ( this.vuosiluokkakokonaisuus == null || this.vuosiluokkakokonaisuus.equals(vuosiluokkakokonaisuus) ) {
             this.vuosiluokkakokonaisuus = vuosiluokkakokonaisuus;

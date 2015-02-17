@@ -88,6 +88,24 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
     @Getter
     private Tila tila = Tila.LUONNOS;
 
+    public Vuosiluokkakokonaisuus() {
+    }
+
+    private Vuosiluokkakokonaisuus(Vuosiluokkakokonaisuus other) {
+        this.tunniste = other.getTunniste();
+        this.nimi = other.getNimi();
+        this.siirtymaEdellisesta = Tekstiosa.copyOf(other.getSiirtymaEdellisesta());
+        this.siirtymaSeuraavaan = Tekstiosa.copyOf(other.getSiirtymaSeuraavaan());
+        this.tehtava = Tekstiosa.copyOf(other.getTehtava());
+        this.tila = Tila.LUONNOS;
+
+        other.getLaajaalaisetosaamiset().forEach(l -> {
+            Laajaalainenosaaminen lo = new Laajaalainenosaaminen(l);
+            lo.setVuosiluokkaKokonaisuus(this);
+            laajaalaisetosaamiset.add(lo);
+        });
+
+    }
 
     public Set<Laajaalainenosaaminen> getLaajaalaisetosaamiset() {
         return new HashSet<>(laajaalaisetosaamiset);
@@ -123,6 +141,10 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
     @Override
     public int hashCode() {
         return System.identityHashCode(this);
+    }
+
+    public static Vuosiluokkakokonaisuus copyOf(Vuosiluokkakokonaisuus vuosiluokkakokonaisuus) {
+        return new Vuosiluokkakokonaisuus(vuosiluokkakokonaisuus);
     }
 
 }

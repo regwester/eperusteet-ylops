@@ -19,7 +19,13 @@
 ylopsApp
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
   MurupolkuData, vlk, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
-  baseLaajaalaiset) {
+  baseLaajaalaiset, $timeout, $anchorScroll, $location) {
+
+  $timeout(function () {
+    if ($location.hash()) {
+      $anchorScroll();
+    }
+  }, 1000);
 
   var laajaalaisetosaamiset = _.indexBy(baseLaajaalaiset, 'tunniste');
   $scope.siirtymat = ['siirtymaEdellisesta', 'siirtymaSeuraavaan'];

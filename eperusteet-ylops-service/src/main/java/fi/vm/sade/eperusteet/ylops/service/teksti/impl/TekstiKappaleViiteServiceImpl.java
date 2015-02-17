@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
@@ -74,6 +75,10 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappaleViite parentViite = findViite(opsId, parentViiteId);
 
         TekstiKappaleViite uusiViite = new TekstiKappaleViite(Omistussuhde.OMA);
+        if (viiteDto != null) {
+            uusiViite.setPakollinen(viiteDto.isPakollinen());
+        }
+
         repository.lock(parentViite.getRoot());
 
         List<TekstiKappaleViite> lapset = parentViite.getLapset();
@@ -109,10 +114,15 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = false)
-    public void updateTekstiKappaleViite(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
-        TekstiKappaleViite viite = findViite(opsId, rootViiteId);
+    public TekstiKappaleViiteDto updateTekstiKappaleViite(
+        @P("opsId") Long opsId, Long viiteId, TekstiKappaleViiteDto uusi) {
+        TekstiKappaleViite viite = findViite(opsId, viiteId);
         repository.lock(viite.getRoot());
-        updateTekstiKappale(viite, uusi);
+
+        updateTekstiKappale(viite, uusi.getTekstiKappale());
+        viite.setPakollinen(uusi.isPakollinen());
+        viite = repository.save(viite);
+        return mapper.map(viite, TekstiKappaleViiteDto.class);
     }
 
     @Override
@@ -120,7 +130,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public void reorderSubTree(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
         TekstiKappaleViite viite = findViite(opsId, rootViiteId);
         repository.lock(viite.getRoot());
-        Set<TekstiKappaleViite> refs = Collections.newSetFromMap(new IdentityHashMap<TekstiKappaleViite, Boolean>());
+        Set<TekstiKappaleViite> refs = Collections.newSetFromMap(new IdentityHashMap<>());
         refs.add(viite);
         TekstiKappaleViite parent = viite.getVanhempi();
         clearChildren(viite, refs);
@@ -189,13 +199,13 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.getLapset().clear();
     }
 
-    private void updateTekstiKappale(TekstiKappaleViite viite, TekstiKappaleViiteDto uusi) {
-        if (uusi.getTekstiKappale() != null) {
+    private void updateTekstiKappale(TekstiKappaleViite viite, TekstiKappaleDto uusiTekstiKappale) {
+        if (uusiTekstiKappale != null) {
             if (viite.getOmistussuhde() == Omistussuhde.OMA) {
-                tekstiKappaleService.update(uusi.getTekstiKappale());
+                tekstiKappaleService.update(uusiTekstiKappale);
             } else {
                 TekstiKappale vanha = viite.getTekstiKappale();
-                tekstiKappaleService.mergeNew(viite, uusi.getTekstiKappale());
+                tekstiKappaleService.mergeNew(viite, uusiTekstiKappale);
 
                 // Poista vanha tekstikappale jos siihen ei tämän jälkeen enää löydy viittauksia
                 if (repository.findAllByTekstiKappale(vanha).size() == 0) {
@@ -217,7 +227,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         lapset.clear();
 
         // Päivitä myös tekstikappale jos DTO sen sisältää
-        updateTekstiKappale(viite, uusi);
+        updateTekstiKappale(viite, uusi.getTekstiKappale());
 
         if (uusi.getLapset() != null) {
             lapset.addAll(uusi.getLapset()

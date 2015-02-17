@@ -17,69 +17,10 @@
 'use strict';
 
 ylopsApp
-.service('DummyData', function () {
-  // TODO poista dummydata
-  this.getVuosiluokat = function () {
-    return [
-      {id: 'dummy1', nimi: {fi: 'Vuosiluokat 1-2'}},
-      {id: 'dummy2', nimi: {fi: 'Vuosiluokat 3-6'}},
-      {id: 'dummy3', nimi: {fi: 'Vuosiluokat 7-9'}},
-    ];
-  };
-
-  this.getOppiaineet = function () {
-    return [
-      {id: 'dummy4', nimi: {fi: 'Matematiikka'}},
-      {id: 'dummy5', nimi: {fi: 'Äidinkieli ja kirjallisuus'}},
-      {id: 'dummy6', nimi: {fi: 'Musiikki'}},
-      {id: 'dummy7', nimi: {fi: 'Liikunta'}},
-    ];
-  };
-
-  this.getTavoitteet = function () {
-    return [
-      {tavoite: {fi: 'pitää yllä oppilaan innostusta ja kiinnostusta matematiikkaa kohtaan sekä tukee positiivista minäkuvaa ja itseluottamusta'}},
-      {tavoite: {fi: 'ohjaa oppilasta havaitsemaan yhteyksiä oppimiensa asioiden välillä'}},
-      {tavoite: {fi: 'kehittää oppilaan taitoa esittää kysymyksiä ja tehdä perusteltuja päätelmiä havaintojensa pohjalta'}},
-      {tavoite: {fi: 'kannustaa oppilasta esittämään ratkaisujaan ja päätelmiään muille konkreettisin välinein, piirroksin, suullisesti ja kirjallisesti käyttäen myös tieto- ja viestintäteknologiaa'}},
-      {tavoite: {fi: 'ohjaa oppilasta ymmärtämään ja käyttämään matemaattisia käsitteitä ja merkintöjä'}},
-      {tavoite: {fi: 'varmistaa, että oppilas ymmärtää kymmenjärjestelmän periaatteen sekä desimaaliluvut sen osana'}},
-      {tavoite: {fi: 'laajentaa lukukäsitteen ymmärtämistä positiivisiin rationaalilukuihin ja negatiivisiin kokonaislukuihin'}},
-      {tavoite: {fi: 'ohjaa oppilasta arvioimaan mittauskohteen suuruutta ja valitsemaan mittaamiseen sopivan välineen sekä käyttämään sopivaa mittayksikköä ja pohtimaan mittaustuloksen järkevyyttä'}},
-      {tavoite: {fi: 'laajentaa lukukäsitteen ymmärtämistä positiivisiin rationaalilukuihin ja negatiivisiin kokonaislukuihin'}},
-    ];
-  };
-
-  this.getOppiaine = function () {
-    return {
-      nimi: {fi: 'Matematiikka'},
-      tehtava: {otsikko: {fi: 'Oppiaineen tehtävä'}, teksti: {fi: 'Matematiikan opetuksen tehtävänä on kehittää oppilaan loogista, täsmällistä ja luovaa matemaattista ajattelua. Opetus luo pohjan matemaattisten käsitteiden ja rakenteiden ymmärtämiselle sekä kehittää oppilaan kykyä käsitellä tietoa ja ratkaista ongelmia.'}},
-      vuosiluokat: [
-        {
-          vuosiluokka: '1'
-        },
-        {
-          vuosiluokka: '2'
-        },
-      ],
-      vuosiluokkakokonaisuudet: [
-        {
-          nimi: {fi: 'Vuosiluokat 1-2'},
-
-          tehtava: {otsikko: {fi: 'Matematiikan tehtävä vuosiluokilla 1-2'}, teksti: {fi: 'Vuosiluokkien 1−2 matematiikan opetuksessa oppilaalle tarjotaan monipuolisia kokemuksia matemaattisten käsitteiden ja rakenteiden muodostumisen perustaksi.'}},
-          tyotavat: {otsikko: {fi: 'Oppiaineen oppimisympäristöihin ja työtapoihin liittyvät tavoitteet vuosiluokalla 1-2'}, teksti: {fi: 'Opetuksen lähtökohtana käytetään oppilaalle tuttuja ja kiinnostavia aiheita ja ongelmia. Tavoitteena on luoda oppimisympäristö, jossa matematiikkaa ja matematiikan käsitteitä opiskellaan toiminnallisesti ja välineiden avulla.'}},
-          ohjaus: {otsikko: {fi: 'Ohjaus ja tuki oppiaineessa vuosiluokilla 1-2'}, teksti: {fi: 'Oppilaiden osaamisessa on huomattavia eroja jo ennen koulun alkamista. Hierarkkisena oppiaineena matematiikan perusasioiden hallinta on välttämätön edellytys uusien sisältöjen oppimiselle.'}},
-          arviointi: {otsikko: {fi: 'Oppilaan oppimisen arviointi oppiaineessa vuosiluokilla 1-2'}, teksti: {fi: 'Vuosiluokilla 1-2 matematiikan oppimisen arvioinnissa on kiinnitettävä huomiota kannustavan palautteen antamiseen. Keskeisten sisältöjen oppimisen rinnalla on myös arvioitava laaja-alaisten taitojen kehittymistä monipuolisesti.'}},
-        },
-      ]
-    };
-  };
-})
-
-.service('VuosiluokatService', function ($q, DummyData, $state, OppiaineCRUD, Utils, OpsService,
+.service('VuosiluokatService', function ($q, $state, OppiaineCRUD, Utils, OpsService,
   VuosiluokkakokonaisuusCRUD, OpetussuunnitelmaCRUD) {
   var opsId = null;
-  var vuosiluokat = null;
+  var vuosiluokkakokonaisuudet = null;
 
   function promisify(data) {
     var deferred = $q.defer();
@@ -111,20 +52,20 @@ ylopsApp
     function processVuosiluokkakokonaisuudet(model) {
       opsId = model.id;
       var vlkt = model.vuosiluokkakokonaisuudet;
-      vuosiluokat = _.sortBy(vlkt, vlkSorter);
-      promise.resolve(vuosiluokat);
+      vuosiluokkakokonaisuudet = _.sortBy(vlkt, vlkSorter);
+      promise.resolve(vuosiluokkakokonaisuudet);
     }
     var opsModel = (ops || OpsService.get());
     onCompletion(opsModel, processVuosiluokkakokonaisuudet);
     return promise.promise;
   }
 
-  function getVuosiluokat(ops) {
+  function getVuosiluokkakokonaisuudet(ops) {
     return fetch(ops);
   }
 
-  function setVuosiluokat(vlkt) {
-    vuosiluokat = vlkt;
+  function setVuosiluokkakokonaisuudet(vlkt) {
+    vuosiluokkakokonaisuudet = vlkt;
   }
 
   function getVuosiluokkakokonaisuus(opetussuunnitelmaId, vlkId, successCb, errorCb) {
@@ -135,10 +76,6 @@ ylopsApp
   function getVlkPeruste(opetussuunnitelmaId, vlkId, successCb, errorCb) {
     return VuosiluokkakokonaisuusCRUD.peruste({opsId: opetussuunnitelmaId, vlkId: vlkId},
       successCb || angular.noop, errorCb || angular.noop);
-  }
-
-  function getTavoitteet(/*oppiaineenVlkId*/) {
-    return promisify(DummyData.getTavoitteet());
   }
 
   function getLaajaalaiset(opetussuunnitelmaId) {
@@ -180,7 +117,7 @@ ylopsApp
   function mapForMenu(ops) {
     var arr = [];
     if (ops) {
-      _.each(vuosiluokat, function (vlk) {
+      _.each(vuosiluokkakokonaisuudet, function (vlk) {
         var obj = vlk.vuosiluokkakokonaisuus;
         var item = {
           label: obj.nimi,
@@ -221,13 +158,15 @@ ylopsApp
   this.setOps = setOps;
   this.fetch = fetch;
   this.getLaajaalaiset = getLaajaalaiset;
-  this.getVuosiluokat = getVuosiluokat;
-  this.setVuosiluokat = setVuosiluokat;
+  this.getVuosiluokkakokonaisuudet = getVuosiluokkakokonaisuudet;
+  this.setVuosiluokkakokonaisuudet = setVuosiluokkakokonaisuudet;
   this.getVuosiluokkakokonaisuus = getVuosiluokkakokonaisuus;
   this.getVlkPeruste = getVlkPeruste;
   this.getVuosiluokka = getVuosiluokka;
-  this.getTavoitteet = getTavoitteet;
   this.getOppiaine = getOppiaine;
   this.getPerusteOppiaine = getPerusteOppiaine;
   this.mapForMenu = mapForMenu;
+  this.fromEnum = function (vuosiluokkaEnum) {
+    return parseInt(_.last(vuosiluokkaEnum.split('_')), 10);
+  };
 });

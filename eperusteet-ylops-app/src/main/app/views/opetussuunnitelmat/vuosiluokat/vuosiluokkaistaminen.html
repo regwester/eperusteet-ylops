@@ -12,7 +12,7 @@
 
 <div class="vuosiluokkaistaminen-container-outer">
   <div class="vuosiluokkaistaminen-container">
-  <div ng-repeat="container in containers" class="panel panel-default vuosiluokka" ng-class="{tavoitteet: container.type === 'tavoitteet'}">
+  <div ng-repeat="container in containers" class="panel panel-default vuosiluokka" ng-class="containerClasses(container)">
     <div class="panel-heading">
       <h3 class="panel-title">{{container.label || 'vuosiluokka' | kaanna}} {{container.vuosiluokka}}
         <span ng-if="container.type === 'tavoitteet' && allDragged"

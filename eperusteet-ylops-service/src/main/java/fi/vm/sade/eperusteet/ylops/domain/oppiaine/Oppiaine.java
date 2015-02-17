@@ -22,8 +22,10 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -238,5 +240,29 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public interface Strict {
+    }
+
+    public static Oppiaine copyOf(Oppiaine other) {
+        Oppiaine o = new Oppiaine(other.getTunniste());
+        o.setNimi(other.getNimi());
+        o.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
+        o.setKoodi(other.getKoodi());
+        o.setKoosteinen(other.isKoosteinen());
+
+        Map<Long, Opetuksenkohdealue> kohdealueet = other.getKohdealueet().stream()
+            .collect(Collectors.toMap(ka -> ka.getId(), ka -> new Opetuksenkohdealue(ka.getNimi())));
+        o.setKohdealueet(new HashSet<>(kohdealueet.values()));
+
+        other.getVuosiluokkakokonaisuudet().forEach((vk -> {
+            o.addVuosiluokkaKokonaisuus(Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet));
+        }));
+
+        if (other.isKoosteinen()) {
+            other.getOppimaarat().forEach((om -> {
+                o.addOppimaara(Oppiaine.copyOf(om));
+            }));
+        }
+
+        return o;
     }
 }

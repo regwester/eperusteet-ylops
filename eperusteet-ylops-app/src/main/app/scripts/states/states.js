@@ -64,15 +64,16 @@ ylopsApp
             return $stateParams.id;
           }],
           opsModel: ['opsService', 'opsId', function(opsService, opsId) {
-            return opsService.fetch(opsId);
+            var fetched = opsService.fetch(opsId);
+            return fetched.$promise ? fetched.$promise : fetched;
           }],
-          vuosiluokat: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
-            return vuosiluokatService.getVuosiluokat(opsModel);
+          vuosiluokkakokonaisuudet: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
+            return vuosiluokatService.getVuosiluokkakokonaisuudet(opsModel);
           }]
         },
-        controller: function ($scope, opsModel, vuosiluokat, opsService, $rootScope) {
+        controller: function ($scope, opsModel, vuosiluokkakokonaisuudet, opsService, $rootScope) {
           $scope.model = opsModel;
-          $scope.vuosiluokat = vuosiluokat;
+          $scope.vuosiluokkakokonaisuudet = vuosiluokkakokonaisuudet;
           $scope.$on('rakenne:updated', function () {
             $scope.model = opsService.get();
             $rootScope.$broadcast('murupolku:update');
@@ -92,7 +93,7 @@ ylopsApp
       })
 
       .state('root.opetussuunnitelmat.yksi.tiedot', {
-        url: '/tiedot',
+        url: '/tiedot?:pohjaId',
         templateUrl: 'views/opetussuunnitelmat/tiedot.html',
         controller: 'OpetussuunnitelmaTiedotController',
         resolve: {

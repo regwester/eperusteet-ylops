@@ -18,10 +18,14 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -103,11 +107,25 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
         return new ArrayList<>(sisaltoalueet);
     }
 
-    public void setSisaltoalueet(List<Keskeinensisaltoalue> sisaltoalueet) {
+    public void setSisaltoalueet(Collection<Keskeinensisaltoalue> sisaltoalueet) {
         this.sisaltoalueet.clear();
         if (sisaltoalueet != null) {
             this.sisaltoalueet.addAll(sisaltoalueet);
         }
+    }
+
+    static Oppiaineenvuosiluokka copyOf(final Oppiaineenvuosiluokka other, final Map<Long, Opetuksenkohdealue> kohdealueet) {
+        Oppiaineenvuosiluokka ovl = new Oppiaineenvuosiluokka();
+        ovl.setVuosiluokka(other.getVuosiluokka());
+
+        Map<Long, Keskeinensisaltoalue> sisaltoalueet = other.getSisaltoalueet().stream()
+            .collect(Collectors.toMap(s -> s.getId(), s -> Keskeinensisaltoalue.copyOf(s), (u, v) -> u, LinkedHashMap::new));
+        ovl.setSisaltoalueet(sisaltoalueet.values());
+        ovl.setTavoitteet(
+            other.tavoitteet.stream()
+            .map(t -> Opetuksentavoite.copyOf(t, kohdealueet, sisaltoalueet))
+            .collect(Collectors.toList()));
+        return ovl;
     }
 
 }

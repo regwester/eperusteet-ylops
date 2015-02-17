@@ -17,6 +17,23 @@
 'use strict';
 
 ylopsApp
+  .controller('UusiOpsController', function ($scope, $state, OpsListaService, Utils) {
+    $scope.pohja = {
+      active: 0,
+      model: null
+    };
+
+    $scope.addNew = function (pohja) {
+      var pohjaId = null;
+      if (pohja) {
+        pohjaId = pohja.id;
+      }
+      $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi', pohjaId: pohjaId});
+    };
+
+    $scope.pohjat = OpsListaService.query(true);
+    $scope.sorter = Utils.sort;
+  })
   .controller('EtusivuController', function () {
 
   });
