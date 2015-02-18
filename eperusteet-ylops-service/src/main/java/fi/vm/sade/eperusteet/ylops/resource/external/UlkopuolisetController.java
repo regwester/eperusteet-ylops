@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.external;
 
-import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
@@ -24,17 +23,15 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -64,8 +61,8 @@ public class UlkopuolisetController {
 
     @RequestMapping(value = "/perusopetusperusteet/{id}", method = GET)
     @ResponseBody
-    public ResponseEntity<Peruste> getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
-        return new ResponseEntity<>(eperusteetService.getPerusopetuksenPeruste(id), HttpStatus.OK);
+    public Peruste getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
+        return eperusteetService.getPerusopetuksenPeruste(id);
     }
 
     @RequestMapping(value = "/tiedotteet", method = GET)

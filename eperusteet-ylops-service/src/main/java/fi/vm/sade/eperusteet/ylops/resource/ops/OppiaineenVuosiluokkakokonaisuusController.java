@@ -80,8 +80,8 @@ public class OppiaineenVuosiluokkakokonaisuusController {
             .filter(vk -> vk.getId().equals(id))
             .flatMap(vk -> vk.getVuosiluokat().stream())
             .collect(Collectors.toMap(
-                OppiaineenVuosiluokkaDto::getVuosiluokka,
-                l -> l.getTavoitteet().stream().map(OpetuksenTavoiteDto::getTunniste).collect(Collectors.toSet())));
+                    OppiaineenVuosiluokkaDto::getVuosiluokka,
+                    l -> l.getTavoitteet().stream().map(OpetuksenTavoiteDto::getTunniste).collect(Collectors.toSet())));
     }
 
     @RequestMapping(value = "/{id}/tavoitteet", method = RequestMethod.POST)
@@ -118,14 +118,14 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id) {
 
-        final Optional<Peruste> peruste = Optional.ofNullable(ops.getPeruste(opsId));
+        final Peruste peruste = ops.getPeruste(opsId);
         final Optional<OppiaineDto> aine = Optional.ofNullable(oppiaineService.get(opsId, oppiaineId));
 
-        return Responses.of(peruste.flatMap(p -> aine.flatMap(a -> a.getVuosiluokkakokonaisuudet().stream()
+        return Responses.of(aine.flatMap(a -> a.getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> vk.getId().equals(id))
             .findAny()
-            .flatMap(ovk -> p.getPerusopetus().getOppiaine(a.getTunniste())
-                .flatMap(poa -> poa.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus()))))));
+            .flatMap(ovk -> peruste.getPerusopetus().getOppiaine(a.getTunniste())
+                .flatMap(poa -> poa.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus())))));
 
     }
 

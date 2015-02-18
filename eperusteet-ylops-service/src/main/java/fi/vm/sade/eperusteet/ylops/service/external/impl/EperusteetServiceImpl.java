@@ -68,11 +68,10 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
-    @Cacheable("perusteet")
     public List<PerusteInfo> findPerusopetuksenPerusteet() {
         PerusteInfoWrapperDto wrapperDto
-            = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi=koulutustyyppi_16&sivukoko=100",
-                                  PerusteInfoWrapperDto.class);
+            = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
+                                  PerusteInfoWrapperDto.class, koulutustyyppiPerusopetus, 100);
 
         // Filtteröi pois perusteet jotka eivät enää ole voimassa
         Date now = new Date();
@@ -82,12 +81,13 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
+    @Cacheable("perusteet")
     public Peruste getPerusopetuksenPeruste(final Long id) {
         PerusopetusPerusteDto peruste = client.getForObject(koodistoServiceUrl
             + "/api/perusteet/{id}/kaikki", PerusopetusPerusteDto.class, id);
 
-        if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi())) {
-            throw new BusinessRuleViolationException("Pyydetty peruste ei ole oikeaa tyyppiä");
+        if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi()) || peruste.getPerusopetus() == null) {
+            throw new BusinessRuleViolationException("Perustetta ei löytynyt tai se ei ole perusopetuksen peruste");
         }
 
         return mapper.map(peruste, Peruste.class);
