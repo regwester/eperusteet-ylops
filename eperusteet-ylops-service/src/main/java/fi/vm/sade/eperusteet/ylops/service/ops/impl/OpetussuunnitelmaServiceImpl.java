@@ -331,6 +331,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
         }
 
+        if (!Objects.equals(alkuperainenOps.getPerusteenDiaarinumero(), ops.getPerusteenDiaarinumero())) {
+            throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei voi vaihtaa");
+        }
+
         // Tilan muuttamiseen on oma erillinen endpointtinsa
         ops.setTila(alkuperainenOps.getTila());
         ops = repository.save(ops);
