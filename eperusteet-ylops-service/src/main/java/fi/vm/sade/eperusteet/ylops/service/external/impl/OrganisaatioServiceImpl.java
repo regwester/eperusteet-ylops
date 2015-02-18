@@ -15,15 +15,27 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
 import java.io.IOException;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,10 +83,29 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         CachingRestClient crc = restClientFactory.get(serviceUrl);
         String url = serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + KUNTA_KRITEERI_ID + "=" + kuntaId + PERUSKOULU_HAKU;
         try {
-            return mapper.readTree(crc.getAsString(url));
+            JsonNode tree = mapper.readTree(crc.getAsString(url));
+            JsonNode organisaatioTree = tree.get("organisaatiot");
+
+            return flattenTree(organisaatioTree, "children",
+                               node -> node.get("oppilaitostyyppi") != null &&
+                                       "oppilaitostyyppi_11#1".equals(node.get("oppilaitostyyppi").asText()));
         } catch (IOException ex) {
             throw new BusinessRuleViolationException("Peruskoulujen tietojen hakeminen epäonnistui", ex);
         }
+    }
+
+    private ArrayNode flattenTree(JsonNode tree, String childTreeName, Predicate<JsonNode> filter) {
+        ArrayNode array = JsonNodeFactory.instance.arrayNode();
+        if (tree != null) {
+            tree.forEach(node -> {
+                if (filter.test(node)) {
+                    array.add(node);
+                }
+                JsonNode childTree = node.get(childTreeName);
+                array.addAll(flattenTree(childTree, childTreeName, filter));
+            });
+        }
+        return array;
     }
 
     @Override

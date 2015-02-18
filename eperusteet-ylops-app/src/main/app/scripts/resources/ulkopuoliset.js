@@ -47,7 +47,7 @@ ylopsApp
     }, {
       get: {
         method: 'GET',
-        isArray: false,
+        isArray: true,
         cache: true
       }
     });
