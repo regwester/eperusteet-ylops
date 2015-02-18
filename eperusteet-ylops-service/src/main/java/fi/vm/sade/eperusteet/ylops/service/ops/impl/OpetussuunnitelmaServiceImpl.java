@@ -350,12 +350,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         // Sallitaan tilasiirtymät vain yhteen suuntaan
         if (tila.ordinal() > ops.getTila().ordinal()) {
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
+                // Arkistoidaan vanhat valmiit pohjat
                 List<Opetussuunnitelma> pohjat = repository.findAllByTyyppi(Tyyppi.POHJA);
-                if (pohjat.size() > 0) {
-                    // Arkistoidaan vanhat valmiit pohjat
-                    pohjat.stream().filter(pohja -> pohja.getTila() == Tila.VALMIS)
-                          .forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
-                }
+                pohjat.stream().filter(pohja -> pohja.getTila() == Tila.VALMIS)
+                      .forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
             }
 
             ops.setTila(tila);
