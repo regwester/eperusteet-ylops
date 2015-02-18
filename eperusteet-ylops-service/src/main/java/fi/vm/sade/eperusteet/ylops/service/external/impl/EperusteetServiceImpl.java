@@ -96,8 +96,6 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     @Cacheable("perusteet")
     public Peruste getPerusopetuksenPeruste(String diaarinumero) {
-
-        // TODO: filtteröi diaarinumerolla
         PerusteInfo perusteInfoDto = findPerusopetuksenPerusteet().stream()
             .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
             .findAny()
