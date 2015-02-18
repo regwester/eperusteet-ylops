@@ -268,14 +268,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
                         new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
 
-            final Map<Reference, UUID> vuosiluokkaMap
-                = sisalto.getVuosiluokkakokonaisuudet().stream()
-                .collect(Collectors.toMap(vlk -> Reference.of(vlk),
-                                          vlk -> vlk.getTunniste()));
-
             if (sisalto.getOppiaineet() != null) {
                 sisalto.getOppiaineet().stream()
-                    .map(oa -> OpsDtoMapper.fromEperusteet(oa, vuosiluokkaMap))
+                    .map(OpsDtoMapper::fromEperusteet)
                     .forEach(oa -> oppiaineService.add(opsId, oa));
             }
 

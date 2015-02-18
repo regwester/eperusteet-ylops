@@ -84,7 +84,7 @@ public class OpsDtoMapper {
         if (dto.getVuosiluokkakokonaisuudet() != null) {
             dto.getVuosiluokkakokonaisuudet()
                 .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
-                        mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
+                    mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
         }
 
         return oppiaine;
@@ -107,8 +107,7 @@ public class OpsDtoMapper {
     }
 
     public static OppiaineDto oppimaaraFromEperusteet(
-        PerusteOppiaine oa,
-        Map<Reference, UUID> vuosiluokkaMap) {
+        PerusteOppiaine oa) {
         OppiaineDto dto = new OppiaineDto();
         dto.setTila(Tila.LUONNOS);
 
@@ -130,7 +129,7 @@ public class OpsDtoMapper {
         if (oa.getVuosiluokkakokonaisuudet() != null) {
             dto.setVuosiluokkakokonaisuudet(
                 oa.getVuosiluokkakokonaisuudet().stream()
-                .map(oaVlk -> fromEperusteet(oaVlk, vuosiluokkaMap))
+                .map(OpsDtoMapper::fromEperusteet)
                 .collect(Collectors.toSet()));
         }
 
@@ -138,8 +137,7 @@ public class OpsDtoMapper {
     }
 
     public static OppiaineLaajaDto fromEperusteet(
-        PerusteOppiaine oa,
-        Map<Reference, UUID> vuosiluokkaMap) {
+        PerusteOppiaine oa) {
         OppiaineLaajaDto dto = new OppiaineLaajaDto();
         dto.setTila(Tila.LUONNOS);
 
@@ -157,41 +155,30 @@ public class OpsDtoMapper {
         if (oa.getOppimaarat() != null) {
             dto.setOppimaarat(
                 oa.getOppimaarat().stream()
-                .map(om -> oppimaaraFromEperusteet(om, vuosiluokkaMap))
+                .map(OpsDtoMapper::oppimaaraFromEperusteet)
                 .collect(Collectors.toSet()));
         }
 
         if (oa.getVuosiluokkakokonaisuudet() != null) {
             dto.setVuosiluokkakokonaisuudet(
                 oa.getVuosiluokkakokonaisuudet().stream()
-                .map(oaVlk -> fromEperusteet(oaVlk, vuosiluokkaMap))
+                .map(OpsDtoMapper::fromEperusteet)
                 .collect(Collectors.toSet()));
         }
 
         return dto;
     }
 
-    public static OppiaineenVuosiluokkakokonaisuusDto fromEperusteet(PerusteOppiaineenVuosiluokkakokonaisuus ovk,
-        Map<Reference, UUID> vuosiluokkaMap) {
+    public static OppiaineenVuosiluokkakokonaisuusDto fromEperusteet(PerusteOppiaineenVuosiluokkakokonaisuus ovk) {
         OppiaineenVuosiluokkakokonaisuusDto dto = new OppiaineenVuosiluokkakokonaisuusDto();
-        dto.setTehtava(fromEperusteet(ovk.getTehtava()));
-        dto.setTyotavat(fromEperusteet(ovk.getTyotavat()));
-        dto.setOhjaus(fromEperusteet(ovk.getOhjaus()));
-        dto.setArviointi(fromEperusteet(ovk.getArviointi()));
+        dto.setTehtava(new TekstiosaDto());
+        dto.setTyotavat(new TekstiosaDto());
+        dto.setOhjaus(new TekstiosaDto());
+        dto.setArviointi(new TekstiosaDto());
 
         dto.setVuosiluokkakokonaisuus(Reference.of(ovk.getVuosiluokkaKokonaisuus().getTunniste()));
 
         return dto;
-    }
-
-    public static TekstiosaDto fromEperusteet(PerusteTekstiOsa dto) {
-        if (dto == null) {
-            return null;
-        }
-        LokalisoituTekstiDto otsikko = dto.getOtsikko();
-        LokalisoituTekstiDto teksti = dto.getTeksti();
-        return new TekstiosaDto(Optional.ofNullable(otsikko),
-                                Optional.ofNullable(teksti));
     }
 
     public static OpetuksenKohdealueDto fromEperusteet(
