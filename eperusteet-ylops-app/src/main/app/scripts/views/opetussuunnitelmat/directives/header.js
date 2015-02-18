@@ -51,7 +51,7 @@ ylopsApp
       ($state.is('root.pohjat.yksi.tiedot') && $stateParams.pohjaId === 'uusi');
     $scope.isPohjaState = $state.current.name.substr(0, 12) === 'root.pohjat.';
     $scope.isPohjaTyyppi = $scope.model.tyyppi === 'pohja';
-    $scope.linkit = mapUrls($scope.isPohja ? POHJALINKIT : OPSLINKIT);
+    $scope.linkit = mapUrls($scope.isPohjaState ? POHJALINKIT : OPSLINKIT);
     $scope.opsId = $stateParams.id;
     $scope.pohjaId = $stateParams.pohjaId;
   }
