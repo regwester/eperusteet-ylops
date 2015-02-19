@@ -121,9 +121,12 @@ ylopsApp
   $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
   });
-  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk.tavoitteet, 'tunniste');
+  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : [], 'tunniste');
 
   function updateVuosiluokat() {
+    if (!$scope.oppiaineenVlk) {
+      return;
+    }
     $scope.vuosiluokat = $scope.oppiaineenVlk.vuosiluokat;
     _.each($scope.vuosiluokat, function (vlk) {
       vlk.$numero = VuosiluokatService.fromEnum(vlk.vuosiluokka);
