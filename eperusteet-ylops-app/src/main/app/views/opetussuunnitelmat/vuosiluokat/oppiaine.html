@@ -24,9 +24,7 @@
         </a>
       </td>
       <td>
-        <span ng-if="vuosiluokka.$tavoitteetShort" ng-repeat="tavoite in vuosiluokka.tavoitteet">
-          <span ng-if="tavoite.$short" ng-bind="tavoite.$short"></span>
-        </span>
+        <span ng-if="vuosiluokka.$tavoitteetShort" ng-repeat="tavoite in vuosiluokka.tavoitteet"><span class="koodi-short" ng-if="tavoite.$short" ng-bind="tavoite.$short"></span></span>
         <span ng-if="!vuosiluokka.$tavoitteetShort">
           <ul>
             <li ng-repeat="tavoite in vuosiluokka.tavoitteet">
@@ -36,9 +34,7 @@
         </span>
       </td>
       <td>
-        <span ng-if="vuosiluokka.$sisaltoalueetShort" ng-repeat="alue in vuosiluokka.sisaltoalueet">
-          <span ng-if="alue.$short" ng-bind="alue.$short"></span>
-        </span>
+        <span ng-if="vuosiluokka.$sisaltoalueetShort" ng-repeat="alue in vuosiluokka.sisaltoalueet"><span class="koodi-short" ng-if="alue.$short" ng-bind="alue.$short"></span></span>
         <span ng-if="!vuosiluokka.$sisaltoalueetShort">
           <ul>
             <li ng-repeat="alue in vuosiluokka.sisaltoalueet">
