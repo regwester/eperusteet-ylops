@@ -15,33 +15,25 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonPointer;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -53,20 +45,28 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     @Value("${cas.service.organisaatio-service:''}")
     private String serviceUrl;
 
+    @Value("#{'${fi.vm.sade.eperusteet.ylops.organisaatio-service.peruskoulu-oppilaitostyypit}'.split(',')}")
+    private List<String> oppilaitostyypit;
+
     private static final String ORGANISAATIOT = "/rest/organisaatio/";
     private static final String ORGANISAATIORYHMAT = ORGANISAATIOT + "1.2.246.562.10.00000000001/ryhmat";
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
     private static final String KUNTA_KRITEERI_ID = "kunta";
-    private static final String PERUSKOULU_HAKU =
-            "&aktiiviset=true&suunnitellut=true&lakkautetut=false" +
-            "&oppilaitostyyppi=oppilaitostyyppi_11%23*" +
-            "&oppilaitostyyppi=oppilaitostyyppi_12%23*" +
-            "&oppilaitostyyppi=oppilaitostyyppi_19%23*&organisaatiotyyppi=Oppilaitos";
+
+    private String peruskouluHakuehto;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     RestClientFactory restClientFactory;
+
+    @PostConstruct
+    public void init() {
+        peruskouluHakuehto =
+            "&aktiiviset=true&suunnitellut=true&lakkautetut=false&organisaatiotyyppi=Oppilaitos" +
+            oppilaitostyypit.stream()
+                            .reduce("", (acc, t) -> acc + "&oppilaitostyyppi=oppilaitostyyppi_" + t + "%23*");
+    }
 
     @Override
     @Cacheable("organisaatiot")
@@ -84,16 +84,16 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     @Cacheable("organisaatiot")
     public JsonNode getPeruskoulut(String kuntaId) {
         CachingRestClient crc = restClientFactory.get(serviceUrl);
-        String url = serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + KUNTA_KRITEERI_ID + "=" + kuntaId + PERUSKOULU_HAKU;
+
         try {
+            final String url =
+                serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + KUNTA_KRITEERI_ID + "=" + kuntaId + peruskouluHakuehto;
             JsonNode tree = mapper.readTree(crc.getAsString(url));
             JsonNode organisaatioTree = tree.get("organisaatiot");
-
-            List<String> oppilaitosTyypit =
-                Arrays.asList("oppilaitostyyppi_11#1", "oppilaitostyyppi_12#1", "oppilaitostyyppi_19#1");
             return flattenTree(organisaatioTree, "children",
                                node -> node.get("oppilaitostyyppi") != null &&
-                                       oppilaitosTyypit.stream()
+                                       oppilaitostyypit.stream()
+                                                       .map(t -> "oppilaitostyyppi_" + t + "#1")
                                                        .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
         } catch (IOException ex) {
             throw new BusinessRuleViolationException("Peruskoulujen tietojen hakeminen epäonnistui", ex);
