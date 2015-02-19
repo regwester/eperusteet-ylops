@@ -37,7 +37,7 @@
         <div>
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input viewmode">
-            <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna}}<span ng-show="!$last">, </span></span>
+            <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna:false:true}}<span ng-show="!$last">, </span></span>
             <span ng-if="!model.koulut || model.koulut.length === 0">-</span>
           </div>
         </div>
@@ -102,9 +102,9 @@
             <ui-select class="ui-select" multiple ng-model="editableModel.kouluOidit" on-select="$select.search = ''"
                        ng-disabled="editableModel.kuntaUrit.length !== 1 || koululista.length === 0">
               <ui-select-choices repeat="koulu.oid as koulu in koululista | filter: $select.search">
-                <span ng-bind-html="koulu.nimi | kaanna | highlight: $select.search"></span>
+                <span ng-bind-html="koulu.nimi | kaanna:false:true | highlight: $select.search"></span>
               </ui-select-choices>
-              <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
+              <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
             </ui-select>
             <p ng-if="!loadingKoulut && eiKoulujaVaroitus" kaanna="'kunnalla-ei-kouluja'"></p>
           </div>

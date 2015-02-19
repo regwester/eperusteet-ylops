@@ -50,7 +50,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
     };
 
     this.sort = function (item) {
-      return Kaanna.kaanna(item.nimi).toLowerCase();
+      return Kaanna.kaanna(item.nimi, false, true).toLowerCase();
     };
 
     this.nameSort = function (item, key) {
