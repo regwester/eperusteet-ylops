@@ -32,6 +32,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -58,7 +59,9 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private static final String KUNTA_KRITEERI_ID = "kunta";
     private static final String PERUSKOULU_HAKU =
             "&aktiiviset=true&suunnitellut=true&lakkautetut=false" +
-            "&oppilaitostyyppi=oppilaitostyyppi_11%23*&organisaatiotyyppi=Oppilaitos";
+            "&oppilaitostyyppi=oppilaitostyyppi_11%23*" +
+            "&oppilaitostyyppi=oppilaitostyyppi_12%23*" +
+            "&oppilaitostyyppi=oppilaitostyyppi_19%23*&organisaatiotyyppi=Oppilaitos";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -86,9 +89,12 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
             JsonNode tree = mapper.readTree(crc.getAsString(url));
             JsonNode organisaatioTree = tree.get("organisaatiot");
 
+            List<String> oppilaitosTyypit =
+                Arrays.asList("oppilaitostyyppi_11#1", "oppilaitostyyppi_12#1", "oppilaitostyyppi_19#1");
             return flattenTree(organisaatioTree, "children",
                                node -> node.get("oppilaitostyyppi") != null &&
-                                       "oppilaitostyyppi_11#1".equals(node.get("oppilaitostyyppi").asText()));
+                                       oppilaitosTyypit.stream()
+                                                       .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
         } catch (IOException ex) {
             throw new BusinessRuleViolationException("Peruskoulujen tietojen hakeminen epäonnistui", ex);
         }
