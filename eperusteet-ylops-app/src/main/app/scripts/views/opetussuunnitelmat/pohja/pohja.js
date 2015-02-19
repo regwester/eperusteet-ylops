@@ -73,7 +73,9 @@ ylopsApp
       kappale.$original = _.cloneDeep(kappale.tekstiKappale);
     },
     delete: function (osio, kappale) {
-      TekstikappaleOps.delete($scope.model, osio, $stateParams.pohjaId, kappale);
+      TekstikappaleOps.varmistusdialogi(kappale.tekstiKappale.nimi, function () {
+        TekstikappaleOps.delete($scope.model, osio, $stateParams.pohjaId, kappale);
+      });
     },
     cancel: function (kappale) {
       $scope.kappaleEdit = null;

@@ -18,8 +18,8 @@
 
 ylopsApp
 .controller('PohjaTekstikappaleController', function ($scope, tekstikappaleModel, Editointikontrollit,
-  Notifikaatiot, Varmistusdialogi, $timeout, $state, $stateParams, OhjeCRUD, OpetussuunnitelmanTekstit,
-  Utils, $rootScope, MurupolkuData) {
+  Notifikaatiot, TekstikappaleOps, $timeout, $state, $stateParams, OhjeCRUD, OpetussuunnitelmanTekstit,
+  Utils, $rootScope, MurupolkuData, OpsService) {
 
   $scope.pohjaId = $stateParams.pohjaId;
   $scope.model = tekstikappaleModel;
@@ -47,18 +47,17 @@ ylopsApp
   }
 
   $scope.delete = function () {
-    Varmistusdialogi.dialogi({
-      otsikko: 'varmista-poisto',
-      primaryBtn: 'poista',
-      successCb: function () {
-        $scope.model.$delete({opsId: $stateParams.pohjaId}, function () {
-          Notifikaatiot.onnistui('poisto-onnistui');
-          $timeout(function () {
-            $state.go('root.pohjat.yksi.sisalto');
-          });
-        }, Notifikaatiot.serverCb);
-      }
-    })();
+    TekstikappaleOps.varmistusdialogi($scope.model.tekstiKappale.nimi, function () {
+      $scope.model.$delete({opsId: $stateParams.pohjaId}, function () {
+        Notifikaatiot.onnistui('poisto-onnistui');
+        OpsService.refetch(function () {
+          $rootScope.$broadcast('rakenne:updated');
+        });
+        $timeout(function () {
+          $state.go('root.pohjat.yksi.sisalto');
+        });
+      }, Notifikaatiot.serverCb);
+    });
   };
 
   function fetchOhje(model) {
