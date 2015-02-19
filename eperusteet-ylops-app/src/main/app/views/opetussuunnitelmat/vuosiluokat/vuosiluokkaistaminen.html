@@ -25,9 +25,9 @@
         'tavoite-list': container.type === 'tavoitteet',
         'vuosiluokka-list': container.type !== 'tavoitteet'}"
           id="{{container.id}}" ui-sortable="sortableOptions" ng-model="container.items">
-        <li ng-repeat="item in container.items | orderBy:[tavoiteSorter, nimiSorter] track by $index"
+        <li ng-repeat="item in container.items | orderBy:tavoiteSorter track by $index"
             ng-class="{'not-used': !item.$kaytossa, 'collapsed-mode': collapsedMode}"
-            class="container-item" id="{{container.id + '-' + item.koodi}}">
+            class="container-item" id="{{container.id + '_' + item.tunniste}}">
           <span ng-show="showKohdealueet" ng-style="item.kohdealue.styles" class="kohdealue"
                 ng-bind="item.kohdealue.nimi | kaanna"></span>
           <span class="koodi" ng-bind="item.koodi"></span>
