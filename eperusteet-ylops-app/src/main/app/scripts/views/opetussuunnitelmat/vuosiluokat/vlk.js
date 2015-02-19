@@ -105,6 +105,10 @@ ylopsApp
     });
   }
 
+  $scope.options = {
+    editing: false
+  };
+
   $scope.callbacks = {
     edit: function () {
       fetch();
@@ -126,6 +130,7 @@ ylopsApp
       fetch();
     },
     notify: function (mode) {
+      $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
     notifier: angular.noop

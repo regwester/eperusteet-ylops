@@ -90,6 +90,10 @@ ylopsApp
     });
   }
 
+  $scope.options = {
+    editing: false
+  };
+
   $scope.callbacks = {
     edit: function () {
       refetch();
@@ -111,6 +115,7 @@ ylopsApp
       refetch();
     },
     notify: function (mode) {
+      $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
     notifier: angular.noop
@@ -143,6 +148,10 @@ ylopsApp
   }
   refetch();
 
+  $scope.options = {
+    editing: false
+  };
+
   $scope.callbacks = {
     edit: function () {
       refetch();
@@ -160,6 +169,7 @@ ylopsApp
       refetch();
     },
     notify: function (mode) {
+      $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
     notifier: angular.noop
@@ -180,6 +190,7 @@ ylopsApp
     scope: {
       muokattava: '=opsTeksti',
       callbacks: '=',
+      config: '='
     },
     templateUrl: 'views/opetussuunnitelmat/vuosiluokat/directives/opsteksti.html',
     controller: 'TekstiosaController',
