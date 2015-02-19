@@ -28,13 +28,14 @@ ylopsApp
   }, 1000);
 
   var laajaalaisetosaamiset = _.indexBy(baseLaajaalaiset, 'tunniste');
+  var laajaalaisetOrder = _(baseLaajaalaiset).sortBy(Utils.sort).map('tunniste').value();
   $scope.siirtymat = ['siirtymaEdellisesta', 'siirtymaSeuraavaan'];
   var editoitavat = ['tehtava'].concat($scope.siirtymat);
   $scope.vlk = vlk;
   $scope.temp = {};
   $scope.paikalliset = {};
   $scope.orderFn = function (tunniste) {
-    return Kaanna.kaanna($scope.laajaalaiset[tunniste].nimi).toLowerCase();
+    return laajaalaisetOrder.indexOf(tunniste);
   };
 
   function fetch() {
