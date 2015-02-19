@@ -84,7 +84,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
   })
 
   /* Shows "back to top" link when scrolled beyond cutoff point */
-  .directive('backtotop', function ($window, $document, Utils, $timeout) {
+  .directive('backtotop', function ($window, $document, Utils) {
     var CUTOFF_PERCENTAGE = 33;
 
     return {
@@ -119,13 +119,6 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
         });
         scope.$on('$destroy', function() {
           window.off('scroll', scroll);
-        });
-        scope.$on('localisation:loaded', function () {
-          // Force digest
-          scope.tooltip.label = '';
-          $timeout(function () {
-            scope.tooltip.label = 'takaisin-ylos';
-          });
         });
       },
       controller: function ($scope) {

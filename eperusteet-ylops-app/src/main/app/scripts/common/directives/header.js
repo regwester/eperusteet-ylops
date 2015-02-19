@@ -186,6 +186,8 @@ ylopsApp
       currentState = toState;
       update();
     });
+    currentState = $state.current;
+    update();
 
     $scope.$watch('isVirkailija', function (value) {
       Oikeudet.setVirkailija(value);

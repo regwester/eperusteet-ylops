@@ -17,7 +17,28 @@
 'use strict';
 /* global _ */
 
-ylopsApp.factory('LokalisointiResource', function(LOKALISOINTI_SERVICE_LOC, $resource) {
+ylopsApp
+  .service('Lokalisointi', function ($http, $q) {
+    var translations = {};
+    var PREFIX = 'localisation/locale-',
+        SUFFIX = '.json';
+
+    this.init = function () {
+      var deferred = [];
+      _.each(['fi', 'sv'], function (key) {
+        deferred.push($http({
+          url: PREFIX + key + SUFFIX,
+          method: 'GET',
+          params: ''
+        }).success(function (data) {
+          translations[key] = data;
+        }));
+      });
+      return $q.all(deferred);
+    };
+  })
+
+  .factory('LokalisointiResource', function(LOKALISOINTI_SERVICE_LOC, $resource) {
     return $resource(LOKALISOINTI_SERVICE_LOC, {}, {
       get: {
         method: 'GET',
@@ -43,13 +64,13 @@ ylopsApp.factory('LokalisointiResource', function(LOKALISOINTI_SERVICE_LOC, $res
         _.extend(translations, data);
         if (BYPASS_REMOTE) {
           deferred.resolve(translations);
-          $rootScope.$broadcast('localisation:loaded');
+          $rootScope.lokalisointiInited = true;
         } else {
           LokalisointiResource.get({locale: options.key}, function (res) {
             var remotes = _.zipObject(_.map(res, 'key'), _.map(res, 'value'));
             _.extend(translations, remotes);
             deferred.resolve(translations);
-            $rootScope.$broadcast('localisation:loaded');
+            $rootScope.lokalisointiInited = true;
           }, function () {
             deferred.reject(options.key);
           });
