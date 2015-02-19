@@ -201,6 +201,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Transactional
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
+        ops.setPohja(pohja);
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
         kopioiTekstit(pohja.getTekstit(), ops.getTekstit());
 
@@ -306,32 +307,27 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
-    private static Long getPohjaId(Opetussuunnitelma ops) {
-        return ops != null ? ops.getId() : null;
-    }
-
     @Override
     public OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
 
-        Opetussuunnitelma alkuperainenOps = mapper.map(ops, Opetussuunnitelma.class);
-        mapper.map(opetussuunnitelmaDto, ops);
-
-        if (alkuperainenOps.getTyyppi() != ops.getTyyppi()) {
+        if (opetussuunnitelmaDto.getTyyppi() != ops.getTyyppi()) {
             throw new BusinessRuleViolationException("Opetussuunnitelman tyyppiä ei voi vaihtaa");
         }
 
-        if (!Objects.equals(getPohjaId(alkuperainenOps), getPohjaId(ops))) {
+        if (!Objects.equals(opetussuunnitelmaDto.getPohja(), Reference.of(ops.getPohja()))) {
             throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
         }
 
-        if (!Objects.equals(alkuperainenOps.getPerusteenDiaarinumero(), ops.getPerusteenDiaarinumero())) {
+        if (!Objects.equals(opetussuunnitelmaDto.getPerusteenDiaarinumero(), ops.getPerusteenDiaarinumero())) {
             throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei voi vaihtaa");
         }
 
         // Tilan muuttamiseen on oma erillinen endpointtinsa
-        ops.setTila(alkuperainenOps.getTila());
+        opetussuunnitelmaDto.setTila(ops.getTila());
+
+        mapper.map(opetussuunnitelmaDto, ops);
         ops = repository.save(ops);
 
         if (opetussuunnitelmaDto.getTekstit() != null) {
