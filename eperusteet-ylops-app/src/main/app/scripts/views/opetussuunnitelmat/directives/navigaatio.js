@@ -172,14 +172,16 @@ ylopsApp
 
 })
 
-.service('OpsNavigaatio', function ($location) {
+.service('OpsNavigaatio', function ($location, $timeout) {
   var active = true;
   var callback = angular.noop;
   var items = null;
 
   this.setActive = function (value) {
-    active = _.isUndefined(value) || !!value;
-    callback(active);
+    $timeout(function () {
+      active = _.isUndefined(value) || !!value;
+      callback(active);
+    });
   };
 
   this.setItems = function (newItems) {
