@@ -114,9 +114,10 @@ ylopsApp
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna, OppiaineService, TextUtils) {
+  VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils) {
 
   $scope.vuosiluokat = [];
+  $scope.alueOrder = Utils.sort;
 
   $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;

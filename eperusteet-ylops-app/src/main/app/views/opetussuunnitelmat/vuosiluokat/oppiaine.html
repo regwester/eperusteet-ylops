@@ -37,7 +37,7 @@
         <span ng-if="vuosiluokka.$sisaltoalueetShort" ng-repeat="alue in vuosiluokka.sisaltoalueet"><span class="koodi-short" ng-if="alue.$short" ng-bind="alue.$short"></span></span>
         <span ng-if="!vuosiluokka.$sisaltoalueetShort">
           <ul>
-            <li ng-repeat="alue in vuosiluokka.sisaltoalueet">
+            <li ng-repeat="alue in vuosiluokka.sisaltoalueet | orderBy:alueOrder">
               <span ng-bind="alue.nimi | kaanna"></span>
             </li>
           </ul>
