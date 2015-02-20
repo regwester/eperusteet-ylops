@@ -62,5 +62,8 @@ ylopsApp
   }
 
   this.getCasTiedot = getCasTiedot;
+  this.oid = function () {
+    return info.oid;
+  };
 
 });
