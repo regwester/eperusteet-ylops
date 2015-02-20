@@ -19,7 +19,7 @@
 ylopsApp
 .controller('VuosiluokkaistaminenController', function ($scope, $filter, VariHyrra, ColorCalculator,
   $state, OppiaineenVlk, $stateParams, OpsService, Kaanna, Notifikaatiot, VuosiluokatService,
-  $rootScope, OppiaineService) {
+  $rootScope, OppiaineService, Varmistusdialogi) {
 
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
@@ -153,8 +153,32 @@ ylopsApp
   }
 
   $scope.save = function () {
-    // TODO save
     saveCb(goBack);
+  };
+
+  $scope.placeAll = function (container) {
+    container.items = [];
+    _.each($scope.containers.tavoitteet.items, function (item) {
+      container.items.push(item);
+    });
+    resetTavoitteet();
+  };
+
+  $scope.empty = function (container) {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-tavoitteet-tyhjennys-otsikko',
+      teksti: 'varmista-tavoitteet-tyhjennys',
+      primaryBtn: 'tyhjenna',
+      successCb: function () {
+        container.items = [];
+        resetTavoitteet();
+      }
+    })();
+  };
+
+  $scope.remove = function (container, item) {
+    _.remove(container.items, {tunniste: item.tunniste});
+    resetTavoitteet();
   };
 
   function sourceIs(event, className) {

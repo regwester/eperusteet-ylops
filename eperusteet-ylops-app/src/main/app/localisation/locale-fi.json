@@ -130,6 +130,10 @@
   "tavoitteiden-vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet",
   "vuosiluokka": "Vuosiluokka",
   "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt",
+  "tyhjenna": "Tyhjennä",
+  "varmista-tavoitteet-tyhjennys-otsikko": "Varmista tyhjennys",
+  "varmista-tavoitteet-tyhjennys": "Tyhjennetäänkö vuosiluokalle tuodut tavoitteet?",
+  "tuo-kaikki": "Tuo kaikki",
 
   "arviointi-vuosiluokan-paatteeksi": "Arviointikriteerit vuosiluokkakokonaisuuden päätteeksi",
   "arvioinnin-kohde": "Arvioinnin kohde",

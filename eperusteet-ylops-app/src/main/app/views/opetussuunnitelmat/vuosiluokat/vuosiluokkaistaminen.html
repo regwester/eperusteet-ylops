@@ -17,6 +17,10 @@
         <span ng-if="container.type === 'tavoitteet' && allDragged"
               ng-attr-title="{{'kaikki-vuosiluokkaistettu' | kaanna}}"
               class="all-done glyphicon glyphicon-ok"></span>
+        <div class="napit" ng-if="container-type !== 'tavoitteet'">
+          <a icon-role="arrow-down" ng-attr-title="{{'tuo-kaikki'|kaanna}}" ng-click="placeAll(container)"></a>
+          <a icon-role="trash" ng-attr-title="{{'tyhjenna'|kaanna}}" ng-click="empty(container)"></a>
+        </div>
       </h3>
     </div>
     <div class="panel-body">
@@ -31,6 +35,8 @@
                 ng-bind="item.kohdealue.nimi | kaanna"></span>
           <span class="koodi" ng-bind="item.koodi"></span>
           <span ng-bind-html="item.tavoite | kaanna | unsafe" ng-attr-title="{{item.tavoite | kaanna | stripTags}}"></span>
+          <span ng-if="container.type !== 'tavoitteet'" class="remover" icon-role="remove" ng-click="remove(container, item)"
+                ng-attr-title="{{'poista' | kaanna}}"></span>
         </li>
       </ul>
     </div>
