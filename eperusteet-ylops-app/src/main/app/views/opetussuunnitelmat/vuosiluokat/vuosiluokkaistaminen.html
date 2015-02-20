@@ -31,7 +31,7 @@
           <span ng-show="showKohdealueet" ng-style="item.kohdealue.styles" class="kohdealue"
                 ng-bind="item.kohdealue.nimi | kaanna"></span>
           <span class="koodi" ng-bind="item.koodi"></span>
-          <span ng-bind-html="item.tavoite | kaanna | unsafe" ng-attr-title="{{item.tavoite | kaanna}}"></span>
+          <span ng-bind-html="item.tavoite | kaanna | unsafe" ng-attr-title="{{item.tavoite | kaanna | stripTags}}"></span>
         </li>
       </ul>
     </div>
