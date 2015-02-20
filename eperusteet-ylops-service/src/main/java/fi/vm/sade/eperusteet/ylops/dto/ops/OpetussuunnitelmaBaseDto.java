@@ -40,6 +40,7 @@ public abstract class OpetussuunnitelmaBaseDto implements Serializable {
     private Set<OrganisaatioDto> koulut;
     private Set<KoodistoDto> kunnat;
     private LokalisoituTekstiDto kuvaus;
+    private LokalisoituTekstiDto yhteystiedot;
     private String luoja;
     private Date luotu;
     private Date muokattu;

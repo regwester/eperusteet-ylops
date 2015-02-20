@@ -117,11 +117,14 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         Tila vanhaTila = ops.getTila();
         String kuvaus = uniikkiString();
         ops.setKuvaus(lt(kuvaus));
+        String yhteystiedot = uniikkiString();
+        ops.setYhteystiedot(lt(yhteystiedot));
         ops.setTila(Tila.POISTETTU);
         opetussuunnitelmaService.updateOpetussuunnitelma(ops);
 
         ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertEquals(kuvaus, ops.getKuvaus().get(Kieli.FI));
+        assertEquals(yhteystiedot, ops.getYhteystiedot().get(Kieli.FI));
         assertEquals(vanhaTila, ops.getTila());
     }
 
