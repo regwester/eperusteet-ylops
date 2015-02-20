@@ -14,10 +14,10 @@
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
-        <label for="ops-field-nimi" kaanna="'nimi'"></label>
+        <label for="ops-field-nimi-readonly" kaanna="'nimi'"></label>
       </div>
       <div class="col-sm-9 formfield-data viewmode">
-        <div ng-bind="model.nimi | kaanna"></div>
+        <div id="ops-field-nimi-readonly" ng-bind="model.nimi | kaanna"></div>
       </div>
     </div>
 
@@ -41,6 +41,15 @@
             <span ng-if="!model.koulut || model.koulut.length === 0">-</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-yhteystiedot-readonly" kaanna="'yhteystiedot'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div id="ops-field-yhteystiedot-readonly" ng-bind-html="model.yhteystiedot | kaanna:false:true"></div>
       </div>
     </div>
 
@@ -109,6 +118,15 @@
             <p ng-if="!loadingKoulut && eiKoulujaVaroitus" kaanna="'kunnalla-ei-kouluja'"></p>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-yhteystiedot" kaanna="'yhteystiedot'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data">
+        <div id="ops-field-yhteystiedot" ckeditor ng-model="editableModel.yhteystiedot" slocalized></div>
       </div>
     </div>
 
