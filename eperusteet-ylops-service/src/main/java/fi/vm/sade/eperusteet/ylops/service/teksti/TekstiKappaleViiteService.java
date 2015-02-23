@@ -15,15 +15,15 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.teksti;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * @author mikkom
  */
-public interface TekstiKappaleViiteService {
+public interface TekstiKappaleViiteService extends LockService<TekstikappaleCtx> {
     @PreAuthorize("permitAll()")
     TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId);
 

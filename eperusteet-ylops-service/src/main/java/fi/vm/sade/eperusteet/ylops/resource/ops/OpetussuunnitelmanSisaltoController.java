@@ -18,8 +18,11 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.AbstractLockController;
+import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
+import fi.vm.sade.eperusteet.ylops.service.teksti.TekstikappaleCtx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -124,5 +127,18 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId) {
         return tekstiKappaleViiteService.kloonaaTekstiKappale(opsId, viiteId);
+    }
+
+
+    @RestController
+    @RequestMapping("/opetussuunnitelmat/{opsId}/tekstit/{viiteId}/lukko")
+    public static class LockController extends AbstractLockController<TekstikappaleCtx> {
+        @Autowired
+        private TekstiKappaleViiteService service;
+        @Override
+        protected LockService<TekstikappaleCtx> service() {
+            return service;
+        }
+
     }
 }

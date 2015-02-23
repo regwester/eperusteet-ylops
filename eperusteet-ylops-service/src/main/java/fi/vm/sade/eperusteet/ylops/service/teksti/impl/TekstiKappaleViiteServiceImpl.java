@@ -26,9 +26,12 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
+import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
+import fi.vm.sade.eperusteet.ylops.service.teksti.TekstikappaleCtx;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -45,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional(readOnly = true)
-public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService {
+public class TekstiKappaleViiteServiceImpl extends AbstractLockService<TekstikappaleCtx> implements TekstiKappaleViiteService {
 
     @Autowired
     private DtoMapper mapper;
@@ -242,5 +245,24 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         if (o == null) {
             throw new BusinessRuleViolationException(msg);
         }
+    }
+
+    @Override
+    protected Long getLockId(TekstikappaleCtx ctx) {
+        return ctx.getViiteId();
+    }
+
+    @Override
+    protected int latestRevision(TekstikappaleCtx ctx) {
+        return tekstiKappaleRepository.getLatestRevisionId(findViite(ctx.getOpsId(),ctx.getViiteId()).getTekstiKappale().getId());
+    }
+
+    @Override
+    protected Long validateCtx(TekstikappaleCtx ctx, boolean readOnly) {
+        TekstiKappaleViite viite = findViite(ctx.getOpsId(),ctx.getViiteId());
+        if ( viite != null && (readOnly == true || viite.getOmistussuhde() == Omistussuhde.OMA)) {
+            return viite.getId();
+        }
+        throw new LockingException("Virheellinen lukitus");
     }
 }

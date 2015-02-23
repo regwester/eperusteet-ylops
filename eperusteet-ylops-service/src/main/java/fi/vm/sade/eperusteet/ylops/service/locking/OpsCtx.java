@@ -13,16 +13,24 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.repository.teksti;
+package fi.vm.sade.eperusteet.ylops.service.locking;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
-import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-import org.springframework.stereotype.Repository;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
-@Repository
-public interface TekstiKappaleRepository extends JpaWithVersioningRepository<TekstiKappale, Long> {
+@Getter
+@Setter
+public class OpsCtx {
+    private Long opsId;
+
+    public OpsCtx() {
+    }
+
+    public OpsCtx(Long opsId) {
+        this.opsId = opsId;
+    }
 }

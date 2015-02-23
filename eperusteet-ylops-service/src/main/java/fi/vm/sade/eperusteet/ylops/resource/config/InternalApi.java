@@ -13,16 +13,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.repository.teksti;
+package fi.vm.sade.eperusteet.ylops.resource.config;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
-import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-import org.springframework.stereotype.Repository;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
-@Repository
-public interface TekstiKappaleRepository extends JpaWithVersioningRepository<TekstiKappale, Long> {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value = {ElementType.METHOD, ElementType.TYPE})
+public @interface InternalApi {
+
 }

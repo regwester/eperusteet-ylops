@@ -13,16 +13,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.repository.teksti;
+package fi.vm.sade.eperusteet.ylops.service.locking;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
-import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-import org.springframework.stereotype.Repository;
+import fi.vm.sade.eperusteet.ylops.dto.LukkoDto;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
-@Repository
-public interface TekstiKappaleRepository extends JpaWithVersioningRepository<TekstiKappale, Long> {
+public interface LockService<T> {
+
+    @PreAuthorize("isAuthenticated()")
+    LukkoDto getLock(T ctx);
+    @PreAuthorize("isAuthenticated()")
+    LukkoDto lock(T ctx);
+    @PreAuthorize("isAuthenticated()")
+    LukkoDto lock(T ctx, Integer ifMatchRevision);
+    @PreAuthorize("isAuthenticated()")
+    void unlock(T ctx);
+    @PreAuthorize("isAuthenticated()")
+    void assertLock(T ctx);
+
 }

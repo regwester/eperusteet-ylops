@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.time.Instant;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +51,7 @@ public class DtoMapperConfig {
         factory.getConverterFactory().registerConverter(new LaajaalainenosaaminenViiteConverter());
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTeksti.class));
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTekstiDto.class));
+        factory.getConverterFactory().registerConverter(new PassThroughConverter(Instant.class));
         factory.getConverterFactory().registerConverter(new OrganisaatioConverter());
         OptionalSupport.register(factory);
         factory.registerMapper(new ReferenceableCollectionMergeMapper());
