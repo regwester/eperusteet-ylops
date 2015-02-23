@@ -69,15 +69,17 @@ public class KommenttiController {
                         .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/tekstikappaleviitteet/{id}", method = GET)
-    public ResponseEntity<List<KommenttiDto>> getAllByTekstiKappaleViite(@PathVariable("id") final long id) {
-        List<KommenttiDto> t = service.getAllByTekstiKappaleViite(id);
-        return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/opetussuunnitelmat/{id}", method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByOpetussuunnitelma(@PathVariable("id") final long id) {
         List<KommenttiDto> t = service.getAllByOpetussuunnitelma(id);
+        return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/opetussuunnitelmat/{id}/tekstikappaleviitteet/{viiteId}", method = GET)
+    public ResponseEntity<List<KommenttiDto>> getAllByTekstiKappaleViite(
+        @PathVariable("id") final long id,
+        @PathVariable("viiteId") final long viiteId) {
+        List<KommenttiDto> t = service.getAllByTekstiKappaleViite(id, viiteId);
         return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }
 

@@ -48,15 +48,15 @@ public class KommenttiServiceImpl implements KommenttiService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<KommenttiDto> getAllByTekstiKappaleViite(Long tekstiKappaleViiteId) {
-        List<Kommentti> kommentit = repository.findByTekstiKappaleViiteId(tekstiKappaleViiteId);
+    public List<KommenttiDto> getAllByTekstiKappaleViite(Long opsId, Long tekstiKappaleViiteId) {
+        List<Kommentti> kommentit = repository.findByTekstiKappaleViiteId(opsId, tekstiKappaleViiteId);
         return mapper.mapAsList(kommentit, KommenttiDto.class);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<KommenttiDto> getAllByOpetussuunnitelma(Long opetussuunnitelmaId) {
-        List<Kommentti> kommentit = repository.findByOpetussuunnitelmaId(opetussuunnitelmaId);
+    public List<KommenttiDto> getAllByOpetussuunnitelma(Long opsId) {
+        List<Kommentti> kommentit = repository.findByOpetussuunnitelmaId(opsId);
         return mapper.mapAsList(kommentit, KommenttiDto.class);
     }
 

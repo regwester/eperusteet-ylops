@@ -22,14 +22,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 /**
+ *
  * @author mikkom
  */
 public interface KommenttiService {
     @PreAuthorize("isAuthenticated()")
-    public List<KommenttiDto> getAllByTekstiKappaleViite(Long tekstiKappaleViiteId);
+    public List<KommenttiDto> getAllByTekstiKappaleViite(Long opsId, Long tekstiKappaleViiteId);
 
     @PreAuthorize("isAuthenticated()")
-    public List<KommenttiDto> getAllByOpetussuunnitelma(Long opetussuunnitelmaId);
+    public List<KommenttiDto> getAllByOpetussuunnitelma(Long opsId);
 
     @PreAuthorize("isAuthenticated()")
     public List<KommenttiDto> getAllByParent(Long id);

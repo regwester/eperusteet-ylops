@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.repository.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kommentti;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,7 +30,8 @@ import java.util.List;
 public interface KommenttiRepository extends JpaRepository<Kommentti, Long> {
     List<Kommentti> findByOpetussuunnitelmaId(Long opetussuunnitelmaId);
 
-    List<Kommentti> findByTekstiKappaleViiteId(Long tekstiKappaleViiteId);
+    @Query("SELECT k FROM Kommentti k WHERE k.opetussuunnitelmaId = ?1 AND k.tekstiKappaleViiteId = ?2")
+    List<Kommentti> findByTekstiKappaleViiteId(Long opsId, Long tekstiKappaleViiteId);
 
     List<Kommentti> findByParentId(Long parentId);
 
