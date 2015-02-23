@@ -52,6 +52,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,6 +101,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OrganisaatioService organisaatioService;
+
+    @Autowired
+    private KommenttiService kommenttiService;
 
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
@@ -360,6 +364,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public void removeOpetussuunnitelma(@P("id") Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
+        if (ops != null) {
+            kommenttiService.getAllByOpetussuunnitelma(id)
+                            .forEach(k -> kommenttiService.deleteReally(k.getId()));
+        }
         repository.delete(ops);
     }
 
