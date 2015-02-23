@@ -16,9 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.service.teksti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kommentti;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.KommenttiDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.KommenttiRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class KommenttiServiceImpl implements KommenttiService {
 
     @Autowired
     private KommenttiRepository repository;
+
+    @Autowired
+    private KayttajanTietoService kayttajat;
 
     @Autowired
     private DtoMapper mapper;
@@ -76,6 +81,14 @@ public class KommenttiServiceImpl implements KommenttiService {
         return mapper.map(kommentti, KommenttiDto.class);
     }
 
+    @Transactional
+    private void addName(Kommentti kommentti) {
+        KayttajanTietoDto ktd = kayttajat.hae(kommentti.getLuoja());
+        if (ktd != null) {
+            kommentti.setNimi(ktd.getKutsumanimi() + " " + ktd.getSukunimi());
+        }
+    }
+
     private static String clip(String kommentti) {
         if (kommentti != null) {
             int length = kommentti.length();
@@ -94,7 +107,7 @@ public class KommenttiServiceImpl implements KommenttiService {
             kommentti.setYlinId(parent.getYlinId() == null ? parent.getId() : parent.getYlinId());
         }
         kommentti = repository.save(kommentti);
-        // TODO: Käyttäjänimen lisääminen
+        addName(kommentti);
         return mapper.map(kommentti, KommenttiDto.class);
     }
 

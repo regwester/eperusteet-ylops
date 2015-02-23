@@ -16,7 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kommentti;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.KommenttiDto;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -43,37 +47,56 @@ public class KommenttiController {
     @Autowired
     private KommenttiService service;
 
+    @Autowired
+    KayttajanTietoService kayttajanTietoService;
 
-    // TODO: Käyttäjänimellä rikastaminen
+    private KommenttiDto rikastaKommentti(KommenttiDto kommentti) {
+        if (kommentti != null) {
+            KayttajanTietoDto kayttaja = kayttajanTietoService.hae(kommentti.getMuokkaaja());
+            if (kayttaja != null) {
+                String kutsumanimi = kayttaja.getKutsumanimi();
+                String etunimet = kayttaja.getEtunimet();
+                String etunimi = kutsumanimi != null ? kutsumanimi : etunimet;
+                kommentti.setNimi(etunimi + " " + kayttaja.getSukunimi());
+            }
+        }
+        return kommentti;
+    }
+
+    private List<KommenttiDto> rikastaKommentit(List<KommenttiDto> kommentit) {
+        return kommentit.stream()
+                        .map(this::rikastaKommentti)
+                        .collect(Collectors.toList());
+    }
 
     @RequestMapping(value = "/tekstikappaleviitteet/{id}", method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByTekstiKappaleViite(@PathVariable("id") final long id) {
         List<KommenttiDto> t = service.getAllByTekstiKappaleViite(id);
-        return new ResponseEntity<>(t, HttpStatus.OK);
+        return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/opetussuunnitelmat/{id}", method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByOpetussuunnitelma(@PathVariable("id") final long id) {
         List<KommenttiDto> t = service.getAllByOpetussuunnitelma(id);
-        return new ResponseEntity<>(t, HttpStatus.OK);
+        return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/ylin/{id}", method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByYlin(@PathVariable("id") final long id) {
         List<KommenttiDto> t = service.getAllByYlin(id);
-        return new ResponseEntity<>(t, HttpStatus.OK);
+        return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/parent/{id}", method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByParent(@PathVariable("id") final long id) {
         List<KommenttiDto> t = service.getAllByParent(id);
-        return new ResponseEntity<>(t, HttpStatus.OK);
+        return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = GET)
     public ResponseEntity<KommenttiDto> get(@PathVariable("id") final long id) {
         KommenttiDto t = service.get(id);
-        return new ResponseEntity<>(t, t == null ? HttpStatus.NOT_FOUND : HttpStatus.OK);
+        return new ResponseEntity<>(rikastaKommentti(t), t == null ? HttpStatus.NOT_FOUND : HttpStatus.OK);
     }
 
     @RequestMapping(method = POST)
