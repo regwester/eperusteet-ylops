@@ -90,6 +90,10 @@ ylopsApp
     });
   }
 
+  $scope.options = {
+    editing: false
+  };
+
   $scope.callbacks = {
     edit: function () {
       refetch();
@@ -111,6 +115,7 @@ ylopsApp
       refetch();
     },
     notify: function (mode) {
+      $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
     notifier: angular.noop
@@ -120,13 +125,13 @@ ylopsApp
 })
 
 .controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit,
-  $timeout, $location, $anchorScroll, OppiaineService) {
+  $timeout, $location, $anchorScroll, OppiaineService, Utils) {
   $scope.tunnisteet = [];
   $scope.muokattavat = {};
 
   function mapModel() {
     $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
-    $scope.tunnisteet = _.map($scope.sisaltoalueet, 'tunniste');
+    $scope.tunnisteet = _($scope.sisaltoalueet).sortBy(Utils.sort).map('tunniste').value();
     _.each($scope.tunnisteet, function (tunniste) {
       var paikallinen = _.find($scope.sisaltoalueet, function (alue) {
         return alue.tunniste === tunniste;
@@ -142,6 +147,10 @@ ylopsApp
     });
   }
   refetch();
+
+  $scope.options = {
+    editing: false
+  };
 
   $scope.callbacks = {
     edit: function () {
@@ -160,6 +169,7 @@ ylopsApp
       refetch();
     },
     notify: function (mode) {
+      $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
     notifier: angular.noop
@@ -180,6 +190,7 @@ ylopsApp
     scope: {
       muokattava: '=opsTeksti',
       callbacks: '=',
+      config: '='
     },
     templateUrl: 'views/opetussuunnitelmat/vuosiluokat/directives/opsteksti.html',
     controller: 'TekstiosaController',

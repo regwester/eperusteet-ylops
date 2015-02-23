@@ -92,8 +92,8 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
             ops.setNimi(lt(uniikkiString()));
             ops.setKuvaus(lt(uniikkiString()));
             ops.setTyyppi(Tyyppi.POHJA);
-            ops.setTila(Tila.VALMIS);
             ops = opsit.addPohja(ops);
+            ops = opsit.updateTila(ops.getId(), Tila.VALMIS);
 
             ops = new OpetussuunnitelmaDto();
             ops.setNimi(lt(uniikkiString()));

@@ -34,6 +34,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 /**
@@ -82,10 +83,11 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     private Omistussuhde omistussuhde = Omistussuhde.OMA;
 
-    @OneToMany(mappedBy = "vanhempi", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vanhempi", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OrderColumn
     @Getter
     @Setter
+    @BatchSize(size = 100)
     private List<TekstiKappaleViite> lapset;
 
     public TekstiKappaleViite() {

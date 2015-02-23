@@ -50,7 +50,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
     };
 
     this.sort = function (item) {
-      return Kaanna.kaanna(item.nimi).toLowerCase();
+      return Kaanna.kaanna(item.nimi, false, true).toLowerCase();
     };
 
     this.nameSort = function (item, key) {
@@ -90,7 +90,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
     return {
       restrict: 'AE',
       scope: {},
-      template: '<div id="backtotop" ng-hide="hidden" title="{{\'takaisin-ylos\' | kaanna}}">' +
+      template: '<div id="backtotop" ng-hide="hidden" title="{{tooltip.label | kaanna}}">' +
         '<a class="action-link" icon-role="arrow-up" ng-click="backToTop()"></a></div>',
       link: function (scope) {
         var active = true;
@@ -120,6 +120,11 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
         scope.$on('$destroy', function() {
           window.off('scroll', scroll);
         });
+      },
+      controller: function ($scope) {
+        $scope.tooltip = {
+          label: 'takaisin-ylos'
+        };
       }
     };
   })

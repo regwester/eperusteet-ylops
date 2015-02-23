@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +25,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class OpetuksenKohdealueDto {
+public class OpetuksenKohdealueDto implements ReferenceableDto {
+    private Long id;
     private LokalisoituTekstiDto nimi;
 
     public OpetuksenKohdealueDto() { }

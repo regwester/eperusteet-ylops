@@ -19,7 +19,7 @@
 ylopsApp
 .controller('PohjaController', function ($scope, $state, pohjaModel, opsService) {
   if ($state.current.name === 'root.pohjat.yksi') {
-    $state.go('root.pohjat.yksi.sisalto');
+    $state.go('root.pohjat.yksi.sisalto', {}, {location: 'replace'});
   }
   $scope.model = pohjaModel;
   $scope.$on('rakenne:updated', function () {
@@ -27,9 +27,10 @@ ylopsApp
   });
 })
 
-.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD) {
+.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter) {
   $scope.items = OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'});
   $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
+  $scope.sorter = ListaSorter.init($scope);
 
   $scope.addNew = function () {
     $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});
@@ -73,7 +74,9 @@ ylopsApp
       kappale.$original = _.cloneDeep(kappale.tekstiKappale);
     },
     delete: function (osio, kappale) {
-      TekstikappaleOps.delete($scope.model, osio, $stateParams.pohjaId, kappale);
+      TekstikappaleOps.varmistusdialogi(kappale.tekstiKappale.nimi, function () {
+        TekstikappaleOps.delete($scope.model, osio, $stateParams.pohjaId, kappale);
+      });
     },
     cancel: function (kappale) {
       $scope.kappaleEdit = null;

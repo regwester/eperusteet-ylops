@@ -17,8 +17,39 @@
 'use strict';
 
 ylopsApp
+  .service('ListaSorter', function (Utils) {
+    this.init = function ($scope) {
+      return {
+        key: 'muokattu',
+        desc: true,
+        set: function (key) {
+          if (key === $scope.sorter.key) {
+            $scope.sorter.desc = !$scope.sorter.desc;
+          } else {
+            $scope.sorter.key = key;
+            $scope.sorter.desc = false;
+          }
+        },
+        fn: function (item) {
+          switch($scope.sorter.key) {
+            case 'nimi':
+              return Utils.sort(item);
+            case 'muokattu':
+              return item.muokattu;
+            case 'tila':
+              return Utils.nameSort(item, 'tila');
+          }
+        }
+      };
+    };
+  })
+
   .controller('OpetussuunnitelmatListaController', function ($scope, $state,
-    OpsListaService) {
+    OpsListaService, Utils, ListaSorter) {
+
+    $scope.sorter = ListaSorter.init($scope);
+    $scope.opsiLista = true;
+
     $scope.items = OpsListaService.query();
     $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
 
@@ -26,6 +57,7 @@ ylopsApp
       $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi'});
     };
   })
+
   .controller('TiedotteetController', function ($scope) {
     $scope.tiedotteet = [
       {nimi: {fi: 'Tiedote 1'}, muokattu: '14.1.2015'},

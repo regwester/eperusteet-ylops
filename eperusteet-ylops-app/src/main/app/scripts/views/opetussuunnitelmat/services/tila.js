@@ -18,8 +18,10 @@
 /* global _ */
 
 ylopsApp
-.factory('OpsinTila', function (OpetussuunnitelmaCRUD) {
-  return OpetussuunnitelmaCRUD;
+.service('OpsinTila', function (OpetussuunnitelmaCRUD, Notifikaatiot) {
+  this.save = function (ops, tila, cb) {
+    OpetussuunnitelmaCRUD.setTila({opsId: ops.id, tila: tila}, null, cb, Notifikaatiot.serverCb);
+  };
 })
 
 .service('OpsinTilanvaihto', function ($modal) {

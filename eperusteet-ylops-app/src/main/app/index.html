@@ -24,8 +24,7 @@
     <script src="bower_components/json3/lib/json3.js"></script>
     <![endif]-->
     <!-- endbuild  -->
-    <!-- Add your site or application content here -->
-    <div class="container-fluid" id="ylasivuankkuri">
+    <div ng-if="lokalisointiInited" class="container-fluid" id="ylasivuankkuri">
       <div class="row">
         <div class="col-md-12">
           <ylops-header></ylops-header>
@@ -34,7 +33,6 @@
       </div>
       <div class="editointi-wrapper"><editointikontrollit ng-controller="EditointiController"></editointikontrollit></div>
       <ylops-footer></ylops-footer>
-      <spinner></spinner>
       <backtotop></backtotop>
       <div class="notification-wrapper" ng-cloak>
         <div class="notifications" ng-model="viestit" ng-controller="NotifikaatioController">
@@ -47,6 +45,7 @@
         </div>
       </div>
     </div>
+    <spinner></spinner>
 
     <!-- build:js({.tmp,../src/main/app}) scripts/components.js -->
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -99,6 +98,7 @@
     <script src="scripts/common/services/algoritmit.js"></script>
     <script src="scripts/common/services/oikeudet.js"></script>
     <script src="scripts/common/services/varihyrra.js"></script>
+    <script src="scripts/common/services/kommentit.js"></script>
 
     <script src="scripts/common/filters.js"></script>
 
@@ -110,6 +110,8 @@
     <script src="scripts/common/directives/ckeditor.js"></script>
     <script src="scripts/common/directives/navimenu.js"></script>
     <script src="scripts/common/directives/collapse.js"></script>
+    <script src="scripts/common/directives/kommentit.js"></script>
+    <script src="scripts/common/directives/kommenttiviesti.js"></script>
 
     <script src="scripts/resources/opetussuunnitelma.js"></script>
     <script src="scripts/resources/ohje.js"></script>

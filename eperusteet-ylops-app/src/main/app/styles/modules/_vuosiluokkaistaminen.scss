@@ -49,6 +49,18 @@ $vl-container-width: 255px;
   .koodi {
     font-weight: 700;
   }
+  .remover {
+    visibility: hidden;
+    color: $brand-primary;
+    padding-top: 3px;
+    padding-left: 4px;
+    background-color: rgba(255,255,255,0.7);
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 140%;
+    cursor: pointer;
+  }
   .kohdealue {
     display: block;
     font-weight: 700;
@@ -75,6 +87,10 @@ $vl-container-width: 255px;
 
     &:not(:last-child) {
       margin-right: 10px;
+    }
+    .napit {
+      float: right;
+      font-size: 14px;
     }
   }
 
@@ -121,6 +137,11 @@ $vl-container-width: 255px;
       box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3);
       padding: 5px;
       cursor: move;
+      position: relative;
+
+      &:hover .remover {
+        visibility: visible;
+      }
 
       &.collapsed-mode {
         padding: 2px;
@@ -130,6 +151,9 @@ $vl-container-width: 255px;
         text-overflow: ellipsis;
         .kohdealue {
           display: none;
+        }
+        .remover {
+          font-size: 110%;
         }
       }
 

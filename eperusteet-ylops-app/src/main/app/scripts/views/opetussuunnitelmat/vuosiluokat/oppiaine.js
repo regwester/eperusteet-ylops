@@ -114,28 +114,42 @@ ylopsApp
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna, OppiaineService, TextUtils) {
+  VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils) {
 
   $scope.vuosiluokat = [];
+  $scope.alueOrder = Utils.sort;
 
   $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
   });
-  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk.tavoitteet, 'tunniste');
+  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : [], 'tunniste');
 
   function updateVuosiluokat() {
+    if (!$scope.oppiaineenVlk) {
+      return;
+    }
     $scope.vuosiluokat = $scope.oppiaineenVlk.vuosiluokat;
     _.each($scope.vuosiluokat, function (vlk) {
       vlk.$numero = VuosiluokatService.fromEnum(vlk.vuosiluokka);
+      var allShort = true;
       _.each(vlk.tavoitteet, function (tavoite) {
         var perusteTavoite = perusteTavoitteet[tavoite.tunniste] || {};
         tavoite.$tavoite = perusteTavoite.tavoite;
         var tavoiteTeksti = TextUtils.toPlaintext(Kaanna.kaanna(perusteTavoite.tavoite));
         tavoite.$short = TextUtils.getCode(tavoiteTeksti);
+        if (!tavoite.$short) {
+          allShort = false;
+        }
       });
+      vlk.$tavoitteetShort = allShort;
+      allShort = true;
       _.each(vlk.sisaltoalueet, function (alue) {
         alue.$short = TextUtils.getCode(Kaanna.kaanna(alue.nimi));
+        if (!alue.$short) {
+          allShort = false;
+        }
       });
+      vlk.$sisaltoalueetShort = allShort;
     });
   }
   updateVuosiluokat();
@@ -152,6 +166,10 @@ ylopsApp
     });
   }
 
+  $scope.options = {
+    editing: false
+  };
+
   $scope.callbacks = {
     edit: function () {
       refetch();
@@ -163,6 +181,7 @@ ylopsApp
       refetch();
     },
     notify: function (mode) {
+      $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
     notifier: angular.noop

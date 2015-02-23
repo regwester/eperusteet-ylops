@@ -1,17 +1,42 @@
 <table class="table table-hover" ng-if="items && items.length">
   <tr>
-    <th kaanna="'nimi'"></th>
-    <th kaanna="'tila'"></th>
-    <th kaanna="'muokattu-viimeksi'"></th>
+    <th width="50%">
+      <a ng-click="sorter.set('nimi')">
+        <span kaanna="'nimi'"></span>
+        <span ng-show="sorter.key === 'nimi'" class="glyphicon"
+          ng-class="sorter.desc ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet'">
+        </span>
+      </a>
+    </th>
+    <th width="20%">
+      <a ng-click="sorter.set('tila')">
+        <span kaanna="'tila'"></span>
+        <span ng-show="sorter.key === 'tila'" class="glyphicon"
+          ng-class="sorter.desc ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet'">
+        </span>
+      </a>
+    </th>
+    <th>
+      <a ng-click="sorter.set('muokattu')">
+        <span kaanna="'muokattu-viimeksi'"></span>
+        <span ng-show="sorter.key === 'muokattu'" class="glyphicon"
+          ng-class="sorter.desc ? 'glyphicon-sort-by-attributes-alt' : 'glyphicon-sort-by-attributes'">
+        </span>
+      </a>
+    </th>
+
   </tr>
   <tr ng-if="!items.$resolved"><td colspan="3"><small-spinner></small-spinner></td></tr>
-  <tr ng-if="items.$resolved" ng-repeat="item in items | orderBy:'-muokattu' | limitTo:opsLimit">
+  <tr ng-if="items.$resolved" ng-repeat="item in items | filter:{tila:'!poistettu'} | orderBy:sorter.fn:sorter.desc | limitTo:opsLimit">
     <td>
-      <a ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
+      <a ng-if="opsiLista" ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
+      <a ng-if="!opsiLista" ui-sref="root.pohjat.yksi({pohjaId: item.id})" ng-bind="item.nimi | kaanna"></a>
     </td>
     <td><span ng-bind="item.tila | kaanna"></span></td>
-    <td><span ng-bind="item.muokattu | aikaleima"></span></td>
+    <td><span ng-bind="item.muokattu | aikaleima:'short'"></span></td>
   </tr>
 </table>
-<p ng-if="items.length === 0" kaanna="'ei-opetussuunnitelmia'"></p>
-<a class="see-more" ng-if="opsLimit < items.length" ui-sref="root.opetussuunnitelmat.lista" kaanna="'nayta-kaikki'"></a>
+<p ng-if="opsiLista && items.length === 0" kaanna="'ei-opetussuunnitelmia'"></p>
+<p ng-if="!opsiLista && items.length === 0" kaanna="'ei-pohjia'"></p>
+<a class="see-more" ng-if="opsiLista && opsLimit < items.length" ui-sref="root.opetussuunnitelmat.lista" kaanna="'nayta-kaikki'"></a>
+<a class="see-more" ng-if="!opsiLista && opsLimit < items.length" ui-sref="root.pohjat.lista" kaanna="'nayta-kaikki'"></a>

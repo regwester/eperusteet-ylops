@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
@@ -81,9 +82,9 @@ public class OppiaineController {
     @CacheControl(nonpublic = false, age = 3600)
     public ResponseEntity<PerusteOppiaine> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
 
-        return Responses.of(Optional.ofNullable(ops.getPeruste(opsId))
-            .flatMap(p -> Optional.ofNullable(oppiaineService.get(opsId, id))
-                .flatMap(a -> p.getPerusopetus().getOppiaine(a.getTunniste()))));
+        Peruste p = ops.getPeruste(opsId);
+        return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
+            .flatMap(a -> p.getPerusopetus().getOppiaine(a.getTunniste())));
 
     }
 

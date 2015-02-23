@@ -76,16 +76,22 @@ ylopsApp
 
     $scope.startEditing = function() {
       // TODO tilat backendiltä?
-      var tilat = ['luonnos', 'valmis'];
+      var tilat = ['poistettu'];
+      if ($scope.status === 'luonnos') {
+        tilat.unshift('valmis');
+        tilat.unshift('luonnos');
+      } else if ($scope.status === 'valmis') {
+        tilat.unshift('valmis');
+      }
       OpsinTilanvaihto.start({
         currentStatus: $scope.status,
         mahdollisetTilat: tilat,
         isPohja: $scope.model.tyyppi === 'pohja'
       }, function (newStatus) {
-        OpsinTila.save({}, _.extend({tila: newStatus}, _.omit($scope.model, 'tila')), function(res) {
+        OpsinTila.save($scope.model, newStatus, function(res) {
           Notifikaatiot.onnistui('tallennettu-ok');
           $scope.status = res.tila;
-        }, Notifikaatiot.serverCb);
+        });
       });
     };
 

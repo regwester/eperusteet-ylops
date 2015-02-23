@@ -30,12 +30,17 @@ ylopsApp
   })
 
   .filter('aikaleima', function ($filter, Kaanna) {
+    var mapping = {
+      date: 'd.M.yyyy',
+      default: 'd.M.yyyy H:mm:ss',
+      short: 'd.M.yyyy H:mm'
+    };
+
     return function (input, format, defaultKey) {
       if (!input) {
         return defaultKey ? Kaanna.kaanna(defaultKey) : '';
       }
 
-      var dateFormat = format === 'date' ? 'd.M.yyyy' : 'dd.MM.yyyy HH:mm:ss';
-      return $filter('date')(input, dateFormat);
+      return $filter('date')(input, mapping[format] || mapping.default);
     };
   });

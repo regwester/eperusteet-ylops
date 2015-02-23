@@ -19,7 +19,7 @@
 
 ylopsApp
   .service('Kaanna', function($translate, Kieli) {
-    function translate (obj, key) {
+    function translate (obj, key, useFallback) {
       function getTranslation(input, lang) {
         return input[lang] || input[lang.toUpperCase()] || input['kieli_' + lang + '#1'];
       }
@@ -29,24 +29,27 @@ ylopsApp
       }
       var secondaryKey = key === 'fi' || key === 'FI' ? 'sv' : 'fi';
       var secondary = getTranslation(obj, secondaryKey);
+
       if (secondary) {
-        return '[' + secondary + ']';
+        return useFallback ? secondary : '[' + secondary + ']';
+      } else if (useFallback) {
+        return _(obj).values().first();
       }
       return secondary;
     }
 
-    function kaannaSisalto(input) {
+    function kaannaSisalto(input, useFallback) {
       if (_.isEmpty(input)) {
         return '';
       }
       var sisaltokieli = Kieli.getSisaltokieli();
-      return translate(input, sisaltokieli);
+      return translate(input, sisaltokieli, useFallback);
     }
 
     return {
-      kaanna: function(input, config) {
+      kaanna: function(input, config, useFallback) {
         if (_.isObject(input)) {
-          return kaannaSisalto(input);
+          return kaannaSisalto(input, useFallback);
         } else if (_.isString(input)) {
           return $translate.instant(input, config);
         }
