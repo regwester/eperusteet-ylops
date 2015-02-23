@@ -119,7 +119,7 @@ ylopsApp
     '  <div class="kommentti-sisalto">' +
     '    <h3>' +
     '      {{ viesti.nimi || viesti.muokkaaja }}' +
-    '      <span class="pull-right" ng-if="selfOid === viesti.muokkaaja">' +
+    '      <span class="pull-right" ng-if="true || selfOid === viesti.muokkaaja">' + // TODO nykyisen käyttäjän oid
     '        <a class="action-link" ng-click="startEditing(viesti)" icon-role="edit" oikeustarkastelu="{ target: \'peruste\', permission: \'muokkaus\' }"></a>' +
     '        <a class="action-link" ng-click="poistaKommentti(viesti)" icon-role="remove" oikeustarkastelu="{ target: \'peruste\', permission: \'poisto\' }"></a>' +
     '      </span>' +

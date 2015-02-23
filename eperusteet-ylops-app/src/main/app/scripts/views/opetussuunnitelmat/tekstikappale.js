@@ -19,8 +19,10 @@
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
-    OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils) {
+    OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
+    KommentitByTekstikappaleViite) {
 
+    Kommentit.haeKommentit(KommentitByTekstikappaleViite, {id: $stateParams.tekstikappaleId, opsId: $stateParams.id});
     $scope.ohje = {};
     $scope.perusteteksti = {};
     $scope.options = {tekstiCollapsed: true};

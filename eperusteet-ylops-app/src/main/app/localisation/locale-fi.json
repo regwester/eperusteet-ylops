@@ -137,6 +137,17 @@
 
   "arviointi-vuosiluokan-paatteeksi": "Arviointikriteerit vuosiluokkakokonaisuuden päätteeksi",
   "arvioinnin-kohde": "Arvioinnin kohde",
-  "arvion-hyva-osaaminen": "Arvion \"hyvä\" / arvosanan 8 osaaminen"
+  "arvion-hyva-osaaminen": "Arvion \"hyvä\" / arvosanan 8 osaaminen",
+
+  "keskustelu": "Keskustelu",
+  "lisaa-kommentti": "Lisää kommentti",
+  "viesti-poistettu": "Viesti poistettu",
+  "kommentti-poistettu": "Kommentti poistettiin onnistuneesti",
+  "nayta-aliviestit": "Näytä vastaukset",
+  "piilota-aliviestit": "Piilota vastaukset",
+  "poistetaanko-kommentti": "Poistetaanko kommentti?",
+  "vastaa": "Vastaa",
+  "kommentti-ei-saa-ylittaa": "Kommentti ei saa olla yli {{ maara }} merkkiä pitkä.",
+  "vahvista-poisto": "Vahvista poisto"
 
 }
