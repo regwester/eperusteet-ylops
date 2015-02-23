@@ -27,9 +27,10 @@ ylopsApp
   });
 })
 
-.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD) {
+.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter) {
   $scope.items = OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'});
   $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
+  $scope.sorter = ListaSorter.init($scope);
 
   $scope.addNew = function () {
     $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});
