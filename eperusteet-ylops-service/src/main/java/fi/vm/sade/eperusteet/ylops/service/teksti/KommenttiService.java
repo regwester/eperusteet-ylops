@@ -40,7 +40,6 @@ public interface KommenttiService {
     @PreAuthorize("isAuthenticated()")
     public KommenttiDto get(Long kommenttiId);
 
-    // FIXME: Lisää kommentointi-permission
     @PreAuthorize("hasPermission(#k.opetussuunnitelmaId, 'opetussuunnitelma', 'KOMMENTOINTI')")
     public KommenttiDto add(@P("k") final KommenttiDto kommenttiDto);
 
