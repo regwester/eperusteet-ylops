@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.codahale.metrics.annotation.Timed;
 import com.wordnik.swagger.annotations.Api;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
@@ -95,6 +96,15 @@ public class OpetussuunnitelmaController {
         opetussuunnitelmaDto.setId(id);
         return new ResponseEntity<>(opetussuunnitelmaService.updateOpetussuunnitelma(opetussuunnitelmaDto),
                 HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/tila/{tila}", method = RequestMethod.POST)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<OpetussuunnitelmaDto> updateTila(
+        @PathVariable("id") final Long id,
+        @PathVariable("tila") Tila tila) {
+        return new ResponseEntity<>(opetussuunnitelmaService.updateTila(id, tila), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

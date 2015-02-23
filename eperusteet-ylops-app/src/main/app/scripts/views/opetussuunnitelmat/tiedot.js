@@ -213,7 +213,7 @@ ylopsApp
     } else if (kunnat.length === 1) {
       var kunta = kunnat[0];
       PeruskouluHaku.get({ kuntaUri: kunta }, function(res) {
-        $scope.koululista = _.sortBy(res.organisaatiot, Utils.sort);
+        $scope.koululista = _.sortBy(res, Utils.sort);
         $scope.loadingKoulut = false;
       }, Notifikaatiot.serverCb);
     } else {

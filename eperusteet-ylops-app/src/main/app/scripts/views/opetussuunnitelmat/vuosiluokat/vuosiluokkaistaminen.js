@@ -19,7 +19,7 @@
 ylopsApp
 .controller('VuosiluokkaistaminenController', function ($scope, $filter, VariHyrra, ColorCalculator,
   $state, OppiaineenVlk, $stateParams, OpsService, Kaanna, Notifikaatiot, VuosiluokatService,
-  $rootScope, OppiaineService) {
+  $rootScope, OppiaineService, Varmistusdialogi) {
 
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
@@ -48,7 +48,9 @@ ylopsApp
     return classes;
   };
 
+  var originalTavoiteOrder = [];
   function processTavoitteet() {
+    originalTavoiteOrder = _.map($scope.tavoitteet, 'tunniste');
     _.each($scope.tavoitteet, function (tavoite) {
       var kohdealueId = _.first(tavoite.kohdealueet);
       tavoite.kohdealue = _.find(kohdealueet, {id: kohdealueId});
@@ -151,8 +153,32 @@ ylopsApp
   }
 
   $scope.save = function () {
-    // TODO save
     saveCb(goBack);
+  };
+
+  $scope.placeAll = function (container) {
+    container.items = [];
+    _.each($scope.containers.tavoitteet.items, function (item) {
+      container.items.push(item);
+    });
+    resetTavoitteet();
+  };
+
+  $scope.empty = function (container) {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-tavoitteet-tyhjennys-otsikko',
+      teksti: 'varmista-tavoitteet-tyhjennys',
+      primaryBtn: 'tyhjenna',
+      successCb: function () {
+        container.items = [];
+        resetTavoitteet();
+      }
+    })();
+  };
+
+  $scope.remove = function (container, item) {
+    _.remove(container.items, {tunniste: item.tunniste});
+    resetTavoitteet();
   };
 
   function sourceIs(event, className) {
@@ -172,11 +198,7 @@ ylopsApp
   }
 
   $scope.tavoiteSorter = function (item) {
-    return item.kohdealue ? item.kohdealue.id : null;
-  };
-
-  $scope.nimiSorter = function (item) {
-    return Kaanna.kaanna(item.tavoite).toLowerCase();
+    return originalTavoiteOrder.indexOf(item.tunniste);
   };
 
   function modelFromTarget(target) {
@@ -196,7 +218,7 @@ ylopsApp
       // Must use same sorter(s) as in ng-repeat template
       var model = modelFromTarget(event.target);
       if (model) {
-        var sortedIndex = adjustIndex(model.items, [$scope.tavoiteSorter, $scope.nimiSorter], ui.item.sortable.index);
+        var sortedIndex = adjustIndex(model.items, [$scope.tavoiteSorter], ui.item.sortable.index);
         ui.item.sortable.index = sortedIndex;
       }
     },
@@ -222,9 +244,9 @@ ylopsApp
       // Ei duplikaatteja vuosiluokan sisällä
       if (toVuosiluokka) {
         var dropModel = modelFromTarget(ui.item.sortable.droptarget[0]);
-        var koodi = _.last(ui.item[0].getAttribute('id').split('-'));
+        var tunniste = _.last(ui.item[0].getAttribute('id').split('_'));
         var existing = _.find(dropModel.items, function (item) {
-          return koodi === item.koodi;
+          return tunniste === item.tunniste;
         });
         if (existing && !ui.sender) {
           ui.item.sortable.cancel();

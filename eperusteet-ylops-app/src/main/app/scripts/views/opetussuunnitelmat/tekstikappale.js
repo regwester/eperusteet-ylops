@@ -18,8 +18,8 @@
 
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
-    Varmistusdialogi, Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
-    OhjeCRUD, MurupolkuData, $rootScope, OpsService) {
+    Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
+    OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils) {
 
     $scope.ohje = {};
     $scope.perusteteksti = {};
@@ -46,6 +46,7 @@ ylopsApp
     };
 
     $scope.model = {};
+    var originalOtsikko = null;
 
     function fetchOhje(model) {
       OhjeCRUD.forTekstikappale({uuid: model.tekstiKappale.tunniste}, function (ohje) {
@@ -74,6 +75,7 @@ ylopsApp
           viiteId: $stateParams.tekstikappaleId
         }, function (res) {
           $scope.model = res;
+          originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
           MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
           fetchOhje(res);
         }, Notifikaatiot.serverCb);
@@ -87,21 +89,17 @@ ylopsApp
     };
 
     $scope.remove = function () {
-      Varmistusdialogi.dialogi({
-        otsikko: 'varmista-poisto',
-        primaryBtn: 'poista',
-        successCb: function () {
-          $scope.model.$delete({opsId: $stateParams.id}, function () {
-            Notifikaatiot.onnistui('poisto-onnistui');
-            OpsService.refetch(function () {
-              $rootScope.$broadcast('rakenne:updated');
-            });
-            $timeout(function () {
-              $state.go('root.opetussuunnitelmat.yksi.sisalto');
-            });
-          }, Notifikaatiot.serverCb);
-        }
-      })();
+      TekstikappaleOps.varmistusdialogi($scope.model.tekstiKappale.nimi, function () {
+        $scope.model.$delete({opsId: $stateParams.id}, function () {
+          Notifikaatiot.onnistui('poisto-onnistui');
+          OpsService.refetch(function () {
+            $rootScope.$broadcast('rakenne:updated');
+          });
+          $timeout(function () {
+            $state.go('root.opetussuunnitelmat.yksi.sisalto');
+          });
+        }, Notifikaatiot.serverCb);
+      });
     };
 
     var successCb = function (res) {
@@ -110,6 +108,12 @@ ylopsApp
       if ($stateParams.tekstikappaleId === 'uusi') {
         $state.go($state.current.name, {tekstikappaleId: res.id}, {reload: true});
       }
+      if (!Utils.compareLocalizedText(originalOtsikko, res.tekstiKappale.nimi)) {
+        OpsService.refetch(function () {
+          $rootScope.$broadcast('rakenne:updated');
+        });
+      }
+      originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
     };
 
     var callbacks = {

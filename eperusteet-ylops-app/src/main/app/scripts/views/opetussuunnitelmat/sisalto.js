@@ -17,7 +17,8 @@
 'use strict';
 
 ylopsApp
-.service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit) {
+.service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
+  Varmistusdialogi, Kaanna) {
   function mapSisalto(root) {
     return {
       id: root.id,
@@ -75,10 +76,18 @@ ylopsApp
   this.saveRakenne = saveRakenne;
   this.add = add;
   this.delete = deleteKappale;
+  this.varmistusdialogi = function (nimi, successCb) {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-poisto',
+      teksti: Kaanna.kaanna('poista-tekstikappale-teksti', {nimi: Kaanna.kaanna(nimi)}),
+      primaryBtn: 'poista',
+      successCb: successCb
+    })();
+  };
 })
 
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, OpetussuunnitelmanTekstit,
-  Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Varmistusdialogi) {
+  Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils) {
   $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
   $scope.adding = {jarjestaminen: false, lahtokohdat: false};
   $scope.uusi = {nimi: {}};
@@ -140,13 +149,9 @@ ylopsApp
       $scope.uusi = {nimi: {}};
     },
     deleteKappale: function (osio, item) {
-      Varmistusdialogi.dialogi({
-        otsikko: 'varmista-poisto',
-        primaryBtn: 'poista',
-        successCb: function () {
-          TekstikappaleOps.delete($scope.model, osio, $stateParams.id, item);
-        }
-      })();
+      TekstikappaleOps.varmistusdialogi(item.tekstiKappale.nimi, function () {
+        TekstikappaleOps.delete($scope.model, osio, $stateParams.id, item);
+      });
     },
     editTitle: function (osio, kappale) {
       $scope.kappaleEdit = kappale;

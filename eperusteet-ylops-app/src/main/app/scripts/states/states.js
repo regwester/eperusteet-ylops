@@ -26,7 +26,12 @@ ylopsApp
         abstract: true,
         onEnter: ['Kieli', '$stateParams', function (Kieli, $stateParams) {
           Kieli.setUiKieli($stateParams.lang, false);
-        }]
+        }],
+        resolve: {
+          casTiedot: ['Oikeudet', function (Oikeudet) {
+            return Oikeudet.getCasTiedot();
+          }]
+        }
       })
 
       .state('root.virhe', {

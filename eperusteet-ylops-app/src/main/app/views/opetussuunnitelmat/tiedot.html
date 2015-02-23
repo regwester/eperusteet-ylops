@@ -14,10 +14,10 @@
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
-        <label for="ops-field-nimi" kaanna="'nimi'"></label>
+        <label for="ops-field-nimi-readonly" kaanna="'nimi'"></label>
       </div>
       <div class="col-sm-9 formfield-data viewmode">
-        <div ng-bind="model.nimi | kaanna"></div>
+        <div id="ops-field-nimi-readonly" ng-bind="model.nimi | kaanna"></div>
       </div>
     </div>
 
@@ -37,10 +37,19 @@
         <div>
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input viewmode">
-            <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna}}<span ng-show="!$last">, </span></span>
+            <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna:false:true}}<span ng-show="!$last">, </span></span>
             <span ng-if="!model.koulut || model.koulut.length === 0">-</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-yhteystiedot-readonly" kaanna="'yhteystiedot'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div id="ops-field-yhteystiedot-readonly" ng-bind-html="model.yhteystiedot | kaanna:false:true"></div>
       </div>
     </div>
 
@@ -102,13 +111,22 @@
             <ui-select class="ui-select" multiple ng-model="editableModel.kouluOidit" on-select="$select.search = ''"
                        ng-disabled="editableModel.kuntaUrit.length !== 1 || koululista.length === 0">
               <ui-select-choices repeat="koulu.oid as koulu in koululista | filter: $select.search">
-                <span ng-bind-html="koulu.nimi | kaanna | highlight: $select.search"></span>
+                <span ng-bind-html="koulu.nimi | kaanna:false:true | highlight: $select.search"></span>
               </ui-select-choices>
-              <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
+              <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
             </ui-select>
             <p ng-if="!loadingKoulut && eiKoulujaVaroitus" kaanna="'kunnalla-ei-kouluja'"></p>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-yhteystiedot" kaanna="'yhteystiedot'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data">
+        <div id="ops-field-yhteystiedot" ckeditor ng-model="editableModel.yhteystiedot" slocalized></div>
       </div>
     </div>
 

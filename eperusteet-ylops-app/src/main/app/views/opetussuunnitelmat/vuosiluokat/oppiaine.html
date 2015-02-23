@@ -2,7 +2,7 @@
 
 <div perusteen-tekstiosa="perusteOppiaine.tehtava"></div>
 
-<div class="tekstiosa-wrapper">
+<div class="tekstiosa-wrapper" ng-show="oppiaineenVlk">
   <h3>
     <div class="action-buttons-inline">
       <button class="btn btn-default" icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"></button>
@@ -24,15 +24,24 @@
         </a>
       </td>
       <td>
-        <span ng-repeat="tavoite in vuosiluokka.tavoitteet" ng-class="{short: tavoite.$short}">
-          <span ng-if="tavoite.$short" ng-bind="tavoite.$short"></span>
-          <span class="long" ng-if="!tavoite.$short" ng-bind="tavoite.$tavoite | kaanna | stripTags"></span></span>
+        <span ng-if="vuosiluokka.$tavoitteetShort" ng-repeat="tavoite in vuosiluokka.tavoitteet"><span class="koodi-short" ng-if="tavoite.$short" ng-bind="tavoite.$short"></span></span>
+        <span ng-if="!vuosiluokka.$tavoitteetShort">
+          <ul>
+            <li ng-repeat="tavoite in vuosiluokka.tavoitteet">
+              <span ng-bind="tavoite.$tavoite | kaanna | stripTags"></span>
+            </li>
+          </ul>
         </span>
       </td>
       <td>
-        <span ng-repeat="alue in vuosiluokka.sisaltoalueet">
-          <span ng-if="alue.$short" ng-bind="alue.$short"></span>
-          <span class="long" ng-if="!alue.$short" ng-bind="alue.nimi | kaanna"></span></span>
+        <span ng-if="vuosiluokka.$sisaltoalueetShort" ng-repeat="alue in vuosiluokka.sisaltoalueet"><span class="koodi-short" ng-if="alue.$short" ng-bind="alue.$short"></span></span>
+        <span ng-if="!vuosiluokka.$sisaltoalueetShort">
+          <ul>
+            <li ng-repeat="alue in vuosiluokka.sisaltoalueet | orderBy:alueOrder">
+              <span ng-bind="alue.nimi | kaanna"></span>
+            </li>
+          </ul>
+        </span>
       </td>
     </tr>
 
@@ -40,6 +49,6 @@
 </div>
 
 <div perusteen-tekstiosa="perusteOpVlk.tehtava"></div>
-<div perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
-<div perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
-<div perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
+<div perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks" config="options"></div>
+<div perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks" config="options"></div>
+<div perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks" config="options"></div>

@@ -25,9 +25,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlk.html',
         controller: 'VuosiluokkakokonaisuusController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
-          }],
           vuosiluokatService: 'VuosiluokatService',
           vlkId: ['$stateParams', function($stateParams){
             return $stateParams.vlkId;
@@ -38,6 +35,10 @@ ylopsApp
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
             return vuosiluokatService.getLaajaalaiset(opsId).$promise;
           }],
+          naviState: ['baseLaajaalaiset', 'OpsNavigaatio', function (baseLaajaalaiset, OpsNavigaatio) {
+            // Odota laaja-alaiset ennen sivunavin aktivointia niin UI-elementit ei pompi
+            OpsNavigaatio.setActive();
+          }]
         }
       })
 

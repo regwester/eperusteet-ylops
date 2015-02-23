@@ -14,6 +14,7 @@
   "ei-maaritetty": "Tyhjä",
   "piilota": "Piilota",
   "nayta": "Näytä",
+  "takaisin-ylos": "Takaisin ylös",
 
   "muokkaa": "Muokkaa",
   "muokkaa-otsikkoa": "Muokkaa otsikkoa",
@@ -21,6 +22,7 @@
   "kommentoi-muutosta": "Kommentoi muutosta",
   "muokkaa-kappaletta": "Muokkaa tekstikappaletta",
   "kappaleen-otsikko": "Otsikko",
+  "poista-tekstikappale-teksti": "Tekstikappale \"{{nimi}}\" poistetaan. Oletko varma?",
 
   "etusivu": "Etusivu",
   "uusi-ops": "Uusi opetussuunnitelma",
@@ -37,7 +39,7 @@
   "kayta-pohjaa": "Käytä pohjana:",
   "tyhja-pohja": "Oletuspohja",
   "valitse-pohja": "Valitse OPS...",
-  "vuosiluokat-ja-oppiaineet": "Vuosiluokat ja oppiaineet",
+  "vuosiluokat-ja-oppiaineet": "Opetus eri vuosiluokilla",
   "opsn-tiedot": "OPS:n tiedot",
   "pohjan-tiedot": "Pohjan tiedot",
   "aloita-uusi-pohja": "Aloita uusi pohja",
@@ -46,7 +48,7 @@
   "pohjat": "Pohjat",
   "nayta-kaikki": "Näytä kaikki",
   "ei-opetussuunnitelmia": "Ei opetussuunnitelmia",
-  "ei-opetussuunnitelmia": "Ei pohjia",
+  "ei-pohjia": "Ei pohjia",
 
   "ohje": "Ohje",
   "pakollinen": "Pakollinen",
@@ -92,6 +94,7 @@
   "kunnat": "Kunnat",
   "koulut": "Koulut",
   "kunnalla-ei-kouluja": "Valitulle kunnalle ei löytynyt kouluja.",
+  "yhteystiedot": "Yhteystiedot",
   "julkaisukielet": "Julkaisukielet",
   "fi": "suomi",
   "sv": "ruotsi",
@@ -99,8 +102,13 @@
 
   "luonnos": "Luonnos",
   "tila-luonnos": "luonnos",
+  "tilakuvaus-luonnos": "Kuvaus luonnos-tilalle",
   "valmis": "Valmis",
   "tila-valmis": "Valmis",
+  "tilakuvaus-valmis": "Kuvaus valmis-tilalle",
+  "tila-poistettu": "Arkistoitu",
+  "poistettu": "Arkistoitu",
+  "tilakuvaus-poistettu": "Kuvaus poistettu-tilalle",
   "aseta-pohjan-tila": "Aseta pohjan tila",
   "aseta-opsin-tila": "Aseta opetussuunnitelman tila",
 
@@ -122,6 +130,10 @@
   "tavoitteiden-vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet",
   "vuosiluokka": "Vuosiluokka",
   "tavoitteet-ja-sisallot": "Tavoitteet ja sisällöt",
+  "tyhjenna": "Tyhjennä",
+  "varmista-tavoitteet-tyhjennys-otsikko": "Varmista tyhjennys",
+  "varmista-tavoitteet-tyhjennys": "Tyhjennetäänkö vuosiluokalle tuodut tavoitteet?",
+  "tuo-kaikki": "Tuo kaikki",
 
   "arviointi-vuosiluokan-paatteeksi": "Arviointikriteerit vuosiluokkakokonaisuuden päätteeksi",
   "arvioinnin-kohde": "Arvioinnin kohde",
