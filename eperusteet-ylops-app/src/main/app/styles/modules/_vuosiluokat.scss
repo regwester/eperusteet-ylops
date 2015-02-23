@@ -33,28 +33,47 @@
     position: relative;
     border: $tavoite-border;
     .header {
-      padding: 10px;
       font-size: 130%;
+      position: relative;
+      .clearer {
+        clear: right;
+      }
+      .toggle-nimi {
+        padding: 10px;
+        max-width: 75%;
+        position: relative;
+        height: 100%;
+      }
       .toggle {
-        display: inline-block;
-        margin-top: 2px;
-        vertical-align: top;
+        position: absolute;
+        left: 10px;
       }
       .nimi {
+        margin-left: 25px;
         display: inline-block;
-        max-width: 75%;
       }
       .kohdealue {
-        //border: 1px solid red;
-        padding: 5px;
+        display: block;
+        border-left: $tavoite-border;
+        border-bottom: $tavoite-border;
+        margin-bottom: -1px;
+        padding: 10px 5px 5px 7px;
+        height: 100%;
         color: #777;
-        position: absolute;
-        right: 0;
-        top: 0;
+        float: right;
         max-width: 25%;
-        font-size: 14px;
+        font-size: 13px;
         text-align: right;
       }
+      &.kohdealueeton {
+        .toggle-nimi {
+          max-width: 100%;
+        }
+        .kohdealue {
+          display: none;
+        }
+      }
+
     }
 
     .peruste-body {

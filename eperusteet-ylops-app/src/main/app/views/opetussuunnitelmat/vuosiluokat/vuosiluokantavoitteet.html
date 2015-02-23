@@ -1,11 +1,14 @@
 <div class="tavoitteet">
   <div class="tavoite" ng-repeat="tunniste in tunnisteet">
 
-    <div class="header">
-      <span class="kohdealue" ng-bind="tavoiteMap[tunniste].$kohdealue.nimi | kaanna"></span>
-      <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
-      <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
-            ng-bind="tavoiteMap[tunniste].$tavoite | kaanna | stripTags"></span>
+    <div class="header" ng-class="{kohdealueeton: !tavoiteMap[tunniste].$kohdealue}">
+      <div class="kohdealue" ng-bind="tavoiteMap[tunniste].$kohdealue.nimi | kaanna"></div>
+      <div class="toggle-nimi">
+        <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
+        <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
+              ng-bind="tavoiteMap[tunniste].$tavoite | kaanna | stripTags"></span>
+      </div>
+      <div class="clearer"></div>
     </div>
 
     <div class="peruste-body" collapse="collapsed[tunniste]">
