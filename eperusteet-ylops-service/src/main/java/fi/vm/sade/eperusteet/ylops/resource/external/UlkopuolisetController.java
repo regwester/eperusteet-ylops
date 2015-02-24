@@ -85,6 +85,13 @@ public class UlkopuolisetController {
         return new ResponseEntity<>(ryhma, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/organisaatiot/peruskoulutoimijat/{kuntaIdt}", method = GET)
+    @ResponseBody
+    public ResponseEntity<JsonNode> getPeruskoulut(@PathVariable(value = "kuntaIdt") final List<String> kuntaIdt) {
+        JsonNode peruskoulut = organisaatioService.getPeruskoulutoimijat(kuntaIdt);
+        return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/organisaatiot/peruskoulut/{kuntaId}", method = GET)
     @ResponseBody
     public ResponseEntity<JsonNode> getPeruskoulut(@PathVariable(value = "kuntaId") final String kuntaId) {

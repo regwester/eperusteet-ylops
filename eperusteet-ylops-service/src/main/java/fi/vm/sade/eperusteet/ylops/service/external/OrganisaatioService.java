@@ -32,6 +32,9 @@ public interface OrganisaatioService {
     JsonNode getPeruskoulut(String kuntaId);
 
     @PreAuthorize("permitAll()")
+    JsonNode getPeruskoulutoimijat(List<String> kuntaIdt);
+
+    @PreAuthorize("permitAll()")
     JsonNode getRyhma(String organisaatioOid);
 
     @PreAuthorize("permitAll()")

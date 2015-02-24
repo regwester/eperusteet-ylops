@@ -24,8 +24,11 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +55,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private static final String ORGANISAATIORYHMAT = ORGANISAATIOT + "1.2.246.562.10.00000000001/ryhmat";
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
     private static final String KUNTA_KRITEERI_ID = "kunta";
+    private static final String HAKUKRITEERI = "&aktiiviset=true&suunnitellut=true&lakkautetut=false";
 
     private String peruskouluHakuehto;
 
@@ -63,7 +67,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     @PostConstruct
     public void init() {
         peruskouluHakuehto =
-            "&aktiiviset=true&suunnitellut=true&lakkautetut=false&organisaatiotyyppi=Oppilaitos" +
+            "&organisaatiotyyppi=Oppilaitos" +
             oppilaitostyypit.stream()
                             .reduce("", (acc, t) -> acc + "&oppilaitostyyppi=oppilaitostyyppi_" + t + "%23*");
     }
@@ -87,7 +91,8 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         try {
             final String url =
-                serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + KUNTA_KRITEERI_ID + "=" + kuntaId + peruskouluHakuehto;
+                serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU +
+                KUNTA_KRITEERI_ID + "=" + kuntaId + HAKUKRITEERI + peruskouluHakuehto;
             JsonNode tree = mapper.readTree(crc.getAsString(url));
             JsonNode organisaatioTree = tree.get("organisaatiot");
             return flattenTree(organisaatioTree, "children",
@@ -98,6 +103,20 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         } catch (IOException ex) {
             throw new BusinessRuleViolationException("Peruskoulujen tietojen hakeminen epäonnistui", ex);
         }
+    }
+
+    @Override
+    public JsonNode getPeruskoulutoimijat(List<String> kuntaIdt) {
+        Set<String> toimijaOidit =
+            kuntaIdt.stream()
+                    .flatMap(kuntaId ->
+                                 StreamSupport.stream(getPeruskoulut(kuntaId).spliterator(), false)
+                                              .map(koulu -> koulu.get("parentOid").asText()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        ArrayNode toimijat = JsonNodeFactory.instance.arrayNode();
+        toimijaOidit.stream().map(this::getOrganisaatio).forEach(toimijat::add);
+        return toimijat;
     }
 
     private ArrayNode flattenTree(JsonNode tree, String childTreeName, Predicate<JsonNode> filter) {
