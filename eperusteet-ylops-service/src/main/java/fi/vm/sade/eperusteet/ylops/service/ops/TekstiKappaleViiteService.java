@@ -13,17 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.teksti;
+package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
-import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * @author mikkom
  */
-public interface TekstiKappaleViiteService extends LockService<OpsTekstikappaleCtx> {
+public interface TekstiKappaleViiteService {
     @PreAuthorize("permitAll()")
     TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId);
 

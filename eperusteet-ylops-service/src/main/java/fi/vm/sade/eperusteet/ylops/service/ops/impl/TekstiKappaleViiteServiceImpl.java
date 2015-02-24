@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.teksti.impl;
+package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -24,14 +24,11 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
-import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
-import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.teksti.OpsTekstikappaleCtx;
+import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
-import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -48,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional(readOnly = true)
-public class TekstiKappaleViiteServiceImpl extends AbstractLockService<OpsTekstikappaleCtx> implements TekstiKappaleViiteService {
+public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService {
 
     @Autowired
     private DtoMapper mapper;
@@ -57,7 +54,7 @@ public class TekstiKappaleViiteServiceImpl extends AbstractLockService<OpsTeksti
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Autowired
-    private TekstiKappaleViiteRepository repository;
+    private TekstikappaleviiteRepository repository;
 
     @Autowired
     private TekstiKappaleRepository tekstiKappaleRepository;
@@ -121,7 +118,6 @@ public class TekstiKappaleViiteServiceImpl extends AbstractLockService<OpsTeksti
         @P("opsId") Long opsId, Long viiteId, TekstiKappaleViiteDto uusi) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         repository.lock(viite.getRoot());
-
         updateTekstiKappale(viite, uusi.getTekstiKappale());
         viite.setPakollinen(uusi.isPakollinen());
         viite = repository.save(viite);
@@ -152,7 +148,7 @@ public class TekstiKappaleViiteServiceImpl extends AbstractLockService<OpsTeksti
         if (viite.getLapset() != null && !viite.getLapset().isEmpty()) {
             throw new BusinessRuleViolationException("Sisällöllä on lapsia, ei voida poistaa");
         }
-
+        repository.lock(viite.getRoot());
         if (viite.getTekstiKappale() != null && viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
             TekstiKappale tekstiKappale = viite.getTekstiKappale();
             tekstiKappaleService.delete(tekstiKappale.getId());
@@ -247,23 +243,4 @@ public class TekstiKappaleViiteServiceImpl extends AbstractLockService<OpsTeksti
         }
     }
 
-    @Override
-    protected Long getLockId(OpsTekstikappaleCtx ctx) {
-        TekstiKappaleViite viite = repository.findOne(ctx.getViiteId());
-        return viite == null ? null : viite.getTekstiKappale().getId();
-    }
-
-    @Override
-    protected int latestRevision(OpsTekstikappaleCtx ctx) {
-        return tekstiKappaleRepository.getLatestRevisionId(repository.findOne(ctx.getViiteId()).getTekstiKappale().getId());
-    }
-
-    @Override
-    protected Long validateCtx(OpsTekstikappaleCtx ctx, boolean readOnly) {
-        TekstiKappaleViite viite = findViite(ctx.getOpsId(),ctx.getViiteId());
-        if ( viite != null ) {
-            return viite.getTekstiKappale().getId();
-        }
-        throw new LockingException("Virheellinen lukitus");
-    }
 }

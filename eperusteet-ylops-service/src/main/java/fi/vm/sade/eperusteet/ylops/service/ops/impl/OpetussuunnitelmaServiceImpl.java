@@ -43,7 +43,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
-import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -53,7 +53,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
-import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
+import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,7 +85,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private OpetussuunnitelmaRepository repository;
 
     @Autowired
-    private TekstiKappaleViiteRepository viiteRepository;
+    private TekstikappaleviiteRepository viiteRepository;
 
     @Autowired
     private TekstiKappaleRepository tekstiKappaleRepository;

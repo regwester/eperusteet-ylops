@@ -13,29 +13,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.teksti;
+package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import fi.vm.sade.eperusteet.ylops.service.locking.OpsCtx;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  *
  * @author jhyoty
  */
-@Getter
-@Setter
-public class OpsTekstikappaleCtx extends OpsCtx {
-
-    private Long viiteId;
-
-    public OpsTekstikappaleCtx() {
-        super();
-    }
-
-    public OpsTekstikappaleCtx(Long opsId, Long viiteId) {
-        super(opsId);
-        this.viiteId = viiteId;
-    }
+public interface OpsSisaltoLockService extends LockService<OpsCtx> {
 
 }

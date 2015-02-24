@@ -17,8 +17,8 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.resource.util.AbstractLockController;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpsTekstikappaleCtx;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpsTekstikappaleLockService;
+import fi.vm.sade.eperusteet.ylops.service.locking.OpsCtx;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsSisaltoLockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,13 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @author jhyoty
  */
 @RestController
-@RequestMapping(value = "/opetussuunnitelmat/{opsId}/tekstit/{viiteId}/lukko")
-public class OpsTekstikappaleLockController extends AbstractLockController<OpsTekstikappaleCtx> {
+@RequestMapping(value = "/opetussuunnitelmat/{opsId}/tekstit/lukko")
+public class OpsSisaltoLockController extends AbstractLockController<OpsCtx> {
     @Autowired
-    private OpsTekstikappaleLockService service;
+    private OpsSisaltoLockService service;
 
     @Override
-    protected LockService<OpsTekstikappaleCtx> service() {
+    protected LockService<OpsCtx> service() {
         return service;
     }
 
