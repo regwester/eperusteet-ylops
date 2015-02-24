@@ -1,4 +1,4 @@
-<div class="action-buttons-inline">
+<div class="action-buttons-inline" ng-hide="editMode">
   <!-- <a ui-sref="root.pohjat.yksi.tekstikappale({pohjaId: opsId, tekstikappaleId: model.id})">[pohjanäkymä]</a> -->
   <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip"></lukko>
   <button ng-disabled="lukkotiedot.lukittu" ng-if="canRemove()" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()"></button>
