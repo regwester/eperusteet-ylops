@@ -76,7 +76,7 @@
         <property name="persistenceProviderClass" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
         <property name="jpaPropertyMap">
             <map>
-                <entry key="hibernate.hbm2ddl.auto" value="update"/>
+                <entry key="hibernate.hbm2ddl.auto" value="validate"/>
                 <entry key="hibernate.show_sql" value="${hibernate.show_sql:false}"/>
                 <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
                 <entry key="javax.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/>
