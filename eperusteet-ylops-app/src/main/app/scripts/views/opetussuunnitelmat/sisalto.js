@@ -173,6 +173,7 @@ ylopsApp
     },
     edit: function (osio, event) {
       stopEvent(event);
+      $scope.rakenne.cancelAdd(osio);
       fetch();
       $scope.rakenneEdit[osio] = true;
       original = _.cloneDeep($scope.model[osio].lapset);

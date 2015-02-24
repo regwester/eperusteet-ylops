@@ -78,6 +78,15 @@ h1.plain {
 }
 
 .sisalto-osio {
+  .addnew {
+    background-color: #f0f0f0;
+  }
+  .addnew-closer {
+    width: 100%;
+    text-align: right;
+    margin-bottom: 5px;
+    font-size: 110%;
+  }
   .kontrollit {
     position: absolute;
     right: 5px;

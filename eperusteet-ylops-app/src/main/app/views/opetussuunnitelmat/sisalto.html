@@ -10,14 +10,16 @@
         <span ng-bind="model[osio].tekstiKappale.nimi | kaanna"></span>
       </a>
 
-      <div ng-if="adding[osio]" class="list-group-item">
-        <input class="form-control" ng-model="uusi.nimi" slocalized ng-enter="hasText() && rakenne.doAdd(osio)"
-               placeholder="{{'luo-uusi-tekstikappale'|kaanna}}">
-        <div class="pull-right">
-          <button class="btn btn-default" kaanna="'peruuta'" ng-click="rakenne.cancelAdd(osio)"></button>
-          <button class="btn btn-primary" kaanna="'lisaa'" ng-click="rakenne.doAdd(osio)" ng-disabled="!hasText()"></button>
+      <div ng-if="adding[osio]" class="list-group-item addnew">
+        <div class="addnew-closer"><a ng-attr-title="{{'sulje'|kaanna}}" icon-role="remove" ng-click="rakenne.cancelAdd(osio)"></a></div>
+        <div class="input-group">
+          <input class="form-control" ng-model="uusi.nimi" slocalized ng-enter="hasText() && rakenne.doAdd(osio)"
+                 placeholder="{{'luo-uusi-tekstikappale'|kaanna}}" ng-esc="rakenne.cancelAdd(osio)">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" kaanna="'lisaa'" ng-click="rakenne.doAdd(osio)" ng-disabled="!hasText()"></button>
+          </span>
         </div>
-        <div class="clearfix"></div>
+        <!-- <div class="clearfix"></div> -->
       </div>
 
       <div ng-if="!rakenneEdit[osio]" class="list-group-item" ng-repeat="item in model[osio].lapset">
