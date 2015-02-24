@@ -22,7 +22,7 @@ ylopsApp
     this.OPPIAINE = this.OPS + '/oppiaineet/:oppiaineId';
     this.VLK = this.OPS + '/vuosiluokkakokonaisuudet/:vlkId';
     this.OPVLK = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId';
-    this.VUOSILUOKKA = this.OPPIAINE + '/vuosiluokat/:vlId';
+    this.VUOSILUOKKA = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId/vuosiluokat/:vlId';
   })
 
   .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {

@@ -31,7 +31,7 @@ import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
-import fi.vm.sade.eperusteet.ylops.service.teksti.TekstikappaleCtx;
+import fi.vm.sade.eperusteet.ylops.service.teksti.OpsTekstikappaleCtx;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -48,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional(readOnly = true)
-public class TekstiKappaleViiteServiceImpl extends AbstractLockService<TekstikappaleCtx> implements TekstiKappaleViiteService {
+public class TekstiKappaleViiteServiceImpl extends AbstractLockService<OpsTekstikappaleCtx> implements TekstiKappaleViiteService {
 
     @Autowired
     private DtoMapper mapper;
@@ -248,19 +248,19 @@ public class TekstiKappaleViiteServiceImpl extends AbstractLockService<Tekstikap
     }
 
     @Override
-    protected Long getLockId(TekstikappaleCtx ctx) {
+    protected Long getLockId(OpsTekstikappaleCtx ctx) {
         return ctx.getViiteId();
     }
 
     @Override
-    protected int latestRevision(TekstikappaleCtx ctx) {
+    protected int latestRevision(OpsTekstikappaleCtx ctx) {
         return tekstiKappaleRepository.getLatestRevisionId(findViite(ctx.getOpsId(),ctx.getViiteId()).getTekstiKappale().getId());
     }
 
     @Override
-    protected Long validateCtx(TekstikappaleCtx ctx, boolean readOnly) {
+    protected Long validateCtx(OpsTekstikappaleCtx ctx, boolean readOnly) {
         TekstiKappaleViite viite = findViite(ctx.getOpsId(),ctx.getViiteId());
-        if ( viite != null && (readOnly == true || viite.getOmistussuhde() == Omistussuhde.OMA)) {
+        if ( viite != null ) {
             return viite.getId();
         }
         throw new LockingException("Virheellinen lukitus");

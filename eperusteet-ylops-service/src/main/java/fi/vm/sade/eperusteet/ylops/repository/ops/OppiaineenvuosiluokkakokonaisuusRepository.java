@@ -13,29 +13,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.teksti;
+package fi.vm.sade.eperusteet.ylops.repository.ops;
 
-import fi.vm.sade.eperusteet.ylops.service.locking.OpsCtx;
-import lombok.Getter;
-import lombok.Setter;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author jhyoty
  */
-@Getter
-@Setter
-public class TekstikappaleCtx extends OpsCtx {
+@Repository
+public interface OppiaineenvuosiluokkakokonaisuusRepository extends JpaWithVersioningRepository<Oppiaineenvuosiluokkakokonaisuus, Long> {
 
-    private Long viiteId;
-
-    public TekstikappaleCtx() {
-        super();
-    }
-
-    public TekstikappaleCtx(Long opsId, Long viiteId) {
-        super(opsId);
-        this.viiteId = viiteId;
-    }
-
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM Oppiaine o JOIN o.vuosiluokkakokonaisuudet vk WHERE o.id = ?1 AND vk.id = ?2)")
+    boolean exists(long oppiaineId, long kokonaisuusId);
 }

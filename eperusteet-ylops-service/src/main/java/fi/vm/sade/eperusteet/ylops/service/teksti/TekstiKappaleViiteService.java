@@ -23,7 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 /**
  * @author mikkom
  */
-public interface TekstiKappaleViiteService extends LockService<TekstikappaleCtx> {
+public interface TekstiKappaleViiteService extends LockService<OpsTekstikappaleCtx> {
     @PreAuthorize("permitAll()")
     TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId);
 

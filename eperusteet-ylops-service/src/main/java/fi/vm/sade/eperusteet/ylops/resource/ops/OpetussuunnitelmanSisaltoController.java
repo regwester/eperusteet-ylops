@@ -22,7 +22,7 @@ import fi.vm.sade.eperusteet.ylops.resource.util.AbstractLockController;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
-import fi.vm.sade.eperusteet.ylops.service.teksti.TekstikappaleCtx;
+import fi.vm.sade.eperusteet.ylops.service.teksti.OpsTekstikappaleCtx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -130,15 +130,4 @@ public class OpetussuunnitelmanSisaltoController {
     }
 
 
-    @RestController
-    @RequestMapping("/opetussuunnitelmat/{opsId}/tekstit/{viiteId}/lukko")
-    public static class LockController extends AbstractLockController<TekstikappaleCtx> {
-        @Autowired
-        private TekstiKappaleViiteService service;
-        @Override
-        protected LockService<TekstikappaleCtx> service() {
-            return service;
-        }
-
-    }
 }

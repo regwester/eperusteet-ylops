@@ -15,21 +15,17 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-import java.util.Set;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
 @Repository
-public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine, Long> {
-    @Query(value = "SELECT a FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a WHERE o.id = ?1")
-    Set<Oppiaine> findByOpsId(long opsId);
-
-    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a LEFT JOIN a.oppimaarat m WHERE o.id = ?1 AND (a.id = ?2 OR m.id = ?2)")
-    boolean exists(long opsId, long oppiaineId);
+public interface OppiaineenvuosiluokkaRepository extends JpaWithVersioningRepository<Oppiaineenvuosiluokka, Long> {
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM Oppiaine o JOIN o.vuosiluokkakokonaisuudet k JOIN k.vuosiluokat v WHERE o.id = ?1 AND k.id=?2 AND v.id = ?3)")
+    boolean exists(long oppiaineId, long kokonaisuusId, long vuosiluokkaId);
 }
