@@ -54,8 +54,9 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private static final String ORGANISAATIOT = "/rest/organisaatio/";
     private static final String ORGANISAATIORYHMAT = ORGANISAATIOT + "1.2.246.562.10.00000000001/ryhmat";
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
-    private static final String KUNTA_KRITEERI_ID = "kunta";
-    private static final String HAKUKRITEERI = "&aktiiviset=true&suunnitellut=true&lakkautetut=false";
+    private static final String KUNTA_KRITEERI = "kunta=";
+    private static final String STATUS_KRITEERI = "&aktiiviset=true&suunnitellut=true&lakkautetut=false";
+    private static final String ORGANISAATIO_KRITEERI = "oidRestrictionList=";
 
     private String peruskouluHakuehto;
 
@@ -84,15 +85,12 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         }
     }
 
-    @Override
-    @Cacheable("organisaatiot")
-    public JsonNode getPeruskoulut(String kuntaId) {
+    private JsonNode getPeruskoulut(String hakuehto) {
         CachingRestClient crc = restClientFactory.get(serviceUrl);
 
         try {
             final String url =
-                serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU +
-                KUNTA_KRITEERI_ID + "=" + kuntaId + HAKUKRITEERI + peruskouluHakuehto;
+                serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + hakuehto + STATUS_KRITEERI + peruskouluHakuehto;
             JsonNode tree = mapper.readTree(crc.getAsString(url));
             JsonNode organisaatioTree = tree.get("organisaatiot");
             return flattenTree(organisaatioTree, "children",
@@ -106,11 +104,24 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     }
 
     @Override
+    @Cacheable("organisaatiot")
+    public JsonNode getPeruskoulutByKuntaId(String kuntaId) {
+        return getPeruskoulut(KUNTA_KRITEERI + kuntaId);
+    }
+
+    @Override
+    @Cacheable("organisaatiot")
+    public JsonNode getPeruskoulutByOid(String oid) {
+        return getPeruskoulut(ORGANISAATIO_KRITEERI + oid);
+    }
+
+    @Override
+    @Cacheable("organisaatiot")
     public JsonNode getPeruskoulutoimijat(List<String> kuntaIdt) {
         Set<String> toimijaOidit =
             kuntaIdt.stream()
                     .flatMap(kuntaId ->
-                                 StreamSupport.stream(getPeruskoulut(kuntaId).spliterator(), false)
+                                 StreamSupport.stream(getPeruskoulutByKuntaId(kuntaId).spliterator(), false)
                                               .map(koulu -> koulu.get("parentOid").asText()))
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
