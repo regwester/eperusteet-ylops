@@ -69,6 +69,13 @@
   "jarjestelmavirhe-teksti": "Tapahtui järjestelmävirhe {{virhekoodi}}. Ole hyvä ja yritä uudelleen. Jos ongelma toistuu ota yhteyttä palvelun ylläpitäjään.",
   "odottamaton-virhe": "Tapahtui odottamaton virhe",
   "mandatory-odottamaton-virhe": "Kaikkia pakollisia kenttiä ei ole täytetty",
+  "lukitus-kayttajalla": "Sivu on lukittu. Käyttäjä {{user}} muokkaa sivua.",
+  "editoimasi-sisalto-on-muuttunut": "Muokkaamasi sisältö on muuttunut",
+  "ylikirjoita-uusi-sisalto": "Jatka muokkaamista",
+  "peru-omat-muutokset": "Peru omat muutokset",
+  "joku-toinen-on-muokannut-dokumenttia": "Joku toinen henkilö on muokannut dokumenttia. Voit joko perua omat muutoksesi tai jatkaa dokumentin editointia ja ylikirjoittaa toisen muutokset.",
+  "ylikirjoittaessasi-voit-palauttaa": "Jatkaessasi voit ylikirjoittaa toisten muutokset. Ne säilyvät edelleen muutoshistoriassa ja voit palauttaa ne sieltä",
+  "huom": "Huom!",
 
   "nimi": "Nimi",
   "tila": "Tila",

@@ -76,12 +76,13 @@ ylopsApp
   this.saveRakenne = saveRakenne;
   this.add = add;
   this.delete = deleteKappale;
-  this.varmistusdialogi = function (nimi, successCb) {
+  this.varmistusdialogi = function (nimi, successCb, failureCb) {
     Varmistusdialogi.dialogi({
       otsikko: 'varmista-poisto',
       teksti: Kaanna.kaanna('poista-tekstikappale-teksti', {nimi: Kaanna.kaanna(nimi)}),
       primaryBtn: 'poista',
-      successCb: successCb
+      successCb: successCb,
+      failureCb: failureCb || angular.noop
     })();
   };
 })
