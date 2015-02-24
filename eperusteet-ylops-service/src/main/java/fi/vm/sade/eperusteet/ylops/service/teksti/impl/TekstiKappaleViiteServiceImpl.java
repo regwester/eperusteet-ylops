@@ -29,9 +29,9 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.teksti.OpsTekstikappaleCtx;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
-import fi.vm.sade.eperusteet.ylops.service.teksti.OpsTekstikappaleCtx;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -249,19 +249,20 @@ public class TekstiKappaleViiteServiceImpl extends AbstractLockService<OpsTeksti
 
     @Override
     protected Long getLockId(OpsTekstikappaleCtx ctx) {
-        return ctx.getViiteId();
+        TekstiKappaleViite viite = repository.findOne(ctx.getViiteId());
+        return viite == null ? null : viite.getTekstiKappale().getId();
     }
 
     @Override
     protected int latestRevision(OpsTekstikappaleCtx ctx) {
-        return tekstiKappaleRepository.getLatestRevisionId(findViite(ctx.getOpsId(),ctx.getViiteId()).getTekstiKappale().getId());
+        return tekstiKappaleRepository.getLatestRevisionId(repository.findOne(ctx.getViiteId()).getTekstiKappale().getId());
     }
 
     @Override
     protected Long validateCtx(OpsTekstikappaleCtx ctx, boolean readOnly) {
         TekstiKappaleViite viite = findViite(ctx.getOpsId(),ctx.getViiteId());
         if ( viite != null ) {
-            return viite.getId();
+            return viite.getTekstiKappale().getId();
         }
         throw new LockingException("Virheellinen lukitus");
     }
