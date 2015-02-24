@@ -2,9 +2,11 @@
   <div class="tavoite" ng-repeat="tunniste in tunnisteet" id="{{tunniste}}">
 
     <div class="header">
-      <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
-      <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
-            ng-bind="perusteSisaltoalueet[tunniste].nimi | kaanna"></span>
+      <div class="toggle-nimi">
+        <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
+        <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
+              ng-bind="perusteSisaltoalueet[tunniste].nimi | kaanna"></span>
+      </div>
     </div>
 
     <div class="peruste-body" collapse="collapsed[tunniste]">
