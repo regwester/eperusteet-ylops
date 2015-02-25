@@ -52,7 +52,7 @@ public class OpsTekstikappaleLockServiceImpl extends AbstractLockService<OpsTeks
     @Override
     protected Long validateCtx(OpsTekstikappaleCtx ctx, boolean readOnly) {
         TekstiKappaleViite viite = viitteet.findInOps(ctx.getOpsId(), ctx.getViiteId());
-        if (viite != null) {
+        if (viite != null && viite.getTekstiKappale() != null) {
             return viite.getTekstiKappale().getId();
         }
         throw new LockingException("Virheellinen lukitus");

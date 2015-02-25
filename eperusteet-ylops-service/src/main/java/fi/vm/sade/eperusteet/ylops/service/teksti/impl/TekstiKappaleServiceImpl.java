@@ -67,9 +67,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
         TekstiKappale current = repository.findOne(id);
         repository.lock(current);
         mapper.map(tekstiKappaleDto, current);
-        current = repository.save(current);
-        mapper.map(current, tekstiKappaleDto);
-        return tekstiKappaleDto;
+        return mapper.map(repository.save(current), TekstiKappaleDto.class);
     }
 
     @Override

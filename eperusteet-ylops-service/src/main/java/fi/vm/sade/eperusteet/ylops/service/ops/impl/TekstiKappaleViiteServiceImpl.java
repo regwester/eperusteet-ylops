@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.locking.LockManager;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
@@ -61,6 +62,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Autowired
     private TekstiKappaleService tekstiKappaleService;
+
+    @Autowired
+    private LockManager lockMgr;
 
     @Override
     public TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId) {
@@ -118,7 +122,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         @P("opsId") Long opsId, Long viiteId, TekstiKappaleViiteDto uusi) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         repository.lock(viite.getRoot());
-        updateTekstiKappale(viite, uusi.getTekstiKappale());
+        lockMgr.lock(viite.getTekstiKappale().getId());
+        updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), true);
         viite.setPakollinen(uusi.isPakollinen());
         viite = repository.save(viite);
         return mapper.map(viite, TekstiKappaleViiteDto.class);
@@ -133,7 +138,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         refs.add(viite);
         TekstiKappaleViite parent = viite.getVanhempi();
         clearChildren(viite, refs);
-        updateTraverse(parent, uusi, refs);
+        updateTraverse(opsId, parent, uusi, refs);
     }
 
     @Override
@@ -150,6 +155,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         }
         repository.lock(viite.getRoot());
         if (viite.getTekstiKappale() != null && viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
+            lockMgr.lock(viite.getTekstiKappale().getId());
             TekstiKappale tekstiKappale = viite.getTekstiKappale();
             tekstiKappaleService.delete(tekstiKappale.getId());
         }
@@ -198,14 +204,19 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.getLapset().clear();
     }
 
-    private void updateTekstiKappale(TekstiKappaleViite viite, TekstiKappaleDto uusiTekstiKappale) {
+    private void updateTekstiKappale(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto uusiTekstiKappale, boolean requireLock) {
         if (uusiTekstiKappale != null) {
             if (viite.getOmistussuhde() == Omistussuhde.OMA) {
+                if ( viite.getTekstiKappale() != null ) {
+                    final Long tid = viite.getTekstiKappale().getId();
+                    if ( requireLock || lockMgr.getLock(tid) != null ) {
+                        lockMgr.ensureLockedByAuthenticatedUser(tid);
+                    }
+                }
                 tekstiKappaleService.update(uusiTekstiKappale);
             } else {
                 TekstiKappale vanha = viite.getTekstiKappale();
                 tekstiKappaleService.mergeNew(viite, uusiTekstiKappale);
-
                 // Poista vanha tekstikappale jos siihen ei tämän jälkeen enää löydy viittauksia
                 if (repository.findAllByTekstiKappale(vanha).size() == 0) {
                     tekstiKappaleService.delete(vanha.getId());
@@ -214,10 +225,10 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         }
     }
 
-    private TekstiKappaleViite updateTraverse(TekstiKappaleViite parent, TekstiKappaleViiteDto.Puu uusi,
+    private TekstiKappaleViite updateTraverse(Long opsId, TekstiKappaleViite parent, TekstiKappaleViiteDto.Puu uusi,
         Set<TekstiKappaleViite> refs) {
-        TekstiKappaleViite viite = repository.getOne(uusi.getId());
-        if (!refs.remove(viite)) {
+        TekstiKappaleViite viite = repository.findOne(uusi.getId());
+        if (viite == null || !refs.remove(viite)) {
             throw new BusinessRuleViolationException("Viitepuun päivitysvirhe, annettua alipuun juuren viitettä ei löydy");
         }
         viite.setVanhempi(parent);
@@ -226,12 +237,13 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         lapset.clear();
 
         // Päivitä myös tekstikappale jos DTO sen sisältää
-        updateTekstiKappale(viite, uusi.getTekstiKappale());
+        // TODO: sallittu/haluttu toimenpide?
+        updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), false);
 
         if (uusi.getLapset() != null) {
             lapset.addAll(uusi.getLapset()
                 .stream()
-                .map(elem -> updateTraverse(viite, elem, refs))
+                .map(elem -> updateTraverse(opsId, viite, elem, refs))
                 .collect(Collectors.toList()));
         }
         return repository.save(viite);
