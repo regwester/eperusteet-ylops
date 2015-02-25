@@ -37,7 +37,7 @@ import lombok.Setter;
 public abstract class OpetussuunnitelmaBaseDto implements Serializable {
     private Long id;
     private Set<Kieli> julkaisukielet;
-    private Set<OrganisaatioDto> koulut;
+    private Set<OrganisaatioDto> organisaatiot;
     private Set<KoodistoDto> kunnat;
     private LokalisoituTekstiDto kuvaus;
     private LokalisoituTekstiDto yhteystiedot;

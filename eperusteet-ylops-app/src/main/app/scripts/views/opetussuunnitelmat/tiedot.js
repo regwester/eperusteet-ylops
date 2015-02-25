@@ -61,7 +61,7 @@ ylopsApp
   }
 
   //Jos luodaan uutta ops:ia toisesta opetussuunnitelmasta,
-  // niin haetaan pohja opetussuunnitelmasta kunnat ja koulut
+  // niin haetaan pohja opetussuunnitelmasta kunnat ja organisaatiot
   if ($scope.luonnissa && $scope.editableModel._pohja) {
     OpetussuunnitelmaCRUD.get({opsId: $scope.editableModel._pohja}, function (res) {
        $scope.editableModel.kuntaUrit = _.map(res.kunnat, 'koodiUri');

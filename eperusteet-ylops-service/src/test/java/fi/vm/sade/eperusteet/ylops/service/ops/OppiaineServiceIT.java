@@ -96,7 +96,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OrganisaatioDto kouluDto = new OrganisaatioDto();
         kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
         kouluDto.setOid("1.2.15252345624572462");
-        ops.setKoulut(new HashSet<>(Collections.singleton(kouluDto)));
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
         opetussuunnitelmaService.addPohja(ops);
 
         List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);

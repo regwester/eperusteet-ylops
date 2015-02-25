@@ -83,7 +83,7 @@ public class MappingTest {
         organisaatioDto = new OrganisaatioDto();
         organisaatioDto.setNimi(lt("Etelä-Hervannan koulu"));
         organisaatioDto.setOid("2.14.132352.26");
-        opsDto.setKoulut(Collections.singleton(organisaatioDto));
+        opsDto.setOrganisaatiot(Collections.singleton(organisaatioDto));
 
         Opetussuunnitelma ops = mapper.map(opsDto, Opetussuunnitelma.class);
         Assert.assertNotNull(ops);

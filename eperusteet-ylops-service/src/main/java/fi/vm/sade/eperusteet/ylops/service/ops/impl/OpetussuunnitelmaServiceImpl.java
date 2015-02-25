@@ -161,7 +161,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void fetchKouluNimet(OpetussuunnitelmaDto opetussuunnitelmaDto) {
-        for (OrganisaatioDto organisaatioDto : opetussuunnitelmaDto.getKoulut()) {
+        for (OrganisaatioDto organisaatioDto : opetussuunnitelmaDto.getOrganisaatiot()) {
             Map<String, String> tekstit = new HashMap<>();
             JsonNode organisaatio = organisaatioService.getOrganisaatio(organisaatioDto.getOid());
             if (organisaatio != null) {
