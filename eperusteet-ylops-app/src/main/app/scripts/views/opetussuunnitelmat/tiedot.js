@@ -20,7 +20,7 @@
 ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function ($scope, Editointikontrollit, $stateParams, $state,
   $timeout, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
-  kunnat, Kieli) {
+  PeruskoulutoimijaHaku, kunnat, Kieli) {
 
   $scope.luonnissa = $stateParams.id === 'uusi';
   $scope.editableModel = $scope.model;
@@ -32,15 +32,16 @@ ylopsApp
   $scope.kielivalinnat = ['fi', 'sv', 'se'];
   $scope.loading = false;
   $scope.kuntalista = [];
+  $scope.koulutoimijalista = [];
   $scope.koululista = [];
   $scope.eiKoulujaVaroitus = false;
-
 
 
   $scope.hasRequiredFields = function () {
     var model = $scope.editableModel;
     return Utils.hasLocalizedText(model.nimi) &&
            model.kuntaUrit && model.kuntaUrit.length > 0 &&
+           model.koulutoimijaOidit && model.koulutoimijaOidit.length > 0 &&
            _.any(_.values($scope.julkaisukielet));
   };
 
@@ -56,18 +57,39 @@ ylopsApp
     }).sortBy(Utils.sort).value();
   }
 
+  function filterOrganisaatio(tyyppi) {
+    return function (organisaatiot) {
+      return _.filter(organisaatiot, function (org) {
+        return _.includes(org.tyypit, tyyppi);
+      });
+    };
+  }
+
+  var filterKoulutustoimija = filterOrganisaatio('Koulutustoimija');
+  var filterOppilaitos = filterOrganisaatio('Oppilaitos');
+
   if (kunnat) {
     $scope.kuntalista = mapKunnat(kunnat);
+  }
+
+  if ($scope.model.organisaatiot) {
+    $scope.model.koulutoimijat = filterKoulutustoimija($scope.model.organisaatiot);
+    $scope.model.koulut = filterOppilaitos($scope.model.organisaatiot);
   }
 
   //Jos luodaan uutta ops:ia toisesta opetussuunnitelmasta,
   // niin haetaan pohja opetussuunnitelmasta kunnat ja organisaatiot
   if ($scope.luonnissa && $scope.editableModel._pohja) {
     OpetussuunnitelmaCRUD.get({opsId: $scope.editableModel._pohja}, function (res) {
-       $scope.editableModel.kuntaUrit = _.map(res.kunnat, 'koodiUri');
-       $scope.editableModel.koulut = res.koulut;
-       $scope.editableModel.kouluOidit = _.map(res.koulut, 'oid');
-       $scope.haeKoulut($scope.editableModel.kuntaUrit);
+      $scope.editableModel.kuntaUrit = _.map(res.kunnat, 'koodiUri');
+
+      $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
+      $scope.editableModel.koulutoimijaOidit = _.map($scope.editableModel.koulutoimijat, 'oid');
+
+      $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
+      $scope.editableModel.kouluOidit = _.map(res.koulut, 'oid');
+      $scope.haeKoulutoimijat($scope.editableModel.kuntaUrit);
+      $scope.haeKoulut($scope.editableModel.koulutoimijaOidit);
     }, Notifikaatiot.serverCb);
   }
 
@@ -78,7 +100,12 @@ ylopsApp
       $scope.model = res;
       $scope.editableModel = res;
       $scope.editableModel.kuntaUrit = _.map(res.kunnat, 'koodiUri');
-      $scope.editableModel.kouluOidit = _.map(res.koulut, 'oid');
+
+      $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
+      $scope.editableModel.koulutoimijaOidit = _.map($scope.editableModel.koulutoimijat, 'oid');
+
+      $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
+      $scope.editableModel.kouluOidit = _.map($scope.editableModel.koulut, 'oid');
       if (notify) {
         $rootScope.$broadcast('rakenne:updated');
       }
@@ -102,12 +129,18 @@ ylopsApp
         return koulu.oid === oid;
       });
     });
+    $scope.editableModel.koulutoimijat = _.map($scope.editableModel.koulutoimijaOidit, function (oid) {
+      return _.find($scope.koulutoimijalista, function (koulutoimija) {
+        return koulutoimija.oid === oid;
+      });
+    });
     $scope.editableModel.kunnat = _.map($scope.editableModel.kuntaUrit, function (uri) {
       return _.find($scope.kuntalista, function (kunta) {
         return kunta.koodiUri === uri;
       });
     });
     delete $scope.editableModel.kouluOidit;
+    delete $scope.editableModel.koulutoimijaOidit;
     delete $scope.editableModel.kuntaUrit;
   }
 
@@ -124,6 +157,7 @@ ylopsApp
       $scope.editableModel.julkaisukielet = _($scope.julkaisukielet).keys().filter(function (koodi) {
         return $scope.julkaisukielet[koodi];
       }).value();
+      $scope.editableModel.organisaatiot = $scope.editableModel.koulutoimijat.concat($scope.editableModel.koulut);
       if ($scope.luonnissa) {
         OpetussuunnitelmaCRUD.save({}, $scope.editableModel, successCb, Notifikaatiot.serverCb);
       } else {
@@ -137,6 +171,7 @@ ylopsApp
       $scope.editMode = mode;
       if (mode) {
         $scope.haeKunnat();
+        $scope.haeKoulutoimijat();
         $scope.haeKoulut();
       }
     }
@@ -174,6 +209,10 @@ ylopsApp
   }
 
   $scope.$watch('editableModel.kuntaUrit', function () {
+    $scope.haeKoulutoimijat();
+  });
+
+  $scope.$watch('editableModel.koulutoimijaOidit', function () {
     $scope.haeKoulut();
     updateKouluVaroitus();
   });
@@ -200,19 +239,19 @@ ylopsApp
 
   $scope.$watch('editableModel.julkaisukielet', mapJulkaisukielet);
 
-  $scope.haeKoulut = function (kuntaUrit) {
+  $scope.haeKoulut = function (koulutoimijaOidit) {
     $scope.loadingKoulut = true;
-    var kunnat = kuntaUrit ? kuntaUrit : $scope.editableModel.kuntaUrit;
-    if (!($scope.editMode || $scope.luonnissa) || !kunnat) {
+    var koulutoimijat = koulutoimijaOidit || $scope.editableModel.koulutoimijaOidit;
+    if (!($scope.editMode || $scope.luonnissa) || !koulutoimijat) {
       $scope.loadingKoulut = false;
       return;
     }
-    if (kunnat.length === 0) {
+    if (koulutoimijat.length === 0) {
       $scope.loadingKoulut = false;
       $scope.editableModel.kouluOidit = [];
-    } else if (kunnat.length === 1) {
-      var kunta = kunnat[0];
-      PeruskouluHaku.get({ kuntaUri: kunta }, function(res) {
+    } else if (koulutoimijat.length === 1) {
+      var koulutoimija = koulutoimijat[0];
+      PeruskouluHaku.get({ oid: koulutoimija }, function(res) {
         $scope.koululista = _.sortBy(res, Utils.sort);
         $scope.loadingKoulut = false;
       }, Notifikaatiot.serverCb);
@@ -220,6 +259,24 @@ ylopsApp
       $scope.loadingKoulut = false;
       $scope.editableModel.kouluOidit = [];
       $scope.koululista = [];
+    }
+  };
+
+  $scope.haeKoulutoimijat = function (kuntaUrit) {
+    $scope.loadingKoulutoimijat = true;
+    var kunnat = kuntaUrit ? kuntaUrit : $scope.editableModel.kuntaUrit;
+    if (!($scope.editMode || $scope.luonnissa) || !kunnat) {
+      $scope.loadingKoulutoimijat = false;
+      return;
+    }
+    if (kunnat.length === 0) {
+      $scope.loadingKoulutoimijat = false;
+      $scope.editableModel.koulutoimijaOidit = [];
+    } else {
+      PeruskoulutoimijaHaku.get({ kuntaUri: kunnat }, function(res) {
+        $scope.koulutoimijalista = _.sortBy(res, Utils.sort);
+        $scope.loadingKoulutoimijat = false;
+      }, Notifikaatiot.serverCb);
     }
   };
 

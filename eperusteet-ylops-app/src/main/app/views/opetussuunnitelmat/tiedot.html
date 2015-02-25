@@ -35,6 +35,16 @@
         </div>
 
         <div>
+          <div class="organisaatio-label"><label kaanna="'organisaatio'"></label></div>
+          <div class="organisaatio-input viewmode">
+            <span ng-repeat="koulutoimija in model.koulutoimijat">
+              {{koulutoimija.nimi | kaanna:false:true}}<span ng-show="!$last">, </span>
+            </span>
+            <span ng-if="!model.koulutoimijat || model.koulutoimijat.length === 0">-</span>
+          </div>
+        </div>
+
+        <div>
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input viewmode">
             <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna:false:true}}<span ng-show="!$last">, </span></span>
@@ -106,10 +116,24 @@
         </div>
 
         <div>
+          <div class="organisaatio-label"><label><span kaanna="'organisaatio'"></span>*</label></div>
+          <div class="organisaatio-input">
+            <ui-select class="ui-select" multiple ng-model="editableModel.koulutoimijaOidit" on-select="$select.search = ''"
+                       ng-disabled="editableModel.kuntaUrit.length === 0 || koulutoimijalista.length === 0">
+              <ui-select-choices repeat="koulutoimija.oid as koulutoimija in koulutoimijalista | filter: $select.search">
+                <span ng-bind-html="koulutoimija.nimi | kaanna:false:true | highlight: $select.search"></span>
+              </ui-select-choices>
+              <ui-select-match placeholder="{{'valitse-organisaatiot' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
+            </ui-select>
+            <p ng-if="!loadingKoulutoimijat && eiKoulujaVaroitus" kaanna="'kunnalla-ei-kouluja'"></p>
+          </div>
+        </div>
+
+        <div>
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input">
             <ui-select class="ui-select" multiple ng-model="editableModel.kouluOidit" on-select="$select.search = ''"
-                       ng-disabled="editableModel.kuntaUrit.length !== 1 || koululista.length === 0">
+                       ng-disabled="editableModel.koulutoimijaOidit.length !== 1 || koululista.length === 0">
               <ui-select-choices repeat="koulu.oid as koulu in koululista | filter: $select.search">
                 <span ng-bind-html="koulu.nimi | kaanna:false:true | highlight: $select.search"></span>
               </ui-select-choices>

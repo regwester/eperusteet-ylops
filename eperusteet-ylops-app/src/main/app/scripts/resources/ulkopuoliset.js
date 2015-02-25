@@ -42,7 +42,18 @@ ylopsApp
     });
   })
   .factory('PeruskouluHaku', function(UlkopuolisetResources, $resource) {
-    return $resource(UlkopuolisetResources.ULKOPUOLISET + 'organisaatiot/peruskoulut/:kuntaUri', {
+    return $resource(UlkopuolisetResources.ULKOPUOLISET + 'organisaatiot/peruskoulut/oid/:oid', {
+      oid: '@oid'
+    }, {
+      get: {
+        method: 'GET',
+        isArray: true,
+        cache: true
+      }
+    });
+  })
+  .factory('PeruskoulutoimijaHaku', function(UlkopuolisetResources, $resource) {
+    return $resource(UlkopuolisetResources.ULKOPUOLISET + 'organisaatiot/peruskoulutoimijat/:kuntaUri', {
       kuntaUri: '@kuntaUri'
     }, {
       get: {

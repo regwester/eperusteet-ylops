@@ -61,8 +61,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -163,6 +167,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private void fetchKouluNimet(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         for (OrganisaatioDto organisaatioDto : opetussuunnitelmaDto.getOrganisaatiot()) {
             Map<String, String> tekstit = new HashMap<>();
+            List<String> tyypit = new ArrayList<>();
             JsonNode organisaatio = organisaatioService.getOrganisaatio(organisaatioDto.getOid());
             if (organisaatio != null) {
                 JsonNode nimiNode = organisaatio.get("nimi");
@@ -173,8 +178,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         tekstit.put(field.getKey(), field.getValue().asText());
                     }
                 }
+
+                JsonNode tyypitNode = Optional.ofNullable(organisaatio.get("tyypit"))
+                                              .orElse(organisaatio.get("organisaatiotyypit"));
+                if (tyypitNode != null) {
+                    tyypit = StreamSupport.stream(tyypitNode.spliterator(), false)
+                                          .map(JsonNode::asText)
+                                          .collect(Collectors.toList());
+                }
             }
             organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
+            organisaatioDto.setTyypit(tyypit);
         }
     }
 
