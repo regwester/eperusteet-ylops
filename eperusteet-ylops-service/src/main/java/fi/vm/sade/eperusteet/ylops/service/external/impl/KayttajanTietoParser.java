@@ -13,12 +13,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.service.mapping;
+package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,7 +25,11 @@ import java.util.stream.Stream;
  *
  * @author jhyoty
  */
-public class KayttajanTietoParser {
+final class KayttajanTietoParser {
+
+    private KayttajanTietoParser() {
+        //apuluokka
+    }
 
     private static String getField(JsonNode json, String... fields) {
         for (String field : fields) {
@@ -39,7 +41,6 @@ public class KayttajanTietoParser {
         }
         return json != null ? json.asText() : null;
     }
-
 
     public static KayttajanTietoDto parsiKayttaja(JsonNode json) {
         KayttajanTietoDto ktd = new KayttajanTietoDto();

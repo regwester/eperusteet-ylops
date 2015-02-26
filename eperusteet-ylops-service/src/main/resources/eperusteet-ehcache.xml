@@ -297,6 +297,12 @@
            timeToLiveSeconds="600"
            overflowToDisk="false" />
 
+    <cache name="kayttajat"
+           maxElementsInMemory="10000"
+           eternal="false"
+           timeToLiveSeconds="3600"
+           overflowToDisk="false" />
+
     <cache name="perusteet"
            maxElementsInMemory="10"
            eternal="false"

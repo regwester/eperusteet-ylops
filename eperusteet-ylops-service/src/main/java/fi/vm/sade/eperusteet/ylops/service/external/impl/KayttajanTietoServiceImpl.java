@@ -17,29 +17,24 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.Future;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Future;
-
-import static fi.vm.sade.eperusteet.ylops.service.mapping.KayttajanTietoParser.parsiKayttaja;
+import static fi.vm.sade.eperusteet.ylops.service.external.impl.KayttajanTietoParser.parsiKayttaja;
 
 /**
  * @author mikkom
@@ -47,28 +42,12 @@ import static fi.vm.sade.eperusteet.ylops.service.mapping.KayttajanTietoParser.p
 @Service
 public class KayttajanTietoServiceImpl implements KayttajanTietoService {
 
-    @Value("${cas.service.authentication-service:''}")
-    private String serviceUrl;
-
-    private static final String KAYTTAJA_API = "/resources/henkilo/";
-    private static final String OMAT_TIEDOT_API = "/resources/omattiedot/";
-
-    private final ObjectMapper mapper = new ObjectMapper();
-
     @Autowired
-    private RestClientFactory restClientFactory;
+    private KayttajaClient client;
 
     @Override
     public KayttajanTietoDto hae(String oid) {
-        CachingRestClient crc = restClientFactory.get(serviceUrl);
-
-        try {
-            String url = serviceUrl + (oid == null ? OMAT_TIEDOT_API : KAYTTAJA_API + oid);
-            JsonNode json = mapper.readTree(crc.getAsString(url));
-            return parsiKayttaja(json);
-        } catch (IOException e) {
-            return null;
-        }
+        return client.hae(oid);
     }
 
     @Override
@@ -87,5 +66,30 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     public KayttajanProjektitiedotDto haeOpetussuunnitelma(String oid, Long opsId) {
         // TODO
         throw new NotImplementedException();
+    }
+
+    @Component
+    public static class KayttajaClient {
+        @Autowired
+        private RestClientFactory restClientFactory;
+        @Value("${cas.service.authentication-service:''}")
+        private String serviceUrl;
+
+        private static final String KAYTTAJA_API = "/resources/henkilo/";
+        private static final String OMAT_TIEDOT_API = "/resources/omattiedot/";
+        private final ObjectMapper mapper = new ObjectMapper();
+
+        @Cacheable("kayttajat")
+        public KayttajanTietoDto hae(String oid) {
+            CachingRestClient crc = restClientFactory.get(serviceUrl);
+
+            try {
+                String url = serviceUrl + (oid == null ? OMAT_TIEDOT_API : KAYTTAJA_API + oid);
+                JsonNode json = mapper.readTree(crc.getAsString(url));
+                return parsiKayttaja(json);
+            } catch (IOException e) {
+                return null;
+            }
+        }
     }
 }
