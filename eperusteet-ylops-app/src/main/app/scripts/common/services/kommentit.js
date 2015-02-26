@@ -105,7 +105,7 @@ ylopsApp
       res.muokattu = null;
       res.viestit = [];
       parent.viestit.unshift(res);
-      success();
+      success(res);
     });
   }
 
