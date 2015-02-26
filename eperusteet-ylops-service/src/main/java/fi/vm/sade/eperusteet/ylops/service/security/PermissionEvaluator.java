@@ -74,6 +74,7 @@ public class PermissionEvaluator implements org.springframework.security.access.
 
         LUKU,
         MUOKKAUS,
+        KOMMENTOINTI,
         LUONTI,
         POISTO
     }
@@ -114,6 +115,7 @@ public class PermissionEvaluator implements org.springframework.security.access.
                         return hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.OPH);
 
                     case MUOKKAUS:
+                    case KOMMENTOINTI:
                         return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, EnumSet.of(RolePermission.READ_UPDATE, RolePermission.CRUD), Organization.OPH);
 
                     default:

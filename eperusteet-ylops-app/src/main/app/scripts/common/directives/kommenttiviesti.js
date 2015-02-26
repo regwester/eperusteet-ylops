@@ -47,16 +47,6 @@ ylopsApp
       $scope.indent = ($scope.depth * 60) + 'px';
       $scope.oidResolved = false;
       $scope.selfOid = Oikeudet.oid();
-      /*if (!$scope.selfOid) {
-        Profiili.casTiedot().then(function (res) {
-          if (res.oid) {
-            $scope.selfOid = res.oid;
-          }
-          $scope.oidResolved = true;
-        });
-      } else {
-        $scope.oidResolved = true;
-      }*/
       $scope.oidResolved = true;
 
       $scope.$kommenttiMaxLength = {

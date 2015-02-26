@@ -19,9 +19,12 @@
 ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
-    OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils) {
+    OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
+    KommentitByTekstikappaleViite, Lukko) {
 
+    Kommentit.haeKommentit(KommentitByTekstikappaleViite, {id: $stateParams.tekstikappaleId, opsId: $stateParams.id});
     $scope.ohje = {};
+    $scope.lukkotiedot = null;
     $scope.perusteteksti = {};
     $scope.options = {tekstiCollapsed: true};
     var TYYPIT = ['ohje', 'perusteteksti'];
@@ -61,7 +64,12 @@ ylopsApp
       });
     }
 
-    function fetch() {
+    var commonParams = {
+      opsId: $stateParams.id,
+      viiteId: $stateParams.tekstikappaleId
+    };
+
+    function fetch(noLockCheck) {
       if ($stateParams.tekstikappaleId === 'uusi') {
         $scope.model = {
           tekstiKappale: {
@@ -70,35 +78,40 @@ ylopsApp
           }
         };
       } else {
-        OpetussuunnitelmanTekstit.get({
-          opsId: $stateParams.id,
-          viiteId: $stateParams.tekstikappaleId
-        }, function (res) {
+        OpetussuunnitelmanTekstit.get(commonParams, function (res) {
           $scope.model = res;
           originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
           MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
           fetchOhje(res);
         }, Notifikaatiot.serverCb);
-
+        if (!noLockCheck) {
+          Lukko.isLocked($scope, commonParams);
+        }
       }
     }
     fetch();
 
     $scope.edit = function () {
-      Editointikontrollit.startEditing();
+      Lukko.lock(commonParams, function () {
+        Editointikontrollit.startEditing();
+      });
     };
 
     $scope.remove = function () {
-      TekstikappaleOps.varmistusdialogi($scope.model.tekstiKappale.nimi, function () {
-        $scope.model.$delete({opsId: $stateParams.id}, function () {
-          Notifikaatiot.onnistui('poisto-onnistui');
-          OpsService.refetch(function () {
-            $rootScope.$broadcast('rakenne:updated');
-          });
-          $timeout(function () {
-            $state.go('root.opetussuunnitelmat.yksi.sisalto');
-          });
-        }, Notifikaatiot.serverCb);
+      Lukko.lock(commonParams, function () {
+        TekstikappaleOps.varmistusdialogi($scope.model.tekstiKappale.nimi, function () {
+          $scope.model.$delete({opsId: $stateParams.id}, function () {
+            Notifikaatiot.onnistui('poisto-onnistui');
+            OpsService.refetch(function () {
+              $rootScope.$broadcast('rakenne:updated');
+            });
+            $timeout(function () {
+              $state.go('root.opetussuunnitelmat.yksi.sisalto');
+            });
+          }, Notifikaatiot.serverCb);
+        }, function () {
+          Lukko.unlock(commonParams);
+        });
       });
     };
 
@@ -107,6 +120,10 @@ ylopsApp
       Notifikaatiot.onnistui('tallennettu-ok');
       if ($stateParams.tekstikappaleId === 'uusi') {
         $state.go($state.current.name, {tekstikappaleId: res.id}, {reload: true});
+      } else {
+        Lukko.unlock(commonParams, function () {
+          $scope.lukkotiedot = null;
+        });
       }
       if (!Utils.compareLocalizedText(originalOtsikko, res.tekstiKappale.nimi)) {
         OpsService.refetch(function () {
@@ -118,7 +135,10 @@ ylopsApp
 
     var callbacks = {
       edit: function () {
-        fetch();
+        fetch(true);
+      },
+      asyncValidate: function (cb) {
+        Lukko.lock(commonParams, cb);
       },
       save: function () {
         var params = {opsId: $stateParams.id};
@@ -135,7 +155,10 @@ ylopsApp
             $state.go('root.opetussuunnitelmat.yksi.sisalto');
           });
         } else {
-          fetch();
+          Lukko.unlock(commonParams, function () {
+            $scope.lukkotiedot = null;
+            fetch();
+          });
         }
       },
       notify: function (mode) {

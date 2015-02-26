@@ -1,0 +1,40 @@
+<div class="ops-edit-container uusioppiaine">
+  <h2 kaanna="uusi-oppiaine"></h2>
+
+  <div class="row">
+    <div class="col-sm-3 formfield-label">
+      <label><span kaanna="'nimi'"></span>*</label>
+    </div>
+
+    <div class="col-sm-9 formfield-data">
+      <input class="form-control" slocalized ng-model="oppiaine.nimi">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-3 formfield-label">
+      <label><span kaanna="'vuosiluokkakokonaisuudet'"></span>*</label>
+    </div>
+
+    <div class="col-sm-9 formfield-data">
+      <ul>
+        <li ng-repeat="vlk in vuosiluokkakokonaisuudet">
+          <label>
+            <input type="checkbox" ng-model="chosenVlk[vlk.vuosiluokkakokonaisuus.id]">
+            <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span>
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-9">
+      <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
+      <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'lisaa-oppiaine'" ng-click="uusi.create()"
+              ng-disabled="!hasRequiredFields()"></button>
+    </div>
+  </div>
+
+</div>

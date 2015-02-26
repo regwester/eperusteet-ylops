@@ -35,21 +35,24 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkakokonaisuusRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -60,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class OppiaineServiceImpl implements OppiaineService {
+public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> implements OppiaineService {
 
     @Autowired
     private DtoMapper mapper;
@@ -72,10 +75,16 @@ public class OppiaineServiceImpl implements OppiaineService {
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Autowired
-    private OppiaineRepository oppiaineRepository;
+    private OppiaineRepository oppiaineet;
 
     @Autowired
     private EperusteetService perusteet;
+
+    @Autowired
+    private OppiaineenvuosiluokkaRepository vuosiluokat;
+
+    @Autowired
+    private OppiaineenvuosiluokkakokonaisuusRepository kokonaisuudet;
 
     public OppiaineServiceImpl() {
     }
@@ -96,7 +105,7 @@ public class OppiaineServiceImpl implements OppiaineService {
             .flatMap(po -> po.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus().getId()))
             .orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta tai vuosiluokkakokonaisuutta ei ole perusteessa"));
 
-        oppiaineRepository.lock(oppiaine);
+        oppiaineet.lock(oppiaine);
         updateVuosiluokkakokonaisuudenTavoitteet(ovk, pov, tavoitteet);
 
     }
@@ -106,7 +115,7 @@ public class OppiaineServiceImpl implements OppiaineService {
     public List<OppiaineDto> getAll(@P("opsId") Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        return mapper.mapAsList(oppiaineRepository.findByOpsId(opsId), OppiaineDto.class);
+        return mapper.mapAsList(oppiaineet.findByOpsId(opsId), OppiaineDto.class);
     }
 
     @Override
@@ -122,7 +131,7 @@ public class OppiaineServiceImpl implements OppiaineService {
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
         Oppiaine oppiaine = opsDtoMapper.fromDto(oppiaineDto);
-        oppiaine = oppiaineRepository.save(oppiaine);
+        oppiaine = oppiaineet.save(oppiaine);
         ops.addOppiaine(oppiaine);
         return mapper.map(oppiaine, OppiaineLaajaDto.class);
     }
@@ -133,7 +142,7 @@ public class OppiaineServiceImpl implements OppiaineService {
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
         Oppiaine oppiaine = opsDtoMapper.fromDto(oppiaineDto);
-        oppiaine = oppiaineRepository.save(oppiaine);
+        oppiaine = oppiaineet.save(oppiaine);
         ops.addOppiaine(oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
     }
@@ -143,18 +152,18 @@ public class OppiaineServiceImpl implements OppiaineService {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
 
         // lockService.assertLock ( opsId ) ... ?
-        oppiaineRepository.lock(oppiaine);
+        oppiaineet.lock(oppiaine);
 
         mapper.map(oppiaineDto, oppiaine);
 
-        oppiaine = oppiaineRepository.save(oppiaine);
+        oppiaine = oppiaineet.save(oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
     }
 
     @Override
     public void delete(@P("opsId") Long opsId, Long id) {
         Oppiaine oppiaine = getOppiaine(opsId, id);
-        oppiaineRepository.lock(oppiaine);
+        oppiaineet.lock(oppiaine);
 
         if (oppiaine.isKoosteinen()) {
             oppiaine.getOppimaarat().forEach(oppimaara -> delete(opsId, oppimaara.getId()));
@@ -167,17 +176,17 @@ public class OppiaineServiceImpl implements OppiaineService {
             ops.removeOppiaine(oppiaine);
         }
 
-        oppiaineRepository.delete(oppiaine);
+        oppiaineet.delete(oppiaine);
     }
 
     @Override
     public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkakokonaisuusDto dto) {
         Oppiaine oppiaine = getOppiaine(opsId, id);
-        Oppiaineenvuosiluokkakokonaisuus oavlk =
-            oppiaine.getVuosiluokkakokonaisuudet().stream()
-                    .filter(ov -> ov.getId().equals(dto.getId()))
-                    .findAny()
-                    .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei löydy"));
+        Oppiaineenvuosiluokkakokonaisuus oavlk
+            = oppiaine.getVuosiluokkakokonaisuudet().stream()
+            .filter(ov -> ov.getId().equals(dto.getId()))
+            .findAny()
+            .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei löydy"));
 
         oavlk.setTehtava(mapper.map(dto.getTehtava(), Tekstiosa.class));
         oavlk.setTyotavat(mapper.map(dto.getTyotavat(), Tekstiosa.class));
@@ -191,12 +200,12 @@ public class OppiaineServiceImpl implements OppiaineService {
     @Override
     public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkaDto dto) {
         Oppiaine oppiaine = getOppiaine(opsId, id);
-        Oppiaineenvuosiluokka oppiaineenVuosiluokka =
-            oppiaine.getVuosiluokkakokonaisuudet().stream()
-                    .map(oavlk -> oavlk.getVuosiluokka(dto.getVuosiluokka()))
-                    .flatMap(vl -> vl.map(Stream::of).orElseGet(Stream::empty))
-                    .findFirst()
-                    .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkaa ei löydy"));
+        Oppiaineenvuosiluokka oppiaineenVuosiluokka
+            = oppiaine.getVuosiluokkakokonaisuudet().stream()
+            .map(oavlk -> oavlk.getVuosiluokka(dto.getVuosiluokka()))
+            .flatMap(vl -> vl.map(Stream::of).orElseGet(Stream::empty))
+            .findFirst()
+            .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkaa ei löydy"));
 
         if (!oppiaineenVuosiluokka.getId().equals(dto.getId())) {
             throw new BusinessRuleViolationException("Annetun vuosiluokan ID ei vastaa olemassaolevan vuosiluokan vastaavaa");
@@ -205,20 +214,20 @@ public class OppiaineServiceImpl implements OppiaineService {
         // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden ja tavoitteiden kuvaukset,
         // noin muutoin sisältöön ei pidä kajoaman
         dto.getSisaltoalueet().forEach(
-            sisaltoalueDto ->
-                oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
-                                     .ifPresent(sa -> sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class))));
+            sisaltoalueDto
+            -> oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
+            .ifPresent(sa -> sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class))));
         dto.getTavoitteet().forEach(
-            tavoiteDto ->
-                oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
-                                     .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
+            tavoiteDto
+            -> oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
+            .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
         mapper.map(oppiaineenVuosiluokka, dto);
         return dto;
     }
 
     private Oppiaine getOppiaine(Long opsId, Long oppiaineId) {
-        Oppiaine oppiaine = oppiaineRepository.findOne(oppiaineId);
+        Oppiaine oppiaine = oppiaineet.findOne(oppiaineId);
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -239,7 +248,7 @@ public class OppiaineServiceImpl implements OppiaineService {
         PerusteOppiaineenVuosiluokkakokonaisuus vuosiluokkakokonaisuus,
         Map<Vuosiluokka, Set<UUID>> tavoitteet) {
 
-        if ( !vuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet()) ) {
+        if (!vuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet())) {
             throw new BusinessRuleViolationException("Yksi tai useampi vuosiluokka ei kuulu tähän vuosiluokkakokonaisuuteen");
         }
 
@@ -261,7 +270,7 @@ public class OppiaineServiceImpl implements OppiaineService {
             .filter(t -> tavoiteIds.contains(t.getTunniste()))
             .collect(Collectors.toList());
 
-        if ( tavoiteIds.size() > filtered.size() ) {
+        if (tavoiteIds.size() > filtered.size()) {
             throw new BusinessRuleViolationException("Yksi tai useampi tavoite ei kuulu oppiaineen vuosiluokkakokonaisuuden tavoitteisiin");
         }
 
@@ -300,6 +309,44 @@ public class OppiaineServiceImpl implements OppiaineService {
             })
             .collect(Collectors.toList());
         ov.setTavoitteet(tmp);
+    }
+
+    @Override
+    protected Long getLockId(OpsOppiaineCtx ctx) {
+        if (ctx.getKokonaisuusId() == null) {
+            return ctx.getOppiaineId();
+        }
+        if (ctx.getVuosiluokkaId() == null) {
+            return ctx.getKokonaisuusId();
+        }
+        return ctx.getVuosiluokkaId();
+    }
+
+    @Override
+    protected int latestRevision(OpsOppiaineCtx ctx) {
+        if (ctx.getKokonaisuusId() == null) {
+            return oppiaineet.getLatestRevisionId(ctx.getOppiaineId());
+        }
+        if (ctx.getVuosiluokkaId() == null) {
+            return kokonaisuudet.getLatestRevisionId(ctx.getKokonaisuusId());
+        }
+        return vuosiluokat.getLatestRevisionId(ctx.getVuosiluokkaId());
+    }
+
+    @Override
+    protected Long validateCtx(OpsOppiaineCtx ctx, boolean readOnly) {
+        if (ctx.isValid() && oppiaineet.exists(ctx.getOpsId(), ctx.getOppiaineId())) {
+            if (ctx.isOppiane()) {
+                return ctx.getOppiaineId();
+            }
+            if (ctx.isKokonaisuus() && kokonaisuudet.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId())) {
+                return ctx.getKokonaisuusId();
+            }
+            if (ctx.isVuosiluokka() && vuosiluokat.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId(), ctx.getVuosiluokkaId())) {
+                return ctx.getVuosiluokkaId();
+            }
+        }
+        throw new LockingException("Virheellinen lukitus");
     }
 
 }

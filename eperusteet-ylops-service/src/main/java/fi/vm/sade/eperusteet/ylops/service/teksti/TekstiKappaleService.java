@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.teksti;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import org.springframework.security.access.prepost.PreAuthorize;

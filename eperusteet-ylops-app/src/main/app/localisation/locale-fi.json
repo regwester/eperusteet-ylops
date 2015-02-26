@@ -49,6 +49,7 @@
   "nayta-kaikki": "Näytä kaikki",
   "ei-opetussuunnitelmia": "Ei opetussuunnitelmia",
   "ei-pohjia": "Ei pohjia",
+  "pohja-ops": "Pohja",
 
   "ohje": "Ohje",
   "pakollinen": "Pakollinen",
@@ -69,6 +70,13 @@
   "jarjestelmavirhe-teksti": "Tapahtui järjestelmävirhe {{virhekoodi}}. Ole hyvä ja yritä uudelleen. Jos ongelma toistuu ota yhteyttä palvelun ylläpitäjään.",
   "odottamaton-virhe": "Tapahtui odottamaton virhe",
   "mandatory-odottamaton-virhe": "Kaikkia pakollisia kenttiä ei ole täytetty",
+  "lukitus-kayttajalla": "Sivu on lukittu. Käyttäjä {{user}} muokkaa sivua.",
+  "editoimasi-sisalto-on-muuttunut": "Muokkaamasi sisältö on muuttunut",
+  "ylikirjoita-uusi-sisalto": "Jatka muokkaamista",
+  "peru-omat-muutokset": "Peru omat muutokset",
+  "joku-toinen-on-muokannut-dokumenttia": "Joku toinen henkilö on muokannut dokumenttia. Voit joko perua omat muutoksesi tai jatkaa dokumentin editointia ja ylikirjoittaa toisen muutokset.",
+  "ylikirjoittaessasi-voit-palauttaa": "Jatkaessasi voit ylikirjoittaa toisten muutokset. Ne säilyvät edelleen muutoshistoriassa ja voit palauttaa ne sieltä",
+  "huom": "Huom!",
 
   "nimi": "Nimi",
   "tila": "Tila",
@@ -90,6 +98,7 @@
   "kunta": "Kunta",
   "koulu": "Koulu",
   "valitse-kunnat": "Valitse kunta/kunnat",
+  "valitse-organisaatiot": "Valitse organisaatio/organisaatiot",
   "valitse-koulut": "Valitse koulut",
   "kunnat": "Kunnat",
   "koulut": "Koulut",
@@ -137,6 +146,21 @@
 
   "arviointi-vuosiluokan-paatteeksi": "Arviointikriteerit vuosiluokkakokonaisuuden päätteeksi",
   "arvioinnin-kohde": "Arvioinnin kohde",
-  "arvion-hyva-osaaminen": "Arvion \"hyvä\" / arvosanan 8 osaaminen"
+  "arvion-hyva-osaaminen": "Arvion \"hyvä\" / arvosanan 8 osaaminen",
+
+  "lisaa-oppiaine": "Luo oppiaine",
+  "uusi-oppiaine": "Uusi oppiaine",
+  "vuosiluokkakokonaisuudet": "Vuosiluokkakokonaisuudet",
+
+  "keskustelu": "Keskustelu",
+  "lisaa-kommentti": "Lisää kommentti",
+  "viesti-poistettu": "Viesti poistettu",
+  "kommentti-poistettu": "Kommentti poistettiin onnistuneesti",
+  "nayta-aliviestit": "Näytä vastaukset",
+  "piilota-aliviestit": "Piilota vastaukset",
+  "poistetaanko-kommentti": "Poistetaanko kommentti?",
+  "vastaa": "Vastaa",
+  "kommentti-ei-saa-ylittaa": "Kommentti ei saa olla yli {{ maara }} merkkiä pitkä.",
+  "vahvista-poisto": "Vahvista poisto"
 
 }

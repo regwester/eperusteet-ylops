@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-.service('Oikeudet', function($http, $q, $rootScope, $window) {
+.service('Oikeudet', function($http, $q, $rootScope, $window, Kayttaja) {
   var isVirkailija = false;
   var info = {};
   var GROUP = 'APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001';
@@ -61,9 +61,18 @@ ylopsApp
     return deferred.promise;
   }
 
+  function getKayttaja() {
+    return Kayttaja.get({}, function (res) {
+      _.each(['oidHenkilo', 'kayttajanimi', 'kieliKoodi'], function (key) {
+        info[key] = res[key];
+      });
+      info.oid = res.oidHenkilo;
+    });
+  }
+
   this.getCasTiedot = getCasTiedot;
   this.oid = function () {
     return info.oid;
   };
-
+  this.getKayttaja = getKayttaja;
 });

@@ -71,24 +71,24 @@ public class UlkopuolisetController {
         return new ResponseEntity<>(eperusteetService.getTiedotteet(jalkeen), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/organisaatioryhmat", method = GET)
+    @RequestMapping(value = "/organisaatiot/peruskoulutoimijat/{kuntaIdt}", method = GET)
     @ResponseBody
-    public ResponseEntity<JsonNode> getOrganisaatioRyhmat() {
-        JsonNode ryhmat = organisaatioService.getRyhmat();
-        return new ResponseEntity<>(ryhmat, HttpStatus.OK);
+    public ResponseEntity<JsonNode> getPeruskoulut(@PathVariable(value = "kuntaIdt") final List<String> kuntaIdt) {
+        JsonNode peruskoulut = organisaatioService.getPeruskoulutoimijat(kuntaIdt);
+        return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/organisaatioryhmat/{oid}", method = GET)
+    @RequestMapping(value = "/organisaatiot/peruskoulut/oid/{oid}", method = GET)
     @ResponseBody
-    public ResponseEntity<JsonNode> getOrganisaatioRyhma(@PathVariable(value = "oid") final String oid) {
-        JsonNode ryhma = organisaatioService.getRyhma(oid);
-        return new ResponseEntity<>(ryhma, HttpStatus.OK);
+    public ResponseEntity<JsonNode> getPeruskoulutByOid(@PathVariable(value = "oid") final String oid) {
+        JsonNode peruskoulut = organisaatioService.getPeruskoulutByOid(oid);
+        return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/organisaatiot/peruskoulut/{kuntaId}", method = GET)
     @ResponseBody
-    public ResponseEntity<JsonNode> getPeruskoulut(@PathVariable(value = "kuntaId") final String kuntaId) {
-        JsonNode peruskoulut = organisaatioService.getPeruskoulut(kuntaId);
+    public ResponseEntity<JsonNode> getPeruskoulutByKuntaId(@PathVariable(value = "kuntaId") final String kuntaId) {
+        JsonNode peruskoulut = organisaatioService.getPeruskoulutByKuntaId(kuntaId);
         return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
     }
 

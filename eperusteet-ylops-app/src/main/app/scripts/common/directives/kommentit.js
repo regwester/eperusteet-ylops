@@ -87,6 +87,10 @@ ylopsApp
       };
       $scope.lisaaKommentti = function(parent, kommentti, cb) {
         Kommentit.lisaaKommentti(parent, kommentti, function() {
+          var first = _.first($scope.sisalto.viestit);
+          if (first) {
+            first.$nimikirjaimet = $scope.nimikirjaimet(first.nimi || first.muokkaaja);
+          }
           $scope.sisalto.$yhteensa += 1;
           (cb || angular.noop)();
         });

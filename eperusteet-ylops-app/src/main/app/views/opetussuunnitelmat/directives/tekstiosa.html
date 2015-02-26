@@ -3,8 +3,13 @@
     <span ng-bind="model.otsikko | kaanna"></span>
   </h3>
   <div class="tekstiosa perusteen-teksti">
-    <a class="toggle-perusteen-teksti" ng-click="options.collapsed = !options.collapsed" ng-bind="options.collapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></a>
-    <div class="teksti" collapse="options.collapsed" ng-bind-html="model.teksti | kaanna | unsafe"></div>
+    <a class="toggle-perusteen-teksti" ng-click="options.collapsed = !options.collapsed">
+      <span class="glyphicon" ng-class="{'glyphicon-chevron-down': !options.collapsed, 'glyphicon-chevron-right': options.collapsed}"></span>
+      <span ng-bind="options.collapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></span>
+    </a>
+    <div class="ohjeellinen ikoni-peruste" ng-class="{collapsed: options.collapsed}">
+      <div class="teksti" collapse="options.collapsed" ng-bind-html="model.teksti | kaanna | unsafe"></div>
+    </div>
   </div>
 
 </div>

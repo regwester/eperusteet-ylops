@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  *
  * @author mikkom
@@ -31,17 +33,17 @@ public class OrganisaatioServiceMock implements OrganisaatioService {
     }
 
     @Override
-    public JsonNode getPeruskoulut(String kuntaId) {
+    public JsonNode getPeruskoulutByKuntaId(String kuntaId) {
         return null;
     }
 
     @Override
-    public JsonNode getRyhma(String organisaatioOid) {
+    public JsonNode getPeruskoulutByOid(String oid) {
         return null;
     }
 
     @Override
-    public JsonNode getRyhmat() {
+    public JsonNode getPeruskoulutoimijat(List<String> kuntaIdt) {
         return null;
     }
 }

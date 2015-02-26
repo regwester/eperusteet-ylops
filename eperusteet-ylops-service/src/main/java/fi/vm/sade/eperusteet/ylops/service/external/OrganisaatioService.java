@@ -29,11 +29,11 @@ public interface OrganisaatioService {
     JsonNode getOrganisaatio(String organisaatioOid);
 
     @PreAuthorize("permitAll()")
-    JsonNode getPeruskoulut(String kuntaId);
+    JsonNode getPeruskoulutByKuntaId(String kuntaId);
 
     @PreAuthorize("permitAll()")
-    JsonNode getRyhma(String organisaatioOid);
+    JsonNode getPeruskoulutByOid(String oid);
 
     @PreAuthorize("permitAll()")
-    JsonNode getRyhmat();
+    JsonNode getPeruskoulutoimijat(List<String> kuntaIdt);
 }

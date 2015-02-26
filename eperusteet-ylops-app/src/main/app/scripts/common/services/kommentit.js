@@ -27,24 +27,8 @@ ylopsApp
     get: { method: 'GET', isArray: true }
   });
 })
-.factory('KommentitByPerusteenOsa', function(SERVICE_LOC, $resource) {
-  return $resource(SERVICE_LOC + '/kommentit/perusteprojekti/:id/perusteenosa/:perusteenOsaId', {
-    id: '@id',
-    perusteenOsaId: '@perusteenOsaId'
-  }, {
-    get: { method: 'GET', isArray: true }
-  });
-})
-.factory('KommentitBySuoritustapa', function(SERVICE_LOC, $resource) {
-  return $resource(SERVICE_LOC + '/kommentit/perusteprojekti/:id/suoritustapa/:suoritustapa', {
-    id: '@id',
-    suoritustapa: '@suoritustapa'
-  }, {
-    get: { method: 'GET', isArray: true }
-  });
-})
-.factory('KommentitByPerusteprojekti', function(SERVICE_LOC, $resource) {
-  return $resource(SERVICE_LOC + '/kommentit/perusteprojekti/:id', { id: '@id' }, {
+.factory('KommentitByTekstikappaleViite', function(SERVICE_LOC, $resource) {
+  return $resource(SERVICE_LOC + '/kommentit/opetussuunnitelmat/:opsId/tekstikappaleviitteet/:id', {}, {
     get: { method: 'GET', isArray: true }
   });
 })
@@ -99,8 +83,7 @@ ylopsApp
       Resource.get(params, function(res) {
         nykyinen = rakennaKommenttiPuu(res);
         cb(nykyinen);
-      },
-      Notifikaatiot.serverCb);
+      }, Notifikaatiot.serverCb);
     };
     stored = {url: url, lataaja: lataaja};
     $timeout(function() {
@@ -113,7 +96,8 @@ ylopsApp
     var payload = _.merge(_.clone(nykyinenParams), {
       parentId: parent && parent.id ? parent.id : null,
       sisalto: viesti,
-      perusteprojektiId: $stateParams.perusteProjektiId ? $stateParams.perusteProjektiId : null
+      opetussuunnitelmaId: nykyinenParams.opsId,
+      tekstiKappaleViiteId: nykyinenParams.id
     });
     delete payload.id;
 
@@ -121,7 +105,7 @@ ylopsApp
       res.muokattu = null;
       res.viestit = [];
       parent.viestit.unshift(res);
-      success();
+      success(res);
     });
   }
 

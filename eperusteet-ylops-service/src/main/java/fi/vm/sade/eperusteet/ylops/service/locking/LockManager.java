@@ -13,21 +13,30 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.repository.teksti;
+package fi.vm.sade.eperusteet.ylops.service.locking;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
-import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import fi.vm.sade.eperusteet.ylops.domain.Lukko;
+import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 
 /**
  *
- * @author mikkom
+ * @author jhyoty
  */
-@Repository
-public interface TekstiKappaleViiteRepository extends JpaWithVersioningRepository<TekstiKappaleViite, Long> {
-    List<TekstiKappaleViite> findAllByTekstiKappale(TekstiKappale tekstiKappale);
+public interface LockManager {
+
+    Lukko lock(Long id);
+
+    boolean isLockedByAuthenticatedUser(Long id);
+
+    /**
+     * Varmistaa että tunnistettu käyttäjä omistaa lukon,
+     *
+     * @param id lukon tunniste
+     * @throws LockingException jos lukkoa ei ole tai sen omistaa toinen käyttäjä
+     */
+    void ensureLockedByAuthenticatedUser(Long id);
+
+    Lukko getLock(Long id);
+
+    boolean unlock(Long id);
 }

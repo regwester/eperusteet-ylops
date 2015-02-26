@@ -64,13 +64,10 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     public TekstiKappaleDto update(TekstiKappaleDto tekstiKappaleDto) {
         Long id = tekstiKappaleDto.getId();
         assertExists(id);
-        // TODO: Lukitse entiteetti!
-        //         lockManager.ensureLockedByAuthenticatedUser(id);
         TekstiKappale current = repository.findOne(id);
+        repository.lock(current);
         mapper.map(tekstiKappaleDto, current);
-        current = repository.save(current);
-        mapper.map(current, tekstiKappaleDto);
-        return tekstiKappaleDto;
+        return mapper.map(repository.save(current), TekstiKappaleDto.class);
     }
 
     @Override
