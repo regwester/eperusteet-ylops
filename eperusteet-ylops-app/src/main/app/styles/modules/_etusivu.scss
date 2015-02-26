@@ -25,3 +25,11 @@
   margin-top: -10px;
   text-align: center;
 }
+
+.ops-table {
+  .ops-th-nimi {}
+  .ops-th-kunta { width: 20%; }
+  .ops-th-tila { width: 15%; }
+  .ops-th-muokattu { width: 15%; }
+  &.pohja-table {}
+}

@@ -1,6 +1,6 @@
-<table class="table table-hover" ng-if="items && items.length">
+<table class="table table-hover ops-table" ng-class="{'pohja-table': !opsiLista}" ng-if="items && items.length">
   <tr>
-    <th width="50%">
+    <th class="ops-th-nimi">
       <a ng-click="sorter.set('nimi')">
         <span kaanna="'nimi'"></span>
         <span ng-show="sorter.key === 'nimi'" class="glyphicon"
@@ -8,7 +8,15 @@
         </span>
       </a>
     </th>
-    <th width="20%">
+    <th ng-if="opsiLista" class="ops-th-kunta">
+      <a ng-click="sorter.set('kunta')">
+        <span kaanna="'kunta'"></span>
+        <span ng-show="sorter.key === 'kunta'" class="glyphicon"
+          ng-class="sorter.desc ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet'">
+        </span>
+      </a>
+    </th>
+    <th class="ops-th-tila">
       <a ng-click="sorter.set('tila')">
         <span kaanna="'tila'"></span>
         <span ng-show="sorter.key === 'tila'" class="glyphicon"
@@ -16,7 +24,7 @@
         </span>
       </a>
     </th>
-    <th>
+    <th class="ops-th-muokattu">
       <a ng-click="sorter.set('muokattu')">
         <span kaanna="'muokattu-viimeksi'"></span>
         <span ng-show="sorter.key === 'muokattu'" class="glyphicon"
@@ -26,11 +34,14 @@
     </th>
 
   </tr>
-  <tr ng-if="!items.$resolved"><td colspan="3"><small-spinner></small-spinner></td></tr>
+  <tr ng-if="!items.$resolved"><td colspan="4"><small-spinner></small-spinner></td></tr>
   <tr ng-if="items.$resolved" ng-repeat="item in items | filter:{tila:'!poistettu'} | orderBy:sorter.fn:sorter.desc | limitTo:opsLimit">
     <td>
       <a ng-if="opsiLista" ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
       <a ng-if="!opsiLista" ui-sref="root.pohjat.yksi({pohjaId: item.id})" ng-bind="item.nimi | kaanna"></a>
+    </td>
+    <td ng-if="opsiLista">
+      <span ng-repeat="kunta in item.kunnat|orderBy:nimiSort"><span ng-bind="kunta.nimi|kaanna"></span><br ng-if="!$last"></span>
     </td>
     <td><span ng-bind="item.tila | kaanna"></span></td>
     <td><span ng-bind="item.muokattu | aikaleima:'short'"></span></td>
