@@ -17,8 +17,9 @@
 'use strict';
 
 ylopsApp
-  .service('ListaSorter', function (Utils) {
+  .service('ListaSorter', function (Utils, Kaanna) {
     this.init = function ($scope) {
+      $scope.nimiSort = Utils.sort;
       return {
         key: 'muokattu',
         desc: true,
@@ -38,6 +39,10 @@ ylopsApp
               return item.muokattu;
             case 'tila':
               return Utils.nameSort(item, 'tila');
+            case 'kunta':
+              return _(item.kunnat).map(function (kunta) {
+                return Kaanna.kaanna(kunta.nimi).toLowerCase();
+              }).sortBy().first();
           }
         }
       };
