@@ -28,8 +28,8 @@ ylopsApp
           Kieli.setUiKieli($stateParams.lang, false);
         }],
         resolve: {
-          casTiedot: ['Oikeudet', function (Oikeudet) {
-            return Oikeudet.getCasTiedot();
+          casTiedot: ['Oikeudet', '$q', function (Oikeudet, $q) {
+            return $q.all([Oikeudet.getKayttaja().$promise, Oikeudet.getCasTiedot()]);
           }]
         }
       })
