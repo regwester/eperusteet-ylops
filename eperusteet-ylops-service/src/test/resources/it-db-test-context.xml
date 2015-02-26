@@ -45,6 +45,8 @@
 
     <tx:annotation-driven/>
 
+    <aop:aspectj-autoproxy/>
+    
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 
     <bean id="dataSource"

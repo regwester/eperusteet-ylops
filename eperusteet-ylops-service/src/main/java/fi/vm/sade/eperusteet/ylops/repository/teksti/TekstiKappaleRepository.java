@@ -16,7 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.repository.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
-import org.springframework.data.jpa.repository.JpaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,5 +24,5 @@ import org.springframework.stereotype.Repository;
  * @author mikkom
  */
 @Repository
-public interface TekstiKappaleRepository extends JpaRepository<TekstiKappale, Long> {
+public interface TekstiKappaleRepository extends JpaWithVersioningRepository<TekstiKappale, Long> {
 }

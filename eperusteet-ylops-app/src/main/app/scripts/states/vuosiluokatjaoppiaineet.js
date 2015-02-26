@@ -114,6 +114,17 @@ ylopsApp
             OpsNavigaatio.setActive(false);
           }]
         }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.uusioppiaine', {
+        url: '/uusioppiaine/:vlkId',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/uusioppiaine.html',
+        controller: 'UusiOppiaineController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
+          }]
+        }
       });
 
   });

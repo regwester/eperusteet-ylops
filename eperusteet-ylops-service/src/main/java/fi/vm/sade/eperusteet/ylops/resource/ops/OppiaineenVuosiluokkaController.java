@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mikkom
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokat")
+@RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat")
 @ApiIgnore
 public class OppiaineenVuosiluokkaController {
     @Autowired

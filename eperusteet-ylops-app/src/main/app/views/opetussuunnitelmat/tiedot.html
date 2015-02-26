@@ -35,6 +35,16 @@
         </div>
 
         <div>
+          <div class="organisaatio-label"><label kaanna="'organisaatio'"></label></div>
+          <div class="organisaatio-input viewmode">
+            <span ng-repeat="koulutoimija in model.koulutoimijat">
+              {{koulutoimija.nimi | kaanna:false:true}}<span ng-show="!$last">, </span>
+            </span>
+            <span ng-if="!model.koulutoimijat || model.koulutoimijat.length === 0">-</span>
+          </div>
+        </div>
+
+        <div>
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input viewmode">
             <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna:false:true}}<span ng-show="!$last">, </span></span>
@@ -69,6 +79,16 @@
 
 
   <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
+    
+    <div class="row" ng-show="editableModel._pohja && luonnissa">
+      <div class="col-sm-3 formfield-label">
+        <label><span kaanna="'pohja-ops'"></span></label>
+      </div>
+      <div class="col-sm-9 formfield-label">
+        {{pohjanNimi|kaanna}}
+      </div>
+    </div>
+    
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label for="ops-field-nimi"><span kaanna="'nimi'"></span>*</label>
@@ -96,8 +116,8 @@
         <div>
           <div class="organisaatio-label"><label><span kaanna="'kunta'"></span>*</label></div>
           <div class="organisaatio-input">
-            <ui-select class="ui-select" multiple ng-model="editableModel.kuntaUrit" on-select="$select.search = ''">
-              <ui-select-choices repeat="kunta.koodiUri as kunta in kuntalista | filter: $select.search">
+            <ui-select class="ui-select" multiple ng-model="editableModel.kunnat" on-select="$select.search = ''">
+              <ui-select-choices repeat="kunta in kuntalista | filter: $select.search track by kunta.koodiUri">
                 <span ng-bind-html="kunta.nimi | kaanna | highlight: $select.search"></span>
               </ui-select-choices>
               <ui-select-match class="ui-select-match" placeholder="{{'valitse-kunnat' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
@@ -106,11 +126,24 @@
         </div>
 
         <div>
+          <div class="organisaatio-label"><label><span kaanna="'organisaatio'"></span>*</label></div>
+          <div class="organisaatio-input">
+            <ui-select class="ui-select" multiple ng-model="editableModel.koulutoimijat" on-select="$select.search = ''"
+                       ng-disabled="editableModel.kunnat.length === 0 || koulutoimijalista.length === 0">
+              <ui-select-choices repeat="koulutoimija in koulutoimijalista | filter: $select.search track by koulutoimija.oid">
+                <span ng-bind-html="koulutoimija.nimi | kaanna:false:true | highlight: $select.search"></span>
+              </ui-select-choices>
+              <ui-select-match placeholder="{{'valitse-organisaatiot' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
+            </ui-select>
+          </div>
+        </div>
+
+        <div>
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input">
-            <ui-select class="ui-select" multiple ng-model="editableModel.kouluOidit" on-select="$select.search = ''"
-                       ng-disabled="editableModel.kuntaUrit.length !== 1 || koululista.length === 0">
-              <ui-select-choices repeat="koulu.oid as koulu in koululista | filter: $select.search">
+            <ui-select class="ui-select" multiple ng-model="editableModel.koulut" on-select="$select.search = ''"
+                       ng-disabled="editableModel.koulutoimijat.length !== 1 || koululista.length === 0">
+              <ui-select-choices repeat="koulu in koululista | filter: $select.search track by koulu.oid">
                 <span ng-bind-html="koulu.nimi | kaanna:false:true | highlight: $select.search"></span>
               </ui-select-choices>
               <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>

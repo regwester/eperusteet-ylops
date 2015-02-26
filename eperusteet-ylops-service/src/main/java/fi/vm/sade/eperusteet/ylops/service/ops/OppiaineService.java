@@ -18,13 +18,13 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -32,7 +32,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
  *
  * @author mikkom
  */
-public interface OppiaineService {
+public interface OppiaineService extends LockService<OpsOppiaineCtx> {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long vlkId, Map<Vuosiluokka, Set<UUID>> tavoitteet);

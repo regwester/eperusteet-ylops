@@ -71,6 +71,7 @@ ylopsApp
   this.saveVuosiluokka = function (model, cb) {
     VuosiluokkaCRUD.save({
       opsId: opetussuunnitelma.id,
+      vlkId: oppiaineenVlk.id,
       oppiaineId: oppiaine.id,
     }, model, function (res) {
       Notifikaatiot.onnistui('tallennettu-ok');
@@ -81,6 +82,7 @@ ylopsApp
     VuosiluokkaCRUD.get({
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id,
+      vlkId: oppiaineenVlk.id,
       vlId: vlId
     }, cb, Notifikaatiot.serverCb);
   };

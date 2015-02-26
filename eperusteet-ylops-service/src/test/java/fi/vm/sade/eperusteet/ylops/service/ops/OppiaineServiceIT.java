@@ -31,11 +31,9 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
-import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
-import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -51,8 +49,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -68,6 +67,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    OppiaineRepository oppiaineRepo;
 
     @Autowired
     VuosiluokkakokonaisuusService vuosiluokkakokonaisuusService;
@@ -94,7 +96,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OrganisaatioDto kouluDto = new OrganisaatioDto();
         kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
         kouluDto.setOid("1.2.15252345624572462");
-        ops.setKoulut(new HashSet<>(Collections.singleton(kouluDto)));
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
         opetussuunnitelmaService.addPohja(ops);
 
         List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);
@@ -187,6 +189,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
         ovk = oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
         assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get().get(Kieli.FI));
+
+        assertTrue(oppiaineRepo.exists(opsId, oppiaineDto.getId()));
+        assertFalse(oppiaineRepo.exists(opsId, -1));
     }
 
     private static TekstiosaDto getTekstiosa(String suffiksi) {

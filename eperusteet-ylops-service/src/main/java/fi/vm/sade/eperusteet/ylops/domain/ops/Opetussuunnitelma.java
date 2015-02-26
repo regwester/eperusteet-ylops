@@ -135,7 +135,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @ElementCollection
     @Getter
     @Setter
-    private Set<String> koulut = new HashSet<>();
+    private Set<String> organisaatiot = new HashSet<>();
 
     @ElementCollection
     @Getter

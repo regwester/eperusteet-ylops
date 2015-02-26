@@ -20,6 +20,8 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  *
  * @author mikkom
@@ -29,5 +31,6 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganisaatioDto {
     private String oid;
+    private List<String> tyypit;
     private LokalisoituTekstiDto nimi;
 }

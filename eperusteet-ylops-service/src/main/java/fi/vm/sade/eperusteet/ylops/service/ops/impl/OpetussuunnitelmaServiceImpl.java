@@ -43,7 +43,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
-import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleViiteRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -51,8 +51,9 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
-import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleViiteService;
+import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,9 +61,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -84,7 +88,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private OpetussuunnitelmaRepository repository;
 
     @Autowired
-    private TekstiKappaleViiteRepository viiteRepository;
+    private TekstikappaleviiteRepository viiteRepository;
 
     @Autowired
     private TekstiKappaleRepository tekstiKappaleRepository;
@@ -100,6 +104,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OrganisaatioService organisaatioService;
+
+    @Autowired
+    private KommenttiService kommenttiService;
 
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
@@ -158,8 +165,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void fetchKouluNimet(OpetussuunnitelmaDto opetussuunnitelmaDto) {
-        for (OrganisaatioDto organisaatioDto : opetussuunnitelmaDto.getKoulut()) {
+        for (OrganisaatioDto organisaatioDto : opetussuunnitelmaDto.getOrganisaatiot()) {
             Map<String, String> tekstit = new HashMap<>();
+            List<String> tyypit = new ArrayList<>();
             JsonNode organisaatio = organisaatioService.getOrganisaatio(organisaatioDto.getOid());
             if (organisaatio != null) {
                 JsonNode nimiNode = organisaatio.get("nimi");
@@ -170,8 +178,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         tekstit.put(field.getKey(), field.getValue().asText());
                     }
                 }
+
+                JsonNode tyypitNode = Optional.ofNullable(organisaatio.get("tyypit"))
+                                              .orElse(organisaatio.get("organisaatiotyypit"));
+                if (tyypitNode != null) {
+                    tyypit = StreamSupport.stream(tyypitNode.spliterator(), false)
+                                          .map(JsonNode::asText)
+                                          .collect(Collectors.toList());
+                }
             }
             organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
+            organisaatioDto.setTyypit(tyypit);
         }
     }
 
@@ -199,7 +216,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
-    @Transactional
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         ops.setPohja(pohja);
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
@@ -216,7 +232,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             .collect(Collectors.toSet()));
     }
 
-    @Transactional
     private void kopioiTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent) {
         List<TekstiKappaleViite> vanhaLapset = vanha.getLapset();
         if (vanhaLapset != null) {
@@ -360,6 +375,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public void removeOpetussuunnitelma(@P("id") Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
+        if (ops != null) {
+            kommenttiService.getAllByOpetussuunnitelma(id)
+                            .forEach(k -> kommenttiService.deleteReally(k.getId()));
+        }
         repository.delete(ops);
     }
 

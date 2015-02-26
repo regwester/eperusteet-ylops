@@ -16,12 +16,9 @@
 package fi.vm.sade.eperusteet.ylops.resource.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheHeaderInterceptor;
 import fi.vm.sade.eperusteet.ylops.resource.util.LoggingInterceptor;
 import java.util.List;
@@ -83,7 +80,10 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         converter.setPrettyPrint(true);
         converter.getObjectMapper().enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         converter.getObjectMapper().enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        converter.getObjectMapper().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        converter.getObjectMapper().disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
         converter.getObjectMapper().registerModule(new Jdk8Module());
+        converter.getObjectMapper().registerModule(new JSR310Module());
         MappingModule module = new MappingModule();
         converter.getObjectMapper().registerModule(module);
         converter.getObjectMapper().setPropertyNamingStrategy(new ReferenceNamingStrategy());
