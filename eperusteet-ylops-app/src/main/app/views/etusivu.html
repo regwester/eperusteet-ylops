@@ -2,14 +2,14 @@
 
 <div class="row etusivu-osiot">
 
-  <div class="osio col-md-6 col-sm-8">
+  <div class="osio col-md-8 col-sm-9">
     <h2 kaanna="'omat-opetussuunnitelmat'"></h2>
     <div ng-controller="OpetussuunnitelmatListaController">
       <div ng-include="'views/opetussuunnitelmat/taulukko.html'"></div>
     </div>
   </div>
 
-  <div class="osio col-md-6 col-sm-4">
+  <div class="osio col-md-4 col-sm-3">
     <h2 kaanna="'aloita-uusi-ops'"></h2>
     <form name="aloitauusiForm" ng-controller="UusiOpsController">
       <label>
@@ -51,14 +51,14 @@
 <div ng-controller="EtusivuController">
   <div ng-if="isVirkailija()" class="row etusivu-osiot">
 
-    <div class="osio col-md-6 col-sm-8">
+    <div class="osio col-md-8 col-sm-9">
       <h2 kaanna="'pohjat'"></h2>
       <div ng-controller="PohjaListaController">
         <div ng-include="'views/opetussuunnitelmat/taulukko.html'"></div>
       </div>
     </div>
 
-    <div class="osio col-md-3 col-sm-4">
+    <div class="osio col-md-4 col-sm-3">
       <h2 kaanna="'aloita-uusi-pohja'"></h2>
       <button class="btn btn-primary luo-nappi" ng-click="addNewPohja()" kaanna="'luo-pohja'"></button>
     </div>
