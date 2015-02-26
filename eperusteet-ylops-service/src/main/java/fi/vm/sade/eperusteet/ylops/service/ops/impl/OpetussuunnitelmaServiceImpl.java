@@ -35,6 +35,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -64,7 +65,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang.StringUtils;
@@ -121,7 +121,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
         List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(tyyppi);
-        return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class);
+        List<OpetussuunnitelmaInfoDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class);
+        dtot.stream().forEach(this::fetchKuntaNimet);
+        dtot.stream().forEach(this::fetchOrganisaatioNimet);
+        return dtot;
     }
 
     @Override
@@ -139,7 +142,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         OpetussuunnitelmaDto dto = mapper.map(ops, OpetussuunnitelmaDto.class);
 
         fetchKuntaNimet(dto);
-        fetchKouluNimet(dto);
+        fetchOrganisaatioNimet(dto);
 
         return dto;
     }
@@ -151,7 +154,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus().getLaajaalaisetosaamiset();
     }
 
-    private void fetchKuntaNimet(OpetussuunnitelmaDto opetussuunnitelmaDto) {
+    private void fetchKuntaNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
         for (KoodistoDto koodistoDto : opetussuunnitelmaDto.getKunnat()) {
             Map<String, String> tekstit = new HashMap<>();
             KoodistoKoodiDto kunta = koodistoService.get("kunta", koodistoDto.getKoodiUri());
@@ -164,7 +167,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private void fetchKouluNimet(OpetussuunnitelmaDto opetussuunnitelmaDto) {
+    private void fetchOrganisaatioNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
         for (OrganisaatioDto organisaatioDto : opetussuunnitelmaDto.getOrganisaatiot()) {
             Map<String, String> tekstit = new HashMap<>();
             List<String> tyypit = new ArrayList<>();
