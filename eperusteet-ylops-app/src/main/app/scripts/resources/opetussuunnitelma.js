@@ -48,6 +48,10 @@ ylopsApp
     });
   })
 
+  .factory('OpetussuunnitelmanTekstitRakenneLukko', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/tekstit/lukko');
+  })
+
   .factory('OppiaineCRUD', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPPIAINE, {
       oppiaineId: '@id'

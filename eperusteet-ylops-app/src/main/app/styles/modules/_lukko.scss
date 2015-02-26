@@ -23,4 +23,21 @@ $lukko-inner: 1.2em;
     height: $lukko-width;
     width: $lukko-width;
   }
+  &.small {
+    $lukko-width: 1.8em*0.8;
+    $lukko-inner: 1.2em*0.8;
+    width: $lukko-width;
+    height: $lukko-width;
+    .inner1 {
+      width: $lukko-inner;
+      height: $lukko-inner*1.2;
+      border: $lukko-inner*0.3 solid black;
+      border-radius: $lukko-inner/2;
+    }
+    .inner2 {
+      top: -$lukko-inner*1.2/2;
+      height: $lukko-width;
+      width: $lukko-width;
+    }
+  }
 }

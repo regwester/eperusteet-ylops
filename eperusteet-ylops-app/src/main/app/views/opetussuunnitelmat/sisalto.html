@@ -4,8 +4,11 @@
       <a class="list-group-item list-group-header"
          ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: model[osio].id})">
          <div class="kontrollit" ng-hide="rakenneEdit[osio]">
-           <span ng-hide="isAdding()" ng-click="rakenne.add(osio, $event)" icon-role="add" ng-attr-title="{{'luo-uusi-tekstikappale' | kaanna}}"></span>
-           <span ng-click="rakenne.edit(osio, $event)" icon-role="edit" ng-attr-title="{{'muokkaa-rakennetta' | kaanna}}"></span>
+           <span class="lukko-wrapper">
+             <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip" size="small"></lukko>
+           </span>
+           <span ng-hide="lukkotiedot.lukittu || isAdding()" ng-click="rakenne.add(osio, $event)" icon-role="add" ng-attr-title="{{'luo-uusi-tekstikappale' | kaanna}}"></span>
+           <span ng-hide="lukkotiedot.lukittu" ng-click="rakenne.edit(osio, $event)" icon-role="edit" ng-attr-title="{{'muokkaa-rakennetta' | kaanna}}"></span>
          </div>
         <span ng-bind="model[osio].tekstiKappale.nimi | kaanna"></span>
       </a>

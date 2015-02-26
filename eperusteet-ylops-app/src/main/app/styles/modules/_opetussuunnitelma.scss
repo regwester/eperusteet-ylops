@@ -90,6 +90,11 @@ h1.plain {
   .kontrollit {
     position: absolute;
     right: 5px;
+    .lukko-wrapper {
+      position: relative;
+      top: -10px;
+      right: -2px;
+    }
   }
   .kappale-ops {
     visibility: hidden;

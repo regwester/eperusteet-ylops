@@ -19,10 +19,11 @@
 ylopsApp
 .directive('lukko', function() {
   return {
-    template: '<div class="lukko" ng-attr-title="{{tip}}"><div class="inner1"></div><div class="inner2"></div></div>',
+    template: '<div class="lukko" ng-class="{small: size === \'small\'}" ng-attr-title="{{tip}}"><div class="inner1"></div><div class="inner2"></div></div>',
     restrict: 'AE',
     scope: {
-      tip: '='
+      tip: '=',
+      size: '@'
     }
   };
 })
@@ -33,8 +34,8 @@ ylopsApp
   });
 })
 
-.service('Lukko', function(OpetussuunnitelmanTekstitLukko, Notifikaatiot, $state, Editointikontrollit, $modal,
-  Kaanna, $rootScope) {
+.service('Lukko', function(OpetussuunnitelmanTekstitLukko, OpetussuunnitelmanTekstitRakenneLukko,
+  Notifikaatiot, $state, Editointikontrollit, $modal, Kaanna, $rootScope) {
   var etag = null;
   $rootScope.$on('$stateChangeSuccess', function() {
     etag = null;
@@ -66,6 +67,8 @@ ylopsApp
     var resource = null;
     if (_.endsWith($state.current.name, 'yksi.tekstikappale')) {
       resource = OpetussuunnitelmanTekstitLukko;
+    } else if (_.endsWith($state.current.name, 'yksi.sisalto')) {
+      resource = OpetussuunnitelmanTekstitRakenneLukko;
     }
     if (!resource) {
       console.warn('Ei lukkoresurssia!');
@@ -110,7 +113,18 @@ ylopsApp
     etag = null;
   }
 
+  function lockTekstikappale(params, cb) {
+    doLock(OpetussuunnitelmanTekstitLukko, params, cb);
+  }
+
+  function unlockTekstikappale(params, cb) {
+    OpetussuunnitelmanTekstitLukko.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
+    etag = null;
+  }
+
   this.isLocked = checkLock;
   this.lock = lock;
   this.unlock = unlock;
+  this.lockTekstikappale = lockTekstikappale;
+  this.unlockTekstikappale = unlockTekstikappale;
 });
