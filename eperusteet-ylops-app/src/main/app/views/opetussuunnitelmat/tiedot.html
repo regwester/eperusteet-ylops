@@ -79,6 +79,16 @@
 
 
   <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
+    
+    <div class="row" ng-show="editableModel._pohja && luonnissa">
+      <div class="col-sm-3 formfield-label">
+        <label><span kaanna="'pohja-ops'"></span></label>
+      </div>
+      <div class="col-sm-9 formfield-label">
+        {{pohjanNimi|kaanna}}
+      </div>
+    </div>
+    
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label for="ops-field-nimi"><span kaanna="'nimi'"></span>*</label>

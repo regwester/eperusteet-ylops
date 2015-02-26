@@ -81,6 +81,7 @@ ylopsApp
   // niin haetaan pohja opetussuunnitelmasta kunnat ja organisaatiot
   if ($scope.luonnissa && $scope.editableModel._pohja) {
     OpetussuunnitelmaCRUD.get({opsId: $scope.editableModel._pohja}, function (res) {
+      $scope.pohjanNimi = res.nimi;
       $scope.editableModel.kunnat = res.kunnat;
       $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
       $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
