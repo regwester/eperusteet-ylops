@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.generic.rest.CachingRestClient;
 import java.io.IOException;
 import java.util.List;
@@ -54,6 +55,17 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     @Async
     public Future<KayttajanTietoDto> haeAsync(String oid) {
         return new AsyncResult<>(hae(oid));
+    }
+
+    @Override
+    public KayttajanTietoDto haeKirjautaunutKayttaja() {
+        KayttajanTietoDto kayttaja = hae(SecurityUtil.getAuthenticatedPrincipal().getName());
+        if ( kayttaja == null ) {
+            //"fallback" jos integraatio on rikki eikä löydä käyttäjän tietoja
+            kayttaja =  new KayttajanTietoDto();
+            kayttaja.setOidHenkilo(SecurityUtil.getAuthenticatedPrincipal().getName());
+        }
+        return kayttaja;
     }
 
     @Override
