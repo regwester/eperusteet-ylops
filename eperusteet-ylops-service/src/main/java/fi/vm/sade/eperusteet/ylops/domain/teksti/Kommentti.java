@@ -16,11 +16,12 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
-import lombok.Getter;
-import lombok.Setter;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
@@ -39,6 +40,8 @@ public class Kommentti extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
+    @Column(length = 1024)
+    @Size(max = 1024,message = "Kommentin maksimipituus on {max} merkkiä")
     private String sisalto;
 
     @Getter
