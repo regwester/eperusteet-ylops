@@ -244,10 +244,9 @@ ylopsApp
       $scope.loadingKoulutoimijat = false;
       $scope.editableModel.koulutoimijat = [];
       $scope.editableModel.koulut = [];
-    } else if (kunnat.length === 1){
-      var kunta = kunnat[0];
-      PeruskoulutoimijaHaku.get({ kuntaUri: kunta.koodiUri }, function(res) {
-
+    } else {
+      var kuntaUrit = _.map(kunnat, 'koodiUri');
+      PeruskoulutoimijaHaku.get({ kuntaUri: kuntaUrit }, function(res) {
         $scope.koulutoimijalista =  _(res).map(function (koulutoimija) {
       return {
         oid: koulutoimija.oid,
@@ -258,11 +257,6 @@ ylopsApp
 
         $scope.loadingKoulutoimijat = false;
       }, Notifikaatiot.serverCb);
-    } else {
-      $scope.loadingKoulutoimijat = false;
-      $scope.editableModel.koulutoimijat = [];
-      $scope.koulutoimijalista = [];
-      $scope.koululista = [];
     }
   };
 
