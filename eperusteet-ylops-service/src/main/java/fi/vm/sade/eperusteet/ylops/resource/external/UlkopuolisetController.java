@@ -71,20 +71,6 @@ public class UlkopuolisetController {
         return new ResponseEntity<>(eperusteetService.getTiedotteet(jalkeen), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/organisaatioryhmat", method = GET)
-    @ResponseBody
-    public ResponseEntity<JsonNode> getOrganisaatioRyhmat() {
-        JsonNode ryhmat = organisaatioService.getRyhmat();
-        return new ResponseEntity<>(ryhmat, HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/organisaatioryhmat/{oid}", method = GET)
-    @ResponseBody
-    public ResponseEntity<JsonNode> getOrganisaatioRyhma(@PathVariable(value = "oid") final String oid) {
-        JsonNode ryhma = organisaatioService.getRyhma(oid);
-        return new ResponseEntity<>(ryhma, HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/organisaatiot/peruskoulutoimijat/{kuntaIdt}", method = GET)
     @ResponseBody
     public ResponseEntity<JsonNode> getPeruskoulut(@PathVariable(value = "kuntaIdt") final List<String> kuntaIdt) {

@@ -52,7 +52,6 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private List<String> oppilaitostyypit;
 
     private static final String ORGANISAATIOT = "/rest/organisaatio/";
-    private static final String ORGANISAATIORYHMAT = ORGANISAATIOT + "1.2.246.562.10.00000000001/ryhmat";
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
     private static final String KUNTA_KRITEERI = "kunta=";
     private static final String STATUS_KRITEERI = "&aktiiviset=true&suunnitellut=true&lakkautetut=false";
@@ -142,36 +141,5 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
             });
         }
         return array;
-    }
-
-    @Override
-    public JsonNode getRyhma(String organisaatioOid) {
-        CachingRestClient crc = restClientFactory.get(serviceUrl);
-        try {
-            String url = serviceUrl + ORGANISAATIOT + organisaatioOid;
-            return mapper.readTree(crc.getAsString(url));
-        } catch (IOException ex) {
-            throw new BusinessRuleViolationException("Työryhmän tietojen hakeminen epäonnistui", ex);
-        }
-    }
-
-    @Override
-    public JsonNode getRyhmat() {
-        CachingRestClient crc = restClientFactory.get(serviceUrl);
-        try {
-            String url = serviceUrl + ORGANISAATIORYHMAT;
-            JsonNode tree = mapper.readTree(crc.getAsString(url));
-            ArrayNode response = JsonNodeFactory.instance.arrayNode();
-
-            StreamSupport.stream(tree.spliterator(), false)
-                         .map(ryhma -> ryhma.get("kayttoryhmat"))
-                         .filter(kayttoryhma -> "perusteiden_laadinta".equals(kayttoryhma.asText()))
-                         .findFirst()
-                         .ifPresent(response::add);
-
-            return response;
-        } catch (IOException ex) {
-            throw new BusinessRuleViolationException("Työryhmätietojen hakeminen epäonnistui", ex);
-        }
     }
 }
