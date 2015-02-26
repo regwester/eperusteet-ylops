@@ -9,9 +9,11 @@
       </div>
     </div>
 
-    <div class="peruste-body" collapse="collapsed[tunniste]">
-      <h4 kaanna="'perusteen-teksti'"></h4>
-      <div ng-bind-html="perusteSisaltoalueet[tunniste].kuvaus | kaanna | unsafe"></div>
+    <div class="peruste-body ikoni-peruste" collapse="collapsed[tunniste]">
+      <div class="peruste-wrapper">
+        <h4 kaanna="'perusteen-teksti'"></h4>
+        <div ng-bind-html="perusteSisaltoalueet[tunniste].kuvaus | kaanna | unsafe"></div>
+      </div>
     </div>
 
     <div class="ops-body">

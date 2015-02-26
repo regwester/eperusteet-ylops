@@ -123,7 +123,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         repository.lock(viite.getRoot());
         lockMgr.lock(viite.getTekstiKappale().getId());
-        updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), true);
+        updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), false /* TODO: pakota lukitus */);
         viite.setPakollinen(uusi.isPakollinen());
         viite = repository.save(viite);
         return mapper.map(viite, TekstiKappaleViiteDto.class);

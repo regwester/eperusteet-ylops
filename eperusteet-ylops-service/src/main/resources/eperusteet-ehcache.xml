@@ -297,6 +297,12 @@
            timeToLiveSeconds="600"
            overflowToDisk="false" />
 
+    <cache name="organisaation-peruskoulut"
+           maxElementsInMemory="10000"
+           eternal="false"
+           timeToLiveSeconds="600"
+           overflowToDisk="false" />
+
     <cache name="kayttajat"
            maxElementsInMemory="10000"
            eternal="false"
