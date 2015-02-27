@@ -30,6 +30,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -40,6 +41,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 /**
@@ -54,7 +56,7 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter(AccessLevel.PACKAGE)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @NotNull
     private Oppiaineenvuosiluokkakokonaisuus kokonaisuus;
 
@@ -63,14 +65,16 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
     @Enumerated(EnumType.STRING)
     private Vuosiluokka vuosiluokka;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinTable
     @OrderColumn
+    @BatchSize(size = 25)
     private List<Opetuksentavoite> tavoitteet = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinTable
     @OrderColumn
+    @BatchSize(size = 25)
     private List<Keskeinensisaltoalue> sisaltoalueet = new ArrayList<>();
 
     public Oppiaineenvuosiluokka() {

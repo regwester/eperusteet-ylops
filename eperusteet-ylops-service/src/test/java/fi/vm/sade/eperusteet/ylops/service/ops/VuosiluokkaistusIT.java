@@ -143,7 +143,7 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
                     pvk.getVuosiluokkaKokonaisuus().getVuosiluokat().forEach(
                         l -> tavoitteet.put(l, pvk.getTavoitteet().stream()
                                                   .map(PerusteOpetuksentavoite::getTunniste).collect(Collectors.toSet())));
-                    Assert.assertEquals(tavoitteet.keySet().size(), vk.getVuosiluokat().size());
+                    Assert.assertEquals(tavoitteet.values().stream().filter(s -> !s.isEmpty()).count(), vk.getVuosiluokat().size());
                     vk.getVuosiluokat().forEach(l -> {
                         Assert.assertEquals(pvk.getTavoitteet().size(), l.getTavoitteet().size());
                         Assert.assertEquals(pvk.getSisaltoalueet().size(), l.getSisaltoalueet().size());
