@@ -35,12 +35,18 @@ var ylopsApp = angular.module('ylopsApp', [
 /* jshint ignore:end */
 
 ylopsApp
-  .run(function ($rootScope, VirheService) {
+  .run(function ($rootScope, VirheService, $window) {
     $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState*/) {
       VirheService.virhe({state: toState.name});
     });
 
     $rootScope.$on('$stateNotFound', function(event, toState/*, toParams, fromState*/) {
       VirheService.virhe({state: toState.to});
+    });
+
+    // SurveyMonkey popup
+    $window.addEventListener('load', function() {
+      var surveyMonkey = window.open('', 'ePerusteet POPS pilotointi', 'width=700, height=650');
+      surveyMonkey.document.write('<div id="surveyMonkeyInfo"><div><script src="https://www.surveymonkey.com/jsEmbed.aspx?sm=4dHAHhCxKodziIrA5BOOpA_3d_3d"> </script></div>Create your free online surveys with <a href="https://www.surveymonkey.com">SurveyMonkey</a> , the world\'s leading questionnaire tool.</div>');
     });
   });
