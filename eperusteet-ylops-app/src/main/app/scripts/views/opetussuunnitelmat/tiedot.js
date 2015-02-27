@@ -247,6 +247,10 @@ ylopsApp
           return _.pick(koulutoimija, ['oid', 'nimi', 'tyypit']);
         }).sortBy(Utils.sort).value();
 
+        $scope.editableModel.koulutoimijat = _.filter($scope.editableModel.koulutoimijat, function (koulutoimija) {
+          return _.includes(_.map($scope.koulutoimijalista, 'oid'), koulutoimija.oid);
+        });
+
         $scope.loadingKoulutoimijat = false;
       }, Notifikaatiot.serverCb);
     }
