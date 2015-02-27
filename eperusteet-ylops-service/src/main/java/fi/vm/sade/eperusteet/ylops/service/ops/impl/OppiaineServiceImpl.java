@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Tavoitteenarviointi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
@@ -33,6 +34,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkaRepository;
@@ -261,8 +263,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     return tmp;
                 });
                 mergePerusteTavoitteet(ov, vuosiluokkakokonaisuus, e.getValue());
+                if (ov.getTavoitteet().isEmpty()) {
+                    v.removeVuosiluokka(ov);
+                }
             });
-
     }
 
     private void mergePerusteTavoitteet(Oppiaineenvuosiluokka ov, PerusteOppiaineenVuosiluokkakokonaisuus pvk, Set<UUID> tavoiteIds) {
@@ -279,7 +283,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             .map(ps -> ov.getSisaltoalue(ps.getTunniste()).orElseGet(() -> {
                 Keskeinensisaltoalue k = new Keskeinensisaltoalue();
                 k.setTunniste(ps.getTunniste());
-                k.setNimi(LokalisoituTeksti.of(ps.getNimi().getTekstit()));
+                k.setNimi(fromDto(ps.getNimi()));
                 // Kuvaus-kenttä on paikaillisesti määritettävää sisältöä joten sitä ei tässä aseteta
                 return k;
             }))
@@ -302,13 +306,20 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     .map(s -> alueet.get(s.getTunniste()))
                     .collect(Collectors.toSet()));
                 opst.setKohdealueet(t.getKohdealueet().stream()
-                    .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(LokalisoituTeksti.of(k.getNimi().getTekstit()))))
+                    .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
                     .collect(Collectors.toSet()));
-                //TODO: arviointi!
+                opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
+                    .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()),fromDto(a.getHyvanOsaamisenKuvaus())))
+                    .collect(Collectors.toSet()));
                 return opst;
             })
             .collect(Collectors.toList());
         ov.setTavoitteet(tmp);
+    }
+
+    private LokalisoituTeksti fromDto(LokalisoituTekstiDto dto) {
+        if ( dto == null ) { return null; }
+        return LokalisoituTeksti.of(dto.getTekstit());
     }
 
     @Override
