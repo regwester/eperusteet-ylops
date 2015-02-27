@@ -182,6 +182,16 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
+    public OppiaineenVuosiluokkaDto getVuosiluokka(Long opsId, Long oppiaineId, Long vuosiluokkaId) {
+        if ( !oppiaineet.exists(opsId, oppiaineId) ) {
+            throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
+        }
+        Oppiaineenvuosiluokka vl = vuosiluokat.findByOppiaine(oppiaineId, vuosiluokkaId);
+        return vl == null ? null : mapper.map(vl, OppiaineenVuosiluokkaDto.class);
+    }
+
+
+    @Override
     public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkakokonaisuusDto dto) {
         Oppiaine oppiaine = getOppiaine(opsId, id);
         Oppiaineenvuosiluokkakokonaisuus oavlk

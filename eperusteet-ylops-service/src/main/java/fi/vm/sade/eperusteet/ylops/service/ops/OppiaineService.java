@@ -34,6 +34,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
  */
 public interface OppiaineService extends LockService<OpsOppiaineCtx> {
 
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long vlkId, Map<Vuosiluokka, Set<UUID>> tavoitteet);
 
@@ -58,6 +59,9 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkakokonaisuusDto dto);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OppiaineenVuosiluokkaDto getVuosiluokka(@P("opsId") Long opsId, Long oppiaineId, Long vuosiluokkaId);
+    
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkaDto dto);
 

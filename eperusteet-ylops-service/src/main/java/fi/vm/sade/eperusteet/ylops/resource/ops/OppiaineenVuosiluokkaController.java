@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
@@ -44,11 +43,8 @@ public class OppiaineenVuosiluokkaController {
         @PathVariable("opsId") final Long opsId,
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id) {
-        OppiaineDto oa = oppiaineService.get(opsId, oppiaineId);
-        return Responses.of(oa.getVuosiluokkakokonaisuudet().stream()
-                              .flatMap(oavlk -> oavlk.getVuosiluokat().stream())
-                              .filter(vl -> vl.getId().equals(id))
-                              .findAny());
+        OppiaineenVuosiluokkaDto oa = oppiaineService.getVuosiluokka(opsId, oppiaineId, id);
+        return Responses.ofNullable(oa);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
