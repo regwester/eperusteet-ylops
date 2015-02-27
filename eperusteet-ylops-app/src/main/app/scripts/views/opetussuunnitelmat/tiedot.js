@@ -216,11 +216,7 @@ ylopsApp
       var koulutoimija = koulutoimijat[0];
       PeruskouluHaku.get({oid: koulutoimija.oid}, function (res) {
         $scope.koululista = _(res).map(function (koulu) {
-          return {
-            oid: koulu.oid,
-            nimi: koulu.nimi,
-            tyypit: koulu.tyypit
-          };
+          return _.pick(koulu, ['oid', 'nimi', 'tyypit']);
         }).sortBy(Utils.sort).value();
 
         $scope.loadingKoulut = false;
@@ -248,12 +244,12 @@ ylopsApp
       var kuntaUrit = _.map(kunnat, 'koodiUri');
       PeruskoulutoimijaHaku.get({ kuntaUri: kuntaUrit }, function(res) {
         $scope.koulutoimijalista =  _(res).map(function (koulutoimija) {
-      return {
-        oid: koulutoimija.oid,
-        nimi: koulutoimija.nimi,
-        tyypit: koulutoimija.tyypit
-      };
-    }).sortBy(Utils.sort).value();
+          return _.pick(koulutoimija, ['oid', 'nimi', 'tyypit']);
+        }).sortBy(Utils.sort).value();
+
+        $scope.editableModel.koulutoimijat = _.filter($scope.editableModel.koulutoimijat, function (koulutoimija) {
+          return _.includes(_.map($scope.koulutoimijalista, 'oid'), koulutoimija.oid);
+        });
 
         $scope.loadingKoulutoimijat = false;
       }, Notifikaatiot.serverCb);

@@ -27,12 +27,14 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -68,20 +70,24 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
 
     @Getter
     @Setter
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @BatchSize(size = 25)
     private Set<Keskeinensisaltoalue> sisaltoalueet = new HashSet<>();
 
     @Getter
     @Setter
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
+    @BatchSize(size = 25)
     private Set<LaajaalainenosaaminenViite> laajattavoitteet = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 25)
     private Set<Tavoitteenarviointi> arvioinninkohteet = new HashSet<>();
 
     @Getter
     @Setter
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @BatchSize(size = 25)
     private Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
 
     public Set<Tavoitteenarviointi> getArvioinninkohteet() {

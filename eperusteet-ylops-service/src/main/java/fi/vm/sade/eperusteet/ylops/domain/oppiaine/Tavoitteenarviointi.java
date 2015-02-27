@@ -55,4 +55,15 @@ public class Tavoitteenarviointi extends AbstractReferenceableEntity {
         ta.setHyvanOsaamisenKuvaus(other.getHyvanOsaamisenKuvaus());
         return ta;
     }
+
+    public Tavoitteenarviointi() {
+        //JPA
+    }
+
+
+    public Tavoitteenarviointi(LokalisoituTeksti arvioinninKohde, LokalisoituTeksti hyvanOsaamisenKuvaus) {
+        this.arvioinninKohde = arvioinninKohde;
+        this.hyvanOsaamisenKuvaus = hyvanOsaamisenKuvaus;
+    }
+    
 }

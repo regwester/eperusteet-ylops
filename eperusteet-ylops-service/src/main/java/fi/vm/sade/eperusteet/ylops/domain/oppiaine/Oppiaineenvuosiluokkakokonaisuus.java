@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
@@ -54,7 +55,7 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
 
     @Getter
     @Setter(AccessLevel.PACKAGE)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "oppiaine_id")
     private Oppiaine oppiaine;
@@ -87,7 +88,7 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
     private Tekstiosa arviointi;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinTable
     @OrderColumn
     private Set<Oppiaineenvuosiluokka> vuosiluokat = new HashSet<>();
