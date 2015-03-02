@@ -117,7 +117,7 @@
           <div class="organisaatio-label"><label><span kaanna="'kunta'"></span>*</label></div>
           <div class="organisaatio-input">
             <ui-select class="ui-select" multiple ng-model="editableModel.kunnat" on-select="$select.search = ''">
-              <ui-select-choices repeat="kunta in kuntalista | filter: $select.search track by kunta.koodiUri">
+              <ui-select-choices repeat="kunta in kuntalista | filter: $select.search | arrayFilterByField: editableModel.kunnat: 'koodiUri' track by kunta.koodiUri">
                 <span ng-bind-html="kunta.nimi | kaanna | highlight: $select.search"></span>
               </ui-select-choices>
               <ui-select-match class="ui-select-match" placeholder="{{'valitse-kunnat' | kaanna}}">{{$item.nimi|kaanna}}</ui-select-match>
@@ -130,7 +130,7 @@
           <div class="organisaatio-input">
             <ui-select class="ui-select" multiple ng-model="editableModel.koulutoimijat" on-select="$select.search = ''"
                        ng-disabled="editableModel.kunnat.length === 0 || koulutoimijalista.length === 0">
-              <ui-select-choices repeat="koulutoimija in koulutoimijalista | filter: $select.search track by koulutoimija.oid">
+              <ui-select-choices repeat="koulutoimija in koulutoimijalista | filter: $select.search | arrayFilterByField: editableModel.koulutoimijat: 'oid' track by koulutoimija.oid">
                 <span ng-bind-html="koulutoimija.nimi | kaanna:false:true | highlight: $select.search"></span>
               </ui-select-choices>
               <ui-select-match placeholder="{{'valitse-koulutustoimijat' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
@@ -143,7 +143,7 @@
           <div class="organisaatio-input">
             <ui-select class="ui-select" multiple ng-model="editableModel.koulut" on-select="$select.search = ''"
                        ng-disabled="editableModel.koulutoimijat.length !== 1 || koululista.length === 0">
-              <ui-select-choices repeat="koulu in koululista | filter: $select.search track by koulu.oid">
+              <ui-select-choices repeat="koulu in koululista | filter: $select.search | arrayFilterByField: editableModel.koulut: 'oid' track by koulu.oid">
                 <span ng-bind-html="koulu.nimi | kaanna:false:true | highlight: $select.search"></span>
               </ui-select-choices>
               <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>

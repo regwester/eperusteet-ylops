@@ -43,4 +43,15 @@ ylopsApp
 
       return $filter('date')(input, mapping[format] || mapping.default);
     };
+  })
+
+  .filter('arrayFilterByField', function () {
+    return function (value, selectedArray, field) {
+      angular.forEach(selectedArray, function (selected) {
+        _.remove(value, function (object) {
+          return object[field] === selected[field];
+        });
+      });
+      return value;
+    };
   });
