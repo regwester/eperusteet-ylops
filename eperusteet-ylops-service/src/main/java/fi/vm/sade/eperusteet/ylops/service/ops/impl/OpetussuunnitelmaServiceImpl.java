@@ -67,6 +67,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -120,7 +121,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
-        List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(tyyppi);
+        List<String> organisaatiot = SecurityUtil.getOrganisations();
+        List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(tyyppi, organisaatiot);
         List<OpetussuunnitelmaInfoDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class);
         dtot.stream().forEach(this::fetchKuntaNimet);
         dtot.stream().forEach(this::fetchOrganisaatioNimet);
@@ -255,6 +257,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
+        // Jokainen pohja sisältää OPH:n organisaationaan
+        ops.getOrganisaatiot().add(SecurityUtil.OPH_OID);
 
         final String diaarinumero = ops.getPerusteenDiaarinumero();
         if (StringUtils.isBlank(diaarinumero)) {

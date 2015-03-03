@@ -17,12 +17,13 @@ package fi.vm.sade.eperusteet.ylops.repository.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -35,6 +36,11 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
     public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
     public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
+
+    @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
+                   "WHERE org IN (:organisaatiot) AND o.tyyppi = :tyyppi")
+    public List<Opetussuunnitelma> findAllByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
+                                                   @Param("organisaatiot") List<String> organisaatiot);
 
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE o.tekstit.id in ?1")
     Set<Opetussuunnitelma> findByTekstiRoot(Iterable<Long> ids);

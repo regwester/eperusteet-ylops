@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
+
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -46,18 +48,18 @@ public class PermissionEvaluator implements org.springframework.security.access.
             return Optional.ofNullable(organization);
         }
 
-        private static final Organization OPH = new Organization("1.2.246.562.10.00000000001");
+        public static final Organization OPH = new Organization(SecurityUtil.OPH_OID);
         private static final Organization ANY = new Organization();
 
     }
 
-    enum RolePrefix {
+    public enum RolePrefix {
 
         ROLE_APP_EPERUSTEET_YLOPS,
         ROLE_VIRKAILIJA
     }
 
-    enum RolePermission {
+    public enum RolePermission {
 
         CRUD,
         READ_UPDATE,
@@ -132,7 +134,7 @@ public class PermissionEvaluator implements org.springframework.security.access.
 
     private boolean hasRole(Authentication authentication, RolePrefix prefix, RolePermission permission, Organization org) {
         return authentication.getAuthorities().stream()
-            .anyMatch(a -> roleEquals(a.getAuthority(), prefix, permission, org));
+                             .anyMatch(a -> roleEquals(a.getAuthority(), prefix, permission, org));
     }
 
     private boolean hasAnyRole(Authentication authentication, RolePrefix prefix, Set<RolePermission> permission, Organization org) {
