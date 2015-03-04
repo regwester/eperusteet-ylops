@@ -17,12 +17,12 @@
 package fi.vm.sade.eperusteet.ylops.service.util;
 
 import java.security.Principal;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
@@ -52,15 +52,18 @@ public final class SecurityUtil {
         }
     }
 
-    public static Set<String> getOrganisations() {
-        Set<RolePermission> permissions = EnumSet.allOf(RolePermission.class);
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                                    .map(grantedAuthority -> parseOid(grantedAuthority.getAuthority(),
-                                                                      RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
-                                                                      permissions))
-                                    .filter(Optional::isPresent)
-                                    .map(Optional::get)
-                                    .collect(Collectors.toSet());
+    public static Set<String> getOrganizations(Set<RolePermission> permissions) {
+        return getOrganizations(SecurityContextHolder.getContext().getAuthentication(), permissions);
+    }
+
+    public static Set<String> getOrganizations(Authentication authentication, Set<RolePermission> permissions) {
+        return authentication.getAuthorities().stream()
+                             .map(grantedAuthority -> parseOid(grantedAuthority.getAuthority(),
+                                                               RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
+                                                               permissions))
+                             .filter(Optional::isPresent)
+                             .map(Optional::get)
+                             .collect(Collectors.toSet());
     }
 
     private static Optional<String> parseOid(String authority, RolePrefix prefix, Set<RolePermission> permissions) {
