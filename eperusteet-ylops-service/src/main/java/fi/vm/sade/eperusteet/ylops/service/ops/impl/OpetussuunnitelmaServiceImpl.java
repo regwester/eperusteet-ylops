@@ -121,7 +121,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
-        List<String> organisaatiot = SecurityUtil.getOrganisations();
+        Set<String> organisaatiot = SecurityUtil.getOrganisations();
         List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppi(tyyppi, organisaatiot);
         List<OpetussuunnitelmaInfoDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class);
         dtot.stream().forEach(this::fetchKuntaNimet);
