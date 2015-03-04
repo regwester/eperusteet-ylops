@@ -15,6 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.security;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
@@ -25,11 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.TargetType;
@@ -51,6 +50,15 @@ public class PermissionManager {
     @Transactional(readOnly = true)
     public boolean hasPermission(Authentication authentication, Serializable targetId, TargetType target,
                                  Permission perm) {
+
+        // Salli valmiiden pohjien lukeminen kaikilta joilla on CRUD-oikeus
+        if (perm == Permission.LUKU && targetId != null &&
+            hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.ANY)) {
+            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne((Long) targetId);
+            if (ops.getTyyppi() == Tyyppi.POHJA && ops.getTila() == Tila.VALMIS) {
+                return true;
+            }
+        }
 
         Set<RolePermission> permissions;
         switch (perm) {
@@ -74,8 +82,7 @@ public class PermissionManager {
             case POHJA:
             case OPETUSSUUNNITELMA:
                 if (targetId != null) {
-                    Long opsId = (Long)targetId;
-                    Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+                    Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne((Long)targetId);
                     Set<String> organisaatiot = SecurityUtil.getOrganizations(authentication, permissions);
                     return !CollectionUtil.intersect(ops.getOrganisaatiot(), organisaatiot).isEmpty();
                 } else {
@@ -86,6 +93,11 @@ public class PermissionManager {
                 return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
                                   permissions, Organization.ANY);
         }
+    }
+
+    private static boolean hasRole(Authentication authentication, RolePrefix prefix,
+                                   RolePermission permission, Organization org) {
+        return hasAnyRole(authentication, prefix, Collections.singleton(permission), org);
     }
 
     private static boolean hasAnyRole(Authentication authentication, RolePrefix prefix,
