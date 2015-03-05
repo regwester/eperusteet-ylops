@@ -79,7 +79,7 @@
 
 
   <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
-    
+
     <div class="row" ng-show="editableModel._pohja && luonnissa">
       <div class="col-sm-3 formfield-label">
         <label><span kaanna="'pohja-ops'"></span></label>
@@ -88,7 +88,7 @@
         {{pohjanNimi|kaanna}}
       </div>
     </div>
-    
+
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label for="ops-field-nimi"><span kaanna="'nimi'"></span>*</label>
@@ -179,9 +179,11 @@
     <div class="row" ng-if="luonnissa">
       <div class="col-sm-3"></div>
       <div class="col-sm-9">
-        <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
-        <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-opetussuunnitelma'" ng-click="uusi.create()"
+        <div class="luontinapit">
+          <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
+          <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-opetussuunnitelma'" ng-click="uusi.create()"
                 ng-disabled="!hasRequiredFields()"></button>
+        </div>
       </div>
     </div>
 

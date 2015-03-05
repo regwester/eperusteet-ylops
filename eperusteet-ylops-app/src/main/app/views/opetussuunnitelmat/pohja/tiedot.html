@@ -62,9 +62,11 @@
     <div class="row" ng-if="luonnissa">
       <div class="col-sm-3 formfield-label"></div>
       <div class="col-sm-9 formfield-data">
-        <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
-        <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-pohja'" ng-click="uusi.create()"
+        <div class="luontinapit">
+          <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
+          <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-pohja'" ng-click="uusi.create()"
                 ng-disabled="!hasRequiredFields()"></button>
+        </div>
       </div>
     </div>
   </div>
