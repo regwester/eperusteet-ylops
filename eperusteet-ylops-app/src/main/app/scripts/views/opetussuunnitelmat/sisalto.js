@@ -151,24 +151,21 @@ ylopsApp
   $scope.rakenne = {
     add: function (osio, event) {
       stopEvent(event);
-      Lukko.lock(commonParams, function () {
-        $scope.adding[osio] = true;
-      });
+      $scope.adding[osio] = true;
     },
     doAdd: function (osio) {
-      // Älä poista lukkoa, koska uuden kappaleen lisäyskenttä jää vielä näkyviin
       Lukko.lock(commonParams, function () {
         TekstikappaleOps.add($scope.model, osio, $stateParams.id, $scope.uusi, function () {
-          $scope.uusi = {nimi: {}};
-          mapModel();
+          Lukko.unlock(commonParams, function () {
+            $scope.uusi = {nimi: {}};
+            mapModel();
+          });
         });
       });
     },
     cancelAdd: function (osio) {
-      Lukko.unlock(commonParams, function () {
-        $scope.adding[osio] = false;
-        $scope.uusi = {nimi: {}};
-      });
+      $scope.adding[osio] = false;
+      $scope.uusi = {nimi: {}};
     },
     deleteKappale: function (osio, item) {
       lockTeksti(item.id, function () {
