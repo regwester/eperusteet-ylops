@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.Permission;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.TargetType;
+
 /**
  * Oikeuksien tarkistelu.
  *
@@ -63,21 +66,6 @@ public class PermissionEvaluator implements org.springframework.security.access.
         CRUD,
         READ_UPDATE,
         READ
-    }
-
-    enum TargetType {
-
-        POHJA,
-        OPETUSSUUNNITELMA
-    }
-
-    enum Permission {
-
-        LUKU,
-        MUOKKAUS,
-        KOMMENTOINTI,
-        LUONTI,
-        POISTO
     }
 
     @Autowired

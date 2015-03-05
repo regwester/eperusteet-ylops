@@ -19,9 +19,12 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import org.jgroups.util.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +33,12 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.TargetType;
-import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.Permission;
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePrefix;
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.Organization;
@@ -45,6 +50,22 @@ import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.O
  */
 @Service
 public class PermissionManager {
+
+    public enum TargetType {
+
+        POHJA,
+        OPETUSSUUNNITELMA
+    }
+
+    public enum Permission {
+
+        LUKU,
+        MUOKKAUS,
+        KOMMENTOINTI,
+        LUONTI,
+        POISTO
+    }
+
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
@@ -115,5 +136,44 @@ public class PermissionManager {
             return authority.equals(prefix.name() + "_" + permission.name());
         }
         return authority.equals(prefix.name() + "_" + permission.name() + "_" + org.getOrganization().get());
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("isAuthenticated()")
+    public Map<TargetType, Set<Permission>> getOpsPermissions(Long id) {
+
+        Map<TargetType, Set<Permission>> permissionMap = new HashMap<>();
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
+        if (ops == null) {
+            throw new BusinessRuleViolationException("Opetussuunnitelmaa ei ole olemassa");
+        }
+        Set<String> organisaatiot = ops.getOrganisaatiot();
+        Set<Permission> permissions =
+            EnumSet.allOf(RolePermission.class).stream()
+                   .map(p -> new Tuple<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+                   .filter(pair -> !CollectionUtil.intersect(pair.getVal2(), organisaatiot).isEmpty())
+                   .flatMap(pair -> fromRolePermission(pair.getVal1()).stream())
+                   .collect(Collectors.toSet());
+
+        permissionMap.put(TargetType.OPETUSSUUNNITELMA, permissions);
+
+        return permissionMap;
+    }
+
+    private static Set<Permission> fromRolePermission(RolePermission rolePermission) {
+        Set<Permission> permissions = new HashSet<>();
+        switch (rolePermission) {
+            case CRUD:
+                permissions.add(Permission.LUONTI);
+                permissions.add(Permission.POISTO);
+            case READ_UPDATE:
+                permissions.add(Permission.LUKU);
+                permissions.add(Permission.MUOKKAUS);
+            case READ:
+                permissions.add(Permission.LUKU);
+                permissions.add(Permission.KOMMENTOINTI);
+                break;
+        }
+        return permissions;
     }
 }
