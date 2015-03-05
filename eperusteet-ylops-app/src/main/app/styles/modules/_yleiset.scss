@@ -166,3 +166,9 @@ label {
 a, a:focus {
   outline: 0;
 }
+
+.has-placeholder.cke_editable,
+.has-placeholder span.tekstikentta {
+  font-style: italic;
+  color: #aaa;
+}
