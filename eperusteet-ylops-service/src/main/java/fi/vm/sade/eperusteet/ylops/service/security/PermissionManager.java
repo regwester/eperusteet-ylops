@@ -63,6 +63,7 @@ public class PermissionManager {
         Set<RolePermission> permissions;
         switch (perm) {
             case LUKU:
+            case KOMMENTOINTI:
                 permissions = EnumSet.allOf(RolePermission.class);
                 break;
             case LUONTI:
@@ -70,7 +71,6 @@ public class PermissionManager {
                 permissions = EnumSet.of(RolePermission.CRUD);
                 break;
             case MUOKKAUS:
-            case KOMMENTOINTI:
                 permissions = EnumSet.of(RolePermission.CRUD, RolePermission.READ_UPDATE);
                 break;
             default:
