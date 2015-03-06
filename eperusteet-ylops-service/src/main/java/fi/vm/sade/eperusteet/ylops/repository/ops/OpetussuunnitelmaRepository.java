@@ -35,6 +35,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository<Opetussuunnitelma, Long> {
 
+    @Query(value = "SELECT org from Opetussuunnitelma o join o.organisaatiot org where o.id = ?1")
+    public List<String> findOrganisaatiot(long id);
+
+    @Query(value = "SELECT o.tyyppi, o.tila from Opetussuunnitelma o where o.id = ?1")
+    public Object findTyyppiAndTila(long id);
+
     public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
     public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
     public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);

@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.TargetType;
@@ -54,8 +55,10 @@ public class PermissionManager {
         // Salli valmiiden pohjien lukeminen kaikilta joilla on CRUD-oikeus
         if (perm == Permission.LUKU && targetId != null &&
             hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.ANY)) {
-            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne((Long) targetId);
-            if (ops.getTyyppi() == Tyyppi.POHJA && ops.getTila() == Tila.VALMIS) {
+            Object[] tyyppiJaTila = (Object[])opetussuunnitelmaRepository.findTyyppiAndTila((long)targetId);
+            Tyyppi tyyppi = (Tyyppi)tyyppiJaTila[0];
+            Tila tila = (Tila)tyyppiJaTila[1];
+            if (tyyppi == Tyyppi.POHJA && tila == Tila.VALMIS) {
                 return true;
             }
         }
@@ -82,9 +85,9 @@ public class PermissionManager {
             case POHJA:
             case OPETUSSUUNNITELMA:
                 if (targetId != null) {
-                    Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne((Long)targetId);
-                    Set<String> organisaatiot = SecurityUtil.getOrganizations(authentication, permissions);
-                    return !CollectionUtil.intersect(ops.getOrganisaatiot(), organisaatiot).isEmpty();
+                    List<String> opsOrganisaatiot = opetussuunnitelmaRepository.findOrganisaatiot((Long) targetId);
+                    Set<String> kayttajaOrganisaatiot = SecurityUtil.getOrganizations(authentication, permissions);
+                    return !CollectionUtil.intersect(opsOrganisaatiot, kayttajaOrganisaatiot).isEmpty();
                 } else {
                     return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
                                       permissions, Organization.ANY);
