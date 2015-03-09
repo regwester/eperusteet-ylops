@@ -53,17 +53,39 @@ public class PermissionManager {
 
     public enum TargetType {
 
-        POHJA,
-        OPETUSSUUNNITELMA
+        POHJA("pohja"),
+        OPETUSSUUNNITELMA("opetussuunnitelma");
+
+        private final String target;
+
+        private TargetType(String target) {
+            this.target = target;
+        }
+
+        @Override
+        public String toString() {
+            return target;
+        }
     }
 
     public enum Permission {
 
-        LUKU,
-        MUOKKAUS,
-        KOMMENTOINTI,
-        LUONTI,
-        POISTO
+        LUKU("luku"),
+        MUOKKAUS("muokkaus"),
+        KOMMENTOINTI("kommentointi"),
+        LUONTI("luonti"),
+        POISTO("poisto");
+
+        private final String permission;
+
+        private Permission(String permission) {
+            this.permission = permission;
+        }
+
+        @Override
+        public String toString() {
+            return permission;
+        }
     }
 
     @Autowired
