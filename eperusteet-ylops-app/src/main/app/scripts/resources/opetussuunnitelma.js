@@ -33,7 +33,11 @@ ylopsApp
       setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'}
     });
   })
-
+  .factory('OpetussuunnitelmaOikeudet', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/oikeudet', {
+      opsId: '@id'
+    });
+  })
   .factory('OpetussuunnitelmanTekstit', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/tekstit/:viiteId', {
       viiteId: '@id'

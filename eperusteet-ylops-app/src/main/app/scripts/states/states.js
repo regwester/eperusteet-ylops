@@ -49,7 +49,7 @@ ylopsApp
       .state('root.opetussuunnitelmat', {
         url: '/opetussuunnitelmat',
         abstract: true,
-        template: '<div ui-view></div>',
+        template: '<div ui-view></div>'
       })
 
       .state('root.opetussuunnitelmat.lista', {
@@ -113,6 +113,10 @@ ylopsApp
               return KoodistoHaku.get({ koodistoUri: 'kunta' }).$promise;
             }
             return null;
+          }],
+          'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
+          'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+            opsOikeudet.fetch($stateParams);
           }]
         }
       })

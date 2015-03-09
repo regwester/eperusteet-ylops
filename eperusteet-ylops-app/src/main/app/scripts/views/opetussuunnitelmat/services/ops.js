@@ -86,4 +86,47 @@ ylopsApp
   this.getId = function () {
     return opsId;
   };
-});
+})
+
+  .service('OpetussuunnitelmaOikeudetService', function ($rootScope,
+                                                         $stateParams,
+                                                         OpetussuunnitelmaOikeudet,
+                                                         OpsService,
+                                                         Notifikaatiot) {
+    var oikeudet;
+    var opsId = null;
+    var opsTila = null;
+
+    function fetch(stateParams) {
+      var deferred = OpetussuunnitelmaOikeudet.get({opsId: stateParams.id}, function (res) {
+        oikeudet = res;
+      }, Notifikaatiot.serverCb);
+      return deferred.$promise;
+    }
+
+    function get() {
+      return _.clone(oikeudet);
+    }
+
+    function onkoOikeudet(target, permission) {
+      return oikeudet ? _.contains(oikeudet[target], permission) : false;
+    }
+
+    $rootScope.$on('$stateChangeSuccess', function() {
+      OpsService.fetch($stateParams.id).$promise.then(function(res) {
+        var ops = res;
+        if (opsId && opsId === ops.id && opsTila === ops.tila) {
+          fetch($stateParams);
+        } else {
+          opsId = ops.id;
+          opsTila = ops.tila;
+        }
+      });
+    });
+
+    return {
+      fetch: fetch,
+      get: get,
+      onkoOikeudet: onkoOikeudet
+    };
+  });
