@@ -362,6 +362,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei voi vaihtaa");
         }
 
+        if (opetussuunnitelmaDto.getOrganisaatiot().isEmpty()) {
+            throw new BusinessRuleViolationException("Organisaatiolista ei voi olla tyhjä");
+        }
+
         // Tilan muuttamiseen on oma erillinen endpointtinsa
         opetussuunnitelmaDto.setTila(ops.getTila());
 
