@@ -19,7 +19,7 @@
 ylopsApp
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
   MurupolkuData, vlk, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
-  baseLaajaalaiset, $timeout, $anchorScroll, $location, $state) {
+  baseLaajaalaiset, $timeout, $anchorScroll, $location) {
 
   $timeout(function () {
     if ($location.hash()) {
@@ -136,11 +136,4 @@ ylopsApp
     notifier: angular.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
-
-  $scope.addOppiaine = function () {
-    $state.go('root.opetussuunnitelmat.yksi.uusioppiaine', {
-      vlkId: $stateParams.vlkId
-    });
-  };
-
 });

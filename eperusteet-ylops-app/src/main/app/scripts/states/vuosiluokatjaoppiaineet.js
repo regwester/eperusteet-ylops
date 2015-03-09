@@ -42,6 +42,21 @@ ylopsApp
         }
       })
 
+      .state('root.opetussuunnitelmat.yksi.valinnaiset', {
+        url: '/vuosiluokat/:vlkId/valinnaiset',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/valinnaiset.html',
+        controller: 'ValinnaisetOppiaineetController',
+        resolve: {
+          vuosiluokatService: 'VuosiluokatService',
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
+          }],
+        }
+      })
+
       .state('root.opetussuunnitelmat.yksi.oppiaine', {
         url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId',
         template: '<div ui-view></div>',
@@ -123,7 +138,14 @@ ylopsApp
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive(false);
-          }]
+          }],
+          vuosiluokatService: 'VuosiluokatService',
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
+          }],
         }
       });
 

@@ -150,6 +150,14 @@ ylopsApp
             });
           }
         });
+        // TODO: enable
+        /*arr.push({
+          depth: 1,
+          label: 'valinnaiset-oppiaineet',
+          id: 'valinnaiset',
+          vlkId: vlk.vuosiluokkakokonaisuus.id,
+          url: $state.href('root.opetussuunnitelmat.yksi.valinnaiset', {vlkId: vlk.vuosiluokkakokonaisuus.id})
+        });*/
       });
     }
     return arr;

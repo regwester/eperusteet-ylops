@@ -1,0 +1,10 @@
+<div class="action-buttons-inline">
+  <button class="btn btn-default" kaanna="'luo-uusi-valinnainen-aine'" icon-role="add" ng-click="addOppiaine()"></button>
+</div>
+
+<h2>
+  <span ng-bind="'valinnaiset-oppiaineet' | kaanna"></span>
+</h2>
+<div class="title-addon" ng-bind="vlk.nimi | kaanna"></div>
+
+<p class="empty-notice" ng-if="!valinnaiset || valinnaiset.length === 0" kaanna="'ei-valinnaisia-aineita'"></p>

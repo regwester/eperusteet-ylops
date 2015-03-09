@@ -92,6 +92,14 @@ ylopsApp
         useId: 'vlkId',
         parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
       },
+      'root.opetussuunnitelmat.yksi.valinnaiset': {
+        parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+        label: 'valinnaiset-oppiaineet'
+      },
+      'root.opetussuunnitelmat.yksi.uusioppiaine': {
+        parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+        label: 'uusi-oppiaine'
+      },
       'root.opetussuunnitelmat.yksi.oppiaine.oppiaine': {
         useData: 'oppiaineNimi',
         parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus'

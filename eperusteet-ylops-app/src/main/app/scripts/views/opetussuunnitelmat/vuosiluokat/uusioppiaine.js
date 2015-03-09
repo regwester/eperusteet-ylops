@@ -17,9 +17,25 @@
 'use strict';
 
 ylopsApp
-.controller('UusiOppiaineController', function ($scope, $stateParams, Utils) {
+.controller('UusiOppiaineController', function ($scope, $stateParams, Utils, OpsService, vlk, MurupolkuData) {
+  MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
+
+  $scope.options = {};
+  $scope.tyypit = [
+    {nimi: 'tyyppi-taide-ja-taitoaineiden-syventavat'},
+    {nimi: 'tyyppi-kieli'},
+    {nimi: 'tyyppi-muu-valinnainen'},
+  ];
+  $scope.ops = OpsService.get();
+  $scope.oppiaineet = $scope.ops.oppiaineet;
+
   $scope.oppiaine = {
-    nimi: {}
+    nimi: {},
+    tehtava: {teksti: {}},
+    arviointi: {teksti: {}},
+    ohjaus: {teksti: {}},
+    tyotavat: {teksti: {}},
+    tavoitteet: []
   };
   $scope.chosenVlk = {};
   if ($stateParams.vlkId) {
@@ -33,10 +49,19 @@ ylopsApp
 
   $scope.uusi = {
     create: function () {
-      
+
     },
     cancel: function () {
 
+    }
+  };
+
+  $scope.tavoite = {
+    add: function () {
+      $scope.oppiaine.tavoitteet.push({
+        tavoite: {},
+        kuvaus: {}
+      });
     }
   };
 
