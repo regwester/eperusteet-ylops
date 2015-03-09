@@ -15,8 +15,7 @@
       <label>
         <input type="radio" ng-model="pohja.active" value="1">
         <span kaanna="'kayta-pohjaa'"></span>
-      </label>
-      <select class="pohja-select form-control" ng-model="pohja.model"
+      </label><select class="pohja-select form-control" ng-model="pohja.model"
               ng-options="(item.nimi | kaanna) for item in pohjat | orderBy:sorter"
               ng-change="pohja.active = '1'">
         <option value="">{{'valitse-pohja' | kaanna}}</option>

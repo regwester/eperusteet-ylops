@@ -79,7 +79,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
         OrganisaatioDto kouluDto = new OrganisaatioDto();
         kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
-        kouluDto.setOid("1.2.15252345624572462");
+        kouluDto.setOid("1.2.246.562.10.00000000001");
         ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
         opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }

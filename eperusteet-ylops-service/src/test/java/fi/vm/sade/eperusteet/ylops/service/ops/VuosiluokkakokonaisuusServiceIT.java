@@ -23,7 +23,10 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,6 +61,7 @@ public class VuosiluokkakokonaisuusServiceIT extends AbstractIntegrationTest {
         viite = new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_3, Vuosiluokka.VUOSILUOKKA_4, Vuosiluokka.VUOSILUOKKA_5, Vuosiluokka.VUOSILUOKKA_6));
         this.viite2Ref = Reference.of(viitteet.save(viite));
         Opetussuunnitelma ops = new Opetussuunnitelma();
+        ops.setOrganisaatiot(Collections.singleton(SecurityUtil.OPH_OID));
         ops = suunnitelmat.save(ops);
         opsId = ops.getId();
     }

@@ -28,6 +28,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,7 +104,7 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
             ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
             OrganisaatioDto kouluDto = new OrganisaatioDto();
             kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
-            kouluDto.setOid("1.2.15252345624572462");
+            kouluDto.setOid(SecurityUtil.OPH_OID);
             ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
             ops = opsit.addOpetussuunnitelma(ops);
             opsId = ops.getId();

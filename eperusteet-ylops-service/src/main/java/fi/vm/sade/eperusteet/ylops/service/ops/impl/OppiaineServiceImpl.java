@@ -54,7 +54,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -183,13 +182,16 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiaineenVuosiluokkaDto getVuosiluokka(Long opsId, Long oppiaineId, Long vuosiluokkaId) {
-        if ( !oppiaineet.exists(opsId, oppiaineId) ) {
-            throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
-        }
-        Oppiaineenvuosiluokka vl = vuosiluokat.findByOppiaine(oppiaineId, vuosiluokkaId);
+        Oppiaineenvuosiluokka vl = findVuosiluokka(opsId, oppiaineId, vuosiluokkaId);
         return vl == null ? null : mapper.map(vl, OppiaineenVuosiluokkaDto.class);
     }
 
+    private Oppiaineenvuosiluokka findVuosiluokka(Long opsId, Long oppiaineId, Long vuosiluokkaId) throws BusinessRuleViolationException {
+        if (!oppiaineet.exists(opsId, oppiaineId)) {
+            throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
+        }
+        return vuosiluokat.findByOppiaine(oppiaineId, vuosiluokkaId);
+    }
 
     @Override
     public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkakokonaisuusDto dto) {
@@ -211,17 +213,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkaDto dto) {
-        Oppiaine oppiaine = getOppiaine(opsId, id);
-        Oppiaineenvuosiluokka oppiaineenVuosiluokka
-            = oppiaine.getVuosiluokkakokonaisuudet().stream()
-            .map(oavlk -> oavlk.getVuosiluokka(dto.getVuosiluokka()))
-            .flatMap(vl -> vl.map(Stream::of).orElseGet(Stream::empty))
-            .findFirst()
-            .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkaa ei löydy"));
-
-        if (!oppiaineenVuosiluokka.getId().equals(dto.getId())) {
-            throw new BusinessRuleViolationException("Annetun vuosiluokan ID ei vastaa olemassaolevan vuosiluokan vastaavaa");
-        }
+        Oppiaineenvuosiluokka oppiaineenVuosiluokka = assertExists(findVuosiluokka(opsId, id, dto.getId()),"Vuosiluokkaa ei löydy");
 
         // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden ja tavoitteiden kuvaukset,
         // noin muutoin sisältöön ei pidä kajoaman
@@ -234,25 +226,23 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             -> oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
             .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
-        mapper.map(oppiaineenVuosiluokka, dto);
-        return dto;
+        return mapper.map(oppiaineenVuosiluokka, OppiaineenVuosiluokkaDto.class);
     }
 
     private Oppiaine getOppiaine(Long opsId, Long oppiaineId) {
+        if (!oppiaineet.exists(opsId, oppiaineId)) {
+            throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
+        }
         Oppiaine oppiaine = oppiaineet.findOne(oppiaineId);
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        if (!ops.containsOppiaine(oppiaine)) {
-            throw new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa");
-        }
         return oppiaine;
     }
 
-    private static void assertExists(Object o, String msg) {
+    private static <T> T assertExists(T o, String msg) {
         if (o == null) {
             throw new BusinessRuleViolationException(msg);
         }
+        return o;
     }
 
     private void updateVuosiluokkakokonaisuudenTavoitteet(
@@ -319,7 +309,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
                     .collect(Collectors.toSet()));
                 opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
-                    .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()),fromDto(a.getHyvanOsaamisenKuvaus())))
+                    .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getHyvanOsaamisenKuvaus())))
                     .collect(Collectors.toSet()));
                 return opst;
             })
@@ -328,7 +318,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private LokalisoituTeksti fromDto(LokalisoituTekstiDto dto) {
-        if ( dto == null ) { return null; }
+        if (dto == null) {
+            return null;
+        }
         return LokalisoituTeksti.of(dto.getTekstit());
     }
 
