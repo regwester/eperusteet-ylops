@@ -54,13 +54,14 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
+import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -69,16 +70,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
-import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
 /**
  *
@@ -144,14 +142,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public OpetussuunnitelmaDto getOpetussuunnitelma(@P("id") Long id) {
+    public OpetussuunnitelmaDto getOpetussuunnitelma(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaDto dto = mapper.map(ops, OpetussuunnitelmaDto.class);
-
         fetchKuntaNimet(dto);
         fetchOrganisaatioNimet(dto);
-
         return dto;
     }
 
@@ -400,7 +396,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public void removeOpetussuunnitelma(@P("id") Long id) {
+    public void removeOpetussuunnitelma(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         if (ops != null) {
             kommenttiService.getAllByOpetussuunnitelma(id)
@@ -410,14 +406,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public TekstiKappaleViiteDto.Puu getTekstit(@P("opsId") Long opsId) {
+    public TekstiKappaleViiteDto.Puu getTekstit(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
         return mapper.map(ops.getTekstit(), TekstiKappaleViiteDto.Puu.class);
     }
 
     @Override
-    public TekstiKappaleViiteDto.Matala addTekstiKappale(@P("opsId") Long opsId, TekstiKappaleViiteDto.Matala viite) {
+    public TekstiKappaleViiteDto.Matala addTekstiKappale(Long opsId, TekstiKappaleViiteDto.Matala viite) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
@@ -426,15 +422,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") Long opsId, Long parentId,
+    public TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(Long opsId, Long parentId,
         TekstiKappaleViiteDto.Matala viite) {
         // Lisätään viite parent-noden alle
         return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, parentId, viite);
     }
 
-    private static void assertExists(Object o, String msg) {
-        if (o == null) {
-            throw new BusinessRuleViolationException(msg);
-        }
-    }
 }

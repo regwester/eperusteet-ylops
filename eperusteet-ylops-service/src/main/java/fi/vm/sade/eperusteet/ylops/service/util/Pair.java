@@ -13,42 +13,28 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+
 package fi.vm.sade.eperusteet.ylops.service.util;
 
-import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
-import java.util.Collection;
-import java.util.Collections;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
- * Apumetodeja null-arvojen kanssa temppuiluun
- *
+ * Yksinkertainen "pari"
  * @author jhyoty
  */
-public final class Nulls {
+@Getter
+@EqualsAndHashCode
+public final class Pair<F,S> {
+    private final F first;
+    private final S second;
 
-    private Nulls() {
-        //Apuluokka
+    public Pair(F first, S second) {
+        this.first = first;
+        this.second = second;
     }
 
-    public static <T> Collection<T> nullToEmpty(Collection<T> s) {
-        if (s == null) {
-            return Collections.emptySet();
-        }
-        return s;
+    public static <F,S> Pair<F,S> of(F f, S s) {
+        return new Pair<>(f,s);
     }
-
-    public static String nullToEmpty(String s) {
-        if (s == null) {
-            return "";
-        }
-        return s;
-    }
-
-    public static <T> T assertExists(T o, String msg) {
-        if (o == null) {
-            throw new NotExistsException(msg);
-        }
-        return o;
-    }
-
 }

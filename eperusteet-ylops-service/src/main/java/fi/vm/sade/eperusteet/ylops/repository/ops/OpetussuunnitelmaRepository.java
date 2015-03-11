@@ -19,11 +19,10 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-
+import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -38,8 +37,8 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     @Query(value = "SELECT org from Opetussuunnitelma o join o.organisaatiot org where o.id = ?1")
     public List<String> findOrganisaatiot(long id);
 
-    @Query(value = "SELECT o.tyyppi, o.tila from Opetussuunnitelma o where o.id = ?1")
-    public Object findTyyppiAndTila(long id);
+    @Query(value = "SELECT NEW fi.vm.sade.eperusteet.ylops.service.util.Pair(o.tyyppi, o.tila) from Opetussuunnitelma o where o.id = ?1")
+    public Pair<Tyyppi,Tila> findTyyppiAndTila(long id);
 
     public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
     public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);

@@ -59,6 +59,8 @@ import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+
 /**
  * @author mikkom
  */
@@ -236,13 +238,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine oppiaine = oppiaineet.findOne(oppiaineId);
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
         return oppiaine;
-    }
-
-    private static <T> T assertExists(T o, String msg) {
-        if (o == null) {
-            throw new BusinessRuleViolationException(msg);
-        }
-        return o;
     }
 
     private void updateVuosiluokkakokonaisuudenTavoitteet(

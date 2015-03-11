@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
@@ -40,6 +39,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
 /**
  * @author mikkom
@@ -77,7 +78,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId, Long parentViiteId,
         TekstiKappaleViiteDto.Matala viiteDto) {
         TekstiKappaleViite parentViite = findViite(opsId, parentViiteId);
-
         TekstiKappaleViite uusiViite = new TekstiKappaleViite(Omistussuhde.OMA);
         if (viiteDto != null) {
             uusiViite.setPakollinen(viiteDto.isPakollinen());
@@ -185,14 +185,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     private TekstiKappaleViite findViite(Long opsId, Long viiteId) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
-        TekstiKappaleViite viite = repository.findOne(viiteId);
-        assertExists(viite, "Tekstikappaleviitettä ei ole olemassa");
-        if (!ops.containsViite(viite)) {
-            throw new BusinessRuleViolationException("Annettu tekstikappaleviite ei kuulu tähän opetussuunnitelmaan");
-        }
-        return viite;
+        return assertExists(repository.findInOps(opsId, viiteId), "Tekstikappaleviitettä ei ole olemassa");
     }
 
     private void clearChildren(TekstiKappaleViite viite, Set<TekstiKappaleViite> refs) {
@@ -218,7 +211,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                 TekstiKappale vanha = viite.getTekstiKappale();
                 tekstiKappaleService.mergeNew(viite, uusiTekstiKappale);
                 // Poista vanha tekstikappale jos siihen ei tämän jälkeen enää löydy viittauksia
-                if (repository.findAllByTekstiKappale(vanha).size() == 0) {
+                if (repository.findAllByTekstiKappale(vanha).isEmpty()) {
                     tekstiKappaleService.delete(vanha.getId());
                 }
             }
@@ -247,12 +240,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                 .collect(Collectors.toList()));
         }
         return repository.save(viite);
-    }
-
-    private static void assertExists(Object o, String msg) {
-        if (o == null) {
-            throw new BusinessRuleViolationException(msg);
-        }
     }
 
 }
