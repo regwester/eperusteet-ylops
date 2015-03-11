@@ -99,6 +99,10 @@ ylopsApp
     var opsTila = null;
 
     function fetch(stateParams) {
+      if (stateParams.id === 'uusi') {
+        return query();
+      }
+
       var deferred = OpetussuunnitelmaOikeudet.get({opsId: stateParams.id}, function (res) {
         opsOikeudet = res;
       }, Notifikaatiot.serverCb);
