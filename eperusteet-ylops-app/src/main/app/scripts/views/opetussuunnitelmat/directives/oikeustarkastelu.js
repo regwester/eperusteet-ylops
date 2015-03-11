@@ -32,4 +32,20 @@ ylopsApp
         }
       }
     };
+  })
+  .directive('kayttajaoikeustarkastelu', function (OpetussuunnitelmaOikeudetService) {
+    return {
+      restrict: 'A',
+      link: function postLink(scope, element, attrs) {
+        var oikeudet = scope.$eval(attrs.kayttajaoikeustarkastelu);
+        if (!angular.isArray(oikeudet)) {
+          oikeudet = [oikeudet];
+        }
+        if (!_.any(oikeudet, function(o) {
+            return OpetussuunnitelmaOikeudetService.onkoOikeudet(o.target, o.permission, true);
+          })) {
+          element.hide();
+        }
+      }
+    };
   });

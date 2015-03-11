@@ -93,40 +93,52 @@ ylopsApp
                                                          OpetussuunnitelmaOikeudet,
                                                          OpsService,
                                                          Notifikaatiot) {
-    var oikeudet;
+    var kayttajaOikeudet = null;
+    var opsOikeudet;
     var opsId = null;
     var opsTila = null;
 
     function fetch(stateParams) {
       var deferred = OpetussuunnitelmaOikeudet.get({opsId: stateParams.id}, function (res) {
-        oikeudet = res;
+        opsOikeudet = res;
       }, Notifikaatiot.serverCb);
       return deferred.$promise;
     }
 
     function get() {
-      return _.clone(oikeudet);
+      return _.clone(opsOikeudet);
     }
 
-    function onkoOikeudet(target, permission) {
+    function query() {
+      if (!kayttajaOikeudet) {
+        kayttajaOikeudet = OpetussuunnitelmaOikeudet.query();
+      }
+      return kayttajaOikeudet.$promise;
+    }
+
+    function onkoOikeudet(target, permission, kayttaja) {
+      var oikeudet = kayttaja ? kayttajaOikeudet : opsOikeudet;
       return oikeudet ? _.contains(oikeudet[target], permission) : false;
     }
 
     $rootScope.$on('$stateChangeSuccess', function() {
-      OpsService.fetch($stateParams.id).$promise.then(function(res) {
-        var ops = res;
-        if (opsId && opsId === ops.id && opsTila === ops.tila) {
-          fetch($stateParams);
-        } else {
-          opsId = ops.id;
-          opsTila = ops.tila;
-        }
-      });
+      if ($stateParams.id) {
+        OpsService.fetch($stateParams.id).$promise.then(function (res) {
+          var ops = res;
+          if (opsId && opsId === ops.id && opsTila === ops.tila) {
+            fetch($stateParams);
+          } else {
+            opsId = ops.id;
+            opsTila = ops.tila;
+          }
+        });
+      }
     });
 
     return {
       fetch: fetch,
       get: get,
+      query: query,
       onkoOikeudet: onkoOikeudet
     };
   });

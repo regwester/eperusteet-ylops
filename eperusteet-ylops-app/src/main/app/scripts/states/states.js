@@ -43,7 +43,13 @@ ylopsApp
       .state('root.etusivu', {
         url: '',
         templateUrl: 'views/etusivu.html',
-        controller: 'EtusivuController'
+        controller: 'EtusivuController',
+        resolve: {
+          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
+          kayttajaOikeudetNouto: ['opsOikeudet', function (opsOikeudet) {
+            return opsOikeudet.query();
+          }]
+        }
       })
 
       .state('root.opetussuunnitelmat', {
@@ -116,7 +122,7 @@ ylopsApp
           }],
           'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
           'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
-            opsOikeudet.fetch($stateParams);
+            return opsOikeudet.fetch($stateParams);
           }]
         }
       })

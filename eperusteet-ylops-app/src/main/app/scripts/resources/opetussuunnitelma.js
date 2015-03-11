@@ -36,6 +36,8 @@ ylopsApp
   .factory('OpetussuunnitelmaOikeudet', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/oikeudet', {
       opsId: '@id'
+    }, {
+      query: {method: 'GET', isArray: false}
     });
   })
   .factory('OpetussuunnitelmanTekstit', function ($resource, YlopsResources) {

@@ -162,6 +162,22 @@ public class PermissionManager {
 
     @Transactional(readOnly = true)
     @PreAuthorize("isAuthenticated()")
+    public Map<TargetType, Set<Permission>> getOpsPermissions() {
+
+        Map<TargetType, Set<Permission>> permissionMap = new HashMap<>();
+        Set<Permission> permissions =
+            EnumSet.allOf(RolePermission.class).stream()
+                   .map(p -> new Tuple<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+                   .flatMap(pair -> fromRolePermission(pair.getVal1()).stream())
+                   .collect(Collectors.toSet());
+
+        permissionMap.put(TargetType.OPETUSSUUNNITELMA, permissions);
+
+        return permissionMap;
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("isAuthenticated()")
     public Map<TargetType, Set<Permission>> getOpsPermissions(Long id) {
 
         Map<TargetType, Set<Permission>> permissionMap = new HashMap<>();
