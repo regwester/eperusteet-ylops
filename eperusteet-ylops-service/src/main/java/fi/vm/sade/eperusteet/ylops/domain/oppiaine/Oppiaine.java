@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -215,7 +216,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
      */
     public Opetuksenkohdealue addKohdealue(Opetuksenkohdealue kohdealue) {
         for (Opetuksenkohdealue k : kohdealueet) {
-            if (k.getNimi().equals(kohdealue.getNimi())) {
+            if (Objects.equals(k.getNimi(), kohdealue.getNimi())) {
                 return k;
             }
         }
