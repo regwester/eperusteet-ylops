@@ -213,6 +213,10 @@ ylopsApp
               return EperusteetPerusopetus.query({}).$promise;
             }
             return null;
+          }],
+          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
+          opsOikeudetNouto: ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+            return opsOikeudet.fetch($stateParams);
           }]
         }
       })

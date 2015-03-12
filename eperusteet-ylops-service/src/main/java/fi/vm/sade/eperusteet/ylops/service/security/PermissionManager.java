@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.jgroups.util.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -169,13 +168,20 @@ public class PermissionManager {
     public Map<TargetType, Set<Permission>> getOpsPermissions() {
 
         Map<TargetType, Set<Permission>> permissionMap = new HashMap<>();
-        Set<Permission> permissions =
+        Set<Permission> opsPermissions =
             EnumSet.allOf(RolePermission.class).stream()
-                   .map(p -> new Tuple<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
-                   .flatMap(pair -> fromRolePermission(pair.getVal1()).stream())
+                   .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+                   .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
                    .collect(Collectors.toSet());
+        permissionMap.put(TargetType.OPETUSSUUNNITELMA, opsPermissions);
 
-        permissionMap.put(TargetType.OPETUSSUUNNITELMA, permissions);
+        Set<Permission> pohjaPermissions =
+            EnumSet.allOf(RolePermission.class).stream()
+                   .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+                   .filter(pair -> pair.getSecond().contains(SecurityUtil.OPH_OID))
+                   .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
+                   .collect(Collectors.toSet());
+        permissionMap.put(TargetType.POHJA, pohjaPermissions);
 
         return permissionMap;
     }
@@ -192,12 +198,15 @@ public class PermissionManager {
         Set<String> organisaatiot = ops.getOrganisaatiot();
         Set<Permission> permissions
             = EnumSet.allOf(RolePermission.class).stream()
-            .map(p -> new Tuple<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
-            .filter(pair -> !CollectionUtil.intersect(pair.getVal2(), organisaatiot).isEmpty())
-            .flatMap(pair -> fromRolePermission(pair.getVal1()).stream())
+            .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+            .filter(pair -> !CollectionUtil.intersect(pair.getSecond(), organisaatiot).isEmpty())
+            .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
             .collect(Collectors.toSet());
 
         permissionMap.put(TargetType.OPETUSSUUNNITELMA, permissions);
+        if (ops.getTyyppi() == Tyyppi.POHJA) {
+            permissionMap.put(TargetType.POHJA, permissions);
+        }
 
         return permissionMap;
     }
