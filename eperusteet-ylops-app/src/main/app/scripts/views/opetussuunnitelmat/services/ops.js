@@ -126,7 +126,7 @@ ylopsApp
     }
 
     $rootScope.$on('$stateChangeSuccess', function() {
-      if ($stateParams.id) {
+      if ($stateParams.id && $stateParams.id !== 'uusi') {
         OpsService.fetch($stateParams.id).$promise.then(function (res) {
           var ops = res;
           if (opsId && opsId === ops.id && opsTila === ops.tila) {
