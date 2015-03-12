@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import static fi.vm.sade.eperusteet.ylops.service.external.impl.KayttajanTietoParser.parsiKayttaja;
+import java.security.Principal;
 
 /**
  * @author mikkom
@@ -59,11 +60,11 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
 
     @Override
     public KayttajanTietoDto haeKirjautaunutKayttaja() {
-        KayttajanTietoDto kayttaja = hae(SecurityUtil.getAuthenticatedPrincipal().getName());
-        if ( kayttaja == null ) {
-            //"fallback" jos integraatio on rikki eikä löydä käyttäjän tietoja
-            kayttaja =  new KayttajanTietoDto();
-            kayttaja.setOidHenkilo(SecurityUtil.getAuthenticatedPrincipal().getName());
+        Principal ap = SecurityUtil.getAuthenticatedPrincipal();
+        KayttajanTietoDto kayttaja = hae(ap.getName());
+        if (kayttaja == null) { //"fallback" jos integraatio on rikki eikä löydä käyttäjän tietoja
+            kayttaja = new KayttajanTietoDto();
+            kayttaja.setOidHenkilo(ap.getName());
         }
         return kayttaja;
     }
@@ -93,13 +94,12 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
 
         @Cacheable("kayttajat")
         public KayttajanTietoDto hae(String oid) {
-            CachingRestClient crc = restClientFactory.get(serviceUrl);
-
             try {
+                CachingRestClient crc = restClientFactory.get(serviceUrl);
                 String url = serviceUrl + (oid == null ? OMAT_TIEDOT_API : KAYTTAJA_API + oid);
                 JsonNode json = mapper.readTree(crc.getAsString(url));
                 return parsiKayttaja(json);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 return null;
             }
         }
