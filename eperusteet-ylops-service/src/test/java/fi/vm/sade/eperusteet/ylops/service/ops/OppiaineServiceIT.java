@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
@@ -119,6 +120,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         assertNotNull(vlk);
 
         OppiaineDto oppiaineDto = new OppiaineDto();
+        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         oppiaineDto.setNimi(lt("Uskonto"));
         oppiaineDto.setKoodiUri("koodikoodi");
         oppiaineDto.setTunniste(UUID.randomUUID());
@@ -128,11 +130,13 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         assertNotNull(oppiaineDto);
 
         oppiaineDto = new OppiaineDto();
+        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         oppiaineDto.setNimi(lt("Äidinkieli"));
         oppiaineDto.setKoodiUri("koodi_123");
         oppiaineDto.setTunniste(UUID.randomUUID());
 
         OppiaineSuppeaDto oppimaaraDto = new OppiaineSuppeaDto();
+        oppimaaraDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         oppimaaraDto.setNimi(lt("Suomen kieli ja kirjallisuus"));
         oppimaaraDto.setKoosteinen(false);
         oppimaaraDto.setTunniste(UUID.randomUUID());
@@ -146,6 +150,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         assertEquals(1, oppiaineDto.getOppimaarat().size());
 
         oppiaineDto = new OppiaineDto();
+        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         oppiaineDto.setNimi(lt("Matematiikka"));
         oppiaineDto.setKoodiUri("jaa-a");
         oppiaineDto.setKoosteinen(false);

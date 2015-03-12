@@ -13,20 +13,37 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain;
+package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 /**
  *
- * @author harrik
+ * @author mikkom
  */
-public enum Tyyppi {
-
-    OPS("ops"),
-    POHJA("pohja");
+public enum OppiaineTyyppi {
+    /**
+     *
+     * Kaikille yhteinen aine
+     */
+    YHTEINEN("yhteinen"),
+    /**
+     *
+     * Taide- ja/tai taitoaineen valinnainen tunti
+     */
+    TAIDE_TAITOAINE("taideTaitoaine"),
+    /**
+     *
+     * Vieraan kielen vapaaehtoinen ja/tai valinnainen oppimäärä
+     */
+    KIELI("kieli"),
+    /**
+     *
+     * Muu valinnainen aine
+     */
+    MUU("muu");
 
     private final String tyyppi;
 
-    private Tyyppi(String tyyppi) { this.tyyppi = tyyppi; }
+    private OppiaineTyyppi(String tyyppi) { this.tyyppi = tyyppi; }
 
     @Override
     public String toString() { return tyyppi; }

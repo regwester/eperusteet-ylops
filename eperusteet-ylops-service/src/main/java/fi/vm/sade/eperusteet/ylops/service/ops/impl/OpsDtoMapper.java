@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksenkohdealue;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
@@ -112,6 +113,7 @@ public class OpsDtoMapper {
         dto.setTila(Tila.LUONNOS);
 
         dto.setNimi(oa.getNimi());
+        dto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         dto.setTunniste(oa.getTunniste());
         dto.setKoosteinen(oa.getKoosteinen());
         dto.setKoodiArvo(oa.getKoodiArvo());
@@ -142,6 +144,7 @@ public class OpsDtoMapper {
         dto.setTila(Tila.LUONNOS);
 
         dto.setNimi(oa.getNimi());
+        dto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         dto.setKoosteinen(oa.getKoosteinen());
         dto.setTunniste(oa.getTunniste());
         dto.setKoodiArvo(oa.getKoodiArvo());

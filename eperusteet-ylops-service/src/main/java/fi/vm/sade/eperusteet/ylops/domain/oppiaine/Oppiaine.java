@@ -64,6 +64,25 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Setter
     private String koodi;
 
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    @Getter
+    @Setter
+    private OppiaineTyyppi tyyppi = OppiaineTyyppi.YHTEINEN;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Getter
+    @Setter
+    private Oppiaine liittyvaOppiaine;
+
+    /**
+     *
+     * Laajuus vuosiviikkotunteina (vvh)
+     */
+    @Getter
+    @Setter
+    private Integer laajuus;
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @Getter
