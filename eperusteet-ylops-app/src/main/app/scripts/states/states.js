@@ -30,6 +30,10 @@ ylopsApp
         resolve: {
           casTiedot: ['Oikeudet', '$q', function (Oikeudet, $q) {
             return $q.all([Oikeudet.getKayttaja().$promise, Oikeudet.getCasTiedot()]);
+          }],
+          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
+          kayttajaOikeudetNouto: ['opsOikeudet', function (opsOikeudet) {
+            return opsOikeudet.query();
           }]
         }
       })
@@ -43,13 +47,7 @@ ylopsApp
       .state('root.etusivu', {
         url: '',
         templateUrl: 'views/etusivu.html',
-        controller: 'EtusivuController',
-        resolve: {
-          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
-          kayttajaOikeudetNouto: ['opsOikeudet', function (opsOikeudet) {
-            return opsOikeudet.query();
-          }]
-        }
+        controller: 'EtusivuController'
       })
 
       .state('root.opetussuunnitelmat', {
