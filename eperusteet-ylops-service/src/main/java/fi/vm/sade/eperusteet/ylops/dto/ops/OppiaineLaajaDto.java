@@ -32,6 +32,7 @@ public class OppiaineLaajaDto extends OppiaineBaseDto {
     private Set<OppiaineDto> oppimaarat;
     private Set<OpetuksenKohdealueDto> kohdealueet;
     private Set<OppiaineenVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
+    private OppiaineDto liittyvaOppiaine;
     private String koodiUri;
     private String koodiArvo;
 }
