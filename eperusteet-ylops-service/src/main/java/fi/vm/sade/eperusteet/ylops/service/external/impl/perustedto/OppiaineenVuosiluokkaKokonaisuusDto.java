@@ -37,6 +37,7 @@ public class OppiaineenVuosiluokkaKokonaisuusDto implements ReferenceableDto {
     private TekstiOsaDto tyotavat;
     private TekstiOsaDto ohjaus;
     private TekstiOsaDto arviointi;
+    private TekstiOsaDto sisaltoalueinfo;
     private List<OpetuksenTavoiteDto> tavoitteet;
     private List<KeskeinenSisaltoalueDto> sisaltoalueet;
 }
