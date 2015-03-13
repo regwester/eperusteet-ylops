@@ -19,6 +19,7 @@
 ylopsApp
 .controller('VuosiluokkaBaseController', function ($scope, $stateParams, MurupolkuData, $state, Kaanna,
   VuosiluokatService, baseLaajaalaiset) {
+
   $scope.vuosiluokka = _.find($scope.oppiaineenVlk.vuosiluokat, function (vuosiluokka) {
     return '' + vuosiluokka.id === $stateParams.vlId;
   });
@@ -45,6 +46,7 @@ ylopsApp
   $scope.collapsed = {};
   $scope.nimiOrder = Utils.sort;
   $scope.muokattavat = {};
+
 
   function mapModel() {
     $scope.tavoitteet = $scope.vuosiluokka.tavoitteet;
@@ -126,8 +128,11 @@ ylopsApp
 
 .controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit,
   $timeout, $location, $anchorScroll, OppiaineService, Utils) {
+
   $scope.tunnisteet = [];
   $scope.muokattavat = {};
+  $scope.sisaltoInfo = {};
+  $scope.sisaltoInfoCollapse = false;
 
   function mapModel() {
     $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
