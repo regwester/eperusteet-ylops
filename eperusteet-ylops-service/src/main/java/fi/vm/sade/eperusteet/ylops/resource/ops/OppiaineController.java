@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,8 +63,23 @@ public class OppiaineController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<OppiaineDto> getAll(@PathVariable("opsId") final Long opsId) {
-        return oppiaineService.getAll(opsId);
+    public List<OppiaineDto> getAll(@PathVariable("opsId") final Long opsId,
+                                    @RequestParam(value = "tyyppi", required = false) OppiaineTyyppi tyyppi) {
+        if (tyyppi == null) {
+            return oppiaineService.getAll(opsId);
+        } else {
+            return oppiaineService.getAll(opsId, tyyppi);
+        }
+    }
+
+    @RequestMapping(value = "/yhteiset",method = RequestMethod.GET)
+    public List<OppiaineDto> getYhteiset(@PathVariable("opsId") final Long opsId) {
+        return oppiaineService.getAll(opsId, false);
+    }
+
+    @RequestMapping(value = "/valinnaiset",method = RequestMethod.GET)
+    public List<OppiaineDto> getValinnaiset(@PathVariable("opsId") final Long opsId) {
+        return oppiaineService.getAll(opsId, true);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)

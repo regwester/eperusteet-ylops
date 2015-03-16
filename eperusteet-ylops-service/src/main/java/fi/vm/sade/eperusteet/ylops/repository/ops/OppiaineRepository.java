@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import java.util.Set;
 import org.springframework.data.jpa.repository.Query;
@@ -29,6 +30,15 @@ import org.springframework.stereotype.Repository;
 public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine, Long> {
     @Query(value = "SELECT a FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a WHERE o.id = ?1")
     Set<Oppiaine> findByOpsId(long opsId);
+
+    @Query(value = "SELECT a FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a WHERE o.id = ?1 AND a.tyyppi = 'YHTEINEN'")
+    Set<Oppiaine> findYhteisetByOpsId(long opsId);
+
+    @Query(value = "SELECT a FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a WHERE o.id = ?1 AND a.tyyppi <> 'YHTEINEN'")
+    Set<Oppiaine> findValinnaisetByOpsId(long opsId);
+
+    @Query(value = "SELECT a FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a WHERE o.id = ?1 AND a.tyyppi = ?2")
+    Set<Oppiaine> findByOpsIdAndTyyppi(long opsId, OppiaineTyyppi tyyppi);
 
     @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a LEFT JOIN a.oppimaarat m WHERE o.id = ?1 AND (a.id = ?2 OR m.id = ?2)")
     boolean exists(long opsId, long oppiaineId);

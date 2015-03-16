@@ -171,6 +171,14 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         assertNotNull(oppiaineet);
         assertEquals(3, oppiaineet.size());
 
+        oppiaineet = oppiaineService.getAll(opsId, true);
+        assertNotNull(oppiaineet);
+        assertEquals(0, oppiaineet.size());
+
+        oppiaineet = oppiaineService.getAll(opsId, false);
+        assertNotNull(oppiaineet);
+        assertEquals(3, oppiaineet.size());
+
         oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
         assertNotNull(oppiaineDto);
         assertEquals("Matematiikka", oppiaineDto.getNimi().get(Kieli.FI));

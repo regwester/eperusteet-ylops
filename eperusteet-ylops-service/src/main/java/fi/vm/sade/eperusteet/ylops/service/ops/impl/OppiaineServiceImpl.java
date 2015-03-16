@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksenkohdealue;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Tavoitteenarviointi;
@@ -119,6 +120,25 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         return mapper.mapAsList(oppiaineet.findByOpsId(opsId), OppiaineDto.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OppiaineDto> getAll(@P("opsId") Long opsId, boolean valinnaiset) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Set<Oppiaine> aineet = valinnaiset ?
+                               oppiaineet.findValinnaisetByOpsId(opsId) :
+                               oppiaineet.findYhteisetByOpsId(opsId);
+        return mapper.mapAsList(aineet, OppiaineDto.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OppiaineDto> getAll(@P("opsId") Long opsId, OppiaineTyyppi tyyppi) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        return mapper.mapAsList(oppiaineet.findByOpsIdAndTyyppi(opsId, tyyppi), OppiaineDto.class);
     }
 
     @Override
