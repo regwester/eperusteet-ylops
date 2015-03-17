@@ -32,11 +32,6 @@ public enum OppiaineTyyppi {
     TAIDE_TAITOAINE("taideTaitoaine"),
     /**
      *
-     * Vieraan kielen vapaaehtoinen ja/tai valinnainen oppimäärä
-     */
-    KIELI("kieli"),
-    /**
-     *
      * Muu valinnainen aine
      */
     MUU("muu");
