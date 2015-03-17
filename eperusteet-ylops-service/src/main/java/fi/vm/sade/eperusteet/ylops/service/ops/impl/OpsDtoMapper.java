@@ -71,8 +71,10 @@ public class OpsDtoMapper {
     }
 
     public Oppiaine fromDto(OppiaineDto dto) {
+        Oppiaine oppiaine = dto.getTyyppi() != OppiaineTyyppi.YHTEINEN && dto.getTunniste() == null ?
+                            new Oppiaine(dto.getTyyppi()) : // Uusi valinnainen aine, luodaan uusi tunniste
+                            new Oppiaine(dto.getTunniste());
 
-        Oppiaine oppiaine = new Oppiaine(dto.getTunniste());
         mapper.map(dto, oppiaine);
         if (dto.getOppimaarat() != null) {
             dto.getOppimaarat().forEach(o -> {

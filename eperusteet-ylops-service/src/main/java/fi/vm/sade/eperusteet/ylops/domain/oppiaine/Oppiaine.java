@@ -131,6 +131,14 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         this.tunniste = tunniste;
     }
 
+    public Oppiaine(OppiaineTyyppi tyyppi) {
+        if (tyyppi != OppiaineTyyppi.YHTEINEN) {
+            this.tunniste = UUID.randomUUID();
+        } else {
+            throw new IllegalArgumentException("Oppiaine ei ole valinnainen");
+        }
+    }
+
     protected Oppiaine() {
         //for JPA
     }

@@ -29,12 +29,12 @@ public enum OppiaineTyyppi {
      *
      * Taide- ja/tai taitoaineen valinnainen tunti
      */
-    TAIDE_TAITOAINE("taideTaitoaine"),
+    TAIDE_TAITOAINE("taide_taitoaine"),
     /**
      *
      * Muu valinnainen aine
      */
-    MUU("muu");
+    MUU_VALINNAINEN("muu_valinnainen");
 
     private final String tyyppi;
 
