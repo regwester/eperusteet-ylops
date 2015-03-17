@@ -105,6 +105,10 @@ ylopsApp
     });
   }
 
+  $scope.addOppiaine = function() {
+    $state.go('root.oppiaineet.yksi.tiedot', {pohjaId: 'uusi'});
+  };
+
   $scope.options = {
     editing: false
   };

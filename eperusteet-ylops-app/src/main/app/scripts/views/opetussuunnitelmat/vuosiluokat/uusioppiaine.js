@@ -17,14 +17,14 @@
 'use strict';
 
 ylopsApp
-.controller('UusiOppiaineController', function ($scope, $stateParams, Utils, OpsService, vlk, MurupolkuData) {
+.controller('UusiOppiaineController', function ($scope, $stateParams, Utils, OpsService, vlk, MurupolkuData,
+                                                Notifikaatiot, OppiaineCRUD) {
   MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
 
   $scope.options = {};
   $scope.tyypit = [
-    {nimi: 'tyyppi-taide-ja-taitoaineiden-syventavat'},
-    {nimi: 'tyyppi-kieli'},
-    {nimi: 'tyyppi-muu-valinnainen'},
+    'taide_taitoaine',
+    'muu_valinnainen'
   ];
   $scope.ops = OpsService.get();
   $scope.oppiaineet = $scope.ops.oppiaineet;
@@ -47,12 +47,17 @@ ylopsApp
     return Utils.hasLocalizedText(model.nimi) && _.any(_.values($scope.chosenVlk));
   };
 
+  var successCb = function (res) {
+    Notifikaatiot.onnistui('tallennettu-ok');
+  };
+
   $scope.uusi = {
     create: function () {
-
+        OppiaineCRUD.save({
+          opsId: $scope.ops.id
+        }, $scope.oppiaine, successCb, Notifikaatiot.serverCb);
     },
     cancel: function () {
-
     }
   };
 
