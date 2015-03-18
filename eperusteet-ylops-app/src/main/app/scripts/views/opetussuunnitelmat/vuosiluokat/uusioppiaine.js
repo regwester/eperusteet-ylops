@@ -55,7 +55,7 @@ ylopsApp
            ;
   };
 
-  var successCb = function (res) {
+  var successCb = function () {
     Notifikaatiot.onnistui('tallennettu-ok');
   };
 
