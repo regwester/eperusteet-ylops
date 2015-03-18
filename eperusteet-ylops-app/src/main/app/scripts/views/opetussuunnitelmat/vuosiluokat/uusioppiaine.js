@@ -46,7 +46,13 @@ ylopsApp
 
   $scope.hasRequiredFields = function () {
     var model = $scope.oppiaine;
-    return Utils.hasLocalizedText(model.nimi) && _.any(_.values($scope.chosenVlk));
+    return Utils.hasLocalizedText(model.nimi) &&
+           _.any(_.values($scope.chosenVlk)) &&
+           model.tyyppi &&
+           model.laajuus &&
+           model.tehtava.teksti &&
+           $scope.valitutVuosiluokat && _($scope.valitutVuosiluokat).values().some()
+           ;
   };
 
   var successCb = function (res) {
