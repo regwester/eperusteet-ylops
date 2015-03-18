@@ -33,24 +33,11 @@
 
         <div class="row">
           <div class="col-sm-3 formfield-label">
-            <label><span kaanna="'oppiaineen-kuvaus'"></span>*</label>
+            <label><span kaanna="'oppiaineen-tehtava'"></span>*</label>
           </div>
 
           <div class="col-sm-9 formfield-data">
             <div ckeditor slocalized ng-model="oppiaine.tehtava.teksti"></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-3 formfield-label">
-            <label><span kaanna="'oppiaine-liittyy'"></span></label>
-          </div>
-
-          <div class="col-sm-9 formfield-data">
-            <select class="form-control" ng-model="oppiaine.oppiaine"
-                    ng-options="(item.oppiaine.nimi | kaanna) for item in oppiaineet">
-              <option value="">{{'valitse-oppiaine' | kaanna}}</option>
-            </select>
           </div>
         </div>
 
@@ -65,6 +52,33 @@
           </div>
         </div>
 
+        <div class="row">
+          <div class="col-sm-3 formfield-label">
+            <label><span kaanna="'vuosiluokat'"></span>*</label>
+          </div>
+
+          <div class="col-sm-9 formfield-data">
+            <label ng-repeat="vuosiluokka in vuosiluokat" class="vuosiluokka">
+              <input type="checkbox" ng-model="valitutVuosiluokat[vuosiluokka]">
+              <span ng-bind="vuosiluokka | kaanna"></span>
+            </label>
+          </div>
+        </div>
+
+        <!--
+        <div class="row">
+          <div class="col-sm-3 formfield-label">
+            <label><span kaanna="'oppiaine-liittyy'"></span></label>
+          </div>
+
+          <div class="col-sm-9 formfield-data">
+            <select class="form-control" ng-model="oppiaine.oppiaine"
+                    ng-options="(item.oppiaine.nimi | kaanna) for item in liittyvatAineet">
+              <option value="">{{'valitse-oppiaine' | kaanna}}</option>
+            </select>
+          </div>
+        </div>
+-->
         <div class="row">
           <div class="col-sm-3 formfield-label">
             <label><span kaanna="'oppiaine-arviointi'"></span></label>

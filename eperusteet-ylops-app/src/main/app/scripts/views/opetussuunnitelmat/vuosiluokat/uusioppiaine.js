@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-.controller('UusiOppiaineController', function ($scope, $stateParams, Utils, OpsService, vlk, MurupolkuData,
+.controller('UusiOppiaineController', function ($scope, $stateParams, Utils, OpsService, vlk, vlkPeruste, MurupolkuData,
                                                 Notifikaatiot, OppiaineCRUD) {
   MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
 
@@ -28,6 +28,8 @@ ylopsApp
   ];
   $scope.ops = OpsService.get();
   $scope.oppiaineet = $scope.ops.oppiaineet;
+  $scope.vuosiluokat = vlkPeruste.vuosiluokat.sort();
+  $scope.valitutVuosiluokat = {};
 
   $scope.oppiaine = {
     nimi: {},

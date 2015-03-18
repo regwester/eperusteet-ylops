@@ -146,6 +146,9 @@ ylopsApp
           vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
             return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
           }],
+          vlkPeruste: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
+            return vuosiluokatService.getVlkPeruste(opsId, vlkId).$promise;
+          }],
         }
       });
 
