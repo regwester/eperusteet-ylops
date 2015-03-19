@@ -171,6 +171,7 @@ public class PermissionManager {
         Set<Permission> opsPermissions =
             EnumSet.allOf(RolePermission.class).stream()
                    .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+                   .filter(pair -> !pair.getSecond().isEmpty())
                    .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
                    .collect(Collectors.toSet());
         permissionMap.put(TargetType.OPETUSSUUNNITELMA, opsPermissions);
