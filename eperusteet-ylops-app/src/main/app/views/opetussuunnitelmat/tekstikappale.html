@@ -1,8 +1,8 @@
 <div class="action-buttons-inline" ng-hide="editMode">
   <!-- <a ui-sref="root.pohjat.yksi.tekstikappale({pohjaId: opsId, tekstikappaleId: model.id})">[pohjanäkymä]</a> -->
   <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip"></lukko>
-  <button ng-disabled="lukkotiedot.lukittu" ng-if="canRemove()" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()"></button>
-  <button ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+  <button ng-disabled="lukkotiedot.lukittu" ng-if="canRemove()" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+  <button ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
 </div>
 
 <h2 class="tekstikappale-title">
