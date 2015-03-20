@@ -134,7 +134,8 @@
 
   "vuosiluokkaistaminen": "Vuosiluokkaistaminen",
   "vuosiluokkaistaminen-on-jo-tehty": "Vuosiluokkaistaminen on jo tehty",
-  "vuosiluokkaistamista-ei-viela-tehty": "Tavoitteita ei ole vielä vuosiluokkaistettu. Aloita valitsemalla 'Vuosiluokkaista tavoitteet'.",
+  "vuosiluokkaistamista-ei-viela-tehty": "Tavoitteita ei ole vielä vuosiluokkaistettu.",
+  "aloita-vuosiluokkaistaminen": "Aloita valitsemalla 'Vuosiluokkaista tavoitteet'.",
   "vuosiluokkaistaminen-varoitus": "Vuosiluokkaistaminen on jo tehty. Saatat menettää paikallisia vuosiluokkakohtaisia sisältöjä. Haluatko jatkaa?",
   "pienet-tavoitteet": "Tiivis näkymä",
   "nayta-kohdealueet": "Näytä kohdealueet",
