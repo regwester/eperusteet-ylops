@@ -78,6 +78,10 @@ ylopsApp
           }],
           vuosiluokkakokonaisuudet: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
             return vuosiluokatService.getVuosiluokkakokonaisuudet(opsModel);
+          }],
+          'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
+          'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+            return opsOikeudet.fetch($stateParams);
           }]
         },
         controller: function ($scope, opsModel, vuosiluokkakokonaisuudet, opsService, $rootScope) {
@@ -117,10 +121,6 @@ ylopsApp
               return KoodistoHaku.get({ koodistoUri: 'kunta' }).$promise;
             }
             return null;
-          }],
-          'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
-          'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
-            return opsOikeudet.fetch($stateParams);
           }]
         }
       })
@@ -188,6 +188,10 @@ ylopsApp
           }],
           pohjaModel: ['opsService', 'pohjaId', function(opsService, pohjaId) {
             return opsService.fetchPohja(pohjaId);
+          }],
+          'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
+          'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+            return opsOikeudet.fetch($stateParams);
           }]
         }
       })

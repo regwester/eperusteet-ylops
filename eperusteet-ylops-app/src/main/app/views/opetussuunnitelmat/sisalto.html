@@ -38,8 +38,8 @@
           </span>
         </div>
         <div class="floater-ops" ng-if="canRemove(item) && !kappaleEdit">
-          <span class="kappale-ops" ng-click="rakenne.editTitle(osio, item)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}"></span>
-          <span class="kappale-ops" ng-click="rakenne.deleteKappale(osio, item)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></span>
+          <span class="kappale-ops" ng-click="rakenne.editTitle(osio, item)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span>
+          <span class="kappale-ops" ng-click="rakenne.deleteKappale(osio, item)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span>
         </div>
       </div>
 
