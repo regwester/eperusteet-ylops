@@ -52,7 +52,7 @@ ylopsApp
   };
 })
 
-.controller('StatusbadgeController', function ($scope, OpsinTilanvaihto, OpsinTila, Notifikaatiot) {
+.controller('StatusbadgeController', function ($scope, OpsinTilanvaihto, OpsinTila, Notifikaatiot, OpetussuunnitelmaOikeudetService) {
     $scope.iconMapping = {
       luonnos: 'pencil',
       laadinta: 'pencil',
@@ -75,6 +75,11 @@ ylopsApp
     };
 
     $scope.startEditing = function() {
+      var isPohja = $scope.model.tyyppi === 'pohja';
+      if (!OpetussuunnitelmaOikeudetService.onkoOikeudet(isPohja ? 'pohja' : 'opetussuunnitelma', 'muokkaus')) {
+        return;
+      }
+
       // TODO tilat backendiltä?
       var tilat = ['poistettu'];
       if ($scope.status === 'luonnos') {
@@ -86,7 +91,7 @@ ylopsApp
       OpsinTilanvaihto.start({
         currentStatus: $scope.status,
         mahdollisetTilat: tilat,
-        isPohja: $scope.model.tyyppi === 'pohja'
+        isPohja: isPohja
       }, function (newStatus) {
         OpsinTila.save($scope.model, newStatus, function(res) {
           Notifikaatiot.onnistui('tallennettu-ok');
