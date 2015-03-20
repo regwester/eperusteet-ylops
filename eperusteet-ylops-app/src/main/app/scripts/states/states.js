@@ -32,7 +32,7 @@ ylopsApp
             return $q.all([Oikeudet.getKayttaja().$promise, Oikeudet.getCasTiedot()]);
           }],
           opsOikeudet: 'OpetussuunnitelmaOikeudetService',
-          kayttajaOikeudetNouto: ['opsOikeudet', function (opsOikeudet) {
+          kayttajaOikeudetNouto: ['casTiedot', 'opsOikeudet', function (casTiedot, opsOikeudet) {
             return opsOikeudet.query();
           }]
         }
