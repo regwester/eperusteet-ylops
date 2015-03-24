@@ -16,6 +16,11 @@
   "nayta": "Näytä",
   "takaisin-ylos": "Takaisin ylös",
 
+  "poistu-sivulta": "Poistu sivulta",
+  "tallentamattomia-muutoksia": "Sinulla on tallentamattomia muutoksia. Jos poistut sivulta muutokset menetetään.",
+  "vahvista-liikkuminen": "Vahvista liikkuminen",
+  "haluatko-jatkaa": "Haluatko jatkaa?",
+
   "muokkaa": "Muokkaa",
   "muokkaa-otsikkoa": "Muokkaa otsikkoa",
   "muokattavana": "Muokattavana",
@@ -132,12 +137,13 @@
   "laaja-alainen-osaaminen": "Laaja-alainen osaaminen",
   "laaja-alaiset-osaamiset": "Laaja-alaiset osaamiset",
 
-  "vuosiluokkaistaminen": "Vuosiluokkaistaminen",
+  "vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet ja sisällöt",
+  "vuosiluokkaistaminen-ohje": "Vuosiluokkaista tavoitteet ja sisällöt vetämällä tavoitteet vuosiluokille.",
   "vuosiluokkaistaminen-on-jo-tehty": "Vuosiluokkaistaminen on jo tehty",
   "vuosiluokkaistamista-ei-viela-tehty": "Tavoitteita ei ole vielä vuosiluokkaistettu.",
   "aloita-vuosiluokkaistaminen": "Aloita valitsemalla 'Vuosiluokkaista tavoitteet'.",
   "vuosiluokkaistaminen-varoitus": "Vuosiluokkaistaminen on jo tehty. Saatat menettää paikallisia vuosiluokkakohtaisia sisältöjä. Haluatko jatkaa?",
-  "pienet-tavoitteet": "Tiivis näkymä",
+  "pienet-tavoitteet": "Avaa/pienennä kaikki tavoitteet",
   "nayta-kohdealueet": "Näytä kohdealueet",
   "kaikki-vuosiluokkaistettu": "Kaikki tavoitteet vuosiluokkaistettu",
   "kaikkia-ei-vuosiluokkaistettu": "Kaikkia tavoitteita ei ole vuosiluokkaistettu",
@@ -148,6 +154,7 @@
   "varmista-tavoitteet-tyhjennys-otsikko": "Varmista tyhjennys",
   "varmista-tavoitteet-tyhjennys": "Tyhjennetäänkö vuosiluokalle tuodut tavoitteet?",
   "tuo-kaikki": "Tuo kaikki",
+  "veda-tavoitteet-tahan": "Vedä tavoitteet ja sisällöt tähän",
 
   "arviointi-vuosiluokan-paatteeksi": "Arviointikriteerit vuosiluokkakokonaisuuden päätteeksi",
   "arvioinnin-kohde": "Arvioinnin kohde",
