@@ -10,7 +10,7 @@
 
         <div class="row">
           <div class="col-sm-3 formfield-label">
-            <label><span kaanna="'nimi'"></span>*</label>
+            <label><span kaanna="'valinnaisen-nimi'"></span>*</label>
           </div>
 
           <div class="col-sm-9 formfield-data">
@@ -47,7 +47,7 @@
           </div>
 
           <div class="col-sm-9 formfield-data">
-            <input type="number" class="form-control form-short" ng-model="oppiaine.laajuus"><span kaanna="'vuosiviikkotuntia'"></span><br>
+            <input type="number" min="0" class="form-control form-short" ng-model="oppiaine.laajuus"><span kaanna="'vuosiviikkotuntia'"></span><br>
             <div><span kaanna="'arvosana'"></span>:&nbsp;<span ng-bind="oppiaine.laajuus < 2 ? 'sanallinen' : 'numero' | kaanna"></span></div>
           </div>
         </div>

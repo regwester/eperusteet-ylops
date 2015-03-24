@@ -104,13 +104,38 @@ ylopsApp
       label: oppiaine.nimi,
       id: oppiaine.id,
       vlkId: vlk.id,
-      url: $state.href('root.opetussuunnitelmat.yksi.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id}),
+      url: $state.href('root.opetussuunnitelmat.yksi.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi}),
     };
   }
 
   function getTunnisteet(vlkt) {
     return _.map(vlkt, function (item) {
       return item._vuosiluokkakokonaisuus;
+    });
+  }
+
+  function populateMenuItems(arr, obj, oppiaineet, depth) {
+    depth = depth || 1;
+    _.each(oppiaineet, function (oppiaine) {
+      var tunnisteet = getTunnisteet(oppiaine.oppiaine.vuosiluokkakokonaisuudet);
+      var parentPushed = false;
+      if (_.indexOf(tunnisteet, obj._tunniste) > -1) {
+        arr.push(generateOppiaineItem(oppiaine.oppiaine, obj, depth));
+        parentPushed = true;
+      }
+      if (oppiaine.oppiaine.koosteinen) {
+        var oppimaarat = _.sortBy(oppiaine.oppiaine.oppimaarat, Utils.sort);
+        _.each(oppimaarat, function (oppimaara) {
+          tunnisteet = getTunnisteet(oppimaara.vuosiluokkakokonaisuudet);
+          if (_.indexOf(tunnisteet, obj._tunniste) > -1) {
+            if (!parentPushed) {
+              arr.push(generateOppiaineItem(oppiaine.oppiaine, obj, depth));
+              parentPushed = true;
+            }
+            arr.push(generateOppiaineItem(oppimaara, obj, depth + 1));
+          }
+        });
+      }
     });
   }
 
@@ -129,35 +154,22 @@ ylopsApp
         var sorted = _.sortBy(ops.oppiaineet, function (item) {
           return Utils.sort(item.oppiaine);
         });
-        _.each(sorted, function (oppiaine) {
-          var tunnisteet = getTunnisteet(oppiaine.oppiaine.vuosiluokkakokonaisuudet);
-          var parentPushed = false;
-          if (_.indexOf(tunnisteet, obj._tunniste) > -1) {
-            arr.push(generateOppiaineItem(oppiaine.oppiaine, obj));
-            parentPushed = true;
-          }
-          if (oppiaine.oppiaine.koosteinen) {
-            var oppimaarat = _.sortBy(oppiaine.oppiaine.oppimaarat, Utils.sort);
-            _.each(oppimaarat, function (oppimaara) {
-              tunnisteet = getTunnisteet(oppimaara.vuosiluokkakokonaisuudet);
-              if (_.indexOf(tunnisteet, obj._tunniste) > -1) {
-                if (!parentPushed) {
-                  arr.push(generateOppiaineItem(oppiaine.oppiaine, obj));
-                  parentPushed = true;
-                }
-                arr.push(generateOppiaineItem(oppimaara, obj, 2));
-              }
-            });
-          }
-        });
-        // TODO: enable
-        /*arr.push({
+
+        populateMenuItems(arr, obj, _.filter(sorted, function (oppiaine) {
+          return oppiaine.oppiaine.tyyppi === 'yhteinen'
+        }));
+
+        arr.push({
           depth: 1,
           label: 'valinnaiset-oppiaineet',
           id: 'valinnaiset',
           vlkId: vlk.vuosiluokkakokonaisuus.id,
           url: $state.href('root.opetussuunnitelmat.yksi.valinnaiset', {vlkId: vlk.vuosiluokkakokonaisuus.id})
-        });*/
+        });
+
+        populateMenuItems(arr, obj, _.filter(sorted, function (oppiaine) {
+          return oppiaine.oppiaine.tyyppi !== 'yhteinen'
+        }), 2);
       });
     }
     return arr;

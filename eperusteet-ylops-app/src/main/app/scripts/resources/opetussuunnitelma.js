@@ -62,7 +62,8 @@ ylopsApp
     return $resource(YlopsResources.OPPIAINE, {
       oppiaineId: '@id'
     }, {
-      peruste: {method: 'GET', url: YlopsResources.OPPIAINE + '/peruste'}
+      peruste: {method: 'GET', url: YlopsResources.OPPIAINE + '/peruste'},
+      saveValinnainen: {method: 'POST', url: YlopsResources.OPPIAINE + '/valinnainen'}
     });
   })
 

@@ -25,11 +25,12 @@ ylopsApp
   });
   $scope.vuosiluokkaNro = VuosiluokatService.fromEnum($scope.vuosiluokka.vuosiluokka);
   MurupolkuData.set('vuosiluokkaNimi', Kaanna.kaanna('vuosiluokka') + ' ' + $scope.vuosiluokkaNro);
-  $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
-    return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
-  });
+  $scope.perusteOpVlk = $scope.perusteOppiaine ?
+    _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
+      return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
+    }) : null;
   $scope.laajaalaiset = _.indexBy(baseLaajaalaiset, 'tunniste');
-  $scope.perusteSisaltoalueet = _.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste');
+  $scope.perusteSisaltoalueet = $scope.perusteOpVlk ?_.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste') : [];
 
   $scope.isState = function (name) {
     return _.endsWith($state.current.name, 'vuosiluokka.' + name);
@@ -62,7 +63,7 @@ ylopsApp
   refetch();
 
   function processTavoitteet() {
-    var perusteKohdealueet = _.indexBy($scope.perusteOppiaine.kohdealueet, 'id');
+    var perusteKohdealueet = $scope.perusteOppiaine ? _.indexBy($scope.perusteOppiaine.kohdealueet, 'id') : [];
     _.each($scope.tavoitteet, function (item) {
       var perusteTavoite = _.find($scope.perusteOpVlk.tavoitteet, function (pTavoite) {
         return pTavoite.tunniste === item.tunniste;

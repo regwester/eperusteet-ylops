@@ -21,11 +21,15 @@ ylopsApp
                                                 Notifikaatiot, OppiaineCRUD) {
   MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
 
+  $scope.luonnissa = $stateParams.oppiaineId === 'uusi' || !$stateParams.OppiaineId;
   $scope.options = {};
   $scope.tyypit = [
     'taide_taitoaine',
     'muu_valinnainen'
   ];
+
+  $scope.liittyvatAineet = [];
+
   $scope.ops = OpsService.get();
   $scope.oppiaineet = $scope.ops.oppiaineet;
   $scope.vuosiluokat = vlkPeruste.vuosiluokat.sort();
@@ -39,6 +43,7 @@ ylopsApp
     tyotavat: {teksti: {}},
     tavoitteet: []
   };
+
   $scope.chosenVlk = {};
   if ($stateParams.vlkId) {
     $scope.chosenVlk[$stateParams.vlkId] = true;
@@ -57,13 +62,47 @@ ylopsApp
 
   var successCb = function () {
     Notifikaatiot.onnistui('tallennettu-ok');
+    if ($scope.luonnissa) {
+      $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
+    } else {
+      fetch(true);
+    }
+  };
+
+  $scope.tyyppiUpdated = function () {
+    if ($scope.oppiaine.tyyppi == 'taide_taitoaine') {
+      var liittyvat = ['KUVATAIDE', 'MUSIIKKI', 'LIIKUNTA', 'KOTITALOUS', 'KÄSITYÖ'];
+      $scope.liittyvatAineet = _.filter($scope.ops.oppiaineet, function (oppiaine) {
+        return _.includes(liittyvat, oppiaine.oppiaine.nimi.fi);
+      });
+    } else if ($scope.oppiaine.tyyppi == 'muu_valinnainen') {
+      $scope.liittyvatAineet = $scope.ops.oppiaineet;
+    } else {
+      $scope.liittyvatAineet = [];
+    }
   };
 
   $scope.uusi = {
     create: function () {
-        OppiaineCRUD.save({
+      var vuosiluokat = _($scope.valitutVuosiluokat)
+        .keys()
+        .filter(function (vuosiluokka) {
+          return $scope.valitutVuosiluokat[vuosiluokka];
+        }).value();
+
+      var tallennusDto = {
+        oppiaine: $scope.oppiaine,
+        vuosiluokkakokonaisuus: vlk,
+        vuosiluokat: vuosiluokat
+      };
+
+      if ($scope.luonnissa) {
+        OppiaineCRUD.saveValinnainen({
           opsId: $scope.ops.id
-        }, $scope.oppiaine, successCb, Notifikaatiot.serverCb);
+        }, tallennusDto, successCb, Notifikaatiot.serverCb);
+      } else {
+        $scope.tallennusDto.$save({}, successCb, Notifikaatiot.serverCb);
+      }
     },
     cancel: function () {
     }
