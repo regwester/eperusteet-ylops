@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -57,6 +58,11 @@ public class OppiaineController {
         return oppiaineService.add(opsId, dto);
     }
 
+    @RequestMapping(value = "/valinnainen", method = RequestMethod.POST)
+    public OppiaineDto addValinnainen(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
+        return oppiaineService.addValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuus(), dto.getVuosiluokat());
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         return Responses.ofNullable(oppiaineService.get(opsId, id));
@@ -66,7 +72,7 @@ public class OppiaineController {
     public List<OppiaineDto> getAll(@PathVariable("opsId") final Long opsId,
                                     @RequestParam(value = "tyyppi", required = false) OppiaineTyyppi tyyppi) {
         if (tyyppi == null) {
-            return oppiaineService.getAll(opsId);
+            return oppiaineService.getAll(opsId, OppiaineTyyppi.YHTEINEN);
         } else {
             return oppiaineService.getAll(opsId, tyyppi);
         }

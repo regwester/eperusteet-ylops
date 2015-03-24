@@ -22,10 +22,12 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -164,6 +166,8 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         if (vuosiluokkakokonaisuudet == null) {
             vuosiluokkakokonaisuudet = new HashSet<>();
         }
+
+
         ovk.setOppiaine(this);
         if (vuosiluokkakokonaisuudet.add(ovk)) {
             this.muokattu();

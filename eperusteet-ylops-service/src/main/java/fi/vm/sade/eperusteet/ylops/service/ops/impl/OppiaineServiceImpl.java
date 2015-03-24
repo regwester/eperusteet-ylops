@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksenkohdealue;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
@@ -31,15 +32,19 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
+import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkakokonaisuusRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -88,7 +93,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private OppiaineenvuosiluokkaRepository vuosiluokat;
 
     @Autowired
-    private OppiaineenvuosiluokkakokonaisuusRepository kokonaisuudet;
+    private VuosiluokkakokonaisuusRepository kokonaisuudet;
+
+    @Autowired
+    private OppiaineenvuosiluokkakokonaisuusRepository oppiaineenKokonaisuudet;
 
     public OppiaineServiceImpl() {
     }
@@ -167,6 +175,30 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine oppiaine = opsDtoMapper.fromDto(oppiaineDto);
         oppiaine = oppiaineet.save(oppiaine);
         ops.addOppiaine(oppiaine);
+        return mapper.map(oppiaine, OppiaineDto.class);
+    }
+
+    @Override
+    public OppiaineDto addValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, VuosiluokkakokonaisuusDto vlkDto,
+                                      Set<Vuosiluokka> vuosiluokat) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        opetussuunnitelmaRepository.lock(ops);
+        Oppiaine oppiaine = opsDtoMapper.fromDto(oppiaineDto, true);
+        oppiaine = oppiaineet.save(oppiaine);
+        ops.addOppiaine(oppiaine);
+
+        Vuosiluokkakokonaisuus vlk = kokonaisuudet.findBy(opsId, vlkDto.getId());
+        assertExists(vlk, "Pyydettyä vuosiluokkakokonaisuutta ei ole olemassa");
+
+        // FIXME: Sisällöt vielä puuttuu
+        Set<Oppiaineenvuosiluokka> oaVuosiluokat =
+            vuosiluokat.stream().map(Oppiaineenvuosiluokka::new).collect(Collectors.toSet());
+        Oppiaineenvuosiluokkakokonaisuus oavlk = new Oppiaineenvuosiluokkakokonaisuus();
+        oavlk.setVuosiluokkakokonaisuus(vlk.getTunniste());
+        oavlk.setVuosiluokat(oaVuosiluokat);
+        oppiaine.addVuosiluokkaKokonaisuus(oavlk);
+
         return mapper.map(oppiaine, OppiaineDto.class);
     }
 
@@ -356,7 +388,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             return oppiaineet.getLatestRevisionId(ctx.getOppiaineId());
         }
         if (ctx.getVuosiluokkaId() == null) {
-            return kokonaisuudet.getLatestRevisionId(ctx.getKokonaisuusId());
+            return oppiaineenKokonaisuudet.getLatestRevisionId(ctx.getKokonaisuusId());
         }
         return vuosiluokat.getLatestRevisionId(ctx.getVuosiluokkaId());
     }
@@ -367,7 +399,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             if (ctx.isOppiane()) {
                 return ctx.getOppiaineId();
             }
-            if (ctx.isKokonaisuus() && kokonaisuudet.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId())) {
+            if (ctx.isKokonaisuus() && oppiaineenKokonaisuudet.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId())) {
                 return ctx.getKokonaisuusId();
             }
             if (ctx.isVuosiluokka() && vuosiluokat.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId(), ctx.getVuosiluokkaId())) {

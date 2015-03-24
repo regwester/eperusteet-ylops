@@ -71,6 +71,10 @@ public class OpsDtoMapper {
     }
 
     public Oppiaine fromDto(OppiaineDto dto) {
+        return fromDto(dto, true);
+    }
+
+    public Oppiaine fromDto(OppiaineDto dto, boolean includeVlk) {
         Oppiaine oppiaine = dto.getTyyppi() != OppiaineTyyppi.YHTEINEN && dto.getTunniste() == null ?
                             new Oppiaine(dto.getTyyppi()) : // Uusi valinnainen aine, luodaan uusi tunniste
                             new Oppiaine(dto.getTunniste());
@@ -84,7 +88,7 @@ public class OpsDtoMapper {
             });
         }
 
-        if (dto.getVuosiluokkakokonaisuudet() != null) {
+        if (includeVlk && dto.getVuosiluokkakokonaisuudet() != null) {
             dto.getVuosiluokkakokonaisuudet()
                 .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
                     mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
