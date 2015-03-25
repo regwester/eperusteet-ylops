@@ -35,12 +35,41 @@ var ylopsApp = angular.module('ylopsApp', [
 /* jshint ignore:end */
 
 ylopsApp
-  .run(function ($rootScope, VirheService) {
+  .run(function ($rootScope, VirheService, $window, Editointikontrollit, Kaanna, Varmistusdialogi, $state) {
     $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState*/) {
       VirheService.virhe({state: toState.name});
     });
 
     $rootScope.$on('$stateNotFound', function(event, toState/*, toParams, fromState*/) {
       VirheService.virhe({state: toState.to});
+    });
+
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+      $rootScope.lastState = {
+        state: _.clone(fromState),
+        params: _.clone(fromParams)
+      };
+
+      if (Editointikontrollit.getEditMode()) {
+        event.preventDefault();
+
+        var data = {toState: toState, toParams: toParams};
+        Varmistusdialogi.dialogi({
+          successCb: function(data) {
+            Editointikontrollit.cancelEditing(true);
+            $state.go(data.toState, data.toParams);
+          }, data: data, otsikko: 'vahvista-liikkuminen', teksti: 'tallentamattomia-muutoksia',
+          lisaTeksti: 'haluatko-jatkaa',
+          primaryBtn: 'poistu-sivulta'
+        })();
+      }
+    });
+
+    $window.addEventListener('beforeunload', function(event) {
+      if (Editointikontrollit.getEditMode()) {
+        var confirmationMessage = Kaanna.kaanna('tallentamattomia-muutoksia');
+        (event || window.event).returnValue = confirmationMessage;
+        return confirmationMessage;
+      }
     });
   });
