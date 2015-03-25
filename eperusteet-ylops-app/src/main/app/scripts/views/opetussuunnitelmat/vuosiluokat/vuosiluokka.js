@@ -189,7 +189,7 @@ ylopsApp
 
 })
 
-.directive('opsTeksti', function () {
+.directive('opsTeksti', function ($timeout, $window) {
   return {
     restrict: 'A',
     scope: {
@@ -205,6 +205,15 @@ ylopsApp
         collapsed: scope.editable
       };
       scope.isEmpty = _.isEmpty;
+      scope.focusAndScroll = function () {
+        $timeout(function () {
+          var el = element.find('[ckeditor]');
+          if (el && el.length > 0) {
+            el[0].focus();
+            $window.scrollTo(0, el.eq(0).offset().top - 400);
+          }
+        }, 300);
+      };
     }
   };
 })
