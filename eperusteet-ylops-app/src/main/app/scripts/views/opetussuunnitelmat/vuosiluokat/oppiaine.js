@@ -199,6 +199,10 @@ ylopsApp
     })();
   }
 
+  $scope.goToVuosiluokka = function (vuosiluokka) {
+    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {vlId: vuosiluokka.id});
+  };
+
   $scope.startVuosiluokkaistaminen = function () {
     function start() {
       $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {

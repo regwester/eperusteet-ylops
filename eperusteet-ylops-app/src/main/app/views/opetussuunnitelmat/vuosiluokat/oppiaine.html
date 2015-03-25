@@ -14,13 +14,13 @@
     <span kaanna="'vuosiluokkaistamista-ei-viela-tehty'"></span>
     <span kaanna="'aloita-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span>
   </p>
-  <table ng-if="vuosiluokat.length > 0" class="table table-striped table-hover vuosiluokat-table">
+  <table ng-if="vuosiluokat.length > 0" class="table table-hover vuosiluokat-table">
     <tr>
       <th width="15%" kaanna="'vuosiluokka'"></th>
       <th kaanna="'tavoitteet'"></th>
       <th kaanna="'sisaltoalueet'"></th>
     </tr>
-    <tr ng-repeat="vuosiluokka in vuosiluokat | orderBy:'$numero'">
+    <tr class="vuosiluokka-row" ng-repeat="vuosiluokka in vuosiluokat | orderBy:'$numero'" ng-click="goToVuosiluokka(vuosiluokka)">
       <td>
         <a ui-sref="root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka({vlId: vuosiluokka.id})">
           <span kaanna="'vuosiluokka'"></span> {{vuosiluokka.$numero}}
