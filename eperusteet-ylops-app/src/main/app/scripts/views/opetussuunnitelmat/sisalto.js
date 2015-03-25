@@ -18,7 +18,7 @@
 
 ylopsApp
 .service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
-  Varmistusdialogi, Kaanna) {
+  Varmistusdialogi, Kaanna, OpsService, $rootScope) {
   function mapSisalto(root) {
     return {
       id: root.id,
@@ -51,6 +51,9 @@ ylopsApp
       OpetussuunnitelmanTekstit.save(params, res, function () {
         Notifikaatiot.onnistui('tallennettu-ok');
         cb();
+        OpsService.refetch(function () {
+          $rootScope.$broadcast('rakenne:updated');
+        });
       }, Notifikaatiot.serverCb);
     }, Notifikaatiot.serverCb);
   }
@@ -69,6 +72,9 @@ ylopsApp
       if (foundList) {
         foundList.splice(foundIndex, 1);
       }
+      OpsService.refetch(function () {
+        $rootScope.$broadcast('rakenne:updated');
+      });
       Notifikaatiot.onnistui('poisto-onnistui');
     }, Notifikaatiot.serverCb);
   }
@@ -195,6 +201,9 @@ ylopsApp
         unlockTeksti(kappale.id, function () {
           $scope.kappaleEdit = null;
           Notifikaatiot.onnistui('tallennettu-ok');
+          opsService.refetch(function () {
+            $rootScope.$broadcast('rakenne:updated');
+          });
           delete kappale.$original;
         });
       }, Notifikaatiot.serverCb);
