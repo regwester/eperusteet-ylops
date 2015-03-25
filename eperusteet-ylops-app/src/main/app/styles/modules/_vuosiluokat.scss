@@ -13,14 +13,21 @@
   }
   .vl-tabit {
     font-size: 110%;
-    cursor: pointer;
     float: left;
     border-bottom: none;
     li a {
-      padding: 10px 15px;
+      padding: 10px 25px;
+      cursor: pointer;
     }
-    li.active a {
-      border-bottom: none;
+    li.active {
+      a {
+        border-bottom: none;
+        background: white;
+        cursor: default;
+        &:hover, *:hover {
+          text-decoration: none;
+        }
+      }
     }
   }
   .content {
