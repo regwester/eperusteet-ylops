@@ -1,8 +1,8 @@
-<div ng-if="model.otsikko || model.teksti" class="tekstiosa-wrapper">
+<div ng-if="model.otsikko || model.teksti || muokattava.otsikko" class="tekstiosa-wrapper">
   <h3>
-    <span ng-bind="model.otsikko | kaanna"></span>
+    <span ng-bind="model.otsikko || muokattava.otsikko | kaanna"></span>
   </h3>
-  <div class="tekstiosa perusteen-teksti">
+  <div ng-if="model.otsikko || model.teksti" class="tekstiosa perusteen-teksti">
     <a class="toggle-perusteen-teksti" ng-click="options.collapsed = !options.collapsed">
       <span class="glyphicon" ng-class="{'glyphicon-chevron-down': !options.collapsed, 'glyphicon-chevron-right': options.collapsed}"></span>
       <span ng-bind="options.collapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></span>
@@ -13,7 +13,7 @@
   </div>
 
 </div>
-<div ng-if="model.otsikko && editable" class="panel-clear-fix tekstiosa">
+<div ng-if="(model.otsikko || muokattava.otsikko) && editable" class="panel-clear-fix tekstiosa">
 
   <h4>
     <div class="action-buttons-inline">

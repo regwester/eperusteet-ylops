@@ -5,7 +5,7 @@
 <div class="tekstiosa-wrapper" ng-show="oppiaineenVlk">
   <h3>
     <div class="action-buttons-inline">
-      <button class="btn btn-default" icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+      <button ng-if="oppiaine.tyyppi === 'yhteinen'" class="btn btn-default" icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     </div>
     <span kaanna="'tavoitteet-ja-sisallot-vuosiluokittain'"></span>
   </h3>
@@ -51,7 +51,12 @@
   </table>
 </div>
 
-<div perusteen-tekstiosa="perusteOpVlk.tehtava"></div>
+<div ng-if="oppiaine.tyyppi === 'yhteinen'">
+  <div perusteen-tekstiosa="perusteOpVlk.tehtava"></div>
+</div>
+<div ng-if="oppiaine.tyyppi !== 'yhteinen'">
+  <div perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" config="options"></div>
+</div>
 <div perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks" config="options"></div>
 <div perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks" config="options"></div>
 <div perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks" config="options"></div>

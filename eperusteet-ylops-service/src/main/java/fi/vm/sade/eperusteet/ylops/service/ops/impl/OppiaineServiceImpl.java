@@ -53,6 +53,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -181,6 +182,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Override
     public OppiaineDto addValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, VuosiluokkakokonaisuusDto vlkDto,
                                       Set<Vuosiluokka> vuosiluokat) {
+
+        OppiaineenVuosiluokkakokonaisuusDto oavlktDto =
+            oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
+        oppiaineDto.setVuosiluokkakokonaisuudet(Collections.EMPTY_SET);
+
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
@@ -191,11 +197,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Vuosiluokkakokonaisuus vlk = kokonaisuudet.findBy(opsId, vlkDto.getId());
         assertExists(vlk, "Pyydettyä vuosiluokkakokonaisuutta ei ole olemassa");
 
-        // FIXME: Sisällöt vielä puuttuu
         Set<Oppiaineenvuosiluokka> oaVuosiluokat =
             vuosiluokat.stream().map(Oppiaineenvuosiluokka::new).collect(Collectors.toSet());
         Oppiaineenvuosiluokkakokonaisuus oavlk = new Oppiaineenvuosiluokkakokonaisuus();
         oavlk.setVuosiluokkakokonaisuus(vlk.getTunniste());
+        oavlk.setTehtava(mapper.map(oavlktDto.getTehtava(), Tekstiosa.class));
+        oavlk.setTyotavat(mapper.map(oavlktDto.getTyotavat(), Tekstiosa.class));
+        oavlk.setOhjaus(mapper.map(oavlktDto.getOhjaus(), Tekstiosa.class));
+        oavlk.setArviointi(mapper.map(oavlktDto.getArviointi(), Tekstiosa.class));
+
         oavlk.setVuosiluokat(oaVuosiluokat);
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
 

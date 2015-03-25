@@ -17,8 +17,8 @@
 'use strict';
 
 ylopsApp
-.controller('UusiOppiaineController', function ($scope, $stateParams, Utils, OpsService, vlk, vlkPeruste, MurupolkuData,
-                                                Notifikaatiot, OppiaineCRUD) {
+.controller('UusiOppiaineController', function ($scope, $stateParams, $state, Utils, OpsService, vlk, vlkPeruste,
+                                                MurupolkuData, Notifikaatiot, OppiaineCRUD, Kieli, Kaanna) {
   MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
 
   $scope.luonnissa = $stateParams.oppiaineId === 'uusi' || !$stateParams.OppiaineId;
@@ -35,14 +35,37 @@ ylopsApp
   $scope.vuosiluokat = vlkPeruste.vuosiluokat.sort();
   $scope.valitutVuosiluokat = {};
 
+  var sisaltokieli = Kieli.getSisaltokieli();
+  vlk.tehtava = {
+    otsikko: {},
+    teksti: {}
+  };
+  vlk.tehtava.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaineen-tehtava');
+
+  vlk.arviointi = {
+    otsikko: {},
+    teksti: {}
+  };
+  vlk.arviointi.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-arviointi');
+
+  vlk.ohjaus = {
+    otsikko: {},
+    teksti: {}
+  };
+  vlk.ohjaus.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-ohjaus');
+
+  vlk.tyotavat = {
+    otsikko: {},
+    teksti: {}
+  };
+  vlk.tyotavat.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-tyotavat');
+
   $scope.oppiaine = {
     nimi: {},
-    tehtava: {teksti: {}},
-    arviointi: {teksti: {}},
-    ohjaus: {teksti: {}},
-    tyotavat: {teksti: {}},
+    vuosiluokkakokonaisuudet: [vlk],
     tavoitteet: []
   };
+
 
   $scope.chosenVlk = {};
   if ($stateParams.vlkId) {
@@ -55,7 +78,7 @@ ylopsApp
            _.any(_.values($scope.chosenVlk)) &&
            model.tyyppi &&
            model.laajuus &&
-           model.tehtava.teksti &&
+           model.vuosiluokkakokonaisuudet[0].tehtava.teksti &&
            $scope.valitutVuosiluokat && _($scope.valitutVuosiluokat).values().some()
            ;
   };

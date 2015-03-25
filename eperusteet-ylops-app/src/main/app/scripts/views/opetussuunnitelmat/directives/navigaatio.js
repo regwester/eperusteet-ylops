@@ -156,7 +156,6 @@ ylopsApp
   $scope.$watch('model.tekstit.lapset', function () {
     if ($scope.model && $scope.model.tekstit) {
       $scope.items = mapLapset($scope.model.tekstit.lapset);
-      console.log('$scope.items =', $scope.items);
       var vuosiluokat = {
         label: 'vuosiluokat-ja-oppiaineet',
         id: 'vuosiluokat',
