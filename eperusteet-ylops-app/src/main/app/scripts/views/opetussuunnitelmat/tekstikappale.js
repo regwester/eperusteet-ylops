@@ -51,7 +51,7 @@ ylopsApp
     $scope.model = {};
     var originalOtsikko = null;
 
-    function fetchOhje(model) {
+    function fetchOhje(model, cb) {
       OhjeCRUD.forTekstikappale({uuid: model.tekstiKappale.tunniste}, function (ohje) {
         _.each(TYYPIT, function (tyyppi) {
           var found = _.find(ohje, function (item) {
@@ -61,6 +61,7 @@ ylopsApp
             $scope[tyyppi] = found;
           }
         });
+        (cb || angular.noop)();
       });
     }
 
@@ -69,7 +70,7 @@ ylopsApp
       viiteId: $stateParams.tekstikappaleId
     };
 
-    function fetch(noLockCheck) {
+    function fetch(noLockCheck, cb) {
       if ($stateParams.tekstikappaleId === 'uusi') {
         $scope.model = {
           tekstiKappale: {
@@ -82,7 +83,7 @@ ylopsApp
           $scope.model = res;
           originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
           MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
-          fetchOhje(res);
+          fetchOhje(res, cb);
         }, Notifikaatiot.serverCb);
         if (!noLockCheck) {
           Lukko.isLocked($scope, commonParams);
@@ -135,7 +136,15 @@ ylopsApp
 
     var callbacks = {
       edit: function () {
-        fetch(true);
+        fetch(true, function () {
+          $timeout(function () {
+            var el = angular.element('#ops-ckeditor');
+            if (el && el.length > 0) {
+              el[0].focus();
+              el[0].scrollIntoView();
+            }
+          }, 300);
+        });
       },
       asyncValidate: function (cb) {
         Lukko.lock(commonParams, cb);
