@@ -112,7 +112,7 @@ ylopsApp
     _.each($scope.items, function (item) {
       item.active = false;
     });
-    var items = $scope.items[$scope.chosen];
+
     var inVuosiluokat = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus');
     var inValinnaiset = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.valinnaiset');
     var inOppiaine = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.oppiaine');
@@ -124,6 +124,8 @@ ylopsApp
     } else {
       findActiveTeksti();
     }
+
+    var items = $scope.items[$scope.chosen];
     OpsNavigaatio.setItems(items);
   }
 
