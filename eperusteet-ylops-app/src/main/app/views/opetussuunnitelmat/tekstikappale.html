@@ -49,7 +49,7 @@
   <h4><span kaanna="'opsin-teksti'"></span></h4>
 
   <div ng-if="editMode">
-    <div id="ops-ckeditor" ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
+    <div id="ops-ckeditor" ckeditor class="bigger" ng-model="model.tekstiKappale.teksti" slocalized></div>
   </div>
   <div ng-if="!editMode">
     <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></div>

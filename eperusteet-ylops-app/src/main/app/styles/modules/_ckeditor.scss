@@ -15,4 +15,7 @@
 
 .cke_editable {
   min-height: 60px;
+  &.bigger {
+    min-height: 200px;
+  }
 }
