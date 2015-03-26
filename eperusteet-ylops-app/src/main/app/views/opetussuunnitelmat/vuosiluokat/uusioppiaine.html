@@ -135,14 +135,14 @@
         <span kaanna="'tavoitteet-ja-sisallot'"></span>
       </h3>
       <div class="panel-collapsed-body" collapse="options.tavoitteet">
-        <div class="oppiaineen-tavoite" ng-repeat="tavoite in oppiaine.tavoitteet">
+        <div class="oppiaineen-tavoite" ng-repeat="tavoite in tavoitteet">
           <hr>
           <div class="row">
             <div class="col-sm-3 formfield-label">
               <label><span kaanna="'tavoite-otsikko'"></span></label>
             </div>
             <div class="col-sm-9 formfield-data">
-              <input class="form-control" slocalized ng-model="tavoite.tavoite">
+              <input class="form-control" slocalized ng-model="tavoite.otsikko">
             </div>
           </div>
 
@@ -151,7 +151,7 @@
               <label><span kaanna="'tavoite-sisalto'"></span></label>
             </div>
             <div class="col-sm-9 formfield-data">
-              <div ckeditor slocalized ng-model="tavoite.kuvaus"></div>
+              <div ckeditor slocalized ng-model="tavoite.teksti"></div>
             </div>
           </div>
 

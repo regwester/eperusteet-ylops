@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,4 +32,5 @@ public class OppiaineenTallennusDto {
     private OppiaineDto oppiaine;
     private VuosiluokkakokonaisuusDto vuosiluokkakokonaisuus;
     private Set<Vuosiluokka> vuosiluokat;
+    private Set<TekstiosaDto> tavoitteet;
 }

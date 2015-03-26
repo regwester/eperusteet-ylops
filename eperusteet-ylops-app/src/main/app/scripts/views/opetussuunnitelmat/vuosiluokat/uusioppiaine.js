@@ -63,9 +63,9 @@ ylopsApp
   $scope.oppiaine = {
     nimi: {},
     vuosiluokkakokonaisuudet: [vlk],
-    tavoitteet: []
   };
 
+  $scope.tavoitteet = [];
 
   $scope.chosenVlk = {};
   if ($stateParams.vlkId) {
@@ -116,7 +116,8 @@ ylopsApp
       var tallennusDto = {
         oppiaine: $scope.oppiaine,
         vuosiluokkakokonaisuus: vlk,
-        vuosiluokat: vuosiluokat
+        vuosiluokat: vuosiluokat,
+        tavoitteet: $scope.tavoitteet
       };
 
       if ($scope.luonnissa) {
@@ -133,9 +134,9 @@ ylopsApp
 
   $scope.tavoite = {
     add: function () {
-      $scope.oppiaine.tavoitteet.push({
-        tavoite: {},
-        kuvaus: {}
+      $scope.tavoitteet.push({
+        otsikko: {},
+        teksti: {}
       });
     }
   };

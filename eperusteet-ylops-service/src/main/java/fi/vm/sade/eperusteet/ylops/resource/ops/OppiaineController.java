@@ -60,7 +60,8 @@ public class OppiaineController {
 
     @RequestMapping(value = "/valinnainen", method = RequestMethod.POST)
     public OppiaineDto addValinnainen(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
-        return oppiaineService.addValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuus(), dto.getVuosiluokat());
+        return oppiaineService.addValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuus(),
+                                              dto.getVuosiluokat(), dto.getTavoitteet());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
