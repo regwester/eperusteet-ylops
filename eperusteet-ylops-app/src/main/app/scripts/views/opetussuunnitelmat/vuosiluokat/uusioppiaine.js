@@ -17,8 +17,8 @@
 'use strict';
 
 ylopsApp
-.controller('UusiOppiaineController', function ($scope, $stateParams, $state, Utils, OpsService, vlk, vlkPeruste,
-                                                MurupolkuData, Notifikaatiot, OppiaineCRUD, Kieli, Kaanna) {
+.controller('UusiOppiaineController', function ($scope, $stateParams, $state, $rootScope, Utils, OpsService, vlk,
+                                                vlkPeruste, MurupolkuData, Notifikaatiot, OppiaineCRUD, Kieli, Kaanna) {
   MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
 
   $scope.luonnissa = $stateParams.oppiaineId === 'uusi' || !$stateParams.OppiaineId;
@@ -83,22 +83,26 @@ ylopsApp
            ;
   };
 
-  var successCb = function () {
+  var successCb = function (res) {
     Notifikaatiot.onnistui('tallennettu-ok');
     if ($scope.luonnissa) {
-      $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
+      $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+        oppiaineId: res.id,
+        vlkId: $stateParams.vlkId,
+        oppiaineTyyppi: res.tyyppi
+      });
     } else {
-      fetch(true);
+      //fetch(true);
     }
   };
 
   $scope.tyyppiUpdated = function () {
-    if ($scope.oppiaine.tyyppi == 'taide_taitoaine') {
+    if ($scope.oppiaine.tyyppi === 'taide_taitoaine') {
       var liittyvat = ['KUVATAIDE', 'MUSIIKKI', 'LIIKUNTA', 'KOTITALOUS', 'KÄSITYÖ'];
       $scope.liittyvatAineet = _.filter($scope.ops.oppiaineet, function (oppiaine) {
         return _.includes(liittyvat, oppiaine.oppiaine.nimi.fi);
       });
-    } else if ($scope.oppiaine.tyyppi == 'muu_valinnainen') {
+    } else if ($scope.oppiaine.tyyppi === 'muu_valinnainen') {
       $scope.liittyvatAineet = $scope.ops.oppiaineet;
     } else {
       $scope.liittyvatAineet = [];
@@ -107,6 +111,8 @@ ylopsApp
 
   $scope.uusi = {
     create: function () {
+      $rootScope.$broadcast('notifyCKEditor');
+
       var vuosiluokat = _($scope.valitutVuosiluokat)
         .keys()
         .filter(function (vuosiluokka) {

@@ -156,7 +156,7 @@ ylopsApp
         });
 
         populateMenuItems(arr, obj, _.filter(sorted, function (oppiaine) {
-          return oppiaine.oppiaine.tyyppi === 'yhteinen'
+          return oppiaine.oppiaine.tyyppi === 'yhteinen';
         }));
 
         arr.push({
@@ -168,7 +168,7 @@ ylopsApp
         });
 
         populateMenuItems(arr, obj, _.filter(sorted, function (oppiaine) {
-          return oppiaine.oppiaine.tyyppi !== 'yhteinen'
+          return oppiaine.oppiaine.tyyppi !== 'yhteinen';
         }), 2);
       });
     }
