@@ -119,7 +119,7 @@ ylopsApp
     _.each(oppiaineet, function (oppiaine) {
       var tunnisteet = getTunnisteet(oppiaine.oppiaine.vuosiluokkakokonaisuudet);
       var parentPushed = false;
-      if (_.indexOf(tunnisteet, obj._tunniste) > -1) {
+      if (_.indexOf(tunnisteet, obj._tunniste) > -1 || OpsService.oppiaineIsKieli(oppiaine.oppiaine)) {
         arr.push(generateOppiaineItem(oppiaine.oppiaine, obj, depth));
         parentPushed = true;
       }

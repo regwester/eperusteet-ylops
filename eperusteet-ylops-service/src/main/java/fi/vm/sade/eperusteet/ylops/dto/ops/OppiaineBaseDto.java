@@ -35,4 +35,5 @@ public abstract class OppiaineBaseDto {
     private Integer laajuus;
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;
+    private Boolean abstrakti;
 }

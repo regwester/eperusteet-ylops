@@ -35,13 +35,18 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KielitarjontaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
@@ -77,6 +82,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -103,6 +109,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OppiaineService oppiaineService;
+
+    @Autowired
+    private OppiaineRepository oppiaineRepository;
 
     @Autowired
     private KoodistoService koodistoService;
@@ -187,11 +196,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 }
 
                 JsonNode tyypitNode = Optional.ofNullable(organisaatio.get("tyypit"))
-                                              .orElse(organisaatio.get("organisaatiotyypit"));
+                        .orElse(organisaatio.get("organisaatiotyypit"));
                 if (tyypitNode != null) {
                     tyypit = StreamSupport.stream(tyypitNode.spliterator(), false)
-                                          .map(JsonNode::asText)
-                                          .collect(Collectors.toList());
+                            .map(JsonNode::asText)
+                            .collect(Collectors.toList());
                 }
             }
             organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
@@ -228,20 +237,38 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
+    private boolean onPoistettava(OpsOppiaine oa) {
+        String koodi = oa.getOppiaine().getKoodiArvo();
+        return oa.getOppiaine().getKoodiArvo() == null
+                || Pattern.matches("^AI.+", koodi)
+                || Pattern.matches("^A1.+", koodi)
+                || Pattern.matches("^A2.+", koodi)
+                || Pattern.matches("^B1.+", koodi)
+                || Pattern.matches("^B2.+", koodi)
+                || Pattern.matches("^B3.+", koodi)
+                || Pattern.matches("^RU", koodi)
+                || Pattern.matches("^SK", koodi)
+//                || Pattern.matches("^TK", koodi)
+//                || Pattern.matches("^VK", koodi)
+                || Pattern.matches("^LK", koodi);
+    }
+
+
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         ops.setPohja(pohja);
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
         kopioiTekstit(pohja.getTekstit(), ops.getTekstit());
 
+        // FIXME poista filtteröi oppiaineet onPoistettavalla
         ops.setOppiaineet(
             pohja.getOppiaineet().stream()
-            .map(ooa -> new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), true))
-            .collect(Collectors.toSet()));
+                .map(ooa -> new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), true))
+                .collect(Collectors.toSet()));
 
         ops.setVuosiluokkakokonaisuudet(
-            pohja.getVuosiluokkakokonaisuudet().stream()
-            .map(ovlk -> new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true))
-            .collect(Collectors.toSet()));
+                pohja.getVuosiluokkakokonaisuudet().stream()
+                .map(ovlk -> new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true))
+                .collect(Collectors.toSet()));
     }
 
     private void kopioiTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent) {
@@ -276,9 +303,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (StringUtils.isBlank(diaarinumero)) {
             throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei ole määritelty");
         } else if (eperusteetService.findPerusopetuksenPerusteet().stream()
-            .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
-            throw new BusinessRuleViolationException("Diaarinumerolla " + diaarinumero +
-                " ei löydy voimassaolevaa perustetta");
+                .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
+            throw new BusinessRuleViolationException("Diaarinumerolla " + diaarinumero
+                    + " ei löydy voimassaolevaa perustetta");
         }
 
         if (ops.getPohja() != null) {
@@ -296,22 +323,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Long opsId = ops.getId();
 
         PerusopetuksenPerusteenSisalto sisalto
-            = perusteDto.getPerusopetus();
+                = perusteDto.getPerusopetus();
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
-                .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
-                        new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
+                    .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
+                                    new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
 
             if (sisalto.getOppiaineet() != null) {
                 sisalto.getOppiaineet().stream()
-                    .map(OpsDtoMapper::fromEperusteet)
-                    .forEach(oa -> oppiaineService.add(opsId, oa));
+                        .map(OpsDtoMapper::fromEperusteet)
+                        .forEach(oa -> oppiaineService.add(opsId, oa));
             }
 
             sisalto.getVuosiluokkakokonaisuudet().stream()
-                .map(OpsDtoMapper::fromEperusteet)
-                .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
+                    .map(OpsDtoMapper::fromEperusteet)
+                    .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
@@ -332,12 +359,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         addTekstiKappale(ops.getId(), ohjeistus);
 
         nimi = new LokalisoituTekstiDto(null,
-                                        Collections.singletonMap(Kieli.FI, "Opetuksen toteuttamisen lähtökohdat"));
+                Collections.singletonMap(Kieli.FI, "Opetuksen toteuttamisen lähtökohdat"));
         teksti = new LokalisoituTekstiDto(null, null);
         TekstiKappaleDto opetuksenJarjestaminenTeksti
-            = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
+                = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
         TekstiKappaleViiteDto.Matala opetuksenJarjestaminen
-            = new TekstiKappaleViiteDto.Matala(opetuksenJarjestaminenTeksti);
+                = new TekstiKappaleViiteDto.Matala(opetuksenJarjestaminenTeksti);
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
@@ -386,7 +413,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 // Arkistoidaan vanhat valmiit pohjat
                 List<Opetussuunnitelma> pohjat = repository.findAllByTyyppi(Tyyppi.POHJA);
                 pohjat.stream().filter(pohja -> pohja.getTila() == Tila.VALMIS)
-                      .forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
+                        .forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
             }
 
             ops.setTila(tila);
@@ -400,7 +427,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(id);
         if (ops != null) {
             kommenttiService.getAllByOpetussuunnitelma(id)
-                            .forEach(k -> kommenttiService.deleteReally(k.getId()));
+                    .forEach(k -> kommenttiService.deleteReally(k.getId()));
         }
         repository.delete(ops);
     }
@@ -423,7 +450,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(Long opsId, Long parentId,
-        TekstiKappaleViiteDto.Matala viite) {
+            TekstiKappaleViiteDto.Matala viite) {
         // Lisätään viite parent-noden alle
         return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, parentId, viite);
     }

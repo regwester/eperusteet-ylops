@@ -85,6 +85,16 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Setter
     private Integer laajuus;
 
+    @Getter
+    @Setter
+    @Column(name = "koodi_arvo")
+    private String koodiArvo;
+
+    @Getter
+    @Setter
+    @Column(name = "koodi_uri")
+    private String koodiUri;
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @Getter
@@ -116,6 +126,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
      */
     @Getter
     private boolean koosteinen = false;
+
+    @Getter
+    @Setter
+    private Boolean abstrakti;
 
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Set<Oppiaine> oppimaarat;
@@ -280,6 +294,8 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         o.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
         o.setKoodi(other.getKoodi());
         o.setKoosteinen(other.isKoosteinen());
+        o.setKoodiArvo(other.getKoodiArvo());
+        o.setKoodiUri(other.getKoodiUri());
 
         Map<Long, Opetuksenkohdealue> kohdealueet = other.getKohdealueet().stream()
             .collect(Collectors.toMap(ka -> ka.getId(), ka -> new Opetuksenkohdealue(ka.getNimi())));
@@ -289,10 +305,17 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
             o.addVuosiluokkaKokonaisuus(Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet));
         }));
 
+        boolean isKielijoukko = other.koodiArvo != null
+                && ("TK".equals(other.koodiArvo.toUpperCase())
+                || "VK".equals(other.koodiArvo.toUpperCase())
+                || "AI".equals(other.koodiArvo.toUpperCase()));
+
         if (other.isKoosteinen()) {
-            other.getOppimaarat().forEach((om -> {
-                o.addOppimaara(Oppiaine.copyOf(om));
-            }));
+            if (other.koodiArvo == null || !isKielijoukko) {
+                other.getOppimaarat().forEach((om -> {
+                    o.addOppimaara(Oppiaine.copyOf(om));
+                }));
+            }
         }
 
         return o;

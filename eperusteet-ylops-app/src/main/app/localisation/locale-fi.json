@@ -28,6 +28,10 @@
   "muokkaa-kappaletta": "Muokkaa tekstikappaletta",
   "kappaleen-otsikko": "Otsikko",
   "poista-tekstikappale-teksti": "Tekstikappale \"{{nimi}}\" poistetaan. Oletko varma?",
+  "vieras-kieli-a1": "Vieras kieli, A1-oppimäärä",
+  "vieras-kieli-a2": "Vieras kieli, A2-oppimäärä",
+  "vieras-kieli-b1": "Vieras kieli, B1-oppimäärä",
+  "vieras-kieli-b2": "Vieras kieli, B2-oppimäärä",
 
   "etusivu": "Etusivu",
   "uusi-ops": "Uusi opetussuunnitelma",
@@ -68,6 +72,7 @@
   "piilota-perusteen-teksti": "Piilota perusteen teksti",
   "tavoitteet": "Tavoitteet",
   "sisaltoalueet": "Sisältöalueet",
+  "kielitarjonta": "Kielitarjonta",
 
   "ui-kieli": "Käyttöliittymäkieli",
   "sisallon-kieli": "Sisällön kieli",

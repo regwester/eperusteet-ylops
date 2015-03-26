@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import com.codepoetics.protonpack.StreamUtils;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksenkohdealue;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
@@ -34,9 +33,9 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkako
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KielitarjontaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
@@ -63,9 +62,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -171,6 +168,28 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oppiaine = oppiaineet.save(oppiaine);
         ops.addOppiaine(oppiaine);
         return mapper.map(oppiaine, OppiaineLaajaDto.class);
+    }
+
+    @Override
+    public OppiaineDto addKielitarjonta(@P("opsId") Long opsId, Long oppiaineId, KielitarjontaDto kt) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Opetussuunnitelma opspohja = ops.getPohja();
+        Oppiaine parent = oppiaineet.findOne(oppiaineId);
+        Oppiaine pohjaparent = oppiaineet.findOneByOpsIdAndTunniste(opspohja.getId(), parent.getTunniste());
+        Oppiaine uusi = null;
+
+        for (Oppiaine om : pohjaparent.getOppimaarat()) {
+            if (om.getTunniste().equals(UUID.fromString(kt.getTunniste()))) {
+                uusi = Oppiaine.copyOf(om);
+                uusi.setNimi(LokalisoituTeksti.of(kt.getOmaNimi().getTekstit()));
+                parent.addOppimaara(oppiaineet.save(uusi));
+                break;
+            }
+        }
+
+        assertExists(uusi, "Pyydettyä kielitarjonnan oppiainetta ei ole");
+        return mapper.map(uusi, OppiaineDto.class);
     }
 
     @Override

@@ -30,7 +30,8 @@ ylopsApp
       opsId: '@id'
     }, {
       laajaalaiset: {method: 'GET', url: YlopsResources.OPS + '/laajaalaisetosaamiset', isArray: true},
-      setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'}
+      setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'},
+      lisaaKielitarjonta: {method: 'POST', url: YlopsResources.OPS + '/kielitarjonta', isArray: true},
     });
   })
   .factory('OpetussuunnitelmaOikeudet', function ($resource, YlopsResources) {
@@ -63,7 +64,8 @@ ylopsApp
       oppiaineId: '@id'
     }, {
       peruste: {method: 'GET', url: YlopsResources.OPPIAINE + '/peruste'},
-      saveValinnainen: {method: 'POST', url: YlopsResources.OPPIAINE + '/valinnainen'}
+      saveValinnainen: {method: 'POST', url: YlopsResources.OPPIAINE + '/valinnainen'},
+      addKielitarjonta: {method: 'POST', url: YlopsResources.OPPIAINE + '/kielitarjonta'}
     });
   })
 

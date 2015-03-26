@@ -1,0 +1,39 @@
+<div class="modal-header">
+  <h2 ng-bind="'kielitarjonta' | kaanna"></h2>
+</div>
+
+<div class="modal-body">
+  <div class="kielitarjonta-modal">
+    <div class="row kieli-field">
+      <div class="row">
+        <div class="col-xs-4"><h4 kaanna="oppiaine.nimi"></h4></div>
+        <div class="col-xs-8">
+          <div ng-repeat="valittu in $valitut | orderBy:(valittu.nimi | kaanna)">
+            <h5>{{ valittu.nimi | kaanna }} <a class="pull-right" ng-click="poista(valittu)" icon-role="remove"></a></h5>
+          </div>
+          <div ng-show="$vaihtoehdot.length !== 0">
+            <select class="form-control" ng-model="$valittu" ng-click="valitse($valittu)"
+                    ng-options="(om.nimi | kaanna) for om in $kaikki track by om.id"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div ng-show="$valittu.nimi">
+      <div ng-if="$onAbstrakti">
+        <div ng-bind-html="$valittu.tehtava.teksti | kaanna | unsafe"></div>
+        <h4>Pohja</h4>
+        <select class="form-control" ng-model="$valittu.$concrete"
+                ng-options="(om.nimi | kaanna) for om in $concretet track by om.id"></select>
+      </div>
+
+      <h4>Nimi</h4>
+      <input type="text" class="form-control" ng-model="$omaNimi" slocalized>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary" ng-click="ok()" kaanna="'ok'"></button>
+  <button class="btn btn-default" ng-click="peruuta()" kaanna="'peruuta'"></button>
+</div>

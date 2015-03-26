@@ -19,6 +19,7 @@ import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KielitarjontaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
@@ -62,6 +63,14 @@ public class OppiaineController {
     public OppiaineDto addValinnainen(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
         return oppiaineService.addValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuus(),
                                               dto.getVuosiluokat(), dto.getTavoitteet());
+    }
+
+    @RequestMapping(value = "/{id}/kielitarjonta", method = RequestMethod.POST)
+    public OppiaineDto addOppimaara(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("id") final Long oppiaineId,
+            @RequestBody KielitarjontaDto kt) {
+        return oppiaineService.addKielitarjonta(opsId, oppiaineId, kt);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -109,7 +118,6 @@ public class OppiaineController {
         Peruste p = ops.getPeruste(opsId);
         return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
             .flatMap(a -> p.getPerusopetus().getOppiaine(a.getTunniste())));
-
     }
 
 }

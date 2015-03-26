@@ -1,5 +1,9 @@
 <h2 ng-bind="oppiaine.nimi | kaanna"></h2>
 
+<div ng-if="valitseKielitarjontaa">
+  <button class="btn btn-default pull-right" icon-role="flag" kaanna="'kielitarjonta'" ng-click="valitseKielitarjontaa()"></button>
+</div>
+
 <div perusteen-tekstiosa="perusteOppiaine.tehtava"></div>
 
 <div class="tekstiosa-wrapper" ng-show="oppiaineenVlk">

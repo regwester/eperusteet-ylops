@@ -15,22 +15,17 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 /**
  *
- * @author mikkom
+ * @author nkala
  */
 @Getter
 @Setter
-public class OppiaineSuppeaDto extends OppiaineBaseDto {
-    private Set<OppiaineSuppeaDto> oppimaarat;
-    private Set<OppiaineenVuosiluokkakokonaisuusSuppeaDto> vuosiluokkakokonaisuudet;
-    private OppiaineSuppeaDto liittyvaOppiaine;
-    private String koodiUri;
-    private String koodiArvo;
+public class KielitarjontaDto {
+    LokalisoituTekstiDto omaNimi;
+    String tunniste;
 }
-

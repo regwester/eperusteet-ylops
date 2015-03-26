@@ -116,8 +116,7 @@ ylopsApp
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils) {
-
+  VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta) {
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
 
@@ -125,7 +124,14 @@ ylopsApp
     _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
       return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
     }) : null;
+
   var perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : [], 'tunniste');
+
+  if (_.isString($scope.oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK'], $scope.oppiaine.koodiArvo.toUpperCase())) {
+    $scope.valitseKielitarjontaa = function() {
+      Kielitarjonta.rakenna($stateParams.id, $scope.oppiaine, $scope.perusteOppiaine);
+    };
+  }
 
   function updateVuosiluokat() {
     if (!$scope.oppiaineenVlk) {
