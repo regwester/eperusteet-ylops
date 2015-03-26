@@ -42,26 +42,26 @@ describe('Service: Vuosiluokat', function () {
 
       ops = {
         oppiaineet: [
-          {oppiaine: {id: 1, nimi: {fi: 'MA'}, koosteinen: false, vuosiluokkakokonaisuudet: [
+          {oppiaine: {id: 1, nimi: {fi: 'MA'}, tyyppi: 'yhteinen', koosteinen: false, vuosiluokkakokonaisuudet: [
             {'_vuosiluokkakokonaisuus': '12'}
           ]}},
-          {oppiaine: {id: 2, nimi: {fi: 'LI'}, koosteinen: false, vuosiluokkakokonaisuudet: [
+          {oppiaine: {id: 2, nimi: {fi: 'LI'}, tyyppi: 'yhteinen', koosteinen: false, vuosiluokkakokonaisuudet: [
             {'_vuosiluokkakokonaisuus': '36'}
           ]}},
-          {oppiaine: {id: 3, nimi: {fi: 'FY'}, koosteinen: false, vuosiluokkakokonaisuudet: [
+          {oppiaine: {id: 3, nimi: {fi: 'FY'}, tyyppi: 'yhteinen', koosteinen: false, vuosiluokkakokonaisuudet: [
             {'_vuosiluokkakokonaisuus': '12'}
           ]}},
-          {oppiaine: {id: 4, nimi: {fi: 'A1'}, koosteinen: true, vuosiluokkakokonaisuudet: [
+          {oppiaine: {id: 4, nimi: {fi: 'A1'}, tyyppi: 'yhteinen', koosteinen: true, vuosiluokkakokonaisuudet: [
             /*{'_vuosiluokkakokonaisuus': '12'}*/
           ],
             oppimaarat: [
-            {id: 7, nimi: {fi: 'JA'}, koosteinen: false, vuosiluokkakokonaisuudet: [
+            {id: 7, nimi: {fi: 'JA'}, tyyppi: 'yhteinen', koosteinen: false, vuosiluokkakokonaisuudet: [
               {'_vuosiluokkakokonaisuus': '12'}
             ]},
-            {id: 5, nimi: {fi: 'EN'}, koosteinen: false, vuosiluokkakokonaisuudet: [
+            {id: 5, nimi: {fi: 'EN'}, tyyppi: 'yhteinen', koosteinen: false, vuosiluokkakokonaisuudet: [
               {'_vuosiluokkakokonaisuus': '12'}
             ]},
-            {id: 6, nimi: {fi: 'RU'}, koosteinen: false, vuosiluokkakokonaisuudet: [
+            {id: 6, nimi: {fi: 'RU'}, tyyppi: 'yhteinen', koosteinen: false, vuosiluokkakokonaisuudet: [
               {'_vuosiluokkakokonaisuus': '36'}
             ]},
           ]}},
@@ -84,7 +84,7 @@ describe('Service: Vuosiluokat', function () {
       var app = mySvc.mapForMenu(ops);
 
       var labels = _.map(app, function (item) { return item.label.fi; });
-      expect(labels).toEqual(['1-2', 'A1', 'EN', 'JA', 'FY', 'MA', '3-6', 'A1', 'RU', 'LI']);
+      expect(labels).toEqual(['1-2', 'A1', 'EN', 'JA', 'FY', 'MA', undefined, '3-6', 'A1', 'RU', 'LI', undefined]);
       expect(app[1].depth).toEqual(1);
       expect(app[2].depth).toEqual(2);
     });
