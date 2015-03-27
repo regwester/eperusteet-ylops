@@ -37,26 +37,52 @@ ylopsApp
       rakenna: rakenna
     };
   })
-  .controller('KielitarjontaModalController', function($scope, $stateParams, $modalInstance, $q,
+  .controller('KielitarjontaModalController', function($scope, $stateParams, $modalInstance, $q, OpsService,
                                                        $state, opsId, oppiaine, perusteOppiaine, OppiaineCRUD, Notifikaatiot) {
+    function getType() {
+      if (!_.isString(oppiaine.koodiArvo)) {
+        console.log('Oppiaineen koodia ei ole määritelty');
+        return '';
+      }
+
+      if (OpsService.oppiaineIsKieli(oppiaine)) {
+        return 'kieli';
+      }
+      else if (oppiaine.koodiArvo === 'KT') {
+        $scope.$valittu = oppiaine;
+        return 'uskonto';
+      }
+      else {
+        console.log('Oppiaineen täytyy olla kieli tai uskonto');
+        return '';
+      }
+    }
+
+    $scope.$valittu = {};
+    $scope.$type = getType();
     $scope.oppiaine = oppiaine;
     $scope.$kaikki = perusteOppiaine.oppimaarat;
     $scope.$concretet = _.reject(perusteOppiaine.oppimaarat, function(om) {
       return om.abstrakti || _.isEmpty(om.vuosiluokkakokonaisuudet);
     });
-    $scope.$valittu = {};
 
     $scope.valitse = function(valinta) {
+      $scope.$valittu = valinta;
+      if (!valinta.abstrakti) {
+        $scope.$valittu.$concrete = valinta;
+      }
       $scope.$onAbstrakti = valinta.abstrakti;
       $scope.$omaNimi = _.clone(valinta.nimi);
     };
 
     $scope.ok = function() {
+      var tunniste = $scope.$type === 'kieli' ? $scope.$valittu.$concrete.tunniste : $scope.$valittu.tunniste;
+
       OppiaineCRUD.addKielitarjonta({
         opsId: opsId,
         oppiaineId: oppiaine.id
       }, {
-        tunniste: $scope.$valittu.tunniste,
+        tunniste: tunniste,
         omaNimi: $scope.$omaNimi
       }, function() {
         $state.go($state.current.name, $stateParams, { reload: true });

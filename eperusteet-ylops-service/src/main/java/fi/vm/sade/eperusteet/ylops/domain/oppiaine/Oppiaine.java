@@ -289,6 +289,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public static Oppiaine copyOf(Oppiaine other) {
+        return copyOf(other, true);
+    }
+
+    public static Oppiaine copyOf(Oppiaine other, boolean copyOppimaarat) {
         Oppiaine o = new Oppiaine(other.getTunniste());
         o.setNimi(other.getNimi());
         o.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
@@ -310,7 +314,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
                 || "VK".equals(other.koodiArvo.toUpperCase())
                 || "AI".equals(other.koodiArvo.toUpperCase()));
 
-        if (other.isKoosteinen()) {
+        if (other.isKoosteinen() && copyOppimaarat) {
             if (other.koodiArvo == null || !isKielijoukko) {
                 other.getOppimaarat().forEach((om -> {
                     o.addOppimaara(Oppiaine.copyOf(om));

@@ -1,10 +1,14 @@
 <div class="modal-header">
-  <h2 ng-bind="'kielitarjonta' | kaanna"></h2>
+  <h2 ng-bind="'lisaa-oppimaara-' + $type | kaanna"></h2>
+  <div class="pull-right">
+    <kielenvaihto modal="true"></kielenvaihto>
+  </div>
+  <div class="clearfix"></div>
 </div>
 
 <div class="modal-body">
   <div class="kielitarjonta-modal">
-    <div class="row kieli-field">
+    <div ng-show="$type === 'kieli'" class="row kieli-field">
       <div class="row">
         <div class="col-xs-4"><h4 kaanna="oppiaine.nimi"></h4></div>
         <div class="col-xs-8">
@@ -19,21 +23,27 @@
       </div>
     </div>
 
-    <div ng-show="$valittu.nimi">
-      <div ng-if="$onAbstrakti">
-        <div ng-bind-html="$valittu.tehtava.teksti | kaanna | unsafe"></div>
-        <h4>Pohja</h4>
-        <select class="form-control" ng-model="$valittu.$concrete"
-                ng-options="(om.nimi | kaanna) for om in $concretet track by om.id"></select>
+    <div ng-show="$type === 'kieli' && $valittu.nimi">
+      <div ng-bind-html="$valittu.tehtava.teksti | kaanna | unsafe"></div>
+      <div class="row" ng-show="$onAbstrakti">
+        <div class="col-xs-4"><h4 kaanna="'pohja'"></h4></div>
+        <div class="col-xs-8">
+          <select class="form-control" ng-model="$valittu.$concrete"
+                  ng-options="(om.nimi | kaanna) for om in $concretet track by om.id"></select>
+        </div>
       </div>
+    </div>
 
-      <h4>Nimi</h4>
-      <input type="text" class="form-control" ng-model="$omaNimi" slocalized>
+    <div class="row" ng-show="$valittu.nimi">
+      <div class="col-xs-4"><h4 kaanna="'nimi'"></h4></div>
+      <div class="col-xs-8">
+        <input type="text" class="form-control" ng-model="$omaNimi" slocalized>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="modal-footer">
-  <button class="btn btn-primary" ng-click="ok()" kaanna="'ok'"></button>
+  <button class="btn btn-primary" ng-click="ok()" ng-disabled="($type === 'kieli' && !$valittu.$concrete) || !($omaNimi | kaanna)" kaanna="'ok'"></button>
   <button class="btn btn-default" ng-click="peruuta()" kaanna="'peruuta'"></button>
 </div>

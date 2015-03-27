@@ -127,8 +127,8 @@ ylopsApp
 
   var perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : [], 'tunniste');
 
-  if (_.isString($scope.oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK'], $scope.oppiaine.koodiArvo.toUpperCase())) {
-    $scope.valitseKielitarjontaa = function() {
+  if ($scope.oppiaine.koosteinen && _.isString($scope.oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], $scope.oppiaine.koodiArvo.toUpperCase())) {
+    $scope.valitseOppimaara = function() {
       Kielitarjonta.rakenna($stateParams.id, $scope.oppiaine, $scope.perusteOppiaine);
     };
   }

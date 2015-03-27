@@ -1,7 +1,7 @@
 <h2 ng-bind="oppiaine.nimi | kaanna"></h2>
 
-<div ng-if="valitseKielitarjontaa">
-  <button class="btn btn-default pull-right" icon-role="flag" kaanna="'kielitarjonta'" ng-click="valitseKielitarjontaa()"></button>
+<div ng-if="valitseOppimaara">
+  <button class="btn btn-default pull-right" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"></button>
 </div>
 
 <div perusteen-tekstiosa="perusteOppiaine.tehtava"></div>
