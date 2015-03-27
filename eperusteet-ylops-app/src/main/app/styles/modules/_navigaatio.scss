@@ -1,5 +1,13 @@
 $navigaatio-width: 280px;
 
+.navigaatio-takaisin {
+  margin: 15px 0 -25px 0;
+
+  a {
+    font-size: x-large;
+  }
+}
+
 .navigaatio-ylataso {
   margin-top: -1px;
   font-size: 120%;

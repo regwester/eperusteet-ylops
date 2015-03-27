@@ -35,6 +35,7 @@ ylopsApp
   $scope.isActive = true;
   $scope.chosen = 0;
   $scope.collapsed = true;
+  console.log($scope);
 
   function listener(value) {
     $scope.isActive = value;
