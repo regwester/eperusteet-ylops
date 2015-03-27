@@ -45,16 +45,6 @@ ylopsApp
 
   .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData, Kaanna) {
     var currentState = null;
-    var STATE_ROOTS = {
-      'root.opetussuunnitelmat.yksi': {
-        state: 'root.opetussuunnitelmat.lista',
-        label: 'opetussuunnitelmat'
-      },
-      'root.pohjat.yksi': {
-        state: 'root.pohjat.lista',
-        label: 'pohjat'
-      },
-    };
 
     var STATES = {
       'root.opetussuunnitelmat.yksi.sisalto': {
@@ -149,15 +139,6 @@ ylopsApp
         return;
       }
       $scope.crumbs = [];
-
-      _.each(STATE_ROOTS, function (root, key) {
-        if (toState.name.indexOf(key) === 0 && toState.name !== key) {
-          $scope.crumbs.push({
-            url: $state.href(root.state),
-            label: root.label
-          });
-        }
-      });
 
       var path = getPath(toState.name);
       _(path).reverse().each(function (item) {
