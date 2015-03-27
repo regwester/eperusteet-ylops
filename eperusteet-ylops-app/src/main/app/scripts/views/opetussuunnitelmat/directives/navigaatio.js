@@ -35,7 +35,7 @@ ylopsApp
   $scope.isActive = true;
   $scope.chosen = 0;
   $scope.collapsed = true;
-  console.log($scope);
+  $scope.showTakaisin = false;
 
   function listener(value) {
     $scope.isActive = value;
