@@ -1,3 +1,7 @@
+<div ng-if="oppiaine.tyyppi !== 'yhteinen'" class="action-buttons-inline">
+  <button class="btn btn-default" icon-role="edit" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+  <button class="btn btn-default" icon-role="remove" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+</div>
 <h2 ng-bind="oppiaine.nimi | kaanna"></h2>
 
 <div ng-if="valitseOppimaara">

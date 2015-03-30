@@ -105,6 +105,14 @@ public class OppiaineController {
         return oppiaineService.update(opsId, dto);
     }
 
+    @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)
+    public OppiaineDto updateValinnainen(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id,
+                                         @RequestBody OppiaineenTallennusDto dto) {
+        dto.getOppiaine().setId(id);
+        return oppiaineService.updateValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuus(),
+                                                 dto.getVuosiluokat(), dto.getTavoitteet());
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {

@@ -21,7 +21,7 @@ ylopsApp
                                                 vlkPeruste, MurupolkuData, Notifikaatiot, OppiaineCRUD, Kieli, Kaanna) {
   MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
 
-  $scope.luonnissa = $stateParams.oppiaineId === 'uusi' || !$stateParams.OppiaineId;
+  $scope.luonnissa = $stateParams.oppiaineId === 'uusi' || !$stateParams.oppiaineId;
   $scope.options = {};
   $scope.tyypit = [
     'taide_taitoaine',
@@ -35,37 +35,56 @@ ylopsApp
   $scope.vuosiluokat = vlkPeruste.vuosiluokat.sort();
   $scope.valitutVuosiluokat = {};
 
-  var sisaltokieli = Kieli.getSisaltokieli();
-  vlk.tehtava = {
-    otsikko: {},
-    teksti: {}
-  };
-  vlk.tehtava.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaineen-tehtava');
+  if ($scope.luonnissa) {
+    var sisaltokieli = Kieli.getSisaltokieli();
+    vlk.tehtava = {
+      otsikko: {},
+      teksti: {}
+    };
+    vlk.tehtava.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaineen-tehtava');
 
-  vlk.arviointi = {
-    otsikko: {},
-    teksti: {}
-  };
-  vlk.arviointi.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-arviointi');
+    vlk.arviointi = {
+      otsikko: {},
+      teksti: {}
+    };
+    vlk.arviointi.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-arviointi');
 
-  vlk.ohjaus = {
-    otsikko: {},
-    teksti: {}
-  };
-  vlk.ohjaus.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-ohjaus');
+    vlk.ohjaus = {
+      otsikko: {},
+      teksti: {}
+    };
+    vlk.ohjaus.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-ohjaus');
 
-  vlk.tyotavat = {
-    otsikko: {},
-    teksti: {}
-  };
-  vlk.tyotavat.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-tyotavat');
+    vlk.tyotavat = {
+      otsikko: {},
+      teksti: {}
+    };
+    vlk.tyotavat.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaine-tyotavat');
 
-  $scope.oppiaine = {
-    nimi: {},
-    vuosiluokkakokonaisuudet: [vlk],
-  };
+    $scope.oppiaine = {
+      nimi: {},
+      vuosiluokkakokonaisuudet: [vlk],
+    };
 
-  $scope.tavoitteet = [];
+    $scope.tavoitteet = [];
+  } else {
+    OppiaineCRUD.get({opsId: OpsService.getId()}, {id: $stateParams.oppiaineId}, function (oppiaine) {
+      $scope.oppiaine = oppiaine;
+      var vuosiluokat = oppiaine.vuosiluokkakokonaisuudet[0].vuosiluokat;
+      _.forEach(vuosiluokat, function (vl) {
+        $scope.valitutVuosiluokat[vl.vuosiluokka] = true;
+      });
+      var vuosiluokka = vuosiluokat[0];
+      var tavoitteet = _.map(vuosiluokka.tavoitteet, 'tavoite');
+      var sisallot = _.map(vuosiluokka.sisaltoalueet, 'kuvaus');
+      $scope.tavoitteet = _.map(_.zip(tavoitteet, sisallot), function (pair) {
+        return {
+          otsikko: pair[0],
+          teksti: pair[1]
+        };
+      });
+    });
+  }
 
   $scope.chosenVlk = {};
   if ($stateParams.vlkId) {
@@ -74,7 +93,8 @@ ylopsApp
 
   $scope.hasRequiredFields = function () {
     var model = $scope.oppiaine;
-    return Utils.hasLocalizedText(model.nimi) &&
+    return model &&
+           Utils.hasLocalizedText(model.nimi) &&
            _.any(_.values($scope.chosenVlk)) &&
            model.tyyppi &&
            model.laajuus &&
@@ -85,15 +105,11 @@ ylopsApp
 
   var successCb = function (res) {
     Notifikaatiot.onnistui('tallennettu-ok');
-    if ($scope.luonnissa) {
-      $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
-        oppiaineId: res.id,
-        vlkId: $stateParams.vlkId,
-        oppiaineTyyppi: res.tyyppi
-      });
-    } else {
-      //fetch(true);
-    }
+    $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+      oppiaineId: res.id,
+      vlkId: $stateParams.vlkId,
+      oppiaineTyyppi: res.tyyppi
+    });
   };
 
   $scope.tyyppiUpdated = function () {
@@ -131,7 +147,10 @@ ylopsApp
           opsId: $scope.ops.id
         }, tallennusDto, successCb, Notifikaatiot.serverCb);
       } else {
-        $scope.tallennusDto.$save({}, successCb, Notifikaatiot.serverCb);
+        OppiaineCRUD.saveValinnainen({
+          opsId: $scope.ops.id,
+          oppiaineId: $scope.oppiaine.id
+        }, tallennusDto, successCb, Notifikaatiot.serverCb);
       }
     },
     cancel: function () {
@@ -140,6 +159,10 @@ ylopsApp
 
   $scope.tavoite = {
     add: function () {
+      if (!$scope.tavoitteet) {
+        $scope.tavoitteet = [];
+      }
+
       $scope.tavoitteet.push({
         otsikko: {},
         teksti: {}

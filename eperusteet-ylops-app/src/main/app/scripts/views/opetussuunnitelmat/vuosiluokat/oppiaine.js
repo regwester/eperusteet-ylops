@@ -116,7 +116,7 @@ ylopsApp
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta) {
+  VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, Notifikaatiot, OpsService, $timeout) {
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
 
@@ -213,7 +213,7 @@ ylopsApp
   $scope.startVuosiluokkaistaminen = function () {
     function start() {
       $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
-        vlkId: $stateParams.vlkId,
+        vlkId: $stateParams.vlkId
       });
     }
     if (_.isArray($scope.vuosiluokat) && $scope.vuosiluokat.length > 0) {
@@ -224,4 +224,27 @@ ylopsApp
       start();
     }
   };
+
+  $scope.editOppiaine = function () {
+    $state.go('root.opetussuunnitelmat.yksi.uusioppiaine', {
+      vlkId: $stateParams.vlkId,
+      oppiaineId: $scope.oppiaine.id
+    });
+  };
+
+  $scope.removeOppiaine = function () {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-poisto',
+      primaryBtn: 'poista',
+      successCb: function () {
+        $scope.oppiaine.$delete({opsId: OpsService.getId()}, function () {
+          Notifikaatiot.onnistui('poisto-onnistui');
+          $timeout(function () {
+            $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId});
+          });
+        }, Notifikaatiot.serverCb);
+      }
+    })();
+  };
+
 });

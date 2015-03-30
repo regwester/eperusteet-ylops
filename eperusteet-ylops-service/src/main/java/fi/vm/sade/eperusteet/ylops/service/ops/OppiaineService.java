@@ -71,6 +71,10 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OppiaineDto update(@P("opsId") Long opsId, OppiaineDto oppiaineDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, VuosiluokkakokonaisuusDto vlkDto,
+                                  Set<Vuosiluokka> vuosiluokat, Set<TekstiosaDto> tavoitteet);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void delete(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
