@@ -3,6 +3,11 @@ $navigaatio-width: 280px;
 .navigaatio-takaisin {
   margin: 15px 0 -25px 0;
 
+  &.plain {
+    margin-top: -25px;
+    margin-bottom: 20px;
+  }
+
   a {
     font-size: x-large;
   }
