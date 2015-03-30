@@ -144,11 +144,11 @@
   "laaja-alaiset-osaamiset": "Laaja-alaiset osaamiset",
 
   "vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet ja sisällöt",
-  "vuosiluokkaistaminen-ohje": "Vuosiluokkaista tavoitteet ja sisällöt vetämällä tavoitteet vuosiluokille.",
+  "vuosiluokkaistaminen-ohje": "<p>Vuosiluokkaista tavoitteet ja sisällöt vetämällä tavoitteet vuosiluokille.</p><p>Jos vuosiluokalle siirretty tavoite poistetaan vuosiluokalta, niin kyseiseen tavoitteeseen ja siihen liitettyyn sisältöalueeseen kirjoitettu sisältö voi hävitä.</p>",
   "vuosiluokkaistaminen-on-jo-tehty": "Vuosiluokkaistaminen on jo tehty",
   "vuosiluokkaistamista-ei-viela-tehty": "Tavoitteita ei ole vielä vuosiluokkaistettu.",
   "aloita-vuosiluokkaistaminen": "Aloita valitsemalla 'Vuosiluokkaista tavoitteet'.",
-  "vuosiluokkaistaminen-varoitus": "Vuosiluokkaistaminen on jo tehty. Saatat menettää paikallisia vuosiluokkakohtaisia sisältöjä. Haluatko jatkaa?",
+  "vuosiluokkaistaminen-varoitus": "Vuosiluokkaistaminen voi kadottaa tavoitteiden ja sisältöalueiden paikallista sisältöä. Haluatko jatkaa?",
   "pienet-tavoitteet": "Avaa/pienennä kaikki tavoitteet",
   "nayta-kohdealueet": "Näytä kohdealueet",
   "kaikki-vuosiluokkaistettu": "Kaikki tavoitteet vuosiluokkaistettu",
