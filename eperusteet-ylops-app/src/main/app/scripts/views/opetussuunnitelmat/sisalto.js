@@ -39,9 +39,10 @@ ylopsApp
 
   function add(model, osio, opsId, uusi, cb) {
     var newNode = {tekstiKappale: angular.copy(uusi), lapset: []};
-    model[osio].lapset.push(newNode);
+    var parent = osio ? model[osio] : model;
+    parent.lapset.push(newNode);
     var params = {opsId: opsId};
-    OpetussuunnitelmanTekstit.setChild(_.extend({parentId: model[osio].id}, params), newNode, function (res) {
+    OpetussuunnitelmanTekstit.setChild(_.extend({parentId: parent.id}, params), newNode, function (res) {
       var otsikko = _.cloneDeep(newNode.tekstiKappale.nimi);
       newNode.id = res.id;
       newNode.omistussuhde = res.omistussuhde;
@@ -50,7 +51,7 @@ ylopsApp
       // TODO: lapsi-APIa käyttämällä ei tekstikappale tallennu samalla pyynnöllä
       OpetussuunnitelmanTekstit.save(params, res, function () {
         Notifikaatiot.onnistui('tallennettu-ok');
-        cb();
+        cb(res);
         OpsService.refetch(function () {
           $rootScope.$broadcast('rakenne:updated');
         });

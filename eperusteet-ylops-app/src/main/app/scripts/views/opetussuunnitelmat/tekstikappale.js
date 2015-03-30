@@ -17,10 +17,22 @@
 'use strict';
 
 ylopsApp
+  .service('TekstikappaleEditMode', function () {
+    this.mode = false;
+    this.setMode = function (mode) {
+      this.mode = mode;
+    };
+    this.getMode = function () {
+      var ret = this.mode;
+      this.mode = false;
+      return ret;
+    };
+  })
+
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
-    KommentitByTekstikappaleViite, Lukko) {
+    KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode) {
 
     Kommentit.haeKommentit(KommentitByTekstikappaleViite, {id: $stateParams.tekstikappaleId, opsId: $stateParams.id});
     $scope.ohje = {};
@@ -34,7 +46,8 @@ ylopsApp
       isCollapsed: true
     };
     $scope.editMode = false;
-    if ($stateParams.tekstikappaleId === 'uusi') {
+
+    if ($stateParams.tekstikappaleId === 'uusi' || TekstikappaleEditMode.getMode()) {
       $timeout(function () {
         $scope.edit();
       }, 200);
@@ -95,6 +108,21 @@ ylopsApp
     $scope.edit = function () {
       Lukko.lock(commonParams, function () {
         Editointikontrollit.startEditing();
+      });
+    };
+
+    $scope.addChild = function () {
+      var lukkoParams = _.omit(commonParams, 'viiteId');
+      Lukko.lockRakenne(lukkoParams, function () {
+        TekstikappaleOps.add($scope.model, null, $stateParams.id, {nimi: {fi: 'Uusi tekstikappale'}}, function (res) {
+          Lukko.unlockRakenne(lukkoParams, function () {
+            var newParams = _.extend(_.clone($stateParams), {tekstikappaleId: res.id});
+            TekstikappaleEditMode.setMode(true);
+            $timeout(function () {
+              $state.go('^.tekstikappale', newParams, {reload: true});
+            });
+          });
+        });
       });
     };
 

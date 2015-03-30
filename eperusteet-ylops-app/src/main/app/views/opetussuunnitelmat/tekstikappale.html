@@ -1,7 +1,3 @@
-<div class="action-buttons-inline" ng-hide="editMode">
-  <button ng-disabled="lukkotiedot.lukittu" ng-if="canRemove()" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
-</div>
-
 <h2 class="tekstikappale-title">
   <span ng-if="editMode && canRemove()">
     <input ng-model="model.tekstiKappale.nimi" slocalized class="form-control" placeholder="{{'kappaleen-otsikko'|kaanna}}">
@@ -43,6 +39,8 @@
 <div class="panel-clear-fix tekstiosa single">
   <div class="action-buttons-inline" ng-hide="editMode">
     <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip"></lukko>
+    <button ng-disabled="lukkotiedot.lukittu" ng-if="canRemove()" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+    <button class="btn btn-default" kaanna="'lisaa-aliotsikko'" icon-role="add" ng-click="addChild()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   </div>
 
