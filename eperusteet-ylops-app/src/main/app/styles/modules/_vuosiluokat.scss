@@ -7,6 +7,8 @@
   }
 }
 
+$active-tab-bg: #e4e4e4;
+
 .vuosiluokka {
   h2 {
     margin-bottom: 40px;
@@ -16,13 +18,25 @@
     float: left;
     border-bottom: none;
     li a {
+      border-top-color: #ccc;
+      border-right-color: #ccc;
+      border-left-color: #ccc;
+      border-bottom-color: #ccc;
       padding: 10px 25px;
       cursor: pointer;
+      background: white;
+      &:hover {
+        border-color: #ccc;
+      }
     }
     li.active {
       a {
-        border-bottom: none;
-        background: white;
+        border-top-color: #ccc;
+        border-right-color: #ccc;
+        border-left-color: #ccc;
+        border-bottom: 1px solid $active-tab-bg;
+        box-shadow: none;
+        background: $active-tab-bg;
         cursor: default;
         &:hover, *:hover {
           text-decoration: none;
@@ -31,12 +45,18 @@
     }
   }
   .content {
-    padding-top: 60px;
+    padding-top: 41px;
+  }
+  .tab-content-container {
+    background: $active-tab-bg;
+    border: 1px solid #ccc;
+    padding: 10px;
   }
 
   $tavoite-border: 1px solid #ccc;
 
   .tavoite {
+    background-color: white;
     position: relative;
     border: $tavoite-border;
     .header {
