@@ -146,11 +146,15 @@ ylopsApp
         if (item.useId) {
           params[item.useId] = MurupolkuData.get(item.useId);
         }
-        $scope.crumbs.push({
+
+        // Jos ollaan luomassa uutta OPS:ia, niin ei laiteta murupolkuun linkkiä sisältöön. Uutta luodessa ei sisältöä ole vielä olemassa.
+        if (!(item.useData && item.useData === 'opsNimi' && item.state === 'root.opetussuunnitelmat.yksi.sisalto' && MurupolkuData.get(item.useData) === 'uusi')) {
+          $scope.crumbs.push({
           url: $state.href(item.state, params),
           label: item.useData ? MurupolkuData.get(item.useData) :
                  (item.label ? item.label : _.last(item.state.split('.')))
-        });
+          });
+        }
       }).value();
 
       setTitle();
