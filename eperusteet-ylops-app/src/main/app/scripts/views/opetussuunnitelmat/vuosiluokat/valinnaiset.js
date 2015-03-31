@@ -17,10 +17,15 @@
 'use strict';
 
 ylopsApp
-.controller('ValinnaisetOppiaineetController', function ($scope, vlk, $state, $stateParams) {
+.controller('ValinnaisetOppiaineetController', function ($scope, vlk, $state, $stateParams, opsModel) {
   $scope.vlk = vlk;
-  $scope.valinnaiset = [];
-  
+  $scope.valinnaiset = _(opsModel.oppiaineet).map('oppiaine').filter(function (oppiaine) {
+    return oppiaine.tyyppi !== 'yhteinen';
+  }).forEach(function (oppiaine) {
+    oppiaine.vlk = _(oppiaine.vuosiluokkakokonaisuudet).filter('_vuosiluokkakokonaisuus', vlk.tunniste).first();
+    oppiaine.vlk.vuosiluokat = _.sortBy(oppiaine.vlk.vuosiluokat, 'vuosiluokka');
+  }).filter('vlk').value();
+
   $scope.addOppiaine = function () {
     $state.go('root.opetussuunnitelmat.yksi.uusioppiaine', {
       vlkId: $stateParams.vlkId
