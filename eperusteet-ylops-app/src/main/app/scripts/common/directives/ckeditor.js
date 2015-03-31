@@ -96,7 +96,7 @@ ylopsApp
           toolbar: toolbarLayout,
           removePlugins: 'resize,elementspath,scayt,wsc',
           extraPlugins: 'divarea,sharedspace',
-          disallowedContent: 'br',
+          disallowedContent: 'br; tr td{width,height};',
           language: 'fi',
           'entities_latin': false,
           sharedSpaces: {
