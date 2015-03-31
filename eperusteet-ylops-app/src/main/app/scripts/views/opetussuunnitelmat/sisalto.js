@@ -59,7 +59,7 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   }
 
-  function deleteKappale(model, osio, opsId, kappale) {
+  function deleteKappale(model, osio, opsId, kappale, cb) {
     var params = {opsId: opsId};
     OpetussuunnitelmanTekstit.delete(params, kappale, function () {
       var foundIndex = null, foundList = null;
@@ -75,6 +75,7 @@ ylopsApp
       }
       OpsService.refetch(function () {
         $rootScope.$broadcast('rakenne:updated');
+        (cb || angular.noop)();
       });
       Notifikaatiot.onnistui('poisto-onnistui');
     }, Notifikaatiot.serverCb);

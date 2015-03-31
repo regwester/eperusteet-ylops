@@ -39,7 +39,10 @@ ylopsApp
 
 .controller('PohjaSisaltoController', function ($scope, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
   Notifikaatiot, $state, TekstikappaleOps) {
-  $scope.uusi = {nimi: {}};
+  $scope.uusi = {
+    jarjestaminen: {nimi: {}},
+    lahtokohdat: {nimi: {}}
+  };
   $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
   $scope.kappaleEdit = null;
 
@@ -58,14 +61,14 @@ ylopsApp
     mapModel();
   }, true);
 
-  $scope.hasText = function () {
-    return Utils.hasLocalizedText($scope.uusi.nimi);
+  $scope.hasText = function (osio) {
+    return Utils.hasLocalizedText($scope.uusi[osio].nimi);
   };
 
   $scope.pohjaOps = {
     addNew: function (osio) {
-      TekstikappaleOps.add($scope.model, osio, $stateParams.pohjaId, $scope.uusi, function () {
-        $scope.uusi = {nimi: {}};
+      TekstikappaleOps.add($scope.model, osio, $stateParams.pohjaId, $scope.uusi[osio], function () {
+        $scope.uusi[osio] = {nimi: {}};
         mapModel();
       });
     },
@@ -75,7 +78,9 @@ ylopsApp
     },
     delete: function (osio, kappale) {
       TekstikappaleOps.varmistusdialogi(kappale.tekstiKappale.nimi, function () {
-        TekstikappaleOps.delete($scope.model, osio, $stateParams.pohjaId, kappale);
+        TekstikappaleOps.delete($scope.model, osio, $stateParams.pohjaId, kappale, function () {
+          mapModel();
+        });
       });
     },
     cancel: function (kappale) {
