@@ -78,6 +78,11 @@ public class OppiaineController {
         return Responses.ofNullable(oppiaineService.get(opsId, id));
     }
 
+    @RequestMapping(value = "/{id}/parent", method = RequestMethod.GET)
+    public ResponseEntity<OppiaineDto> getParent(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        return Responses.ofNullable(oppiaineService.getParent(opsId, id));
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public List<OppiaineDto> getAll(@PathVariable("opsId") final Long opsId,
                                     @RequestParam(value = "tyyppi", required = false) OppiaineTyyppi tyyppi) {

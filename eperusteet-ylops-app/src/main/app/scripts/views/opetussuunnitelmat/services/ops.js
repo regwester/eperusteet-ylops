@@ -48,7 +48,7 @@ ylopsApp
       deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
         MurupolkuData.set('opsNimi', angular.copy(res.nimi));
         ops = res;
-        (cb || angular.noop)(res);
+        (cb || angular.noop)(ops);
       }, Notifikaatiot.serverCb);
       return deferred;
     }
@@ -99,8 +99,6 @@ ylopsApp
                                                          Notifikaatiot) {
     var kayttajaOikeudet = null;
     var opsOikeudet;
-    var opsId = null;
-    var opsTila = null;
 
     function fetch(stateParams) {
       if (stateParams.id === 'uusi') {
@@ -128,20 +126,6 @@ ylopsApp
       var oikeudet = kayttaja ? kayttajaOikeudet : opsOikeudet;
       return oikeudet ? _.contains(oikeudet[target], permission) : false;
     }
-
-    $rootScope.$on('$stateChangeSuccess', function() {
-      if ($stateParams.id && $stateParams.id !== 'uusi') {
-        OpsService.fetch($stateParams.id).$promise.then(function (res) {
-          var ops = res;
-          if (opsId && opsId === ops.id && opsTila === ops.tila) {
-            fetch($stateParams);
-          } else {
-            opsId = ops.id;
-            opsTila = ops.tila;
-          }
-        });
-      }
-    });
 
     return {
       fetch: fetch,

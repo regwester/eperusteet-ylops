@@ -160,6 +160,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public OppiaineDto getParent(@P("opsId") Long opsId, Long id) {
+        Oppiaine oppiaine = getOppiaine(opsId, id);
+        return mapper.map(oppiaine.getOppiaine(), OppiaineDto.class);
+    }
+
+    @Override
     public OppiaineLaajaDto add(@P("opsId") Long opsId, OppiaineLaajaDto oppiaineDto) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");

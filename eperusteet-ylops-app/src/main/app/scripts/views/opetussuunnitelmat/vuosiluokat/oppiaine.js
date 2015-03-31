@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-.service('OppiaineService', function (VuosiluokatService, $rootScope, MurupolkuData, $q, OppiaineenVlk,
+.service('OppiaineService', function (VuosiluokatService, $rootScope, MurupolkuData, $q, OppiaineCRUD, OppiaineenVlk,
   Notifikaatiot, VuosiluokkaCRUD) {
   var vlkTunniste = null;
   var oppiaineenVlk = null;
@@ -38,6 +38,12 @@ ylopsApp
     promise.resolve();
   }
 
+  this.getParent = function(cb) {
+    OppiaineCRUD.getParent({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id
+    }, cb);
+  };
   this.refresh = function (ops, oppiaineId, vlkId) {
     var promise = $q.defer();
     VuosiluokatService.getOppiaine(oppiaineId).$promise.then(function (res) {
@@ -90,7 +96,6 @@ ylopsApp
 
 .controller('OppiaineBaseController', function ($scope, perusteOppiaine, MurupolkuData, $stateParams,
   $rootScope, OppiaineService) {
-
   $scope.perusteOppiaine = perusteOppiaine;
   $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.oppiaineenVlk = OppiaineService.getOpVlk();
@@ -116,9 +121,18 @@ ylopsApp
 })
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
-  VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, Notifikaatiot, OpsService, $timeout) {
+  VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, OppiaineCRUD, OpsService, Notifikaatiot) {
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
+
+  function vanhempiOnUskontoTaiKieli(oppiaine) {
+    return _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
+  }
+
+  OppiaineService.getParent(function(res) {
+    $scope.oppiaine.$parent = res;
+    $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
+  });
 
   $scope.perusteOpVlk = $scope.perusteOppiaine ?
     _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
@@ -132,6 +146,24 @@ ylopsApp
       Kielitarjonta.rakenna($stateParams.id, $scope.oppiaine, $scope.perusteOppiaine);
     };
   }
+
+  $scope.poistaOppimaara = function() {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-poisto',
+      primaryBtn: 'poista',
+      successCb: function () {
+        OppiaineCRUD.remove({
+          opsId: $stateParams.id,
+          oppiaineId: $stateParams.oppiaineId
+        }, function() {
+          Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
+          $state.go($state.current.name, _.merge(_.clone($stateParams), {
+            oppiaineId: $scope.oppiaine.$parent.id
+          }), { reload: true });
+        }, Notifikaatiot.serverCb);
+      }
+    })();
+  };
 
   function updateVuosiluokat() {
     if (!$scope.oppiaineenVlk) {
@@ -239,9 +271,7 @@ ylopsApp
       successCb: function () {
         $scope.oppiaine.$delete({opsId: OpsService.getId()}, function () {
           Notifikaatiot.onnistui('poisto-onnistui');
-          $timeout(function () {
-            $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId});
-          });
+          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId});
         }, Notifikaatiot.serverCb);
       }
     })();
