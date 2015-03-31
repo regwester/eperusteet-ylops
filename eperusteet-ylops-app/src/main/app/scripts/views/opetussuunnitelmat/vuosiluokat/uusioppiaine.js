@@ -139,6 +139,9 @@ ylopsApp
       }
     },
     cancel: function () {
+      $state.go('root.opetussuunnitelmat.yksi.valinnaiset', {
+        vlkId: $stateParams.vlkId
+      });
     }
   };
 
