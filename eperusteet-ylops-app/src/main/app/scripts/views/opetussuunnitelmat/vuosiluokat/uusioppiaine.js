@@ -28,8 +28,6 @@ ylopsApp
     'muu_valinnainen'
   ];
 
-  $scope.liittyvatAineet = [];
-
   $scope.ops = OpsService.get();
   $scope.oppiaineet = $scope.ops.oppiaineet;
   $scope.vuosiluokat = vlkPeruste.vuosiluokat.sort();
@@ -110,19 +108,6 @@ ylopsApp
       vlkId: $stateParams.vlkId,
       oppiaineTyyppi: res.tyyppi
     });
-  };
-
-  $scope.tyyppiUpdated = function () {
-    if ($scope.oppiaine.tyyppi === 'taide_taitoaine') {
-      var liittyvat = ['KUVATAIDE', 'MUSIIKKI', 'LIIKUNTA', 'KOTITALOUS', 'KÄSITYÖ'];
-      $scope.liittyvatAineet = _.filter($scope.ops.oppiaineet, function (oppiaine) {
-        return _.includes(liittyvat, oppiaine.oppiaine.nimi.fi);
-      });
-    } else if ($scope.oppiaine.tyyppi === 'muu_valinnainen') {
-      $scope.liittyvatAineet = $scope.ops.oppiaineet;
-    } else {
-      $scope.liittyvatAineet = [];
-    }
   };
 
   $scope.uusi = {

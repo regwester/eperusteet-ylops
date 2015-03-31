@@ -72,11 +72,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Setter
     private OppiaineTyyppi tyyppi = OppiaineTyyppi.YHTEINEN;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @Getter
-    @Setter
-    private Oppiaine liittyvaOppiaine;
-
     /**
      *
      * Laajuus vuosiviikkotunteina (vvh)
