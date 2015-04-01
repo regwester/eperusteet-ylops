@@ -97,7 +97,10 @@ ylopsApp
            model.tyyppi &&
            model.laajuus &&
            model.vuosiluokkakokonaisuudet[0].tehtava.teksti &&
-           $scope.valitutVuosiluokat && _($scope.valitutVuosiluokat).values().some()
+           $scope.valitutVuosiluokat && _($scope.valitutVuosiluokat).values().some() &&
+           _.every($scope.tavoitteet, function (tavoite) {
+             return Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti);
+           })
            ;
   };
 
@@ -145,7 +148,7 @@ ylopsApp
     }
   };
 
-  $scope.tavoite = {
+  $scope.tavoiteFns = {
     add: function () {
       if (!$scope.tavoitteet) {
         $scope.tavoitteet = [];
@@ -155,6 +158,12 @@ ylopsApp
         otsikko: {},
         teksti: {}
       });
+    },
+
+    remove: function (item) {
+      if ($scope.tavoitteet) {
+        $scope.tavoitteet.splice(item, 1);
+      }
     }
   };
 

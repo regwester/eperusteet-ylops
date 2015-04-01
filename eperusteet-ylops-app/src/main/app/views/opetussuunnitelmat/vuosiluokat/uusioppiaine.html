@@ -10,6 +10,19 @@
 
         <div class="row">
           <div class="col-sm-3 formfield-label">
+            <label><span kaanna="'tyyppi'"></span>*</label>
+          </div>
+
+          <div class="col-sm-9 formfield-data">
+            <select class="form-control" ng-model="oppiaine.tyyppi"
+                    ng-options="(item | kaanna) for item in tyypit">
+              <option value="">{{'valitse-tyyppi' | kaanna}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3 formfield-label">
             <label><span kaanna="'valinnaisen-nimi'"></span>*</label>
           </div>
 
@@ -20,14 +33,14 @@
 
         <div class="row">
           <div class="col-sm-3 formfield-label">
-            <label><span kaanna="'tyyppi'"></span>*</label>
+            <label><span kaanna="'oppiaine-vuosiluokat'"></span>*</label>
           </div>
 
           <div class="col-sm-9 formfield-data">
-            <select class="form-control" ng-model="oppiaine.tyyppi"
-                    ng-options="(item | kaanna) for item in tyypit">
-              <option value="">{{'valitse-tyyppi' | kaanna}}</option>
-            </select>
+            <label ng-repeat="vuosiluokka in vuosiluokat" class="vuosiluokka">
+              <input type="checkbox" ng-model="valitutVuosiluokat[vuosiluokka]">
+              <span ng-bind="vuosiluokka | kaanna"></span>
+            </label>
           </div>
         </div>
 
@@ -54,29 +67,6 @@
 
         <div class="row">
           <div class="col-sm-3 formfield-label">
-            <label><span kaanna="'vuosiluokat'"></span>*</label>
-          </div>
-
-          <div class="col-sm-9 formfield-data">
-            <label ng-repeat="vuosiluokka in vuosiluokat" class="vuosiluokka">
-              <input type="checkbox" ng-model="valitutVuosiluokat[vuosiluokka]">
-              <span ng-bind="vuosiluokka | kaanna"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-3 formfield-label">
-            <label><span kaanna="'oppiaine-arviointi'"></span></label>
-          </div>
-
-          <div class="col-sm-9 formfield-data">
-            <div ckeditor slocalized ng-model="oppiaine.vuosiluokkakokonaisuudet[0].arviointi.teksti"></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-sm-3 formfield-label">
             <label><span kaanna="'oppiaine-tyotavat'"></span></label>
           </div>
 
@@ -92,6 +82,16 @@
 
           <div class="col-sm-9 formfield-data">
             <div ckeditor slocalized ng-model="oppiaine.vuosiluokkakokonaisuudet[0].ohjaus.teksti"></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3 formfield-label">
+            <label><span kaanna="'oppiaine-arviointi'"></span></label>
+          </div>
+
+          <div class="col-sm-9 formfield-data">
+            <div ckeditor slocalized ng-model="oppiaine.vuosiluokkakokonaisuudet[0].arviointi.teksti"></div>
           </div>
         </div>
 
@@ -145,9 +145,15 @@
               <div ckeditor slocalized ng-model="tavoite.teksti"></div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-sm-10"></div>
+            <div class="col-sm-2">
+              <button class="btn btn-default" kaanna="'poista-tavoite'" icon-role="remove" ng-click="tavoiteFns.remove($index)"></button>
+            </div>
+          </div>
 
         </div>
-        <button class="btn btn-default" kaanna="'lisaa-tavoite'" icon-role="add" ng-click="tavoite.add()"></button>
+        <button class="btn btn-default" kaanna="'lisaa-tavoite'" icon-role="add" ng-click="tavoiteFns.add()"></button>
       </div>
     </div>
   </div>
