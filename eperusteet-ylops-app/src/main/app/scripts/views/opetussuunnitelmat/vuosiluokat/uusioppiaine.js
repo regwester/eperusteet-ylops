@@ -110,7 +110,7 @@ ylopsApp
       oppiaineId: res.id,
       vlkId: $stateParams.vlkId,
       oppiaineTyyppi: res.tyyppi
-    });
+    }, { reload: true });
   };
 
   $scope.uusi = {
