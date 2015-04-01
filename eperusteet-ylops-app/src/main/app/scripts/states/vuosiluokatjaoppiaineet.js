@@ -48,6 +48,9 @@ ylopsApp
         controller: 'ValinnaisetOppiaineetController',
         resolve: {
           vuosiluokatService: 'VuosiluokatService',
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive();
+          }],
           vlkId: ['$stateParams', function($stateParams){
             return $stateParams.vlkId;
           }],

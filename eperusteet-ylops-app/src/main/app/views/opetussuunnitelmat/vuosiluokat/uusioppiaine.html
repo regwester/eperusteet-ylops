@@ -121,6 +121,10 @@
         <span kaanna="'tavoitteet-ja-sisallot'"></span>
       </h3>
       <div class="panel-collapsed-body" collapse="options.tavoitteet">
+        <div class="row">
+          <div class="col-sm-3"></div>
+          <div class="col-sm-9" ng-bind="'tavoitteiden-muokkauksen-ohjeteksti' | kaanna"></div>
+        </div>
         <div class="oppiaineen-tavoite" ng-repeat="tavoite in tavoitteet">
           <hr>
           <div class="row">
