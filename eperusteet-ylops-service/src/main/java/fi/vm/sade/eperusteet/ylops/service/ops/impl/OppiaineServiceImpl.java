@@ -220,7 +220,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineDto addValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, VuosiluokkakokonaisuusDto vlkDto,
+    public OppiaineDto addValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                       Set<Vuosiluokka> vuosiluokat, Set<TekstiosaDto> tavoitteetDto) {
 
         OppiaineenVuosiluokkakokonaisuusDto oavlktDto =
@@ -234,7 +234,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oppiaine = oppiaineet.save(oppiaine);
         ops.addOppiaine(oppiaine);
 
-        Vuosiluokkakokonaisuus vlk = kokonaisuudet.findBy(opsId, vlkDto.getId());
+        Vuosiluokkakokonaisuus vlk = kokonaisuudet.findBy(opsId, vlkId);
         assertExists(vlk, "Pyydettyä vuosiluokkakokonaisuutta ei ole olemassa");
 
         Oppiaineenvuosiluokkakokonaisuus oavlk = new Oppiaineenvuosiluokkakokonaisuus();
@@ -253,14 +253,14 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, VuosiluokkakokonaisuusDto vlkDto,
+    public OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                          Set<Vuosiluokka> vuosiluokat, Set<TekstiosaDto> tavoitteetDto) {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
         assertExists(oppiaine, "Päivitettävää oppiainetta ei ole olemassa");
 
         delete(opsId, oppiaineDto.getId());
 
-        return addValinnainen(opsId, oppiaineDto, vlkDto, vuosiluokat, tavoitteetDto);
+        return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, tavoitteetDto);
     }
 
     private Set<Oppiaineenvuosiluokka> luoOppiaineenVuosiluokat(Set<Vuosiluokka> vuosiluokat,

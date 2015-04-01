@@ -30,7 +30,7 @@ import java.util.Set;
 @Setter
 public class OppiaineenTallennusDto {
     private OppiaineDto oppiaine;
-    private VuosiluokkakokonaisuusDto vuosiluokkakokonaisuus;
+    private Long vuosiluokkakokonaisuusId;
     private Set<Vuosiluokka> vuosiluokat;
     private Set<TekstiosaDto> tavoitteet;
 }

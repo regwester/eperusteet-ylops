@@ -125,7 +125,7 @@ ylopsApp
 
       var tallennusDto = {
         oppiaine: $scope.oppiaine,
-        vuosiluokkakokonaisuus: vlk,
+        vuosiluokkakokonaisuusId: vlk.id,
         vuosiluokat: vuosiluokat,
         tavoitteet: $scope.tavoitteet
       };
