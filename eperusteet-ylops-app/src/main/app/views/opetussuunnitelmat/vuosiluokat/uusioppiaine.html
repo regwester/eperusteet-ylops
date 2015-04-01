@@ -39,7 +39,7 @@
           <div class="col-sm-9 formfield-data">
             <label ng-repeat="vuosiluokka in vuosiluokat" class="vuosiluokka">
               <input type="checkbox" ng-model="valitutVuosiluokat[vuosiluokka]">
-              <span ng-bind="vuosiluokka | kaanna"></span>
+              <span ng-bind="(vuosiluokka | kaanna) + ('vuosiluokka-paate-lyhyt' | kaanna)"></span>
             </label>
           </div>
         </div>
