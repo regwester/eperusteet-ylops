@@ -12,8 +12,10 @@
 <div ng-repeat="oppiaine in valinnaiset">
   <div ng-repeat="vuosiluokka in oppiaine.vlk.vuosiluokat">
     <div class="row">
-      <a ui-sref="root.opetussuunnitelmat.yksi.oppiaine.oppiaine({oppiaineId: oppiaine.id, vlkId: vlk.id, oppiaineTyyppi: oppiaine.tyyppi})"
-         class="col-sm-2 formfield-data viewmode" ng-bind="oppiaine.nimi | kaanna"></a>
+      <div class="col-sm-2">
+        <a ng-if="$first" ui-sref="root.opetussuunnitelmat.yksi.oppiaine.oppiaine({oppiaineId: oppiaine.id, vlkId: vlk.id, oppiaineTyyppi: oppiaine.tyyppi})"
+           class="formfield-data viewmode" ng-bind="oppiaine.nimi | kaanna"></a>
+      </div>
       <div class="col-sm-2 formfield-data viewmode">
         <div ng-bind="oppiaine.laajuus + ' ' + ('vvh' | kaanna)"></div>
       </div>
