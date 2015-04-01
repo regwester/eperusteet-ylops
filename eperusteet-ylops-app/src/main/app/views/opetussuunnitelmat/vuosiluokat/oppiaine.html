@@ -25,9 +25,7 @@
   </p>
   <table ng-if="vuosiluokat.length > 0" class="table table-hover vuosiluokat-table">
     <tr>
-      <th width="15%" kaanna="'vuosiluokka'"></th>
-      <th kaanna="'tavoitteet'"></th>
-      <th kaanna="'sisaltoalueet'"></th>
+      <th kaanna="'vuosiluokka'"></th>
     </tr>
     <tr class="vuosiluokka-row" ng-repeat="vuosiluokka in vuosiluokat | orderBy:'$numero'" ng-click="goToVuosiluokka(vuosiluokka)">
       <td>
@@ -35,28 +33,7 @@
           <span kaanna="'vuosiluokka'"></span> {{vuosiluokka.$numero}}
         </a>
       </td>
-      <td>
-        <span ng-if="vuosiluokka.$tavoitteetShort" ng-repeat="tavoite in vuosiluokka.tavoitteet"><span class="koodi-short" ng-if="tavoite.$short" ng-bind="tavoite.$short"></span></span>
-        <span ng-if="!vuosiluokka.$tavoitteetShort">
-          <ul>
-            <li ng-repeat="tavoite in vuosiluokka.tavoitteet">
-              <span ng-bind="tavoite.$tavoite | kaanna | stripTags"></span>
-            </li>
-          </ul>
-        </span>
-      </td>
-      <td>
-        <span ng-if="vuosiluokka.$sisaltoalueetShort" ng-repeat="alue in vuosiluokka.sisaltoalueet"><span class="koodi-short" ng-if="alue.$short" ng-bind="alue.$short"></span></span>
-        <span ng-if="!vuosiluokka.$sisaltoalueetShort">
-          <ul>
-            <li ng-repeat="alue in vuosiluokka.sisaltoalueet | orderBy:alueOrder">
-              <span ng-bind="alue.nimi | kaanna"></span>
-            </li>
-          </ul>
-        </span>
-      </td>
     </tr>
-
   </table>
 </div>
 

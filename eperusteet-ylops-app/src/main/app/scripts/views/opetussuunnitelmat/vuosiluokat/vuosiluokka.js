@@ -14,6 +14,8 @@
 * European Union Public Licence for more details.
 */
 
+/* global _ */
+
 'use strict';
 
 ylopsApp
@@ -29,6 +31,10 @@ ylopsApp
     _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
       return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
     }) : null;
+
+  $scope.onValinnaiselle = !$scope.perusteOpVlk;
+  $scope.sisaltoAlueetMap = _.indexBy($scope.vuosiluokka.sisaltoalueet, 'id');
+
   $scope.laajaalaiset = _.indexBy(baseLaajaalaiset, 'tunniste');
   $scope.perusteSisaltoalueet = $scope.perusteOpVlk ?_.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste') : [];
 

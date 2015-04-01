@@ -1,4 +1,4 @@
-<div class="tavoitteet">
+<div class="tavoitteet" ng-if="!onValinnaiselle">
   <div class="tavoite" ng-repeat="tunniste in tunnisteet">
 
     <div class="header" ng-class="{kohdealueeton: !tavoiteMap[tunniste].$kohdealue}">
@@ -50,4 +50,23 @@
     </div>
 
   </div>
+</div>
+<div class="tavoitteet" ng-if="onValinnaiselle">
+    <div class="tavoite" ng-repeat="tavoite in vuosiluokka.tavoitteet">
+        <div class="header" ng-class="{kohdealueeton: !tavoiteMap[tunniste].$kohdealue}">
+            <div class="toggle-nimi">
+                <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
+                <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
+                  ng-bind="tavoite.tavoite | kaanna | stripTags"></span>
+            </div>
+            <div class="clearer"></div>
+        </div>
+        <div class="peruste-body ikoni-peruste" collapse="collapsed[tunniste]">
+            <div class="peruste-wrapper">
+                <h4> </h4>
+                <div ng-bind-html="sisaltoAlueetMap[tavoite.sisaltoalueet[0]].kuvaus | kaanna | unsafe"></div>
+            </div>        
+        </div>
+    </div>
+
 </div>
