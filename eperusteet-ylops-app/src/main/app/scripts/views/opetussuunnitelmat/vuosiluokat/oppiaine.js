@@ -271,7 +271,7 @@ ylopsApp
       successCb: function () {
         $scope.oppiaine.$delete({opsId: OpsService.getId()}, function () {
           Notifikaatiot.onnistui('poisto-onnistui');
-          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId});
+          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, { reload: true });
         }, Notifikaatiot.serverCb);
       }
     })();
