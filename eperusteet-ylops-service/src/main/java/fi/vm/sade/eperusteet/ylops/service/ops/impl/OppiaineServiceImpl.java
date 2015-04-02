@@ -33,7 +33,7 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkako
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KielitarjontaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
@@ -178,7 +178,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineDto addKielitarjonta(@P("opsId") Long opsId, Long oppiaineId, KielitarjontaDto kt) {
+    public OppiaineDto addCopyOppimaara(@P("opsId") Long opsId, Long oppiaineId, KopioOppimaaraDto kt) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         Opetussuunnitelma opspohja = ops.getPohja();

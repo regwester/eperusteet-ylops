@@ -35,7 +35,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KielitarjontaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;

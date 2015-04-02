@@ -17,7 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KielitarjontaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
@@ -61,7 +61,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OppiaineDto add(@P("opsId") Long opsId, OppiaineDto oppiaineDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    OppiaineDto addKielitarjonta(@P("opsId") Long opsId, Long oppiaineId, KielitarjontaDto oppiaineDto);
+    OppiaineDto addCopyOppimaara(@P("opsId") Long opsId, Long oppiaineId, KopioOppimaaraDto oppiaineDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OppiaineLaajaDto add(@P("opsId") Long opsId, OppiaineLaajaDto oppiaineDto);

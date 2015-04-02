@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class KielitarjontaDto {
+public class KopioOppimaaraDto {
     LokalisoituTekstiDto omaNimi;
     String tunniste;
 }
