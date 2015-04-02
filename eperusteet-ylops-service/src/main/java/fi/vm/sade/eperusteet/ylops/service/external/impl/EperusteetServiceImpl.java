@@ -26,9 +26,11 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
@@ -65,6 +67,23 @@ public class EperusteetServiceImpl implements EperusteetService {
         converter.getObjectMapper().registerModule(new Jdk8Module());
         converter.getObjectMapper().setPropertyNamingStrategy(new ReferenceNamingStrategy());
         client = new RestTemplate(Arrays.asList(converter));
+    }
+
+    @Override
+    public List<PerusteInfo> findPerusteet(Set<String> tyypit) {
+        List<PerusteInfo> infot = new ArrayList<>();
+        for (String tyyppi : tyypit) {
+            PerusteInfoWrapperDto wrapperDto
+                = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
+                                      PerusteInfoWrapperDto.class, tyyppi, 100);
+
+            // Filtteröi pois perusteet jotka eivät enää ole voimassa
+            Date now = new Date();
+            infot.addAll(wrapperDto.getData().stream()
+                .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
+                .collect(Collectors.toList()));
+        }
+        return infot;
     }
 
     @Override

@@ -19,14 +19,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
  * @author nkala
  */
 public interface EperusteetService {
-
     Peruste getPerusopetuksenPeruste(String diaariNumero);
+    List<PerusteInfo> findPerusteet(Set<String> tyypit);
     List<PerusteInfo> findPerusopetuksenPerusteet();
     Peruste getPerusopetuksenPeruste(final Long id);
     JsonNode getTiedotteet(Long jalkeen);

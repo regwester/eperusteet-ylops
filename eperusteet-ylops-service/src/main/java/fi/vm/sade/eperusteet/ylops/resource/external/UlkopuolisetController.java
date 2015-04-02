@@ -23,6 +23,8 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,6 +54,17 @@ public class UlkopuolisetController {
 
     @Autowired
     private EperusteetService eperusteetService;
+
+    @RequestMapping(value = "/julkaistutperusteet", method = GET)
+    @ResponseBody
+    public ResponseEntity<List<PerusteInfo>> getPerusteet() {
+        String[] vaihtoehdot = {
+            "koulutustyyppi_16",
+            "koulutustyyppi_15",
+            "koulutustyyppi_6"
+        };
+        return new ResponseEntity<>(eperusteetService.findPerusteet(new HashSet<>(Arrays.asList(vaihtoehdot))), HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/perusopetusperusteet", method = GET)
     @ResponseBody
