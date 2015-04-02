@@ -149,3 +149,9 @@ $active-tab-bg: #e4e4e4;
 .popover {
   max-width: 400px;
 }
+
+.everclear-fix {
+  .row:after {
+    clear: right;
+  }
+}

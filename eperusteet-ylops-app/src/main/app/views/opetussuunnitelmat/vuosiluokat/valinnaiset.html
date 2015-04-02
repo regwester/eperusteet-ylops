@@ -10,7 +10,7 @@
 <p class="empty-notice" ng-if="!valinnaiset || valinnaiset.length === 0" kaanna="'ei-valinnaisia-aineita'"></p>
 
 <div ng-repeat="oppiaine in valinnaiset">
-  <div ng-repeat="vuosiluokka in oppiaine.vlk.vuosiluokat">
+  <div class="everclear-fix" ng-repeat="vuosiluokka in oppiaine.vlk.vuosiluokat">
     <div class="row">
       <div class="col-sm-2">
         <a ng-if="$first" ui-sref="root.opetussuunnitelmat.yksi.oppiaine.oppiaine({oppiaineId: oppiaine.id, vlkId: vlk.id, oppiaineTyyppi: oppiaine.tyyppi})"
