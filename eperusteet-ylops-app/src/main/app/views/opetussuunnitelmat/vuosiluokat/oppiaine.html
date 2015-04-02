@@ -11,7 +11,7 @@
 
 <div perusteen-tekstiosa="perusteOppiaine.tehtava"></div>
 
-<div class="tekstiosa-wrapper" ng-show="oppiaineenVlk">
+<div class="tekstiosa-wrapper" ng-show="!oppiaine.koosteinen && oppiaineenVlk">
   <h3>
     <div class="action-buttons-inline">
       <button ng-if="oppiaine.tyyppi === 'yhteinen'" class="btn btn-default" icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
