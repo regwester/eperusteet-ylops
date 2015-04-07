@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,13 @@ public class EperusteetServiceMock implements EperusteetService {
 
     @Autowired
     private DtoMapper mapper;
+
+    @Override
+    public List<PerusteInfo> findPerusteet(Set<String> tyypit) {
+        PerusteInfo perusteInfo = new PerusteInfo();
+        perusteInfo.setDiaarinumero(DIAARINUMERO);
+        return Collections.singletonList(perusteInfo);
+    }
 
     @Override
     public List<PerusteInfo> findPerusopetuksenPerusteet() {

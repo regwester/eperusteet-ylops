@@ -11,10 +11,9 @@
       <div class="teksti" collapse="options.collapsed" ng-bind-html="model.teksti | kaanna | unsafe"></div>
     </div>
   </div>
-
 </div>
-<div ng-if="(model.otsikko || muokattava.otsikko) && editable" class="panel-clear-fix tekstiosa">
 
+<div ng-if="(model.otsikko || muokattava.otsikko) && editable" class="panel-clear-fix tekstiosa">
   <h4>
     <div class="action-buttons-inline">
       <button ng-hide="editMode || config.editing" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="startEditing()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>

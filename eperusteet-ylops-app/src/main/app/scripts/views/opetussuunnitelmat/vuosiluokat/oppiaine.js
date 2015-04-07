@@ -132,6 +132,9 @@ ylopsApp
   OppiaineService.getParent(function(res) {
     $scope.oppiaine.$parent = res;
     $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
+    if ($scope.$onKieliTaiUskonto) {
+      $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
+    }
   });
 
   $scope.perusteOpVlk = $scope.perusteOppiaine ?
@@ -216,6 +219,7 @@ ylopsApp
       refetch();
     },
     save: function () {
+      $scope.oppiaine.$save({ opsId: $stateParams.id });
       OppiaineService.saveVlk($scope.oppiaineenVlk);
     },
     cancel: function () {
@@ -249,9 +253,7 @@ ylopsApp
       });
     }
     if (_.isArray($scope.vuosiluokat) && $scope.vuosiluokat.length > 0) {
-      vuosiluokkaistamisVaroitus(function () {
-        start();
-      });
+      vuosiluokkaistamisVaroitus(start);
     } else {
       start();
     }
