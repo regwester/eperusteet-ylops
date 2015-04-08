@@ -1,31 +1,48 @@
 <div class="row" ng-show="model.$resolved">
-  <div class="col-md-6 col-sm-6" ng-repeat="osio in ['jarjestaminen', 'lahtokohdat']">
+  <div class="col-md-6 col-sm-6" ng-repeat="osio in model.tekstit.lapset">
+    <!-- <pre>{{ osio | json }}</pre> -->
     <div class="list-group">
-      <div class="list-group-item list-group-header" ng-bind="model[osio].tekstiKappale.nimi | kaanna"></div>
+      <div class="list-group-item list-group-header">
+        <div ng-hide="osio.tekstiKappale.$$edit">
+          <span ng-bind="osio.tekstiKappale.nimi | kaanna"></span>
+          <span class="pull-right">
+            <a ng-click="opsOtsikot.edit(osio)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}"></a>
+            <a ng-click="opsOtsikot.delete(osio)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></a>
+          </span>
+        </div>
+        <div ng-show="osio.tekstiKappale.$$edit">
+          <div class="input-group">
+            <input ng-model="osio.tekstiKappale.nimi" slocalized class="form-control">
+            <span class="input-group-btn">
+              <button class="btn btn-default" ng-click="opsOtsikot.cancel(osio)" kaanna="'peruuta'"></button>
+              <button class="btn btn-primary" ng-click="opsOtsikot.save(osio)" kaanna="'tallenna'"></button>
+            </span>
+          </div>
+        </div>
+      </div>
       <div class="list-group-item pohjan-muokkaus">
-
         <div class="input-group" oikeustarkastelu="{ target: 'pohja', permission: 'muokkaus' }">
-          <input class="form-control" ng-model="uusi[osio].nimi" slocalized ng-enter="hasText(osio) && pohjaOps.addNew(osio)"
+          <input class="form-control" ng-model="osio.$$nimi" slocalized ng-enter="hasText(osio.$$nimi) && pohjaOps.addNew(osio)"
                  placeholder="{{'luo-uusi-tekstikappale'|kaanna}}"
-                 ng-disabled="rakenneEdit[osio]">
+                 ng-disabled="osio.$$edit">
           <span class="input-group-btn">
-            <button class="btn btn-primary" kaanna="'lisaa'" ng-click="pohjaOps.addNew(osio)" ng-disabled="rakenneEdit[osio] || !hasText(osio)"></button>
+            <button class="btn btn-primary" kaanna="'lisaa'" ng-click="pohjaOps.addNew(osio)" ng-disabled="osio.$$edit || !hasText(osio.$$nimi)"></button>
           </span>
         </div>
 
         <div class="rakenne">
 
-          <div ng-show="model[osio].lapset.length === 0" kaanna="'ei-tekstikappaleita'"></div>
+          <div ng-show="osio.lapset.length === 0" kaanna="'ei-tekstikappaleita'"></div>
 
-          <button ng-show="rakenneEdit[osio]" class="btn btn-default" kaanna="'peru-rakenne'" ng-click="rakenne.cancel(osio)"></button>
-          <button ng-show="rakenneEdit[osio]" class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="rakenne.save(osio)"></button>
+          <button ng-show="osio.$$edit" class="btn btn-default" kaanna="'peru-rakenne'" ng-click="rakenne.cancel(osio)"></button>
+          <button ng-show="osio.$$edit" class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="rakenne.save(osio)"></button>
 
-          <button ng-hide="rakenneEdit[osio] || !model[osio].lapset || model[osio].lapset.length === 0"
+          <button ng-hide="osio.$$edit || !osio.lapset || osio.lapset.length === 0"
                   class="btn btn-default" kaanna="'muokkaa-rakennetta'" ng-click="rakenne.edit(osio)"></button>
 
-          <div ng-show="model[osio].lapset.length > 0" ui-tree class="tekstikappaleet" data-empty-place-holder-enabled="true" data-drag-enabled="rakenneEdit[osio]">
-            <ul ui-tree-nodes ng-model="model[osio].lapset">
-              <li ng-repeat="kappale in model[osio].lapset" ui-tree-node ng-include="'views/opetussuunnitelmat/pohja/treenode.html'"></li>
+          <div ng-show="osio.lapset.length > 0" ui-tree class="tekstikappaleet" data-empty-place-holder-enabled="true" data-drag-enabled="osio.$$edit">
+            <ul ui-tree-nodes ng-model="osio.lapset">
+              <li ng-repeat="kappale in osio.lapset" ui-tree-node ng-include="'views/opetussuunnitelmat/pohja/treenode.html'"></li>
             </ul>
           </div>
         </div>

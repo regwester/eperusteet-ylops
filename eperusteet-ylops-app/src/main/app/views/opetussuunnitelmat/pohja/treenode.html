@@ -1,12 +1,12 @@
 <div class="teksti-node" ng-class="{editmode: kappaleEdit === kappale}">
   <div class="teksti-node-actions">
-    <span ng-hide="rakenneEdit[osio]">
+    <span ng-hide="osio.$$edit">
       <a ng-click="pohjaOps.edit(kappale)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}"></a>
       <a ng-click="pohjaOps.delete(osio, kappale)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></a>
     </span>
   </div>
 
-  <span ng-show="rakenneEdit[osio]" icon-role="drag" ui-tree-handle></span>
+  <span ng-show="osio.$$edit" icon-role="drag" ui-tree-handle></span>
   <a ng-href="{{kappale.$url}}"
      ng-if="kappaleEdit !== kappale" ng-bind="kappale.tekstiKappale.nimi || 'nimeton' | kaanna"
      ng-attr-title="{{kappale.tekstiKappale.nimi | kaanna}}"></a>
