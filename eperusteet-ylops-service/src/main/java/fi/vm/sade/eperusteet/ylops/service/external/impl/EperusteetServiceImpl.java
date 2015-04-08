@@ -29,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,6 +70,20 @@ public class EperusteetServiceImpl implements EperusteetService {
         client = new RestTemplate(Arrays.asList(converter));
     }
 
+    private Set<String> getKoulutuskoodit() {
+        String[] vaihtoehdot = {
+            "koulutustyyppi_16",
+            "koulutustyyppi_15",
+            "koulutustyyppi_6"
+        };
+        return new HashSet<>(Arrays.asList(vaihtoehdot));
+    }
+
+    @Override
+    public List<PerusteInfo> findPerusteet() {
+        return findPerusteet(getKoulutuskoodit());
+    }
+
     @Override
     public List<PerusteInfo> findPerusteet(Set<String> tyypit) {
         List<PerusteInfo> infot = new ArrayList<>();
@@ -105,7 +120,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         PerusopetusPerusteDto peruste = client.getForObject(koodistoServiceUrl
             + "/api/perusteet/{id}/kaikki", PerusopetusPerusteDto.class, id);
 
-        if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi()) || peruste.getPerusopetus() == null) {
+        if (peruste == null || !getKoulutuskoodit().contains(peruste.getKoulutustyyppi().toLowerCase())) {
             throw new BusinessRuleViolationException("Perustetta ei löytynyt tai se ei ole perusopetuksen peruste");
         }
 
@@ -115,7 +130,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     @Cacheable("perusteet")
     public Peruste getPerusopetuksenPeruste(String diaarinumero) {
-        PerusteInfo perusteInfoDto = findPerusopetuksenPerusteet().stream()
+        PerusteInfo perusteInfoDto = findPerusteet().stream()
             .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
             .findAny()
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));

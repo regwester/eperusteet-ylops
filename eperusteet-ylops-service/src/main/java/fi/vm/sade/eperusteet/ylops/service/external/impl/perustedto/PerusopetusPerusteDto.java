@@ -44,4 +44,5 @@ public class PerusopetusPerusteDto {
     private String tyyppi;
     private Set<String> korvattavatDiaarinumerot;
     private PerusopetuksenPerusteenSisaltoDto perusopetus;
+    private EsiopetuksenPerusteenSisaltoDto esiopetus;
 }

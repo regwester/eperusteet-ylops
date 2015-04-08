@@ -288,42 +288,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    @Override
-    public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaDto opetussuunnitelmaDto) {
-        Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
-        // Jokainen pohja sisältää OPH:n organisaationaan
-        ops.getOrganisaatiot().add(SecurityUtil.OPH_OID);
+    private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, Peruste peruste) {
+        return ops;
+    }
 
-        Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD));
-        if (CollectionUtil.intersect(userOids, ops.getOrganisaatiot()).isEmpty()) {
-            throw new BusinessRuleViolationException("Käyttäjällä ei ole luontioikeutta opetussuunnitelman pohjan organisaatioissa");
-        }
-
-        final String diaarinumero = ops.getPerusteenDiaarinumero();
-        if (StringUtils.isBlank(diaarinumero)) {
-            throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei ole määritelty");
-        } else if (eperusteetService.findPerusopetuksenPerusteet().stream()
-                .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
-            throw new BusinessRuleViolationException("Diaarinumerolla " + diaarinumero
-                    + " ei löydy voimassaolevaa perustetta");
-        }
-
-        if (ops.getPohja() != null) {
-            throw new BusinessRuleViolationException("Opetussuunnitelman pohjalla ei voi olla pohjaa");
-        }
-
-        ops.setTila(Tila.LUONNOS);
-        lisaaTekstipuunJuuri(ops);
-
-        ops = repository.save(ops);
-        lisaaTekstipuunLapset(ops);
-
-        Peruste perusteDto = eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
-
+    private Opetussuunnitelma addPohjaPerusopetus(Opetussuunnitelma ops, Peruste peruste) {
         Long opsId = ops.getId();
 
-        PerusopetuksenPerusteenSisalto sisalto
-                = perusteDto.getPerusopetus();
+        PerusopetuksenPerusteenSisalto sisalto = peruste.getPerusopetus();
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
@@ -339,6 +311,50 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             sisalto.getVuosiluokkakokonaisuudet().stream()
                     .map(OpsDtoMapper::fromEperusteet)
                     .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
+        }
+        return ops;
+    }
+
+    @Override
+    public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaDto opetussuunnitelmaDto) {
+        Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
+        // Jokainen pohja sisältää OPH:n organisaationaan
+        ops.getOrganisaatiot().add(SecurityUtil.OPH_OID);
+
+        Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD));
+        if (CollectionUtil.intersect(userOids, ops.getOrganisaatiot()).isEmpty()) {
+            throw new BusinessRuleViolationException("Käyttäjällä ei ole luontioikeutta opetussuunnitelman pohjan organisaatioissa");
+        }
+
+        final String diaarinumero = ops.getPerusteenDiaarinumero();
+        if (StringUtils.isBlank(diaarinumero)) {
+            throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei ole määritelty");
+        } else if (eperusteetService.findPerusteet().stream()
+                .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
+            throw new BusinessRuleViolationException("Diaarinumerolla " + diaarinumero
+                    + " ei löydy voimassaolevaa perustetta");
+        }
+
+        if (ops.getPohja() != null) {
+            throw new BusinessRuleViolationException("Opetussuunnitelman pohjalla ei voi olla pohjaa");
+        }
+
+        ops.setTila(Tila.LUONNOS);
+        lisaaTekstipuunJuuri(ops);
+
+        ops = repository.save(ops);
+        lisaaTekstipuunLapset(ops);
+
+        Peruste peruste = eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
+        if (peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_16")) {
+            ops = addPohjaPerusopetus(ops, peruste);
+        }
+        else if (peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_6")
+                || peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_15")) {
+            ops = addPohjaLisaJaEsiopetus(ops, peruste);
+        }
+        else {
+            throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);

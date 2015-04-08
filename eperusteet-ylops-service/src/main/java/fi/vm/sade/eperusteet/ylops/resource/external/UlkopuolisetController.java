@@ -58,12 +58,7 @@ public class UlkopuolisetController {
     @RequestMapping(value = "/julkaistutperusteet", method = GET)
     @ResponseBody
     public ResponseEntity<List<PerusteInfo>> getPerusteet() {
-        String[] vaihtoehdot = {
-            "koulutustyyppi_16",
-            "koulutustyyppi_15",
-            "koulutustyyppi_6"
-        };
-        return new ResponseEntity<>(eperusteetService.findPerusteet(new HashSet<>(Arrays.asList(vaihtoehdot))), HttpStatus.OK);
+        return new ResponseEntity<>(eperusteetService.findPerusteet(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/perusopetusperusteet", method = GET)

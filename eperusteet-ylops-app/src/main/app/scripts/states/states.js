@@ -210,7 +210,7 @@ ylopsApp
           pohjaId: ['$stateParams', function ($stateParams) {
             return $stateParams.pohjaId;
           }],
-          perusteet: ['EperusteetPerusopetus', 'pohjaId', function (EperusteetPerusopetus, pohjaId) {
+          perusteet: ['EperusteetValmiitPerusteet', 'pohjaId', function (EperusteetPerusopetus, pohjaId) {
             if (pohjaId === 'uusi') {
               return EperusteetPerusopetus.query({}).$promise;
             }
