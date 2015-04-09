@@ -78,9 +78,19 @@ ylopsApp
     VuosiluokkaCRUD.save({
       opsId: opetussuunnitelma.id,
       vlkId: oppiaineenVlk.id,
-      oppiaineId: oppiaine.id,
+      oppiaineId: oppiaine.id
     }, model, function (res) {
       Notifikaatiot.onnistui('tallennettu-ok');
+      cb(res);
+    }, Notifikaatiot.serverCb);
+  };
+  this.saveValinnainenVuosiluokka = function (vlId, model, cb) {
+    VuosiluokkaCRUD.saveValinnainen({
+      opsId: opetussuunnitelma.id,
+      vlkId: oppiaineenVlk.id,
+      oppiaineId: oppiaine.id,
+      vvlId: vlId
+    }, model, function (res) {
       cb(res);
     }, Notifikaatiot.serverCb);
   };

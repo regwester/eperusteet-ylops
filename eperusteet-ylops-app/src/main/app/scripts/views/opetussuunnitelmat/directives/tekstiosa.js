@@ -62,4 +62,8 @@ ylopsApp
     Editointikontrollit.startEditing();
     $scope.focusAndScroll();
   };
+
+  $scope.remove = function () {
+    $scope.callbacks.remove($scope.muokattava);
+  };
 });

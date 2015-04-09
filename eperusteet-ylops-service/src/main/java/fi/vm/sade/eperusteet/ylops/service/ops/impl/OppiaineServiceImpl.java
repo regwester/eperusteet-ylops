@@ -58,6 +58,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -221,7 +222,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiaineDto addValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
-                                      Set<Vuosiluokka> vuosiluokat, Set<TekstiosaDto> tavoitteetDto) {
+                                      Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto) {
 
         OppiaineenVuosiluokkakokonaisuusDto oavlktDto =
             oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
@@ -254,7 +255,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
-                                         Set<Vuosiluokka> vuosiluokat, Set<TekstiosaDto> tavoitteetDto) {
+                                         Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto) {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
         assertExists(oppiaine, "Päivitettävää oppiainetta ei ole olemassa");
 
@@ -264,41 +265,44 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private Set<Oppiaineenvuosiluokka> luoOppiaineenVuosiluokat(Set<Vuosiluokka> vuosiluokat,
-                                                                Set<TekstiosaDto> tavoitteetDto) {
-        List<Tekstiosa> tavoitteet = mapper.mapAsList(tavoitteetDto, Tekstiosa.class);
+                                                                List<TekstiosaDto> tavoitteetDto) {
+        return vuosiluokat.stream().map(Oppiaineenvuosiluokka::new)
+                          .map(oavl -> asetaOppiaineenVuosiluokanSisalto(oavl, tavoitteetDto))
+                          .collect(Collectors.toSet());
+    }
 
-        Set<Oppiaineenvuosiluokka> oaVuosiluokat =
-            vuosiluokat.stream().map(Oppiaineenvuosiluokka::new).collect(Collectors.toSet());
+    private Oppiaineenvuosiluokka asetaOppiaineenVuosiluokanSisalto(Oppiaineenvuosiluokka oavl,
+                                                                    List<TekstiosaDto> tavoitteetDto) {
+        List<Tekstiosa> tavoitteet = mapper.mapAsList(tavoitteetDto, Tekstiosa.class);
 
         List<Keskeinensisaltoalue> sisaltoalueet =
             tavoitteet.stream()
                       .map(tekstiosa -> {
                           Keskeinensisaltoalue k = new Keskeinensisaltoalue();
+                          k.setTunniste(UUID.randomUUID());
                           k.setKuvaus(tekstiosa.getTeksti());
                           return k;
                       })
                       .collect(Collectors.toList());
 
-        oaVuosiluokat.forEach(oavl -> {
-                                  List<Keskeinensisaltoalue> oavlSisaltoalueet =
-                                      sisaltoalueet.stream()
-                                                   .map(k -> Keskeinensisaltoalue.copyOf(k))
-                                                   .collect(Collectors.toList());
-                                  oavl.setSisaltoalueet(oavlSisaltoalueet);
+        List<Keskeinensisaltoalue> oavlSisaltoalueet =
+            sisaltoalueet.stream()
+                         .map(k -> Keskeinensisaltoalue.copyOf(k))
+                         .collect(Collectors.toList());
+        oavl.setSisaltoalueet(oavlSisaltoalueet);
 
-                                  List<Opetuksentavoite> oavlTavoitteet =
-                                      StreamUtils.zip(tavoitteet.stream(), oavlSisaltoalueet.stream(),
-                                                      (tekstiosa, sisaltoalue) -> {
-                                                          Opetuksentavoite t = new Opetuksentavoite();
-                                                          t.setTavoite(tekstiosa.getOtsikko());
-                                                          t.setSisaltoalueet(Collections.singleton(sisaltoalue));
-                                                          return t;
-                                                      })
-                                                 .collect(Collectors.toList());
-                                  oavl.setTavoitteet(oavlTavoitteet);
-                              }
-        );
-        return oaVuosiluokat;
+        List<Opetuksentavoite> oavlTavoitteet =
+            StreamUtils.zip(tavoitteet.stream(), oavlSisaltoalueet.stream(),
+                            (tekstiosa, sisaltoalue) -> {
+                                Opetuksentavoite t = new Opetuksentavoite();
+                                t.setTunniste(UUID.randomUUID());
+                                t.setTavoite(tekstiosa.getOtsikko());
+                                t.setSisaltoalueet(Collections.singleton(sisaltoalue));
+                                return t;
+                            })
+                       .collect(Collectors.toList());
+        oavl.setTavoitteet(oavlTavoitteet);
+        return oavl;
     }
 
     @Override
@@ -367,20 +371,37 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkaDto dto) {
-        Oppiaineenvuosiluokka oppiaineenVuosiluokka = assertExists(findVuosiluokka(opsId, id, dto.getId()),"Vuosiluokkaa ei löydy");
+        Oppiaineenvuosiluokka oppiaineenVuosiluokka = assertExists(findVuosiluokka(opsId, id, dto.getId()), "Vuosiluokkaa ei löydy");
 
         // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden ja tavoitteiden kuvaukset,
         // noin muutoin sisältöön ei pidä kajoaman
         dto.getSisaltoalueet().forEach(
-            sisaltoalueDto
-            -> oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
-            .ifPresent(sa -> sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class))));
+            sisaltoalueDto ->
+                oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
+                                     .ifPresent(sa -> sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class))));
         dto.getTavoitteet().forEach(
-            tavoiteDto
-            -> oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
-            .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
+            tavoiteDto ->
+                oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
+                                     .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
         return mapper.map(oppiaineenVuosiluokka, OppiaineenVuosiluokkaDto.class);
+    }
+
+    public OppiaineenVuosiluokkaDto updateValinnaisenVuosiluokanSisalto(@P("opsId") Long opsId, Long id,
+                                                                        Long oppiaineenVuosiluokkaId,
+                                                                        List<TekstiosaDto> tavoitteetDto) {
+
+
+        Oppiaineenvuosiluokka oavl = assertExists(findVuosiluokka(opsId, id, oppiaineenVuosiluokkaId), "Vuosiluokkaa ei löydy");
+
+        Oppiaine oppiaine = oppiaineet.findOne(id);
+        if (oppiaine.getTyyppi() == OppiaineTyyppi.YHTEINEN) {
+            throw new BusinessRuleViolationException("Oppiaine ei ole valinnainen");
+        }
+
+        oavl = asetaOppiaineenVuosiluokanSisalto(oavl, tavoitteetDto);
+        oavl = vuosiluokat.save(oavl);
+        return mapper.map(oavl, OppiaineenVuosiluokkaDto.class);
     }
 
     private Oppiaine getOppiaine(Long opsId, Long oppiaineId) {
