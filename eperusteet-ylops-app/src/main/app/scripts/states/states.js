@@ -30,6 +30,10 @@ ylopsApp
         resolve: {
           casTiedot: ['Oikeudet', '$q', function (Oikeudet, $q) {
             return $q.all([Oikeudet.getKayttaja().$promise, Oikeudet.getCasTiedot()]);
+          }],
+          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
+          kayttajaOikeudetNouto: ['casTiedot', 'opsOikeudet', function (casTiedot, opsOikeudet) {
+            return opsOikeudet.query();
           }]
         }
       })
@@ -49,7 +53,7 @@ ylopsApp
       .state('root.opetussuunnitelmat', {
         url: '/opetussuunnitelmat',
         abstract: true,
-        template: '<div ui-view></div>',
+        template: '<div ui-view></div>'
       })
 
       .state('root.opetussuunnitelmat.lista', {
@@ -74,6 +78,10 @@ ylopsApp
           }],
           vuosiluokkakokonaisuudet: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
             return vuosiluokatService.getVuosiluokkakokonaisuudet(opsModel);
+          }],
+          'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
+          'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+            return opsOikeudet.fetch($stateParams);
           }]
         },
         controller: function ($scope, opsModel, vuosiluokkakokonaisuudet, opsService, $rootScope) {
@@ -180,6 +188,10 @@ ylopsApp
           }],
           pohjaModel: ['opsService', 'pohjaId', function(opsService, pohjaId) {
             return opsService.fetchPohja(pohjaId);
+          }],
+          'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
+          'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+            return opsOikeudet.fetch($stateParams);
           }]
         }
       })
@@ -203,6 +215,10 @@ ylopsApp
               return EperusteetPerusopetus.query({}).$promise;
             }
             return null;
+          }],
+          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
+          opsOikeudetNouto: ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+            return opsOikeudet.fetch($stateParams);
           }]
         }
       })

@@ -45,16 +45,6 @@ ylopsApp
 
   .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData, Kaanna) {
     var currentState = null;
-    var STATE_ROOTS = {
-      'root.opetussuunnitelmat.yksi': {
-        state: 'root.opetussuunnitelmat.lista',
-        label: 'opetussuunnitelmat'
-      },
-      'root.pohjat.yksi': {
-        state: 'root.pohjat.lista',
-        label: 'pohjat'
-      },
-    };
 
     var STATES = {
       'root.opetussuunnitelmat.yksi.sisalto': {
@@ -91,6 +81,14 @@ ylopsApp
         useData: 'vlkNimi',
         useId: 'vlkId',
         parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
+      },
+      'root.opetussuunnitelmat.yksi.valinnaiset': {
+        parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+        label: 'valinnaiset-oppiaineet'
+      },
+      'root.opetussuunnitelmat.yksi.uusioppiaine': {
+        parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+        label: 'uusi-oppiaine'
       },
       'root.opetussuunnitelmat.yksi.oppiaine.oppiaine': {
         useData: 'oppiaineNimi',
@@ -142,26 +140,21 @@ ylopsApp
       }
       $scope.crumbs = [];
 
-      _.each(STATE_ROOTS, function (root, key) {
-        if (toState.name.indexOf(key) === 0 && toState.name !== key) {
-          $scope.crumbs.push({
-            url: $state.href(root.state),
-            label: root.label
-          });
-        }
-      });
-
       var path = getPath(toState.name);
       _(path).reverse().each(function (item) {
         var params = {};
         if (item.useId) {
           params[item.useId] = MurupolkuData.get(item.useId);
         }
-        $scope.crumbs.push({
+
+        // Jos ollaan luomassa uutta OPS:ia, niin ei laiteta murupolkuun linkkiä sisältöön. Uutta luodessa ei sisältöä ole vielä olemassa.
+        if (!(item.useData && item.useData === 'opsNimi' && item.state === 'root.opetussuunnitelmat.yksi.sisalto' && MurupolkuData.get(item.useData) === 'uusi')) {
+          $scope.crumbs.push({
           url: $state.href(item.state, params),
           label: item.useData ? MurupolkuData.get(item.useData) :
                  (item.label ? item.label : _.last(item.state.split('.')))
-        });
+          });
+        }
       }).value();
 
       setTitle();

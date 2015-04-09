@@ -7,29 +7,56 @@
   }
 }
 
+$active-tab-bg: #e4e4e4;
+
 .vuosiluokka {
   h2 {
     margin-bottom: 40px;
   }
   .vl-tabit {
     font-size: 110%;
-    cursor: pointer;
     float: left;
     border-bottom: none;
     li a {
-      padding: 10px 15px;
+      border-top-color: #ccc;
+      border-right-color: #ccc;
+      border-left-color: #ccc;
+      border-bottom-color: #ccc;
+      padding: 10px 25px;
+      cursor: pointer;
+      background: white;
+      &:hover {
+        border-color: #ccc;
+      }
     }
-    li.active a {
-      border-bottom: none;
+    li.active {
+      a {
+        border-top-color: #ccc;
+        border-right-color: #ccc;
+        border-left-color: #ccc;
+        border-bottom: 1px solid $active-tab-bg;
+        box-shadow: none;
+        background: $active-tab-bg;
+        cursor: default;
+        &:hover, *:hover {
+          text-decoration: none;
+        }
+      }
     }
   }
   .content {
-    padding-top: 60px;
+    padding-top: 41px;
+  }
+  .tab-content-container {
+    background: $active-tab-bg;
+    border: 1px solid #ccc;
+    padding: 10px;
   }
 
   $tavoite-border: 1px solid #ccc;
 
   .tavoite {
+    background-color: white;
     position: relative;
     border: $tavoite-border;
     .header {
@@ -121,4 +148,10 @@
 
 .popover {
   max-width: 400px;
+}
+
+.everclear-fix {
+  .row:after {
+    clear: right;
+  }
 }

@@ -29,4 +29,7 @@ import java.util.Set;
 public class OppiaineSuppeaDto extends OppiaineBaseDto {
     private Set<OppiaineSuppeaDto> oppimaarat;
     private Set<OppiaineenVuosiluokkakokonaisuusSuppeaDto> vuosiluokkakokonaisuudet;
+    private String koodiUri;
+    private String koodiArvo;
 }
+

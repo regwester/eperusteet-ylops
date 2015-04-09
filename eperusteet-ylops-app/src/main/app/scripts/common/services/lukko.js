@@ -113,6 +113,15 @@ ylopsApp
     etag = null;
   }
 
+  function lockRakenne(params, cb) {
+    doLock(OpetussuunnitelmanTekstitRakenneLukko, params, cb);
+  }
+
+  function unlockRakenne(params, cb) {
+    OpetussuunnitelmanTekstitRakenneLukko.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
+    etag = null;
+  }
+
   function lockTekstikappale(params, cb) {
     doLock(OpetussuunnitelmanTekstitLukko, params, cb);
   }
@@ -125,6 +134,8 @@ ylopsApp
   this.isLocked = checkLock;
   this.lock = lock;
   this.unlock = unlock;
+  this.lockRakenne = lockRakenne;
+  this.unlockRakenne = unlockRakenne;
   this.lockTekstikappale = lockTekstikappale;
   this.unlockTekstikappale = unlockTekstikappale;
 });

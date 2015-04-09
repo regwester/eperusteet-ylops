@@ -30,10 +30,17 @@ ylopsApp
       opsId: '@id'
     }, {
       laajaalaiset: {method: 'GET', url: YlopsResources.OPS + '/laajaalaisetosaamiset', isArray: true},
-      setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'}
+      setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'},
+      lisaaKielitarjonta: {method: 'POST', url: YlopsResources.OPS + '/kielitarjonta', isArray: true},
     });
   })
-
+  .factory('OpetussuunnitelmaOikeudet', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/oikeudet', {
+      opsId: '@id'
+    }, {
+      query: {method: 'GET', isArray: false}
+    });
+  })
   .factory('OpetussuunnitelmanTekstit', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/tekstit/:viiteId', {
       viiteId: '@id'
@@ -56,7 +63,10 @@ ylopsApp
     return $resource(YlopsResources.OPPIAINE, {
       oppiaineId: '@id'
     }, {
-      peruste: {method: 'GET', url: YlopsResources.OPPIAINE + '/peruste'}
+      peruste: {method: 'GET', url: YlopsResources.OPPIAINE + '/peruste'},
+      saveValinnainen: {method: 'POST', url: YlopsResources.OPPIAINE + '/valinnainen'},
+      addKielitarjonta: {method: 'POST', url: YlopsResources.OPPIAINE + '/kielitarjonta'},
+      getParent: {method: 'GET', url: YlopsResources.OPPIAINE + '/parent'}
     });
   })
 

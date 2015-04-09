@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksenkohdealue;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
@@ -70,8 +71,14 @@ public class OpsDtoMapper {
     }
 
     public Oppiaine fromDto(OppiaineDto dto) {
+        return fromDto(dto, true);
+    }
 
-        Oppiaine oppiaine = new Oppiaine(dto.getTunniste());
+    public Oppiaine fromDto(OppiaineDto dto, boolean includeVlk) {
+        Oppiaine oppiaine = dto.getTyyppi() != OppiaineTyyppi.YHTEINEN && dto.getTunniste() == null ?
+                            new Oppiaine(dto.getTyyppi()) : // Uusi valinnainen aine, luodaan uusi tunniste
+                            new Oppiaine(dto.getTunniste());
+
         mapper.map(dto, oppiaine);
         if (dto.getOppimaarat() != null) {
             dto.getOppimaarat().forEach(o -> {
@@ -81,7 +88,7 @@ public class OpsDtoMapper {
             });
         }
 
-        if (dto.getVuosiluokkakokonaisuudet() != null) {
+        if (includeVlk && dto.getVuosiluokkakokonaisuudet() != null) {
             dto.getVuosiluokkakokonaisuudet()
                 .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
                     mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
@@ -112,6 +119,7 @@ public class OpsDtoMapper {
         dto.setTila(Tila.LUONNOS);
 
         dto.setNimi(oa.getNimi());
+        dto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         dto.setTunniste(oa.getTunniste());
         dto.setKoosteinen(oa.getKoosteinen());
         dto.setKoodiArvo(oa.getKoodiArvo());
@@ -142,6 +150,7 @@ public class OpsDtoMapper {
         dto.setTila(Tila.LUONNOS);
 
         dto.setNimi(oa.getNimi());
+        dto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         dto.setKoosteinen(oa.getKoosteinen());
         dto.setTunniste(oa.getTunniste());
         dto.setKoodiArvo(oa.getKoodiArvo());

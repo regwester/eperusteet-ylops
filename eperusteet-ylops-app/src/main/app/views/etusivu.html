@@ -1,6 +1,6 @@
 <h1 kaanna="'ops-tyokalu'"></h1>
 
-<div class="row etusivu-osiot">
+<div class="row etusivu-osiot" kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'luku' }">
 
   <div class="osio col-md-8 col-sm-9">
     <h2 kaanna="'omat-opetussuunnitelmat'"></h2>
@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div class="osio col-md-4 col-sm-3">
+  <div class="osio col-md-4 col-sm-3" kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'luonti' }">
     <h2 kaanna="'aloita-uusi-ops'"></h2>
     <form name="aloitauusiForm" ng-controller="UusiOpsController">
       <label>
@@ -48,8 +48,7 @@
 </div>
 
 <div ng-controller="EtusivuController">
-  <div ng-if="isVirkailija()" class="row etusivu-osiot">
-
+  <div ng-if="isVirkailija()" class="row etusivu-osiot" kayttajaoikeustarkastelu="{ target: 'pohja', permission: 'luku' }">
     <div class="osio col-md-8 col-sm-9">
       <h2 kaanna="'pohjat'"></h2>
       <div ng-controller="PohjaListaController">
@@ -57,7 +56,7 @@
       </div>
     </div>
 
-    <div class="osio col-md-4 col-sm-3">
+    <div class="osio col-md-4 col-sm-3" kayttajaoikeustarkastelu="{ target: 'pohja', permission: 'luonti' }">
       <h2 kaanna="'aloita-uusi-pohja'"></h2>
       <button class="btn btn-primary luo-nappi" ng-click="addNewPohja()" kaanna="'luo-pohja'"></button>
     </div>

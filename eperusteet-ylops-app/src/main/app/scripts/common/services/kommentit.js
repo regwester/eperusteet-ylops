@@ -112,7 +112,7 @@ ylopsApp
   function poistaKommentti(viesti) {
     KommentitCRUD.remove({ id: viesti.id }, function() {
       viesti.sisalto = '';
-      viesti.muokattu = new Date();
+      viesti.muokattu = (new Date()).getTime();
       viesti.poistettu = true;
       viesti.muokkaaja = null;
       viesti.lahettaja = null;

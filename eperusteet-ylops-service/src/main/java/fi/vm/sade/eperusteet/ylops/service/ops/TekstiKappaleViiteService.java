@@ -23,22 +23,22 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * @author mikkom
  */
 public interface TekstiKappaleViiteService {
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId,
                                                        TekstiKappaleViiteDto.Matala viiteDto);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto updateTekstiKappaleViite(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto uusi);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void reorderSubTree(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void removeTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(@P("opsId") Long opsId, Long viiteId);
 }

@@ -119,6 +119,11 @@ public class OpetussuunnitelmaController {
         opetussuunnitelmaService.removeOpetussuunnitelma(id);
     }
 
+    @RequestMapping(value = "/oikeudet", method = RequestMethod.GET)
+    public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudet() {
+        return new ResponseEntity<>(permissionManager.getOpsPermissions(), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}/oikeudet", method = RequestMethod.GET)
     public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudet(
         @PathVariable("id") final Long id) {

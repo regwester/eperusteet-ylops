@@ -1,8 +1,8 @@
 <div class="ops-edit-container">
   <h2 ng-hide="luonnissa">
     <div class="action-buttons-inline">
-      <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()"></button>
-      <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+      <button ng-hide="editMode" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="delete()" oikeustarkastelu="{ target: 'pohja', permission: 'poisto' }"></button>
+      <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()" oikeustarkastelu="{ target: 'pohja', permission: 'muokkaus' }"></button>
     </div>
     <span kaanna="'pohjan-tiedot'"></span>
   </h2>

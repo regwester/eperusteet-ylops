@@ -35,6 +35,7 @@ ylopsApp
   $scope.isActive = true;
   $scope.chosen = 0;
   $scope.collapsed = true;
+  $scope.showTakaisin = false;
 
   function listener(value) {
     $scope.isActive = value;
@@ -95,11 +96,13 @@ ylopsApp
     });
   }
 
-  function findActiveVuosiluokkaOrOppiaine(isOppiaine) {
+  function findActiveVuosiluokkaOrOppiaine(isOppiaine, isValinnaiset) {
     _.each($scope.items[$scope.chosen].items, function (item) {
       var vlkMatch = stateMatch(item.id, 'vlkId');
-      item.active = (isOppiaine && stateMatch(item.id, 'oppiaineId') && stateMatch(item.vlkId, 'vlkId')) ||
-                    (!isOppiaine && vlkMatch);
+      var itemVlkMatch = stateMatch(item.vlkId, 'vlkId');
+      item.active = (isValinnaiset && itemVlkMatch && item.id === 'valinnaiset') ||
+                    (isOppiaine && stateMatch(item.id, 'oppiaineId') && itemVlkMatch) ||
+                    (!isOppiaine && !isValinnaiset && vlkMatch);
       if (!item.active && vlkMatch) {
         MurupolkuData.set({vlkNimi: item.label, vlkId: item.id});
       }
@@ -110,17 +113,21 @@ ylopsApp
     _.each($scope.items, function (item) {
       item.active = false;
     });
+
     var inVuosiluokat = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus');
+    var inValinnaiset = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.valinnaiset');
     var inOppiaine = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.oppiaine');
-    if (inVuosiluokat || inOppiaine) {
+    if (inVuosiluokat || inOppiaine || inValinnaiset) {
       $scope.chosen = $scope.items.length - 1;
       MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat'});
       $scope.items[$scope.chosen].active = true;
-      findActiveVuosiluokkaOrOppiaine(inOppiaine);
+      findActiveVuosiluokkaOrOppiaine(inOppiaine, inValinnaiset);
     } else {
       findActiveTeksti();
     }
-    OpsNavigaatio.setItems($scope.items[$scope.chosen]);
+
+    var items = $scope.items[$scope.chosen];
+    OpsNavigaatio.setItems(items);
   }
 
   function createNavimenu(node) {

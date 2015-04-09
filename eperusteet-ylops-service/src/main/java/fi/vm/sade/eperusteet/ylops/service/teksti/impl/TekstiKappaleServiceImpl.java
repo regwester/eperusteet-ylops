@@ -21,12 +21,13 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
-import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
 /**
  *
@@ -45,7 +46,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     @Override
     @Transactional(readOnly = true)
     public TekstiKappaleDto get(Long id) {
-        TekstiKappale tekstiKappale = repository.getOne(id);
+        TekstiKappale tekstiKappale = repository.findOne(id);
         assertExists(tekstiKappale, "Pyydettyä tekstikappaletta ei ole olemassa");
         return mapper.map(tekstiKappale, TekstiKappaleDto.class);
     }
@@ -63,8 +64,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     @Override
     public TekstiKappaleDto update(TekstiKappaleDto tekstiKappaleDto) {
         Long id = tekstiKappaleDto.getId();
-        assertExists(id);
-        TekstiKappale current = repository.findOne(id);
+        TekstiKappale current = assertExists(repository.findOne(id),"Tekstikappaletta ei ole olemassa");
         repository.lock(current);
         mapper.map(tekstiKappaleDto, current);
         return mapper.map(repository.save(current), TekstiKappaleDto.class);
@@ -72,11 +72,11 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
 
     @Override
     public TekstiKappaleDto mergeNew(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
-        assertExists(viite.getTekstiKappale(), "Viitteellä ei ole tekstikappaletta");
+        if ( viite.getTekstiKappale() == null || viite.getTekstiKappale().getId() == null ) {
+            throw new IllegalArgumentException("Virheellinen viite");
+        }
         Long id = viite.getTekstiKappale().getId();
-        assertExists(id);
-
-        TekstiKappale clone = repository.findOne(id).copy();
+        TekstiKappale clone = assertExists(repository.findOne(id),"Tekstikappaletta ei ole olemassa").copy();
         mapper.map(tekstiKappaleDto, clone);
         clone = repository.save(clone);
 
@@ -90,17 +90,5 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     @Override
     public void delete(Long id) {
         repository.delete(id);
-    }
-
-    private void assertExists(Long id) {
-        if (!repository.exists(id)) {
-            throw new BusinessRuleViolationException("Pyydettyä tekstikappaletta ei ole olemassa");
-        }
-    }
-
-    private static void assertExists(Object o, String msg) {
-        if (o == null) {
-            throw new BusinessRuleViolationException(msg);
-        }
     }
 }

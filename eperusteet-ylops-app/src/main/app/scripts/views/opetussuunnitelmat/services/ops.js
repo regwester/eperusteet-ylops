@@ -48,7 +48,7 @@ ylopsApp
       deferred = OpetussuunnitelmaCRUD.get({opsId: opsId}, function (res) {
         MurupolkuData.set('opsNimi', angular.copy(res.nimi));
         ops = res;
-        (cb || angular.noop)(res);
+        (cb || angular.noop)(ops);
       }, Notifikaatiot.serverCb);
       return deferred;
     }
@@ -77,6 +77,10 @@ ylopsApp
     return deferred;
   }
 
+  this.oppiaineIsKieli = function(oppiaine) {
+    return _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK'], oppiaine.koodiArvo.toUpperCase());
+  };
+
   this.fetch = fetch;
   this.fetchPohja = fetch;
   this.refetch = refetch;
@@ -86,4 +90,47 @@ ylopsApp
   this.getId = function () {
     return opsId;
   };
-});
+})
+
+  .service('OpetussuunnitelmaOikeudetService', function ($rootScope,
+                                                         $stateParams,
+                                                         OpetussuunnitelmaOikeudet,
+                                                         OpsService,
+                                                         Notifikaatiot) {
+    var kayttajaOikeudet = null;
+    var opsOikeudet;
+
+    function fetch(stateParams) {
+      if (stateParams.id === 'uusi') {
+        return query();
+      }
+
+      var deferred = OpetussuunnitelmaOikeudet.get({opsId: stateParams.id}, function (res) {
+        opsOikeudet = res;
+      }, Notifikaatiot.serverCb);
+      return deferred.$promise;
+    }
+
+    function get() {
+      return _.clone(opsOikeudet);
+    }
+
+    function query() {
+      if (!kayttajaOikeudet) {
+        kayttajaOikeudet = OpetussuunnitelmaOikeudet.query();
+      }
+      return kayttajaOikeudet.$promise;
+    }
+
+    function onkoOikeudet(target, permission, kayttaja) {
+      var oikeudet = kayttaja ? kayttajaOikeudet : opsOikeudet;
+      return oikeudet ? _.contains(oikeudet[target], permission) : false;
+    }
+
+    return {
+      fetch: fetch,
+      get: get,
+      query: query,
+      onkoOikeudet: onkoOikeudet
+    };
+  });

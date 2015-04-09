@@ -1,7 +1,11 @@
+<div ng-hide="luonnissa || editMode" class="navigaatio-takaisin plain">
+  <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" icon-role="chevron-left" kaanna="'takaisin-osioihin'"></a>
+</div>
+
 <div class="ops-edit-container">
   <h2 ng-hide="luonnissa">
     <div class="action-buttons-inline">
-      <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()"></button>
+      <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }" icon-role="edit" ng-click="edit()"></button>
     </div>
     <span kaanna="'opsn-tiedot'"></span>
   </h2>
@@ -14,7 +18,7 @@
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
-        <label for="ops-field-nimi-readonly" kaanna="'nimi'"></label>
+        <label for="ops-field-nimi-readonly" kaanna="'opsin-nimi'"></label>
       </div>
       <div class="col-sm-9 formfield-data viewmode">
         <div id="ops-field-nimi-readonly" ng-bind="model.nimi | kaanna"></div>
@@ -91,10 +95,10 @@
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
-        <label for="ops-field-nimi"><span kaanna="'nimi'"></span>*</label>
+        <label for="ops-field-nimi"><span kaanna="'opsin-nimi'"></span>*</label>
       </div>
       <div class="col-sm-9 formfield-data">
-        <input id="ops-field-nimi" ng-model="editableModel.nimi" slocalized class="form-control">
+        <input id="ops-field-nimi" ng-model="editableModel.nimi" slocalized class="form-control" placeholder="{{'lisaa-opsin-nimi' | kaanna}}">
       </div>
     </div>
 

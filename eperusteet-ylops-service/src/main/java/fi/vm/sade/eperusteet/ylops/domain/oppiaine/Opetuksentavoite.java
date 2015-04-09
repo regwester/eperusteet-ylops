@@ -107,7 +107,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
         ot.setTavoite(other.getTavoite());
         ot.setLaajattavoitteet(
             other.getLaajattavoitteet().stream()
-            .map(lt -> new LaajaalainenosaaminenViite(lt))
+            .map(LaajaalainenosaaminenViite::new)
             .collect(Collectors.toSet())
         );
         ot.setSisaltoalueet(

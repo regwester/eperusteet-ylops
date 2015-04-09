@@ -25,15 +25,15 @@ import java.util.List;
  */
 public interface OrganisaatioService {
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     JsonNode getOrganisaatio(String organisaatioOid);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     JsonNode getPeruskoulutByKuntaId(String kuntaId);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     JsonNode getPeruskoulutByOid(String oid);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     JsonNode getPeruskoulutoimijat(List<String> kuntaIdt);
 }
