@@ -55,7 +55,7 @@ public class Keskeinensisaltoalue extends AbstractReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
     private LokalisoituTeksti kuvaus;
 
-    static Keskeinensisaltoalue copyOf(Keskeinensisaltoalue other) {
+    public static Keskeinensisaltoalue copyOf(Keskeinensisaltoalue other) {
         Keskeinensisaltoalue ks = new Keskeinensisaltoalue();
         ks.setTunniste(other.getTunniste());
         ks.setNimi(other.getNimi());

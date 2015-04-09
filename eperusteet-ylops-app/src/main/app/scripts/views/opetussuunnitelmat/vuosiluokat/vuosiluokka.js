@@ -14,21 +14,29 @@
 * European Union Public Licence for more details.
 */
 
+/* global _ */
+
 'use strict';
 
 ylopsApp
 .controller('VuosiluokkaBaseController', function ($scope, $stateParams, MurupolkuData, $state, Kaanna,
   VuosiluokatService, baseLaajaalaiset) {
+
   $scope.vuosiluokka = _.find($scope.oppiaineenVlk.vuosiluokat, function (vuosiluokka) {
     return '' + vuosiluokka.id === $stateParams.vlId;
   });
   $scope.vuosiluokkaNro = VuosiluokatService.fromEnum($scope.vuosiluokka.vuosiluokka);
   MurupolkuData.set('vuosiluokkaNimi', Kaanna.kaanna('vuosiluokka') + ' ' + $scope.vuosiluokkaNro);
-  $scope.perusteOpVlk = _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
-    return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
-  });
+  $scope.perusteOpVlk = $scope.perusteOppiaine ?
+    _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
+      return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
+    }) : null;
+
+  $scope.onValinnaiselle = !$scope.perusteOpVlk;
+  $scope.sisaltoAlueetMap = _.indexBy($scope.vuosiluokka.sisaltoalueet, 'id');
+
   $scope.laajaalaiset = _.indexBy(baseLaajaalaiset, 'tunniste');
-  $scope.perusteSisaltoalueet = _.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste');
+  $scope.perusteSisaltoalueet = $scope.perusteOpVlk ?_.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste') : [];
 
   $scope.isState = function (name) {
     return _.endsWith($state.current.name, 'vuosiluokka.' + name);
@@ -46,6 +54,7 @@ ylopsApp
   $scope.nimiOrder = Utils.sort;
   $scope.muokattavat = {};
 
+
   function mapModel() {
     $scope.tavoitteet = $scope.vuosiluokka.tavoitteet;
     processTavoitteet();
@@ -60,7 +69,7 @@ ylopsApp
   refetch();
 
   function processTavoitteet() {
-    var perusteKohdealueet = _.indexBy($scope.perusteOppiaine.kohdealueet, 'id');
+    var perusteKohdealueet = $scope.perusteOppiaine ? _.indexBy($scope.perusteOppiaine.kohdealueet, 'id') : [];
     _.each($scope.tavoitteet, function (item) {
       var perusteTavoite = _.find($scope.perusteOpVlk.tavoitteet, function (pTavoite) {
         return pTavoite.tunniste === item.tunniste;
@@ -126,8 +135,11 @@ ylopsApp
 
 .controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit,
   $timeout, $location, $anchorScroll, OppiaineService, Utils) {
+
   $scope.tunnisteet = [];
   $scope.muokattavat = {};
+  $scope.sisaltoInfo = {};
+  $scope.sisaltoInfoCollapse = false;
 
   function mapModel() {
     $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
@@ -184,7 +196,7 @@ ylopsApp
 
 })
 
-.directive('opsTeksti', function () {
+.directive('opsTeksti', function ($timeout, $window) {
   return {
     restrict: 'A',
     scope: {
@@ -200,6 +212,15 @@ ylopsApp
         collapsed: scope.editable
       };
       scope.isEmpty = _.isEmpty;
+      scope.focusAndScroll = function () {
+        $timeout(function () {
+          var el = element.find('[ckeditor]');
+          if (el && el.length > 0) {
+            el[0].focus();
+            $window.scrollTo(0, el.eq(0).offset().top - 400);
+          }
+        }, 300);
+      };
     }
   };
 })

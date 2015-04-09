@@ -166,3 +166,36 @@ label {
 a, a:focus {
   outline: 0;
 }
+
+.has-placeholder.cke_editable,
+.has-placeholder span.tekstikentta {
+  font-style: italic;
+  color: #aaa;
+}
+
+.title-addon {
+  color: #999;
+  margin-bottom: 20px;
+}
+
+.panel-body {
+  .panel-title {
+    font-size: 150%;
+  }
+}
+
+.panel-collapsed-body {
+  margin-top: 20px;
+}
+
+.panel-body {
+  .formfield-label > label {
+    font-size: 110%;
+  }
+}
+
+.form-short {
+  display: inline-block;
+  width: 8em;
+  margin-right: 10px;
+}

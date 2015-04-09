@@ -4,12 +4,12 @@
       <div class="list-group-item list-group-header" ng-bind="model[osio].tekstiKappale.nimi | kaanna"></div>
       <div class="list-group-item pohjan-muokkaus">
 
-        <div class="input-group">
-          <input class="form-control" ng-model="uusi.nimi" slocalized ng-enter="hasText() && pohjaOps.addNew(osio)"
+        <div class="input-group" oikeustarkastelu="{ target: 'pohja', permission: 'muokkaus' }">
+          <input class="form-control" ng-model="uusi[osio].nimi" slocalized ng-enter="hasText(osio) && pohjaOps.addNew(osio)"
                  placeholder="{{'luo-uusi-tekstikappale'|kaanna}}"
                  ng-disabled="rakenneEdit[osio]">
           <span class="input-group-btn">
-            <button class="btn btn-primary" kaanna="'lisaa'" ng-click="pohjaOps.addNew(osio)" ng-disabled="rakenneEdit[osio] || !hasText()"></button>
+            <button class="btn btn-primary" kaanna="'lisaa'" ng-click="pohjaOps.addNew(osio)" ng-disabled="rakenneEdit[osio] || !hasText(osio)"></button>
           </span>
         </div>
 

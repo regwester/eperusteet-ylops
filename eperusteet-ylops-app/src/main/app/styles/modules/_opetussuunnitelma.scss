@@ -1,13 +1,15 @@
 $ops-header-background: rgba(20, 158, 203, 0.06);
-$ops-header-height: 120px;
+$ops-header-height: 96px;
+$ops-header-padding: 6px;
 $ops-border: 1px solid #ddd;
 
 .ops-header {
   background-color: $ops-header-background;
   height: $ops-header-height;
   border: $ops-border;
-  padding: 15px;
+  padding: $ops-header-padding;
   position: relative;
+
   .ops-header-toiminnot {
     float: right;
   }
@@ -223,11 +225,27 @@ h1.plain {
 
 .tallenna-peruuta-nappi {
   margin-top: 20px;
-  margin-right: 20px;
+  margin-left: 20px;
   padding: 10px 20px;
 }
 
 .julkaisukieli {
   margin-top: 5px;
   margin-right: 20px;
+}
+
+.luontinapit {
+  text-align: right;
+}
+
+.kielitarjonta-modal {
+  padding: 20px;
+
+  .kieli-field {
+    margin-bottom: 20px;
+
+    button {
+      margin: 8px 0 0 0;
+    }
+  }
 }

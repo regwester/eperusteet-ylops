@@ -18,7 +18,7 @@
 
 ylopsApp
 .service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
-  Varmistusdialogi, Kaanna) {
+  Varmistusdialogi, Kaanna, OpsService, $rootScope) {
   function mapSisalto(root) {
     return {
       id: root.id,
@@ -39,9 +39,10 @@ ylopsApp
 
   function add(model, osio, opsId, uusi, cb) {
     var newNode = {tekstiKappale: angular.copy(uusi), lapset: []};
-    model[osio].lapset.push(newNode);
+    var parent = osio ? model[osio] : model;
+    parent.lapset.push(newNode);
     var params = {opsId: opsId};
-    OpetussuunnitelmanTekstit.setChild(_.extend({parentId: model[osio].id}, params), newNode, function (res) {
+    OpetussuunnitelmanTekstit.setChild(_.extend({parentId: parent.id}, params), newNode, function (res) {
       var otsikko = _.cloneDeep(newNode.tekstiKappale.nimi);
       newNode.id = res.id;
       newNode.omistussuhde = res.omistussuhde;
@@ -50,12 +51,15 @@ ylopsApp
       // TODO: lapsi-APIa käyttämällä ei tekstikappale tallennu samalla pyynnöllä
       OpetussuunnitelmanTekstit.save(params, res, function () {
         Notifikaatiot.onnistui('tallennettu-ok');
-        cb();
+        cb(res);
+        OpsService.refetch(function () {
+          $rootScope.$broadcast('rakenne:updated');
+        });
       }, Notifikaatiot.serverCb);
     }, Notifikaatiot.serverCb);
   }
 
-  function deleteKappale(model, osio, opsId, kappale) {
+  function deleteKappale(model, osio, opsId, kappale, cb) {
     var params = {opsId: opsId};
     OpetussuunnitelmanTekstit.delete(params, kappale, function () {
       var foundIndex = null, foundList = null;
@@ -69,6 +73,10 @@ ylopsApp
       if (foundList) {
         foundList.splice(foundIndex, 1);
       }
+      OpsService.refetch(function () {
+        $rootScope.$broadcast('rakenne:updated');
+        (cb || angular.noop)();
+      });
       Notifikaatiot.onnistui('poisto-onnistui');
     }, Notifikaatiot.serverCb);
   }
@@ -151,24 +159,21 @@ ylopsApp
   $scope.rakenne = {
     add: function (osio, event) {
       stopEvent(event);
-      Lukko.lock(commonParams, function () {
-        $scope.adding[osio] = true;
-      });
+      $scope.adding[osio] = true;
     },
     doAdd: function (osio) {
-      // Älä poista lukkoa, koska uuden kappaleen lisäyskenttä jää vielä näkyviin
       Lukko.lock(commonParams, function () {
         TekstikappaleOps.add($scope.model, osio, $stateParams.id, $scope.uusi, function () {
-          $scope.uusi = {nimi: {}};
-          mapModel();
+          Lukko.unlock(commonParams, function () {
+            $scope.uusi = {nimi: {}};
+            mapModel();
+          });
         });
       });
     },
     cancelAdd: function (osio) {
-      Lukko.unlock(commonParams, function () {
-        $scope.adding[osio] = false;
-        $scope.uusi = {nimi: {}};
-      });
+      $scope.adding[osio] = false;
+      $scope.uusi = {nimi: {}};
     },
     deleteKappale: function (osio, item) {
       lockTeksti(item.id, function () {
@@ -198,6 +203,9 @@ ylopsApp
         unlockTeksti(kappale.id, function () {
           $scope.kappaleEdit = null;
           Notifikaatiot.onnistui('tallennettu-ok');
+          opsService.refetch(function () {
+            $rootScope.$broadcast('rakenne:updated');
+          });
           delete kappale.$original;
         });
       }, Notifikaatiot.serverCb);

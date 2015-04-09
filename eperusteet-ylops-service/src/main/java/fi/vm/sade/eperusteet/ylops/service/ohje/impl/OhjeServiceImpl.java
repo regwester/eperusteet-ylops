@@ -19,16 +19,16 @@ import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
-import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
 /**
  * @author mikkom
@@ -84,9 +84,4 @@ public class OhjeServiceImpl implements OhjeService {
         repository.delete(ohje);
     }
 
-    private static void assertExists(Object o, String msg) {
-        if (o == null) {
-            throw new BusinessRuleViolationException(msg);
-        }
-    }
 }

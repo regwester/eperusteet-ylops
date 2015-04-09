@@ -12,10 +12,10 @@
 
     <ul class="ops-header-linkit" role="navigation">
       <li ng-repeat="linkki in linkit" ng-class="{active: linkki.active}">
-        <a ng-href="{{linkki.url}}" icon-role="{{linkki.role}}"><span ng-bind="linkki.label | kaanna"></span></a>
+        <a ng-hide="linkki.action" ng-href="{{linkki.url}}" icon-role="{{linkki.role}}"><span ng-bind="linkki.label | kaanna"></span></a>
+        <a ng-show="linkki.action" class="action-link" ng-click="linkki.action()" icon-role="{{linkki.role}}"><span ng-bind="linkki.label | kaanna"></span></a>
       </li>
     </ul>
 
   </div>
-
 </div>

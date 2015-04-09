@@ -26,18 +26,18 @@ import java.util.List;
  */
 public interface KoodistoService {
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     List<KoodistoKoodiDto> getAll(String koodisto);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     KoodistoKoodiDto get(String koodisto, String koodi);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     List<KoodistoKoodiDto> filterBy(String koodisto, String haku);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     List<KoodistoKoodiDto> getAlarelaatio(String koodi);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     List<KoodistoKoodiDto> getYlarelaatio(String koodi);
 }

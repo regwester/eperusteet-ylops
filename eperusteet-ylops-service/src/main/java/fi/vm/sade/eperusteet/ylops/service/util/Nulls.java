@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.util;
 
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -41,6 +42,13 @@ public final class Nulls {
             return "";
         }
         return s;
+    }
+
+    public static <T> T assertExists(T o, String msg) {
+        if (o == null) {
+            throw new NotExistsException(msg);
+        }
+        return o;
     }
 
 }

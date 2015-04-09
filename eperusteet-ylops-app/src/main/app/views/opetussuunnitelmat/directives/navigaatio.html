@@ -1,9 +1,5 @@
-<div role="navigation" class="navigaatio-ylataso" ng-if="isActive">
-  <div class="list-group list-group-horizontal">
-    <a ng-href="{{item.url}}" ng-repeat="item in items" class="list-group-item" ng-class="{active: item.active}">
-      <span ng-bind="item.label | kaanna"></span>
-    </a>
-  </div>
+<div class="navigaatio-takaisin" ng-if="isActive">
+  <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" icon-role="chevron-left" kaanna="'takaisin-osioihin'"></a>
 </div>
 
 <div class="navigaatio-wrapper" ng-if="isActive">

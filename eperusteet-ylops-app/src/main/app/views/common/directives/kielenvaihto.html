@@ -1,6 +1,6 @@
 <div ng-class="{modalkielenvaihto: isModal}">
-  <div ng-if="isModal">
-    <span kaanna="'sisallon-kieli'"></span>::
+  <span ng-if="isModal">
+    <span kaanna="'sisallon-kieli'"></span>:
     <span dropdown class="kieli-dropdown">
       <button class="btn btn-default dropdown-toggle">{{sisaltokieli|kaanna}} <span class="caret"></span></button>
       <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -9,7 +9,7 @@
         </li>
       </ul>
     </span>
-  </div>
+  </span>
 
   <span ng-if="!isModal">
 

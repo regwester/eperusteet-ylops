@@ -22,9 +22,12 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -63,6 +66,30 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Setter
     private String koodi;
 
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    @Getter
+    @Setter
+    private OppiaineTyyppi tyyppi = OppiaineTyyppi.YHTEINEN;
+
+    /**
+     *
+     * Laajuus vuosiviikkotunteina (vvh)
+     */
+    @Getter
+    @Setter
+    private Integer laajuus;
+
+    @Getter
+    @Setter
+    @Column(name = "koodi_arvo")
+    private String koodiArvo;
+
+    @Getter
+    @Setter
+    @Column(name = "koodi_uri")
+    private String koodiUri;
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @Getter
@@ -76,7 +103,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa tehtava;
 
-    @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY, orphanRemoval = true)
     @NotNull(groups = Strict.class)
     @Size(min = 1, groups = Strict.class)
     @Valid
@@ -95,6 +122,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Getter
     private boolean koosteinen = false;
 
+    @Getter
+    @Setter
+    private Boolean abstrakti;
+
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Set<Oppiaine> oppimaarat;
 
@@ -109,6 +140,14 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
 
     public Oppiaine(UUID tunniste) {
         this.tunniste = tunniste;
+    }
+
+    public Oppiaine(OppiaineTyyppi tyyppi) {
+        if (tyyppi != OppiaineTyyppi.YHTEINEN) {
+            this.tunniste = UUID.randomUUID();
+        } else {
+            throw new IllegalArgumentException("Oppiaine ei ole valinnainen");
+        }
     }
 
     protected Oppiaine() {
@@ -136,6 +175,8 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         if (vuosiluokkakokonaisuudet == null) {
             vuosiluokkakokonaisuudet = new HashSet<>();
         }
+
+
         ovk.setOppiaine(this);
         if (vuosiluokkakokonaisuudet.add(ovk)) {
             this.muokattu();
@@ -215,7 +256,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
      */
     public Opetuksenkohdealue addKohdealue(Opetuksenkohdealue kohdealue) {
         for (Opetuksenkohdealue k : kohdealueet) {
-            if (k.getNimi().equals(kohdealue.getNimi())) {
+            if (Objects.equals(k.getNimi(), kohdealue.getNimi())) {
                 return k;
             }
         }
@@ -243,11 +284,17 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public static Oppiaine copyOf(Oppiaine other) {
+        return copyOf(other, true);
+    }
+
+    public static Oppiaine copyOf(Oppiaine other, boolean copyOppimaarat) {
         Oppiaine o = new Oppiaine(other.getTunniste());
         o.setNimi(other.getNimi());
         o.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
         o.setKoodi(other.getKoodi());
         o.setKoosteinen(other.isKoosteinen());
+        o.setKoodiArvo(other.getKoodiArvo());
+        o.setKoodiUri(other.getKoodiUri());
 
         Map<Long, Opetuksenkohdealue> kohdealueet = other.getKohdealueet().stream()
             .collect(Collectors.toMap(ka -> ka.getId(), ka -> new Opetuksenkohdealue(ka.getNimi())));
@@ -257,10 +304,17 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
             o.addVuosiluokkaKokonaisuus(Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet));
         }));
 
-        if (other.isKoosteinen()) {
-            other.getOppimaarat().forEach((om -> {
-                o.addOppimaara(Oppiaine.copyOf(om));
-            }));
+        boolean isKielijoukko = other.koodiArvo != null
+                && ("TK".equals(other.koodiArvo.toUpperCase())
+                || "VK".equals(other.koodiArvo.toUpperCase())
+                || "AI".equals(other.koodiArvo.toUpperCase()));
+
+        if (other.isKoosteinen() && copyOppimaarat) {
+            if (other.koodiArvo == null || !isKielijoukko) {
+                other.getOppimaarat().forEach((om -> {
+                    o.addOppimaara(Oppiaine.copyOf(om));
+                }));
+            }
         }
 
         return o;

@@ -1,54 +1,48 @@
+<div ng-if="oppiaine.tyyppi !== 'yhteinen'" class="action-buttons-inline">
+  <button class="btn btn-default" icon-role="edit" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+  <button class="btn btn-default" icon-role="remove" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+</div>
 <h2 ng-bind="oppiaine.nimi | kaanna"></h2>
+
+<div>
+  <button ng-if="valitseOppimaara" class="btn btn-default pull-right" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"></button>
+  <button ng-if="$onKieliTaiUskonto" class="btn btn-default pull-right" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"></button>
+</div>
 
 <div perusteen-tekstiosa="perusteOppiaine.tehtava"></div>
 
 <div class="tekstiosa-wrapper" ng-show="oppiaineenVlk">
   <h3>
     <div class="action-buttons-inline">
-      <button class="btn btn-default" icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"></button>
+      <button ng-if="oppiaine.tyyppi === 'yhteinen'" class="btn btn-default" icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     </div>
     <span kaanna="'tavoitteet-ja-sisallot-vuosiluokittain'"></span>
   </h3>
 
-  <p class="empty-notice" ng-if="!vuosiluokat || vuosiluokat.length === 0" kaanna="'vuosiluokkaistamista-ei-viela-tehty'"></p>
-  <table ng-if="vuosiluokat.length > 0" class="table table-striped table-hover vuosiluokat-table">
+  <p class="empty-notice" ng-if="!vuosiluokat || vuosiluokat.length === 0">
+    <span kaanna="'vuosiluokkaistamista-ei-viela-tehty'"></span>
+    <span kaanna="'aloita-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span>
+  </p>
+  <table ng-if="vuosiluokat.length > 0" class="table table-hover vuosiluokat-table">
     <tr>
-      <th width="15%" kaanna="'vuosiluokka'"></th>
-      <th kaanna="'tavoitteet'"></th>
-      <th kaanna="'sisaltoalueet'"></th>
+      <th kaanna="'vuosiluokka'"></th>
     </tr>
-    <tr ng-repeat="vuosiluokka in vuosiluokat | orderBy:'$numero'">
+    <tr class="vuosiluokka-row" ng-repeat="vuosiluokka in vuosiluokat | orderBy:'$numero'" ng-click="goToVuosiluokka(vuosiluokka)">
       <td>
         <a ui-sref="root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka({vlId: vuosiluokka.id})">
           <span kaanna="'vuosiluokka'"></span> {{vuosiluokka.$numero}}
         </a>
       </td>
-      <td>
-        <span ng-if="vuosiluokka.$tavoitteetShort" ng-repeat="tavoite in vuosiluokka.tavoitteet"><span class="koodi-short" ng-if="tavoite.$short" ng-bind="tavoite.$short"></span></span>
-        <span ng-if="!vuosiluokka.$tavoitteetShort">
-          <ul>
-            <li ng-repeat="tavoite in vuosiluokka.tavoitteet">
-              <span ng-bind="tavoite.$tavoite | kaanna | stripTags"></span>
-            </li>
-          </ul>
-        </span>
-      </td>
-      <td>
-        <span ng-if="vuosiluokka.$sisaltoalueetShort" ng-repeat="alue in vuosiluokka.sisaltoalueet"><span class="koodi-short" ng-if="alue.$short" ng-bind="alue.$short"></span></span>
-        <span ng-if="!vuosiluokka.$sisaltoalueetShort">
-          <ul>
-            <li ng-repeat="alue in vuosiluokka.sisaltoalueet | orderBy:alueOrder">
-              <span ng-bind="alue.nimi | kaanna"></span>
-            </li>
-          </ul>
-        </span>
-      </td>
     </tr>
-
   </table>
 </div>
 
-<div perusteen-tekstiosa="perusteOpVlk.tehtava"></div>
+<div ng-if="oppiaine.tyyppi === 'yhteinen'">
+  <div perusteen-tekstiosa="perusteOpVlk.tehtava"></div>
+</div>
+<div ng-if="oppiaine.tyyppi !== 'yhteinen'">
+  <div perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" config="options"></div>
+</div>
 <div perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks" config="options"></div>
 <div perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks" config="options"></div>
 <div perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks" config="options"></div>

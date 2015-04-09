@@ -19,12 +19,50 @@
 ylopsApp
 .controller('VuosiluokkaistaminenController', function ($scope, $filter, VariHyrra, ColorCalculator,
   $state, OppiaineenVlk, $stateParams, OpsService, Kaanna, Notifikaatiot, VuosiluokatService,
-  $rootScope, OppiaineService, Varmistusdialogi) {
+  $rootScope, OppiaineService, Varmistusdialogi, Utils, $window) {
 
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
   $scope.perusteOpVlk = {};
   $scope.containers = {};
+  var exitOk = false;
+
+  function canExit() {
+    return exitOk;
+  }
+
+  function nagMessage(event) {
+    if (!canExit()) {
+      var confirmationMessage = Kaanna.kaanna('tallentamattomia-muutoksia');
+      (event || window.event).returnValue = confirmationMessage;
+      return confirmationMessage;
+    }
+  }
+  $window.addEventListener('beforeunload', nagMessage);
+  $scope.$on('$destroy', function () {
+    $window.removeEventListener('beforeunload', nagMessage);
+  });
+
+  $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+    $scope.lastState = {
+      state: _.clone(fromState),
+      params: _.clone(fromParams)
+    };
+
+    if (!canExit()) {
+      event.preventDefault();
+
+      var data = {toState: toState, toParams: toParams};
+      Varmistusdialogi.dialogi({
+        successCb: function(data) {
+          exitOk = true;
+          $state.go(data.toState, data.toParams);
+        }, data: data, otsikko: 'vahvista-liikkuminen', teksti: 'tallentamattomia-muutoksia',
+        lisaTeksti: 'haluatko-jatkaa',
+        primaryBtn: 'poistu-sivulta'
+      })();
+    }
+  });
 
   function colorizeKohdealueet() {
     VariHyrra.reset();
@@ -36,6 +74,12 @@ ylopsApp
       };
     });
   }
+
+  $scope.$watch('collapsedMode', function (value) {
+    _.each($scope.tavoitteet, function (item) {
+      item.$collapsed = value;
+    });
+  });
 
   var kohdealueet = $scope.perusteOppiaine.kohdealueet;
   colorizeKohdealueet();
@@ -113,6 +157,7 @@ ylopsApp
       $scope.perusteOpVlk = res;
       $scope.tavoitteet = $scope.perusteOpVlk.tavoitteet;
       $scope.tavoiteMap = _.indexBy($scope.tavoitteet, 'tunniste');
+      $scope.perusteSisaltoalueet = _.indexBy($scope.perusteOpVlk.sisaltoalueet, 'tunniste');
 
       OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId).then(function () {
         $scope.oppiaineenVlk = OppiaineService.getOpVlk();
@@ -133,6 +178,7 @@ ylopsApp
   }
 
   $scope.cancel = function () {
+    exitOk = true;
     goBack();
   };
 
@@ -153,6 +199,7 @@ ylopsApp
   }
 
   $scope.save = function () {
+    exitOk = true;
     saveCb(goBack);
   };
 
@@ -199,6 +246,10 @@ ylopsApp
 
   $scope.tavoiteSorter = function (item) {
     return originalTavoiteOrder.indexOf(item.tunniste);
+  };
+
+  $scope.sisaltoalueSorter = function (item) {
+    return Utils.sort($scope.perusteSisaltoalueet[item]);
   };
 
   function modelFromTarget(target) {

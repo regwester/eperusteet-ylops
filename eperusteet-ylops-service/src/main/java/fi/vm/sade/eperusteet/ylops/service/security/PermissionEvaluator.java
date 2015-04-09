@@ -16,12 +16,16 @@
 package fi.vm.sade.eperusteet.ylops.service.security;
 
 import java.io.Serializable;
-import java.util.EnumSet;
 import java.util.Optional;
-import java.util.Set;
+
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.Permission;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.TargetType;
 
 /**
  * Oikeuksien tarkistelu.
@@ -46,38 +50,26 @@ public class PermissionEvaluator implements org.springframework.security.access.
             return Optional.ofNullable(organization);
         }
 
-        private static final Organization OPH = new Organization("1.2.246.562.10.00000000001");
-        private static final Organization ANY = new Organization();
+        public static final Organization OPH = new Organization(SecurityUtil.OPH_OID);
+        static final Organization ANY = new Organization();
 
     }
 
-    enum RolePrefix {
+    public enum RolePrefix {
 
         ROLE_APP_EPERUSTEET_YLOPS,
         ROLE_VIRKAILIJA
     }
 
-    enum RolePermission {
+    public enum RolePermission {
 
         CRUD,
         READ_UPDATE,
         READ
     }
 
-    enum TargetType {
-
-        POHJA,
-        OPETUSSUUNNITELMA
-    }
-
-    enum Permission {
-
-        LUKU,
-        MUOKKAUS,
-        KOMMENTOINTI,
-        LUONTI,
-        POISTO
-    }
+    @Autowired
+    private PermissionManager permissionManager;
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
@@ -86,8 +78,6 @@ public class PermissionEvaluator implements org.springframework.security.access.
 
     @Override
     public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
-        //TODO. toteutus on kesken
-
         if (authentication == null || authentication.getAuthorities() == null) {
             LOG.error("Virheellinen autentikaatioparametri");
             return false;
@@ -95,56 +85,7 @@ public class PermissionEvaluator implements org.springframework.security.access.
 
         TargetType target = TargetType.valueOf(targetType.toUpperCase());
         Permission perm = Permission.valueOf(permission.toString().toUpperCase());
-
-        return hasPermission(authentication, targetId, target, perm);
-
-    }
-
-    private boolean hasPermission(Authentication authentication, Serializable targetId, TargetType target, Permission perm) {
-
-        switch (target) {
-
-            case POHJA:
-                switch (perm) {
-                    case LUKU:
-                        return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, EnumSet.allOf(RolePermission.class), Organization.OPH) ||
-                            hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.ANY);
-
-                    case LUONTI:
-                    case POISTO:
-                        return hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.OPH);
-
-                    case MUOKKAUS:
-                    case KOMMENTOINTI:
-                        return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, EnumSet.of(RolePermission.READ_UPDATE, RolePermission.CRUD), Organization.OPH);
-
-                    default:
-                        return false;
-                }
-
-            case OPETUSSUUNNITELMA:
-                return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, EnumSet.allOf(RolePermission.class), Organization.ANY);
-
-            default:
-                return false;
-        }
-    }
-
-    private boolean hasRole(Authentication authentication, RolePrefix prefix, RolePermission permission, Organization org) {
-        return authentication.getAuthorities().stream()
-            .anyMatch(a -> roleEquals(a.getAuthority(), prefix, permission, org));
-    }
-
-    private boolean hasAnyRole(Authentication authentication, RolePrefix prefix, Set<RolePermission> permission, Organization org) {
-        return authentication.getAuthorities().stream()
-            .anyMatch(a -> permission.stream().anyMatch(p -> roleEquals(a.getAuthority(), prefix, p, org)));
-    }
-
-    private boolean roleEquals(String authority, RolePrefix prefix, RolePermission permission, Organization org) {
-        if (Organization.ANY.equals(org)) {
-            return authority.equals(prefix.name() + "_" + permission.name());
-        }
-        return authority.equals(prefix.name() + "_" + permission.name() + "_" + org.getOrganization().get());
+        return permissionManager.hasPermission(authentication, targetId, target, perm);
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(PermissionEvaluator.class);

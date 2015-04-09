@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-.directive('perusteenTekstiosa', function () {
+.directive('perusteenTekstiosa', function ($timeout, $window) {
   return {
     restrict: 'A',
     scope: {
@@ -32,6 +32,15 @@ ylopsApp
       scope.editable = !!attrs.muokattava;
       scope.options = {
         collapsed: scope.editable
+      };
+      scope.focusAndScroll = function () {
+        $timeout(function () {
+          var el = element.find('[ckeditor]');
+          if (el && el.length > 0) {
+            el[0].focus();
+            $window.scrollTo(0, el.eq(0).offset().top - 200);
+          }
+        }, 300);
       };
     }
   };
@@ -51,5 +60,6 @@ ylopsApp
     $scope.editMode = true;
     $scope.callbacks.notifier = notifyFn;
     Editointikontrollit.startEditing();
+    $scope.focusAndScroll();
   };
 });

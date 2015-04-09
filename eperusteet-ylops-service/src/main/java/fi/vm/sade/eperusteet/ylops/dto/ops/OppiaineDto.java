@@ -15,8 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;

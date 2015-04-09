@@ -27,6 +27,8 @@ import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -104,12 +106,19 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         return oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineId, dto);
     }
 
+    /*
     @RequestMapping(method = RequestMethod.GET)
     public Set<OppiaineenVuosiluokkakokonaisuusDto> getAll(
         @PathVariable("opsId") final Long opsId,
         @PathVariable("oppiaineId") final Long oppiaineId) {
         return oppiaineService.get(opsId, oppiaineId).getVuosiluokkakokonaisuudet();
     }
+
+    @RequestMapping(value = "/valinnaiset",method = RequestMethod.GET)
+    public List<OppiaineDto> getValinnaiset(@PathVariable("opsId") final Long opsId) {
+        return oppiaineService.getAll(opsId, true);
+    }
+    */
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     @CacheControl(nonpublic = false, age = 3600)
@@ -128,5 +137,4 @@ public class OppiaineenVuosiluokkakokonaisuusController {
                 .flatMap(poa -> poa.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus())))));
 
     }
-
 }

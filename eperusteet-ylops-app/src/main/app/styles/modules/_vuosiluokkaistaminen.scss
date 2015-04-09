@@ -1,28 +1,25 @@
-$vl-container-width: 255px;
-
-.vuosiluokkaistaminen-header {
-  position: relative;
-  max-width: 500px;
+.vuosiluokkaistaminen-buttons {
+  margin-top: 20px;
+  width: 100%;
+  text-align: right;
   .buttons {
-    position: absolute;
-    right: 0;
-    top: 0;
     .btn {
-      padding: 10px 16px;
+      padding: 14px 24px;
     }
   }
-  label + label {
-    margin-left: 20px;
+  &.upper {
+    margin-bottom: 20px;
   }
 }
 
-@media (max-width: 800px) {
-  .vuosiluokkaistaminen-header {
-    max-width: 300px;
-    .buttons {
-      margin-top: 10px;
-      position: relative;
-    }
+.vuosiluokkaistaminen-header {
+  h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+  .ohje-teksti {
+    font-style: italic;
+    opacity: 0.9;
   }
 }
 
@@ -41,11 +38,12 @@ $vl-container-width: 255px;
   }
 }
 
-.vuosiluokkaistaminen-container {
-  margin-right: $vl-container-width;
-  margin-top: 40px;
-  margin-left: 10px;
+.tavoitteet-collapser {
+  height: 80px;
+  line-height: 120px;
+}
 
+.vuosiluokkaistaminen-container {
   .koodi {
     font-weight: 700;
   }
@@ -67,10 +65,10 @@ $vl-container-width: 255px;
     font-size: 80%;
     width: 50%;
     float: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
     padding: 3px;
-    margin-left: 2px;
-    margin-right: -2px;
-    margin-top: -2px;
   }
   .panel-body {
     padding: 5px 5px 15px 5px;
@@ -82,24 +80,19 @@ $vl-container-width: 255px;
   }
 
   .vuosiluokka {
-    float: left;
-    width: $vl-container-width;
+    margin-right: 0;
+    margin-bottom: 10px;
 
-    &:not(:last-child) {
-      margin-right: 10px;
-    }
     .napit {
       float: right;
       font-size: 14px;
     }
+    .panel-body {
+      position: relative;
+    }
   }
 
   .tavoitteet {
-    float: none;
-    position: absolute;
-    right: 0;
-    top: -70px;
-
     .panel-heading {
       background-color: $brand-primary;
       color: white;
@@ -115,7 +108,7 @@ $vl-container-width: 255px;
     list-style-type: none;
     padding: 0;
     margin: 0;
-    min-height: 200px;
+    min-height: 100px;
 
     &.tavoite-list {
       font-style: italic;
@@ -124,20 +117,34 @@ $vl-container-width: 255px;
         color: black;
         font-style: normal;
       }
-    }
-    &.vuosiluokka-list {
-      .container-item {
-        background-color: white;
+      .tavoite-nimi {
+        position: relative;
+        .glyphicon {
+          position: absolute;
+          font-size: 130%;
+          top: 2px;
+          left: 2px;
+        }
+        .tavoite-nimi-nimi {
+          margin-left: 30px;
+          display: inline-block;
+        }
       }
     }
 
     .container-item {
-      background-color: lighten(#3a8fbe, 30%);
+      background-color: lighten(#3a8fbe, 45%);
       border: 1px solid #777;
       box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.3);
       padding: 5px;
       cursor: move;
       position: relative;
+
+      .sisaltoalueet {
+        list-style-type: none;
+        padding-left: 30px;
+        margin-bottom: 20px;
+      }
 
       &:hover .remover {
         visibility: visible;
@@ -145,15 +152,11 @@ $vl-container-width: 255px;
 
       &.collapsed-mode {
         padding: 2px;
-        height: 24px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        .kohdealue {
-          display: none;
-        }
-        .remover {
-          font-size: 110%;
+        .tavoite-nimi {
+          margin-bottom: -10px;
+          .glyphicon {
+            top: 0;
+          }
         }
       }
 
@@ -167,6 +170,18 @@ $vl-container-width: 255px;
       }
     }
 
+    &.vuosiluokka-list {
+      .container-item {
+        display: inline-block;
+        margin-right: 5px;
+        background-color: white;
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+        margin-top: 0;
+      }
+    }
+
     &.empty {
       border: 2px dashed #777;
       .placeholder {
@@ -176,43 +191,11 @@ $vl-container-width: 255px;
   }
 }
 
-@media (min-width: 1000px) {
-  .vuosiluokkaistaminen-container {
-    margin-right: $vl-container-width * 1.1;
-    .vuosiluokka {
-      &.width3 {
-        width: $vl-container-width * 1.2;
-      }
-      &.width4 {
-        width: $vl-container-width * 1.0;
-      }
-    }
-  }
-}
-@media (min-width: 1100px) {
-  .vuosiluokkaistaminen-container {
-    margin-right: $vl-container-width * 1.1;
-    .vuosiluokka {
-      &.width3 {
-        width: $vl-container-width * 1.3;
-      }
-      &.width4 {
-        width: $vl-container-width * 1.1;
-      }
-    }
-  }
-}
-
-@media (min-width: 1350px) {
-  .vuosiluokkaistaminen-container {
-    margin-right: $vl-container-width * 1.2;
-    .vuosiluokka {
-      &.width3 {
-        width: $vl-container-width * 1.4;
-      }
-      &.width4 {
-        width: $vl-container-width * 1.2;
-      }
-    }
-  }
+.vuosiluokka-empty-ohje {
+  font-style: italic;
+  opacity: 0.7;
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  top: 35px;
 }

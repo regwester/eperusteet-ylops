@@ -16,9 +16,12 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KielitarjontaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,14 +59,48 @@ public class OppiaineController {
         return oppiaineService.add(opsId, dto);
     }
 
+    @RequestMapping(value = "/valinnainen", method = RequestMethod.POST)
+    public OppiaineDto addValinnainen(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
+        return oppiaineService.addValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuusId(),
+                                              dto.getVuosiluokat(), dto.getTavoitteet());
+    }
+
+    @RequestMapping(value = "/{id}/kielitarjonta", method = RequestMethod.POST)
+    public OppiaineDto addOppimaara(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("id") final Long oppiaineId,
+            @RequestBody KielitarjontaDto kt) {
+        return oppiaineService.addKielitarjonta(opsId, oppiaineId, kt);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         return Responses.ofNullable(oppiaineService.get(opsId, id));
     }
 
+    @RequestMapping(value = "/{id}/parent", method = RequestMethod.GET)
+    public ResponseEntity<OppiaineDto> getParent(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        return Responses.ofNullable(oppiaineService.getParent(opsId, id));
+    }
+
     @RequestMapping(method = RequestMethod.GET)
-    public List<OppiaineDto> getAll(@PathVariable("opsId") final Long opsId) {
-        return oppiaineService.getAll(opsId);
+    public List<OppiaineDto> getAll(@PathVariable("opsId") final Long opsId,
+                                    @RequestParam(value = "tyyppi", required = false) OppiaineTyyppi tyyppi) {
+        if (tyyppi == null) {
+            return oppiaineService.getAll(opsId, OppiaineTyyppi.YHTEINEN);
+        } else {
+            return oppiaineService.getAll(opsId, tyyppi);
+        }
+    }
+
+    @RequestMapping(value = "/yhteiset",method = RequestMethod.GET)
+    public List<OppiaineDto> getYhteiset(@PathVariable("opsId") final Long opsId) {
+        return oppiaineService.getAll(opsId, false);
+    }
+
+    @RequestMapping(value = "/valinnaiset",method = RequestMethod.GET)
+    public List<OppiaineDto> getValinnaiset(@PathVariable("opsId") final Long opsId) {
+        return oppiaineService.getAll(opsId, true);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
@@ -70,6 +108,14 @@ public class OppiaineController {
         @RequestBody OppiaineDto dto) {
         dto.setId(id);
         return oppiaineService.update(opsId, dto);
+    }
+
+    @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)
+    public OppiaineDto updateValinnainen(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id,
+                                         @RequestBody OppiaineenTallennusDto dto) {
+        dto.getOppiaine().setId(id);
+        return oppiaineService.updateValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuusId(),
+                                                 dto.getVuosiluokat(), dto.getTavoitteet());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -85,7 +131,6 @@ public class OppiaineController {
         Peruste p = ops.getPeruste(opsId);
         return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
             .flatMap(a -> p.getPerusopetus().getOppiaine(a.getTunniste())));
-
     }
 
 }

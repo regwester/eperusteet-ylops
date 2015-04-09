@@ -43,6 +43,7 @@ public class PerusteOppiaineenVuosiluokkakokonaisuus implements ReferenceableDto
     private PerusteTekstiOsa tyotavat;
     private PerusteTekstiOsa ohjaus;
     private PerusteTekstiOsa arviointi;
+    private PerusteTekstiOsa sisaltoalueinfo;
     private List<PerusteOpetuksentavoite> tavoitteet;
     private List<PerusteKeskeinensisaltoalue> sisaltoalueet;
 

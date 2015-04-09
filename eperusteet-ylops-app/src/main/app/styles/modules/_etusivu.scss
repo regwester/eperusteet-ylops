@@ -33,3 +33,7 @@
   .ops-th-muokattu { width: 15%; }
   &.pohja-table {}
 }
+
+label + select {
+  margin-left: 10px;
+}

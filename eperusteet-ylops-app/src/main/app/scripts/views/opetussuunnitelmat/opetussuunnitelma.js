@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-  .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams,
+  .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams, Kielitarjonta,
     $timeout, $state, OpetussuunnitelmaCRUD, opsModel, opsService, Notifikaatiot, Varmistusdialogi,
     OpetussuunnitelmanTekstit) {
 

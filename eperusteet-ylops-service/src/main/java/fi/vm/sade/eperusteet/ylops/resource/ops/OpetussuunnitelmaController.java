@@ -24,7 +24,10 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +49,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class OpetussuunnitelmaController {
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
+
+    @Autowired
+    private PermissionManager permissionManager;
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
@@ -111,5 +117,16 @@ public class OpetussuunnitelmaController {
     @Timed
     public void deleteOpetussuunnitelma(@PathVariable("id") final Long id) {
         opetussuunnitelmaService.removeOpetussuunnitelma(id);
+    }
+
+    @RequestMapping(value = "/oikeudet", method = RequestMethod.GET)
+    public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudet() {
+        return new ResponseEntity<>(permissionManager.getOpsPermissions(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/oikeudet", method = RequestMethod.GET)
+    public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudet(
+        @PathVariable("id") final Long id) {
+        return new ResponseEntity<>(permissionManager.getOpsPermissions(id), HttpStatus.OK);
     }
 }
