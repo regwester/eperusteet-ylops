@@ -125,7 +125,7 @@ ylopsApp
   $scope.rakenne = {
     edit: function() {
       $scope.$$rakenneEdit = true;
-      $scope.$$wat = _.cloneDeep($scope.model.tekstit);
+      $scope.$$originaalit = _.cloneDeep($scope.model.tekstit);
     },
     save: function() {
       TekstikappaleOps.saveRakenne($scope.model, function () {
@@ -134,7 +134,7 @@ ylopsApp
     },
     cancel: function() {
       $scope.$$rakenneEdit = false;
-      $scope.model.tekstit = $scope.$$wat;
+      $scope.model.tekstit = $scope.$$originaalit;
     }
   };
 });
