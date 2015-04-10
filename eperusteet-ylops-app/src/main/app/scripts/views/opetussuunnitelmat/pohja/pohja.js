@@ -37,9 +37,10 @@ ylopsApp
   };
 })
 
-.controller('PohjaSisaltoController', function ($scope, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
+.controller('PohjaSisaltoController', function ($scope, $q, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
   Notifikaatiot, $state, TekstikappaleOps) {
   $scope.kappaleEdit = null;
+  $scope.$$rakenneEdit = false;
 
   function mapModel() {
     Algoritmit.traverse($scope.model.tekstit, 'lapset', function (teksti) {
@@ -49,11 +50,19 @@ ylopsApp
       });
     });
     if ($scope.model.tekstit) {
-      $scope.model.lapset = _.map($scope.model.tekstit.lapset, function(lapsi) {
+      $scope.model.tekstit.lapset = _.map($scope.model.tekstit.lapset, function(lapsi) {
+        lapsi.$$ylataso = true;
         return _.extend(lapsi, { $$nimi: {} });
       });
     }
   }
+
+  $scope.uiTreeOptions = {
+    accept: function(source, destination) {
+      return (source.$modelValue.$$ylataso && destination.$modelValue === $scope.model.tekstit.lapset) ||
+        (!source.$modelValue.$$ylataso && destination.$modelValue !== $scope.model.tekstit.lapset);
+    }
+  };
 
   $scope.$watch('model.tekstit', function () {
     mapModel();
@@ -76,8 +85,6 @@ ylopsApp
     cancel: function(kappale) {
       kappale.tekstiKappale = kappale.tekstiKappale.$$original;
       kappale.tekstiKappale.$$edit = false;
-    },
-    addNew: function() {
     }
   };
 
@@ -90,7 +97,7 @@ ylopsApp
     },
     edit: function (kappale) {
       $scope.kappaleEdit = kappale;
-      kappale.$$original = _.cloneDeep(kappale.tekstiKappale);
+      kappale.tekstiKappale.$$original = _.cloneDeep(kappale.tekstiKappale);
     },
     delete: function (osio, kappale) {
       TekstikappaleOps.varmistusdialogi(kappale.tekstiKappale.nimi, function () {
@@ -101,8 +108,7 @@ ylopsApp
     },
     cancel: function (kappale) {
       $scope.kappaleEdit = null;
-      kappale.tekstiKappale = _.cloneDeep(kappale.$$original);
-      kappale = _.omit(kappale, '$$original');
+      kappale.tekstiKappale = _.cloneDeep(kappale.tekstiKappale.$$original);
     },
     save: function (kappale, cb) {
       cb = cb || angular.noop;
@@ -110,27 +116,25 @@ ylopsApp
       var params = {opsId: $stateParams.pohjaId};
       OpetussuunnitelmanTekstit.save(params, _.omit(kappale, 'lapset'), function () {
         Notifikaatiot.onnistui('tallennettu-ok');
-        kappale = _.omit(kappale, '$$original');
+        kappale.tekstiKappale = _.omit(kappale.tekstiKappale, '$$original');
         cb();
       }, Notifikaatiot.serverCb);
     }
   };
 
   $scope.rakenne = {
-    edit: function (osio) {
-      osio.$$edit = true;
-      osio.$$original = _.cloneDeep(osio.lapset);
+    edit: function() {
+      $scope.$$rakenneEdit = true;
+      $scope.$$wat = _.cloneDeep($scope.model.tekstit);
     },
-    save: function (osio) {
+    save: function() {
       TekstikappaleOps.saveRakenne($scope.model, function () {
-        osio.$$edit = false;
-        osio = _.omit(osio, '$$original');
+        $scope.$$rakenneEdit = false;
       });
     },
-    cancel: function (osio) {
-      osio.$$edit = false;
-      osio.lapset = _.cloneDeep(osio.$$original);
-      osio = _.omit(osio, '$$original');
+    cancel: function() {
+      $scope.$$rakenneEdit = false;
+      $scope.model.tekstit = $scope.$$wat;
     }
   };
 });
