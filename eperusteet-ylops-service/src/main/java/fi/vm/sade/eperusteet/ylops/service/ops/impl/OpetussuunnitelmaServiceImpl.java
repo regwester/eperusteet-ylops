@@ -346,7 +346,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunLapset(ops);
 
         Peruste peruste = eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
-        if (peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_16")) {
+        if (peruste.getKoulutustyyppi() == null || peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_16")) {
             ops = addPohjaPerusopetus(ops, peruste);
         }
         else if (peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_6")

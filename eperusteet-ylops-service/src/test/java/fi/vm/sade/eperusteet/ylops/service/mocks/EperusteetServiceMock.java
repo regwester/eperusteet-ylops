@@ -56,6 +56,11 @@ public class EperusteetServiceMock implements EperusteetService {
     }
 
     @Override
+    public List<PerusteInfo> findPerusteet() {
+        return findPerusteet(null);
+    }
+
+    @Override
     public List<PerusteInfo> findPerusopetuksenPerusteet() {
         PerusteInfo perusteInfo = new PerusteInfo();
         perusteInfo.setDiaarinumero(DIAARINUMERO);
