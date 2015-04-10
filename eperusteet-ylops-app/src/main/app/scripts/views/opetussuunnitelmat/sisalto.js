@@ -154,7 +154,6 @@ ylopsApp
     });
   }
 
-  var original = null;
   $scope.kappaleEdit = null;
 
   function stopEvent(event) {
