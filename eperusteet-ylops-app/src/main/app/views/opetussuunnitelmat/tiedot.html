@@ -82,8 +82,7 @@
   </div>
 
 
-  <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
-
+  <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
     <div class="row" ng-show="editableModel._pohja && luonnissa">
       <div class="col-sm-3 formfield-label">
         <label><span kaanna="'pohja-ops'"></span></label>
@@ -110,6 +109,23 @@
         <div id="ops-field-kuvaus" ckeditor ng-model="editableModel.kuvaus" slocalized></div>
       </div>
     </div> -->
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label><span kaanna="'pohjan-tyyppi'"></span><span ng-if="(editMode || luonnissa)">*</span></label>
+      </div>
+
+      <div class="col-sm-6 formfield-data" ng-class="{viewmode: !(editMode || luonnissa)}">
+        <div ng-if="!(editMode || luonnissa)" ng-bind="editableModel.koulutustyyppi"></div>
+
+        <ui-select ng-if="(editMode || luonnissa)" ng-disabled="editMode" class="ui-select" ng-model="editableModel.koulutustyyppi">
+          <ui-select-choices repeat="koulutustyyppi in ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6']">
+            <div ng-bind-html="koulutustyyppi | kaanna"></div>
+          </ui-select-choices>
+          <ui-select-match class="ui-select-match" placeholder="{{'koulutustyyppi' | kaanna}}">{{$select.selected | kaanna}} {{$select.selected.diaarinumero}}</ui-select-match>
+        </ui-select>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col-sm-3 formfield-label">

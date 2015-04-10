@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.Set;
 public interface EperusteetService {
     Peruste getPerusopetuksenPeruste(String diaariNumero);
     List<PerusteInfo> findPerusteet();
-    List<PerusteInfo> findPerusteet(Set<String> tyypit);
+    List<PerusteInfo> findPerusteet(Set<KoulutusTyyppi> tyypit);
     List<PerusteInfo> findPerusopetuksenPerusteet();
     Peruste getPerusopetuksenPeruste(final Long id);
     JsonNode getTiedotteet(Long jalkeen);

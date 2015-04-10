@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -41,6 +42,7 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     public Pair<Tyyppi,Tila> findTyyppiAndTila(long id);
 
     public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
+    public Opetussuunnitelma findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
     public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
     public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
 

@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
@@ -109,6 +110,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Getter
     @Setter
     private Tyyppi tyyppi = Tyyppi.OPS;
+
+    @Enumerated(value = EnumType.STRING)
+    @Getter
+    @Setter
+    private KoulutusTyyppi koulutustyyppi;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @Getter

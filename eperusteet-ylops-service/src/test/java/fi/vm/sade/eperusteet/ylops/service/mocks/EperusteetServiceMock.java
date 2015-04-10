@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
@@ -49,7 +50,7 @@ public class EperusteetServiceMock implements EperusteetService {
     private DtoMapper mapper;
 
     @Override
-    public List<PerusteInfo> findPerusteet(Set<String> tyypit) {
+    public List<PerusteInfo> findPerusteet(Set<KoulutusTyyppi> tyypit) {
         PerusteInfo perusteInfo = new PerusteInfo();
         perusteInfo.setDiaarinumero(DIAARINUMERO);
         return Collections.singletonList(perusteInfo);

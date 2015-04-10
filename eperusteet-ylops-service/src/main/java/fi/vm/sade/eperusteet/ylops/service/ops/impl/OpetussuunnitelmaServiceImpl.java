@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
@@ -221,7 +222,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma pohja = ops.getPohja();
 
         if (pohja == null) {
-            pohja = repository.findOneByTyyppiAndTila(Tyyppi.POHJA, Tila.VALMIS);
+            pohja = repository.findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi.POHJA, Tila.VALMIS, opetussuunnitelmaDto.getKoulutustyyppi());
         }
 
         if (pohja != null) {
@@ -289,6 +290,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, Peruste peruste) {
+        ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
         return ops;
     }
 
@@ -346,11 +348,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunLapset(ops);
 
         Peruste peruste = eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
-        if (peruste.getKoulutustyyppi() == null || peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_16")) {
+        if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
             ops = addPohjaPerusopetus(ops, peruste);
         }
-        else if (peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_6")
-                || peruste.getKoulutustyyppi().equalsIgnoreCase("koulutustyyppi_15")) {
+        else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi()
+                || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()) {
             ops = addPohjaLisaJaEsiopetus(ops, peruste);
         }
         else {

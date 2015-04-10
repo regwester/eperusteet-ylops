@@ -230,6 +230,11 @@
   "poistetaanko-kommentti": "Poistetaanko kommentti?",
   "vastaa": "Vastaa",
   "kommentti-ei-saa-ylittaa": "Kommentti ei saa olla yli {{ maara }} merkkiä pitkä.",
-  "vahvista-poisto": "Vahvista poisto"
+  "vahvista-poisto": "Vahvista poisto",
 
+  "koulutustyyppi_16": "Perusopetus",
+  "koulutustyyppi_6": "Lisäopetus",
+  "koulutustyyppi_15": "Esiopetus",
+  "koulutustyyppi": "Koulutustyyppi",
+  "pohjan-tyyppi": "Pohjan tyyppi"
 }
