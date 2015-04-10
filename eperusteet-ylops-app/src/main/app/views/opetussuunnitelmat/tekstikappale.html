@@ -44,6 +44,22 @@
     <button ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   </div>
 
+  <div class="teksti-valmis" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }">
+    <div class="btn-group" dropdown>
+      <a class="btn-valmis" dropdown-toggle>
+        <span valmius-ikoni="model"></span><span ng-bind="(model.valmis ? 'valmis' : 'luonnos') | kaanna"></span>&nbsp;<span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        <li ng-class="{active: !model.valmis}">
+          <a ng-click="setValmis(false)"><span valmius-ikoni="valmisOptions[0]"></span><span kaanna="'luonnos'"></span></a>
+        </li>
+        <li ng-class="{active: model.valmis}">
+          <a ng-click="setValmis(true)"><span valmius-ikoni="valmisOptions[1]"></span><span kaanna="'valmis'"></span></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
   <h4><span kaanna="'opsin-teksti'"></span></h4>
 
   <div ng-if="editMode">

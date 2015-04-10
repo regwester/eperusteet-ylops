@@ -28,7 +28,7 @@
       <div ng-if="!rakenneEdit[osio]" class="list-group-item" ng-repeat="item in model[osio].lapset">
         <a ng-if="kappaleEdit !== item" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: item.id})"
            ng-class="{editable: canRemove(item)}">
-          <span ng-bind="item.tekstiKappale.nimi | kaanna"></span>
+           <span valmius-ikoni="item"></span><span ng-bind="item.tekstiKappale.nimi | kaanna"></span>
         </a>
         <div class="input-group" ng-if="kappaleEdit === item">
           <input ng-model="item.tekstiKappale.nimi" slocalized class="form-control">
