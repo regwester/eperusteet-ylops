@@ -42,6 +42,8 @@ public class TekstiKappaleViiteDto {
 
     private boolean pakollinen;
 
+    private boolean valmis;
+
     public TekstiKappaleViiteDto() { }
 
     public TekstiKappaleViiteDto(TekstiKappaleDto tekstiKappale) {

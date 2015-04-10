@@ -125,6 +125,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         lockMgr.lock(viite.getTekstiKappale().getId());
         updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), false /* TODO: pakota lukitus */);
         viite.setPakollinen(uusi.isPakollinen());
+        viite.setValmis(uusi.isValmis());
         viite = repository.save(viite);
         return mapper.map(viite, TekstiKappaleViiteDto.class);
     }
