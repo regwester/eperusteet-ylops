@@ -1,1 +1,40 @@
-<h2 kaanna="'esikatselu'"></h2>
+<div class="esikatselu">
+<div class="navigaatio-takaisin">
+  <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" icon-role="back" kaanna="'takaisin-osioihin'"></a>
+</div>
+
+<div class="row">
+
+  <div class="col-md-3 esikatselu-menu">
+    <h1 kaanna="'esikatselu'"></h1>
+
+    <ul>
+      <li ng-repeat="item in texttree | filter:{depth: 0}">
+        <a ng-href="{{item.url}}" kaanna="item.label" ng-style="{'padding-left': item.depth*10}"></a>
+      </li>
+    </ul>
+
+    <ul>
+      <li ng-repeat="vlk in vuosiluokkakokonaisuudet">
+        <a ui-sref="root.opetussuunnitelmat.yksi.esikatselu.vuosiluokkakokonaisuus({vlkId: vlk.vuosiluokkakokonaisuus.id})"
+           kaanna="vlk.vuosiluokkakokonaisuus.nimi"></a>
+      </li>
+    </ul>
+
+    <ul>
+      <li ng-repeat="oppiaine in oppiaineMenu" ng-class="{'esitys-menu-oppimaara': oppiaine.$depth > 0}">
+        <a ng-if="oppiaine.nimi" ui-sref="root.opetussuunnitelmat.yksi.esikatselu.oppiaine({oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi})"
+           kaanna="oppiaine.nimi"></a>
+        <span ng-if="oppiaine.label" kaanna="oppiaine.label"></span>
+      </li>
+    </ul>
+
+  </div>
+
+
+  <div class="col-md-9 esikatselu-sisalto">
+    <div ui-view></div>
+  </div>
+</div>
+
+</div>

@@ -168,7 +168,57 @@ ylopsApp
       .state('root.opetussuunnitelmat.yksi.esikatselu', {
         url: '/esikatselu',
         templateUrl: 'views/opetussuunnitelmat/esikatselu.html',
-        controller: 'EsikatseluController'
+        controller: 'EsikatseluController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
+          }]
+        }
+      })
+      .state('root.opetussuunnitelmat.yksi.esikatselu.tekstikappale', {
+        url: '/tekstikappale/:tekstikappaleId',
+        templateUrl: 'views/opetussuunnitelmat/esikatselu/tekstikappale.html',
+        controller: 'EsikatseluTekstikappaleController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
+          }]
+        }
+      })
+      .state('root.opetussuunnitelmat.yksi.esikatselu.vuosiluokkakokonaisuus', {
+        url: '/vuosiluokkakokonaisuus/:vlkId',
+        templateUrl: 'views/opetussuunnitelmat/esikatselu/vlk.html',
+        controller: 'EsikatseluVlkController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
+          }],
+          baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
+            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+          }],
+        }
+      })
+      .state('root.opetussuunnitelmat.yksi.esikatselu.oppiaine', {
+        url: '/oppiaine/:oppiaineId?oppiaineTyyppi',
+        templateUrl: 'views/opetussuunnitelmat/esikatselu/oppiaine.html',
+        controller: 'EsikatseluOppiaineController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
+          }],
+          oppiaineId: ['$stateParams', function($stateParams){
+            return $stateParams.oppiaineId;
+          }],
+          oppiaineTyyppi: ['$stateParams', function($stateParams) {
+            return $stateParams.oppiaineTyyppi;
+          }],
+          perusteOppiaine: ['vuosiluokatService', 'oppiaineId', 'oppiaineTyyppi', function (vuosiluokatService, oppiaineId, oppiaineTyyppi) {
+            return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId).$promise : null;
+          }],
+          baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
+            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+          }]
+        }
       })
 
       .state('root.pohjat', {

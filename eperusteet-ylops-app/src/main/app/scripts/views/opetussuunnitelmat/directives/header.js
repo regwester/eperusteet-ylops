@@ -33,15 +33,15 @@ ylopsApp
     {state: 'root.pohjat.yksi.tiedot', label: 'pohjan-tiedot', role: 'info'}
   ];
   var OPSLINKIT = [
-    { state: 'root.opetussuunnitelmat.yksi.tiedot', label: 'opsn-tiedot', role: 'info' },
-    //{state: 'root.opetussuunnitelmat.yksi.esikatselu', label: 'esikatselu', role: 'file'}
+    //{state: 'root.opetussuunnitelmat.yksi.esikatselu', label: 'esikatselu', role: 'file'},
+    {state: 'root.opetussuunnitelmat.yksi.tiedot', label: 'opsn-tiedot', role: 'info'}
   ];
 
   function mapUrls(arr) {
     return _.map(arr, function (item) {
       return _.extend({
         url: $state.href(item.state, $stateParams),
-        active: $state.current.name === item.state
+        active: $state.includes(item.state)
       }, item);
     });
   }

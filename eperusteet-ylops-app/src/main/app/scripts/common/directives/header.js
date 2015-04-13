@@ -62,6 +62,15 @@ ylopsApp
       'root.opetussuunnitelmat.yksi.esikatselu': {
         parent: 'root.opetussuunnitelmat.yksi.sisalto'
       },
+      'root.opetussuunnitelmat.yksi.esikatselu.tekstikappale': {
+        parent: 'root.opetussuunnitelmat.yksi.esikatselu'
+      },
+      'root.opetussuunnitelmat.yksi.esikatselu.vuosiluokkakokonaisuus': {
+        parent: 'root.opetussuunnitelmat.yksi.esikatselu'
+      },
+      'root.opetussuunnitelmat.yksi.esikatselu.oppiaine': {
+        parent: 'root.opetussuunnitelmat.yksi.esikatselu'
+      },
       'root.opetussuunnitelmat.yksi.tekstikappale': {
         useData: 'tekstiNimi',
         parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
