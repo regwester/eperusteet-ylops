@@ -349,6 +349,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         Peruste peruste = eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
         if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
+            ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
             ops = addPohjaPerusopetus(ops, peruste);
         }
         else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi()
