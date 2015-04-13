@@ -38,6 +38,12 @@ ylopsApp
         }
       })
 
+      .state('root.admin', {
+        url: '/admin',
+        templateUrl: 'views/admin.html',
+        controller: 'AdminController'
+      })
+
       .state('root.virhe', {
         url: '/virhe',
         templateUrl: 'views/virhe.html',

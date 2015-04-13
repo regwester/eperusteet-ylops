@@ -1,0 +1,75 @@
+<h1 kaanna="'hallinta'"></h1>
+
+<div class="action-buttons">
+
+</div>
+
+<div class="admin-rajaus">
+  <div class="admin-rajaus-rajaus">
+    <rajaus model="search.term" placeholder="rajaa-tuloksia" callback="search.changed(value)"></rajaus>
+  </div>
+  <div class="admin-tila-rajaus">
+    <label kaanna="'tila'" for="admin-tilarajaus"></label>
+    <select ng-model="search.tilaRajain" class="form-control" id="admin-tilarajaus"
+          ng-options="tila as ('tila-'+tila)|kaanna for tila in tilat">
+      <option value="">{{'kaikki'|kaanna}}</option>
+    </select>
+  </div>
+</div>
+
+<table class="table table-hover ops-table" ng-if="items && items.length">
+  <tr>
+    <th class="ops-th-nimi">
+      <a ng-click="sorter.set('nimi')">
+        <span kaanna="'nimi'"></span>
+        <span ng-show="sorter.key === 'nimi'" class="glyphicon"
+          ng-class="sorter.desc ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet'">
+        </span>
+      </a>
+    </th>
+    <th ng-if="opsiLista" class="ops-th-kunta">
+      <a ng-click="sorter.set('kunta')">
+        <span kaanna="'kunta'"></span>
+        <span ng-show="sorter.key === 'kunta'" class="glyphicon"
+          ng-class="sorter.desc ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet'">
+        </span>
+      </a>
+    </th>
+    <th class="ops-th-tila">
+      <a ng-click="sorter.set('tila')">
+        <span kaanna="'tila'"></span>
+        <span ng-show="sorter.key === 'tila'" class="glyphicon"
+          ng-class="sorter.desc ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet'">
+        </span>
+      </a>
+    </th>
+    <th class="ops-th-muokattu">
+      <a ng-click="sorter.set('muokattu')">
+        <span kaanna="'muokattu-viimeksi'"></span>
+        <span ng-show="sorter.key === 'muokattu'" class="glyphicon"
+          ng-class="sorter.desc ? 'glyphicon-sort-by-attributes-alt' : 'glyphicon-sort-by-attributes'">
+        </span>
+      </a>
+    </th>
+    <th class="ops-th-toiminto">
+      <span kaanna="'toiminto'"></span>
+    </th>
+
+  </tr>
+  <tr ng-if="!items.$resolved"><td colspan="4"><small-spinner></small-spinner></td></tr>
+  <tr ng-if="items.$resolved" ng-repeat="item in filtered | orderBy:sorter.fn:sorter.desc | startFrom:(paginate.current-1)*paginate.perPage | limitTo: paginate.perPage">
+    <td>
+      <a ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
+    </td>
+    <td>
+      <span ng-repeat="kunta in item.kunnat|orderBy:nimiSort"><span ng-bind="kunta.nimi|kaanna"></span><br ng-if="!$last"></span>
+    </td>
+    <td><span ng-bind="item.tila | kaanna"></span></td>
+    <td><span ng-bind="item.muokattu | aikaleima:'short'"></span></td>
+    <td><button ng-click="palauta(item)" class="btn btn-default" ng-if="item.tila === 'poistettu'" kaanna="'palauta'"></button></td>
+  </tr>
+</table>
+<p ng-if="filtered.length === 0" kaanna="'ei-opetussuunnitelmia'"></p>
+
+<p ng-if="filtered.length > 0" class="pagination-page-info" ng-bind="((paginate.current-1)*paginate.perPage + 1) + ' – ' + lastVisible + ' / ' + filtered.length"></p>
+<pagination ng-if="items.length > 0" ng-model="paginate.current" total-items="filtered.length" items-per-page="paginate.perPage"></pagination>

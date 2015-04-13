@@ -442,6 +442,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public OpetussuunnitelmaDto restore(@P("id") Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
+
+        ops.setTila(Tila.LUONNOS);
+        ops = repository.save(ops);
+        return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    @Override
     public void removeOpetussuunnitelma(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         if (ops != null) {
