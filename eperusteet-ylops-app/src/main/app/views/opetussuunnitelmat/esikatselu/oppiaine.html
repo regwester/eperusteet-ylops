@@ -1,0 +1,10 @@
+<h1 kaanna="oppiaine.nimi"></h1>
+
+<div esitys-teksti="oppiaine.tehtava" esitys-peruste="perusteOppiaine.tehtava" show-peruste="true"></div>
+
+<div ng-repeat="vlk in oppiaine.vuosiluokkakokonaisuudet">
+  <h2 kaanna="vlkMap[vlk._vuosiluokkakokonaisuus].vuosiluokkakokonaisuus.nimi"></h2>
+
+  <div esitys-teksti="vlk.tehtava" esitys-peruste="perusteOppiaineVlkMap[vlk._vuosiluokkakokonaisuus].tehtava" show-peruste="true"></div>
+
+</div>
