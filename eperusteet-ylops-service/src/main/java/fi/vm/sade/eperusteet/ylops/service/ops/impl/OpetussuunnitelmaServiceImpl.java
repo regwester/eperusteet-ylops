@@ -258,7 +258,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         ops.setPohja(pohja);
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
-        kopioiTekstit(pohja.getTekstit(), ops.getTekstit());
+        boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
+        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
         // FIXME poista filtteröi oppiaineet onPoistettavalla
         ops.setOppiaineet(
@@ -272,20 +273,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .collect(Collectors.toSet()));
     }
 
-    private void kopioiTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent) {
+    private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent, boolean teeKopio) {
         List<TekstiKappaleViite> vanhaLapset = vanha.getLapset();
         if (vanhaLapset != null) {
-            for (TekstiKappaleViite vanhaTkv : vanhaLapset) {
-                if (vanhaTkv.getTekstiKappale() != null) {
-                    TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
-                    tkv.setOmistussuhde(Omistussuhde.LAINATTU);
-                    tkv.setLapset(new ArrayList<>());
-                    tkv.setVanhempi(parent);
-                    tkv.setTekstiKappale(tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy()));
-                    parent.getLapset().add(tkv);
-                    kopioiTekstit(vanhaTkv, tkv);
-                }
-            }
+            vanhaLapset.stream()
+                       .filter(vanhaTkv -> vanhaTkv.getTekstiKappale() != null)
+                       .forEach(vanhaTkv -> {
+                           TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
+                           tkv.setOmistussuhde(teeKopio ? Omistussuhde.OMA : Omistussuhde.LAINATTU);
+                           tkv.setLapset(new ArrayList<>());
+                           tkv.setVanhempi(parent);
+                           tkv.setTekstiKappale(teeKopio
+                                                ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy())
+                                                : vanhaTkv.getTekstiKappale());
+                           parent.getLapset().add(tkv);
+                           kasitteleTekstit(vanhaTkv, tkv, teeKopio);
+                       });
         }
     }
 

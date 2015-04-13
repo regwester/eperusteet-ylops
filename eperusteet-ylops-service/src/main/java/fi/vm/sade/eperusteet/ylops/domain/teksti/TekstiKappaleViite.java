@@ -63,6 +63,10 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     private Long id;
 
+    /**
+     * Kertoo että onko viitattava tekstikappale merkitty pakolliseksi
+     * ts. sitä ei voi poistaa eikä sen otsikkoa muokata.
+     */
     @Getter
     @Setter
     private boolean pakollinen;
@@ -81,6 +85,11 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     private TekstiKappale tekstiKappale;
 
+    /**
+     * Kertoo viitattavan tekstikappaleen omistussuhteen.
+     * Vain omaa tekstikappaletta voidaan muokata, lainatusta tekstikappaleesta
+     * täytyy ensin tehdä oma kopio ennen kuin muokkaus on mahdollista.
+     */
     @Enumerated(value = EnumType.STRING)
     @NotNull
     @Getter
