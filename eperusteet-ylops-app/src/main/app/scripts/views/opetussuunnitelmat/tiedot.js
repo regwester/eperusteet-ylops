@@ -35,14 +35,20 @@ ylopsApp
   $scope.koulutoimijalista = [];
   $scope.koululista = [];
   $scope.eiKoulujaVaroitus = false;
+  $scope.nimiOrder = function(vlk) {
+    return Utils.sort(vlk.vuosiluokkakokonaisuus);
+  };
+  //$scope.vuosiluokkakokonaisuudet = [];
 
 
   $scope.hasRequiredFields = function () {
     var model = $scope.editableModel;
+    console.log('model valittu array', _(model.vuosiluokkakokonaisuudet).filter({valittu: true}).size());
     return Utils.hasLocalizedText(model.nimi) &&
            model.kunnat && model.kunnat.length > 0 &&
            model.koulutoimijat && model.koulutoimijat.length > 0 &&
-           _.any(_.values($scope.julkaisukielet));
+           _.any(_.values($scope.julkaisukielet)) &&
+           (_(model.vuosiluokkakokonaisuudet).filter({valittu: true}).size() > 0 || model.koulutustyyppi !== 'koulutustyyppi_16');
   };
 
   function mapKunnat(lista) {
@@ -85,7 +91,17 @@ ylopsApp
       $scope.editableModel.kunnat = res.kunnat;
       $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
       $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
+      $scope.editableModel.vuosiluokkakokonaisuudet = res.vuosiluokkakokonaisuudet;
     }, Notifikaatiot.serverCb);
+    // Jos luonnissa ja ei pohja ops:ia, haetaan vuosiluokkakokonaisuudet virkailijan pohjasta
+  } else if ($scope.luonnissa && !$scope.editableModel._pohja) {
+    OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'}, function(pohjat) {
+      // TODO: pitää varmaankin ottaa huomioon mitä ops:ia ollaan luomassa. (Esi-, lisä vai perusopetus)
+      var aktiivinenPohja = _.find(pohjat, {tila: 'valmis'});
+      OpetussuunnitelmaCRUD.get({opsId: aktiivinenPohja.id}, function (ops) {
+        $scope.editableModel.vuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
+      });
+    });
   }
 
   $scope.kieliOrderFn = Kieli.orderFn;
@@ -104,6 +120,7 @@ ylopsApp
   }
 
   var successCb = function (res) {
+    console.log('tallennettu', res);
     Notifikaatiot.onnistui('tallennettu-ok');
     if ($scope.luonnissa) {
       $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
@@ -126,6 +143,7 @@ ylopsApp
       }).value();
       $scope.editableModel.organisaatiot = $scope.editableModel.koulutoimijat.concat($scope.editableModel.koulut);
       if ($scope.luonnissa) {
+        $scope.editableModel.vuosiluokkakokonaisuudet = _.remove($scope.editableModel.vuosiluokkakokonaisuudet, {valittu: true});
         OpetussuunnitelmaCRUD.save({}, $scope.editableModel, successCb, Notifikaatiot.serverCb);
       } else {
         $scope.editableModel.$save({}, successCb, Notifikaatiot.serverCb);

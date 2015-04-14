@@ -81,4 +81,13 @@ ylopsApp
         return confirmationMessage;
       }
     });
+  })
+  .config(function ($tooltipProvider) {
+    $tooltipProvider.setTriggers({
+        'mouseenter': 'mouseleave',
+        'click': 'click',
+        'focus': 'blur',
+        'never': 'mouseleave',
+        'show': 'hide'
+    });
   });

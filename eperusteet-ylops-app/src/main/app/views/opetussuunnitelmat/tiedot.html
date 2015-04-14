@@ -1,3 +1,5 @@
+
+
 <div ng-hide="luonnissa || editMode" class="navigaatio-takaisin plain">
   <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" icon-role="chevron-left" kaanna="'takaisin-osioihin'"></a>
 </div>
@@ -15,6 +17,18 @@
   </div>
 
   <div ng-if="!(editMode || luonnissa)" class="data-container">
+    
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'vuosiluokkakokonaisuudet'"></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data viewmode">
+        <span ng-repeat="vlk in model.vuosiluokkakokonaisuudet">
+          <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span><span ng-show="!$last">, </span>
+        </span>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
@@ -89,9 +103,10 @@
     </div>
 
   </div>
-
+  
 
   <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
+       
     <div class="row" ng-show="editableModel._pohja && luonnissa">
       <div class="col-sm-3 formfield-label">
         <label><span kaanna="'pohja-ops'"></span></label>
@@ -133,6 +148,21 @@
           </ui-select-choices>
           <ui-select-match class="ui-select-match" placeholder="{{'koulutustyyppi' | kaanna}}">{{$select.selected | kaanna}} {{$select.selected.diaarinumero}}</ui-select-match>
         </ui-select>
+      </div>
+    </div>
+    
+    <div ng-if="luonnissa && editableModel.koulutustyyppi === 'koulutustyyppi_16'" class="row">
+      <div class="col-sm-3 formfield-label">
+        <label><span kaanna="'vuosiluokkakokonaisuudet'"></span>*</label>
+          
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <label ng-repeat="vlk in editableModel.vuosiluokkakokonaisuudet | orderBy:nimiOrder" class="julkaisukieli">
+          <input type="checkbox" ng-model="vlk.valittu">
+          <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span>
+        </label>
+        <ohje teksti="luonti-vuosiluokka-valinta-info"></ohje>
       </div>
     </div>
 

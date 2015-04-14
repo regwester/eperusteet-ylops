@@ -249,11 +249,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 || Pattern.matches("^B3.+", koodi)
                 || Pattern.matches("^RU", koodi)
                 || Pattern.matches("^SK", koodi)
-//                || Pattern.matches("^TK", koodi)
-//                || Pattern.matches("^VK", koodi)
+                //                || Pattern.matches("^TK", koodi)
+                //                || Pattern.matches("^VK", koodi)
                 || Pattern.matches("^LK", koodi);
     }
-
 
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         ops.setPohja(pohja);
@@ -263,12 +262,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         // FIXME poista filtteröi oppiaineet onPoistettavalla
         ops.setOppiaineet(
-            pohja.getOppiaineet().stream()
+                pohja.getOppiaineet().stream()
                 .map(ooa -> new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), true))
                 .collect(Collectors.toSet()));
 
         ops.setVuosiluokkakokonaisuudet(
                 pohja.getVuosiluokkakokonaisuudet().stream()
+                .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
+                        .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getId().equals(ovlk.getVuosiluokkakokonaisuus().getId())))
                 .map(ovlk -> new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true))
                 .collect(Collectors.toSet()));
     }
