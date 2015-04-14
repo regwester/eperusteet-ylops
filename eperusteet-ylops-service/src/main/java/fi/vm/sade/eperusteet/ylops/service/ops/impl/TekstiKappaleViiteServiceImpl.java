@@ -203,18 +203,13 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             if (viite.getOmistussuhde() == Omistussuhde.OMA) {
                 if ( viite.getTekstiKappale() != null ) {
                     final Long tid = viite.getTekstiKappale().getId();
-                    if ( requireLock || lockMgr.getLock(tid) != null ) {
+                    if (requireLock || lockMgr.getLock(tid) != null) {
                         lockMgr.ensureLockedByAuthenticatedUser(tid);
                     }
                 }
                 tekstiKappaleService.update(uusiTekstiKappale);
             } else {
-                TekstiKappale vanha = viite.getTekstiKappale();
-                tekstiKappaleService.mergeNew(viite, uusiTekstiKappale);
-                // Poista vanha tekstikappale jos siihen ei tämän jälkeen enää löydy viittauksia
-                if (repository.findAllByTekstiKappale(vanha).isEmpty()) {
-                    tekstiKappaleService.delete(vanha.getId());
-                }
+                throw new BusinessRuleViolationException("Lainattua tekstikappaletta ei voida muokata");
             }
         }
     }

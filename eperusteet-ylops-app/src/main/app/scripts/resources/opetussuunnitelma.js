@@ -47,7 +47,8 @@ ylopsApp
     return $resource(YlopsResources.OPS + '/tekstit/:viiteId', {
       viiteId: '@id'
     }, {
-      setChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:parentId/lapsi/:childId'}
+      setChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:parentId/lapsi/:childId'},
+      kloonaaTekstikappale: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/muokattavakopio'}
     });
   })
 

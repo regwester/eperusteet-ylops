@@ -113,6 +113,15 @@ ylopsApp
       });
     };
 
+    $scope.kopioiMuokattavaksi = function () {
+      Lukko.lock(commonParams, function () {
+        OpetussuunnitelmanTekstit.kloonaaTekstikappale(commonParams, {}, function (res) {
+          successCb(res);
+          $scope.edit();
+        }, Notifikaatiot.serverCb);
+      });
+    };
+
     $scope.addChild = function () {
       var lukkoParams = _.omit(commonParams, 'viiteId');
       Lukko.lockRakenne(lukkoParams, function () {
