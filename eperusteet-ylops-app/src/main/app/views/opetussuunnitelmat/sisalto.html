@@ -3,7 +3,7 @@
     <div class="list-group sisalto-osio">
       <a class="list-group-item list-group-header"
          ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: osio.id})">
-         <div class="kontrollit" ng-hide="osio.$$edit">
+         <div class="kontrollit" ng-hide="osio.$$edit" ng-if="isEditable()">
            <span class="lukko-wrapper">
              <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip" size="small"></lukko>
            </span>
@@ -36,7 +36,7 @@
             <button class="btn btn-primary" ng-click="rakenne.saveTitle(item)" kaanna="'tallenna'"></button>
           </span>
         </div>
-        <div class="floater-ops" ng-if="canRemove(item) && !kappaleEdit">
+        <div class="floater-ops" ng-if="isEditable() && canRemove(item) && !kappaleEdit">
           <span class="kappale-ops" ng-click="rakenne.editTitle(osio, item)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span>
           <span class="kappale-ops" ng-click="rakenne.deleteKappale(osio, item)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span>
         </div>

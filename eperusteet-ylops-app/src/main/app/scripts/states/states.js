@@ -92,6 +92,7 @@ ylopsApp
         },
         controller: function ($scope, opsModel, vuosiluokkakokonaisuudet, opsService, $rootScope) {
           $scope.model = opsModel;
+          $scope.isEditable = opsService.isEditable;
           $scope.vuosiluokkakokonaisuudet = vuosiluokkakokonaisuudet;
           $scope.$on('rakenne:updated', function () {
             $scope.model = opsService.get();

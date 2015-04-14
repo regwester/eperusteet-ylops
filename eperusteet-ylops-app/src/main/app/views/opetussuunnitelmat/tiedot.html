@@ -5,7 +5,7 @@
 <div class="ops-edit-container">
   <h2 ng-hide="luonnissa">
     <div class="action-buttons-inline">
-      <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }" icon-role="edit" ng-click="edit()"></button>
+      <button ng-if="isEditable()" ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }" icon-role="edit" ng-click="edit()"></button>
     </div>
     <span kaanna="'opsn-tiedot'"></span>
   </h2>

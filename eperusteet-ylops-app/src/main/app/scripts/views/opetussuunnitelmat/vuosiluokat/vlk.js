@@ -44,7 +44,7 @@ ylopsApp
 
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
   MurupolkuData, vlk, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
-  baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper) {
+  baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, OpsService) {
 
   $timeout(function () {
     if ($location.hash()) {
@@ -112,7 +112,8 @@ ylopsApp
   };
 
   $scope.options = {
-    editing: false
+    editing: false,
+    isEditable: OpsService.isEditable
   };
 
   $scope.callbacks = {

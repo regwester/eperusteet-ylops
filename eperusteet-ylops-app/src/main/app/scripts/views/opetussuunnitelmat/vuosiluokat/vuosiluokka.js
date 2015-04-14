@@ -123,7 +123,7 @@ ylopsApp
 })
 
 .controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils,
-  $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $stateParams, $rootScope, VuosiluokkaMapper) {
+  $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $stateParams, $rootScope, VuosiluokkaMapper, OpsService) {
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.nimiOrder = Utils.sort;
@@ -137,7 +137,8 @@ ylopsApp
   refetch();
 
   $scope.options = {
-    editing: false
+    editing: false,
+    isEditable: OpsService.isEditable
   };
 
   $scope.callbacks = {
@@ -203,7 +204,7 @@ ylopsApp
 }) // end of VuosiluokkaTavoitteetController
 
 .controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit,
-  $timeout, $location, $anchorScroll, OppiaineService, VuosiluokkaMapper) {
+  $timeout, $location, $anchorScroll, OppiaineService, VuosiluokkaMapper, OpsService) {
 
   $scope.tunnisteet = [];
   $scope.muokattavat = {};
@@ -224,7 +225,8 @@ ylopsApp
   refetch();
 
   $scope.options = {
-    editing: false
+    editing: false,
+    isEditable: OpsService.isEditable
   };
 
   $scope.callbacks = {
@@ -306,34 +308,6 @@ ylopsApp
       scope.isEmpty = _.isEmpty;
 
       scope.focusAndScroll = angular.noop;
-    }
-  };
-})
-
-.directive('popoverHtml', function ($document) {
-  var OPTIONS = {
-    html: true,
-    placement: 'bottom'
-  };
-  return {
-    restrict: 'A',
-    link: function (scope, element) {
-      element.popover(OPTIONS);
-
-      // Click anywhere else to close
-      $document.on('click', function (event) {
-        var clickedParent = angular.element(event.target).hasClass('laajaalainen-popover');
-        var clickedContent = angular.element(event.target).closest('.popover').length > 0;
-        if (clickedParent || clickedContent || element.find(event.target).length > 0) {
-          return;
-        }
-        element.popover('hide');
-      });
-
-      scope.$on('$destroy', function () {
-        $document.off('click');
-        element.popover('destroy');
-      });
     }
   };
 });

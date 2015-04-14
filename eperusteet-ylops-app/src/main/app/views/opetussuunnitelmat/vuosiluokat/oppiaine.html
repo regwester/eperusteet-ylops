@@ -1,10 +1,10 @@
-<div ng-if="oppiaine.tyyppi !== 'yhteinen'" class="action-buttons-inline">
+<div ng-if="isEditable() && oppiaine.tyyppi !== 'yhteinen'" class="action-buttons-inline">
   <button class="btn btn-default" icon-role="edit" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button class="btn btn-default" icon-role="remove" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
 </div>
 <h2 ng-bind="oppiaine.nimi | kaanna"></h2>
 
-<div>
+<div ng-if="isEditable()">
   <button ng-if="valitseOppimaara" class="btn btn-default pull-right" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"></button>
   <button ng-if="$onKieliTaiUskonto" class="btn btn-default pull-right" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"></button>
 </div>
@@ -15,7 +15,7 @@
 
 <div class="tekstiosa-wrapper" ng-show="!oppiaine.koosteinen && oppiaineenVlk">
   <h3>
-    <div class="action-buttons-inline">
+    <div class="action-buttons-inline" ng-if="isEditable()">
       <button ng-if="oppiaine.tyyppi === 'yhteinen'" class="btn btn-default" icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     </div>
     <span kaanna="'tavoitteet-ja-sisallot-vuosiluokittain'"></span>

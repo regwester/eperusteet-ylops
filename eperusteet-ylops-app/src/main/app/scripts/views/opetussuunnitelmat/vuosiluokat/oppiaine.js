@@ -221,7 +221,8 @@ ylopsApp
   }
 
   $scope.options = {
-    editing: false
+    editing: false,
+    isEditable: OpsService.isEditable
   };
 
   $scope.callbacks = {
