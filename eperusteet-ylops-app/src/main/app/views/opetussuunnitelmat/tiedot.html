@@ -27,6 +27,15 @@
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
+        <label for="ops-field-nimi-readonly" kaanna="'koulutustyyppi'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div id="ops-field-nimi-readonly" ng-bind="model.koulutustyyppi | kaanna"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
         <label kaanna="'organisaatio'"></label>
       </div>
 
