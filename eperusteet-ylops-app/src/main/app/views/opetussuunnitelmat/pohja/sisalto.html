@@ -5,7 +5,7 @@
       <div class="input-group">
         <input ng-model="model.tekstit.$$nimi" slocalized class="form-control">
         <span class="input-group-btn">
-          <button class="btn btn-primary" ng-click="pohjaOps.addNew(model.tekstit)" kaanna="'lisaa-paatason-otsikko'"></button>
+          <button class="btn btn-primary" ng-click="pohjaOps.addNew(model.tekstit)" ng-disabled="!hasText(model.tekstit.$$nimi)" kaanna="'lisaa-paatason-otsikko'"></button>
         </span>
       </div>
     </div>
