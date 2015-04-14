@@ -429,8 +429,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
-        // Sallitaan tilasiirtymät vain yhteen suuntaan
-        if (tila.ordinal() > ops.getTila().ordinal()) {
+        // Sallitaan tilasiirtymät vain yhteen suuntaan (paitsi ops valmis->luonnos)
+        if (tila.ordinal() > ops.getTila().ordinal() ||
+            (ops.getTyyppi() == Tyyppi.OPS && tila == Tila.LUONNOS && ops.getTila() == Tila.VALMIS)) {
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
                 // Arkistoidaan vanhat valmiit pohjat
                 List<Opetussuunnitelma> pohjat = repository.findAllByTyyppi(Tyyppi.POHJA);
@@ -438,6 +439,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         .forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
             }
 
+            // TODO opsin validointi kun julkaistaan
             ops.setTila(tila);
             ops = repository.save(ops);
         }

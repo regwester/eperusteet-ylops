@@ -161,6 +161,32 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testUpdateOpsinTila() {
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
+        assertEquals(1, opsit.size());
+
+        Long id = opsit.get(0).getId();
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        assertEquals(Tila.LUONNOS, ops.getTila());
+
+        // Opsin voi palauttaa valmiista luonnokseksi, muuten normaali tilan eteneminen
+        ops = opetussuunnitelmaService.updateTila(id, Tila.VALMIS);
+        assertEquals(Tila.VALMIS, ops.getTila());
+
+        ops = opetussuunnitelmaService.updateTila(id, Tila.LUONNOS);
+        assertEquals(Tila.LUONNOS, ops.getTila());
+
+        ops = opetussuunnitelmaService.updateTila(id, Tila.VALMIS);
+        assertEquals(Tila.VALMIS, ops.getTila());
+
+        ops = opetussuunnitelmaService.updateTila(id, Tila.JULKAISTU);
+        assertEquals(Tila.JULKAISTU, ops.getTila());
+
+        ops = opetussuunnitelmaService.updateTila(id, Tila.LUONNOS);
+        assertEquals(Tila.JULKAISTU, ops.getTila());
+    }
+
+    @Test
     public void testDelete() {
         List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
         assertEquals(1, opsit.size());

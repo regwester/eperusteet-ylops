@@ -87,6 +87,9 @@ ylopsApp
         tilat.unshift('luonnos');
       } else if ($scope.status === 'valmis') {
         tilat.unshift('valmis');
+        if (!isPohja) {
+          tilat.unshift('luonnos');
+        }
       }
       OpsinTilanvaihto.start({
         currentStatus: $scope.status,

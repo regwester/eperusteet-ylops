@@ -27,6 +27,7 @@ public enum Tila {
 
     LUONNOS("luonnos"),
     VALMIS("valmis"),
+    JULKAISTU("julkaistu"),
     POISTETTU("poistettu");
 
     private final String tila;
