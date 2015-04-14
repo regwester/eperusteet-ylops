@@ -41,6 +41,10 @@ public class OpsOppiaine implements Serializable {
     @NotNull
     private Oppiaine oppiaine;
 
+    /**
+     * Ilmaisee onko oppiaine oma vai lainattu. Vain omaa oppiainetta voidaan muokata,
+     * lainatusta oppiaineesta täytyy ensin tehdä oma kopio ennen kuin muokkaus on mahdollista.
+     */
     @Getter
     @Setter
     @Column(updatable = false)

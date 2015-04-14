@@ -41,6 +41,11 @@ public class OpsVuosiluokkakokonaisuus implements Serializable {
     @NotNull
     private Vuosiluokkakokonaisuus vuosiluokkakokonaisuus;
 
+    /**
+     * Ilmaisee onko vuosiluokkakokonaisuus oma vai lainattu. Vain omaa vuosiluokkakokonaisuutta
+     * voidaan muokata, lainatusta kokonaisuudesta täytyy ensin tehdä oma kopio ennen kuin
+     * muokkaus on mahdollista.
+     */
     @Getter
     @Setter
     @Column(updatable = false)

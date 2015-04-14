@@ -262,16 +262,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         // FIXME poista filtteröi oppiaineet onPoistettavalla
         ops.setOppiaineet(
-                pohja.getOppiaineet().stream()
-                .map(ooa -> new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), true))
-                .collect(Collectors.toSet()));
+            pohja.getOppiaineet().stream()
+                 .map(ooa -> new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), teeKopio))
+                 .collect(Collectors.toSet()));
 
         ops.setVuosiluokkakokonaisuudet(
-                pohja.getVuosiluokkakokonaisuudet().stream()
-                .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
-                        .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getId().equals(ovlk.getVuosiluokkakokonaisuus().getId())))
-                .map(ovlk -> new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true))
-                .collect(Collectors.toSet()));
+            pohja.getVuosiluokkakokonaisuudet().stream()
+                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
+                                    .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getId().equals(ovlk.getVuosiluokkakokonaisuus().getId())))
+                 .map(ovlk -> new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), teeKopio))
+                 .collect(Collectors.toSet()));
     }
 
     private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent, boolean teeKopio) {
