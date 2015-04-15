@@ -263,14 +263,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         // FIXME poista filtteröi oppiaineet onPoistettavalla
         ops.setOppiaineet(
             pohja.getOppiaineet().stream()
-                 .map(ooa -> new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), teeKopio))
+                 .map(ooa -> teeKopio
+                             ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), true)
+                             : new OpsOppiaine(ooa.getOppiaine(), false))
                  .collect(Collectors.toSet()));
 
         ops.setVuosiluokkakokonaisuudet(
             pohja.getVuosiluokkakokonaisuudet().stream()
                  .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
                                     .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getId().equals(ovlk.getVuosiluokkakokonaisuus().getId())))
-                 .map(ovlk -> new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), teeKopio))
+                 .map(ovlk -> teeKopio
+                              ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
+                              : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
                  .collect(Collectors.toSet()));
     }
 
