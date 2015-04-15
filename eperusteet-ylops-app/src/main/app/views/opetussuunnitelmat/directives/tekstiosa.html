@@ -1,6 +1,7 @@
 <div ng-if="model.otsikko || model.teksti || muokattava.otsikko" class="tekstiosa-wrapper">
   <h3>
     <span ng-bind="model.otsikko || muokattava.otsikko | kaanna"></span>
+    <ohje ng-if="ohjepallo" teksti="ohjepallo"></ohje>
   </h3>
   <div ng-if="model.otsikko || model.teksti" class="tekstiosa perusteen-teksti">
     <a class="toggle-perusteen-teksti" ng-click="options.collapsed = !options.collapsed">

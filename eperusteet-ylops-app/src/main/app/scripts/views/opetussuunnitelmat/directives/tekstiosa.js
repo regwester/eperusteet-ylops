@@ -24,7 +24,8 @@ ylopsApp
       model: '=perusteenTekstiosa',
       muokattava: '=?',
       callbacks: '=',
-      config: '='
+      config: '=',
+      ohjepallo: '='
     },
     templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
     controller: 'TekstiosaController',

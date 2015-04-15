@@ -31,18 +31,6 @@
  * otsikko: optional
  */
 angular.module('ylopsApp')
-// .directive('popover', function() {
-//            return {
-//                restrict: 'EA',
-//                link: function(scope, element, attrs) {
-//                    attrs.popoverPlacement = attrs.popoverPlacement || 'top';
-//                    attrs.popoverAnimation = attrs.popoverAnimation || true;
-//                    attrs.popoverPopupDelay = attrs.popoverPopupDelay || 0;
-//                    attrs.popoverTrigger = attrs.popoverTrigger || 'mouseenter';
-//                    attrs.popoverAppendToBody = attrs.popoverAppendToBody || false;
-//                }
-//            };
-//        })
   .directive('ohje', function ($timeout, $compile, $document) {
     return {
       templateUrl: 'views/common/directives/ohje.html',

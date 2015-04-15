@@ -5,12 +5,11 @@
 <h2 ng-bind="vlk.nimi | kaanna"></h2>
 
 <div class="vuosiluokkakokonaisuus">
-
-  <div perusteen-tekstiosa="perusteVlk.tehtava" muokattava="temp.tehtava" callbacks="callbacks" config="options"></div>
-
+  <div perusteen-tekstiosa="perusteVlk.tehtava" muokattava="temp.tehtava" callbacks="callbacks" config="options" ohjepallo="vlkErityispiirteet"></div>
+  
   <h2 ng-if="hasSiirtymat()" kaanna="'siirtymavaiheet'"></h2>
   <div ng-repeat="osio in siirtymat">
-    <div perusteen-tekstiosa="perusteVlk[osio]" muokattava="temp[osio]" callbacks="callbacks" config="options"></div>
+    <div perusteen-tekstiosa="perusteVlk[osio]" muokattava="temp[osio]" callbacks="callbacks" config="options" ohjepallo="siirtymaInfot[osio]"></div>
   </div>
 
   <h2 ng-if="perusteVlk.laajaalainenOsaaminen" kaanna="'laaja-alainen-osaaminen'"></h2>
@@ -18,7 +17,7 @@
 
   <h2 ng-if="tunnisteet.length > 0" kaanna="'laaja-alaiset-osaamiset'"></h2>
   <div ng-repeat="tunniste in tunnisteet | orderBy:orderFn" id="{{tunniste}}">
-    <div perusteen-tekstiosa="laajaalaiset[tunniste]" muokattava="paikalliset[tunniste]" callbacks="callbacks" config="options"></div>
+    <div perusteen-tekstiosa="laajaalaiset[tunniste]" muokattava="paikalliset[tunniste]" callbacks="callbacks" config="options" ohjepallo="vlkLaajaalaiset"></div>
   </div>
 
 </div>

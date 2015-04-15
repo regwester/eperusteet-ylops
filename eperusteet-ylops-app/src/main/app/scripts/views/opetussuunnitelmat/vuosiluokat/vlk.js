@@ -52,6 +52,15 @@ ylopsApp
     }
   }, 1000);
 
+
+  // Lokalisaatioavaimet ohjepopover:ien sisällöille
+  var vlkNimi = vlk.nimi.fi;
+  $scope.vlkErityispiirteet = vlkNimi + '_erityispiirteet_ja_tehtavat_info';
+  $scope.siirtymaInfot = {};
+  $scope.siirtymaInfot.siirtymaEdellisesta = vlkNimi + '_siirtyma_aikaisempi_nykyinen_info';
+  $scope.siirtymaInfot.siirtymaSeuraavaan = vlkNimi + '_siirtymä_nykyinen_seuraava_info';
+  $scope.vlkLaajaalaiset = vlkNimi + '_laaja-alaisen_osaamisen_alueet_info';
+
   var laajaalaisetosaamiset = _.indexBy(baseLaajaalaiset, 'tunniste');
   var laajaalaisetOrder = _(baseLaajaalaiset).sortBy(Utils.sort).map('tunniste').value();
   $scope.siirtymat = ['siirtymaEdellisesta', 'siirtymaSeuraavaan'];
