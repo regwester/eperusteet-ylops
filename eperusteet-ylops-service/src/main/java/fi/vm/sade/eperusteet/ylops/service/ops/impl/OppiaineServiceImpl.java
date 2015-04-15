@@ -269,6 +269,27 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, tavoitteetDto);
     }
 
+    @Override
+    public OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+
+        Oppiaine oppiaine = getOppiaine(opsId, id);
+        assertExists(oppiaine, "Kopioitavaa oppiainetta ei ole olemassa");
+
+        Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
+                                            .filter(oa -> !oa.getOppiaine().getId().equals(id))
+                                            .collect(Collectors.toSet());
+
+        oppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
+
+        OpsOppiaine kopio = new OpsOppiaine(oppiaine, true);
+        opsOppiaineet.add(kopio);
+        ops.setOppiaineet(opsOppiaineet);
+
+        return mapper.map(kopio, OpsOppiaineDto.class);
+    }
+
     private Set<Oppiaineenvuosiluokka> luoOppiaineenVuosiluokat(Set<Vuosiluokka> vuosiluokat,
                                                                 List<TekstiosaDto> tavoitteetDto) {
         return vuosiluokat.stream().map(Oppiaineenvuosiluokka::new)
@@ -413,6 +434,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         if (!oppiaineExists(opsId, oppiaineId)) {
             throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
         }
+
         Oppiaine oppiaine = oppiaineet.findOne(oppiaineId);
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
         return oppiaine;
@@ -536,6 +558,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private boolean oppiaineExists(Long opsId, Long oppiaineId) {
-        return oppiaineet.isOma(opsId, oppiaineId);
+        return oppiaineet.isOma(opsId, oppiaineId) != null;
     }
 }

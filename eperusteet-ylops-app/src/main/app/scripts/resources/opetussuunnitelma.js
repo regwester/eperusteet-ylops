@@ -69,7 +69,8 @@ ylopsApp
       peruste: {method: 'GET', url: YlopsResources.OPPIAINE + '/peruste'},
       saveValinnainen: {method: 'POST', url: YlopsResources.OPPIAINE + '/valinnainen'},
       addKielitarjonta: {method: 'POST', url: YlopsResources.OPPIAINE + '/kielitarjonta'},
-      getParent: {method: 'GET', url: YlopsResources.OPPIAINE + '/parent'}
+      getParent: {method: 'GET', url: YlopsResources.OPPIAINE + '/parent'},
+      kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.OPPIAINE + '/muokattavakopio'}
     });
   })
 

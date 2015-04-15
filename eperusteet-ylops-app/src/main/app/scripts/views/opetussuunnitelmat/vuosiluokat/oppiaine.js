@@ -293,6 +293,22 @@ ylopsApp
   };
 
   $scope.kopioiMuokattavaksi = function () {
-    // TODO
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-kopiointi',
+      primaryBtn: 'luo-kopio',
+      successCb: function () {
+        OppiaineCRUD.kloonaaMuokattavaksi({
+          opsId: $stateParams.id,
+          oppiaineId: $stateParams.oppiaineId
+        }, {}, function(res) {
+          Notifikaatiot.onnistui('kopion-luonti-onnistui');
+          $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+            vlkId: $stateParams.vlkId,
+            oppiaineId: res.id,
+            oppiaineTyyppi: res.tyyppi
+          }, { reload: true });
+        }, Notifikaatiot.serverCb);
+      }
+    })();
   };
 });

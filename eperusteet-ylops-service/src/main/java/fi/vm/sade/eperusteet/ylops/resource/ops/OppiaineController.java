@@ -135,4 +135,9 @@ public class OppiaineController {
             .flatMap(a -> p.getPerusopetus().getOppiaine(a.getOppiaine().getTunniste())));
     }
 
+    @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
+    public UnwrappedOpsOppiaineDto kopioiMuokattavaksi(@PathVariable("opsId") final Long opsId,
+                                                       @PathVariable("id") final Long id) {
+        return new UnwrappedOpsOppiaineDto(oppiaineService.kopioiMuokattavaksi(opsId, id));
+    }
 }
