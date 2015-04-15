@@ -44,6 +44,6 @@ public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine
     @Query(value = "SELECT a FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a WHERE o.id = ?1 AND a.tunniste = ?2")
     Oppiaine findOneByOpsIdAndTunniste(long opsId, UUID tunniste);
 
-    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a LEFT JOIN a.oppimaarat m WHERE o.id = ?1 AND (a.id = ?2 OR m.id = ?2)")
-    boolean exists(long opsId, long oppiaineId);
+    @Query(value = "SELECT oa.oma FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a LEFT JOIN a.oppimaarat m WHERE o.id = ?1 AND (a.id = ?2 OR m.id = ?2)")
+    Boolean isOma(long opsId, long oppiaineId);
 }

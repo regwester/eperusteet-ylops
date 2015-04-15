@@ -15,16 +15,22 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
- * @author jhyoty
+ * @author mikkom
  */
 @Getter
 @Setter
-public class OpsOppiaineDto {
+public class UnwrappedOpsOppiaineDto {
     private boolean oma;
+    @JsonUnwrapped
     private OppiaineDto oppiaine;
+
+    public UnwrappedOpsOppiaineDto(OpsOppiaineDto dto) {
+        oma = dto.isOma();
+        oppiaine = dto.getOppiaine();
+    }
 }

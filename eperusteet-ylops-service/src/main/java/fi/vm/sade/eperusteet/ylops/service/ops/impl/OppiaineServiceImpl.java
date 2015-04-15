@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Tavoitteenarviointi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
@@ -38,7 +39,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -58,7 +59,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -155,9 +155,14 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     @Transactional(readOnly = true)
-    public OppiaineDto get(@P("opsId") Long opsId, Long id) {
-        Oppiaine oppiaine = getOppiaine(opsId, id);
-        return mapper.map(oppiaine, OppiaineDto.class);
+    public OpsOppiaineDto get(@P("opsId") Long opsId, Long id) {
+        Boolean isOma = oppiaineet.isOma(opsId, id);
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
+        }
+        Oppiaine oppiaine = oppiaineet.findOne(id);
+        assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
+        return mapper.map(new OpsOppiaine(oppiaine, isOma), OpsOppiaineDto.class);
     }
 
     @Override
@@ -345,7 +350,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private Oppiaineenvuosiluokka findVuosiluokka(Long opsId, Long oppiaineId, Long vuosiluokkaId) throws BusinessRuleViolationException {
-        if (!oppiaineet.exists(opsId, oppiaineId)) {
+        if (oppiaineExists(opsId, oppiaineId)) {
             throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
         }
         return vuosiluokat.findByOppiaine(oppiaineId, vuosiluokkaId);
@@ -405,7 +410,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private Oppiaine getOppiaine(Long opsId, Long oppiaineId) {
-        if (!oppiaineet.exists(opsId, oppiaineId)) {
+        if (!oppiaineExists(opsId, oppiaineId)) {
             throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
         }
         Oppiaine oppiaine = oppiaineet.findOne(oppiaineId);
@@ -516,7 +521,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     protected Long validateCtx(OpsOppiaineCtx ctx, boolean readOnly) {
-        if (ctx.isValid() && oppiaineet.exists(ctx.getOpsId(), ctx.getOppiaineId())) {
+        if (ctx.isValid() && oppiaineExists(ctx.getOpsId(), ctx.getOppiaineId())) {
             if (ctx.isOppiane()) {
                 return ctx.getOppiaineId();
             }
@@ -530,4 +535,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         throw new LockingException("Virheellinen lukitus");
     }
 
+    private boolean oppiaineExists(Long opsId, Long oppiaineId) {
+        return oppiaineet.isOma(opsId, oppiaineId);
+    }
 }

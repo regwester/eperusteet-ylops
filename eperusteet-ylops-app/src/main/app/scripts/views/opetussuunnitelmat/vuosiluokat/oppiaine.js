@@ -222,7 +222,9 @@ ylopsApp
 
   $scope.options = {
     editing: false,
-    isEditable: OpsService.isEditable
+    isEditable: function () {
+      return OpsService.isEditable() && $scope.oppiaine.oma;
+    }
   };
 
   $scope.callbacks = {
@@ -290,4 +292,7 @@ ylopsApp
     })();
   };
 
+  $scope.kopioiMuokattavaksi = function () {
+    // TODO
+  };
 });

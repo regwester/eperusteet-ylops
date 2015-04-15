@@ -65,7 +65,7 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id) {
 
-        OppiaineDto oa = oppiaineService.get(opsId, oppiaineId);
+        OppiaineDto oa = oppiaineService.get(opsId, oppiaineId).getOppiaine();
         return Responses.of(oa.getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> vk.getId().equals(id))
             .findAny());
@@ -77,7 +77,7 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id) {
 
-        OppiaineDto oa = oppiaineService.get(opsId, oppiaineId);
+        OppiaineDto oa = oppiaineService.get(opsId, oppiaineId).getOppiaine();
         return oa.getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> vk.getId().equals(id))
             .flatMap(vk -> vk.getVuosiluokat().stream())
@@ -128,7 +128,7 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         @PathVariable("id") final Long id) {
 
         final Peruste peruste = ops.getPeruste(opsId);
-        final Optional<OppiaineDto> aine = Optional.ofNullable(oppiaineService.get(opsId, oppiaineId));
+        final Optional<OppiaineDto> aine = Optional.ofNullable(oppiaineService.get(opsId, oppiaineId).getOppiaine());
 
         return Responses.of(aine.flatMap(a -> a.getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> vk.getId().equals(id))
