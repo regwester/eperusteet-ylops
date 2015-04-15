@@ -20,31 +20,31 @@
     
     <div class="row">
       <div class="col-sm-3 formfield-label">
+        <label for="ops-field-nimi-readonly" kaanna="'koulutustyyppi'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div id="ops-field-nimi-readonly" ng-bind="model.koulutustyyppi | kaanna"></div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
         <label kaanna="'vuosiluokkakokonaisuudet'"></label>
       </div>
 
       <div class="col-sm-9 formfield-data viewmode">
-        <span ng-repeat="vlk in model.vuosiluokkakokonaisuudet">
+        <span ng-repeat="vlk in model.vuosiluokkakokonaisuudet | orderBy:nimiOrder">
           <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span><span ng-show="!$last">, </span>
         </span>
       </div>
     </div>
-
+      
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label for="ops-field-nimi-readonly" kaanna="'opsin-nimi'"></label>
       </div>
       <div class="col-sm-9 formfield-data viewmode">
         <div id="ops-field-nimi-readonly" ng-bind="model.nimi | kaanna"></div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-3 formfield-label">
-        <label for="ops-field-nimi-readonly" kaanna="'koulutustyyppi'"></label>
-      </div>
-      <div class="col-sm-9 formfield-data viewmode">
-        <div id="ops-field-nimi-readonly" ng-bind="model.koulutustyyppi | kaanna"></div>
       </div>
     </div>
 
@@ -106,6 +106,38 @@
   
 
   <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
+    
+        <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label><span kaanna="'koulutustyyppi'"></span><span ng-if="(editMode || luonnissa)">*</span></label>
+      </div>
+
+      <div class="col-sm-4 formfield-data" ng-class="{viewmode: !(editMode || luonnissa)}">
+        <div ng-if="!(editMode || luonnissa)" ng-bind="editableModel.koulutustyyppi"></div>
+
+        <ui-select ng-if="(editMode || luonnissa)" ng-disabled="editMode" class="ui-select" ng-model="editableModel.koulutustyyppi">
+          <ui-select-choices repeat="koulutustyyppi in ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6']">
+            <div ng-bind-html="koulutustyyppi | kaanna"></div>
+          </ui-select-choices>
+          <ui-select-match class="ui-select-match" placeholder="{{'valitse' | kaanna}}">{{$select.selected | kaanna}} {{$select.selected.diaarinumero}}</ui-select-match>
+        </ui-select>
+      </div>
+    </div>
+    
+    <div ng-if="luonnissa && editableModel.koulutustyyppi === 'koulutustyyppi_16'" class="row">
+      <div class="col-sm-3 formfield-label">
+        <label><span kaanna="'vuosiluokkakokonaisuudet'"></span>*</label>
+          
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <label ng-repeat="vlk in editableModel.vuosiluokkakokonaisuudet | orderBy:nimiOrder" class="julkaisukieli">
+          <input type="checkbox" ng-model="vlk.valittu">
+          <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span>
+        </label>
+        <ohje teksti="luonti-vuosiluokka-valinta-info"></ohje>
+      </div>
+    </div>
        
     <div class="row" ng-show="editableModel._pohja && luonnissa">
       <div class="col-sm-3 formfield-label">
@@ -134,37 +166,7 @@
       </div>
     </div> -->
 
-    <div class="row">
-      <div class="col-sm-3 formfield-label">
-        <label><span kaanna="'pohjan-tyyppi'"></span><span ng-if="(editMode || luonnissa)">*</span></label>
-      </div>
 
-      <div class="col-sm-6 formfield-data" ng-class="{viewmode: !(editMode || luonnissa)}">
-        <div ng-if="!(editMode || luonnissa)" ng-bind="editableModel.koulutustyyppi"></div>
-
-        <ui-select ng-if="(editMode || luonnissa)" ng-disabled="editMode" class="ui-select" ng-model="editableModel.koulutustyyppi">
-          <ui-select-choices repeat="koulutustyyppi in ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6']">
-            <div ng-bind-html="koulutustyyppi | kaanna"></div>
-          </ui-select-choices>
-          <ui-select-match class="ui-select-match" placeholder="{{'koulutustyyppi' | kaanna}}">{{$select.selected | kaanna}} {{$select.selected.diaarinumero}}</ui-select-match>
-        </ui-select>
-      </div>
-    </div>
-    
-    <div ng-if="luonnissa && editableModel.koulutustyyppi === 'koulutustyyppi_16'" class="row">
-      <div class="col-sm-3 formfield-label">
-        <label><span kaanna="'vuosiluokkakokonaisuudet'"></span>*</label>
-          
-      </div>
-
-      <div class="col-sm-9 formfield-data">
-        <label ng-repeat="vlk in editableModel.vuosiluokkakokonaisuudet | orderBy:nimiOrder" class="julkaisukieli">
-          <input type="checkbox" ng-model="vlk.valittu">
-          <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span>
-        </label>
-        <ohje teksti="luonti-vuosiluokka-valinta-info"></ohje>
-      </div>
-    </div>
 
     <div class="row">
       <div class="col-sm-3 formfield-label">
