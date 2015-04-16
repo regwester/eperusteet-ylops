@@ -98,7 +98,6 @@ angular.module('ylopsApp')
         });
 
         scope.$watch('teksti', function () {
-          console.log('teksti', scope.teksti);
           scope.textObject = scope.$parent.$eval(scope.teksti) || scope.teksti;
         });
         scope.$watch('otsikko', function () {

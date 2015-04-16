@@ -43,7 +43,6 @@ ylopsApp
 
   $scope.hasRequiredFields = function () {
     var model = $scope.editableModel;
-    console.log('model valittu array', _(model.vuosiluokkakokonaisuudet).filter({valittu: true}).size());
     return Utils.hasLocalizedText(model.nimi) &&
            model.kunnat && model.kunnat.length > 0 &&
            model.koulutoimijat && model.koulutoimijat.length > 0 &&
