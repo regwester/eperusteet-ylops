@@ -1,5 +1,3 @@
-
-
 <div ng-hide="luonnissa || editMode" class="navigaatio-takaisin plain">
   <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" icon-role="chevron-left" kaanna="'takaisin-osioihin'"></a>
 </div>
@@ -17,7 +15,6 @@
   </div>
 
   <div ng-if="!(editMode || luonnissa)" class="data-container">
-    
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label for="ops-field-nimi-readonly" kaanna="'koulutustyyppi'"></label>
@@ -26,7 +23,7 @@
         <div id="ops-field-nimi-readonly" ng-bind="model.koulutustyyppi | kaanna"></div>
       </div>
     </div>
-    
+
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label kaanna="'vuosiluokkakokonaisuudet'"></label>
@@ -38,7 +35,7 @@
         </span>
       </div>
     </div>
-      
+
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label for="ops-field-nimi-readonly" kaanna="'opsin-nimi'"></label>
@@ -103,11 +100,10 @@
     </div>
 
   </div>
-  
+
 
   <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
-    
-        <div class="row">
+    <div class="row" ng-if="!$$pohja">
       <div class="col-sm-3 formfield-label">
         <label><span kaanna="'koulutustyyppi'"></span><span ng-if="(editMode || luonnissa)">*</span></label>
       </div>
@@ -123,11 +119,11 @@
         </ui-select>
       </div>
     </div>
-    
+
     <div ng-if="luonnissa && editableModel.koulutustyyppi === 'koulutustyyppi_16'" class="row">
       <div class="col-sm-3 formfield-label">
         <label><span kaanna="'vuosiluokkakokonaisuudet'"></span>*</label>
-          
+
       </div>
 
       <div class="col-sm-9 formfield-data">
@@ -138,7 +134,7 @@
         <ohje teksti="luonti-vuosiluokka-valinta-info"></ohje>
       </div>
     </div>
-       
+
     <div class="row" ng-show="editableModel._pohja && luonnissa">
       <div class="col-sm-3 formfield-label">
         <label><span kaanna="'pohja-ops'"></span></label>

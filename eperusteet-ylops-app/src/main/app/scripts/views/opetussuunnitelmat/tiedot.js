@@ -86,11 +86,13 @@ ylopsApp
   // niin haetaan pohja opetussuunnitelmasta kunnat ja organisaatiot
   if ($scope.luonnissa && $scope.editableModel._pohja) {
     OpetussuunnitelmaCRUD.get({opsId: $scope.editableModel._pohja}, function (res) {
+      $scope.$$pohja = res;
       $scope.pohjanNimi = res.nimi;
       $scope.editableModel.kunnat = res.kunnat;
       $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
       $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
       $scope.editableModel.vuosiluokkakokonaisuudet = res.vuosiluokkakokonaisuudet;
+      $scope.editableModel.koulutustyyppi = res.koulutustyyppi;
     }, Notifikaatiot.serverCb);
     // Jos luonnissa ja ei pohja ops:ia, haetaan vuosiluokkakokonaisuudet virkailijan pohjasta
   } else if ($scope.luonnissa && !$scope.editableModel._pohja) {
@@ -119,7 +121,6 @@ ylopsApp
   }
 
   var successCb = function (res) {
-    console.log('tallennettu', res);
     Notifikaatiot.onnistui('tallennettu-ok');
     if ($scope.luonnissa) {
       $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
