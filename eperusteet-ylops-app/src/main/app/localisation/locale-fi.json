@@ -145,6 +145,9 @@
   "valmis": "Valmis",
   "tila-valmis": "Valmis",
   "tilakuvaus-valmis": "Kuvaus valmis-tilalle",
+  "julkaistu": "Julkaistu",
+  "tila-julkaistu": "Julkaistu",
+  "tilakuvaus-julkaistu": "Kuvaus julkaistu-tilalle",
   "tila-poistettu": "Arkistoitu",
   "poistettu": "Arkistoitu",
   "tilakuvaus-poistettu": "Kuvaus poistettu-tilalle",
@@ -249,17 +252,17 @@
   "koulutustyyppi_15": "Esiopetus",
   "koulutustyyppi": "Koulutustyyppi",
   "pohjan-tyyppi": "Pohjan tyyppi",
-  
+
   "VUOSILUOKAT 1-2_erityispiirteet_ja_tehtavat_info": "Mitkä ovat vuosiluokkakokonaisuuden 1-2 erityispiirteet ja tehtävät (perusteiden kuvauksia voidaan hyödyntää sellaisenaan) sekä niihin liittyvät paikalliset painotukset ja miten tehtävän toteutumista seurataan ja kehitetään?",
   "VUOSILUOKAT 1-2_siirtyma_aikaisempi_nykyinen_info": "Miten tuetaan oppilaiden siirtymistä esiopetuksesta perusopetukseen? Toimintatavat siirtymävaiheessa. Tarvittava yhteistyö, työnjako ja vastuut.",
   "VUOSILUOKAT 1-2_siirtymä_nykyinen_seuraava_info": "Miten tuetaan oppilaiden siirtymistä toiselta kolmannelle vuosiluokalle? Toimintatavat siirtymävaiheessa. Tarvittava yhteistyö, työnjako ja vastuut.",
   "VUOSILUOKAT 1-2_laaja-alaisen_osaamisen_alueet_info": "Mitkä ovat laaja-alaisen osaamisen tavoitteet vuosiluokilla 1-2 (perusteiden tavoitekuvauksia voidaan hyödyntää sellaisenaan) sekä niiden mahdolliset paikalliset painotukset ja miten oppilaiden laaja-alaisen osaamisen kehittymistä tuetaan vuosiluokilla 1-2?",
-  
+
   "VUOSILUOKAT 3-6_erityispiirteet_ja_tehtavat_info": "XX",
   "VUOSILUOKAT 3-6_siirtyma_aikaisempi_nykyinen_info": "XX",
   "VUOSILUOKAT 3-6_siirtymä_nykyinen_seuraava_info": "XX",
   "VUOSILUOKAT 3-6_laaja-alaisen_osaamisen_alueet_info": "XX",
-  
+
   "VUOSILUOKAT 7-9_erityispiirteet_ja_tehtavat_info": "XX",
   "VUOSILUOKAT 7-9_siirtyma_aikaisempi_nykyinen_info": "XX",
   "VUOSILUOKAT 7-9_siirtymä_nykyinen_seuraava_info": "XX",
