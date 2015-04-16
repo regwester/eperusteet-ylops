@@ -43,8 +43,9 @@ ylopsApp
 })
 
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
-  MurupolkuData, vlk, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
-  baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, OpsService) {
+  MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
+  baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,
+  OpsService, Varmistusdialogi) {
 
   $timeout(function () {
     if ($location.hash()) {
@@ -122,7 +123,9 @@ ylopsApp
 
   $scope.options = {
     editing: false,
-    isEditable: OpsService.isEditable
+    isEditable: function () {
+      return OpsService.isEditable() && $scope.vlk.oma;
+    }
   };
 
   $scope.callbacks = {
@@ -152,4 +155,22 @@ ylopsApp
     notifier: angular.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
+
+  $scope.kopioiMuokattavaksi = function () {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-kopiointi',
+      primaryBtn: 'luo-kopio',
+      successCb: function () {
+        VuosiluokkakokonaisuusCRUD.kloonaaMuokattavaksi({
+          opsId: $stateParams.id,
+          vlkId: $stateParams.vlkId
+        }, {}, function(res) {
+          Notifikaatiot.onnistui('kopion-luonti-onnistui');
+          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {
+            vlkId: res.id
+          }, { reload: true });
+        }, Notifikaatiot.serverCb);
+      }
+    })();
+  };
 });

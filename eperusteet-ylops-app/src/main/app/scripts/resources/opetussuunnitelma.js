@@ -78,7 +78,8 @@ ylopsApp
     return $resource(YlopsResources.VLK, {
       vlkId: '@id'
     }, {
-      peruste: {method: 'GET', url: YlopsResources.VLK + '/peruste'}
+      peruste: {method: 'GET', url: YlopsResources.VLK + '/peruste'},
+      kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.VLK + '/muokattavakopio'}
     });
   })
 

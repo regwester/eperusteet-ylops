@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,10 +32,13 @@ public interface VuosiluokkakokonaisuusService {
     VuosiluokkakokonaisuusDto add(@P("opsId") Long opsId, VuosiluokkakokonaisuusDto dto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    VuosiluokkakokonaisuusDto get(@P("opsId") Long opsId, Long kokonaisuusId);
+    OpsVuosiluokkakokonaisuusDto get(@P("opsId") Long opsId, Long kokonaisuusId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(#opsId, 'opetussuunnitelma', 'KORJAUS')")
     VuosiluokkakokonaisuusDto update(@P("opsId") Long opsId, VuosiluokkakokonaisuusDto dto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(#opsId, 'opetussuunnitelma', 'KORJAUS')")
+    VuosiluokkakokonaisuusDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long kokonaisuusId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void delete(@P("opsId") Long opsId, Long kokonaisuusId);

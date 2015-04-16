@@ -16,7 +16,9 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
@@ -24,8 +26,12 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -64,9 +70,15 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
     }
 
     @Override
-    public VuosiluokkakokonaisuusDto get(Long opsId, Long kokonaisuusId) {
+    public OpsVuosiluokkakokonaisuusDto get(Long opsId, Long kokonaisuusId) {
+        Boolean isOma = kokonaisuudet.isOma(opsId, kokonaisuusId);
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Vuosiluokkakokonaisuutta ei ole");
+        }
+
         final Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, kokonaisuusId);
-        return vk == null ? null : mapper.map(vk, VuosiluokkakokonaisuusDto.class);
+        OpsVuosiluokkakokonaisuus ovk = new OpsVuosiluokkakokonaisuus(vk, isOma);
+        return mapper.map(ovk, OpsVuosiluokkakokonaisuusDto.class);
     }
 
     @Override
@@ -91,4 +103,27 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         return mapper.map(vk, VuosiluokkakokonaisuusDto.class);
     }
 
+    @Override
+    public VuosiluokkakokonaisuusDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long kokonaisuusId) {
+        Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, kokonaisuusId);
+        if (vk == null) {
+            throw new BusinessRuleViolationException("Päivitettävää vuosiluokkakokonaisuutta ei ole olemassa");
+        }
+
+        Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
+
+        Set<OpsVuosiluokkakokonaisuus> opsVlkt =
+            ops.getVuosiluokkakokonaisuudet().stream()
+               .filter(vlk -> !vlk.getVuosiluokkakokonaisuus().getId().equals(kokonaisuusId))
+               .collect(Collectors.toSet());
+
+        vk = Vuosiluokkakokonaisuus.copyOf(vk);
+        vk = kokonaisuudet.save(vk);
+        OpsVuosiluokkakokonaisuus kopio = new OpsVuosiluokkakokonaisuus(vk, true);
+
+        opsVlkt.add(kopio);
+        ops.setVuosiluokkakokonaisuudet(opsVlkt);
+
+        return mapper.map(vk, VuosiluokkakokonaisuusDto.class);
+    }
 }

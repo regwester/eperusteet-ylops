@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,13 +26,14 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UnwrappedOpsOppiaineDto {
+public class UnwrappedOpsVuosiluokkakokonaisuusDto {
+
     private boolean oma;
     @JsonUnwrapped
-    private OppiaineDto oppiaine;
+    private VuosiluokkakokonaisuusDto vuosiluokkakokonaisuus;
 
-    public UnwrappedOpsOppiaineDto(OpsOppiaineDto dto) {
+    public UnwrappedOpsVuosiluokkakokonaisuusDto(OpsVuosiluokkakokonaisuusDto dto) {
         oma = dto.isOma();
-        oppiaine = dto.getOppiaine();
+        vuosiluokkakokonaisuus = dto.getVuosiluokkakokonaisuus();
     }
 }

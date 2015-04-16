@@ -33,4 +33,6 @@ public interface VuosiluokkakokonaisuusRepository extends JpaWithVersioningRepos
     @Query("SELECT CASE COUNT(o) WHEN 0 THEN false ELSE true END FROM Opetussuunnitelma o JOIN o.vuosiluokkakokonaisuudet ov JOIN ov.vuosiluokkakokonaisuus v WHERE v.id = ?1")
     boolean isInUse(Long kokonaisuusId);
 
+    @Query(value = "SELECT ov.oma FROM Opetussuunnitelma o JOIN o.vuosiluokkakokonaisuudet ov JOIN ov.vuosiluokkakokonaisuus v WHERE o.id = ?1 AND v.id = ?2")
+    Boolean isOma(long opsId, long id);
 }
