@@ -98,7 +98,7 @@ ylopsApp
   } else if ($scope.luonnissa && !$scope.editableModel._pohja) {
     OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'}, function(pohjat) {
       // TODO: pitää varmaankin ottaa huomioon mitä ops:ia ollaan luomassa. (Esi-, lisä vai perusopetus)
-      var aktiivinenPohja = _.find(pohjat, {tila: 'valmis'});
+      var aktiivinenPohja = _.find(pohjat, {tila: 'valmis', koulutustyyppi: 'koulutustyyppi_16'});
       OpetussuunnitelmaCRUD.get({opsId: aktiivinenPohja.id}, function (ops) {
         $scope.editableModel.vuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
       });

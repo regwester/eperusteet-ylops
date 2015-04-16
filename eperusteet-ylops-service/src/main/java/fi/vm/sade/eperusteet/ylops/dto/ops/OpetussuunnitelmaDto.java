@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import java.util.Optional;
 import java.util.Set;
@@ -33,5 +32,5 @@ public class OpetussuunnitelmaDto extends OpetussuunnitelmaBaseDto {
     private Optional<TekstiKappaleViiteDto.Puu> tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineDto> oppiaineet;
-    private KoulutusTyyppi koulutustyyppi;
+
 }
