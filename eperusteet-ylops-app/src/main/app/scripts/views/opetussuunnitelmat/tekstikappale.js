@@ -32,7 +32,7 @@ ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
-    KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode) {
+    KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode, Varmistusdialogi) {
 
     Kommentit.haeKommentit(KommentitByTekstikappaleViite, {id: $stateParams.tekstikappaleId, opsId: $stateParams.id});
     $scope.ohje = {};
@@ -114,12 +114,18 @@ ylopsApp
     };
 
     $scope.kopioiMuokattavaksi = function () {
-      Lukko.lock(commonParams, function () {
-        OpetussuunnitelmanTekstit.kloonaaTekstikappale(commonParams, {}, function (res) {
-          successCb(res);
-          $scope.edit();
-        }, Notifikaatiot.serverCb);
-      });
+      Varmistusdialogi.dialogi({
+        otsikko: 'varmista-kopiointi',
+        primaryBtn: 'luo-kopio',
+        successCb: function () {
+          Lukko.lock(commonParams, function () {
+            OpetussuunnitelmanTekstit.kloonaaTekstikappale(commonParams, {}, function (res) {
+              successCb(res);
+              $scope.edit();
+            }, Notifikaatiot.serverCb);
+          });
+        }
+      })();
     };
 
     $scope.addChild = function () {
