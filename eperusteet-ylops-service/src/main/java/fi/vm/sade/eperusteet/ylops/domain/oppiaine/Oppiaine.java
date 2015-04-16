@@ -306,9 +306,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         }));
 
         boolean isKielijoukko = other.koodiArvo != null
-                && ("TK".equals(other.koodiArvo.toUpperCase())
-                || "VK".equals(other.koodiArvo.toUpperCase())
-                || "AI".equals(other.koodiArvo.toUpperCase()));
+                && ("TK".equalsIgnoreCase(other.koodiArvo)
+                || "VK".equalsIgnoreCase(other.koodiArvo)
+                || "KT".equalsIgnoreCase(other.koodiArvo)
+                || "AI".equalsIgnoreCase(other.koodiArvo));
 
         if (other.isKoosteinen() && copyOppimaarat && other.getOppiaine() == null) {
             if (other.koodiArvo == null || !isKielijoukko) {

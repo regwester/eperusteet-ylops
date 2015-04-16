@@ -238,22 +238,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
-    private boolean onPoistettava(OpsOppiaine oa) {
-        String koodi = oa.getOppiaine().getKoodiArvo();
-        return oa.getOppiaine().getKoodiArvo() == null
-                || Pattern.matches("^AI.+", koodi)
-                || Pattern.matches("^A1.+", koodi)
-                || Pattern.matches("^A2.+", koodi)
-                || Pattern.matches("^B1.+", koodi)
-                || Pattern.matches("^B2.+", koodi)
-                || Pattern.matches("^B3.+", koodi)
-                || Pattern.matches("^RU", koodi)
-                || Pattern.matches("^SK", koodi)
-                //                || Pattern.matches("^TK", koodi)
-                //                || Pattern.matches("^VK", koodi)
-                || Pattern.matches("^LK", koodi);
-    }
-
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         ops.setPohja(pohja);
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());

@@ -61,22 +61,30 @@ ylopsApp
     $scope.$valittu = {};
     $scope.$type = getType();
     $scope.oppiaine = oppiaine;
-    $scope.$kaikki = perusteOppiaine.oppimaarat;
+    $scope.$kaikki = _.clone(perusteOppiaine.oppimaarat);
+
+    if ($scope.$type === 'uskonto') {
+      $scope.$kaikki.unshift({
+        abstrakti: true
+      });
+    }
+
     $scope.$concretet = _.reject(perusteOppiaine.oppimaarat, function(om) {
       return om.abstrakti || _.isEmpty(om.vuosiluokkakokonaisuudet);
     });
 
     $scope.valitse = function(valinta) {
-      $scope.$valittu = valinta;
-      if (!valinta.abstrakti) {
+      $scope.$valittu = valinta || {};
+      if (!$scope.$valittu.abstrakti) {
         $scope.$valittu.$concrete = valinta;
       }
-      $scope.$onAbstrakti = valinta.abstrakti;
-      $scope.$omaNimi = _.clone(valinta.nimi);
+      $scope.$onAbstrakti = $scope.$valittu.abstrakti;
+      $scope.$omaNimi = _.clone($scope.$valittu.nimi);
     };
 
     $scope.ok = function() {
       var tunniste = $scope.$type === 'kieli' ? $scope.$valittu.$concrete.tunniste : $scope.$valittu.tunniste;
+      console.log(tunniste, $scope.$omaNimi);
 
       OppiaineCRUD.addKielitarjonta({
         opsId: opsId,

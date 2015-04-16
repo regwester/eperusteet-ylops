@@ -8,7 +8,7 @@
 
 <div class="modal-body">
   <div class="kielitarjonta-modal">
-    <div ng-show="$type === 'kieli'" class="row kieli-field">
+    <div ng-show="true" class="row kieli-field">
       <div class="row">
         <div class="col-xs-4"><h4 kaanna="oppiaine.nimi"></h4></div>
         <div class="col-xs-8">
@@ -17,7 +17,7 @@
           </div>
           <div ng-show="$vaihtoehdot.length !== 0">
             <select class="form-control" ng-model="$valittu" ng-click="valitse($valittu)"
-                    ng-options="(om.nimi | kaanna) for om in $kaikki track by om.id"></select>
+                    ng-options="(om.nimi || 'muu-uskonto' | kaanna) for om in $kaikki track by om.id"></select>
           </div>
         </div>
       </div>
@@ -34,12 +34,13 @@
       </div>
     </div>
 
-    <div class="row" ng-show="$valittu.nimi">
+    <div class="row" ng-show="($valittu.nimi && $type === 'kieli') || ($valittu.nimi === undefined && $type === 'uskonto')">
       <div class="col-xs-4"><h4 kaanna="'nimi'"></h4></div>
       <div class="col-xs-8">
         <input type="text" class="form-control" ng-model="$omaNimi" slocalized>
       </div>
     </div>
+
   </div>
 </div>
 
