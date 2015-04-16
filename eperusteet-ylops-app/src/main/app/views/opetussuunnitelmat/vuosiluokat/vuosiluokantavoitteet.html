@@ -51,40 +51,13 @@
   </div>
 </div>
 
-<div class="tavoitteet" ng-if="onValinnaiselle">
-  <div class="valinnaisen-tavoitteet">
-    <div class="tavoite" ng-repeat="tavoite in valinnaisenTavoitteet">
-      <div class="ops-body">
-        <div valinnaisen-ops-teksti="tavoite" callbacks="callbacks" config="options"></div>
-      </div>
+<div class="tavoitteet valinnaisen-tavoitteet" ng-if="onValinnaiselle">
+  <div class="tavoite" ng-repeat="tavoite in valinnaisenTavoitteet">
+    <div class="ops-body">
+      <div valinnaisen-ops-teksti="tavoite" callbacks="callbacks" config="options"></div>
     </div>
   </div>
-  <div class="action-buttons-inline" ng-if="isEditable()">
+  <div class="tavoite add-tavoite" ng-if="isEditable()">
     <button class="btn btn-default" icon-role="add" ng-click="callbacks.add()" kaanna="'lisaa-tavoite'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   </div>
 </div>
-
-<!--
-<div class="tavoitteet" ng-if="onValinnaiselle && options.editing">
-  <div class="action-buttons-inline">
-    <button class="btn btn-default" icon-role="edit" ng-click="callbacks.save()" kaanna="'tallenna'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
-  </div>
-  <div class="valinnaisen-tavoitteet">
-    <div class="tavoite" ng-repeat="tavoite in vuosiluokka.tavoitteet">
-      <div class="header">
-        <div class="toggle-nimi">
-          <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
-          <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
-                ng-bind="tavoite.tavoite | kaanna | stripTags"></span>
-          <input id="vuosiluokka-field-tavoite" ng-model="tavoite.tavoite" slocalized class="form-control" placeholder="{{'lisaa-tavoite' | kaanna}}">
-        </div>
-        <div class="clearer"></div>
-      </div>
-      <div class="ops-body" collapse="collapsed[tunniste]">
-        <div ng-bind-html="sisaltoAlueetMap[tavoite.sisaltoalueet[0]].kuvaus | kaanna | unsafe"></div>
-        <input id="vuosiluokka-field-sisaltoalue" ng-model="sisaltoAlueetMap[tavoite.sisaltoalueet[0]].kuvaus" slocalized class="form-control" placeholder="{{'lisaa-sisaltoalue' | kaanna}}">
-      </div>
-    </div>
-  </div>
-</div>
--->

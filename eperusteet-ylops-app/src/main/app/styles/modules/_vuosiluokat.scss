@@ -102,6 +102,10 @@ $active-tab-bg: #e4e4e4;
       }
 
     }
+    &.add-tavoite {
+      border-color: $active-tab-bg;
+      background-color: $active-tab-bg;
+    }
 
     .peruste-body {
       padding: 10px;
@@ -154,8 +158,4 @@ $active-tab-bg: #e4e4e4;
   .row:after {
     clear: right;
   }
-}
-
-.valinnaisen-tavoitteet {
-  clear: both;
 }

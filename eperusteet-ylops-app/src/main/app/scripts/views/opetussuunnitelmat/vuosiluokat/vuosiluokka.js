@@ -123,7 +123,7 @@ ylopsApp
 })
 
 .controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils,
-  $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $stateParams, $rootScope, VuosiluokkaMapper, OpsService) {
+  $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $stateParams, $rootScope, VuosiluokkaMapper, OpsService, $timeout) {
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.nimiOrder = Utils.sort;
@@ -174,6 +174,12 @@ ylopsApp
         otsikko: {},
         teksti: {}
       });
+      $timeout(function () {
+        var el = angular.element('[valinnaisen-ops-teksti]').last();
+        if (el.length === 1 && el.isolateScope()) {
+          el.isolateScope().startEditing();
+        }
+      }, 300);
     },
     remove: function (item) {
       Varmistusdialogi.dialogi({
@@ -300,13 +306,10 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/vuosiluokat/directives/valinnaisenopsteksti.html',
     controller: 'TekstiosaController',
-    link: function (scope, element, attrs) {
-      scope.editable = !!attrs.valinnaisenOpsTeksti;
+    link: function (scope) {
       scope.options = {
-        collapsed: scope.editable
+        collapsed: false
       };
-      scope.isEmpty = _.isEmpty;
-
       scope.focusAndScroll = angular.noop;
     }
   };
