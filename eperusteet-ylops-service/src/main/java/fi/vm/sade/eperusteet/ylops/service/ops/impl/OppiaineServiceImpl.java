@@ -371,7 +371,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private Oppiaineenvuosiluokka findVuosiluokka(Long opsId, Long oppiaineId, Long vuosiluokkaId) throws BusinessRuleViolationException {
-        if (oppiaineExists(opsId, oppiaineId)) {
+        if (!oppiaineExists(opsId, oppiaineId)) {
             throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
         }
         return vuosiluokat.findByOppiaine(oppiaineId, vuosiluokkaId);
