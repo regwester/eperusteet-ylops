@@ -29,6 +29,7 @@ ylopsApp
 
 .controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter) {
   $scope.items = OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'});
+  console.log($scope.items);
   $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
   $scope.sorter = ListaSorter.init($scope);
 

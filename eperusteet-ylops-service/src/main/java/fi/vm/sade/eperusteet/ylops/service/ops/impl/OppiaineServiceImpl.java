@@ -109,7 +109,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long vlkId, Map<Vuosiluokka, Set<UUID>> tavoitteet) {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        Peruste peruste = perusteet.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
+        Peruste peruste = perusteet.getPeruste(ops.getPerusteenDiaarinumero());
 
         Oppiaineenvuosiluokkakokonaisuus ovk = oppiaine.getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> vk.getId().equals(vlkId))

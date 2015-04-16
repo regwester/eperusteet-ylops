@@ -130,7 +130,7 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     @Cacheable("perusteet")
-    public Peruste getPerusopetuksenPeruste(String diaarinumero) {
+    public Peruste getPeruste(String diaarinumero) {
         PerusteInfo perusteInfoDto = findPerusteet().stream()
             .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
             .findAny()

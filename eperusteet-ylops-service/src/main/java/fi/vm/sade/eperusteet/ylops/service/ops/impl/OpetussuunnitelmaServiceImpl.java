@@ -147,7 +147,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public Peruste getPeruste(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        return eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
+        return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
     }
 
     @Override
@@ -165,7 +165,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public Set<PerusteLaajaalainenosaaminen> getLaajaalaisetosaamiset(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        return eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus().getLaajaalaisetosaamiset();
+        return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus().getLaajaalaisetosaamiset();
     }
 
     private void fetchKuntaNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
@@ -339,7 +339,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops = repository.save(ops);
         lisaaTekstipuunLapset(ops);
 
-        Peruste peruste = eperusteetService.getPerusopetuksenPeruste(ops.getPerusteenDiaarinumero());
+        Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
         if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
             ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
             ops = addPohjaPerusopetus(ops, peruste);
@@ -423,8 +423,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             (ops.getTyyppi() == Tyyppi.OPS && tila == Tila.LUONNOS && ops.getTila() == Tila.VALMIS)) {
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
                 // Arkistoidaan vanhat valmiit pohjat
-                List<Opetussuunnitelma> pohjat = repository.findAllByTyyppi(Tyyppi.POHJA);
-                pohjat.stream().filter(pohja -> pohja.getTila() == Tila.VALMIS)
+                List<Opetussuunnitelma> pohjat = repository.findAllByTyyppiAndTilaAndKoulutustyyppi(Tyyppi.POHJA, Tila.VALMIS, ops.getKoulutustyyppi());
+                pohjat.stream()
+                        .filter(pohja -> pohja.getTila() == Tila.VALMIS)
                         .forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
             }
 
