@@ -1,5 +1,5 @@
 alter table opetussuunnitelma
-    drop constraint FK_asdbxdtxyqi82kl5spp17qfbd;
+    drop constraint if exists FK_asdbxdtxyqi82kl5spp17qfbd;
 
 alter table opetussuunnitelma
     drop column if exists yhteystiedot_id;
