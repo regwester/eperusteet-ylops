@@ -187,6 +187,9 @@ ylopsApp
   this.getPerusteOppiaine = getPerusteOppiaine;
   this.mapForMenu = mapForMenu;
   this.fromEnum = function (vuosiluokkaEnum) {
+    if (!vuosiluokkaEnum) {
+      return undefined;
+    }
     return parseInt(_.last(vuosiluokkaEnum.split('_')), 10);
   };
 });

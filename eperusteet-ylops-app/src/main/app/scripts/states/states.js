@@ -167,7 +167,7 @@ ylopsApp
       })
 
       .state('root.opetussuunnitelmat.yksi.esikatselu', {
-        url: '/esikatselu',
+        url: '/esikatselu?menu',
         templateUrl: 'views/opetussuunnitelmat/esikatselu.html',
         controller: 'EsikatseluController',
         resolve: {
@@ -200,7 +200,7 @@ ylopsApp
         }
       })
       .state('root.opetussuunnitelmat.yksi.esikatselu.oppiaine', {
-        url: '/oppiaine/:oppiaineId?oppiaineTyyppi',
+        url: '/oppiaine/:oppiaineId?oppiaineTyyppi?vuosiluokka',
         templateUrl: 'views/opetussuunnitelmat/esikatselu/oppiaine.html',
         controller: 'EsikatseluOppiaineController',
         resolve: {
