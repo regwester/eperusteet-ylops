@@ -99,10 +99,20 @@
       </div>
     </div>
 
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'paatospaivamaara'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div ng-bind="model.paatospaivamaara | aikaleima:'date'"></div>
+      </div>
+    </div>
+
+
   </div>
 
 
-  <div ng-if="(luonnissa || editMode) && !loading" class="data-container">
+  <div ng-if="(luonnissa || editMode) && !loading" class="data-container" ng-form="opsForm">
     <div class="row" ng-if="!$$pohja">
       <div class="col-sm-3 formfield-label">
         <label><span kaanna="'koulutustyyppi'"></span><span ng-if="(editMode || luonnissa)">*</span></label>
@@ -230,6 +240,24 @@
           <input type="checkbox" ng-model="julkaisukielet[kielikoodi]">
           <span ng-bind="kielikoodi | kaanna"></span>
         </label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="paatospaivamaara"><span kaanna="'paatospaivamaara'"></span></label>
+      </div>
+
+      <div class="col-sm-9 formfield-data">
+        <span class="input-group">
+          <input type="text" id="paatospaivamaara" name="paatospaivamaara" class="form-control" datepicker-popup="{{format}}"
+                 ng-model="editableModel.paatospaivamaara" placeholder="{{'anna-paatospaivamaara'| kaanna}}" is-open="kalenteriTilat.paatospaivamaaraButton"
+                 datepicker-options="dateOptions" show-button-bar="false" dateformatvalidator/>
+          <span class="input-group-btn">
+            <button id="paatospaivamaaraButton" class="btn btn-default" ng-click="open($event)"><span icon-role="calendar"></span></button>
+          </span>
+        </span>
+        <p class="alert alert-error" ng-show="opsForm.paatospaivamaara.$error.dateformatvalidator" kaanna="'kelvoton-pvm'"></p>
       </div>
     </div>
 
