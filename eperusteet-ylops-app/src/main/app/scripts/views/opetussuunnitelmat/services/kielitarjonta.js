@@ -84,7 +84,6 @@ ylopsApp
 
     $scope.ok = function() {
       var tunniste = $scope.$type === 'kieli' ? $scope.$valittu.$concrete.tunniste : $scope.$valittu.tunniste;
-      console.log(tunniste, $scope.$omaNimi);
 
       OppiaineCRUD.addKielitarjonta({
         opsId: opsId,

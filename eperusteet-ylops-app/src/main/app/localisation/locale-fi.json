@@ -138,6 +138,9 @@
   "fi": "suomi",
   "sv": "ruotsi",
   "se": "saame",
+  "hyvaksymispvm-label": "Hyväksymispäivämäärä",
+  "anna-hyvaksymispvm": "Anna hyväksymispäivämäärä",
+  "kelvoton-pvm": "Kelvoton päivämäärä",
 
   "luonnos": "Luonnos",
   "tila-luonnos": "Luonnos",

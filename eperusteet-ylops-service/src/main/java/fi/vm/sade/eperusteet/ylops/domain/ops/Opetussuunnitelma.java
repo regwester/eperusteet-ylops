@@ -124,12 +124,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @JoinColumn
     private TekstiKappaleViite tekstit = new TekstiKappaleViite();
 
-    @Audited
-    @Temporal(TemporalType.TIMESTAMP)
-    @Getter
-    @Setter
-    private Date hyvaksymisPvm;
-
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @Getter
     @Setter
