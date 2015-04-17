@@ -38,6 +38,9 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -119,12 +122,15 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         String yhteystiedot = uniikkiString();
         ops.setYhteystiedot(lt(yhteystiedot));
         ops.setTila(Tila.POISTETTU);
+        Date pvm = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR) - 1, Calendar.MARCH, 12).getTime();
+        ops.setPaatospaivamaara(pvm);
         opetussuunnitelmaService.updateOpetussuunnitelma(ops);
 
         ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertEquals(kuvaus, ops.getKuvaus().get(Kieli.FI));
         assertEquals(yhteystiedot, ops.getYhteystiedot().get(Kieli.FI));
         assertEquals(vanhaTila, ops.getTila());
+        assertEquals(pvm, ops.getPaatospaivamaara());
     }
 
     @Test
