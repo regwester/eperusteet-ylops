@@ -271,12 +271,17 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id) {
+        Boolean isOma = oppiaineet.isOma(opsId, id);
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Kopioitavaa oppiainetta ei ole olemassa");
+        } else if (isOma) {
+            throw new BusinessRuleViolationException("Oppiaine on jo muokattavissa");
+        }
+
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
         Oppiaine oppiaine = getOppiaine(opsId, id);
-        assertExists(oppiaine, "Kopioitavaa oppiainetta ei ole olemassa");
-
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
                                             .filter(oa -> !oa.getOppiaine().getId().equals(id))
                                             .collect(Collectors.toSet());
@@ -332,9 +337,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineDto update(@P("opsId") Long opsId, OppiaineDto oppiaineDto) {
+    public OpsOppiaineDto update(@P("opsId") Long opsId, OppiaineDto oppiaineDto) {
+        Boolean isOma = oppiaineet.isOma(opsId, oppiaineDto.getId());
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Päivitettävää oppiainetta ei ole olemassa");
+        } else if (!isOma) {
+            throw new BusinessRuleViolationException("Lainattua oppiainetta ei voi muokatta");
+        }
+
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
-        assertExists(oppiaine, "Päivitettävää oppiainetta ei ole olemassa");
 
         // lockService.assertLock ( opsId ) ... ?
         oppiaineet.lock(oppiaine);
@@ -342,7 +353,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         mapper.map(oppiaineDto, oppiaine);
 
         oppiaine = oppiaineet.save(oppiaine);
-        return mapper.map(oppiaine, OppiaineDto.class);
+        return mapper.map(new OpsOppiaine(oppiaine, isOma), OpsOppiaineDto.class);
     }
 
     @Override

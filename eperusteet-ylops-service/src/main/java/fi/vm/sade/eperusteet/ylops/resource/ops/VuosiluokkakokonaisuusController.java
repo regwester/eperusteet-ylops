@@ -84,17 +84,17 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public VuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId,
+    public UnwrappedOpsVuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId,
         @PathVariable("id") final Long id,
         @RequestBody VuosiluokkakokonaisuusDto dto) {
         dto.setId(id);
-        return vuosiluokkakokonaisuudet.update(opsId, dto);
+        return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.update(opsId, dto));
     }
 
     @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
-    public VuosiluokkakokonaisuusDto kopioiMuokattavaksi(@PathVariable("opsId") final Long opsId,
+    public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(@PathVariable("opsId") final Long opsId,
                                                          @PathVariable("id") final Long id) {
-        return vuosiluokkakokonaisuudet.kopioiMuokattavaksi(opsId, id);
+        return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.kopioiMuokattavaksi(opsId, id));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

@@ -66,6 +66,7 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
             vk = kokonaisuudet.save(vk);
             ops.addVuosiluokkaKokonaisuus(vk);
         }
+
         return mapper.map(vk, VuosiluokkakokonaisuusDto.class);
     }
 
@@ -94,17 +95,29 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
     }
 
     @Override
-    public VuosiluokkakokonaisuusDto update(Long opsId, VuosiluokkakokonaisuusDto dto) {
-        final Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, dto.getId());
-        if (vk == null) {
-            throw new BusinessRuleViolationException("Päivitettävää vuosiluokkakokonaisuutta ei ole olemassa");
+    public OpsVuosiluokkakokonaisuusDto update(Long opsId, VuosiluokkakokonaisuusDto dto) {
+        Boolean isOma = kokonaisuudet.isOma(opsId, dto.getId());
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Vuosiluokkakokonaisuutta ei ole");
+        } else if (!isOma) {
+            throw new BusinessRuleViolationException("Lainattua vuosiluokkakokonaisuutta ei voi muokata");
         }
+
+        final Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, dto.getId());
         mapper.map(dto, vk);
-        return mapper.map(vk, VuosiluokkakokonaisuusDto.class);
+        OpsVuosiluokkakokonaisuus ovk = new OpsVuosiluokkakokonaisuus(vk, isOma);
+        return mapper.map(ovk, OpsVuosiluokkakokonaisuusDto.class);
     }
 
     @Override
-    public VuosiluokkakokonaisuusDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long kokonaisuusId) {
+    public OpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long kokonaisuusId) {
+        Boolean isOma = kokonaisuudet.isOma(opsId, kokonaisuusId);
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Vuosiluokkakokonaisuutta ei ole");
+        } else if (isOma) {
+            throw new BusinessRuleViolationException("Vuosiluokkakokonaisuus on jo muokattavissa");
+        }
+
         Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, kokonaisuusId);
         if (vk == null) {
             throw new BusinessRuleViolationException("Päivitettävää vuosiluokkakokonaisuutta ei ole olemassa");
@@ -124,6 +137,6 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         opsVlkt.add(kopio);
         ops.setVuosiluokkakokonaisuudet(opsVlkt);
 
-        return mapper.map(vk, VuosiluokkakokonaisuusDto.class);
+        return mapper.map(kopio, OpsVuosiluokkakokonaisuusDto.class);
     }
 }
