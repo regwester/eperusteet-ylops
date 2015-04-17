@@ -342,7 +342,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         if (isOma == null) {
             throw new BusinessRuleViolationException("Päivitettävää oppiainetta ei ole olemassa");
         } else if (!isOma) {
-            throw new BusinessRuleViolationException("Lainattua oppiainetta ei voi muokatta");
+            throw new BusinessRuleViolationException("Lainattua oppiainetta ei voi muokata");
         }
 
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
