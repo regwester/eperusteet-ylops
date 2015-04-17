@@ -64,7 +64,7 @@
     <td>
       <span ng-repeat="kunta in item.kunnat|orderBy:nimiSort"><span ng-bind="kunta.nimi|kaanna"></span><br ng-if="!$last"></span>
     </td>
-    <td><span ng-bind="item.tila | kaanna"></span></td>
+    <td><span class="taulukko-tila" ng-class="'tila-'+item.tila" ng-bind="item.tila | kaanna"></span></td>
     <td><span ng-bind="item.muokattu | aikaleima:'short'"></span></td>
     <td><button ng-click="palauta(item)" class="btn btn-default" ng-if="item.tila === 'poistettu'" kaanna="'palauta'"></button></td>
   </tr>
