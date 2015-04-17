@@ -22,6 +22,49 @@
 }
 
 .esikatselu-menu {
+  .ek-menu {
+    li a {
+      padding: 4px;
+      display: inline-block;
+    }
+    .header a {
+      background-color: desaturate(lighten($brand-primary, 65%), 30%);
+    }
+    .active a {
+      &:focus {
+        text-decoration: none;
+      }
+      background-color: $brand-primary;
+      color: white;
+      font-weight: 700;
+    }
+  }
+  .navi-tabs-outer {
+    padding: 0;
+  }
+  .navi-tabs {
+    list-style-type: none;
+    padding: 0;
+    font-size: 0;
+    margin: 0;
+    li {
+      text-align: center;
+      display: inline-block;
+      width: 50%;
+      a {
+        width: 100%;
+        display: inline-block;
+        font-size: 13px;
+        padding: 15px 0px;
+      }
+      &.active {
+        background-color: $brand-primary;
+        a {
+          color: white;
+        }
+      }
+    }
+  }
   h1 {
     margin-top: 0;
   }
@@ -32,5 +75,31 @@
   .esitys-menu-oppimaara {
     padding-left: 20px;
     list-style-type: none;
+  }
+}
+
+.vuosiluokka-valinta {
+  width: 100%;
+  text-align: right;
+  ul {
+    display: inline-block;
+    list-style-type: none;
+    padding: 0;
+    li {
+      margin-left: 5px;
+      display: inline-block;
+      background-color: #eee;
+      a {
+        display: inline-block;
+        padding: 10px 15px;
+      }
+      &.active {
+        background-color: $brand-primary;
+        a {
+          font-weight: 700;
+          color: white;
+        }
+      }
+    }
   }
 }

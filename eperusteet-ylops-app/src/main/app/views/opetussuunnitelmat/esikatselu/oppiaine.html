@@ -1,4 +1,12 @@
 <h1 kaanna="oppiaine.nimi"></h1>
+<div class="vuosiluokka-valinta">
+  <span kaanna="'vuosiluokka'"></span>
+  <ul>
+    <li ng-repeat="vuosiluokka in vuosiluokat | orderBy:'vuosiluokka'" ng-class="{active: isActive(vuosiluokka)}">
+      <a ui-sref="^.oppiaine({vuosiluokka: vuosiluokka.vuosiluokka})" kaanna="vuosiluokka.vuosiluokka"></a>
+    </li>
+  </ul>
+</div>
 
 <div esitys-teksti="oppiaine.tehtava" esitys-peruste="perusteOppiaine.tehtava" show-peruste="true"></div>
 
