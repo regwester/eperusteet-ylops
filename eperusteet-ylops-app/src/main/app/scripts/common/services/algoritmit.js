@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-.service('Algoritmit', function () {
+.service('Algoritmit', function (Kaanna) {
   function traverse(objekti, lapsienAvain, cb, depth) {
     if (!objekti) {
       return;
@@ -30,5 +30,11 @@ ylopsApp
     });
   }
 
+  function match(input, to) {
+    var vertailu = Kaanna.kaanna(to) || '';
+    return vertailu.toLowerCase().indexOf(input.toLowerCase()) !== -1;
+  }
+
   this.traverse = traverse;
+  this.match = match;
 });

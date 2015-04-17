@@ -32,13 +32,15 @@ ylopsApp
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
-    KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode) {
+    KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode, Varmistusdialogi) {
 
     Kommentit.haeKommentit(KommentitByTekstikappaleViite, {id: $stateParams.tekstikappaleId, opsId: $stateParams.id});
     $scope.ohje = {};
     $scope.lukkotiedot = null;
     $scope.perusteteksti = {};
     $scope.options = {tekstiCollapsed: true};
+    $scope.valmisOptions = [{valmis: false}, {valmis: true}];
+    var savingValmis = false;
     var TYYPIT = ['ohje', 'perusteteksti'];
 
     $scope.opsId = $stateParams.id;
@@ -111,6 +113,21 @@ ylopsApp
       });
     };
 
+    $scope.kopioiMuokattavaksi = function () {
+      Varmistusdialogi.dialogi({
+        otsikko: 'varmista-kopiointi',
+        primaryBtn: 'luo-kopio',
+        successCb: function () {
+          Lukko.lock(commonParams, function () {
+            OpetussuunnitelmanTekstit.kloonaaTekstikappale(commonParams, {}, function (res) {
+              successCb(res);
+              $scope.edit();
+            }, Notifikaatiot.serverCb);
+          });
+        }
+      })();
+    };
+
     $scope.addChild = function () {
       var lukkoParams = _.omit(commonParams, 'viiteId');
       Lukko.lockRakenne(lukkoParams, function () {
@@ -154,7 +171,8 @@ ylopsApp
           $scope.lukkotiedot = null;
         });
       }
-      if (!Utils.compareLocalizedText(originalOtsikko, res.tekstiKappale.nimi)) {
+      if (savingValmis || !Utils.compareLocalizedText(originalOtsikko, res.tekstiKappale.nimi)) {
+        savingValmis = false;
         OpsService.refetch(function () {
           $rootScope.$broadcast('rakenne:updated');
         });
@@ -204,4 +222,25 @@ ylopsApp
     };
     Editointikontrollit.registerCallback(callbacks);
 
+    $scope.setValmis = function (value) {
+      $scope.model.valmis = value;
+      savingValmis = true;
+      if (!$scope.editMode) {
+        Lukko.lock(commonParams, function () {
+          callbacks.save();
+        });
+      }
+    };
+
+  })
+
+  .directive('valmiusIkoni', function () {
+    return {
+      restrict: 'A',
+      scope: {
+        model: '=valmiusIkoni'
+      },
+      template: '<span ng-attr-title="{{(model.valmis ? \'valmis\' : \'luonnos\') | kaanna}}" ' +
+        'class="valmius glyphicon" ng-class="model.valmis ? \'glyphicon-check\' : \'glyphicon-edit\'"></span>'
+    };
   });

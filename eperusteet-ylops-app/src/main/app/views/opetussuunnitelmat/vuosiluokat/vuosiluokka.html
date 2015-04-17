@@ -3,11 +3,11 @@
     <span ng-bind="oppiaine.nimi | kaanna"></span>, {{'vuosiluokka' | kaanna}} {{vuosiluokkaNro}}
   </h2>
 
-  <ul class="nav nav-tabs vl-tabit" ng-if="!onValinnaiselle">
+  <ul class="nav nav-tabs vl-tabit">
     <li role="presentation" ng-class="{active: isState('tavoitteet')}">
       <a ui-sref="root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet" kaanna="'tavoitteet'"></a>
     </li>
-    <li role="presentation" ng-class="{active: isState('sisaltoalueet')}">
+    <li role="presentation" ng-class="{active: isState('sisaltoalueet')}" ng-hide="onValinnaiselle">
       <a ui-sref="root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.sisaltoalueet" kaanna="'sisaltoalueet'"></a>
     </li>
   </ul>

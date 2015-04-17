@@ -23,6 +23,7 @@ ylopsApp
     this.VLK = this.OPS + '/vuosiluokkakokonaisuudet/:vlkId';
     this.OPVLK = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId';
     this.VUOSILUOKKA = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId/vuosiluokat/:vlId';
+    this.VUOSILUOKKAVALINNAINEN = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId/vuosiluokat/:vvlId/valinnainen';
   })
 
   .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {
@@ -31,6 +32,7 @@ ylopsApp
     }, {
       laajaalaiset: {method: 'GET', url: YlopsResources.OPS + '/laajaalaisetosaamiset', isArray: true},
       setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'},
+      palauta: {method: 'POST', url: YlopsResources.OPS + '/palauta'},
       lisaaKielitarjonta: {method: 'POST', url: YlopsResources.OPS + '/kielitarjonta', isArray: true},
     });
   })
@@ -45,7 +47,8 @@ ylopsApp
     return $resource(YlopsResources.OPS + '/tekstit/:viiteId', {
       viiteId: '@id'
     }, {
-      setChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:parentId/lapsi/:childId'}
+      setChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:parentId/lapsi/:childId'},
+      kloonaaTekstikappale: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/muokattavakopio'}
     });
   })
 
@@ -66,7 +69,8 @@ ylopsApp
       peruste: {method: 'GET', url: YlopsResources.OPPIAINE + '/peruste'},
       saveValinnainen: {method: 'POST', url: YlopsResources.OPPIAINE + '/valinnainen'},
       addKielitarjonta: {method: 'POST', url: YlopsResources.OPPIAINE + '/kielitarjonta'},
-      getParent: {method: 'GET', url: YlopsResources.OPPIAINE + '/parent'}
+      getParent: {method: 'GET', url: YlopsResources.OPPIAINE + '/parent'},
+      kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.OPPIAINE + '/muokattavakopio'}
     });
   })
 
@@ -74,7 +78,8 @@ ylopsApp
     return $resource(YlopsResources.VLK, {
       vlkId: '@id'
     }, {
-      peruste: {method: 'GET', url: YlopsResources.VLK + '/peruste'}
+      peruste: {method: 'GET', url: YlopsResources.VLK + '/peruste'},
+      kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.VLK + '/muokattavakopio'}
     });
   })
 
@@ -91,5 +96,10 @@ ylopsApp
   .factory('VuosiluokkaCRUD', function ($resource, YlopsResources) {
     return $resource(YlopsResources.VUOSILUOKKA, {
       vlId: '@id'
+    }, {
+      saveValinnainen:
+      { method: 'POST',
+        url: YlopsResources.VUOSILUOKKAVALINNAINEN
+      }
     });
   });

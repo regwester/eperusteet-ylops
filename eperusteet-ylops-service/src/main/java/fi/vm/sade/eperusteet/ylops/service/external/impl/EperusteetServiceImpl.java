@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
@@ -26,9 +27,12 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,6 +71,37 @@ public class EperusteetServiceImpl implements EperusteetService {
         client = new RestTemplate(Arrays.asList(converter));
     }
 
+    private Set<KoulutusTyyppi> getKoulutuskoodit() {
+        KoulutusTyyppi[] vaihtoehdot = {
+            KoulutusTyyppi.ESIOPETUS,
+            KoulutusTyyppi.PERUSOPETUS,
+            KoulutusTyyppi.LISAOPETUS
+        };
+        return new HashSet<>(Arrays.asList(vaihtoehdot));
+    }
+
+    @Override
+    public List<PerusteInfo> findPerusteet() {
+        return findPerusteet(getKoulutuskoodit());
+    }
+
+    @Override
+    public List<PerusteInfo> findPerusteet(Set<KoulutusTyyppi> tyypit) {
+        List<PerusteInfo> infot = new ArrayList<>();
+        for (KoulutusTyyppi tyyppi : tyypit) {
+            PerusteInfoWrapperDto wrapperDto
+                = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
+                                      PerusteInfoWrapperDto.class, tyyppi.toString(), 100);
+
+            // Filtteröi pois perusteet jotka eivät enää ole voimassa
+            Date now = new Date();
+            infot.addAll(wrapperDto.getData().stream()
+                .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
+                .collect(Collectors.toList()));
+        }
+        return infot;
+    }
+
     @Override
     public List<PerusteInfo> findPerusopetuksenPerusteet() {
         PerusteInfoWrapperDto wrapperDto
@@ -86,7 +121,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         PerusopetusPerusteDto peruste = client.getForObject(koodistoServiceUrl
             + "/api/perusteet/{id}/kaikki", PerusopetusPerusteDto.class, id);
 
-        if (peruste == null || !koulutustyyppiPerusopetus.equals(peruste.getKoulutustyyppi()) || peruste.getPerusopetus() == null) {
+        if (peruste == null || !getKoulutuskoodit().contains(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Perustetta ei löytynyt tai se ei ole perusopetuksen peruste");
         }
 
@@ -95,8 +130,8 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     @Cacheable("perusteet")
-    public Peruste getPerusopetuksenPeruste(String diaarinumero) {
-        PerusteInfo perusteInfoDto = findPerusopetuksenPerusteet().stream()
+    public Peruste getPeruste(String diaarinumero) {
+        PerusteInfo perusteInfoDto = findPerusteet().stream()
             .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
             .findAny()
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));

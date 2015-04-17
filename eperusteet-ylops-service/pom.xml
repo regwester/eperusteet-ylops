@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>fi.vm.sade.eperusteet</groupId>
@@ -13,20 +13,21 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hibernate.version>4.3.8.Final</hibernate.version>
-        <spring.version>4.1.5.RELEASE</spring.version>
-        <spring.security.version>3.2.5.RELEASE</spring.security.version>
+        <spring.version>4.1.6.RELEASE</spring.version>
+        <spring.security.version>3.2.7.RELEASE</spring.security.version>
         <spring.data.jpa.version>1.7.2.RELEASE</spring.data.jpa.version>
         <logback.version>1.1.2</logback.version>
         <postgresql.version>9.3-1102-jdbc41</postgresql.version>
-        <jackson.version>2.5.0</jackson.version>
+        <jackson.version>2.5.2</jackson.version>
         <eperusteet-ylops.devdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.devdb.user}</eperusteet-ylops.devdb.jdbcurl>
         <eperusteet-ylops.ittestdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.ittestdb.user}</eperusteet-ylops.ittestdb.jdbcurl>
         <buildhelper.skipAttach>true</buildhelper.skipAttach>
         <jsoup.version>1.8.1</jsoup.version>
         <ehcache.version>2.5.1</ehcache.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <swagger.version>0.9.4</swagger.version>
+        <swagger.version>1.0.2</swagger.version>
         <schema.file>${project.basedir}/target/schema.ddl</schema.file>
+        <hibernate.export.type>CREATE</hibernate.export.type>
     </properties>
 
     <repositories>
@@ -319,11 +320,11 @@
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
         </dependency>
-	<dependency>
-	  <groupId>com.codepoetics</groupId>
-	  <artifactId>protonpack</artifactId>
-	  <version>1.4</version>
-	</dependency>
+        <dependency>
+            <groupId>com.codepoetics</groupId>
+            <artifactId>protonpack</artifactId>
+            <version>1.4</version>
+        </dependency>
 
         <dependency>
             <groupId>com.mangofactory</groupId>
@@ -446,6 +447,20 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <quiet>true</quiet>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <sourcepath>${project.basedir}/src/main/java;${project.basedir}/target/generated-sources/annotations</sourcepath>
+                    <sourceFileExcludes>
+                        <exclude>db/migration/**</exclude>
+                        <exclude>**/domain/**/*_.java</exclude>
+                        <exclude>com/google/code/**</exclude>
+                    </sourceFileExcludes>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -462,7 +477,7 @@
                     </executions>
                     <configuration>
                         <envers>true</envers>
-                        <type>CREATE</type>
+                        <type>${hibernate.export.type}</type>
                         <target>SCRIPT</target>
                         <driverClassName>org.postgresql.Driver</driverClassName>
                         <hibernateDialect>org.hibernate.dialect.PostgreSQL9Dialect</hibernateDialect>
@@ -502,6 +517,9 @@
                                 <phase>process-classes</phase>
                             </execution>
                         </executions>
+                        <configuration>
+                            <hibernateMapping>${project.basedir}/src/test/config/hibernate-typedefs.xml</hibernateMapping>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

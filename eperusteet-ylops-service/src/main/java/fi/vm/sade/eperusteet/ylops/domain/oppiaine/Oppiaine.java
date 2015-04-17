@@ -184,7 +184,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public void setKoosteinen(boolean koosteinen) {
-        if (this.oppiaine != null) {
+        if (koosteinen && this.oppiaine != null) {
             throw new IllegalStateException("Oppimäärä ei voi olla koosteinen");
         }
         this.koosteinen = koosteinen;
@@ -301,15 +301,17 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         o.setKohdealueet(new HashSet<>(kohdealueet.values()));
 
         other.getVuosiluokkakokonaisuudet().forEach((vk -> {
-            o.addVuosiluokkaKokonaisuus(Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet));
+            Oppiaineenvuosiluokkakokonaisuus ovk = Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet);
+            o.addVuosiluokkaKokonaisuus(ovk);
         }));
 
         boolean isKielijoukko = other.koodiArvo != null
-                && ("TK".equals(other.koodiArvo.toUpperCase())
-                || "VK".equals(other.koodiArvo.toUpperCase())
-                || "AI".equals(other.koodiArvo.toUpperCase()));
+                && ("TK".equalsIgnoreCase(other.koodiArvo)
+                || "VK".equalsIgnoreCase(other.koodiArvo)
+                || "KT".equalsIgnoreCase(other.koodiArvo)
+                || "AI".equalsIgnoreCase(other.koodiArvo));
 
-        if (other.isKoosteinen() && copyOppimaarat) {
+        if (other.isKoosteinen() && copyOppimaarat && other.getOppiaine() == null) {
             if (other.koodiArvo == null || !isKielijoukko) {
                 other.getOppimaarat().forEach((om -> {
                     o.addOppimaara(Oppiaine.copyOf(om));

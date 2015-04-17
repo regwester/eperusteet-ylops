@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,5 +33,5 @@ public class OppiaineenTallennusDto {
     private OppiaineDto oppiaine;
     private Long vuosiluokkakokonaisuusId;
     private Set<Vuosiluokka> vuosiluokat;
-    private Set<TekstiosaDto> tavoitteet;
+    private List<TekstiosaDto> tavoitteet;
 }

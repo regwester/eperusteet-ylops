@@ -113,6 +113,14 @@ public class OpetussuunnitelmaController {
         return new ResponseEntity<>(opetussuunnitelmaService.updateTila(id, tila), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<OpetussuunnitelmaDto> restore(
+        @PathVariable("id") final Long id) {
+        return new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @Timed
     public void deleteOpetussuunnitelma(@PathVariable("id") final Long id) {

@@ -90,6 +90,9 @@ ylopsApp
   this.getId = function () {
     return opsId;
   };
+  this.isEditable = function () {
+    return ops && ops.tila === 'luonnos';
+  };
 })
 
   .service('OpetussuunnitelmaOikeudetService', function ($rootScope,

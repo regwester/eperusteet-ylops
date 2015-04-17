@@ -31,22 +31,22 @@ $statusbadge-width: 95px;
   }
 
   &.laadinta, &.luonnos {
-    background-color: #fbb03b;
+    background-color: $status-color-luonnos;
   }
   &.kommentointi {
-    background-color: #3a8fbe;
+    background-color: $status-color-kommentointi;
   }
   &.valmis {
-    background-color: green;
+    background-color: $status-color-valmis;
   }
   &.viimeistely {
-    background-color: purple;
+    background-color: $status-color-viimeistely;
   }
   &.julkaistu {
-    background-color: green;
+    background-color: $status-color-julkaistu;
   }
   &.poistettu {
-    background-color: #c44;
+    background-color: $status-color-poistettu;
   }
 }
 

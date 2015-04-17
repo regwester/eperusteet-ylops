@@ -142,9 +142,12 @@ ylopsApp
       }
     },
     cancel: function () {
-      $state.go('root.opetussuunnitelmat.yksi.valinnaiset', {
-        vlkId: $stateParams.vlkId
-      });
+      if ($scope.luonnissa) {
+        $state.go('root.opetussuunnitelmat.yksi.valinnaiset', { vlkId: $stateParams.vlkId });
+      }
+      else {
+        $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', $stateParams);
+      }
     }
   };
 

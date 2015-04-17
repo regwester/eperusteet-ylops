@@ -53,6 +53,12 @@ public class UlkopuolisetController {
     @Autowired
     private EperusteetService eperusteetService;
 
+    @RequestMapping(value = "/julkaistutperusteet", method = GET)
+    @ResponseBody
+    public ResponseEntity<List<PerusteInfo>> getPerusteet() {
+        return new ResponseEntity<>(eperusteetService.findPerusteet(), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/perusopetusperusteet", method = GET)
     @ResponseBody
     public ResponseEntity<List<PerusteInfo>> getPerusopetusperusteet() {

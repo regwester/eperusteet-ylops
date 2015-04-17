@@ -25,6 +25,9 @@ ylopsApp
       get: { isArray: true }
     });
   })
+  .factory('EperusteetValmiitPerusteet', function(UlkopuolisetResources, $resource) {
+    return $resource(UlkopuolisetResources.ULKOPUOLISET + 'julkaistutperusteet');
+  })
   .factory('EperusteetPerusopetus', function(UlkopuolisetResources, $resource) {
     return $resource(UlkopuolisetResources.ULKOPUOLISET + 'perusopetusperusteet/:perusteId', {
       perusteId: '@id'

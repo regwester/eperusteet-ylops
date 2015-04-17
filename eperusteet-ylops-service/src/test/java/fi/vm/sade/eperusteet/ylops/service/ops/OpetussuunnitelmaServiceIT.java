@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -37,6 +38,9 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -65,6 +69,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTyyppi(Tyyppi.POHJA);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
         ops = opetussuunnitelmaService.addPohja(ops);
         opetussuunnitelmaService.updateTila(ops.getId(), Tila.VALMIS);
 
@@ -73,6 +78,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTila(Tila.LUONNOS);
         ops.setTyyppi(Tyyppi.OPS);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
 
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");
@@ -116,12 +122,15 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         String yhteystiedot = uniikkiString();
         ops.setYhteystiedot(lt(yhteystiedot));
         ops.setTila(Tila.POISTETTU);
+        Date pvm = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR) - 1, Calendar.MARCH, 12).getTime();
+        ops.setPaatospaivamaara(pvm);
         opetussuunnitelmaService.updateOpetussuunnitelma(ops);
 
         ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertEquals(kuvaus, ops.getKuvaus().get(Kieli.FI));
         assertEquals(yhteystiedot, ops.getYhteystiedot().get(Kieli.FI));
         assertEquals(vanhaTila, ops.getTila());
+        assertEquals(pvm, ops.getPaatospaivamaara());
     }
 
     @Test
@@ -155,6 +164,32 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertEquals(Tila.POISTETTU, ops.getTila());
+    }
+
+    @Test
+    public void testUpdateOpsinTila() {
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
+        assertEquals(1, opsit.size());
+
+        Long id = opsit.get(0).getId();
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        assertEquals(Tila.LUONNOS, ops.getTila());
+
+        // Opsin voi palauttaa valmiista luonnokseksi, muuten normaali tilan eteneminen
+        ops = opetussuunnitelmaService.updateTila(id, Tila.VALMIS);
+        assertEquals(Tila.VALMIS, ops.getTila());
+
+        ops = opetussuunnitelmaService.updateTila(id, Tila.LUONNOS);
+        assertEquals(Tila.LUONNOS, ops.getTila());
+
+        ops = opetussuunnitelmaService.updateTila(id, Tila.VALMIS);
+        assertEquals(Tila.VALMIS, ops.getTila());
+
+        ops = opetussuunnitelmaService.updateTila(id, Tila.JULKAISTU);
+        assertEquals(Tila.JULKAISTU, ops.getTila());
+
+        ops = opetussuunnitelmaService.updateTila(id, Tila.LUONNOS);
+        assertEquals(Tila.JULKAISTU, ops.getTila());
     }
 
     @Test

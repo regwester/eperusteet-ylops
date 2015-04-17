@@ -1,6 +1,7 @@
 <div class="teksti-node">
-  <span ng-show="rakenneEdit" icon-role="drag" ui-tree-handle></span>
-  <a class="rakenne-link" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: kappale.id})" ng-bind="kappale.tekstiKappale.nimi || 'nimeton' | kaanna"></a>
+  <span ng-show="osio.$$edit" icon-role="drag" ui-tree-handle></span>
+  <a class="rakenne-link" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: kappale.id})"
+     ng-bind="kappale.tekstiKappale.nimi || 'nimeton' | kaanna"></a>
 </div>
 
 <ul ui-tree-nodes ng-model="kappale.lapset">

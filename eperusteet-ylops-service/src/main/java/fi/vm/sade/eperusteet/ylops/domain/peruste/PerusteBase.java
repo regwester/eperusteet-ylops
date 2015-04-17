@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.peruste;
 
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.*;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.io.Serializable;
@@ -33,7 +33,7 @@ import lombok.Setter;
 public abstract class PerusteBase implements Serializable {
     private Long id;
     private LokalisoituTekstiDto nimi;
-    private String koulutustyyppi;
+    private KoulutusTyyppi koulutustyyppi;
     private Set<PerusteKoulutus> koulutukset;
     private Set<Kieli> kielet;
     private LokalisoituTekstiDto kuvaus;

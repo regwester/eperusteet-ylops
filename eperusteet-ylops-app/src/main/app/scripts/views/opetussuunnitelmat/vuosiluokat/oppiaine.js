@@ -78,9 +78,19 @@ ylopsApp
     VuosiluokkaCRUD.save({
       opsId: opetussuunnitelma.id,
       vlkId: oppiaineenVlk.id,
-      oppiaineId: oppiaine.id,
+      oppiaineId: oppiaine.id
     }, model, function (res) {
       Notifikaatiot.onnistui('tallennettu-ok');
+      cb(res);
+    }, Notifikaatiot.serverCb);
+  };
+  this.saveValinnainenVuosiluokka = function (vlId, model, cb) {
+    VuosiluokkaCRUD.saveValinnainen({
+      opsId: opetussuunnitelma.id,
+      vlkId: oppiaineenVlk.id,
+      oppiaineId: oppiaine.id,
+      vvlId: vlId
+    }, model, function (res) {
       cb(res);
     }, Notifikaatiot.serverCb);
   };
@@ -132,6 +142,9 @@ ylopsApp
   OppiaineService.getParent(function(res) {
     $scope.oppiaine.$parent = res;
     $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
+    if ($scope.$onKieliTaiUskonto) {
+      $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
+    }
   });
 
   $scope.perusteOpVlk = $scope.perusteOppiaine ?
@@ -208,7 +221,10 @@ ylopsApp
   }
 
   $scope.options = {
-    editing: false
+    editing: false,
+    isEditable: function () {
+      return OpsService.isEditable() && $scope.oppiaine.oma;
+    }
   };
 
   $scope.callbacks = {
@@ -216,6 +232,7 @@ ylopsApp
       refetch();
     },
     save: function () {
+      $scope.oppiaine.$save({ opsId: $stateParams.id });
       OppiaineService.saveVlk($scope.oppiaineenVlk);
     },
     cancel: function () {
@@ -249,9 +266,7 @@ ylopsApp
       });
     }
     if (_.isArray($scope.vuosiluokat) && $scope.vuosiluokat.length > 0) {
-      vuosiluokkaistamisVaroitus(function () {
-        start();
-      });
+      vuosiluokkaistamisVaroitus(start);
     } else {
       start();
     }
@@ -277,4 +292,23 @@ ylopsApp
     })();
   };
 
+  $scope.kopioiMuokattavaksi = function () {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-kopiointi',
+      primaryBtn: 'luo-kopio',
+      successCb: function () {
+        OppiaineCRUD.kloonaaMuokattavaksi({
+          opsId: $stateParams.id,
+          oppiaineId: $stateParams.oppiaineId
+        }, {}, function(res) {
+          Notifikaatiot.onnistui('kopion-luonti-onnistui');
+          $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+            vlkId: $stateParams.vlkId,
+            oppiaineId: res.id,
+            oppiaineTyyppi: res.tyyppi
+          }, { reload: true });
+        }, Notifikaatiot.serverCb);
+      }
+    })();
+  };
 });

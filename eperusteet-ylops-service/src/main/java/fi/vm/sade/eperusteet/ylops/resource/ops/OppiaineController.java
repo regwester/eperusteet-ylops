@@ -19,9 +19,11 @@ import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KielitarjontaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -69,13 +71,13 @@ public class OppiaineController {
     public OppiaineDto addOppimaara(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("id") final Long oppiaineId,
-            @RequestBody KielitarjontaDto kt) {
-        return oppiaineService.addKielitarjonta(opsId, oppiaineId, kt);
+            @RequestBody KopioOppimaaraDto kt) {
+        return oppiaineService.addCopyOppimaara(opsId, oppiaineId, kt);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<OppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        return Responses.ofNullable(oppiaineService.get(opsId, id));
+    public ResponseEntity<UnwrappedOpsOppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.get(opsId, id)));
     }
 
     @RequestMapping(value = "/{id}/parent", method = RequestMethod.GET)
@@ -104,10 +106,10 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public OppiaineDto update(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id,
+    public UnwrappedOpsOppiaineDto update(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id,
         @RequestBody OppiaineDto dto) {
         dto.setId(id);
-        return oppiaineService.update(opsId, dto);
+        return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, dto));
     }
 
     @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)
@@ -130,7 +132,12 @@ public class OppiaineController {
 
         Peruste p = ops.getPeruste(opsId);
         return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
-            .flatMap(a -> p.getPerusopetus().getOppiaine(a.getTunniste())));
+            .flatMap(a -> p.getPerusopetus().getOppiaine(a.getOppiaine().getTunniste())));
     }
 
+    @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
+    public UnwrappedOpsOppiaineDto kopioiMuokattavaksi(@PathVariable("opsId") final Long opsId,
+                                                       @PathVariable("id") final Long id) {
+        return new UnwrappedOpsOppiaineDto(oppiaineService.kopioiMuokattavaksi(opsId, id));
+    }
 }

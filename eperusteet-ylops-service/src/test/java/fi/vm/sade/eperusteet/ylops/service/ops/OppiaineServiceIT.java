@@ -29,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -50,9 +51,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 /**
  *
@@ -179,14 +179,18 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         assertNotNull(oppiaineet);
         assertEquals(3, oppiaineet.size());
 
-        oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
+        OpsOppiaineDto opsOppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
+        assertNotNull(opsOppiaineDto);
+        oppiaineDto = opsOppiaineDto.getOppiaine();
         assertNotNull(oppiaineDto);
         assertEquals("Matematiikka", oppiaineDto.getNimi().get(Kieli.FI));
 
         oppiaineDto.setNimi(lt("Biologia"));
-        oppiaineDto = oppiaineService.update(opsId, oppiaineDto);
+        oppiaineDto = oppiaineService.update(opsId, oppiaineDto).getOppiaine();
 
-        oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
+        opsOppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
+        assertNotNull(opsOppiaineDto);
+        oppiaineDto = opsOppiaineDto.getOppiaine();
         assertNotNull(oppiaineDto);
         assertEquals("Biologia", oppiaineDto.getNimi().get(Kieli.FI));
 
@@ -199,12 +203,14 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         final String TYOTAVAT_OTSIKKO = "otsikko_" + TYOTAVAT;
         assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get().get(Kieli.FI));
 
-        oppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
+        opsOppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
+        assertNotNull(opsOppiaineDto);
+        oppiaineDto = opsOppiaineDto.getOppiaine();
         ovk = oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
         assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get().get(Kieli.FI));
 
-        assertTrue(oppiaineRepo.exists(opsId, oppiaineDto.getId()));
-        assertFalse(oppiaineRepo.exists(opsId, -1));
+        assertNotNull(oppiaineRepo.isOma(opsId, oppiaineDto.getId()));
+        assertNull(oppiaineRepo.isOma(opsId, -1));
     }
 
     private static TekstiosaDto getTekstiosa(String suffiksi) {

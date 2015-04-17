@@ -1,0 +1,14 @@
+<h1 ng-bind-html="vlk.nimi | kaanna | unsafe"></h1>
+
+<div esitys-teksti="vlk.tehtava" esitys-peruste="perusteVlk.tehtava" show-peruste="true"></div>
+
+<div esitys-teksti="vlk.siirtymaEdellisesta" esitys-peruste="perusteVlk.siirtymaEdellisesta" show-peruste="true"></div>
+
+<div esitys-teksti="vlk.siirtymaSeuraavaan" esitys-peruste="perusteVlk.siirtymaSeuraavaan" show-peruste="true"></div>
+
+<div esitys-teksti="" esitys-peruste="perusteVlk.laajaalainenOsaaminen" show-peruste="true"></div>
+
+<h2 ng-if="tunnisteet.length > 0" kaanna="'laaja-alaiset-osaamiset'"></h2>
+<div ng-repeat="tunniste in tunnisteet | orderBy:orderFn" id="{{tunniste}}">
+  <div esitys-teksti="paikalliset[tunniste]" esitys-peruste="laajaalaiset[tunniste]" show-peruste="true"></div>
+</div>

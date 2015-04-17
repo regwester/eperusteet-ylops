@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
@@ -90,6 +91,7 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
             ops.setNimi(lt(uniikkiString()));
             ops.setKuvaus(lt(uniikkiString()));
             ops.setTyyppi(Tyyppi.POHJA);
+            ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
             ops = opsit.addPohja(ops);
             ops = opsit.updateTila(ops.getId(), Tila.VALMIS);
 
@@ -98,6 +100,7 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
             ops.setKuvaus(lt(uniikkiString()));
             ops.setTila(Tila.LUONNOS);
             ops.setTyyppi(Tyyppi.OPS);
+            ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
 
             KoodistoDto kunta = new KoodistoDto();
             kunta.setKoodiUri("kunta_837");

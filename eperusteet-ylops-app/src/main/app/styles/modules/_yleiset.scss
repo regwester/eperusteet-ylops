@@ -57,6 +57,11 @@ button.icon-only {
   }
 }
 
+.header-links {
+  float: right;
+  margin-left: 10px;
+}
+
 .kielenvaihto {
   margin-right: 5px;
   list-style-type: none;
@@ -127,6 +132,7 @@ $backtotop-size: 48px;
 
 .action-buttons-inline {
   float: right;
+  margin-left: 5px;
 }
 
 .panel-title, h3, h4 {
@@ -198,4 +204,31 @@ a, a:focus {
   display: inline-block;
   width: 8em;
   margin-right: 10px;
+}
+
+.pagination-page-info {
+  color: #999;
+  margin-bottom: -5px;
+}
+
+.admin-rajaus {
+  height: 32px;
+  .admin-rajaus-rajaus {
+    float: left;
+    min-width: 18em;
+    max-width: 32em;
+  }
+  .admin-tila-rajaus {
+    margin-left: 20px;
+    label {
+      padding-top: 7px;
+    }
+    #admin-tilarajaus {
+      float: right;
+      width: 75%;
+    }
+    float: left;
+    max-width: 30em;
+  }
+  margin-bottom: 10px;
 }

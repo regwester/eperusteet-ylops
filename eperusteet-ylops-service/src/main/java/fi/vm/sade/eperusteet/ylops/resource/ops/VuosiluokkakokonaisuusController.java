@@ -19,6 +19,7 @@ import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -54,15 +55,15 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<VuosiluokkakokonaisuusDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        return Responses.ofNullable(vuosiluokkakokonaisuudet.get(opsId, id));
+    public ResponseEntity<UnwrappedOpsVuosiluokkakokonaisuusDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        return Responses.ofNullable(new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.get(opsId, id)));
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     public fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
 
         final Peruste peruste = opetussuunnitelmat.getPeruste(opsId);
-        final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id);
+        final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id).getVuosiluokkakokonaisuus();
 
         Optional<fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet()
             .stream()
@@ -83,11 +84,17 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public VuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId,
+    public UnwrappedOpsVuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId,
         @PathVariable("id") final Long id,
         @RequestBody VuosiluokkakokonaisuusDto dto) {
         dto.setId(id);
-        return vuosiluokkakokonaisuudet.update(opsId, dto);
+        return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.update(opsId, dto));
+    }
+
+    @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
+    public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(@PathVariable("opsId") final Long opsId,
+                                                         @PathVariable("id") final Long id) {
+        return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.kopioiMuokattavaksi(opsId, id));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

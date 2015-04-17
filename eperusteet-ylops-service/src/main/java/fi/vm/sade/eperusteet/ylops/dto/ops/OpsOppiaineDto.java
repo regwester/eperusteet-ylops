@@ -25,7 +25,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OpsOppiaineDto {
-
     private boolean oma;
     private OppiaineDto oppiaine;
 }

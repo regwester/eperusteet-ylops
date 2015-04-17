@@ -17,15 +17,50 @@
 'use strict';
 
 ylopsApp
+.service('VuosiluokkakokonaisuusMapper', function (VuosiluokatService, $stateParams) {
+  this.init = function (scope, laajaalaisetosaamiset) {
+    VuosiluokatService.getVlkPeruste($stateParams.id, $stateParams.vlkId, function (res) {
+      scope.perusteVlk = res;
+
+      scope.tunnisteet = _.map(scope.perusteVlk.laajaalaisetosaamiset, '_laajaalainenosaaminen');
+      var decorated = _.map(scope.perusteVlk.laajaalaisetosaamiset, function (item) {
+        var base = laajaalaisetosaamiset[item._laajaalainenosaaminen];
+        item.teksti = item.kuvaus;
+        item.otsikko = base ? base.nimi : {fi: '[Ei nimeä]'};
+        return item;
+      });
+      scope.laajaalaiset = _.indexBy(decorated, '_laajaalainenosaaminen');
+      scope.paikalliset = _.mapValues(scope.laajaalaiset, function (item) {
+        var newItem = _.cloneDeep(item);
+        var model = _.find(scope.vlk.laajaalaisetosaamiset, function (osaaminen) {
+          return '' + osaaminen._laajaalainenosaaminen === '' + item._laajaalainenosaaminen;
+        });
+        newItem.teksti = model ? model.kuvaus : {};
+        return newItem;
+      });
+    });
+  };
+})
+
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
-  MurupolkuData, vlk, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
-  baseLaajaalaiset, $timeout, $anchorScroll, $location) {
+  MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
+  baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,
+  OpsService, Varmistusdialogi) {
 
   $timeout(function () {
     if ($location.hash()) {
       $anchorScroll();
     }
   }, 1000);
+
+
+  // Lokalisaatioavaimet ohjepopover:ien sisällöille
+  var vlkNimi = vlk.nimi.fi;
+  $scope.vlkErityispiirteet = vlkNimi + '_erityispiirteet_ja_tehtavat_info';
+  $scope.siirtymaInfot = {};
+  $scope.siirtymaInfot.siirtymaEdellisesta = vlkNimi + '_siirtyma_aikaisempi_nykyinen_info';
+  $scope.siirtymaInfot.siirtymaSeuraavaan = vlkNimi + '_siirtymä_nykyinen_seuraava_info';
+  $scope.vlkLaajaalaiset = vlkNimi + '_laaja-alaisen_osaamisen_alueet_info';
 
   var laajaalaisetosaamiset = _.indexBy(baseLaajaalaiset, 'tunniste');
   var laajaalaisetOrder = _(baseLaajaalaiset).sortBy(Utils.sort).map('tunniste').value();
@@ -42,7 +77,7 @@ ylopsApp
     VuosiluokatService.getVuosiluokkakokonaisuus($stateParams.id, $stateParams.vlkId, function (res) {
       $scope.vlk = res;
       initTexts();
-      initPeruste();
+      VuosiluokkakokonaisuusMapper.init($scope, laajaalaisetosaamiset);
     }, Notifikaatiot.serverCb);
   }
 
@@ -53,29 +88,7 @@ ylopsApp
   }
   initTexts();
 
-  function initPeruste() {
-    VuosiluokatService.getVlkPeruste($stateParams.id, $stateParams.vlkId, function (res) {
-      $scope.perusteVlk = res;
-
-      $scope.tunnisteet = _.map($scope.perusteVlk.laajaalaisetosaamiset, '_laajaalainenosaaminen');
-      var decorated = _.map($scope.perusteVlk.laajaalaisetosaamiset, function (item) {
-        var base = laajaalaisetosaamiset[item._laajaalainenosaaminen];
-        item.teksti = item.kuvaus;
-        item.otsikko = base ? base.nimi : {fi: '[Ei nimeä]'};
-        return item;
-      });
-      $scope.laajaalaiset = _.indexBy(decorated, '_laajaalainenosaaminen');
-      $scope.paikalliset = _.mapValues($scope.laajaalaiset, function (item) {
-        var newItem = _.cloneDeep(item);
-        var model = _.find($scope.vlk.laajaalaisetosaamiset, function (osaaminen) {
-          return '' + osaaminen._laajaalainenosaaminen === '' + item._laajaalainenosaaminen;
-        });
-        newItem.teksti = model ? model.kuvaus : {};
-        return newItem;
-      });
-    });
-  }
-  initPeruste();
+  VuosiluokkakokonaisuusMapper.init($scope, laajaalaisetosaamiset);
 
   MurupolkuData.set('vlkNimi', vlk.nimi);
 
@@ -109,7 +122,10 @@ ylopsApp
   };
 
   $scope.options = {
-    editing: false
+    editing: false,
+    isEditable: function () {
+      return OpsService.isEditable() && $scope.vlk.oma;
+    }
   };
 
   $scope.callbacks = {
@@ -139,4 +155,22 @@ ylopsApp
     notifier: angular.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
+
+  $scope.kopioiMuokattavaksi = function () {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-kopiointi',
+      primaryBtn: 'luo-kopio',
+      successCb: function () {
+        VuosiluokkakokonaisuusCRUD.kloonaaMuokattavaksi({
+          opsId: $stateParams.id,
+          vlkId: $stateParams.vlkId
+        }, {}, function(res) {
+          Notifikaatiot.onnistui('kopion-luonti-onnistui');
+          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {
+            vlkId: res.id
+          }, { reload: true });
+        }, Notifikaatiot.serverCb);
+      }
+    })();
+  };
 });

@@ -37,6 +37,30 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   }
 
+  function lisaa(parent, opsId, uusi, cb) {
+    var newNode = {tekstiKappale: { nimi: angular.copy(uusi) }, lapset: []};
+
+    OpetussuunnitelmanTekstit.setChild({
+      parentId: parent.id,
+      opsId: opsId
+    }, newNode, function (res) {
+      var otsikko = _.cloneDeep(newNode.tekstiKappale.nimi);
+      newNode.id = res.id;
+      newNode.omistussuhde = res.omistussuhde;
+      newNode.tekstiKappale = res.tekstiKappale;
+      res.tekstiKappale.nimi = otsikko;
+      // TODO: lapsi-APIa käyttämällä ei tekstikappale tallennu samalla pyynnöllä
+      OpetussuunnitelmanTekstit.save({ opsId: opsId }, res, function () {
+        Notifikaatiot.onnistui('tallennettu-ok');
+        cb(res);
+        OpsService.refetch(function () {
+          $rootScope.$broadcast('rakenne:updated');
+        });
+      }, Notifikaatiot.serverCb);
+    }, Notifikaatiot.serverCb);
+  }
+
+  // Deprekoitunut
   function add(model, osio, opsId, uusi, cb) {
     var newNode = {tekstiKappale: angular.copy(uusi), lapset: []};
     var parent = osio ? model[osio] : model;
@@ -82,6 +106,7 @@ ylopsApp
   }
 
   this.saveRakenne = saveRakenne;
+  this.lisaa = lisaa;
   this.add = add;
   this.delete = deleteKappale;
   this.varmistusdialogi = function (nimi, successCb, failureCb) {
@@ -97,33 +122,22 @@ ylopsApp
 
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, OpetussuunnitelmanTekstit,
   Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko) {
-  $scope.rakenneEdit = {jarjestaminen: false, lahtokohdat: false};
-  $scope.adding = {jarjestaminen: false, lahtokohdat: false};
   $scope.uusi = {nimi: {}};
   $scope.lukkotiedot = null;
 
   $scope.model = opsService.get($stateParams.id) || opsModel;
 
-  function mapModel() {
-    $scope.model.jarjestaminen = $scope.model.tekstit ? $scope.model.tekstit.lapset[0] : [];
-    $scope.model.lahtokohdat = $scope.model.tekstit ? $scope.model.tekstit.lapset[1] : [];
-  }
-
   $scope.isAdding = function () {
-    return _.any(_.values($scope.adding));
+    return _.any($scope.model.tekstit.lapset, '$$adding');
   };
 
-  $scope.hasText = function () {
-    return Utils.hasLocalizedText($scope.uusi.nimi);
+  $scope.hasText = function(str) {
+    return Utils.hasLocalizedText(str);
   };
 
   $scope.canRemove = function (kappale) {
     return kappale.omistussuhde === 'oma';
   };
-
-  $scope.$watch('model', function () {
-    mapModel();
-  }, true);
 
   var commonParams = {
     opsId: $stateParams.id,
@@ -140,7 +154,6 @@ ylopsApp
     });
   }
 
-  var original = null;
   $scope.kappaleEdit = null;
 
   function stopEvent(event) {
@@ -159,26 +172,25 @@ ylopsApp
   $scope.rakenne = {
     add: function (osio, event) {
       stopEvent(event);
-      $scope.adding[osio] = true;
+      osio.$$adding = true;
     },
     doAdd: function (osio) {
       Lukko.lock(commonParams, function () {
-        TekstikappaleOps.add($scope.model, osio, $stateParams.id, $scope.uusi, function () {
+        TekstikappaleOps.lisaa(osio, $stateParams.id, osio.$$uusi, function () {
           Lukko.unlock(commonParams, function () {
-            $scope.uusi = {nimi: {}};
-            mapModel();
+            fetch();
           });
         });
       });
     },
     cancelAdd: function (osio) {
-      $scope.adding[osio] = false;
+      osio.$$adding = false;
       $scope.uusi = {nimi: {}};
     },
     deleteKappale: function (osio, item) {
       lockTeksti(item.id, function () {
         TekstikappaleOps.varmistusdialogi(item.tekstiKappale.nimi, function () {
-          TekstikappaleOps.delete($scope.model, osio, $stateParams.id, item);
+          TekstikappaleOps.delete($scope.model, osio, $stateParams.id, item, fetch);
         }, function () {
           unlockTeksti(item.id);
         });
@@ -214,24 +226,22 @@ ylopsApp
       stopEvent(event);
       $scope.rakenne.cancelAdd(osio);
       Lukko.lock(commonParams, function () {
-        fetch();
-        $scope.rakenneEdit[osio] = true;
-        original = _.cloneDeep($scope.model[osio].lapset);
+        osio.$$edit = true;
       });
     },
     cancel: function (osio) {
       Lukko.unlock(commonParams, function () {
         $scope.lukkotiedot = null;
-        $scope.rakenneEdit[osio] = false;
-        $scope.model[osio].lapset = _.cloneDeep(original);
-        fetch();
+        fetch(function() {
+          osio.$$edit = false;
+        });
       });
     },
     save: function (osio) {
       TekstikappaleOps.saveRakenne($scope.model, function () {
         Lukko.unlock(commonParams, function () {
           $scope.lukkotiedot = null;
-          $scope.rakenneEdit[osio] = false;
+          osio.$$edit = false;
           fetch(angular.noop, true);
         });
       });

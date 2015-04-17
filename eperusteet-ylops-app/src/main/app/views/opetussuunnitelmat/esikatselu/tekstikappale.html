@@ -1,0 +1,18 @@
+<h1 ng-bind-html="tekstikappale.nimi | kaanna | unsafe"></h1>
+<div ng-bind-html="tekstikappale.teksti | kaanna | unsafe"></div>
+
+<div ng-repeat="lapsi in tekstikappaleViite.lapset">
+  <ep-tekstiotsikko model="lapsi" level="2"></ep-tekstiotsikko>
+  <div ng-bind-html="lapsi.tekstiKappale.teksti | kaanna | unsafe"></div>
+
+  <div ng-repeat="alilapsi in lapsi.lapset">
+    <ep-tekstiotsikko model="alilapsi" level="3"></ep-tekstiotsikko>
+    <div ng-bind-html="alilapsi.tekstiKappale.teksti | kaanna | unsafe"></div>
+
+    <div ng-repeat="alialilapsi in alilapsi.lapset">
+      <ep-tekstiotsikko model="alialilapsi" level="4"></ep-tekstiotsikko>
+      <div ng-bind-html="alialilapsi.tekstiKappale.teksti | kaanna | unsafe"></div>
+    </div>
+  </div>
+
+</div>

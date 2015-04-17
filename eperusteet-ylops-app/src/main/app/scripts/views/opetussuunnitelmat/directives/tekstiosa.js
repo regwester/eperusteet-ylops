@@ -24,7 +24,8 @@ ylopsApp
       model: '=perusteenTekstiosa',
       muokattava: '=?',
       callbacks: '=',
-      config: '='
+      config: '=',
+      ohjepallo: '='
     },
     templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
     controller: 'TekstiosaController',
@@ -61,5 +62,9 @@ ylopsApp
     $scope.callbacks.notifier = notifyFn;
     Editointikontrollit.startEditing();
     $scope.focusAndScroll();
+  };
+
+  $scope.remove = function () {
+    $scope.callbacks.remove($scope.muokattava);
   };
 });

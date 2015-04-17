@@ -19,6 +19,10 @@
 
 ylopsApp
 .service('OpsinTila', function (OpetussuunnitelmaCRUD, Notifikaatiot) {
+  this.palauta = function (ops, cb) {
+    OpetussuunnitelmaCRUD.palauta({opsId: ops.id}, null, cb, Notifikaatiot.serverCb);
+  };
+
   this.save = function (ops, tila, cb) {
     OpetussuunnitelmaCRUD.setTila({opsId: ops.id, tila: tila}, null, cb, Notifikaatiot.serverCb);
   };

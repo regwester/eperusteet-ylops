@@ -1,45 +1,82 @@
-<div class="row" ng-show="model.$resolved">
-  <div class="col-md-6 col-sm-6" ng-repeat="osio in ['jarjestaminen', 'lahtokohdat']">
-    <div class="list-group">
-      <div class="list-group-item list-group-header" ng-bind="model[osio].tekstiKappale.nimi | kaanna"></div>
-      <div class="list-group-item pohjan-muokkaus">
-
-        <div class="input-group" oikeustarkastelu="{ target: 'pohja', permission: 'muokkaus' }">
-          <input class="form-control" ng-model="uusi[osio].nimi" slocalized ng-enter="hasText(osio) && pohjaOps.addNew(osio)"
-                 placeholder="{{'luo-uusi-tekstikappale'|kaanna}}"
-                 ng-disabled="rakenneEdit[osio]">
-          <span class="input-group-btn">
-            <button class="btn btn-primary" kaanna="'lisaa'" ng-click="pohjaOps.addNew(osio)" ng-disabled="rakenneEdit[osio] || !hasText(osio)"></button>
-          </span>
+<div>
+  <div style="padding: 5px" class="row pohja-sisalto-editing-buttons">
+    <div ng-hide="!$$rakenneEdit" class="col-xs-9"></div>
+    <div ng-show="!$$rakenneEdit" class="col-xs-9">
+      <div class="input-group">
+        <input ng-model="model.tekstit.$$nimi" slocalized class="form-control">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" ng-click="pohjaOps.addNew(model.tekstit)" ng-disabled="!hasText(model.tekstit.$$nimi)" kaanna="'lisaa-paatason-otsikko'"></button>
+        </span>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <div class="pull-right">
+        <button ng-hide="$$rakenneEdit" class="btn btn-default" kaanna="'muokkaa-rakennetta'" ng-click="rakenne.edit()"></button>
+        <div ng-show="$$rakenneEdit">
+          <button class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="rakenne.save()"></button>
+          <button class="btn btn-default" kaanna="'peru-rakenne'" ng-click="rakenne.cancel()"></button>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div class="rakenne">
-
-          <div ng-show="model[osio].lapset.length === 0" kaanna="'ei-tekstikappaleita'"></div>
-
-          <button ng-show="rakenneEdit[osio]" class="btn btn-default" kaanna="'peru-rakenne'" ng-click="rakenne.cancel(osio)"></button>
-          <button ng-show="rakenneEdit[osio]" class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="rakenne.save(osio)"></button>
-
-          <button ng-hide="rakenneEdit[osio] || !model[osio].lapset || model[osio].lapset.length === 0"
-                  class="btn btn-default" kaanna="'muokkaa-rakennetta'" ng-click="rakenne.edit(osio)"></button>
-
-          <div ng-show="model[osio].lapset.length > 0" ui-tree class="tekstikappaleet" data-empty-place-holder-enabled="true" data-drag-enabled="rakenneEdit[osio]">
-            <ul ui-tree-nodes ng-model="model[osio].lapset">
-              <li ng-repeat="kappale in model[osio].lapset" ui-tree-node ng-include="'views/opetussuunnitelmat/pohja/treenode.html'"></li>
-            </ul>
+  <div class="row" ng-show="model.$resolved" ui-tree="uiTreeOptions" ui-tree-nodes ng-model="model.tekstit.lapset">
+    <div ng-class="{ 'col-xs-6': !$$rakenneEdit }" ng-repeat="osio in model.tekstit.lapset" ui-tree-node>
+      <div style="padding: 5px" class="list-group">
+        <div class="list-group-item list-group-header">
+          <div ng-show="$$rakenneEdit" class="pull-left" icon-role="drag" ui-tree-handle></div>
+          <div ng-hide="osio.tekstiKappale.$$edit">
+            <span ng-bind="osio.tekstiKappale.nimi | kaanna"></span>
+            <span ng-show="!$$rakenneEdit" class="pull-right">
+              <a ng-click="opsOtsikot.edit(osio)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}"></a>
+              <a ng-click="pohjaOps.delete(model.tekstit, osio)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></a>
+            </span>
           </div>
+          <div ng-show="osio.tekstiKappale.$$edit">
+            <div class="input-group">
+              <input ng-model="osio.tekstiKappale.nimi" slocalized class="form-control">
+              <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="opsOtsikot.cancel(osio)" kaanna="'peruuta'"></button>
+                <button class="btn btn-primary" ng-click="opsOtsikot.save(osio)" kaanna="'tallenna'"></button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="list-group-item pohjan-muokkaus">
+          <div ng-show="!$$rakenneEdit" class="input-group" oikeustarkastelu="{ target: 'pohja', permission: 'muokkaus' }">
+            <input class="form-control" ng-model="osio.$$nimi" slocalized ng-enter="hasText(osio.$$nimi) && pohjaOps.addNew(osio)"
+                  placeholder="{{'luo-uusi-tekstikappale'|kaanna}}"
+                  ng-disabled="osio.$$edit">
+            <span class="input-group-btn">
+              <button class="btn btn-primary" kaanna="'lisaa'" ng-click="pohjaOps.addNew(osio)" ng-disabled="osio.$$edit || !hasText(osio.$$nimi)"></button>
+            </span>
+          </div>
+
+          <div class="rakenne">
+
+            <div ng-show="osio.lapset.length === 0" kaanna="'ei-tekstikappaleita'"></div>
+
+            <button ng-show="osio.$$edit" class="btn btn-default" kaanna="'peru-rakenne'" ng-click="rakenne.cancel(osio)"></button>
+            <button ng-show="osio.$$edit" class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="rakenne.save(osio)"></button>
+
+            <div ng-show="osio.lapset.length > 0" class="tekstikappaleet" data-empty-place-holder-enabled="true" data-drag-enabled="osio.$$edit">
+              <ul ui-tree-nodes ng-model="osio.lapset">
+                <li ng-repeat="kappale in osio.lapset" ui-tree-node ng-include="'views/opetussuunnitelmat/pohja/treenode.html'"></li>
+              </ul>
+            </div>
+          </div>
+
         </div>
 
       </div>
-
     </div>
+    <!-- <div class="col-md-6 col-sm-6">
+      <div class="list-group">
+        <a class="list-group-item list-group-header" kaanna="'vuosiluokat-ja-oppiaineet'"
+        ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: 'vuosiluokat'})"></a>
+        <a class="list-group-item" ng-repeat="item in vuosiluokat" ng-bind="item.nimi | kaanna"
+        ui-sref="root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus({vlkId: item.id})"></a>
+      </div>
+    </div> -->
   </div>
-  <!-- <div class="col-md-6 col-sm-6">
-    <div class="list-group">
-      <a class="list-group-item list-group-header" kaanna="'vuosiluokat-ja-oppiaineet'"
-      ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: 'vuosiluokat'})"></a>
-      <a class="list-group-item" ng-repeat="item in vuosiluokat" ng-bind="item.nimi | kaanna"
-      ui-sref="root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus({vlkId: item.id})"></a>
-    </div>
-  </div> -->
 </div>

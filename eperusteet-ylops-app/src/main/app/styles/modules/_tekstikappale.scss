@@ -59,7 +59,7 @@ $ohje-ikoni-size: 48px;
 }
 
 .tekstiosa-wrapper {
-  h3 {
+  h3:not(.popover-title) {
     margin-top: 30px;
     margin-bottom: 15px;
     //border-top: 1px solid lighten($brand-primary, 30%);
@@ -113,5 +113,30 @@ $ohje-ikoni-size: 48px;
   }
   h3 {
     margin-top: 30px;
+  }
+}
+
+.valmius.glyphicon-check {
+  color: lighten(green, 5%);
+}
+.list-group-item.active .valmius.glyphicon-check {
+  color: lighten(green, 10%);
+}
+.valmius.glyphicon-edit {
+  color: #bbb;
+}
+.valmius.glyphicon {
+  margin-right: 5px;
+}
+
+.teksti-valmis {
+  padding-top: 6px;
+  float: right;
+  .glyphicon-check {
+    color: green;
+  }
+  .btn-valmis {
+    border: 1px solid #ccc;
+    padding: 8px;
   }
 }

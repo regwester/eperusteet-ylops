@@ -73,9 +73,9 @@ public class VuosiluokkakokonaisuusServiceIT extends AbstractIntegrationTest {
         dto.setTunniste(Optional.of(viite1Ref));
 
         dto = service.add(opsId, dto);
-        dto = service.get(opsId, dto.getId());
+        dto = service.get(opsId, dto.getId()).getVuosiluokkakokonaisuus();
         dto.setTunniste(Optional.of(viite2Ref));
-        dto = service.update(opsId, dto);
+        dto = service.update(opsId, dto).getVuosiluokkakokonaisuus();
         service.delete(opsId, dto.getId());
     }
 

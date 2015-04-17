@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,18 @@ public class EperusteetServiceMock implements EperusteetService {
 
     @Autowired
     private DtoMapper mapper;
+
+    @Override
+    public List<PerusteInfo> findPerusteet(Set<KoulutusTyyppi> tyypit) {
+        PerusteInfo perusteInfo = new PerusteInfo();
+        perusteInfo.setDiaarinumero(DIAARINUMERO);
+        return Collections.singletonList(perusteInfo);
+    }
+
+    @Override
+    public List<PerusteInfo> findPerusteet() {
+        return findPerusteet(null);
+    }
 
     @Override
     public List<PerusteInfo> findPerusopetuksenPerusteet() {
@@ -65,7 +79,7 @@ public class EperusteetServiceMock implements EperusteetService {
     }
 
     @Override
-    public Peruste getPerusopetuksenPeruste(String diaariNumero) {
+    public Peruste getPeruste(String diaariNumero) {
         if (perusteDto != null && diaariNumero.equals(perusteDto.getDiaarinumero())) {
             return mapper.map(perusteDto, Peruste.class);
         }

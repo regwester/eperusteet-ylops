@@ -18,6 +18,13 @@
   "takaisin-osioihin": "Takaisin osioihin",
   "oppimaaran-poisto-onnistui": "Oppimäärän poisto onnistui",
 
+  "hallinta": "Hallinta",
+  "rajaa-tuloksia": "Rajaa...",
+  "tyhjenna-rajaus-tooltip": "Tyhjennä rajaus (Esc)",
+  "toiminto": "Toiminto",
+  "palauta": "Palauta",
+  "kaikki": "Kaikki",
+
   "poistu-sivulta": "Poistu sivulta",
   "tallentamattomia-muutoksia": "Sinulla on tallentamattomia muutoksia. Jos poistut sivulta muutokset menetetään.",
   "vahvista-liikkuminen": "Vahvista liikkuminen",
@@ -31,6 +38,10 @@
   "lisaa-aliotsikko": "Lisää aliotsikko",
   "kappaleen-otsikko": "Otsikko",
   "poista-tekstikappale-teksti": "Tekstikappale \"{{nimi}}\" poistetaan. Oletko varma?",
+  "varmista-kopiointi": "Varmista kopiointi",
+  "kopioi-muokattavaksi": "Kopioi muokattavaksi",
+  "luo-kopio": "Luo kopio",
+  "kopion-luonti-onnistui": "Kopion luonti onnistui",
   "vieras-kieli-a1": "Vieras kieli, A1-oppimäärä",
   "vieras-kieli-a2": "Vieras kieli, A2-oppimäärä",
   "vieras-kieli-b1": "Vieras kieli, B1-oppimäärä",
@@ -38,6 +49,7 @@
 
   "etusivu": "Etusivu",
   "uusi-ops": "Uusi opetussuunnitelma",
+  "luonti-vuosiluokka-valinta-info": "Vuosiluokat voi valita vain opetussuunnitelman luonnissa. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
   "ops-tyokalu": "OPS-työkalu",
   "omat-opetussuunnitelmat": "Opetussuunnitelmasi",
   "aloita-uusi-ops": "Aloita uusi OPS-projekti",
@@ -103,6 +115,7 @@
   "luo-uusi-tekstikappale": "Luo uusi tekstikappale",
   "tallenna-rakenne": "Tallenna rakenne",
   "muokkaa-rakennetta": "Muokkaa rakennetta",
+  "lisaa-paatason-otsikko": "Lisää päätason otsikko",
   "peru-rakenne": "Peruuta rakenteen muokkaus",
   "peruste": "Peruste",
   "valitse-peruste": "Valitse peruste",
@@ -127,11 +140,14 @@
   "se": "saame",
 
   "luonnos": "Luonnos",
-  "tila-luonnos": "luonnos",
+  "tila-luonnos": "Luonnos",
   "tilakuvaus-luonnos": "Kuvaus luonnos-tilalle",
   "valmis": "Valmis",
   "tila-valmis": "Valmis",
   "tilakuvaus-valmis": "Kuvaus valmis-tilalle",
+  "julkaistu": "Julkaistu",
+  "tila-julkaistu": "Julkaistu",
+  "tilakuvaus-julkaistu": "Kuvaus julkaistu-tilalle",
   "tila-poistettu": "Arkistoitu",
   "poistettu": "Arkistoitu",
   "tilakuvaus-poistettu": "Kuvaus poistettu-tilalle",
@@ -172,7 +188,7 @@
   "uusi-oppiaine": "Uusi oppiaine",
   "lisaa-oppiaine": "Lisää oppiaine",
   "valinnaisen-nimi": "Valinnaisen oppiaineen nimi",
-  "lisaa-muu-uskonto": "Lisää muu uskonto",
+  "lisaa-muu-uskonto": "Lisää uskonto",
   "lisaa-oppimaara-uskonto": "Lisää uskonto",
   "lisaa-oppimaara-kieli": "Lisää kielitarjontaa",
   "pohja": "Pohja",
@@ -229,6 +245,30 @@
   "poistetaanko-kommentti": "Poistetaanko kommentti?",
   "vastaa": "Vastaa",
   "kommentti-ei-saa-ylittaa": "Kommentti ei saa olla yli {{ maara }} merkkiä pitkä.",
-  "vahvista-poisto": "Vahvista poisto"
+  "vahvista-poisto": "Vahvista poisto",
 
+  "koulutustyyppi_16": "Perusopetus",
+  "koulutustyyppi_6": "Lisäopetus",
+  "koulutustyyppi_15": "Esiopetus",
+  "koulutustyyppi": "Koulutustyyppi",
+  "pohjan-tyyppi": "Pohjan tyyppi",
+
+  "paatospaivamaara": "Hyväksymispäivämäärä",
+  "anna-paatospaivamaara": "Anna hyväksymispäivämäärä",
+  "kelvoton-pvm": "Kelvoton päivämäärä",
+
+  "VUOSILUOKAT 1-2_erityispiirteet_ja_tehtavat_info": "Mitkä ovat vuosiluokkakokonaisuuden 1-2 erityispiirteet ja tehtävät (perusteiden kuvauksia voidaan hyödyntää sellaisenaan) sekä niihin liittyvät paikalliset painotukset ja miten tehtävän toteutumista seurataan ja kehitetään?",
+  "VUOSILUOKAT 1-2_siirtyma_aikaisempi_nykyinen_info": "Miten tuetaan oppilaiden siirtymistä esiopetuksesta perusopetukseen? Toimintatavat siirtymävaiheessa. Tarvittava yhteistyö, työnjako ja vastuut.",
+  "VUOSILUOKAT 1-2_siirtymä_nykyinen_seuraava_info": "Miten tuetaan oppilaiden siirtymistä toiselta kolmannelle vuosiluokalle? Toimintatavat siirtymävaiheessa. Tarvittava yhteistyö, työnjako ja vastuut.",
+  "VUOSILUOKAT 1-2_laaja-alaisen_osaamisen_alueet_info": "Mitkä ovat laaja-alaisen osaamisen tavoitteet vuosiluokilla 1-2 (perusteiden tavoitekuvauksia voidaan hyödyntää sellaisenaan) sekä niiden mahdolliset paikalliset painotukset ja miten oppilaiden laaja-alaisen osaamisen kehittymistä tuetaan vuosiluokilla 1-2?",
+
+  "VUOSILUOKAT 3-6_erityispiirteet_ja_tehtavat_info": "XX",
+  "VUOSILUOKAT 3-6_siirtyma_aikaisempi_nykyinen_info": "XX",
+  "VUOSILUOKAT 3-6_siirtymä_nykyinen_seuraava_info": "XX",
+  "VUOSILUOKAT 3-6_laaja-alaisen_osaamisen_alueet_info": "XX",
+
+  "VUOSILUOKAT 7-9_erityispiirteet_ja_tehtavat_info": "XX",
+  "VUOSILUOKAT 7-9_siirtyma_aikaisempi_nykyinen_info": "XX",
+  "VUOSILUOKAT 7-9_siirtymä_nykyinen_seuraava_info": "XX",
+  "VUOSILUOKAT 7-9_laaja-alaisen_osaamisen_alueet_info": "XX"
 }

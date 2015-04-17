@@ -5,7 +5,6 @@
       <span ng-show="!item.$leaf" ng-click="toggle(items, item, $event)" class="glyphicon"
             ng-class="{'glyphicon-chevron-right': item.$collapsed, 'glyphicon-chevron-down': !item.$collapsed}"></span>
     </div>
-
-    <span class="linktext" ng-bind="item.label | kaanna"></span>
+    <span class="linktext"><span ng-if="item.valmis === true || item.valmis === false" valmius-ikoni="item"></span><span ng-bind="item.label | kaanna"></span></span>
   </a>
 </div>

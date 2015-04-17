@@ -60,7 +60,8 @@ public class DtoMapperConfig {
         factory.classMap(OpetussuunnitelmaDto.class, Opetussuunnitelma.class)
             .fieldBToA(Opetussuunnitelma_.tekstit.getName(), Opetussuunnitelma_.tekstit.getName())
             .fieldBToA(Opetussuunnitelma_.oppiaineet.getName(), Opetussuunnitelma_.oppiaineet.getName())
-            .fieldBToA(Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName(), Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName())
+            //.fieldBToA(Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName(), Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName())
+            //.fieldAToB("vuosiluokkakokonaisuudet", "vuosiluokkakokonaisuudet")
             .byDefault()
             .register();
 

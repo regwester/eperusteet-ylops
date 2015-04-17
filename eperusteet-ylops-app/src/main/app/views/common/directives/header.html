@@ -9,14 +9,19 @@
     </li>
   </ol>
 
+  <!-- TODO hallinta näkyy organisaation adminille -->
+  <div class="header-links" ng-if="isVirkailija">
+    <a icon-role="settings" kaanna="'hallinta'" ui-sref="root.admin"></a>
+  </div>
 
-  <div class="pull-right">
+  <div class="header-links">
     <kielenvaihto></kielenvaihto>
   </div>
 
-  <div class="pull-right" style="margin-right: 10px;" ng-if="isLocal">
+  <div class="header-links" ng-if="isLocal">
     <label><input ng-model="isVirkailija" type="checkbox"> Virkailijan oikeudet</label>
   </div>
+
 
 </div>
 <div class="clearfix"></div>

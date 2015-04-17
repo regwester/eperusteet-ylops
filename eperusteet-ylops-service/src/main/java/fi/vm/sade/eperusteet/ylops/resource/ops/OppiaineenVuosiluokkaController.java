@@ -16,7 +16,9 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -55,5 +60,14 @@ public class OppiaineenVuosiluokkaController {
         @RequestBody OppiaineenVuosiluokkaDto dto) {
         dto.setId(id);
         return oppiaineService.updateVuosiluokanSisalto(opsId, oppiaineId, dto);
+    }
+
+    @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)
+    public OppiaineenVuosiluokkaDto updateValinnaisenVuosiluokanSisalto(
+        @PathVariable("opsId") final Long opsId,
+        @PathVariable("oppiaineId") final Long oppiaineId,
+        @PathVariable("id") final Long id,
+        @RequestBody List<TekstiosaDto> tavoitteetDto) {
+        return oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, oppiaineId, id, tavoitteetDto);
     }
 }

@@ -32,6 +32,27 @@
   .ops-th-tila { width: 15%; }
   .ops-th-muokattu { width: 15%; }
   &.pohja-table {}
+  .taulukko-tila {
+    font-size: 90%;
+    text-transform: uppercase;
+    color: white;
+    background-color: #555;
+    font-weight: 700;
+    padding: 3px;
+    border-radius: 2px;
+  }
+  .tila-luonnos {
+    background-color: $status-color-luonnos;
+  }
+  .tila-valmis {
+    background-color: $status-color-valmis;
+  }
+  .tila-julkaistu {
+    background-color: $status-color-julkaistu;
+  }
+  .tila-poistettu {
+    background-color: $status-color-poistettu;
+  }
 }
 
 label + select {

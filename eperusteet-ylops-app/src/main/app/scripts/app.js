@@ -35,7 +35,16 @@ var ylopsApp = angular.module('ylopsApp', [
 /* jshint ignore:end */
 
 ylopsApp
-  .run(function ($rootScope, VirheService, $window, Editointikontrollit, Kaanna, Varmistusdialogi, $state) {
+  .run(function ($rootScope, VirheService, $window, Editointikontrollit, Kaanna,
+    Varmistusdialogi, $state, paginationConfig) {
+
+    paginationConfig.firstText = '';
+    paginationConfig.previousText = '';
+    paginationConfig.nextText = '';
+    paginationConfig.lastText = '';
+    paginationConfig.maxSize = 5;
+    paginationConfig.rotate = false;
+
     $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState*/) {
       VirheService.virhe({state: toState.name});
     });
@@ -71,5 +80,14 @@ ylopsApp
         (event || window.event).returnValue = confirmationMessage;
         return confirmationMessage;
       }
+    });
+  })
+  .config(function ($tooltipProvider) {
+    $tooltipProvider.setTriggers({
+        'mouseenter': 'mouseleave',
+        'click': 'click',
+        'focus': 'blur',
+        'never': 'mouseleave',
+        'show': 'hide'
     });
   });

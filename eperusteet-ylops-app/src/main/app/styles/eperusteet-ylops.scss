@@ -1,5 +1,5 @@
 @import "modules/variables";
-@import "../bower_components/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap";
+@import "../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap";
 @import "../bower_components/angular-ui-tree/source/angular-ui-tree";
 @import "modules/bootstrap-overrides";
 @import "vendor/virkailija";
@@ -25,3 +25,7 @@
 @import "modules/oppiaine";
 @import "modules/vuosiluokat";
 @import "modules/vuosiluokkaistaminen";
+
+@import "modules/esikatselu";
+@import "modules/ohje";
+

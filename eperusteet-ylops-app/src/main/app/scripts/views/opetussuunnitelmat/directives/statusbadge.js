@@ -64,6 +64,22 @@ ylopsApp
       poistettu: 'folder-open',
     };
 
+    // TODO salli julkaistu-tila kun validointi on toteutettu
+    var OPSTILAT = ['luonnos', 'valmis', /*'julkaistu',*/ 'poistettu'];
+    var POHJATILAT = ['luonnos', 'valmis', 'poistettu'];
+
+    function getTilat(isPohja, current) {
+      var tilat = isPohja ? POHJATILAT : OPSTILAT;
+      switch(current) {
+        case 'valmis':
+          return isPohja ? _.without(tilat, 'luonnos') : tilat;
+        case 'julkaistu':
+          return _.without(tilat, 'luonnos', 'valmis');
+        default:
+          return tilat;
+      }
+    }
+
     $scope.appliedClasses = function () {
       var classes = {editable: $scope.editable};
       classes[$scope.status] = true;
@@ -80,17 +96,9 @@ ylopsApp
         return;
       }
 
-      // TODO tilat backendiltä?
-      var tilat = ['poistettu'];
-      if ($scope.status === 'luonnos') {
-        tilat.unshift('valmis');
-        tilat.unshift('luonnos');
-      } else if ($scope.status === 'valmis') {
-        tilat.unshift('valmis');
-      }
       OpsinTilanvaihto.start({
         currentStatus: $scope.status,
-        mahdollisetTilat: tilat,
+        mahdollisetTilat: getTilat(isPohja, $scope.status),
         isPohja: isPohja
       }, function (newStatus) {
         OpsinTila.save($scope.model, newStatus, function(res) {

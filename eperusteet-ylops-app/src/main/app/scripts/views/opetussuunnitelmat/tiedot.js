@@ -35,14 +35,30 @@ ylopsApp
   $scope.koulutoimijalista = [];
   $scope.koululista = [];
   $scope.eiKoulujaVaroitus = false;
-
+  $scope.nimiOrder = function(vlk) {
+    return Utils.sort(vlk.vuosiluokkakokonaisuus);
+  };
+  //$scope.vuosiluokkakokonaisuudet = [];
+  $scope.dateOptions = {
+    'year-format': 'yy',
+    'starting-day': 1
+  };
+  $scope.format = 'd.M.yyyy';
+  $scope.kalenteriTilat = {};
+  $scope.open = function ($event) {
+    $event.stopPropagation();
+    $event.preventDefault();
+    $scope.kalenteriTilat.paatospaivamaaraButton = true;
+  };
 
   $scope.hasRequiredFields = function () {
     var model = $scope.editableModel;
-    return Utils.hasLocalizedText(model.nimi) &&
-           model.kunnat && model.kunnat.length > 0 &&
-           model.koulutoimijat && model.koulutoimijat.length > 0 &&
-           _.any(_.values($scope.julkaisukielet));
+    var nimiOk = Utils.hasLocalizedText(model.nimi);
+    var organisaatiotOk = model.kunnat && model.kunnat.length > 0 && model.koulutoimijat && model.koulutoimijat.length > 0;
+    var julkaisukieletOk = _.any(_.values($scope.julkaisukielet));
+    var vlkOk = !$scope.luonnissa || model.koulutustyyppi !== 'koulutustyyppi_16' ||
+      _(model.vuosiluokkakokonaisuudet).filter({valittu: true}).size() > 0;
+    return nimiOk && organisaatiotOk && julkaisukieletOk && vlkOk;
   };
 
   function mapKunnat(lista) {
@@ -81,14 +97,32 @@ ylopsApp
   // niin haetaan pohja opetussuunnitelmasta kunnat ja organisaatiot
   if ($scope.luonnissa && $scope.editableModel._pohja) {
     OpetussuunnitelmaCRUD.get({opsId: $scope.editableModel._pohja}, function (res) {
+      $scope.$$pohja = res;
       $scope.pohjanNimi = res.nimi;
       $scope.editableModel.kunnat = res.kunnat;
       $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
       $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
+      $scope.editableModel.vuosiluokkakokonaisuudet = res.vuosiluokkakokonaisuudet;
+      $scope.editableModel.koulutustyyppi = res.koulutustyyppi;
     }, Notifikaatiot.serverCb);
+    // Jos luonnissa ja ei pohja ops:ia, haetaan vuosiluokkakokonaisuudet virkailijan pohjasta
+  } else if ($scope.luonnissa && !$scope.editableModel._pohja) {
+    OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'}, function(pohjat) {
+      // TODO: pitää varmaankin ottaa huomioon mitä ops:ia ollaan luomassa. (Esi-, lisä vai perusopetus)
+      var aktiivinenPohja = _.find(pohjat, {tila: 'valmis', koulutustyyppi: 'koulutustyyppi_16'});
+      OpetussuunnitelmaCRUD.get({opsId: aktiivinenPohja.id}, function (ops) {
+        $scope.editableModel.vuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
+      });
+    });
   }
 
   $scope.kieliOrderFn = Kieli.orderFn;
+
+  function fixTimefield(field) {
+    if (typeof $scope.editableModel[field] === 'number') {
+      $scope.editableModel[field] = new Date($scope.editableModel[field]);
+    }
+  }
 
   function fetch(notify) {
     OpsService.refetch(function (res) {
@@ -96,6 +130,7 @@ ylopsApp
       $scope.editableModel = res;
       $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
       $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
+      fixTimefield('paatospaivamaara');
       if (notify) {
         $rootScope.$broadcast('rakenne:updated');
       }
@@ -125,7 +160,10 @@ ylopsApp
         return $scope.julkaisukielet[koodi];
       }).value();
       $scope.editableModel.organisaatiot = $scope.editableModel.koulutoimijat.concat($scope.editableModel.koulut);
+      delete $scope.editableModel.tekstit;
+      delete $scope.editableModel.oppiaineet;
       if ($scope.luonnissa) {
+        $scope.editableModel.vuosiluokkakokonaisuudet = _.remove($scope.editableModel.vuosiluokkakokonaisuudet, {valittu: true});
         OpetussuunnitelmaCRUD.save({}, $scope.editableModel, successCb, Notifikaatiot.serverCb);
       } else {
         $scope.editableModel.$save({}, successCb, Notifikaatiot.serverCb);
@@ -256,4 +294,24 @@ ylopsApp
     }
   };
 
-});
+})
+
+.directive('datepickerPopup', ['datepickerPopupConfig', 'dateParser', 'dateFilter', function (datepickerPopupConfig, dateParser, dateFilter) {
+    return {
+        'restrict': 'A',
+        'require': '^ngModel',
+        'link': function ($scope, element, attrs, ngModel) {
+            var dateFormat;
+
+            //*** Temp fix for Angular 1.3 support [#2659](https://github.com/angular-ui/bootstrap/issues/2659)
+            attrs.$observe('datepickerPopup', function(value) {
+                dateFormat = value || datepickerPopupConfig.datepickerPopup;
+                ngModel.$render();
+            });
+
+            ngModel.$formatters.push(function (value) {
+                return ngModel.$isEmpty(value) ? value : dateFilter(value, dateFormat);
+            });
+        }
+    };
+}]);
