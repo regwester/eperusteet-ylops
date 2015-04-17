@@ -20,11 +20,13 @@
               ng-change="pohja.active = '1'">
         <option value="">{{'valitse-pohja' | kaanna}}</option>
       </select>
+      <ohje teksti="kayta-pohjaa-info"></ohje>
       <br/>
       <label>
         <input type="radio" ng-model="pohja.active" value="0">
         <span kaanna="'tyhja-pohja'"></span>
       </label>
+      <ohje teksti="tyhja-pohja-info"></ohje>
       <br/>
       <button class="btn btn-primary luo-nappi" ng-click="addNew(pohja.model)" ng-disabled="pohja.active === '1' && !pohja.model"
               kaanna="'luo-projekti'"></button>

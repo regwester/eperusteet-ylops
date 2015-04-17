@@ -38,7 +38,7 @@ ylopsApp
   $scope.nimiOrder = function(vlk) {
     return Utils.sort(vlk.vuosiluokkakokonaisuus);
   };
-  //$scope.vuosiluokkakokonaisuudet = [];
+
   $scope.dateOptions = {
     'year-format': 'yy',
     'starting-day': 1
@@ -49,6 +49,7 @@ ylopsApp
     $event.stopPropagation();
     $event.preventDefault();
     $scope.kalenteriTilat.paatospaivamaaraButton = true;
+
   };
 
   $scope.hasRequiredFields = function () {
