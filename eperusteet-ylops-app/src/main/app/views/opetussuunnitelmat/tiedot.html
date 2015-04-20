@@ -225,21 +225,6 @@
       </div>
     </div>
     
-    <label for="hyvaksymisPvm" class="col-sm-3" kaanna>toimikausi-alku-label</label>
-    <div class="col-sm-9">
-      <span class="input-group">
-        <input type="text" id="hyvaksymisPvm" name="hyvaksymisPvm" class="form-control" datepicker-popup="{{format}}"
-               ng-model="projekti.toimikausiAlku" placeholder="{{'anna-hyvaksymis-pvm'| kaanna}}" is-open="hyvaksymisPvmButton"
-               datepicker-options="dateOptions" show-button-bar="false"/>
-        <span class="input-group-btn">
-          <button id="hyvaksymisPvmButton" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-        </span>
-      </span>
-      <p class="alert alert-error" ng-show="perusteprojektiForm.toimikausiForm.toimikausiAlku.$error.dateformatvalidator" kaanna>
-        kelvoton-pvm
-      </p>
-    </div>
-
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label for="paatospaivamaara"><span kaanna="'paatospaivamaara'"></span></label>
