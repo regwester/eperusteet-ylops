@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -88,13 +89,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private LokalisoituTeksti kuvaus;
-
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @Getter
-    @Setter
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    private LokalisoituTeksti yhteystiedot;
 
     @Enumerated(value = EnumType.STRING)
     @NotNull

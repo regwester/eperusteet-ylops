@@ -120,7 +120,6 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         String kuvaus = uniikkiString();
         ops.setKuvaus(lt(kuvaus));
         String yhteystiedot = uniikkiString();
-        ops.setYhteystiedot(lt(yhteystiedot));
         ops.setTila(Tila.POISTETTU);
         Date pvm = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR) - 1, Calendar.MARCH, 12).getTime();
         ops.setPaatospaivamaara(pvm);
@@ -128,7 +127,6 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertEquals(kuvaus, ops.getKuvaus().get(Kieli.FI));
-        assertEquals(yhteystiedot, ops.getYhteystiedot().get(Kieli.FI));
         assertEquals(vanhaTila, ops.getTila());
         assertEquals(pvm, ops.getPaatospaivamaara());
     }
