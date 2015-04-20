@@ -52,7 +52,8 @@ ylopsApp
   };
 })
 
-.controller('StatusbadgeController', function ($scope, OpsinTilanvaihto, OpsinTila, Notifikaatiot, OpetussuunnitelmaOikeudetService) {
+.controller('StatusbadgeController', function ($scope, $state, OpsinTilanvaihto, OpsinTila, Notifikaatiot,
+                                               OpetussuunnitelmaOikeudetService) {
     $scope.iconMapping = {
       luonnos: 'pencil',
       laadinta: 'pencil',
@@ -104,6 +105,7 @@ ylopsApp
         OpsinTila.save($scope.model, newStatus, function(res) {
           Notifikaatiot.onnistui('tallennettu-ok');
           $scope.status = res.tila;
+          $state.go($state.current, {}, {reload: true});
         });
       });
     };
