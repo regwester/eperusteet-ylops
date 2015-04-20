@@ -32,7 +32,10 @@ ylopsApp
         ('' + item.id === '' + $stateParams.oppiaineId);
     } else if (type === 'vlk') {
       return $state.is('root.opetussuunnitelmat.yksi.esikatselu.vuosiluokkakokonaisuus') &&
-        ('' + item.id === '' + $stateParams.vlkId);
+        ('' + item.id === '' + $stateParams.vlkId) ||
+        $state.is('root.opetussuunnitelmat.yksi.esikatselu.oppiaine') &&
+        ('' + item.id === '' + $stateParams.oppiaineId) &&
+        (!$stateParams.vuosiluokka || $stateParams.vuosiluokka && item.vuosiluokka === $stateParams.vuosiluokka);
     }
     return $state.is('root.opetussuunnitelmat.yksi.esikatselu.tekstikappale') &&
       ('' + item.id === '' + $stateParams.tekstikappaleId);
@@ -201,7 +204,8 @@ ylopsApp
         $scope.vlkMenu.push(item);
         _.each(vl.oppiaineet, function (oa) {
           item = _.clone(oa);
-          item.depth += 2;
+          item.depth = 2;
+          item.vuosiluokka = vl.vuosiluokka;
           item.url = $state.href('root.opetussuunnitelmat.yksi.esikatselu.oppiaine', {
             oppiaineId: oa.id,
             oppiaineTyyppi: oa.tyyppi,
@@ -282,11 +286,36 @@ ylopsApp
     });
     return _.values(vuosiluokat);
   }
+
+  function getFirstVuosiluokka() {
+    return _.first(_.sortBy($scope.vuosiluokat, 'vuosiluokka'));
+  }
   $scope.vuosiluokat = getVuosiluokat();
 
+  function setActiveVuosiluokka() {
+    $scope.activeVuosiluokka = _.find($scope.vuosiluokat, function (vl) {
+      return $stateParams.vuosiluokka === vl.vuosiluokka;
+    });
+    if (!$scope.activeVuosiluokka) {
+      $scope.activeVuosiluokka = getFirstVuosiluokka();
+    }
+  }
+  setActiveVuosiluokka();
+
+  $scope.$on('$stateChangeSuccess', setActiveVuosiluokka);
+
+  $scope.vuosiluokkaFilter = function (item) {
+    return item === $scope.activeVuosiluokka;
+  };
+
+  $scope.vlkFilter = function (vlk) {
+    return !_.isEmpty(_.filter(vlk.vuosiluokat, function (vl) {
+      return $scope.activeVuosiluokka && vl.vuosiluokka === $scope.activeVuosiluokka.vuosiluokka;
+    }));
+  };
+
   $scope.isActive = function (vuosiluokka) {
-    console.log($stateParams.vuosiluokka, vuosiluokka);
-    return $stateParams.vuosiluokka === vuosiluokka.vuosiluokka;
+    return $scope.activeVuosiluokka === vuosiluokka;
   };
 
   $scope.vlkSort = function (oppiaineVlk) {

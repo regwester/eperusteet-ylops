@@ -1,5 +1,5 @@
 <h1 kaanna="oppiaine.nimi"></h1>
-<div class="vuosiluokka-valinta">
+<div ng-if="vuosiluokat.length > 0" class="vuosiluokka-valinta">
   <span kaanna="'vuosiluokka'"></span>
   <ul>
     <li ng-repeat="vuosiluokka in vuosiluokat | orderBy:'vuosiluokka'" ng-class="{active: isActive(vuosiluokka)}">
@@ -10,7 +10,9 @@
 
 <div esitys-teksti="oppiaine.tehtava" esitys-peruste="perusteOppiaine.tehtava" show-peruste="true"></div>
 
-<div ng-repeat="vlk in oppiaine.vuosiluokkakokonaisuudet | orderBy:vlkSort track by vlk._vuosiluokkakokonaisuus">
+<p class="vuosiluokkailmoitus alert alert-info" ng-if="!activeVuosiluokka" kaanna="'oppiaineella-ei-vuosiluokkasisaltoja'"></p>
+
+<div ng-repeat="vlk in oppiaine.vuosiluokkakokonaisuudet | filter:vlkFilter | orderBy:vlkSort track by vlk._vuosiluokkakokonaisuus">
   <h2 kaanna="vlkMap[vlk._vuosiluokkakokonaisuus].vuosiluokkakokonaisuus.nimi"></h2>
 
   <div ng-if="oppiaine.tyyppi === 'yhteinen'">
@@ -34,7 +36,7 @@
 
   <h2 ng-if="vlk.vuosiluokat.length > 0" kaanna="'tavoitteet-ja-sisallot-vuosiluokittain'"></h2>
 
-  <div ng-repeat="vuosiluokka in vlk.vuosiluokat | orderBy:'vuosiluokka' track by vuosiluokka.vuosiluokka">
+  <div ng-repeat="vuosiluokka in vlk.vuosiluokat | filter:vuosiluokkaFilter | orderBy:'vuosiluokka' track by vuosiluokka.vuosiluokka">
     <h3 ng-bind="('vuosiluokka' | kaanna) + ' ' + vuosiluokka.$numero"></h3>
 
     <div ng-if="oppiaine.tyyppi === 'yhteinen'">

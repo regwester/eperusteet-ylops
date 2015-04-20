@@ -44,7 +44,8 @@
 
         <ul ng-if="isState('oppiaineittain')" class="ek-menu">
           <li ng-repeat="oppiaine in oppiaineMenu track by $index" ng-class="{'esitys-menu-oppimaara': oppiaine.depth > 0, active: oppiaine.$active, header: oppiaine.$header}">
-            <a ng-if="oppiaine.nimi" ui-sref="root.opetussuunnitelmat.yksi.esikatselu.oppiaine({oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi})"
+            <a ng-if="oppiaine.nimi"
+               ui-sref="root.opetussuunnitelmat.yksi.esikatselu.oppiaine({oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi, vuosiluokka: null})"
                kaanna="oppiaine.nimi"></a>
             <a ng-if="oppiaine.label" kaanna="oppiaine.label" ng-class="{active: oppiaine.$active, header: oppiaine.$header}"></a>
           </li>
