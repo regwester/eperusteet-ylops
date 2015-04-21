@@ -16,8 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -116,5 +119,21 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
             root = root.getVanhempi();
         }
         return root;
+    }
+
+    static public void validoi(TekstiKappaleViite viite, Set<Kieli> julkaisukielet) {
+        if (viite.getLapset() == null) {
+            return;
+        }
+
+        for (TekstiKappaleViite lapsi : viite.getLapset()) {
+            if (lapsi.getTekstiKappale() != null) {
+                LokalisoituTeksti.validoi(lapsi.getTekstiKappale().getNimi(), julkaisukielet);
+            }
+            else {
+                throw new ValidointiException("tekstikappaleella-ei-lainkaan-sisaltoa");
+            }
+            validoi(lapsi, julkaisukielet);
+        }
     }
 }

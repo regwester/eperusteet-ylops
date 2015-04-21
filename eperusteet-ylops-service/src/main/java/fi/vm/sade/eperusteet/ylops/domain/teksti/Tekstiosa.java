@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.io.Serializable;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -74,4 +75,17 @@ public class Tekstiosa implements Serializable {
         return new Tekstiosa(other);
     }
 
+    public static void validoi(Tekstiosa osa, Set<Kieli> kielet) {
+        validoiOtsikko(osa, kielet);
+        validoiTeksti(osa, kielet);
+    }
+
+
+    public static void validoiOtsikko(Tekstiosa osa, Set<Kieli> kielet) {
+        LokalisoituTeksti.validoi(osa.getOtsikko(), kielet);
+    }
+
+    public static void validoiTeksti(Tekstiosa osa, Set<Kieli> kielet) {
+        LokalisoituTeksti.validoi(osa.getTeksti(), kielet);
+    }
 }

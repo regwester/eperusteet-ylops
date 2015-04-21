@@ -18,6 +18,8 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import java.util.HashSet;
 import java.util.Map;
@@ -151,5 +153,20 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
         return ovk;
     }
 
+    public static void validoi(Oppiaineenvuosiluokkakokonaisuus ovlk, Set<Kieli> kielet) {
+        Tekstiosa.validoiTeksti(ovlk.getArviointi(), kielet);
+        Tekstiosa.validoiTeksti(ovlk.getOhjaus(), kielet);
+        Tekstiosa.validoiTeksti(ovlk.getTehtava(), kielet);
+        Tekstiosa.validoiTeksti(ovlk.getTyotavat(), kielet);
+        
+        for (Oppiaineenvuosiluokka ovl : ovlk.getVuosiluokat()) {
+            for (Opetuksentavoite tavoite : ovl.getTavoitteet()) {
+                LokalisoituTeksti.validoi(tavoite.getTavoite(), kielet);
+            }
 
+            for (Keskeinensisaltoalue sisaltoalue : ovl.getSisaltoalueet()) {
+                LokalisoituTeksti.validoi(sisaltoalue.getKuvaus(), kielet);
+            }
+        }
+    }
 }

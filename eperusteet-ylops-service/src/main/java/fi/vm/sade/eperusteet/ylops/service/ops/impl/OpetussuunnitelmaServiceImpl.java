@@ -27,7 +27,12 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -52,6 +57,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRep
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
@@ -83,7 +89,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import java.util.regex.Pattern;
+import java.util.HashSet;
+import java.util.UUID;
 
 /**
  *
@@ -413,23 +420,71 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
+    private void validoiOpetussuunnitelma(Opetussuunnitelma ops) {
+        Set<Kieli> julkaisukielet = ops.getJulkaisukielet();
+        LokalisoituTeksti.validoi(ops.getNimi(), julkaisukielet);
+        if (ops.getPerusteenDiaarinumero().isEmpty()) {
+            throw new ValidointiException("opsilla-ei-perusteen-diaarinumeroa");
+        }
+
+        TekstiKappaleViite.validoi(ops.getTekstit(), julkaisukielet);
+        ops.getVuosiluokkakokonaisuudet().stream()
+                .filter(vlk -> vlk.isOma())
+                .map(vlk -> vlk.getVuosiluokkakokonaisuus())
+                .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(vlk, julkaisukielet));
+
+
+        Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        ops.getOppiaineet().stream()
+                .filter(oa -> oa.isOma())
+                .map(oa -> oa.getOppiaine())
+                .forEach(oa -> {
+                    Oppiaine.validoi(oa, julkaisukielet);
+                    PerusteOppiaine poppiaine = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
+                    Set<UUID> PerusteenTavoitteet = new HashSet<>();
+
+                    poppiaine.getVuosiluokkakokonaisuudet().stream()
+                            .forEach(vlk -> vlk.getTavoitteet().stream()
+                                .forEach(tavoite -> PerusteenTavoitteet.add(tavoite.getTunniste())));
+
+                    Set<UUID> OpsinTavoitteet = oa.getVuosiluokkakokonaisuudet().stream()
+                            .flatMap(vlk -> vlk.getVuosiluokat().stream())
+                            .map(ovlk -> ovlk.getTavoitteet())
+                            .flatMap(tavoitteet -> tavoitteet.stream())
+                            .map(tavoite -> tavoite.getTunniste())
+                            .collect(Collectors.toSet());
+
+                    OpsinTavoitteet.equals(PerusteenTavoitteet);
+
+                    for (Oppiaine om : oa.getOppimaarat()) {
+                        Oppiaine.validoi(oa, julkaisukielet);
+                    }
+                });
+    }
+
     @Override
     public OpetussuunnitelmaDto updateTila(@P("id") Long id, Tila tila) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
-        // Sallitaan tilasiirtymät vain yhteen suuntaan (paitsi ops valmis->luonnos)
-        if (tila.ordinal() > ops.getTila().ordinal() ||
-            (ops.getTyyppi() == Tyyppi.OPS && tila == Tila.LUONNOS && ops.getTila() == Tila.VALMIS)) {
+        if (ops.getTila().mahdollisetSiirtymat(ops.getTyyppi() == Tyyppi.POHJA).contains(tila)) {
+            if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU || tila == Tila.VALMIS)) {
+                try {
+                    validoiOpetussuunnitelma(ops);
+                }
+                catch (ValidointiException e) {
+                    throw new BusinessRuleViolationException(e.getMessage()); // TODO vaihda kunnon hallintaan
+                }
+            }
+
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
                 // Arkistoidaan vanhat valmiit pohjat
                 List<Opetussuunnitelma> pohjat = repository.findAllByTyyppiAndTilaAndKoulutustyyppi(Tyyppi.POHJA, Tila.VALMIS, ops.getKoulutustyyppi());
-                pohjat.stream()
-                        .filter(pohja -> pohja.getTila() == Tila.VALMIS)
-                        .forEach(pohja -> updateTila(pohja.getId(), Tila.POISTETTU));
+                for (Opetussuunnitelma pohja : pohjat) {
+                    pohja.setTila(Tila.POISTETTU);
+                }
             }
 
-            // TODO opsin validointi kun julkaistaan
             ops.setTila(tila);
             ops = repository.save(ops);
         }

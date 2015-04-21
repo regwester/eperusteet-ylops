@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -145,6 +146,11 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
 
     public static Vuosiluokkakokonaisuus copyOf(Vuosiluokkakokonaisuus vuosiluokkakokonaisuus) {
         return new Vuosiluokkakokonaisuus(vuosiluokkakokonaisuus);
+    }
+
+    public static void validoi(Vuosiluokkakokonaisuus vlk, Set<Kieli> kielet) {
+        LokalisoituTeksti.validoi(vlk.getNimi(), kielet);
+        LokalisoituTeksti.validoi(vlk.getTehtava() != null ? vlk.getTehtava().getOtsikko() : null, kielet);
     }
 
 }

@@ -15,20 +15,38 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
-import java.util.stream.Stream;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  *
  * @author mikkom
  */
 public enum Tila {
-
-    LUONNOS("luonnos"),
-    VALMIS("valmis"),
-    JULKAISTU("julkaistu"),
-    POISTETTU("poistettu");
+    LUONNOS("luonnos") {
+        @Override
+        public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
+            return EnumSet.of(VALMIS, POISTETTU);
+        }
+    },
+    VALMIS("valmis") {
+        @Override
+        public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
+            return isPohja ? EnumSet.noneOf(Tila.class) : EnumSet.of(LUONNOS, POISTETTU, JULKAISTU);
+        }
+    },
+    POISTETTU("poistettu") {
+        @Override
+        public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
+            return EnumSet.of(LUONNOS, POISTETTU);
+        }
+    },
+    JULKAISTU("julkaistu") {
+        @Override
+        public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
+            return EnumSet.noneOf(null);
+        }
+    };
 
     private final String tila;
 
@@ -36,4 +54,12 @@ public enum Tila {
 
     @Override
     public String toString() { return tila; }
+
+    public Set<Tila> mahdollisetSiirtymat() {
+        return mahdollisetSiirtymat(false);
+    }
+
+    public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
+        return EnumSet.noneOf(Tila.class);
+    }
 }

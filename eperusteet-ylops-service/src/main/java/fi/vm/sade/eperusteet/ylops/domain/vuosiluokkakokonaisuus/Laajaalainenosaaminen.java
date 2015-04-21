@@ -73,6 +73,5 @@ public class Laajaalainenosaaminen extends AbstractReferenceableEntity {
             throw new IllegalStateException("Vuosiluokkakokonaisuuteen kuulumista ei voi muuttaa");
         }
     }
-
-
+    
 }

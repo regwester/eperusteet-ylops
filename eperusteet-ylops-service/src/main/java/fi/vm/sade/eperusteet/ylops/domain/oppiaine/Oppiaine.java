@@ -17,6 +17,8 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -320,5 +322,17 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         }
 
         return o;
+    }
+
+    static public void validoi(Oppiaine oa, Set<Kieli> kielet) {
+        LokalisoituTeksti.validoi(oa.getNimi(), kielet);
+
+        for (Oppiaineenvuosiluokkakokonaisuus ovlk : oa.getVuosiluokkakokonaisuudet()) {
+            Oppiaineenvuosiluokkakokonaisuus.validoi(ovlk, kielet);
+        }
+
+        for (Oppiaine om : oa.getOppimaarat()) {
+            validoi(om, kielet);
+        }
     }
 }
