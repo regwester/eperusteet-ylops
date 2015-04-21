@@ -17,10 +17,10 @@
   <div ng-if="!(editMode || luonnissa)" class="data-container">
     <div class="row">
       <div class="col-sm-3 formfield-label">
-        <label for="ops-field-nimi-readonly" kaanna="'koulutustyyppi'"></label>
+        <label for="ops-field-koulutustyyppi-readonly" kaanna="'koulutustyyppi'"></label>
       </div>
       <div class="col-sm-9 formfield-data viewmode">
-        <div id="ops-field-nimi-readonly" ng-bind="model.koulutustyyppi | kaanna"></div>
+        <div id="ops-field-koulutustyyppi-readonly" ng-bind="model.koulutustyyppi | kaanna"></div>
       </div>
     </div>
 
@@ -42,6 +42,24 @@
       </div>
       <div class="col-sm-9 formfield-data viewmode">
         <div id="ops-field-nimi-readonly" ng-bind="model.nimi | kaanna"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-pohja-readonly" kaanna="'pohja-ops'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div id="ops-field-pohja-readonly" ng-bind="model.pohja.nimi | kaanna"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label for="ops-field-diaarinumero-readonly" kaanna="'peruste'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div id="ops-field-diaarinumero-readonly" ng-bind="model.perusteenDiaarinumero"></div>
       </div>
     </div>
 

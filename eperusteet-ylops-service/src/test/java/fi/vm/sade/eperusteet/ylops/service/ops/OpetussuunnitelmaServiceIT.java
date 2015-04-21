@@ -119,7 +119,6 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         Tila vanhaTila = ops.getTila();
         String kuvaus = uniikkiString();
         ops.setKuvaus(lt(kuvaus));
-        String yhteystiedot = uniikkiString();
         ops.setTila(Tila.POISTETTU);
         Date pvm = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR) - 1, Calendar.MARCH, 12).getTime();
         ops.setPaatospaivamaara(pvm);
