@@ -30,7 +30,7 @@
       </div>
       <div class="col-sm-9 formfield-data viewmode">
         <span ng-repeat="vlk in model.vuosiluokkakokonaisuudet | orderBy:nimiOrder">
-          <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span><span ng-show="!$last">, </span>
+          <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span><span ng-show="!$last">,&nbsp;</span>
         </span>
       </div>
     </div>
