@@ -95,45 +95,45 @@ ylopsApp
   };
 })
 
-  .service('OpetussuunnitelmaOikeudetService', function ($rootScope,
-                                                         $stateParams,
-                                                         OpetussuunnitelmaOikeudet,
-                                                         OpsService,
-                                                         Notifikaatiot) {
-    var kayttajaOikeudet = null;
-    var opsOikeudet;
+.service('OpetussuunnitelmaOikeudetService', function ($rootScope,
+                                                       $stateParams,
+                                                       OpetussuunnitelmaOikeudet,
+                                                       OpsService,
+                                                       Notifikaatiot) {
+  var kayttajaOikeudet = null;
+  var opsOikeudet;
 
-    function fetch(stateParams) {
-      if (stateParams.id === 'uusi') {
-        return query();
-      }
-
-      var deferred = OpetussuunnitelmaOikeudet.get({opsId: stateParams.id}, function (res) {
-        opsOikeudet = res;
-      }, Notifikaatiot.serverCb);
-      return deferred.$promise;
+  function fetch(stateParams) {
+    if (stateParams.id === 'uusi') {
+      return query();
     }
 
-    function get() {
-      return _.clone(opsOikeudet);
-    }
+    var deferred = OpetussuunnitelmaOikeudet.get({opsId: stateParams.id}, function (res) {
+      opsOikeudet = res;
+    }, Notifikaatiot.serverCb);
+    return deferred.$promise;
+  }
 
-    function query() {
-      if (!kayttajaOikeudet) {
-        kayttajaOikeudet = OpetussuunnitelmaOikeudet.query();
-      }
-      return kayttajaOikeudet.$promise;
-    }
+  function get() {
+    return _.clone(opsOikeudet);
+  }
 
-    function onkoOikeudet(target, permission, kayttaja) {
-      var oikeudet = kayttaja ? kayttajaOikeudet : opsOikeudet;
-      return oikeudet ? _.contains(oikeudet[target], permission) : false;
+  function query() {
+    if (!kayttajaOikeudet) {
+      kayttajaOikeudet = OpetussuunnitelmaOikeudet.query();
     }
+    return kayttajaOikeudet.$promise;
+  }
 
-    return {
-      fetch: fetch,
-      get: get,
-      query: query,
-      onkoOikeudet: onkoOikeudet
-    };
-  });
+  function onkoOikeudet(target, permission, kayttaja) {
+    var oikeudet = kayttaja ? kayttajaOikeudet : opsOikeudet;
+    return oikeudet ? _.contains(oikeudet[target], permission) : false;
+  }
+
+  return {
+    fetch: fetch,
+    get: get,
+    query: query,
+    onkoOikeudet: onkoOikeudet
+  };
+});

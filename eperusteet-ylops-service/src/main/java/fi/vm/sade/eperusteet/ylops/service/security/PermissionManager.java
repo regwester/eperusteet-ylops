@@ -71,7 +71,8 @@ public class PermissionManager {
         MUOKKAUS("muokkaus"),
         KOMMENTOINTI("kommentointi"),
         LUONTI("luonti"),
-        POISTO("poisto");
+        POISTO("poisto"),
+        TILANVAIHTO("tilanvaihto");
 
         private final String permission;
 
@@ -94,14 +95,16 @@ public class PermissionManager {
     public boolean hasPermission(Authentication authentication, Serializable targetId, TargetType target,
         Permission perm) {
 
+        Pair<Tyyppi, Tila> tyyppiJaTila =
+            targetId != null ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId) : null;
+
         // Salli valmiiden pohjien lukeminen kaikilta joilla on CRUD-oikeus
         if (perm == Permission.LUKU && targetId != null &&
             hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.ANY)) {
-            Pair<Tyyppi, Tila> tt = opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId);
-            if (tt == null) {
+            if (tyyppiJaTila == null) {
                 throw new NotExistsException();
             }
-            if (tt.getFirst() == Tyyppi.POHJA && tt.getSecond() == Tila.VALMIS) {
+            if (tyyppiJaTila.getFirst() == Tyyppi.POHJA && tyyppiJaTila.getSecond() == Tila.VALMIS) {
                 return true;
             }
         }
@@ -116,6 +119,7 @@ public class PermissionManager {
             case POISTO:
                 permissions = EnumSet.of(RolePermission.CRUD);
                 break;
+            case TILANVAIHTO:
             case MUOKKAUS:
                 permissions = EnumSet.of(RolePermission.CRUD, RolePermission.READ_UPDATE);
                 break;
@@ -128,6 +132,12 @@ public class PermissionManager {
             case POHJA:
             case OPETUSSUUNNITELMA:
                 if (targetId != null) {
+                    if (tyyppiJaTila.getSecond() != Tila.LUONNOS &&
+                        (perm == Permission.LUONTI || perm == Permission.POISTO || perm == Permission.MUOKKAUS)) {
+                        // OPSin tai pohjan muokkaus (tilanvaihtoa lukuunottamatta) sallitaan vain luonnos-tilassa
+                        return false;
+                    }
+
                     List<String> opsOrganisaatiot = opetussuunnitelmaRepository.findOrganisaatiot((Long) targetId);
                     if (opsOrganisaatiot.isEmpty()) {
                         throw new NotExistsException(MSG_OPS_EI_OLEMASSA);
@@ -202,6 +212,9 @@ public class PermissionManager {
             .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
             .filter(pair -> !CollectionUtil.intersect(pair.getSecond(), organisaatiot).isEmpty())
             .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
+            // Salli OPS:n sisällön muokkaus vain luonnos-tilassa
+            .filter(permission -> ops.getTila() == Tila.LUONNOS ||
+                                  fromRolePermission(RolePermission.READ).contains(permission))
             .collect(Collectors.toSet());
 
         permissionMap.put(TargetType.OPETUSSUUNNITELMA, permissions);
@@ -221,6 +234,7 @@ public class PermissionManager {
             case READ_UPDATE:
                 permissions.add(Permission.LUKU);
                 permissions.add(Permission.MUOKKAUS);
+                permissions.add(Permission.TILANVAIHTO);
             case READ:
                 permissions.add(Permission.LUKU);
                 permissions.add(Permission.KOMMENTOINTI);

@@ -55,7 +55,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'MUOKKAUS')")
     OpetussuunnitelmaDto updateOpetussuunnitelma(@P("ops") OpetussuunnitelmaDto opetussuunnitelmaDto);
 
-    @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'TILANVAIHTO')")
     OpetussuunnitelmaDto updateTila(@P("id") Long id, Tila tila);
 
     @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'POISTO')")

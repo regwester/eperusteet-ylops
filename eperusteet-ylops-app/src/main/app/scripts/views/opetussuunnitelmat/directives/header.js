@@ -33,7 +33,7 @@ ylopsApp
     {state: 'root.pohjat.yksi.tiedot', label: 'pohjan-tiedot', role: 'info'}
   ];
   var OPSLINKIT = [
-    //{state: 'root.opetussuunnitelmat.yksi.esikatselu', label: 'esikatselu', role: 'file'},
+    {state: 'root.opetussuunnitelmat.yksi.esikatselu', label: 'esikatselu', role: 'file'},
     {state: 'root.opetussuunnitelmat.yksi.tiedot', label: 'opsn-tiedot', role: 'info'}
   ];
 

@@ -193,6 +193,7 @@
   "lisaa-muu-uskonto": "Lisää uskonto",
   "lisaa-oppimaara-uskonto": "Lisää uskonto",
   "lisaa-oppimaara-kieli": "Lisää kielitarjontaa",
+  "muu-uskonto":"Muu uskonto",
 
   "pohja": "Pohja",
   "vuosiluokkakokonaisuudet": "Vuosiluokkakokonaisuudet",
@@ -256,6 +257,10 @@
   "paatospaivamaara": "Hyväksymispäivämäärä",
   "anna-paatospaivamaara": "Anna hyväksymispäivämäärä",
   "kelvoton-pvm": "Kelvoton päivämäärä",
+  "oppiaineella-ei-vuosiluokkasisaltoja": "Oppiaineelle ei ole määritetty vuosiluokkakohtaisia sisältöjä.",
+  "opetus": "Opetus",
+  "vuosiluokittain": "Vuosiluokittain",
+  "oppiaineittain": "Oppiaineittain",
 
   "VUOSILUOKAT 1-2_erityispiirteet_ja_tehtavat_info": "Mitkä ovat vuosiluokkakokonaisuuden 1-2 erityispiirteet ja tehtävät (perusteiden kuvauksia voidaan hyödyntää sellaisenaan) sekä niihin liittyvät paikalliset painotukset ja miten tehtävän toteutumista seurataan ja kehitetään?",
   "VUOSILUOKAT 1-2_siirtyma_aikaisempi_nykyinen_info": "Miten tuetaan oppilaiden siirtymistä esiopetuksesta perusopetukseen? Toimintatavat siirtymävaiheessa. Tarvittava yhteistyö, työnjako ja vastuut.",

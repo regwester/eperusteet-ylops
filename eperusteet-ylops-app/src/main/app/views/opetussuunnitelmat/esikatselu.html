@@ -6,28 +6,55 @@
 <div class="row">
 
   <div class="col-md-3 esikatselu-menu">
-    <h1 kaanna="'esikatselu'"></h1>
 
-    <ul>
-      <li ng-repeat="item in texttree | filter:{depth: 0}">
-        <a ng-href="{{item.url}}" kaanna="item.label" ng-style="{'padding-left': item.depth*10}"></a>
-      </li>
-    </ul>
+    <div class="list-group">
+      <div class="list-group-item menu-header">
+        <h1 kaanna="'esikatselu'"></h1>
+      </div>
+      <div class="list-group-item">
+        <ul class="ek-menu">
+          <li ng-repeat="item in texttree track by $index" ng-hide="item.$hidden" ng-class="{active: item.$active, header: item.$header}">
+            <a ng-href="{{item.url}}" kaanna="item.label" ng-style="{'margin-left': item.depth*15}"></a>
+          </li>
+        </ul>
+      </div>
+      <div ng-show="model.oppiaineet.length > 0" class="list-group-item menu-header" collapse-toggler="osiot.opetus">
+        <h2 kaanna="'opetus'"></h2>
+      </div>
+      <div ng-show="model.oppiaineet.length > 0" class="list-group-item navi-tabs-outer" collapse="osiot.opetus" ng-class="{collapsed: osiot.opetus}">
+        <ul class="navi-tabs">
+          <li role="presentation" ng-class="{active: isState('vuosiluokittain')}">
+            <a ng-click="switchTab('vuosiluokittain')" kaanna="'vuosiluokittain'"></a>
+          </li>
+          <li role="presentation" ng-class="{active: isState('oppiaineittain')}">
+            <a ng-click="switchTab('oppiaineittain')" kaanna="'oppiaineittain'"></a>
+          </li>
+        </ul>
+      </div>
+      <div ng-show="model.oppiaineet.length > 0" class="list-group-item" collapse="osiot.opetus">
 
-    <ul>
-      <li ng-repeat="vlk in vuosiluokkakokonaisuudet">
-        <a ui-sref="root.opetussuunnitelmat.yksi.esikatselu.vuosiluokkakokonaisuus({vlkId: vlk.vuosiluokkakokonaisuus.id})"
-           kaanna="vlk.vuosiluokkakokonaisuus.nimi"></a>
-      </li>
-    </ul>
+        <ul ng-if="isState('vuosiluokittain')" class="ek-menu">
+          <li ng-repeat="vlk in vlkMenu track by $index" ng-hide="vlk.$hidden"
+              ng-class="{active: vlk.$active, header: vlk.$header, 'vuosiluokka-item': !vlk.url}">
+            <a ng-href="{{vlk.url}}" ng-style="{'margin-left': vlk.depth*15}" ng-click="!vlk.url && toggleVlk($index)">
+              <span kaanna="vlk.nimi"></span>
+              <span ng-if="vlk.numero" ng-bind="' ' + (vlk.numero | kaanna)"></span>
+            </a>
+          </li>
+        </ul>
 
-    <ul>
-      <li ng-repeat="oppiaine in oppiaineMenu" ng-class="{'esitys-menu-oppimaara': oppiaine.$depth > 0}">
-        <a ng-if="oppiaine.nimi" ui-sref="root.opetussuunnitelmat.yksi.esikatselu.oppiaine({oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi})"
-           kaanna="oppiaine.nimi"></a>
-        <span ng-if="oppiaine.label" kaanna="oppiaine.label"></span>
-      </li>
-    </ul>
+        <ul ng-if="isState('oppiaineittain')" class="ek-menu">
+          <li ng-repeat="oppiaine in oppiaineMenu track by $index" ng-class="{'esitys-menu-oppimaara': oppiaine.depth > 0, active: oppiaine.$active, header: oppiaine.$header}">
+            <a ng-if="oppiaine.nimi"
+               ui-sref="root.opetussuunnitelmat.yksi.esikatselu.oppiaine({oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi, vuosiluokka: null})"
+               kaanna="oppiaine.nimi"></a>
+            <a ng-if="oppiaine.label" kaanna="oppiaine.label" ng-class="{active: oppiaine.$active, header: oppiaine.$header}"></a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
 
   </div>
 

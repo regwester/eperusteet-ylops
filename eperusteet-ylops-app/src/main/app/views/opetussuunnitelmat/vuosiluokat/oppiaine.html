@@ -5,7 +5,7 @@
 </div>
 <h2 ng-bind="oppiaine.nimi | kaanna"></h2>
 
-<div ng-if="isEditable()">
+<div ng-if="oppiaine.oma && isEditable()">
   <button ng-if="valitseOppimaara" class="btn btn-default pull-right" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="$onKieliTaiUskonto" class="btn btn-default pull-right" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"
