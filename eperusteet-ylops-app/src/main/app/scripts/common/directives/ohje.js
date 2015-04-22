@@ -31,7 +31,7 @@
  * otsikko: optional
  */
 angular.module('ylopsApp')
-  .directive('ohje', function ($timeout, $compile, $document) {
+  .directive('ohje', function ($rootScope, $timeout, $compile, $document) {
     return {
       templateUrl: 'views/common/directives/ohje.html',
       restrict: 'EA',
@@ -69,6 +69,12 @@ angular.module('ylopsApp')
           if (!scope.showing && !opening) {
             return;
           }
+
+          if (opening) {
+            console.log('closing all');
+            $rootScope.$broadcast('ohje:closeAll');
+          }
+
           timer = $timeout(function () {
             el.trigger(opening ? 'show' : 'hide');
             scope.showing = opening;
