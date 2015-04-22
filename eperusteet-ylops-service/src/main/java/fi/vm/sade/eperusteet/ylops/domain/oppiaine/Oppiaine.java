@@ -331,8 +331,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
             Oppiaineenvuosiluokkakokonaisuus.validoi(ovlk, kielet);
         }
 
-        for (Oppiaine om : oa.getOppimaarat()) {
-            validoi(om, kielet);
+        if (oa.getOppimaarat() != null) {
+            for (Oppiaine om : oa.getOppimaarat()) {
+                validoi(om, kielet);
+            }
         }
     }
 }

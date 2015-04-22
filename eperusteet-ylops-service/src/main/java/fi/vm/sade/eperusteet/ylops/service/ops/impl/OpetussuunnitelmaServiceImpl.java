@@ -433,7 +433,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .map(vlk -> vlk.getVuosiluokkakokonaisuus())
                 .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(vlk, julkaisukielet));
 
-
         Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
         ops.getOppiaineet().stream()
                 .filter(oa -> oa.isOma())
@@ -454,10 +453,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                             .map(tavoite -> tavoite.getTunniste())
                             .collect(Collectors.toSet());
 
-                    OpsinTavoitteet.equals(PerusteenTavoitteet);
+                    if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
+                        throw new ValidointiException("opsin-kaikkia-oppiaineita-ei-ole-vuosiluokkaistettu");
+                    }
 
-                    for (Oppiaine om : oa.getOppimaarat()) {
-                        Oppiaine.validoi(oa, julkaisukielet);
+                    if (oa.getOppimaarat() != null) {
+                        for (Oppiaine om : oa.getOppimaarat()) {
+                            Oppiaine.validoi(oa, julkaisukielet);
+                        }
                     }
                 });
     }
