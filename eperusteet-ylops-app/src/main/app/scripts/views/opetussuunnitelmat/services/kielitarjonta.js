@@ -58,7 +58,6 @@ ylopsApp
       }
     }
 
-    $scope.$valittu = {};
     $scope.$type = getType();
     $scope.oppiaine = oppiaine;
     $scope.$kaikki = _.clone(perusteOppiaine.oppimaarat);
@@ -67,6 +66,7 @@ ylopsApp
       $scope.$kaikki.unshift({
         abstrakti: true
       });
+      $scope.$valittu = _.first($scope.$kaikki);
     }
 
     $scope.$concretet = _.reject(perusteOppiaine.oppimaarat, function(om) {

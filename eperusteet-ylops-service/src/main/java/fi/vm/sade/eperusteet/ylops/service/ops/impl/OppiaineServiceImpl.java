@@ -192,7 +192,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine pohjaparent = oppiaineet.findOneByOpsIdAndTunniste(opspohja.getId(), parent.getTunniste());
         Oppiaine uusi = null;
 
-        if (parent.getKoodiArvo().equalsIgnoreCase("KT")) {
+        if (parent.getKoodiArvo().equalsIgnoreCase("KT") && kt.getTunniste() == null) {
             uusi = Oppiaine.copyOf(pohjaparent, false);
             uusi.setNimi(LokalisoituTeksti.of(kt.getOmaNimi().getTekstit()));
             uusi.setKoosteinen(false);
@@ -201,7 +201,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
         else {
             for (Oppiaine om : pohjaparent.getOppimaarat()) {
-                if (om.getTunniste().equals(UUID.fromString(kt.getTunniste()))) {
+                if (om.getTunniste().equals(kt.getTunniste())) {
                     uusi = Oppiaine.copyOf(om);
                     uusi.setNimi(LokalisoituTeksti.of(kt.getOmaNimi().getTekstit()));
                     parent.addOppimaara(oppiaineet.save(uusi));
