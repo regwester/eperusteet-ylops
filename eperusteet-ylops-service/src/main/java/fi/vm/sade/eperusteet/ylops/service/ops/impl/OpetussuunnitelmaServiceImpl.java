@@ -469,12 +469,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         if (ops.getTila().mahdollisetSiirtymat(ops.getTyyppi() == Tyyppi.POHJA).contains(tila)) {
             if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU || tila == Tila.VALMIS)) {
-                try {
-                    validoiOpetussuunnitelma(ops);
-                }
-                catch (ValidointiException e) {
-                    throw new BusinessRuleViolationException(e.getMessage()); // TODO vaihda kunnon hallintaan
-                }
+                validoiOpetussuunnitelma(ops);
             }
 
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {

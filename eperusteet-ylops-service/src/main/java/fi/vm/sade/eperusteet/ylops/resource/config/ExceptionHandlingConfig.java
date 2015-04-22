@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource.config;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
+import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,6 +156,8 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
             map.put("syy", builder.toString());
         } else if (ex instanceof NotExistsException) {
             suppresstrace = true;
+            map.put("syy", ex.getLocalizedMessage());
+        } else if (ex instanceof ValidointiException) {
             map.put("syy", ex.getLocalizedMessage());
         } else if (ex instanceof ServiceException) {
             map.put("syy", ex.getLocalizedMessage());

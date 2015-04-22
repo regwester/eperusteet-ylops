@@ -70,6 +70,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import java.util.Objects;
 
 /**
  * @author mikkom
@@ -187,7 +188,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public OppiaineDto addCopyOppimaara(@P("opsId") Long opsId, Long oppiaineId, KopioOppimaaraDto kt) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+
         Opetussuunnitelma opspohja = ops.getPohja();
+        while (ops.getPohja() != null && !Objects.equals(ops.getPohja().getId(), opspohja.getId())) {
+            opspohja = ops.getPohja();
+        }
+
         Oppiaine parent = oppiaineet.findOne(oppiaineId);
         Oppiaine pohjaparent = oppiaineet.findOneByOpsIdAndTunniste(opspohja.getId(), parent.getTunniste());
         Oppiaine uusi = null;
