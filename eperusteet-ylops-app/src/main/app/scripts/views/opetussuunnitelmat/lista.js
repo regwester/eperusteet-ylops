@@ -50,17 +50,33 @@ ylopsApp
   })
 
   .controller('OpetussuunnitelmatListaController', function ($scope, $state,
-    OpsListaService, Utils, ListaSorter) {
+    OpetussuunnitelmaCRUD, Utils, ListaSorter, Notifikaatiot) {
+
+    $scope.opsMaxLimit = 9999;
+    $scope.opsMinLimit = 7;
 
     $scope.sorter = ListaSorter.init($scope);
     $scope.opsiLista = true;
 
-    $scope.items = OpsListaService.query();
-    $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
+    $scope.items = OpetussuunnitelmaCRUD.query({}, function (res) {
+      $scope.items = _.filter(res, function (item) {
+        return item.tila !== 'poistettu';
+      });
+      $scope.items.$resolved = true;
+    }, Notifikaatiot.serverCb);
 
-    $scope.addNew = function () {
-      $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi'});
+
+
+    $scope.opsLimit = $state.is('root.etusivu') ? $scope.opsMinLimit : $scope.opsMaxLimit;
+
+    $scope.showAll = function() {
+      $scope.opsLimit = $scope.opsMaxLimit;
     };
+
+    $scope.showLess = function() {
+      $scope.opsLimit = $scope.opsMinLimit;
+    };
+
   })
 
   .controller('TiedotteetController', function ($scope) {

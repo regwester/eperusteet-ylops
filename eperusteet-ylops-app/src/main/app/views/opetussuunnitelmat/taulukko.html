@@ -35,7 +35,7 @@
 
   </tr>
   <tr ng-if="!items.$resolved"><td colspan="4"><small-spinner></small-spinner></td></tr>
-  <tr ng-if="items.$resolved" ng-repeat="item in items | filter:{tila:'!poistettu'} | orderBy:sorter.fn:sorter.desc | limitTo:opsLimit">
+  <tr ng-if="items.$resolved" ng-repeat="item in items | orderBy:sorter.fn:sorter.desc | limitTo:opsLimit">
     <td>
       <a ng-if="opsiLista" ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
       <a ng-if="!opsiLista" ui-sref="root.pohjat.yksi({pohjaId: item.id})" ng-bind="item.nimi | kaanna"></a>
@@ -49,5 +49,7 @@
 </table>
 <p ng-if="opsiLista && items.length === 0" kaanna="'ei-opetussuunnitelmia'"></p>
 <p ng-if="!opsiLista && items.length === 0" kaanna="'ei-pohjia'"></p>
-<a class="see-more" ng-if="opsiLista && opsLimit < items.length" ui-sref="root.opetussuunnitelmat.lista" kaanna="'nayta-kaikki'"></a>
-<a class="see-more" ng-if="!opsiLista && opsLimit < items.length" ui-sref="root.pohjat.lista" kaanna="'nayta-kaikki'"></a>
+<a class="see-more" ng-if="opsiLista && opsLimit < items.length" ng-click="showAll()" kaanna="'nayta-kaikki'"></a>
+<a class="see-more" ng-if="opsiLista && opsLimit > opsMinLimit" ng-click="showLess()" kaanna="'nayta-vahemman'"></a>
+<a class="see-more" ng-if="!opsiLista && opsLimit < items.length" ng-click="showAll()" kaanna="'nayta-kaikki'"></a>
+<a class="see-more" ng-if="!opsiLista && opsLimit > opsMinLimit" ng-click="showLess()" kaanna="'nayta-vahemman'"></a>
