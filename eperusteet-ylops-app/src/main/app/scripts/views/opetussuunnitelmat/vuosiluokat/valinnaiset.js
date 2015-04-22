@@ -17,9 +17,9 @@
 'use strict';
 
 ylopsApp
-.controller('ValinnaisetOppiaineetController', function ($scope, vlk, $state, $stateParams, opsModel) {
+.controller('ValinnaisetOppiaineetController', function ($scope, vlk, $state, $stateParams, opsModelVal) {
   $scope.vlk = vlk;
-  $scope.valinnaiset = _(opsModel.oppiaineet).map('oppiaine').filter(function (oppiaine) {
+  $scope.valinnaiset = _(opsModelVal.oppiaineet).map('oppiaine').filter(function (oppiaine) {
     return oppiaine.tyyppi !== 'yhteinen' && _.any(oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
       return opVlk._vuosiluokkakokonaisuus === vlk._tunniste;
     });
