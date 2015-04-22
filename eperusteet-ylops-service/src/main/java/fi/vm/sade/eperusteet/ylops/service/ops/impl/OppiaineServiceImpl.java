@@ -282,6 +282,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
         Oppiaine oppiaine = getOppiaine(opsId, id);
+
+        if (oppiaine.getOppiaine() != null) {
+            throw new BusinessRuleViolationException("Oppimäärää ei voi kopioida");
+        }
+
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
                                             .filter(oa -> !oa.getOppiaine().getId().equals(id))
                                             .collect(Collectors.toSet());

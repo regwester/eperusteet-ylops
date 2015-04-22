@@ -109,6 +109,7 @@ ylopsApp
   $scope.perusteOppiaine = perusteOppiaine;
   $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.oppiaineenVlk = OppiaineService.getOpVlk();
+  console.log($scope.oppiaine);
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
     $scope.oppiaineenVlk = value;
