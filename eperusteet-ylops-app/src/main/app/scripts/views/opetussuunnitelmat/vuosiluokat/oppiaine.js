@@ -106,10 +106,17 @@ ylopsApp
 
 .controller('OppiaineBaseController', function ($scope, perusteOppiaine, MurupolkuData, $stateParams,
   $rootScope, OppiaineService) {
-  $scope.perusteOppiaine = perusteOppiaine;
   $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.oppiaineenVlk = OppiaineService.getOpVlk();
-  console.log($scope.oppiaine);
+
+  if (perusteOppiaine.tunniste === $scope.oppiaine.tunniste) {
+    $scope.perusteOppiaine = perusteOppiaine;
+  }
+  else {
+    $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, function(om) {
+      return om.tunniste === $scope.oppiaine.tunniste;
+    });
+  }
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
     $scope.oppiaineenVlk = value;

@@ -277,5 +277,7 @@
   "VUOSILUOKAT 7-9_erityispiirteet_ja_tehtavat_info": "XX",
   "VUOSILUOKAT 7-9_siirtyma_aikaisempi_nykyinen_info": "XX",
   "VUOSILUOKAT 7-9_siirtymä_nykyinen_seuraava_info": "XX",
-  "VUOSILUOKAT 7-9_laaja-alaisen_osaamisen_alueet_info": "XX"
+  "VUOSILUOKAT 7-9_laaja-alaisen_osaamisen_alueet_info": "XX",
+
+  "kielisisaltoa-ei-loytynyt-opsin-kielilla": "Kaikkea kielisisältöä ei asetettu opetussuunnitelman vaatimilla kielillä"
 }
