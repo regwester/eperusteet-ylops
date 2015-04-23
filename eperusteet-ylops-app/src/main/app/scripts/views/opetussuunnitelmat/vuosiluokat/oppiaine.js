@@ -84,7 +84,7 @@ ylopsApp
     VuosiluokkakokonaisuusMapper.createEmptyText($scope.perusteOpVlk, 'arviointi');
   }
 
-  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk.tavoitteet, 'tunniste');
+  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : null, 'tunniste');
 
   if ($scope.oppiaine.koosteinen && vanhempiOnUskontoTaiKieli($scope.oppiaine)) {
     $scope.valitseOppimaara = function() {
