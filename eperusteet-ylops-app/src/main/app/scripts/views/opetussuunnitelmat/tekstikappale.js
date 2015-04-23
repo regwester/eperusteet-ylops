@@ -131,7 +131,7 @@ ylopsApp
     $scope.addChild = function () {
       var lukkoParams = _.omit(commonParams, 'viiteId');
       Lukko.lockRakenne(lukkoParams, function () {
-        TekstikappaleOps.add($scope.model, null, $stateParams.id, {nimi: {fi: 'Uusi tekstikappale'}}, function (res) {
+        TekstikappaleOps.lisaa($scope.model, $stateParams.id, {fi: 'Uusi tekstikappale'}, function (res) {
           Lukko.unlockRakenne(lukkoParams, function () {
             var newParams = _.extend(_.clone($stateParams), {tekstikappaleId: res.id});
             TekstikappaleEditMode.setMode(true);
