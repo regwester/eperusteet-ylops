@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
@@ -51,6 +52,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
@@ -91,6 +93,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  *
@@ -138,6 +141,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private VuosiluokkakokonaisuusviiteRepository vuosiluokkakokonaisuusviiteRepository;
+
+    @Autowired
+    private OhjeRepository ohjeRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -464,7 +470,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 });
     }
 
+    private void validoiOhjeistus(TekstiKappaleViite tkv, Set<Kieli> kielet) {
+        for (TekstiKappaleViite lapsi : tkv.getLapset()) {
+            Ohje ohje = ohjeRepository.findFirstByKohde(lapsi.getTekstiKappale().getTunniste());
+            if (ohje != null) {
+                try {
+                    LokalisoituTeksti.validoi(ohje.getTeksti(), kielet);
+                } catch (ValidointiException v) {
+                    throw new ValidointiException("ops-pohja-ohjeistus-puuttuu", tkv.getTekstiKappale().getNimi());
+                }
+            }
+            else {
+                throw new ValidointiException("ops-pohja-ohjeistus-puuttuu");
+            }
+            validoiOhjeistus(lapsi, kielet);
+        }
+    }
+
     private void validoiPohja(Opetussuunnitelma ops) {
+        TekstiKappaleViite sisalto = ops.getTekstit();
+        for (TekstiKappaleViite lapsi : sisalto.getLapset()) {
+            validoiOhjeistus(lapsi, ops.getJulkaisukielet());
+        }
     }
 
     @Override
