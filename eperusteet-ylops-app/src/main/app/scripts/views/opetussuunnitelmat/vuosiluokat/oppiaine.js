@@ -109,13 +109,15 @@ ylopsApp
   $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.oppiaineenVlk = OppiaineService.getOpVlk();
 
-  if (perusteOppiaine.tunniste === $scope.oppiaine.tunniste) {
-    $scope.perusteOppiaine = perusteOppiaine;
-  }
-  else {
-    $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, function(om) {
-      return om.tunniste === $scope.oppiaine.tunniste;
-    });
+  if (perusteOppiaine) {
+    if (perusteOppiaine.tunniste === $scope.oppiaine.tunniste) {
+      $scope.perusteOppiaine = perusteOppiaine;
+    }
+    else {
+      $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, function(om) {
+        return om.tunniste === $scope.oppiaine.tunniste;
+      });
+    }
   }
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
