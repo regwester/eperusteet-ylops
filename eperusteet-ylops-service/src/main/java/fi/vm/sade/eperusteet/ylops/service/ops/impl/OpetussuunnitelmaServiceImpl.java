@@ -251,7 +251,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
-        // FIXME poista filtteröi oppiaineet onPoistettavalla
         ops.setOppiaineet(
             pohja.getOppiaineet().stream()
                  .map(ooa -> teeKopio
@@ -259,14 +258,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                              : new OpsOppiaine(ooa.getOppiaine(), false))
                  .collect(Collectors.toSet()));
 
-        ops.setVuosiluokkakokonaisuudet(
-            pohja.getVuosiluokkakokonaisuudet().stream()
-                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
-                                    .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getId().equals(ovlk.getVuosiluokkakokonaisuus().getId())))
-                 .map(ovlk -> teeKopio
-                              ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
-                              : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
-                 .collect(Collectors.toSet()));
+        Set<OpsVuosiluokkakokonaisuus> ovlkoot = pohja.getVuosiluokkakokonaisuudet().stream()
+                .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
+                        .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste().equals(ovlk.getVuosiluokkakokonaisuus().getTunniste())))
+                .map(ovlk -> teeKopio
+                        ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
+                        : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
+                .collect(Collectors.toSet());
+        ops.setVuosiluokkakokonaisuudet(ovlkoot);
     }
 
     private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent, boolean teeKopio) {
@@ -465,14 +464,24 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 });
     }
 
+    private void validoiPohja(Opetussuunnitelma ops) {
+    }
+
     @Override
     public OpetussuunnitelmaDto updateTila(@P("id") Long id, Tila tila) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
-        if (ops.getTila().mahdollisetSiirtymat(ops.getTyyppi() == Tyyppi.POHJA).contains(tila)) {
+        if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.JULKAISTU) {
+            tila = Tila.VALMIS;
+        }
+
+        if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi() == Tyyppi.POHJA).contains(tila)) {
             if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU || tila == Tila.VALMIS)) {
                 validoiOpetussuunnitelma(ops);
+            }
+            else if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.VALMIS) {
+                validoiPohja(ops);
             }
 
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
