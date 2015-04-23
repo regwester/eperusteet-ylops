@@ -79,7 +79,14 @@ ylopsApp
   }
 
   function getLaajaalaiset(opetussuunnitelmaId) {
-    return OpetussuunnitelmaCRUD.laajaalaiset({opsId: opetussuunnitelmaId});
+    var deferred = $q.defer();
+    OpetussuunnitelmaCRUD.laajaalaiset({opsId: opetussuunnitelmaId}, function (res) {
+      deferred.resolve(res);
+    }, function () {
+      // Jos perustedataa ei löydy, voidaan silti jatkaa
+      deferred.resolve([]);
+    });
+    return deferred.promise;
   }
 
   function getOppiaine(oppiaineId) {
@@ -87,7 +94,14 @@ ylopsApp
   }
 
   function getPerusteOppiaine(oppiaineId) {
-    return OppiaineCRUD.peruste({opsId: opsId || OpsService.getId()}, {id: oppiaineId});
+    var deferred = $q.defer();
+    OppiaineCRUD.peruste({opsId: opsId || OpsService.getId()}, {id: oppiaineId}, function (res) {
+      deferred.resolve(res);
+    }, function () {
+      // Jos perustedataa ei löydy, voidaan silti jatkaa
+      deferred.resolve({eiPerustetta: true});
+    });
+    return deferred.promise;
   }
 
   function getVuosiluokka(vuosiluokkaId) {

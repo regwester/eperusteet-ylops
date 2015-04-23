@@ -32,7 +32,10 @@ ylopsApp
       return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
     }) : null;
 
-  $scope.onValinnaiselle = !$scope.perusteOpVlk;
+  $scope.onValinnaiselle = $scope.oppiaine.tyyppi !== 'yhteinen';
+  if (!$scope.onValinnaiselle && !$scope.perusteOpVlk) {
+    $scope.eiPerustetta = true;
+  }
   $scope.sisaltoAlueetMap = _.indexBy($scope.vuosiluokka.sisaltoalueet, 'id');
 
   $scope.laajaalaiset = _.indexBy(baseLaajaalaiset, 'tunniste');

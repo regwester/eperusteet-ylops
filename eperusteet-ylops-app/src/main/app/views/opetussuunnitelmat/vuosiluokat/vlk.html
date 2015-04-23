@@ -5,9 +5,11 @@
 
 <h2 ng-bind="vlk.nimi | kaanna"></h2>
 
+<p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>
+
 <div class="vuosiluokkakokonaisuus">
   <div perusteen-tekstiosa="perusteVlk.tehtava" muokattava="temp.tehtava" callbacks="callbacks" config="options" ohjepallo="vlkErityispiirteet"></div>
-  
+
   <h2 ng-if="hasSiirtymat()" kaanna="'siirtymavaiheet'"></h2>
   <div ng-repeat="osio in siirtymat">
     <div perusteen-tekstiosa="perusteVlk[osio]" muokattava="temp[osio]" callbacks="callbacks" config="options" ohjepallo="siirtymaInfot[osio]"></div>

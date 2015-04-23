@@ -6,6 +6,8 @@
 
 <h2 ng-bind="oppiaine.nimi | kaanna"></h2>
 
+<p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>
+
 <div class="pull-right" ng-if="oppiaine.oma && isEditable()">
   <button ng-if="valitseOppimaara && oppiaine.oma" class="btn btn-default" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
@@ -19,7 +21,9 @@
 <div class="tekstiosa-wrapper" ng-show="!oppiaine.koosteinen && oppiaineenVlk">
   <h3>
     <div class="action-buttons-inline" ng-if="isEditable()">
-      <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma" class="btn btn-default" icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+      <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" class="btn btn-default"
+              icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"
+              oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     </div>
     <span kaanna="'tavoitteet-ja-sisallot-vuosiluokittain'"></span>
   </h3>

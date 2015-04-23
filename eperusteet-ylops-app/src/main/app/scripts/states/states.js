@@ -195,7 +195,7 @@ ylopsApp
             OpsNavigaatio.setActive(false);
           }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
-            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+            return vuosiluokatService.getLaajaalaiset(opsId);
           }],
         }
       })
@@ -214,10 +214,10 @@ ylopsApp
             return $stateParams.oppiaineTyyppi;
           }],
           perusteOppiaine: ['vuosiluokatService', 'oppiaineId', 'oppiaineTyyppi', function (vuosiluokatService, oppiaineId, oppiaineTyyppi) {
-            return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId).$promise : null;
+            return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId) : null;
           }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
-            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+            return vuosiluokatService.getLaajaalaiset(opsId);
           }]
         }
       })

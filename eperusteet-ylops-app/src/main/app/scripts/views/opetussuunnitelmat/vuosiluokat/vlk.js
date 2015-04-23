@@ -18,28 +18,65 @@
 
 ylopsApp
 .service('VuosiluokkakokonaisuusMapper', function (VuosiluokatService, $stateParams) {
+  function success(res, scope, laajaalaisetosaamiset) {
+    scope.perusteVlk = res;
+
+    scope.tunnisteet = _.map(scope.perusteVlk.laajaalaisetosaamiset, '_laajaalainenosaaminen');
+    var decorated = _.map(scope.perusteVlk.laajaalaisetosaamiset, function (item) {
+      var base = laajaalaisetosaamiset[item._laajaalainenosaaminen];
+      item.teksti = item.kuvaus;
+      item.otsikko = base ? base.nimi : {fi: '[Ei nimeä]'};
+      return item;
+    });
+    scope.laajaalaiset = _.indexBy(decorated, '_laajaalainenosaaminen');
+    scope.paikalliset = _.mapValues(scope.laajaalaiset, function (item) {
+      var newItem = _.cloneDeep(item);
+      var model = _.find(scope.vlk.laajaalaisetosaamiset, function (osaaminen) {
+        return '' + osaaminen._laajaalainenosaaminen === '' + item._laajaalainenosaaminen;
+      });
+      newItem.teksti = model ? model.kuvaus : {};
+      return newItem;
+    });
+  }
+
+  function createEmptyText(obj, key) {
+    obj[key] = {
+      otsikko: {fi: '-', sv: '-', en: '-', se: '-'},
+      teksti: {fi: '', sv: '', en: '', se: ''}
+    };
+  }
+
+  function error(scope) {
+    scope.eiPerustetta = true;
+    scope.perusteVlk = {};
+    createEmptyText(scope.perusteVlk, 'tehtava');
+    createEmptyText(scope.perusteVlk, 'siirtymaEdellisesta');
+    createEmptyText(scope.perusteVlk, 'siirtymaSeuraavaan');
+    if (scope.vlk && !_.isEmpty(scope.vlk.laajaalaisetosaamiset)) {
+      scope.tunnisteet = _.map(scope.vlk.laajaalaisetosaamiset, '_laajaalainenosaaminen');
+      scope.laajaalaiset = {};
+      scope.paikalliset = {};
+      _.each(scope.tunnisteet, function (tunniste) {
+        var model = _.find(scope.vlk.laajaalaisetosaamiset, function (osaaminen) {
+          return '' + osaaminen._laajaalainenosaaminen === tunniste;
+        });
+        createEmptyText(scope.laajaalaiset, tunniste);
+        scope.paikalliset[tunniste] = {
+          teksti: model ? model.kuvaus : {}
+        };
+      });
+    }
+  }
+
   this.init = function (scope, laajaalaisetosaamiset) {
     VuosiluokatService.getVlkPeruste($stateParams.id, $stateParams.vlkId, function (res) {
-      scope.perusteVlk = res;
-
-      scope.tunnisteet = _.map(scope.perusteVlk.laajaalaisetosaamiset, '_laajaalainenosaaminen');
-      var decorated = _.map(scope.perusteVlk.laajaalaisetosaamiset, function (item) {
-        var base = laajaalaisetosaamiset[item._laajaalainenosaaminen];
-        item.teksti = item.kuvaus;
-        item.otsikko = base ? base.nimi : {fi: '[Ei nimeä]'};
-        return item;
-      });
-      scope.laajaalaiset = _.indexBy(decorated, '_laajaalainenosaaminen');
-      scope.paikalliset = _.mapValues(scope.laajaalaiset, function (item) {
-        var newItem = _.cloneDeep(item);
-        var model = _.find(scope.vlk.laajaalaisetosaamiset, function (osaaminen) {
-          return '' + osaaminen._laajaalainenosaaminen === '' + item._laajaalainenosaaminen;
-        });
-        newItem.teksti = model ? model.kuvaus : {};
-        return newItem;
-      });
+      success(res, scope, laajaalaisetosaamiset);
+    }, function () {
+      error(scope);
     });
   };
+
+  this.createEmptyText = createEmptyText;
 })
 
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
