@@ -26,7 +26,6 @@ ylopsApp
 })
 
 .controller('EsikatseluController', function ($scope, $state, Algoritmit, Utils, $stateParams, StateHelperService, TreeHelper) {
-
   function updateNavi() {
     TreeHelper.updateTreeNavi($scope.texttree);
     TreeHelper.updateTreeNavi($scope.oppiaineMenu, 'oppiaine');
@@ -169,24 +168,11 @@ ylopsApp
 })
 
 .controller('EsikatseluOppiaineController', function ($scope, $stateParams, perusteOppiaine, Kaanna,
-  VuosiluokatService, VuosiluokkaMapper, baseLaajaalaiset, Utils) {
+  VuosiluokatService, VuosiluokkaMapper, baseLaajaalaiset, Utils, OppiaineService) {
   $scope.nimiOrder = Utils.sort;
-  var oppimaara = null;
-  var oppiaine = _.find($scope.model.oppiaineet, function (oa) {
-    var found = '' + oa.oppiaine.id === '' + $stateParams.oppiaineId;
-    if (!found) {
-      found = _.find(oa.oppiaine.oppimaarat, function (om) {
-        return '' + om.id === '' + $stateParams.oppiaineId;
-      });
-      if (found) {
-        oppimaara = found;
-      }
-    }
-    return found;
-  });
+  $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.laajaalaiset = _.indexBy(baseLaajaalaiset, 'tunniste');
   $scope.perusteOppiaine = perusteOppiaine;
-  $scope.oppiaine = oppimaara ? oppimaara : oppiaine.oppiaine;
   $scope.vlkMap = _.indexBy($scope.vuosiluokkakokonaisuudet, function (vlk) {
     return vlk.vuosiluokkakokonaisuus._tunniste;
   });

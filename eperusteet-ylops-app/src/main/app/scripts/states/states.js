@@ -216,6 +216,9 @@ ylopsApp
           perusteOppiaine: ['vuosiluokatService', 'oppiaineId', 'oppiaineTyyppi', function (vuosiluokatService, oppiaineId, oppiaineTyyppi) {
             return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId) : null;
           }],
+          oppiaineInit: ['OppiaineService', 'oppiaineId', 'opsModel', function (OppiaineService, oppiaineId, opsModel) {
+            return OppiaineService.refresh(opsModel, oppiaineId);
+          }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
             return vuosiluokatService.getLaajaalaiset(opsId);
           }]
