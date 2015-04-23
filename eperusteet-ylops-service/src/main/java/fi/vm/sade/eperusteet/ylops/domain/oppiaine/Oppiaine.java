@@ -314,7 +314,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
                 || "AI".equalsIgnoreCase(other.koodiArvo));
 
         if (other.isKoosteinen() && copyOppimaarat && other.getOppiaine() == null) {
-            if (other.koodiArvo == null || !isKielijoukko) {
+            if (copyOppimaarat || other.koodiArvo == null || !isKielijoukko) {
                 other.getOppimaarat().forEach((om -> {
                     o.addOppimaara(Oppiaine.copyOf(om));
                 }));

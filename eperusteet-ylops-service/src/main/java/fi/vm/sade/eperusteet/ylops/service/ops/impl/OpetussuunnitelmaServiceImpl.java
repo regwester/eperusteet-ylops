@@ -46,6 +46,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
@@ -223,7 +224,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
+    public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
         opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
 
@@ -257,10 +258,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
+        Opetussuunnitelma ylinpohja = pohja;
+        while (ylinpohja != null && ylinpohja.getPohja() != null && ylinpohja.getId().equals(ylinpohja.getPohja().getId())) {
+            ylinpohja = ylinpohja.getPohja();
+        }
+        boolean onPohjastaTehtyPohja = ylinpohja != null && ylinpohja.getId().equals(pohja.getId());
+
         ops.setOppiaineet(
             pohja.getOppiaineet().stream()
                  .map(ooa -> teeKopio
-                             ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), true)
+                             ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), !onPohjastaTehtyPohja)
                              : new OpsOppiaine(ooa.getOppiaine(), false))
                  .collect(Collectors.toSet()));
 
@@ -322,7 +329,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaDto opetussuunnitelmaDto) {
+    public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
         // Jokainen pohja sisältää OPH:n organisaationaan
         ops.getOrganisaatiot().add(SecurityUtil.OPH_OID);
