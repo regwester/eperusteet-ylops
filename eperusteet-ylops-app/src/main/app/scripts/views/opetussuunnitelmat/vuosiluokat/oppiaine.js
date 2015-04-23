@@ -88,7 +88,35 @@ ylopsApp
 
   if ($scope.oppiaine.koosteinen && vanhempiOnUskontoTaiKieli($scope.oppiaine)) {
     $scope.valitseOppimaara = function() {
-      Kielitarjonta.rakenna($stateParams.id, $scope.oppiaine, $scope.perusteOppiaine);
+      var opsId = $stateParams.id;
+      Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, function (res) {
+        var ops = OpsService.get(opsId);
+
+        var tunnisteet = _.map(res.vuosiluokkakokonaisuudet, '_vuosiluokkakokonaisuus');
+        var lisatytVlkt =
+          // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
+          _(ops.vuosiluokkakokonaisuudet).map('vuosiluokkakokonaisuus').filter(function (vlk) {
+            return _.includes(tunnisteet, vlk._tunniste);
+          }).sortBy(function (vlk) {
+            return Kaanna.kaanna(vlk.nimi);
+          }).value();
+
+        Notifikaatiot.onnistui(
+          Kaanna.kaanna(res.nimi) +
+          Kaanna.kaanna('oppiaine-lisattiin-vuosiluokkakokonaisuuksiin') +
+          _.map(lisatytVlkt, function (vlk) {
+            return Kaanna.kaanna(vlk.nimi);
+          }).join(', '));
+
+        var vlkId =
+          _(lisatytVlkt).map('id').includes(parseInt($stateParams.vlkId))? $stateParams.vlkId : lisatytVlkt[0].id;
+
+        $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+          oppiaineId: res.id,
+          vlkId: vlkId,
+          oppiaineTyyppi: res.tyyppi
+        }, { reload: true });
+      });
     };
   }
 

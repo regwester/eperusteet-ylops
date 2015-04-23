@@ -18,7 +18,8 @@
 
 ylopsApp
   .service('Kielitarjonta', function($modal) {
-    function rakenna(opsId, oppiaine, perusteOppiaine) {
+    function rakenna(opsId, oppiaine, perusteOppiaine, successCb) {
+      successCb = successCb || angular.noop;
       $modal.open({
         templateUrl: 'views/opetussuunnitelmat/modals/kielitarjonta.html',
         controller: 'KielitarjontaModalController',
@@ -29,8 +30,7 @@ ylopsApp
           perusteOppiaine: _.constant(perusteOppiaine)
         }
       })
-      .result.then(function() {
-      });
+      .result.then(successCb);
     }
 
     return {
@@ -91,9 +91,8 @@ ylopsApp
       }, {
         tunniste: tunniste,
         omaNimi: $scope.$omaNimi
-      }, function() {
-        $state.go($state.current.name, $stateParams, { reload: true });
-        $modalInstance.close();
+      }, function(res) {
+        $modalInstance.close(res);
         Notifikaatiot.onnistui('tallennettu-ok');
       }, Notifikaatiot.serverCb);
     };
