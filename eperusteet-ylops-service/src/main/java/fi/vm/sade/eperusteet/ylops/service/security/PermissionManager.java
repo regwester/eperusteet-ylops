@@ -210,6 +210,7 @@ public class PermissionManager {
         if (ops == null) {
             throw new NotExistsException(MSG_OPS_EI_OLEMASSA);
         }
+        boolean isPohja = ops.getTyyppi() == Tyyppi.POHJA;
         Set<String> organisaatiot = ops.getOrganisaatiot();
         Set<Permission> permissions
             = EnumSet.allOf(RolePermission.class).stream()
@@ -218,7 +219,8 @@ public class PermissionManager {
             .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
             // Salli OPS:n sisällön muokkaus (tilanvaihtoa lukuunottamatta) vain luonnos-tilassa
             .filter(permission -> ops.getTila() == Tila.LUONNOS ||
-                                  permission == Permission.TILANVAIHTO ||
+                                  (permission == Permission.TILANVAIHTO &&
+                                   !ops.getTila().mahdollisetSiirtymat(isPohja).isEmpty()) ||
                                   fromRolePermission(RolePermission.READ).contains(permission))
             .collect(Collectors.toSet());
 
