@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -64,10 +65,10 @@ public class PermissionRepositoryIT extends AbstractIntegrationTest {
         vkvr.save(new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_3, Vuosiluokka.VUOSILUOKKA_4, Vuosiluokka.VUOSILUOKKA_5, Vuosiluokka.VUOSILUOKKA_6)));
         vkvr.save(new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_7, Vuosiluokka.VUOSILUOKKA_8, Vuosiluokka.VUOSILUOKKA_9)));
 
-        final OpetussuunnitelmaDto dto = ops.addOpetussuunnitelma(new OpetussuunnitelmaDto());
+        final OpetussuunnitelmaDto dto = ops.addOpetussuunnitelma(new OpetussuunnitelmaLuontiDto());
         VuosiluokkakokonaisuusDto vk = vks.add(dto.getId(), new VuosiluokkakokonaisuusDto(Reference.of(vs)));
 
-        ops.addOpetussuunnitelma(new OpetussuunnitelmaDto());
+        ops.addOpetussuunnitelma(new OpetussuunnitelmaLuontiDto());
         final Long id = dto.getTekstit().get().getLapset().get(0).getTekstiKappale().getId();
 
         Set<Opetussuunnitelma> opsit = permissions.findOpsByTekstikappaleId(id, singleton(Omistussuhde.OMA));

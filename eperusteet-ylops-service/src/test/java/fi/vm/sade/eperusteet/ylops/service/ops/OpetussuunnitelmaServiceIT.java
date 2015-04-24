@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -63,17 +64,16 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Before
     public void setUp() {
-        OpetussuunnitelmaDto ops;
-        ops = new OpetussuunnitelmaDto();
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
         ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTyyppi(Tyyppi.POHJA);
         ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
-        ops = opetussuunnitelmaService.addPohja(ops);
-        opetussuunnitelmaService.updateTila(ops.getId(), Tila.VALMIS);
+        OpetussuunnitelmaDto luotu = opetussuunnitelmaService.addPohja(ops);
+        opetussuunnitelmaService.updateTila(luotu.getId(), Tila.VALMIS);
 
-        ops = new OpetussuunnitelmaDto();
+        ops = new OpetussuunnitelmaLuontiDto();
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTila(Tila.LUONNOS);
@@ -136,31 +136,33 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(1, opsit.size());
 
         Long id = opsit.get(0).getId();
-        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
-        assertEquals(Tila.VALMIS, ops.getTila());
+        {
+            OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+            assertEquals(Tila.VALMIS, ops.getTila());
 
-        // Valmiista ei voi palata luonnokseksi
-        ops = opetussuunnitelmaService.updateTila(id, Tila.LUONNOS);
-        assertEquals(Tila.VALMIS, ops.getTila());
+            // Valmiista ei voi palata luonnokseksi
+            ops = opetussuunnitelmaService.updateTila(id, Tila.LUONNOS);
+            assertEquals(Tila.VALMIS, ops.getTila());
+        }
 
         // Vanha valmis pohja merkitään poistetuksi kun uusi pohja merkitään valmiiksi
-        ops = new OpetussuunnitelmaDto();
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
         ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTyyppi(Tyyppi.POHJA);
-        ops = opetussuunnitelmaService.addPohja(ops);
-        ops = opetussuunnitelmaService.updateTila(ops.getId(), Tila.VALMIS);
-        assertEquals(Tila.VALMIS, ops.getTila());
+        OpetussuunnitelmaDto luotu = opetussuunnitelmaService.addPohja(ops);
+        luotu = opetussuunnitelmaService.updateTila(luotu.getId(), Tila.VALMIS);
+        assertEquals(Tila.VALMIS, luotu.getTila());
 
         opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);
         assertEquals(2, opsit.size());
 
-        ops = opetussuunnitelmaService.getOpetussuunnitelma(ops.getId());
-        assertEquals(Tila.VALMIS, ops.getTila());
+        luotu = opetussuunnitelmaService.getOpetussuunnitelma(luotu.getId());
+        assertEquals(Tila.VALMIS, luotu.getTila());
 
-        ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
-        assertEquals(Tila.POISTETTU, ops.getTila());
+        luotu = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        assertEquals(Tila.POISTETTU, luotu.getTila());
     }
 
     @Test
