@@ -42,7 +42,7 @@
     <button ng-disabled="lukkotiedot.lukittu" ng-if="canRemove()" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button class="btn btn-default" kaanna="'lisaa-aliotsikko'" icon-role="add" ng-click="addChild()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button ng-if="model.omistussuhde === 'oma'" ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
-    <button ng-if="model.omistussuhde === 'lainattu'" ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'kopioi-muokattavaksi'" icon-role="edit" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+    <button ng-if="model.omistussuhde === 'lainattu'" ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'kopioi-muokattavaksi'" icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   </div>
 
   <div class="teksti-valmis" ng-if="isEditable()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }">

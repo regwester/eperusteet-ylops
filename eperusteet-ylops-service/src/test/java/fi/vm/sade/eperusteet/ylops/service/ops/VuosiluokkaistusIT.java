@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkako
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
@@ -85,17 +86,16 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
                 mock.setPeruste(json);
             }
 
-            OpetussuunnitelmaDto ops;
-            ops = new OpetussuunnitelmaDto();
+            OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
             ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
             ops.setNimi(lt(uniikkiString()));
             ops.setKuvaus(lt(uniikkiString()));
             ops.setTyyppi(Tyyppi.POHJA);
             ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
-            ops = opsit.addPohja(ops);
-            ops = opsit.updateTila(ops.getId(), Tila.VALMIS);
+            OpetussuunnitelmaDto luotu = opsit.addPohja(ops);
+            opsit.updateTila(luotu.getId(), Tila.VALMIS);
 
-            ops = new OpetussuunnitelmaDto();
+            ops = new OpetussuunnitelmaLuontiDto();
             ops.setNimi(lt(uniikkiString()));
             ops.setKuvaus(lt(uniikkiString()));
             ops.setTila(Tila.LUONNOS);
@@ -109,8 +109,8 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
             kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
             kouluDto.setOid(SecurityUtil.OPH_OID);
             ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
-            ops = opsit.addOpetussuunnitelma(ops);
-            opsId = ops.getId();
+            luotu = opsit.addOpetussuunnitelma(ops);
+            opsId = luotu.getId();
             setupDone = true;
         }
     }

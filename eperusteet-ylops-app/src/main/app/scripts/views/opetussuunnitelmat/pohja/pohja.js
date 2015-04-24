@@ -27,14 +27,29 @@ ylopsApp
   });
 })
 
-.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter) {
-  $scope.items = OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'});
-  $scope.opsLimit = $state.is('root.etusivu') ? 7 : 100;
+.controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter, Notifikaatiot) {
+
+  $scope.pohjaMaxLimit = 9999;
+  $scope.pohjaMinLimit = 7;
+
+  OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'}, function (res){
+   $scope.items = _.filter(res, function (item) {
+     return item.tila !== 'poistettu';
+   });
+   $scope.items.$resolved = true;
+  }, Notifikaatiot.serverCb);
+
+  $scope.opsLimit = $state.is('root.etusivu') ? $scope.pohjaMinLimit : $scope.pohjaMaxLimit;
   $scope.sorter = ListaSorter.init($scope);
 
-  $scope.addNew = function () {
-    $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});
+  $scope.showAll = function() {
+      $scope.opsLimit = $scope.pohjaMaxLimit;
   };
+
+  $scope.showLess = function() {
+      $scope.opsLimit = $scope.pohjaMinLimit;
+   };
+
 })
 
 .controller('PohjaSisaltoController', function ($scope, $q, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,

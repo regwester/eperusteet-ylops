@@ -65,19 +65,18 @@ ylopsApp
       poistettu: 'folder-open',
     };
 
-    // TODO salli julkaistu-tila kun validointi on toteutettu
-    var OPSTILAT = ['luonnos', 'valmis', /*'julkaistu',*/ 'poistettu'];
+    var OPSTILAT = ['luonnos', 'valmis', 'julkaistu', 'poistettu'];
     var POHJATILAT = ['luonnos', 'valmis', 'poistettu'];
 
     function getTilat(isPohja, current) {
-      var tilat = isPohja ? POHJATILAT : OPSTILAT;
+      var tilat = _.without(isPohja ? POHJATILAT : OPSTILAT, current);
       switch(current) {
         case 'valmis':
-          return isPohja ? _.without(tilat, 'luonnos') : tilat;
+          return isPohja ? ['luonnos', 'poistettu'] : tilat;
         case 'julkaistu':
-          return _.without(tilat, 'luonnos', 'valmis');
+          return _.without(tilat, 'luonnos');
         default:
-          return tilat;
+          return _.without(tilat, 'julkaistu');
       }
     }
 
@@ -93,7 +92,7 @@ ylopsApp
 
     $scope.startEditing = function() {
       var isPohja = $scope.model.tyyppi === 'pohja';
-      if (!OpetussuunnitelmaOikeudetService.onkoOikeudet(isPohja ? 'pohja' : 'opetussuunnitelma', 'muokkaus')) {
+      if (!OpetussuunnitelmaOikeudetService.onkoOikeudet(isPohja ? 'pohja' : 'opetussuunnitelma', 'tilanvaihto')) {
         return;
       }
 

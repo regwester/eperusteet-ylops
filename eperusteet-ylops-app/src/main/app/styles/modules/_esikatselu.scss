@@ -25,6 +25,8 @@
       margin-top: 0;
     }
     .tavoite {
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
       .peruste-body {
         .listat {
           padding-left: 0;
@@ -36,6 +38,14 @@
         .kriteerit {
           background-color: white;
         }
+      }
+      .tavoite-otsikko {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      .esitys-paikallinen {
+        padding-left: 10px;
+        padding-right: 10px;
       }
     }
   }
@@ -171,10 +181,6 @@ h5 {
   margin-bottom: 10px;
   padding: 7px;
   background-color: $ops-header-background;
-}
-
-.tavoite-otsikko {
-  margin-top: 30px;
 }
 
 .vlk-otsikko {

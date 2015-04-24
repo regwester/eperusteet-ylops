@@ -60,29 +60,6 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   }
 
-  // Deprekoitunut
-  function add(model, osio, opsId, uusi, cb) {
-    var newNode = {tekstiKappale: angular.copy(uusi), lapset: []};
-    var parent = osio ? model[osio] : model;
-    parent.lapset.push(newNode);
-    var params = {opsId: opsId};
-    OpetussuunnitelmanTekstit.setChild(_.extend({parentId: parent.id}, params), newNode, function (res) {
-      var otsikko = _.cloneDeep(newNode.tekstiKappale.nimi);
-      newNode.id = res.id;
-      newNode.omistussuhde = res.omistussuhde;
-      newNode.tekstiKappale = res.tekstiKappale;
-      res.tekstiKappale.nimi = otsikko;
-      // TODO: lapsi-APIa käyttämällä ei tekstikappale tallennu samalla pyynnöllä
-      OpetussuunnitelmanTekstit.save(params, res, function () {
-        Notifikaatiot.onnistui('tallennettu-ok');
-        cb(res);
-        OpsService.refetch(function () {
-          $rootScope.$broadcast('rakenne:updated');
-        });
-      }, Notifikaatiot.serverCb);
-    }, Notifikaatiot.serverCb);
-  }
-
   function deleteKappale(model, osio, opsId, kappale, cb) {
     var params = {opsId: opsId};
     OpetussuunnitelmanTekstit.delete(params, kappale, function () {
@@ -107,7 +84,6 @@ ylopsApp
 
   this.saveRakenne = saveRakenne;
   this.lisaa = lisaa;
-  this.add = add;
   this.delete = deleteKappale;
   this.varmistusdialogi = function (nimi, successCb, failureCb) {
     Varmistusdialogi.dialogi({

@@ -12,7 +12,7 @@
     <name>eperusteet-ylops-service</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hibernate.version>4.3.8.Final</hibernate.version>
+        <hibernate.version>4.3.9.Final</hibernate.version>
         <spring.version>4.1.6.RELEASE</spring.version>
         <spring.security.version>3.2.7.RELEASE</spring.security.version>
         <spring.data.jpa.version>1.7.2.RELEASE</spring.data.jpa.version>
@@ -213,7 +213,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.3.1.Final</version>
+            <version>${hibernate.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -450,6 +450,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.1</version>
                 <configuration>
                     <quiet>true</quiet>
                     <additionalparam>-Xdoclint:none</additionalparam>

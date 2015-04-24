@@ -72,7 +72,8 @@ public class PermissionManager {
         KOMMENTOINTI("kommentointi"),
         LUONTI("luonti"),
         POISTO("poisto"),
-        TILANVAIHTO("tilanvaihto");
+        TILANVAIHTO("tilanvaihto"),
+        HALLINTA("hallinta");
 
         private final String permission;
 
@@ -122,6 +123,9 @@ public class PermissionManager {
             case TILANVAIHTO:
             case MUOKKAUS:
                 permissions = EnumSet.of(RolePermission.CRUD, RolePermission.READ_UPDATE);
+                break;
+            case HALLINTA:
+                permissions = EnumSet.of(RolePermission.ADMIN);
                 break;
             default:
                 permissions = EnumSet.noneOf(RolePermission.class);
@@ -206,14 +210,17 @@ public class PermissionManager {
         if (ops == null) {
             throw new NotExistsException(MSG_OPS_EI_OLEMASSA);
         }
+        boolean isPohja = ops.getTyyppi() == Tyyppi.POHJA;
         Set<String> organisaatiot = ops.getOrganisaatiot();
         Set<Permission> permissions
             = EnumSet.allOf(RolePermission.class).stream()
             .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
             .filter(pair -> !CollectionUtil.intersect(pair.getSecond(), organisaatiot).isEmpty())
             .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
-            // Salli OPS:n sisällön muokkaus vain luonnos-tilassa
+            // Salli OPS:n sisällön muokkaus (tilanvaihtoa lukuunottamatta) vain luonnos-tilassa
             .filter(permission -> ops.getTila() == Tila.LUONNOS ||
+                                  (permission == Permission.TILANVAIHTO &&
+                                   !ops.getTila().mahdollisetSiirtymat(isPohja).isEmpty()) ||
                                   fromRolePermission(RolePermission.READ).contains(permission))
             .collect(Collectors.toSet());
 
@@ -228,6 +235,8 @@ public class PermissionManager {
     private static Set<Permission> fromRolePermission(RolePermission rolePermission) {
         Set<Permission> permissions = new HashSet<>();
         switch (rolePermission) {
+            case ADMIN:
+                permissions.add(Permission.HALLINTA);
             case CRUD:
                 permissions.add(Permission.LUONTI);
                 permissions.add(Permission.POISTO);

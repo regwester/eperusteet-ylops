@@ -108,7 +108,8 @@ ylopsApp
       return query();
     }
 
-    var deferred = OpetussuunnitelmaOikeudet.get({opsId: stateParams.id}, function (res) {
+    var opsId = stateParams.id || stateParams.pohjaId;
+    var deferred = OpetussuunnitelmaOikeudet.get({opsId: opsId}, function (res) {
       opsOikeudet = res;
     }, Notifikaatiot.serverCb);
     return deferred.$promise;

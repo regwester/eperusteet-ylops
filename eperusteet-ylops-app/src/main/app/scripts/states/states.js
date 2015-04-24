@@ -24,8 +24,9 @@ ylopsApp
         url: '/:lang',
         template: '<div ui-view></div>',
         abstract: true,
-        onEnter: ['Kieli', '$stateParams', function (Kieli, $stateParams) {
+        onEnter: ['Kieli', '$stateParams', '$rootScope', function (Kieli, $stateParams, $rootScope) {
           Kieli.setUiKieli($stateParams.lang, false);
+          $rootScope.$broadcast('fetched:oikeusTiedot');
         }],
         resolve: {
           casTiedot: ['Oikeudet', '$q', function (Oikeudet, $q) {
@@ -195,7 +196,7 @@ ylopsApp
             OpsNavigaatio.setActive(false);
           }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
-            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+            return vuosiluokatService.getLaajaalaiset(opsId);
           }],
         }
       })
@@ -214,10 +215,13 @@ ylopsApp
             return $stateParams.oppiaineTyyppi;
           }],
           perusteOppiaine: ['vuosiluokatService', 'oppiaineId', 'oppiaineTyyppi', function (vuosiluokatService, oppiaineId, oppiaineTyyppi) {
-            return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId).$promise : null;
+            return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId) : null;
+          }],
+          oppiaineInit: ['OppiaineService', 'oppiaineId', 'opsModel', function (OppiaineService, oppiaineId, opsModel) {
+            return OppiaineService.refresh(opsModel, oppiaineId);
           }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
-            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+            return vuosiluokatService.getLaajaalaiset(opsId);
           }]
         }
       })

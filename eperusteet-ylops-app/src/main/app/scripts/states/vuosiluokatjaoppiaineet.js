@@ -33,7 +33,7 @@ ylopsApp
             return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
           }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
-            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+            return vuosiluokatService.getLaajaalaiset(opsId);
           }],
           naviState: ['baseLaajaalaiset', 'OpsNavigaatio', function (baseLaajaalaiset, OpsNavigaatio) {
             // Odota laaja-alaiset ennen sivunavin aktivointia niin UI-elementit ei pompi
@@ -56,6 +56,10 @@ ylopsApp
           }],
           vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
             return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
+          }],
+          opsModelVal: ['opsService', 'opsId', function(opsService, opsId) {
+            var fetched = opsService.fetch(opsId);
+            return fetched.$promise ? fetched.$promise : fetched;
           }],
         }
       })
@@ -80,7 +84,7 @@ ylopsApp
             return OppiaineService.refresh(opsModel, oppiaineId, vlkId);
           }],
           perusteOppiaine: ['vuosiluokatService', 'oppiaineId', 'oppiaineTyyppi', function (vuosiluokatService, oppiaineId, oppiaineTyyppi) {
-            return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId).$promise : null;
+            return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId) : null;
           }]
         }
       })
@@ -105,7 +109,7 @@ ylopsApp
             OpsNavigaatio.setActive();
           }],
           baseLaajaalaiset: ['VuosiluokatService', 'opsId', function (VuosiluokatService, opsId) {
-            return VuosiluokatService.getLaajaalaiset(opsId).$promise;
+            return VuosiluokatService.getLaajaalaiset(opsId);
           }],
         }
       })
@@ -152,8 +156,10 @@ ylopsApp
           vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
             return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
           }],
-          vlkPeruste: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
-            return vuosiluokatService.getVlkPeruste(opsId, vlkId).$promise;
+          vlkPeruste: ['vuosiluokatService', 'vlkId', 'opsId', 'Notifikaatiot', function (vuosiluokatService, vlkId, opsId, Notifikaatiot) {
+            return vuosiluokatService.getVlkPeruste(opsId, vlkId, angular.noop, function () {
+              Notifikaatiot.varoitus('uutta-oppiainetta-ei-voi-luoda');
+            }).$promise;
           }],
           oppiaineId: ['$stateParams', function ($stateParams) {
             return $stateParams.oppiaineId;

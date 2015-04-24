@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class OpetussuunnitelmaController {
     @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> addOpetussuunnitelma(
-            @RequestBody OpetussuunnitelmaDto opetussuunnitelmaDto) {
+            @RequestBody OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
 
         if (opetussuunnitelmaDto.getTyyppi() == null) {
             opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);

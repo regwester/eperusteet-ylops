@@ -13,24 +13,23 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.ops;
+package fi.vm.sade.eperusteet.ylops.service.exception;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
-import java.util.Optional;
-import java.util.Set;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.Getter;
-import lombok.Setter;
+import org.springframework.core.NestedRuntimeException;
 
 /**
- * @author mikkom
+ *
+ * @author nkala
  */
-@Getter
-@Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class OpetussuunnitelmaDto extends OpetussuunnitelmaBaseDto {
-    private OpetussuunnitelmaNimiDto pohja;
-    private Optional<TekstiKappaleViiteDto.Puu> tekstit;
-    private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
-    private Set<OpsOppiaineDto> oppiaineet;
+public class ValidointiException extends NestedRuntimeException {
+    @Getter
+    Validointi validointi;
+
+    public ValidointiException(Validointi validointi) {
+        super("ops-validointivirheita");
+        this.validointi = validointi;
+    }
+
 }

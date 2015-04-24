@@ -70,6 +70,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import java.util.Objects;
 
 /**
  * @author mikkom
@@ -187,12 +188,14 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public OppiaineDto addCopyOppimaara(@P("opsId") Long opsId, Long oppiaineId, KopioOppimaaraDto kt) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        Opetussuunnitelma opspohja = ops.getPohja();
+
+        Opetussuunnitelma opspohja = ops.getAlinPohja();
+
         Oppiaine parent = oppiaineet.findOne(oppiaineId);
         Oppiaine pohjaparent = oppiaineet.findOneByOpsIdAndTunniste(opspohja.getId(), parent.getTunniste());
         Oppiaine uusi = null;
 
-        if (parent.getKoodiArvo().equalsIgnoreCase("KT")) {
+        if (parent.getKoodiArvo().equalsIgnoreCase("KT") && kt.getTunniste() == null) {
             uusi = Oppiaine.copyOf(pohjaparent, false);
             uusi.setNimi(LokalisoituTeksti.of(kt.getOmaNimi().getTekstit()));
             uusi.setKoosteinen(false);
@@ -201,7 +204,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
         else {
             for (Oppiaine om : pohjaparent.getOppimaarat()) {
-                if (om.getTunniste().equals(UUID.fromString(kt.getTunniste()))) {
+                if (om.getTunniste().equals(kt.getTunniste())) {
                     uusi = Oppiaine.copyOf(om);
                     uusi.setNimi(LokalisoituTeksti.of(kt.getOmaNimi().getTekstit()));
                     parent.addOppimaara(oppiaineet.save(uusi));
@@ -282,6 +285,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
         Oppiaine oppiaine = getOppiaine(opsId, id);
+
+        if (oppiaine.getOppiaine() != null) {
+            throw new BusinessRuleViolationException("Oppimäärää ei voi kopioida");
+        }
+
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
                                             .filter(oa -> !oa.getOppiaine().getId().equals(id))
                                             .collect(Collectors.toSet());

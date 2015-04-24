@@ -65,7 +65,8 @@ public class PermissionEvaluator implements org.springframework.security.access.
 
         CRUD,
         READ_UPDATE,
-        READ
+        READ,
+        ADMIN
     }
 
     @Autowired
