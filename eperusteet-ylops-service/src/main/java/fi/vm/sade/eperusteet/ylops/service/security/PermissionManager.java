@@ -72,7 +72,8 @@ public class PermissionManager {
         KOMMENTOINTI("kommentointi"),
         LUONTI("luonti"),
         POISTO("poisto"),
-        TILANVAIHTO("tilanvaihto");
+        TILANVAIHTO("tilanvaihto"),
+        HALLINTA("hallinta");
 
         private final String permission;
 
@@ -122,6 +123,9 @@ public class PermissionManager {
             case TILANVAIHTO:
             case MUOKKAUS:
                 permissions = EnumSet.of(RolePermission.CRUD, RolePermission.READ_UPDATE);
+                break;
+            case HALLINTA:
+                permissions = EnumSet.of(RolePermission.ADMIN);
                 break;
             default:
                 permissions = EnumSet.noneOf(RolePermission.class);
@@ -229,6 +233,8 @@ public class PermissionManager {
     private static Set<Permission> fromRolePermission(RolePermission rolePermission) {
         Set<Permission> permissions = new HashSet<>();
         switch (rolePermission) {
+            case ADMIN:
+                permissions.add(Permission.HALLINTA);
             case CRUD:
                 permissions.add(Permission.LUONTI);
                 permissions.add(Permission.POISTO);
