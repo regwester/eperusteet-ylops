@@ -92,7 +92,7 @@ ylopsApp
 
     $scope.startEditing = function() {
       var isPohja = $scope.model.tyyppi === 'pohja';
-      if (!OpetussuunnitelmaOikeudetService.onkoOikeudet(isPohja ? 'pohja' : 'opetussuunnitelma', 'muokkaus')) {
+      if (!OpetussuunnitelmaOikeudetService.onkoOikeudet(isPohja ? 'pohja' : 'opetussuunnitelma', 'tilanvaihto')) {
         return;
       }
 
