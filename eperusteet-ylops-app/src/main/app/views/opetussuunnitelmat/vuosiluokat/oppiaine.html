@@ -1,7 +1,7 @@
 <div ng-if="isEditable() && (oppiaine.tyyppi !== 'yhteinen' || !oppiaine.oma)" class="action-buttons-inline">
   <button ng-if="oppiaine.oma" class="btn btn-default" icon-role="edit" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="oppiaine.oma" class="btn btn-default" icon-role="remove" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
-  <button ng-if="!oppiaine.oma && !oppiaine.$parent" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'" icon-role="edit" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+  <button ng-if="!oppiaine.oma && !oppiaine.$parent" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'" icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
 </div>
 
 <h2 ng-bind="oppiaine.nimi | kaanna"></h2>
