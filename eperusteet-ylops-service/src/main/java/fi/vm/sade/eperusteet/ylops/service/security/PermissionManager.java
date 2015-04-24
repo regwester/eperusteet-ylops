@@ -212,8 +212,9 @@ public class PermissionManager {
             .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
             .filter(pair -> !CollectionUtil.intersect(pair.getSecond(), organisaatiot).isEmpty())
             .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
-            // Salli OPS:n sisällön muokkaus vain luonnos-tilassa
+            // Salli OPS:n sisällön muokkaus (tilanvaihtoa lukuunottamatta) vain luonnos-tilassa
             .filter(permission -> ops.getTila() == Tila.LUONNOS ||
+                                  permission == Permission.TILANVAIHTO ||
                                   fromRolePermission(RolePermission.READ).contains(permission))
             .collect(Collectors.toSet());
 
