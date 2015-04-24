@@ -31,6 +31,7 @@ ylopsApp
 .service('OpsinTilanvaihto', function ($modal) {
   var that = this;
   this.start = function(parametrit, setFn, successCb) {
+    console.log('what');
     successCb = successCb || angular.noop;
     if (_.isFunction(setFn)) {
       that.setFn = setFn;

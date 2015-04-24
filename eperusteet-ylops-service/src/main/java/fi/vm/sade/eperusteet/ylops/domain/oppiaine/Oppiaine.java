@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -324,16 +325,16 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         return o;
     }
 
-    static public void validoi(Oppiaine oa, Set<Kieli> kielet) {
-        LokalisoituTeksti.validoi(oa.getNimi(), kielet);
+    static public void validoi(Validointi validointi, Oppiaine oa, Set<Kieli> kielet, LokalisoituTeksti parent) {
+        LokalisoituTeksti.validoi(validointi, oa.getNimi(), kielet, parent);
 
         for (Oppiaineenvuosiluokkakokonaisuus ovlk : oa.getVuosiluokkakokonaisuudet()) {
-            Oppiaineenvuosiluokkakokonaisuus.validoi(ovlk, kielet);
+            Oppiaineenvuosiluokkakokonaisuus.validoi(validointi, ovlk, kielet);
         }
 
         if (oa.getOppimaarat() != null) {
             for (Oppiaine om : oa.getOppimaarat()) {
-                validoi(om, kielet);
+                validoi(validointi, om, kielet, oa.getNimi());
             }
         }
     }

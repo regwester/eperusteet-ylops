@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -153,19 +154,19 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
         return ovk;
     }
 
-    public static void validoi(Oppiaineenvuosiluokkakokonaisuus ovlk, Set<Kieli> kielet) {
-        Tekstiosa.validoiTeksti(ovlk.getArviointi(), kielet);
-        Tekstiosa.validoiTeksti(ovlk.getOhjaus(), kielet);
-        Tekstiosa.validoiTeksti(ovlk.getTehtava(), kielet);
-        Tekstiosa.validoiTeksti(ovlk.getTyotavat(), kielet);
-        
+    public static void validoi(Validointi validointi, Oppiaineenvuosiluokkakokonaisuus ovlk, Set<Kieli> kielet) {
+        Tekstiosa.validoiTeksti(validointi, ovlk.getArviointi(), kielet, ovlk.getOppiaine().getNimi());
+        Tekstiosa.validoiTeksti(validointi, ovlk.getOhjaus(), kielet, ovlk.getOppiaine().getNimi());
+        Tekstiosa.validoiTeksti(validointi, ovlk.getTehtava(), kielet, ovlk.getOppiaine().getNimi());
+        Tekstiosa.validoiTeksti(validointi, ovlk.getTyotavat(), kielet, ovlk.getOppiaine().getNimi());
+
         for (Oppiaineenvuosiluokka ovl : ovlk.getVuosiluokat()) {
             for (Opetuksentavoite tavoite : ovl.getTavoitteet()) {
-                LokalisoituTeksti.validoi(tavoite.getTavoite(), kielet);
+                LokalisoituTeksti.validoi(validointi, tavoite.getTavoite(), kielet, ovlk.getOppiaine().getNimi());
             }
 
             for (Keskeinensisaltoalue sisaltoalue : ovl.getSisaltoalueet()) {
-                LokalisoituTeksti.validoi(sisaltoalue.getKuvaus(), kielet);
+                LokalisoituTeksti.validoi(validointi, sisaltoalue.getKuvaus(), kielet, ovlk.getOppiaine().getNimi());
             }
         }
     }

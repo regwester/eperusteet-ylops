@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -148,9 +149,9 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
         return new Vuosiluokkakokonaisuus(vuosiluokkakokonaisuus);
     }
 
-    public static void validoi(Vuosiluokkakokonaisuus vlk, Set<Kieli> kielet) {
-        LokalisoituTeksti.validoi(vlk.getNimi(), kielet);
-        LokalisoituTeksti.validoi(vlk.getTehtava() != null ? vlk.getTehtava().getOtsikko() : null, kielet);
+    public static void validoi(Validointi validointi, Vuosiluokkakokonaisuus vlk, Set<Kieli> kielet) {
+        LokalisoituTeksti.validoi(validointi, vlk.getNimi(), kielet, null);
+        LokalisoituTeksti.validoi(validointi, vlk.getTehtava() != null ? vlk.getTehtava().getOtsikko() : null, kielet, null);
     }
 
 }

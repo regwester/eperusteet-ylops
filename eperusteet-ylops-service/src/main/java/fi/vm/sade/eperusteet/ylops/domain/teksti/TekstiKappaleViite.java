@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.teksti;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
@@ -121,19 +122,21 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
         return root;
     }
 
-    static public void validoi(TekstiKappaleViite viite, Set<Kieli> julkaisukielet) {
-        if (viite.getLapset() == null) {
+    static public void validoi(Validointi validointi, TekstiKappaleViite viite, Set<Kieli> julkaisukielet, LokalisoituTeksti parent) {
+        if (viite == null || viite.getLapset() == null) {
             return;
         }
 
+        LokalisoituTeksti teksti = viite.getTekstiKappale() != null ? viite.getTekstiKappale().getNimi() : null;
+
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
             if (lapsi.getTekstiKappale() != null) {
-                LokalisoituTeksti.validoi(lapsi.getTekstiKappale().getNimi(), julkaisukielet);
+                LokalisoituTeksti.validoi(validointi, lapsi.getTekstiKappale().getNimi(), julkaisukielet, parent);
             }
             else {
-                throw new ValidointiException("tekstikappaleella-ei-lainkaan-sisaltoa");
+                validointi.lisaaVirhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti, parent);
             }
-            validoi(lapsi, julkaisukielet);
+            validoi(validointi, lapsi, julkaisukielet, teksti);
         }
     }
 }

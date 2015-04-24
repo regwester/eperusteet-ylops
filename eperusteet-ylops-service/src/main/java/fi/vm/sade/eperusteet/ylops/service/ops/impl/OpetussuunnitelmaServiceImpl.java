@@ -92,6 +92,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -434,23 +435,25 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private void validoiOpetussuunnitelma(Opetussuunnitelma ops) {
         Set<Kieli> julkaisukielet = ops.getJulkaisukielet();
-        LokalisoituTeksti.validoi(ops.getNimi(), julkaisukielet);
+        Validointi validointi = new Validointi();
+        LokalisoituTeksti.validoi(validointi, ops.getNimi(), julkaisukielet, null);
+
         if (ops.getPerusteenDiaarinumero().isEmpty()) {
-            throw new ValidointiException("opsilla-ei-perusteen-diaarinumeroa");
+            validointi.lisaaVirhe("opsilla-ei-perusteen-diaarinumeroa");
         }
 
-        TekstiKappaleViite.validoi(ops.getTekstit(), julkaisukielet);
+        TekstiKappaleViite.validoi(validointi, ops.getTekstit(), julkaisukielet, ops.getNimi());
         ops.getVuosiluokkakokonaisuudet().stream()
                 .filter(vlk -> vlk.isOma())
                 .map(vlk -> vlk.getVuosiluokkakokonaisuus())
-                .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(vlk, julkaisukielet));
+                .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(validointi, vlk, julkaisukielet));
 
         Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
         ops.getOppiaineet().stream()
                 .filter(oa -> oa.isOma())
                 .map(oa -> oa.getOppiaine())
                 .forEach(oa -> {
-                    Oppiaine.validoi(oa, julkaisukielet);
+                    Oppiaine.validoi(validointi, oa, julkaisukielet, null);
                     PerusteOppiaine poppiaine = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
                     Set<UUID> PerusteenTavoitteet = new HashSet<>();
 
@@ -466,32 +469,36 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                             .collect(Collectors.toSet());
 
                     if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
-                        throw new ValidointiException("opsin-kaikkia-oppiaineita-ei-ole-vuosiluokkaistettu");
+                        validointi.lisaaVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi(), poppiaine.getNimi());
                     }
 
                     if (oa.getOppimaarat() != null) {
                         for (Oppiaine om : oa.getOppimaarat()) {
-                            Oppiaine.validoi(oa, julkaisukielet);
+                            Oppiaine.validoi(validointi, om, julkaisukielet, null);
                         }
                     }
                 });
+
+        validointi.tuomitse();
     }
 
     private void validoiOhjeistus(TekstiKappaleViite tkv, Set<Kieli> kielet) {
+        Validointi validointi = new Validointi();
         for (TekstiKappaleViite lapsi : tkv.getLapset()) {
             Ohje ohje = ohjeRepository.findFirstByKohde(lapsi.getTekstiKappale().getTunniste());
             if (ohje != null) {
                 try {
-                    LokalisoituTeksti.validoi(ohje.getTeksti(), kielet);
+                    LokalisoituTeksti.validoi(validointi, ohje.getTeksti(), kielet, lapsi.getTekstiKappale().getNimi());
                 } catch (ValidointiException v) {
-                    throw new ValidointiException("ops-pohja-ohjeistus-puuttuu", tkv.getTekstiKappale().getNimi());
+                    validointi.lisaaVirhe("ops-pohja-ohjeistus-puuttuu", tkv.getTekstiKappale().getNimi(), tkv.getTekstiKappale().getNimi());
                 }
             }
             else {
-                throw new ValidointiException("ops-pohja-ohjeistus-puuttuu");
+                validointi.lisaaVirhe("ops-pohja-ohjeistus-puuttuu");
             }
             validoiOhjeistus(lapsi, kielet);
         }
+        validointi.tuomitse();
     }
 
     private void validoiPohja(Opetussuunnitelma ops) {
@@ -511,7 +518,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi() == Tyyppi.POHJA).contains(tila)) {
-            if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU || tila == Tila.VALMIS)) {
+            if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU)) {
                 validoiOpetussuunnitelma(ops);
             }
             else if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.VALMIS) {

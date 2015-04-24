@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.teksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.Collections;
@@ -161,9 +162,15 @@ public class LokalisoituTeksti implements Serializable {
         return true;
     }
 
-    static public void validoi(LokalisoituTeksti teksti, Set<Kieli> kielet) {
+    static public void validoi(Validointi validointi, LokalisoituTeksti teksti, Set<Kieli> kielet, LokalisoituTeksti parent) {
         if (teksti == null || !teksti.hasKielet(kielet)) {
-            throw new ValidointiException("kielisisaltoa-ei-loytynyt-opsin-kielilla", teksti);
+            validointi.lisaaVirhe("kielisisaltoa-ei-loytynyt-opsin-kielilla", teksti, parent);
         }
     }
+
+//    static public void validoi(Validointi validointi, LokalisoituTeksti teksti, Set<Kieli> kielet) {
+//        if (teksti == null || !teksti.hasKielet(kielet)) {
+//            validointi.lisaaVirhe("kielisisaltoa-ei-loytynyt-opsin-kielilla", teksti);
+//        }
+//    }
 }

@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.exception;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.Getter;
 import org.springframework.core.NestedRuntimeException;
 
@@ -25,19 +25,11 @@ import org.springframework.core.NestedRuntimeException;
  */
 public class ValidointiException extends NestedRuntimeException {
     @Getter
-    LokalisoituTeksti nimi;
+    Validointi validointi;
 
-    public ValidointiException(String syy) {
-        super(syy);
-    }
-
-    public ValidointiException(String syy, Throwable t) {
-        super(syy, t);
-    }
-
-    public ValidointiException(String syy, LokalisoituTeksti nimi) {
-        super(syy);
-        this.nimi = nimi;
+    public ValidointiException(Validointi validointi) {
+        super("ops-validointivirheita");
+        this.validointi = validointi;
     }
 
 }
