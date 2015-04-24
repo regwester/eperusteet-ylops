@@ -189,10 +189,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
-        Opetussuunnitelma opspohja = ops.getPohja();
-        while (ops.getPohja() != null && !Objects.equals(ops.getPohja().getId(), opspohja.getId())) {
-            opspohja = ops.getPohja();
-        }
+        Opetussuunnitelma opspohja = ops.getAlinPohja();
 
         Oppiaine parent = oppiaineet.findOne(oppiaineId);
         Oppiaine pohjaparent = oppiaineet.findOneByOpsIdAndTunniste(opspohja.getId(), parent.getTunniste());

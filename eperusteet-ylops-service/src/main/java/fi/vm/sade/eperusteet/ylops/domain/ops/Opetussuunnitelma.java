@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -231,4 +232,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         return vuosiluokkakokonaisuudet.remove(new OpsVuosiluokkakokonaisuus(vk, false));
     }
 
+    public Opetussuunnitelma getAlinPohja() {
+        Opetussuunnitelma pohjin = this;
+        while (pohjin.getPohja() != null && !Objects.equals(pohjin.getPohja().getId(), pohjin.getId())) {
+            pohjin = pohjin.getPohja();
+        }
+        return pohjin;
+    }
 }
