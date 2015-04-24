@@ -31,7 +31,7 @@
  * otsikko: optional
  */
 angular.module('ylopsApp')
-  .directive('ohje', function ($rootScope, $timeout, $compile, $document) {
+  .directive('ohje', function ($rootScope, $timeout, $compile, $document, $window) {
     return {
       templateUrl: 'views/common/directives/ohje.html',
       restrict: 'EA',
@@ -44,6 +44,26 @@ angular.module('ylopsApp')
         extra: '='
       },
       link: function (scope, element, attrs) {
+
+        var MAXWIDTH = 400;
+        var originalSuunta = scope.suunta;
+        function setSuunta() {
+          if (!originalSuunta) {
+            var windowWidth = angular.element($window).width();
+            var elOffset = element.offset();
+            if (elOffset.left + (MAXWIDTH/2) > windowWidth) {
+              scope.suunta = 'left';
+            } else {
+              scope.suunta = originalSuunta;
+            }
+          }
+        }
+        setSuunta();
+        var winEl = angular.element($window);
+        winEl.on('resize', setSuunta);
+        scope.$on('$destroy', function () {
+          winEl.off('resize', setSuunta);
+        });
 
         scope.showing = false;
         var DELAY = 500;
@@ -71,7 +91,6 @@ angular.module('ylopsApp')
           }
 
           if (opening) {
-            console.log('closing all');
             $rootScope.$broadcast('ohje:closeAll');
           }
 
