@@ -140,8 +140,10 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
             OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
             assertEquals(Tila.VALMIS, ops.getTila());
 
-            // Valmiista ei voi palata luonnokseksi
             ops = opetussuunnitelmaService.updateTila(id, Tila.LUONNOS);
+            assertEquals(Tila.LUONNOS, ops.getTila());
+
+            ops = opetussuunnitelmaService.updateTila(id, Tila.VALMIS);
             assertEquals(Tila.VALMIS, ops.getTila());
         }
 

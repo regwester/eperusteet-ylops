@@ -23,10 +23,10 @@ ylopsApp
       model: null
     };
 
-    $scope.addNew = function (pohja) {
+    $scope.addNew = function () {
       var pohjaId = null;
-      if (pohja) {
-        pohjaId = pohja.id;
+      if ($scope.pohja.active === '1' && $scope.pohja.model) {
+        pohjaId = $scope.pohja.model.id;
       }
       $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi', pohjaId: pohjaId});
     };

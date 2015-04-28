@@ -30,7 +30,7 @@
       </div>
       <div class="col-sm-9 formfield-data viewmode">
         <span ng-repeat="vlk in model.vuosiluokkakokonaisuudet | orderBy:nimiOrder">
-          <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span><span ng-show="!$last">,&nbsp;</span>
+          <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span><span ng-show="!$last" ng-bind="', '"></span>
         </span>
       </div>
     </div>
@@ -71,7 +71,7 @@
         <div>
           <div class="organisaatio-label"><label kaanna="'kunta'"></label></div>
           <div class="organisaatio-input viewmode">
-            <span ng-repeat="kunta in model.kunnat">{{kunta.nimi | kaanna}}<span ng-show="!$last">, </span></span>
+            <span ng-repeat="kunta in model.kunnat">{{kunta.nimi | kaanna}}<span ng-show="!$last" ng-bind="', '"></span></span>
           </div>
         </div>
 
@@ -79,7 +79,7 @@
           <div class="organisaatio-label"><label kaanna="'organisaatio'"></label></div>
           <div class="organisaatio-input viewmode">
             <span ng-repeat="koulutoimija in model.koulutoimijat">
-              {{koulutoimija.nimi | kaanna:false:true}}<span ng-show="!$last">, </span>
+              {{koulutoimija.nimi | kaanna:false:true}}<span ng-show="!$last" ng-bind="', '"></span>
             </span>
             <span ng-if="!model.koulutoimijat || model.koulutoimijat.length === 0">-</span>
           </div>
@@ -88,7 +88,7 @@
         <div>
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input viewmode">
-            <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna:false:true}}<span ng-show="!$last">, </span></span>
+            <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna:false:true}}<span ng-show="!$last" ng-bind="', '"></span></span>
             <span ng-if="!model.koulut || model.koulut.length === 0">-</span>
           </div>
         </div>
@@ -102,7 +102,7 @@
 
       <div class="col-sm-9 formfield-data viewmode">
         <span ng-repeat="kielikoodi in model.julkaisukielet | orderBy:kieliOrderFn">
-          <span ng-bind="kielikoodi | kaanna"></span><span ng-show="!$last">, </span>
+          <span ng-bind="kielikoodi | kaanna"></span><span ng-show="!$last" ng-bind="', '"></span>
         </span>
       </div>
     </div>
@@ -135,6 +135,7 @@
           </ui-select-choices>
           <ui-select-match class="ui-select-match" placeholder="{{'valitse' | kaanna}}">{{$select.selected | kaanna}} {{$select.selected.diaarinumero}}</ui-select-match>
         </ui-select>
+        <p class="alert alert-error" ng-if="pohjaVaroitus" kaanna="'ei-pohjaa-koulutustyypille'"></p>
       </div>
     </div>
 

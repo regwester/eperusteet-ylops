@@ -252,7 +252,11 @@ ylopsApp
           }],
           'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
           'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
-            return opsOikeudet.fetch($stateParams);
+            var params = _.clone($stateParams);
+            if (params.pohjaId === 'uusi') {
+              params = _.omit(params, 'pohjaId');
+            }
+            return opsOikeudet.fetch(params);
           }]
         }
       })
@@ -276,10 +280,6 @@ ylopsApp
               return EperusteetPerusopetus.query({}).$promise;
             }
             return null;
-          }],
-          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
-          opsOikeudetNouto: ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
-            return opsOikeudet.fetch($stateParams);
           }]
         }
       })
