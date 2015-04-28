@@ -35,7 +35,8 @@ ylopsApp
 })
 
 .service('Lukko', function(OpetussuunnitelmanTekstitLukko, OpetussuunnitelmanTekstitRakenneLukko,
-  Notifikaatiot, $state, Editointikontrollit, $modal, Kaanna, $rootScope) {
+                           OppiaineenVuosiluokkakokonaisuusLukko,
+                           Notifikaatiot, $state, Editointikontrollit, $modal, Kaanna, $rootScope) {
   var etag = null;
   $rootScope.$on('$stateChangeSuccess', function() {
     etag = null;
@@ -65,11 +66,16 @@ ylopsApp
 
   function resourceFromState() {
     var resource = null;
+
     if (_.endsWith($state.current.name, 'yksi.tekstikappale')) {
       resource = OpetussuunnitelmanTekstitLukko;
     } else if (_.endsWith($state.current.name, 'yksi.sisalto')) {
       resource = OpetussuunnitelmanTekstitRakenneLukko;
+    } else if (_.endsWith($state.current.name, 'yksi.oppiaine.oppiaine') ||
+               _.endsWith($state.current.name, 'yksi.uusioppiaine')) {
+      resource = OppiaineenVuosiluokkakokonaisuusLukko;
     }
+
     if (!resource) {
       console.warn('Ei lukkoresurssia!');
     }

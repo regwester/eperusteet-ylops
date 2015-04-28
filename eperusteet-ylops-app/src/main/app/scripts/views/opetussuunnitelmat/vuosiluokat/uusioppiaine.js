@@ -18,7 +18,7 @@
 
 ylopsApp
 .controller('UusiOppiaineController', function ($scope, $stateParams, $state, $rootScope, Utils, OpsService, vlk,
-                                                vlkPeruste, MurupolkuData, Notifikaatiot, OppiaineCRUD, Kieli, Kaanna) {
+                                                vlkPeruste, MurupolkuData, Notifikaatiot, OppiaineCRUD, Kieli, Kaanna, Lukko) {
   MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
 
   $scope.luonnissa = $stateParams.oppiaineId === 'uusi' || !$stateParams.oppiaineId;
@@ -66,8 +66,17 @@ ylopsApp
 
     $scope.tavoitteet = [];
   } else {
-    OppiaineCRUD.get({opsId: OpsService.getId()}, {id: $stateParams.oppiaineId}, function (oppiaine) {
+    var opsId = OpsService.getId();
+    OppiaineCRUD.get({opsId: opsId}, {id: $stateParams.oppiaineId}, function (oppiaine) {
       $scope.oppiaine = oppiaine;
+
+      $scope.commonParams = {
+        opsId: opsId,
+        vlkId: oppiaine.vuosiluokkakokonaisuudet[0].id,
+        oppiaineId: oppiaine.id
+      };
+      Lukko.isLocked($scope, $scope.commonParams);
+
       var vuosiluokat = oppiaine.vuosiluokkakokonaisuudet[0].vuosiluokat;
       _.forEach(vuosiluokat, function (vl) {
         $scope.valitutVuosiluokat[vl.vuosiluokka] = true;
@@ -135,10 +144,12 @@ ylopsApp
           opsId: $scope.ops.id
         }, tallennusDto, successCb, Notifikaatiot.serverCb);
       } else {
-        OppiaineCRUD.saveValinnainen({
-          opsId: $scope.ops.id,
-          oppiaineId: $scope.oppiaine.id
-        }, tallennusDto, successCb, Notifikaatiot.serverCb);
+        Lukko.unlock($scope.commonParams, function () {
+          OppiaineCRUD.saveValinnainen({
+            opsId: $scope.ops.id,
+            oppiaineId: $scope.oppiaine.id
+          }, tallennusDto, successCb, Notifikaatiot.serverCb);
+        });
       }
     },
     cancel: function () {
@@ -146,7 +157,9 @@ ylopsApp
         $state.go('root.opetussuunnitelmat.yksi.valinnaiset', { vlkId: $stateParams.vlkId });
       }
       else {
-        $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', $stateParams);
+        Lukko.unlock($scope.commonParams, function () {
+          $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', $stateParams);
+        });
       }
     }
   };

@@ -62,6 +62,18 @@ ylopsApp
     return $resource(YlopsResources.OPS + '/tekstit/lukko');
   })
 
+  .factory('OppiaineLukko', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/oppiaineet/:oppiaineId/lukko');
+  })
+
+  .factory('OppiaineenVuosiluokkakokonaisuusLukko', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/oppiaineet/:oppiaineId/vuosiluokkakokonaisuudet/:vlkId/lukko');
+  })
+
+  .factory('OppiaineenVuosiluokkaLukko', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/oppiaineet/:oppiaineId/vuosiluokkakokonaisuudet/:vlkId/vuosiluokat/:vlId/lukko');
+  })
+
   .factory('OppiaineCRUD', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPPIAINE, {
       oppiaineId: '@id'
