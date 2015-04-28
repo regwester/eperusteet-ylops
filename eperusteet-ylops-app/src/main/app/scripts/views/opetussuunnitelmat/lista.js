@@ -39,10 +39,15 @@ ylopsApp
               return item.muokattu;
             case 'tila':
               return Utils.nameSort(item, 'tila');
-            case 'kunta':
-              return _(item.kunnat).map(function (kunta) {
-                return Kaanna.kaanna(kunta.nimi).toLowerCase();
-              }).sortBy().first();
+            case 'koulutustoimija':
+              return _(item.organisaatiot)
+                .filter(function (org) {
+                  return _.includes(org.tyypit, 'Koulutustoimija');
+                })
+                .map(function (org) {
+                  return Kaanna.kaanna(org.nimi).toLowerCase();
+                })
+                .sortBy().first();
           }
         }
       };
