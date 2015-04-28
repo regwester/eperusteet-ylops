@@ -39,7 +39,7 @@ ylopsApp
       otsikko: {},
       teksti: {}
     };
-    vlk.tehtava.otsikko[sisaltokieli] = Kaanna.kaanna('oppiaineen-tehtava');
+    vlk.tehtava.otsikko[sisaltokieli] = Kaanna.kaanna('valinnaisen-oppiaineen-tehtava');
 
     vlk.arviointi = {
       otsikko: {},
