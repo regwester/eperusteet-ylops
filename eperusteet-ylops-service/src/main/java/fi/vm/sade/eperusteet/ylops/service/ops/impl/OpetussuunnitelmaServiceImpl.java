@@ -404,7 +404,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Opetussuunnitelman tyyppiä ei voi vaihtaa");
         }
 
-        if (!Objects.equals(opetussuunnitelmaDto.getPohja().getId(), ops.getPohja().getId())) {
+        if (ops.getPohja() != null && !Objects.equals(opetussuunnitelmaDto.getPohja().getId(), ops.getPohja().getId())) {
             throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
         }
 
