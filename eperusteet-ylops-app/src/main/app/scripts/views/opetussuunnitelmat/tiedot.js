@@ -39,6 +39,8 @@ ylopsApp
     return Utils.sort(vlk.vuosiluokkakokonaisuus);
   };
 
+  $scope.model.nimi.$$validointi = Kieli.validoi($scope.model.nimi);
+
   $scope.dateOptions = {
     'year-format': 'yy',
     'starting-day': 1

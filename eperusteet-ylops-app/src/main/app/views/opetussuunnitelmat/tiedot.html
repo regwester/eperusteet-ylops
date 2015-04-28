@@ -40,7 +40,11 @@
         <label for="ops-field-nimi-readonly" kaanna="'opsin-nimi'"></label>
       </div>
       <div class="col-sm-9 formfield-data viewmode">
-        <div id="ops-field-nimi-readonly" ng-bind="model.nimi | kaanna"></div>
+        <span id="ops-field-nimi-readonly" ng-bind="model.nimi | kaanna"></span>
+        <span ng-if="model.nimi.$$validointi">
+          <span class="tekstikappale-error-badge" ng-repeat="virhe in model.nimi.$$validointi"
+              kaanna="virhe" tooltip="{{ virhe + '-kuvaus' | kaanna }}"></span>
+        </span>
       </div>
     </div>
 

@@ -288,5 +288,11 @@
   "ei-pohjaa-koulutustyypille": "Koulutustyypille ei löydy valmista pohjaa järjestelmästä.",
 
   "kielisisaltoa-ei-loytynyt-opsin-kielilla": "Kaikkea kielisisältöä ei asetettu opetussuunnitelman vaatimilla kielillä",
-  "opsin-kaikkia-oppiaineita-ei-ole-vuosiluokkaistettu": "Kaikkia oppiaineita ei ole vielä vuosiluokkaistettu"
+  "opsin-kaikkia-oppiaineita-ei-ole-vuosiluokkaistettu": "Kaikkia oppiaineita ei ole vielä vuosiluokkaistettu",
+  "tekstikentalla-ei-sisaltoa-kielella-fi": "FI",
+  "tekstikentalla-ei-sisaltoa-kielella-fi-kuvaus": "Sisältö puuttuu suomeksi",
+  "tekstikentalla-ei-sisaltoa-kielella-sv": "SV",
+  "tekstikentalla-ei-sisaltoa-kielella-sv-kuvaus": "Sisältö puuttuu ruotsiksi",
+  "tekstikentalla-ei-sisaltoa-kielella-se": "SE",
+  "tekstikentalla-ei-sisaltoa-kielella-se-kuvaus": "Sisältö puuttuu saameksi"
 }

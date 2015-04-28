@@ -30,7 +30,7 @@ ylopsApp
   })
 
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
-    Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit,
+    Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit, Kieli,
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
     KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode, Varmistusdialogi) {
 
@@ -179,6 +179,15 @@ ylopsApp
       }
       originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
     };
+
+    $scope.$watch('model', function(val) {
+      if (val && val.tekstiKappale) {
+        val.tekstiKappale.nimi = val.tekstiKappale.nimi || {};
+        val.tekstiKappale.nimi.$$validointi = Kieli.validoi(val.tekstiKappale.nimi);
+        val.tekstiKappale.teksti = val.tekstiKappale.teksti || {};
+        val.tekstiKappale.teksti.$$validointi = Kieli.validoi(val.tekstiKappale.teksti);
+      }
+    });
 
     var callbacks = {
       edit: function () {

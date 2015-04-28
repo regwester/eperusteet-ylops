@@ -258,10 +258,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
         Opetussuunnitelma ylinpohja = pohja;
-        while (ylinpohja != null && ylinpohja.getPohja() != null && ylinpohja.getId().equals(ylinpohja.getPohja().getId())) {
+        while (ylinpohja.getPohja() != null) {
             ylinpohja = ylinpohja.getPohja();
         }
-        boolean onPohjastaTehtyPohja = ylinpohja != null && ylinpohja.getId().equals(pohja.getId());
+        boolean onPohjastaTehtyPohja = ylinpohja.getId().equals(pohja.getId());
 
         ops.setOppiaineet(
             pohja.getOppiaineet().stream()

@@ -31,6 +31,8 @@ ylopsApp
       'en'
     ];
 
+    var SISALTOKIELETMAP = {};
+
     var UIKIELET = [
       'fi',
       'sv',
@@ -44,6 +46,12 @@ ylopsApp
     function isValidKielikoodi(kielikoodi) {
       return _.indexOf(SISALTOKIELET, kielikoodi) > -1;
     }
+
+    this.setSisaltokielet = function(kielikoodit) {
+      SISALTOKIELET = kielikoodit;
+      SISALTOKIELETMAP = _.zipObject(kielikoodit, _.map(kielikoodit, _.constant(true)));
+      $rootScope.$broadcast('update:sisaltokielet');
+    };
 
     this.setSisaltokieli = function (kielikoodi) {
       if (_.indexOf(SISALTOKIELET, kielikoodi) > -1) {
@@ -72,6 +80,21 @@ ylopsApp
       }
     };
 
+    this.validoi = function(olio) {
+      var errors = [];
+      if (!olio) {
+        errors.push('tekstikentalla-ei-lainkaan-sisaltoa');
+      }
+      else {
+        _.each(SISALTOKIELET, function(kieli) {
+          if (!olio[kieli]) {
+            errors.push('tekstikentalla-ei-sisaltoa-kielella-' + kieli);
+          }
+        });
+      }
+      return errors;
+    };
+
     this.getUiKieli = function () {
       return uikieli;
     };
@@ -82,6 +105,10 @@ ylopsApp
         uikieli = toParams.lang;
       }
     });
+
+    this.getSisaltokielet = function() {
+      return SISALTOKIELET;
+    };
 
     this.SISALTOKIELET = SISALTOKIELET;
     this.UIKIELET = UIKIELET;
@@ -101,7 +128,7 @@ ylopsApp
 
   .controller('KieliController', function($scope, $stateParams, $state, Kieli, $q) {
     $scope.isModal = $scope.modal === 'true';
-    $scope.sisaltokielet = Kieli.SISALTOKIELET;
+    $scope.sisaltokielet = Kieli.getSisaltokielet();
     $scope.sisaltokieli = Kieli.getSisaltokieli();
     $scope.uikielet = Kieli.UIKIELET;
     $scope.uikieli = Kieli.getUiKieli();
@@ -135,6 +162,10 @@ ylopsApp
       if (profiili.preferenssit.sisaltokieli) {
         Kieli.setSisaltokieli(profiili.preferenssit.sisaltokieli);
       }*/
+    });
+
+    $scope.$on('update:sisaltokielet', function() {
+      $scope.sisaltokielet = Kieli.getSisaltokielet();
     });
 
     $scope.$on('changed:sisaltokieli', function (event, value) {

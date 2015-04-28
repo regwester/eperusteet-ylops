@@ -140,3 +140,13 @@ $ohje-ikoni-size: 48px;
     padding: 8px;
   }
 }
+
+.tekstikappale-error-badge {
+  padding: 4px 5px 4px 5px;
+  margin-left: 5px;
+  background: #ffc563;
+  border-radius: 6px;
+  font-size: medium;
+  cursor: help;
+  font-weight: bold;
+}

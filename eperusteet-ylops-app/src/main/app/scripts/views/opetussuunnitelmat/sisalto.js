@@ -18,7 +18,7 @@
 
 ylopsApp
 .service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
-  Varmistusdialogi, Kaanna, OpsService, $rootScope) {
+  Varmistusdialogi, Kaanna, OpsService, $rootScope, Kieli) {
   function mapSisalto(root) {
     return {
       id: root.id,
