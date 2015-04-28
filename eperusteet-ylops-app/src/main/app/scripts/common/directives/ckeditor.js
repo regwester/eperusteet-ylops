@@ -240,26 +240,46 @@ ylopsApp
     };
   })
 
-  .service('EpImageService', function ($q) {
+  .service('EpImageService', function ($q, OpsService, OpsinKuvat, Upload, YlopsResources) {
     this.getAll = function () {
+      return OpsinKuvat.query({opsId: OpsService.getId()}).$promise;
       // TODO fetch list from backend
-      var deferred = $q.defer();
+      /*var deferred = $q.defer();
       deferred.resolve([
         {nimi: {fi: 'Kuva 1'}, id: '44443333ffff'},
         {nimi: {fi: 'Kuva 2 hepasta'}, id: 'aaaabbbb6666'},
       ]);
-      return deferred.promise;
+      return deferred.promise;*/
     };
 
     this.save = function (image) {
+      var deferred = $q.defer();
+      var url = (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId());
+      console.log(image, url);
+
+      Upload.upload({
+        url: url,
+        file: image,
+        fields: {
+          nimi: {
+            fi: image.name,
+            sv: image.name
+          }
+        },
+        success: function (data) {
+          deferred.resolve(data);
+        }
+      });
+      return deferred.promise;
+
       // TODO save to backend
-      console.log(image);
+      /*console.log(image);
       if (!image.id) {
         image.id = '' + _.random(9999);
       }
       var deferred = $q.defer();
       deferred.resolve(image);
-      return deferred.promise;
+      return deferred.promise;*/
     };
   })
 

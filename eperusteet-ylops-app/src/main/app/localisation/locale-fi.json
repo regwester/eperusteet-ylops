@@ -283,6 +283,20 @@
   "VUOSILUOKAT 7-9_siirtymä_nykyinen_seuraava_info": "XX",
   "VUOSILUOKAT 7-9_laaja-alaisen_osaamisen_alueet_info": "XX",
 
+  "epimage-plugin-select-placeholder": "Valitse kuva...",
+  "epimage-plugin-title": "Lisää kuva",
+  "epimage-plugin-menu-muokkaa": "Muokkaa kuvaa",
+  "epimage-plugin-menu-poista": "Poista kuva",
+  "epimage-plugin-button-label": "Kuva",
+  "epimage-plugin-label": "Kuva",
+  "epimage-plugin-label-epimage": "Kuva",
+  "ei-kuvia": "Ei kuvia",
+  "epimage-plugin-virhe-kuva-tyhja": "Valitse kuva.",
+  "epimage-plugin-lisaa-uusi": "Lataa uusi kuva",
+  "epimage-plugin-valitse": "Valitse tiedosto...",
+  "epimage-plugin-tallennettu": "Kuva tallennettu.",
+
+
   "ei-perustetta-info": "Opetussuunnitelman pohjalla olevaa perustetta ei löytynyt. Näkyvillä ovat vain paikallisesti määritetyt sisällöt.",
   "uutta-oppiainetta-ei-voi-luoda": "Uutta oppiainetta ei voi luoda, koska opetussuunnitelman pohjalla olevaa perustetta ei löytynyt.",
   "ei-pohjaa-koulutustyypille": "Koulutustyypille ei löydy valmista pohjaa järjestelmästä.",

@@ -114,4 +114,10 @@ ylopsApp
         url: YlopsResources.VUOSILUOKKAVALINNAINEN
       }
     });
+  })
+
+  .factory('OpsinKuvat', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/kuvat', {
+      id: '@id'
+    });
   });
