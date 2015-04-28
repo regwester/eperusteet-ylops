@@ -445,6 +445,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(validointi, vlk, julkaisukielet));
 
         Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+
         ops.getOppiaineet().stream()
             .filter(oa -> oa.isOma())
             .map(oa -> oa.getOppiaine())
@@ -482,13 +483,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Validointi validointi = new Validointi();
         for (TekstiKappaleViite lapsi : tkv.getLapset()) {
             Ohje ohje = ohjeRepository.findFirstByKohde(lapsi.getTekstiKappale().getTunniste());
-            if (ohje != null) {
-                try {
-                    LokalisoituTeksti.validoi(validointi, ohje.getTeksti(), kielet, lapsi.getTekstiKappale().getNimi());
-                } catch (ValidointiException v) {
-                    validointi.lisaaVirhe("ops-pohja-ohjeistus-puuttuu", tkv.getTekstiKappale().getNimi(), tkv.getTekstiKappale().getNimi());
-                }
-            } else {
+
+            if (ohje != null && (ohje.getTeksti() == null || !ohje.getTeksti().hasKielet(kielet))) {
+                validointi.lisaaVirhe("ops-pohja-ohjeistus-puuttuu", tkv.getTekstiKappale().getNimi(), tkv.getTekstiKappale().getNimi());
+            }
+            else {
                 validointi.lisaaVirhe("ops-pohja-ohjeistus-puuttuu");
             }
             validoiOhjeistus(lapsi, kielet);
@@ -497,10 +496,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void validoiPohja(Opetussuunnitelma ops) {
-        TekstiKappaleViite sisalto = ops.getTekstit();
-        for (TekstiKappaleViite lapsi : sisalto.getLapset()) {
-            validoiOhjeistus(lapsi, ops.getJulkaisukielet());
-        }
+//        TekstiKappaleViite sisalto = ops.getTekstit();
+//        for (TekstiKappaleViite lapsi : sisalto.getLapset()) {
+//            validoiOhjeistus(lapsi, ops.getJulkaisukielet());
+//        }
     }
 
     @Override
