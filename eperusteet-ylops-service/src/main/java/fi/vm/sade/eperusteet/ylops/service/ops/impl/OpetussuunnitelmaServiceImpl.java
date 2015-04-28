@@ -290,6 +290,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     tkv.setOmistussuhde(teeKopio ? Omistussuhde.OMA : Omistussuhde.LAINATTU);
                     tkv.setLapset(new ArrayList<>());
                     tkv.setVanhempi(parent);
+                    tkv.setPakollinen(vanhaTkv.isPakollinen());
                     tkv.setTekstiKappale(teeKopio
                             ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy())
                             : vanhaTkv.getTekstiKappale());
