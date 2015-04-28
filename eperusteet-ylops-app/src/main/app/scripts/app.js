@@ -29,7 +29,8 @@ var ylopsApp = angular.module('ylopsApp', [
   'ui.utils',
   'ui.select',
   'ui.tree',
-  'ui.sortable'
+  'ui.sortable',
+  'ngFileUpload'
 ]);
 
 /* jshint ignore:end */

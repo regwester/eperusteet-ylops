@@ -20,6 +20,10 @@
 ylopsApp
   .run(function() {
     CKEDITOR.disableAutoInline = true;
+    // load external plugins
+    var basePath = CKEDITOR.basePath;
+    basePath = basePath.substr(0, basePath.indexOf('bower_components/'));
+    CKEDITOR.plugins.addExternal('epimage', basePath + 'ckeditor-plugins/epimage/', 'plugin.js');
   })
   .constant('editorLayouts', {
     minimal:
@@ -39,7 +43,7 @@ ylopsApp
         { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
         { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','-','RemoveFormat' ] },
         { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote' ] },
-        { name: 'insert', items : [ 'Table','HorizontalRule','SpecialChar','Link'] },
+        { name: 'insert', items : [ 'Table','HorizontalRule','SpecialChar','Link','epimage'] },
         { name: 'tools', items : [ 'About' ] }
       ]
   })
@@ -94,9 +98,11 @@ ylopsApp
         var deferredcall = null;
         editor = CKEDITOR.inline(element[0], {
           toolbar: toolbarLayout,
-          removePlugins: 'resize,elementspath,scayt,wsc',
-          extraPlugins: 'divarea,sharedspace',
-          disallowedContent: 'br; tr td{width,height};',
+          removePlugins: 'resize,elementspath,scayt,wsc,image',
+          extraPlugins: 'divarea,sharedspace,epimage',
+          // TODO: doesn't remove src attribute from img
+          disallowedContent: 'br; tr td{width,height}; img[src]',
+          extraAllowedContent: 'img[data-uid]',
           language: 'fi',
           'entities_latin': false,
           sharedSpaces: {
@@ -232,4 +238,117 @@ ylopsApp
         ctrl.$render();
       }
     };
+  })
+
+  .service('EpImageService', function ($q) {
+    this.getAll = function () {
+      // TODO fetch list from backend
+      var deferred = $q.defer();
+      deferred.resolve([
+        {nimi: {fi: 'Kuva 1'}, id: '44443333ffff'},
+        {nimi: {fi: 'Kuva 2 hepasta'}, id: 'aaaabbbb6666'},
+      ]);
+      return deferred.promise;
+    };
+
+    this.save = function (image) {
+      // TODO save to backend
+      console.log(image);
+      if (!image.id) {
+        image.id = '' + _.random(9999);
+      }
+      var deferred = $q.defer();
+      deferred.resolve(image);
+      return deferred.promise;
+    };
+  })
+
+  .controller('EpImagePluginController', function ($scope, EpImageService, Kaanna, Algoritmit, $timeout) {
+    $scope.service = EpImageService;
+    $scope.filtered = [];
+    $scope.images = [];
+    $scope.showPreview = false;
+    $scope.model = {
+      files: [],
+      chosen: null
+    };
+
+    $scope.$watch('model.files[0]', function () {
+      if (_.isArray($scope.model.files) && $scope.model.files.length > 0) {
+        $scope.showPreview = true;
+      }
+    });
+    $scope.$watch('model.chosen', function () {
+      $scope.showPreview = false;
+    });
+
+    var callback = angular.noop;
+    var setDeferred = null;
+
+    function setChosenValue (value) {
+      var found = _.find($scope.images, function (image) {
+        return image.id === value;
+      });
+      $scope.model.chosen = found || null;
+    }
+
+    function doSort(items) {
+      return _.sortBy(items, function (item) {
+        return Kaanna.kaanna(item.nimi).toLowerCase();
+      });
+    }
+
+    $scope.init = function () {
+      $scope.service.getAll().then(function (res) {
+        $scope.images = res;
+        $scope.filtered = doSort(res);
+        if (setDeferred) {
+          setChosenValue(_.cloneDeep(setDeferred));
+          setDeferred = null;
+        }
+      });
+    };
+
+    $scope.filterImages = function (value) {
+      $scope.filtered = _.filter(doSort($scope.images), function (item) {
+        return Algoritmit.match(value, item.nimi);
+      });
+    };
+
+    // data from angular model to plugin
+    $scope.registerListener = function (cb) {
+      callback = cb;
+    };
+    $scope.$watch('model.chosen', function (value) {
+      callback(value);
+    });
+
+    // data from plugin to angular model
+    $scope.setValue = function (value) {
+      $scope.$apply(function () {
+        if (_.isEmpty($scope.images)) {
+          setDeferred = value;
+        } else {
+          setChosenValue(value);
+        }
+      });
+    };
+
+    $scope.closeMessage = function () {
+      $scope.message = null;
+    };
+
+    $scope.saveNew = function () {
+      var image = $scope.model.files[0];
+      $scope.service.save(image).then(function (res) {
+        $scope.message = 'epimage-plugin-tallennettu';
+        $timeout(function () {
+          $scope.closeMessage();
+        }, 8000);
+        // TODO res should be the image id
+        setDeferred = _.clone(res);
+        $scope.init();
+      });
+    };
+
   });
