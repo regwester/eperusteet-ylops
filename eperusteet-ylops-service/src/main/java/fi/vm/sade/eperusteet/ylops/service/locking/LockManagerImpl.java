@@ -66,36 +66,28 @@ public class LockManagerImpl implements LockManager {
 
         Lukko lukko;
         try {
-            lukko = transaction.execute(new TransactionCallback<Lukko>() {
-                @Override
-                public Lukko doInTransaction(TransactionStatus status) {
-                    final Lukko newLukko = new Lukko(id, oid, maxLockTime);
-                    Lukko current = getLock(id);
-                    if (current != null) {
-                        em.refresh(current, LockModeType.PESSIMISTIC_WRITE);
-                        if (oid.equals(current.getHaltijaOid())) {
-                            current.refresh();
-                        } else if (current.getVanhentuu().isBefore(Instant.now())) {
-                            em.remove(current);
-                            em.persist(newLukko);
-                            current = newLukko;
-                        }
-                    } else {
+            lukko = transaction.execute(status -> {
+                final Lukko newLukko = new Lukko(id, oid, maxLockTime);
+                Lukko current = getLock(id);
+                if (current != null) {
+                    em.refresh(current, LockModeType.PESSIMISTIC_WRITE);
+                    if (oid.equals(current.getHaltijaOid())) {
+                        current.refresh();
+                    } else if (current.getVanhentuu().isBefore(Instant.now())) {
+                        em.remove(current);
                         em.persist(newLukko);
                         current = newLukko;
                     }
-                    return current;
+                } else {
+                    em.persist(newLukko);
+                    current = newLukko;
                 }
+                return current;
             });
         } catch (TransactionException | DataAccessException | PersistenceException t) {
 
             // (todennäköisesti) samanaikaisesti toisessa transaktiossa lisätty sama lukko, yritetään lukea tämä.
-            lukko = transaction.execute(new TransactionCallback<Lukko>() {
-                @Override
-                public Lukko doInTransaction(TransactionStatus status) {
-                    return getLock(id);
-                }
-            });
+            lukko = transaction.execute(status -> getLock(id));
         }
 
         if (lukko == null || !oid.equals(lukko.getHaltijaOid())) {
