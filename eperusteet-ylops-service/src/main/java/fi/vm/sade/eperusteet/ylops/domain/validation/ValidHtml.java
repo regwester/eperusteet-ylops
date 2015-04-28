@@ -15,18 +15,16 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.validation;
 
-import org.jsoup.safety.Whitelist;
-
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
+import org.jsoup.safety.Whitelist;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 
 /**
  *
@@ -54,6 +52,7 @@ public @interface ValidHtml {
                 .addAttributes("th", "scope", "colspan", "rowspan")
                 .addAttributes("td", "colspan", "rowspan")
                 .addAttributes("a", "href", "target")
+                .addAttributes("img", "data-uid")
                 .addAttributes("abbr", "data-viite"));
 
         private Whitelist whitelist;
