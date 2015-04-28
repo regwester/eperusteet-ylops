@@ -32,7 +32,7 @@ public enum Tila {
     VALMIS("valmis") {
         @Override
         public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
-            return isPohja ? EnumSet.noneOf(Tila.class) : EnumSet.of(LUONNOS, POISTETTU, JULKAISTU);
+            return isPohja ? EnumSet.of(LUONNOS, POISTETTU) : EnumSet.of(LUONNOS, POISTETTU, JULKAISTU);
         }
     },
     POISTETTU("poistettu") {
