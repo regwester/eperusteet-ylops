@@ -167,6 +167,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         liitteet.add(liite);
     }
 
+    public void removeLiite(Liite liite) {
+        liitteet.remove(liite);
+    }
+
     public void attachVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, false));
     }
