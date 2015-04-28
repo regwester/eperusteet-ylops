@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.apache.tika.Tika;
@@ -46,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -72,32 +72,30 @@ public class KuvaUploadController {
 
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    public Callable<ResponseEntity<String>> upload(
+    public ResponseEntity<String> upload(
         @PathVariable("opsId")
         @P("opsId") Long opsId,
         @RequestParam("nimi") String nimi,
         @RequestParam("file") Part file,
         UriComponentsBuilder ucb)
         throws IOException, HttpMediaTypeNotSupportedException {
-        return () -> {
-            final long koko = file.getSize();
-            try (PushbackInputStream pis = new PushbackInputStream(file.getInputStream(), BUFSIZE)) {
-                byte[] buf = new byte[koko < BUFSIZE ? (int) koko : BUFSIZE];
-                int len = pis.read(buf);
-                if (len < buf.length) {
-                    throw new IOException("luku epäonnistui");
-                }
-                pis.unread(buf);
-                String tyyppi = tika.detect(buf);
-                if (!SUPPORTED_TYPES.contains(tyyppi)) {
-                    throw new HttpMediaTypeNotSupportedException(tyyppi + "ei ole tuettu");
-                }
-                UUID id = liitteet.add(opsId, tyyppi, nimi, koko, pis);
-                HttpHeaders h = new HttpHeaders();
-                h.setLocation(ucb.path("/opetussuunnitelmat/{opsId}/kuvat/{id}").buildAndExpand(opsId, id.toString()).toUri());
-                return new ResponseEntity<>(id.toString(), h, HttpStatus.CREATED);
+        final long koko = file.getSize();
+        try (PushbackInputStream pis = new PushbackInputStream(file.getInputStream(), BUFSIZE)) {
+            byte[] buf = new byte[koko < BUFSIZE ? (int) koko : BUFSIZE];
+            int len = pis.read(buf);
+            if (len < buf.length) {
+                throw new IOException("luku epäonnistui");
             }
-        };
+            pis.unread(buf);
+            String tyyppi = tika.detect(buf);
+            if (!SUPPORTED_TYPES.contains(tyyppi)) {
+                throw new HttpMediaTypeNotSupportedException(tyyppi + "ei ole tuettu");
+            }
+            UUID id = liitteet.add(opsId, tyyppi, nimi, koko, pis);
+            HttpHeaders h = new HttpHeaders();
+            h.setLocation(ucb.path("/opetussuunnitelmat/{opsId}/kuvat/{id}").buildAndExpand(opsId, id.toString()).toUri());
+            return new ResponseEntity<>(id.toString(), h, HttpStatus.CREATED);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -124,6 +122,15 @@ public class KuvaUploadController {
         }
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(
+        @PathVariable("opsId") Long opsId,
+        @PathVariable("id") UUID id) {
+        liitteet.delete(opsId, id);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
     public List<LiiteDto> getAll(@PathVariable("opsId") Long opsId) {
         return liitteet.getAll(opsId);
     }
