@@ -266,7 +266,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setOppiaineet(
             pohja.getOppiaineet().stream()
             .map(ooa -> teeKopio
-                    ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), !onPohjastaTehtyPohja)
+                    ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine(), !onPohjastaTehtyPohja), true)
                     : new OpsOppiaine(ooa.getOppiaine(), false))
             .collect(Collectors.toSet()));
 
