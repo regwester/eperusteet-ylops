@@ -25,7 +25,12 @@ ylopsApp
 
   .filter('stripTags', function () {
     return function (val) {
-      return String(val).replace(/<[^>]+>/gm, '');
+      if (!val) {
+        return '';
+      }
+      else {
+        return String(val).replace(/<[^>]+>/gm, '');
+      }
     };
   })
 
