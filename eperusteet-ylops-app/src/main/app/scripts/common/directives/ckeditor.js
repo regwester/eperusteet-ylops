@@ -100,7 +100,7 @@ ylopsApp
           toolbar: toolbarLayout,
           removePlugins: 'resize,elementspath,scayt,wsc,image',
           extraPlugins: 'divarea,sharedspace,epimage',
-          // TODO: doesn't remove src attribute from img
+          // TODO: doesn't remove src attribute from img, hence the hack in trim function
           disallowedContent: 'br; tr td{width,height}; img[src]',
           extraAllowedContent: 'img[data-uid]',
           language: 'fi',
@@ -168,10 +168,12 @@ ylopsApp
           }
         });
 
+        var UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}';
+        var imgSrcPattern = new RegExp('src="[^"]+/' + UUID + '"', 'g');
         function trim(obj) {
           // Replace all nbsps with normal spaces, remove extra spaces and trim ends.
           if (_.isString(obj)) {
-            obj = obj.replace(/&nbsp;/gi, ' ').replace(/ +/g, ' ').trim();
+            obj = obj.replace(/&nbsp;/gi, ' ').replace(/ +/g, ' ').replace(imgSrcPattern, ' ').trim();
           }
           return obj;
         }
@@ -243,43 +245,27 @@ ylopsApp
   .service('EpImageService', function ($q, OpsService, OpsinKuvat, Upload, YlopsResources) {
     this.getAll = function () {
       return OpsinKuvat.query({opsId: OpsService.getId()}).$promise;
-      // TODO fetch list from backend
-      /*var deferred = $q.defer();
-      deferred.resolve([
-        {nimi: {fi: 'Kuva 1'}, id: '44443333ffff'},
-        {nimi: {fi: 'Kuva 2 hepasta'}, id: 'aaaabbbb6666'},
-      ]);
-      return deferred.promise;*/
     };
 
     this.save = function (image) {
       var deferred = $q.defer();
       var url = (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId());
-      console.log(image, url);
 
       Upload.upload({
         url: url,
         file: image,
         fields: {
-          nimi: {
-            fi: image.name,
-            sv: image.name
-          }
+          nimi: image.name
         },
         success: function (data) {
           deferred.resolve(data);
         }
       });
       return deferred.promise;
+    };
 
-      // TODO save to backend
-      /*console.log(image);
-      if (!image.id) {
-        image.id = '' + _.random(9999);
-      }
-      var deferred = $q.defer();
-      deferred.resolve(image);
-      return deferred.promise;*/
+    this.getUrl = function (image) {
+      return (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId()) + '/' + image.id;
     };
   })
 
@@ -317,6 +303,10 @@ ylopsApp
         return Kaanna.kaanna(item.nimi).toLowerCase();
       });
     }
+
+    $scope.urlForImage = function (image) {
+      return $scope.service.getUrl(image);
+    };
 
     $scope.init = function () {
       $scope.service.getAll().then(function (res) {

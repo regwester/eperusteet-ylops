@@ -92,9 +92,7 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
             },
             commit: function (element) {
               element.setAttribute('data-uid', this.getValue());
-              // TODO set the real src
-              element.setAttribute('data-extra', 'testi-testi');
-              element.setAttribute('src', 'http://lorempixel.com/400/200/cats/' + this.getValue());
+              element.setAttribute('src', controllerScope.urlForImage({id: this.getValue()}));
             }
           }
         ]
