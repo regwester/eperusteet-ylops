@@ -15,8 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.util;
 
-import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
-
 /**
  *
  * @author jhyoty
@@ -31,7 +29,7 @@ final class CacheControls {
     public static final String PUBLIC_NOT_CACHEABLE = "no-cache";
 
     private static final String PRIVATE_CACHEABLE = "private,max-age=";
-    private static final String PUBLIC_CACHEABLE = "max-age=";
+    private static final String PUBLIC_CACHEABLE = "public,max-age=";
 
     public static String buildCacheControl(CacheControl cc) {
         if (cc.nocache()) {
