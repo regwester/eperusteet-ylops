@@ -39,6 +39,9 @@ ylopsApp
   })
   .controller('KielitarjontaModalController', function($scope, $stateParams, $modalInstance, $q, OpsService,
                                                        $state, opsId, oppiaine, perusteOppiaine, OppiaineCRUD, Notifikaatiot) {
+    var vuosiluokkakokonaisuudet = _(OpsService.get().vuosiluokkakokonaisuudet).map('vuosiluokkakokonaisuus').map('_tunniste').value();
+    vuosiluokkakokonaisuudet = _.zipObject(vuosiluokkakokonaisuudet, _.map(vuosiluokkakokonaisuudet, _.constant(true)));
+
     function getType() {
       if (!_.isString(oppiaine.koodiArvo)) {
         console.log('Oppiaineen koodia ei ole määritelty');
@@ -60,7 +63,11 @@ ylopsApp
 
     $scope.$type = getType();
     $scope.oppiaine = oppiaine;
-    $scope.$kaikki = _.clone(perusteOppiaine.oppimaarat);
+    $scope.$kaikki = _.filter(_.clone(perusteOppiaine.oppimaarat), function(om) {
+      return _.any(om.vuosiluokkakokonaisuudet, function(vlk) {
+        return vuosiluokkakokonaisuudet[vlk._vuosiluokkakokonaisuus];
+      });
+    });
 
     if ($scope.$type === 'uskonto') {
       $scope.$kaikki.unshift({
