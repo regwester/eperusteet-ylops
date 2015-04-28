@@ -22,14 +22,14 @@ ylopsApp
   $timeout, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
   PeruskoulutoimijaHaku, kunnat, Kieli) {
 
+  $scope.kielivalinnat = []; // Täytetään pohjan perusteella
   $scope.luonnissa = $stateParams.id === 'uusi';
   $scope.editableModel = $scope.model;
   if ($scope.luonnissa) {
-    $scope.editableModel.julkaisukielet = ['fi'];
+    $scope.editableModel.julkaisukielet = [_.first($scope.kielivalinnat)];
     $scope.editableModel._pohja = $stateParams.pohjaId === '' ? null : $stateParams.pohjaId;
   }
   $scope.editMode = false;
-  $scope.kielivalinnat = ['fi', 'sv', 'se'];
   $scope.loading = false;
   $scope.kuntalista = [];
   $scope.koulutoimijalista = [];
@@ -94,6 +94,22 @@ ylopsApp
     $scope.model.koulut = filterOppilaitos($scope.model.organisaatiot);
   }
 
+  function isValidKielivalinta(chosen, options) {
+    return _.all(chosen, function (lang) {
+      return _.contains(options, lang);
+    });
+  }
+
+  function asetaKieletJaVlk(ops) {
+    $scope.editableModel.vuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
+    $scope.kielivalinnat = ops.julkaisukielet;
+    if (_.isEmpty($scope.editableModel.julkaisukielet) ||
+        !isValidKielivalinta($scope.editableModel.julkaisukielet, $scope.kielivalinnat)) {
+      $scope.editableModel.julkaisukielet = [_.first($scope.kielivalinnat)];
+    }
+    mapJulkaisukielet();
+  }
+
   //Jos luodaan uutta ops:ia toisesta opetussuunnitelmasta,
   // niin haetaan pohja opetussuunnitelmasta kunnat ja organisaatiot
   if ($scope.luonnissa && $scope.editableModel._pohja) {
@@ -103,19 +119,32 @@ ylopsApp
       $scope.editableModel.kunnat = res.kunnat;
       $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
       $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
-      $scope.editableModel.vuosiluokkakokonaisuudet = res.vuosiluokkakokonaisuudet;
       $scope.editableModel.koulutustyyppi = res.koulutustyyppi;
+      asetaKieletJaVlk(res);
     }, Notifikaatiot.serverCb);
-    // Jos luonnissa ja ei pohja ops:ia, haetaan vuosiluokkakokonaisuudet virkailijan pohjasta
-  } else if ($scope.luonnissa && !$scope.editableModel._pohja) {
-    OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'}, function(pohjat) {
-      // TODO: pitää varmaankin ottaa huomioon mitä ops:ia ollaan luomassa. (Esi-, lisä vai perusopetus)
-      var aktiivinenPohja = _.find(pohjat, {tila: 'valmis', koulutustyyppi: 'koulutustyyppi_16'});
-      OpetussuunnitelmaCRUD.get({opsId: aktiivinenPohja.id}, function (ops) {
-        $scope.editableModel.vuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
-      });
-    });
   }
+
+  function getPohja(koulutustyyppi, existingPohja) {
+    if (_.isObject(existingPohja) && existingPohja.id) {
+      OpetussuunnitelmaCRUD.get({opsId: existingPohja.id}, asetaKieletJaVlk);
+    } else {
+      OpetussuunnitelmaCRUD.query({tyyppi: 'pohja'}, function(pohjat) {
+        var aktiivinenPohja = _.find(pohjat, {tila: 'valmis', koulutustyyppi: koulutustyyppi});
+        if (aktiivinenPohja) {
+          $scope.pohjaVaroitus = false;
+          OpetussuunnitelmaCRUD.get({opsId: aktiivinenPohja.id}, asetaKieletJaVlk);
+        } else {
+          $scope.pohjaVaroitus = true;
+        }
+      });
+    }
+  }
+
+  $scope.$watch('editableModel.koulutustyyppi', function (value) {
+    if (value) {
+      getPohja(value, $scope.editableModel.pohja);
+    }
+  });
 
   $scope.kieliOrderFn = Kieli.orderFn;
 
@@ -295,24 +324,4 @@ ylopsApp
     }
   };
 
-})
-
-.directive('datepickerPopup', ['datepickerPopupConfig', 'dateParser', 'dateFilter', function (datepickerPopupConfig, dateParser, dateFilter) {
-    return {
-        'restrict': 'A',
-        'require': '^ngModel',
-        'link': function ($scope, element, attrs, ngModel) {
-            var dateFormat;
-
-            //*** Temp fix for Angular 1.3 support [#2659](https://github.com/angular-ui/bootstrap/issues/2659)
-            attrs.$observe('datepickerPopup', function(value) {
-                dateFormat = value || datepickerPopupConfig.datepickerPopup;
-                ngModel.$render();
-            });
-
-            ngModel.$formatters.push(function (value) {
-                return ngModel.$isEmpty(value) ? value : dateFilter(value, dateFormat);
-            });
-        }
-    };
-}]);
+});

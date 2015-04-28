@@ -135,6 +135,7 @@
           </ui-select-choices>
           <ui-select-match class="ui-select-match" placeholder="{{'valitse' | kaanna}}">{{$select.selected | kaanna}} {{$select.selected.diaarinumero}}</ui-select-match>
         </ui-select>
+        <p class="alert alert-error" ng-if="pohjaVaroitus" kaanna="'ei-pohjaa-koulutustyypille'"></p>
       </div>
     </div>
 
