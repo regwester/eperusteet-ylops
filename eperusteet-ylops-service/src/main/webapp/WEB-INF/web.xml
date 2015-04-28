@@ -21,6 +21,8 @@
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ASYNC</dispatcher>
     </filter-mapping>
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
@@ -38,6 +40,11 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
+        <multipart-config>
+            <max-file-size>10000000</max-file-size>
+            <max-request-size>10000000</max-request-size>
+            <file-size-threshold>1000000</file-size-threshold>
+        </multipart-config>
     </servlet>
     <servlet>
         <servlet-name>VirheServlet</servlet-name>

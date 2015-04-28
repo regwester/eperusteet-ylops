@@ -23,12 +23,14 @@ import fi.vm.sade.eperusteet.ylops.resource.util.CacheHeaderInterceptor;
 import fi.vm.sade.eperusteet.ylops.resource.util.LoggingInterceptor;
 import java.util.List;
 import javax.persistence.EntityManagerFactory;
+import org.apache.commons.io.Charsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -63,8 +65,10 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(byteArrayConverter());
         converters.add(converter());
+        StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter(Charsets.UTF_8);
+        stringHttpMessageConverter.setWriteAcceptCharset(false);
+        converters.add(stringHttpMessageConverter);
     }
 
     @Override

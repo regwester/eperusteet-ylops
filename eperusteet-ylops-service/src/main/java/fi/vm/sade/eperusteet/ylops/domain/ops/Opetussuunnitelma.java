@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
+import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -36,7 +37,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
-import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -46,6 +46,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -153,8 +154,17 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @NotNull
     private Set<Kieli> julkaisukielet = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "opetussuunnitelma_liite", inverseJoinColumns = {@JoinColumn(name="liite_id")}, joinColumns = {@JoinColumn(name="opetussuunnitelma_id")})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private Set<Liite> liitteet = new HashSet<>();
+
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
+    }
+
+    public void attachLiite(Liite liite) {
+        liitteet.add(liite);
     }
 
     public void attachVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {

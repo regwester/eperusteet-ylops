@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.util;
 
-import java.util.Date;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -63,11 +62,6 @@ public class CacheHeadersAspect {
         if (responseEntity.getHeaders().getCacheControl() == null) {
             HttpHeaders headers = new HttpHeaders();
             headers.putAll(responseEntity.getHeaders());
-            if ( age < 0 ) {
-                headers.setExpires(0);
-            } else {
-                headers.setExpires((new Date().getTime()) + age * 1000);
-            }
             headers.setCacheControl(cacheControl);
             return new ResponseEntity<>(responseEntity.getBody(), headers, responseEntity.getStatusCode());
         }
