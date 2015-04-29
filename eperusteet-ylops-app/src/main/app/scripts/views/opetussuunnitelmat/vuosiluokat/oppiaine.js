@@ -63,13 +63,15 @@ ylopsApp
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
 
-  var commonParams = {
-    opsId: $stateParams.id,
-    vlkId: $scope.oppiaineenVlk.id,
-    oppiaineId: $stateParams.oppiaineId
-  };
+  if ($scope.oppiaineenVlk) {
+    var commonParams = {
+      opsId: $stateParams.id,
+      vlkId: $scope.oppiaineenVlk.id,
+      oppiaineId: $stateParams.oppiaineId
+    };
 
-  Lukko.isLocked($scope, commonParams);
+    Lukko.isLocked($scope, commonParams);
+  }
 
   function vanhempiOnUskontoTaiKieli(oppiaine) {
     return _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
