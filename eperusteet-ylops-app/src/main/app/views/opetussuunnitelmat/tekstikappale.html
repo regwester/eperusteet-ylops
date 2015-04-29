@@ -76,7 +76,7 @@
     <div id="ops-ckeditor" ckeditor class="bigger" ng-model="model.tekstiKappale.teksti" slocalized></div>
   </div>
   <div ng-if="!editMode">
-    <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe" kuvalinkit></div>
+    <div ng-bind-html="model.tekstiKappale.teksti | kaanna | kuvalinkit | unsafe"></div>
     <p class="empty-notice" ng-show="!model.tekstiKappale.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
   </div>
 </div>

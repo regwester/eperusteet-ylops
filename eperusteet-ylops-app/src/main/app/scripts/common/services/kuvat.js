@@ -31,12 +31,10 @@ ylopsApp
         file: image,
         fields: {
           nimi: image.name
-        },
-        success: function (data) {
+        }}).success(function (data) {
           deferred.resolve(data);
-        }
-      });
-      return deferred.promise;
+        });
+        return deferred.promise;
     };
 
     this.getUrl = function (image) {
@@ -127,6 +125,7 @@ ylopsApp
       var image = $scope.model.files[0];
       $scope.service.save(image).then(function (res) {
         $scope.message = 'epimage-plugin-tallennettu';
+        $scope.model.files = [];
         $timeout(function () {
           $scope.closeMessage();
         }, 8000);
@@ -137,24 +136,21 @@ ylopsApp
     };
 
   })
-
-  .directive('kuvalinkit', function ($timeout, EpImageService) {
-    return {
-      restrict: 'A',
-      link: function (scope, element) {
-        function setup() {
-          element.find('img[data-uid]').each(function () {
+  .filter('kuvalinkit', function(EpImageService) {
+    return function(text) {
+      var modified = false;
+      var tmp = angular.element('<div>'+text+'</div>');
+      tmp.find('img[data-uid]').each(function () {
             var el = angular.element(this);
-            el.attr('src', EpImageService.getUrl({id: el.attr('data-uid')}));
-          });
-        }
-
-        function refresh() {
-          $timeout(function () {
-            setup();
-          }, 500);
-        }
-        refresh();
+            var url = EpImageService.getUrl({id: el.attr('data-uid')});
+            if ( el.attr('src') !== url ) {
+              modified = true;
+              el.attr('src', EpImageService.getUrl({id: el.attr('data-uid')}));
+            }
+      });
+      if ( modified ) {
+        return tmp.html();
       }
+      return text;
     };
   });
