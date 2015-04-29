@@ -63,13 +63,13 @@ ylopsApp
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
 
-  if ($scope.oppiaineenVlk) {
-    var commonParams = {
-      opsId: $stateParams.id,
-      vlkId: $scope.oppiaineenVlk.id,
-      oppiaineId: $stateParams.oppiaineId
-    };
+  var commonParams = $scope.oppiaineenVlk ? {
+    opsId: $stateParams.id,
+    vlkId: $scope.oppiaineenVlk.id,
+    oppiaineId: $stateParams.oppiaineId
+    } : null;
 
+  if (commonParams) {
     Lukko.isLocked($scope, commonParams);
   }
 
