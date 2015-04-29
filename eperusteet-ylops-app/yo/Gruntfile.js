@@ -276,7 +276,15 @@ module.exports = function(grunt) {
             '**',
             '!samples/**'
           ]
-        }, {
+        },{
+            expand: true,
+            cwd: '<%= yeoman.app %>/bower_components/ng-file-upload',
+            dest: '<%= yeoman.dist %>/bower_components/ng-file-upload',
+            src: [
+                'FileAPI.flash.swf',
+                'FileAPI.min.js'
+            ]
+        },{
           expand: true,
           cwd: '<%= yeoman.app %>/localisation',
           dest: '<%= yeoman.dist %>/localisation',

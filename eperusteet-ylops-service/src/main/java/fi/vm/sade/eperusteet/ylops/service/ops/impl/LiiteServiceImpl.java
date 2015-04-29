@@ -54,7 +54,7 @@ public class LiiteServiceImpl implements LiiteService {
     @Override
     @Transactional(readOnly = true)
     public void export(Long opsId, UUID id, OutputStream os) {
-        Liite liite = liitteet.findOne(opsId, id);
+        Liite liite = liitteet.findOne(id);
         if ( liite == null ) {
             throw new NotExistsException("ei ole");
         }
@@ -68,7 +68,8 @@ public class LiiteServiceImpl implements LiiteService {
     @Override
     @Transactional(readOnly = true)
     public LiiteDto get(Long opsId, UUID id) {
-        Liite liite = liitteet.findOne(opsId, id);
+        Liite liite = liitteet.findOne(id);
+        //TODO. tarkasta että liite liittyy pyydettyyn suunnitelmaan tai johonkin sen esivanhempaan
         return mapper.map(liite, LiiteDto.class);
     }
 

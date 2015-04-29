@@ -55,7 +55,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/kuvat")
-public class KuvaUploadController {
+public class LiitetiedostoController {
 
     private static final int BUFSIZE = 64 * 1024;
     final Tika tika = new Tika();
@@ -99,7 +99,7 @@ public class KuvaUploadController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @CacheControl(nonpublic = false, age = CacheControl.ONE_YEAR)
+    @CacheControl(age = CacheControl.ONE_YEAR)
     public void get(
         @PathVariable("opsId") Long opsId,
         @PathVariable("id") UUID id,
@@ -115,6 +115,7 @@ public class KuvaUploadController {
                 response.setHeader("ETag", id.toString());
                 try (OutputStream os = response.getOutputStream()) {
                     liitteet.export(opsId, id, os);
+                    os.flush();
                 }
             }
         } else {
@@ -135,6 +136,6 @@ public class KuvaUploadController {
         return liitteet.getAll(opsId);
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(KuvaUploadController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LiitetiedostoController.class);
 
 }

@@ -217,7 +217,7 @@ ylopsApp
           editor.filter.addTransformations([[
               {
                 element: 'img',
-                right: function(el, tools) {
+                right: function(el) {
                   el.attributes.src = EpImageService.getUrl({id: el.attributes['data-uid']});
                 }
               }
