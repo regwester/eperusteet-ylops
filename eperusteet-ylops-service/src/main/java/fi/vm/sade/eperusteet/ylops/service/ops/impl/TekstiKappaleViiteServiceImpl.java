@@ -225,10 +225,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         List<TekstiKappaleViite> lapset = viite.getLapset();
         lapset.clear();
 
-        // Päivitä myös tekstikappale jos DTO sen sisältää
-        // TODO: sallittu/haluttu toimenpide?
-        updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), false);
-
         if (uusi.getLapset() != null) {
             lapset.addAll(uusi.getLapset()
                 .stream()

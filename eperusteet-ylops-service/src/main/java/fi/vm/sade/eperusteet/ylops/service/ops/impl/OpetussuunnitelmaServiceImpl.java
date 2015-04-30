@@ -52,7 +52,6 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRep
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
@@ -422,10 +421,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         mapper.map(opetussuunnitelmaDto, ops);
         ops = repository.save(ops);
-
-        if (opetussuunnitelmaDto.getTekstit() != null) {
-            tekstiKappaleViiteService.reorderSubTree(ops.getId(), ops.getTekstit().getId(), opetussuunnitelmaDto.getTekstit().get());
-        }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
