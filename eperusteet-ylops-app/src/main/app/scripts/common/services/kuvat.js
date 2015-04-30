@@ -33,8 +33,8 @@ ylopsApp
           nimi: image.name
         }}).success(function (data) {
           deferred.resolve(data);
-        }).error(function() {
-          deferred.reject();
+        }).error(function(data) {
+          deferred.reject(data);
         });
         return deferred.promise;
     };
@@ -51,6 +51,7 @@ ylopsApp
     $scope.showPreview = false;
     $scope.model = {
       files: [],
+      rejected: [],
       chosen: null
     };
 
@@ -131,9 +132,14 @@ ylopsApp
         $timeout(function () {
           $scope.closeMessage();
         }, 8000);
-        // TODO res should be the image id
         setDeferred = _.clone(res);
         $scope.init();
+      }, function (res) {
+        $scope.message = res.syy || 'epimage-plugin-tallennusvirhe';
+        $scope.model.files = [];
+        $timeout(function () {
+          $scope.closeMessage();
+        }, 8000);
       });
     };
 

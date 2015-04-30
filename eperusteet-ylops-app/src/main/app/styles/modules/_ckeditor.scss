@@ -131,4 +131,11 @@ img[data-uid] {
     background-color: #d2ecf5;
     border: 1px solid #92cce0;
   }
+  .success-message, .error-message {
+    margin-top: 10px;
+    font-weight: 700;
+  }
+  .error-message {
+    color: red;
+  }
 }
