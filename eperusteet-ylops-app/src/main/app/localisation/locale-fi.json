@@ -271,6 +271,8 @@
   "ylikirjoita-uusi-sisalto": "Jatka muokkaamista",
   "ylikirjoittaessasi-voit-palauttaa": "Jatkaessasi voit ylikirjoittaa toisten muutokset. Ne säilyvät edelleen muutoshistoriassa ja voit palauttaa ne sieltä",
 
+  "epimage-plugin-virhe-viite-tyhja": "Lisättävää kuvaa ei ole valittu.",
+  "epimage-plugin-hylatty": "Voit ladata vain jpg- tai png-tyyppisiä kuvia.",
   "epimage-plugin-select-placeholder": "Valitse kuva...",
   "epimage-plugin-title": "Lisää kuva",
   "epimage-plugin-menu-muokkaa": "Muokkaa kuvaa",

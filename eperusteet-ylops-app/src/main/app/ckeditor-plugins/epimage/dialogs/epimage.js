@@ -29,18 +29,6 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
         id: 'tab-basic',
         label: kaanna('epimage-plugin-label'),
         elements: [
-          /*{
-            type: 'text',
-            id: 'epimage-text',
-            label: kaanna('epimage-plugin-label-teksti'),
-            validate: CKEDITOR.dialog.validate.notEmpty(kaanna('epimage-plugin-virhe-teksti-tyhja')),
-            setup: function(element) {
-              this.setValue(element.getText());
-            },
-            commit: function(element) {
-              element.setText(this.getValue());
-            }
-          },*/
           {
             type: 'html',
             id: 'epimage-html',
@@ -57,12 +45,12 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
             '<p class="empty-epimaget" ng-if="images.length === 0" kaanna="\'ei-kuvia\'"></p>' +
             '<div class="epimage-plugin-add">' +
             '  <label class="ckeditor-plugin-label">{{\'epimage-plugin-lisaa-uusi\'|kaanna}}</label>'+
-            '  <div><button class="btn btn-default" ngf-select ng-model="model.files"><span kaanna="\'epimage-plugin-valitse\'"></span></button>' +
-            //'    <button class="btn btn-default" ng-click="cancelNew()" kaanna="peruuta"></button>' +
+            '  <div><button class="btn btn-default" ng-model-rejected="model.rejected" ngf-accept="\'.jpg,.jpeg,.png\'" ngf-select ng-model="model.files"><span kaanna="\'epimage-plugin-valitse\'"></span></button>' +
             '    <button ng-disabled="!model.files || model.files.length !== 1" class="btn btn-primary" ng-click="saveNew()" kaanna="lisaa"></button>' +
             '    <img ng-show="showPreview" ngf-thumbnail="model.files[0]" class="epimage-thumb">' +
             '  </div>' +
             '  <p class="success-message" ng-show="message">{{message|kaanna}}</p>' +
+            '  <p class="error-message" ng-show="model.rejected.length > 0">{{\'epimage-plugin-hylatty\'|kaanna}}</p>' +
             '</div></div>',
             onLoad: function () {
               var self = this;
