@@ -100,8 +100,9 @@ ylopsApp
           toolbar: toolbarLayout,
           removePlugins: 'resize,elementspath,scayt,wsc,image',
           extraPlugins: 'divarea,sharedspace,epimage',
-          disallowedContent: 'br; tr td{width,height};',
+          disallowedContent: 'br; tr td{width,height}',
           extraAllowedContent: 'img[!data-uid,src]',
+          disableObjectResizing: true, // doesn't seem to work with inline editor
           language: 'fi',
           'entities_latin': false,
           sharedSpaces: {
@@ -214,11 +215,14 @@ ylopsApp
         });
 
         editor.on('loaded', function() {
+          editor.filter.disallow('br');
           editor.filter.addTransformations([[
               {
                 element: 'img',
                 right: function(el) {
                   el.attributes.src = EpImageService.getUrl({id: el.attributes['data-uid']});
+                  delete el.attributes.height;
+                  delete el.attributes.width;
                 }
               }
             ]]);
