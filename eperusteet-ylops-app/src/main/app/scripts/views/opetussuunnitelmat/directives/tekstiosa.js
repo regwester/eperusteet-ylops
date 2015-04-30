@@ -47,8 +47,22 @@ ylopsApp
   };
 })
 
-.controller('TekstiosaController', function ($scope, Editointikontrollit) {
+.controller('TekstiosaController', function ($state, $scope, Editointikontrollit, Kieli) {
   $scope.editMode = false;
+
+  function validoi() {
+    if ($scope.muokattava) {
+      if (!$scope.model && $state.current.name === 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine') {
+        return;
+      }
+      $scope.muokattava.otsikko = $scope.muokattava.otsikko || {};
+      $scope.muokattava.otsikko.$$validointi = Kieli.validoi($scope.muokattava.otsikko);
+      $scope.muokattava.teksti = $scope.muokattava.teksti || {};
+      $scope.muokattava.teksti.$$validointi = Kieli.validoi($scope.muokattava.teksti);
+    }
+  }
+
+  $scope.$watch('muokattava', validoi, true);
 
   function notifyFn(mode) {
     $scope.editMode = mode;
@@ -62,6 +76,7 @@ ylopsApp
     $scope.callbacks.notifier = notifyFn;
     Editointikontrollit.startEditing();
     $scope.focusAndScroll();
+    validoi();
   };
 
   $scope.remove = function () {

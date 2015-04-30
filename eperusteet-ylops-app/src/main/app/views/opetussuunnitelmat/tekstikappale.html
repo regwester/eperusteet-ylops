@@ -3,8 +3,11 @@
     <input ng-model="model.tekstiKappale.nimi" slocalized class="form-control" placeholder="{{'kappaleen-otsikko'|kaanna}}">
   </span>
   <span ng-if="!editMode || !canRemove()" ng-bind="model.tekstiKappale.nimi | kaanna"></span>
+  <span ng-if="model.tekstiKappale.nimi.$$validointi && model.pakollinen">
+    <span class="tekstikappale-error-badge" ng-repeat="virhe in model.tekstiKappale.nimi.$$validointi"
+        kaanna="virhe" tooltip="{{ virhe + '-kuvaus' | kaanna }}"></span>
+  </span>
 </h2>
-
 
 <div ng-if="ohje.teksti" class="ohje-wrapper">
   <h4><span kaanna="'ohjeistus'"></span></h4>
@@ -61,16 +64,21 @@
     </div>
   </div>
 
-  <h4><span kaanna="'opsin-teksti'"></span></h4>
+  <h4>
+    <span kaanna="'opsin-teksti'"></span>
+    <span ng-if="model.tekstiKappale.teksti.$$validointi && model.pakollinen">
+      <span class="tekstikappale-error-badge" ng-repeat="virhe in model.tekstiKappale.teksti.$$validointi"
+          kaanna="virhe" tooltip="{{ virhe + '-kuvaus' | kaanna }}"></span>
+    </span>
+  </h4>
 
   <div ng-if="editMode">
     <div id="ops-ckeditor" ckeditor class="bigger" ng-model="model.tekstiKappale.teksti" slocalized></div>
   </div>
   <div ng-if="!editMode">
-    <div ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></div>
+    <div class="tekstiosan-teksti" ng-bind-html="model.tekstiKappale.teksti | kaanna | kuvalinkit | unsafe"></div>
     <p class="empty-notice" ng-show="!model.tekstiKappale.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
   </div>
-
 </div>
 
 <kommentit></kommentit>

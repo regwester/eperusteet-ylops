@@ -156,7 +156,8 @@ ylopsApp
         OppiaineService.saveValinnainenVuosiluokka($scope.vuosiluokka.id, tavoitteet, function (res) {
           Notifikaatiot.onnistui('tallennettu-ok');
           $scope.vuosiluokka = res;
-          VuosiluokkaMapper.mapModel($scope);
+          // FIXME Kaikki näyttäisi toimivan
+          // VuosiluokkaMapper.mapModel($scope);
         });
       } else {
         var postdata = angular.copy($scope.vuosiluokka);
@@ -168,7 +169,8 @@ ylopsApp
         });
         OppiaineService.saveVuosiluokka(postdata, function (res) {
           $scope.vuosiluokka = res;
-          VuosiluokkaMapper.mapModel($scope);
+          // FIXME Kaikki näyttäisi toimivan
+          // VuosiluokkaMapper.mapModel($scope);
         });
       }
     },
@@ -225,10 +227,12 @@ ylopsApp
     VuosiluokkaMapper.mapSisaltoalueet($scope, 'tunnisteet', 'muokattavat');
   }
 
+  // FIXME mapOnce saattaa hajottaa jotain
+  var mapOnce = _.once(mapModel);
   function refetch() {
     OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
       $scope.vuosiluokka = res;
-      mapModel();
+      mapOnce();
     });
   }
   refetch();
@@ -248,7 +252,7 @@ ylopsApp
       });
       OppiaineService.saveVuosiluokka($scope.vuosiluokka, function (res) {
         $scope.vuosiluokka = res;
-        mapModel();
+        // mapModel();
       });
     },
     cancel: function () {

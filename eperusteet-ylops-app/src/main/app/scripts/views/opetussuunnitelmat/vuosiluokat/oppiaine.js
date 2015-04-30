@@ -58,9 +58,20 @@ ylopsApp
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
   VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, OppiaineCRUD, OpsService, Notifikaatiot,
-  VuosiluokkakokonaisuusMapper) {
+  VuosiluokkakokonaisuusMapper, Lukko) {
+  $scope.lukkotiedot = null;
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
+
+  var commonParams = $scope.oppiaineenVlk ? {
+    opsId: $stateParams.id,
+    vlkId: $scope.oppiaineenVlk.id,
+    oppiaineId: $stateParams.oppiaineId
+    } : null;
+
+  if (commonParams) {
+    Lukko.isLocked($scope, commonParams);
+  }
 
   function vanhempiOnUskontoTaiKieli(oppiaine) {
     return _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
@@ -183,7 +194,7 @@ ylopsApp
   $scope.options = {
     editing: false,
     isEditable: function () {
-      return OpsService.isEditable() && $scope.oppiaine.oma;
+      return OpsService.isEditable() && $scope.oppiaine.oma && (!$scope.lukkotiedot || !$scope.lukkotiedot.lukittu);
     }
   };
 
@@ -233,23 +244,34 @@ ylopsApp
   };
 
   $scope.editOppiaine = function () {
-    $state.go('root.opetussuunnitelmat.yksi.uusioppiaine', {
-      vlkId: $stateParams.vlkId,
-      oppiaineId: $scope.oppiaine.id
+    Lukko.lock(commonParams, function () {
+      $state.go('root.opetussuunnitelmat.yksi.uusioppiaine', {
+        vlkId: $stateParams.vlkId,
+        oppiaineId: $scope.oppiaine.id
+      });
     });
   };
 
   $scope.removeOppiaine = function () {
-    Varmistusdialogi.dialogi({
-      otsikko: 'varmista-poisto',
-      primaryBtn: 'poista',
-      successCb: function () {
-        $scope.oppiaine.$delete({opsId: OpsService.getId()}, function () {
-          Notifikaatiot.onnistui('poisto-onnistui');
-          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, { reload: true });
-        }, Notifikaatiot.serverCb);
-      }
-    })();
+    Lukko.lock(commonParams, function () {
+      Varmistusdialogi.dialogi({
+        otsikko: 'varmista-poisto',
+        primaryBtn: 'poista',
+        successCb: function () {
+          $scope.oppiaine.$delete({opsId: OpsService.getId()}, function () {
+            Lukko.unlock(commonParams);
+            Notifikaatiot.onnistui('poisto-onnistui');
+            $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, {reload: true});
+          }, function () {
+            Lukko.unlock(commonParams);
+            Notifikaatiot.serverCb();
+          });
+        },
+        failureCb: function () {
+          Lukko.unlock(commonParams);
+        }
+      })();
+    });
   };
 
   $scope.kopioiMuokattavaksi = function () {

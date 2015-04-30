@@ -8,11 +8,19 @@
       <span ng-if="!editMode" class="toggle" collapse-toggler="options.collapsed"></span>
       <span ng-if="!editMode" class="nimi" ng-click="options.collapsed = !options.collapsed"
             ng-bind="muokattava.otsikko | kaanna | stripTags"></span>
+      <span ng-hide="editMode" ng-if="muokattava.otsikko.$$validointi">
+        <span class="tekstikappale-error-badge" ng-repeat="virhe in muokattava.otsikko.$$validointi"
+            kaanna="virhe" tooltip="{{ virhe + '-kuvaus' | kaanna }}"></span>
+      </span>
       <input ng-if="editMode" class="form-control" ng-model="muokattava.otsikko" slocalized>
     </div>
     <div class="clearer"></div>
   </div>
   <div class="ops-body" collapse="options.collapsed">
+    <span ng-hide="editMode" class="pull-right" ng-if="muokattava.teksti.$$validointi">
+      <span class="tekstikappale-error-badge" ng-repeat="virhe in muokattava.teksti.$$validointi"
+          kaanna="virhe" tooltip="{{ virhe + '-kuvaus' | kaanna }}"></span>
+    </span>
     <div ng-if="!editMode" ng-bind-html="muokattava.teksti | kaanna | unsafe"></div>
     <div ng-if="editMode" ckeditor layout="simplified" ng-model="muokattava.teksti" slocalized></div>
   </div>

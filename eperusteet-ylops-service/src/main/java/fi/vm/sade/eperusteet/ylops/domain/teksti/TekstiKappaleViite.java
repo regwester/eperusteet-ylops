@@ -130,7 +130,7 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
         LokalisoituTeksti teksti = viite.getTekstiKappale() != null ? viite.getTekstiKappale().getNimi() : null;
 
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
-            if (lapsi.getTekstiKappale() != null) {
+            if (lapsi.getTekstiKappale() != null && lapsi.pakollinen) {
                 LokalisoituTeksti.validoi(validointi, lapsi.getTekstiKappale().getNimi(), julkaisukielet, parent);
             }
             else {

@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Collections;
@@ -186,8 +187,13 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops = opetussuunnitelmaService.updateTila(id, Tila.VALMIS);
         assertEquals(Tila.VALMIS, ops.getTila());
 
-        ops = opetussuunnitelmaService.updateTila(id, Tila.JULKAISTU);
-        assertEquals(Tila.JULKAISTU, ops.getTila());
+        try {
+            opetussuunnitelmaService.updateTila(id, Tila.JULKAISTU);
+            assertTrue(false); // Tähän ei pitäisi koskaan tulla
+        }
+        catch (ValidointiException e) {
+            assertEquals(e.getValidointi().getVirheet().isEmpty(), false);
+        }
     }
 
     @Test

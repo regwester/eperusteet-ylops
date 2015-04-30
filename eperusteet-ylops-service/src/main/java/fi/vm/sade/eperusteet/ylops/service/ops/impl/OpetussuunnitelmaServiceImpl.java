@@ -258,15 +258,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
         Opetussuunnitelma ylinpohja = pohja;
-        while (ylinpohja != null && ylinpohja.getPohja() != null && ylinpohja.getId().equals(ylinpohja.getPohja().getId())) {
+        while (ylinpohja.getPohja() != null) {
             ylinpohja = ylinpohja.getPohja();
         }
-        boolean onPohjastaTehtyPohja = ylinpohja != null && ylinpohja.getId().equals(pohja.getId());
+        boolean onPohjastaTehtyPohja = ylinpohja.getId().equals(pohja.getId());
 
         ops.setOppiaineet(
             pohja.getOppiaineet().stream()
             .map(ooa -> teeKopio
-                    ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine()), !onPohjastaTehtyPohja)
+                    ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine(), !onPohjastaTehtyPohja), true)
                     : new OpsOppiaine(ooa.getOppiaine(), false))
             .collect(Collectors.toSet()));
 
@@ -290,6 +290,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     tkv.setOmistussuhde(teeKopio ? Omistussuhde.OMA : Omistussuhde.LAINATTU);
                     tkv.setLapset(new ArrayList<>());
                     tkv.setVanhempi(parent);
+                    tkv.setPakollinen(vanhaTkv.isPakollinen());
                     tkv.setTekstiKappale(teeKopio
                             ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy())
                             : vanhaTkv.getTekstiKappale());
@@ -404,7 +405,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Opetussuunnitelman tyyppiä ei voi vaihtaa");
         }
 
-        if (!Objects.equals(opetussuunnitelmaDto.getPohja().getId(), ops.getPohja().getId())) {
+        if (ops.getPohja() != null && !Objects.equals(opetussuunnitelmaDto.getPohja().getId(), ops.getPohja().getId())) {
             throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
         }
 

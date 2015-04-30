@@ -1,6 +1,9 @@
 <div ng-if="isEditable() && (oppiaine.tyyppi !== 'yhteinen' || !oppiaine.oma)" class="action-buttons-inline">
-  <button ng-if="oppiaine.oma" class="btn btn-default" icon-role="edit" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
-  <button ng-if="oppiaine.oma" class="btn btn-default" icon-role="remove" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+  <span class="lukko-wrapper">
+    <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip" size="small"></lukko>
+  </span>
+  <button ng-if="oppiaine.oma" class="btn btn-default" icon-role="edit" ng-disabled="lukkotiedot.lukittu" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+  <button ng-if="oppiaine.oma" class="btn btn-default" icon-role="remove" ng-disabled="lukkotiedot.lukittu" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="!oppiaine.oma && !oppiaine.$parent" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'" icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
 </div>
 <div ng-if="isEditable() && oppiaine.oma" class="action-buttons-inline">
@@ -20,7 +23,7 @@
 <div class="tekstiosa-wrapper" ng-show="!oppiaine.koosteinen && oppiaineenVlk">
   <h3>
     <div class="action-buttons-inline" ng-if="isEditable()">
-      <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" class="btn btn-default"
+      <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="lukkotiedot.lukittu" class="btn btn-default"
               icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"
               oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     </div>
