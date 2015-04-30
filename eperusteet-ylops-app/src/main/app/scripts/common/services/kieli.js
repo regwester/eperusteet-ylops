@@ -46,6 +46,7 @@ ylopsApp
     function isValidKielikoodi(kielikoodi) {
       return _.indexOf(SISALTOKIELET, kielikoodi) > -1;
     }
+    this.isValidKielikoodi = isValidKielikoodi;
 
     this.setSisaltokielet = function(kielikoodit) {
       SISALTOKIELET = kielikoodit;
@@ -125,8 +126,7 @@ ylopsApp
       templateUrl: 'views/common/directives/kielenvaihto.html'
     };
   })
-
-  .controller('KieliController', function($scope, $stateParams, $state, Kieli, $q) {
+  .controller('KieliController', function($scope, Kieli, $q, Profiili) {
     $scope.isModal = $scope.modal === 'true';
     $scope.sisaltokielet = Kieli.getSisaltokielet();
     $scope.sisaltokieli = Kieli.getSisaltokieli();
@@ -134,34 +134,21 @@ ylopsApp
     $scope.uikieli = Kieli.getUiKieli();
     $scope.uiLangChangeAllowed = true;
     var stateInit = $q.defer();
-    var casFetched = $q.defer();
 
-    // TODO Profiili
-    /*var info = Profiili.profiili();
-    if (info.$casFetched) {
-      casFetched.resolve();
-    }*/
-    casFetched.resolve();
+    var info = Profiili.profiili();
 
     $scope.$on('$stateChangeSuccess', function () {
       stateInit.resolve();
     });
 
-    $scope.$on('fetched:casTiedot', function () {
-      casFetched.resolve();
-    });
 
-    $q.all([stateInit.promise, casFetched.promise]).then(function () {
-      /*var lang = Profiili.lang();
+    $q.all([stateInit.promise, info.fetchPromise]).then(function () {
+      var lang = Profiili.lang();
       // Disable ui language change if language preference found in CAS
       if (Kieli.isValidKielikoodi(lang)) {
         $scope.uiLangChangeAllowed = false;
         Kieli.setUiKieli(lang);
       }
-      var profiili = Profiili.profiili();
-      if (profiili.preferenssit.sisaltokieli) {
-        Kieli.setSisaltokieli(profiili.preferenssit.sisaltokieli);
-      }*/
     });
 
     $scope.$on('update:sisaltokielet', function() {
@@ -170,7 +157,6 @@ ylopsApp
 
     $scope.$on('changed:sisaltokieli', function (event, value) {
       $scope.sisaltokieli = value;
-      //Profiili.setPreferenssi('sisaltokieli', value);
     });
     $scope.$on('changed:uikieli', function (event, value) {
       $scope.uikieli = value;
