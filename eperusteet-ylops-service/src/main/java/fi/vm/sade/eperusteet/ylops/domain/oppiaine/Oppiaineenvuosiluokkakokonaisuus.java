@@ -162,11 +162,11 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
 
         for (Oppiaineenvuosiluokka ovl : ovlk.getVuosiluokat()) {
             for (Opetuksentavoite tavoite : ovl.getTavoitteet()) {
-                LokalisoituTeksti.validoi(validointi, tavoite.getTavoite(), kielet, ovlk.getOppiaine().getNimi());
+                LokalisoituTeksti.validoi("oppiaineen-vuosiluokan-tavoite-" + ovl.getVuosiluokka().toString(), validointi, kielet, tavoite.getTavoite(), ovlk.getOppiaine().getNimi());
             }
 
             for (Keskeinensisaltoalue sisaltoalue : ovl.getSisaltoalueet()) {
-                LokalisoituTeksti.validoi(validointi, sisaltoalue.getKuvaus(), kielet, ovlk.getOppiaine().getNimi());
+                LokalisoituTeksti.validoi("oppiaineen-vuosiluokan-sisaltoalueen-kuvaus-" + ovl.getVuosiluokka().toString(), validointi, kielet, sisaltoalue.getKuvaus(), ovlk.getOppiaine().getNimi());
             }
         }
     }

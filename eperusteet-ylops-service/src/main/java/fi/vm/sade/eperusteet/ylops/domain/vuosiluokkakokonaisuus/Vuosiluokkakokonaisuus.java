@@ -150,8 +150,8 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
     }
 
     public static void validoi(Validointi validointi, Vuosiluokkakokonaisuus vlk, Set<Kieli> kielet) {
-        LokalisoituTeksti.validoi(validointi, vlk.getNimi(), kielet, null);
-        LokalisoituTeksti.validoi(validointi, vlk.getTehtava() != null ? vlk.getTehtava().getOtsikko() : null, kielet, null);
+//        LokalisoituTeksti.validoi(validointi, kielet, vlk.getNimi());
+//        LokalisoituTeksti.validoi(validointi, kielet, vlk.getTehtava() != null ? vlk.getTehtava().getOtsikko() : null, kielet, null);
     }
 
 }

@@ -162,15 +162,14 @@ public class LokalisoituTeksti implements Serializable {
         return true;
     }
 
-    static public void validoi(Validointi validointi, LokalisoituTeksti teksti, Set<Kieli> kielet, LokalisoituTeksti parent) {
+    static public void validoi(Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, LokalisoituTeksti... parents) {
+        validoi("kielisisaltoa-ei-loytynyt-opsin-kielilla", validointi, kielet, teksti, parents);
+    }
+
+    static public void validoi(String syy, Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, LokalisoituTeksti... parents) {
         if (teksti == null || !teksti.hasKielet(kielet)) {
-            validointi.lisaaVirhe("kielisisaltoa-ei-loytynyt-opsin-kielilla", teksti, parent);
+            validointi.lisaaVirhe(Validointi.luoVirhe(syy, parents));
         }
     }
 
-//    static public void validoi(Validointi validointi, LokalisoituTeksti teksti, Set<Kieli> kielet) {
-//        if (teksti == null || !teksti.hasKielet(kielet)) {
-//            validointi.lisaaVirhe("kielisisaltoa-ei-loytynyt-opsin-kielilla", teksti);
-//        }
-//    }
 }

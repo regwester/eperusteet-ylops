@@ -83,10 +83,10 @@ public class Tekstiosa implements Serializable {
 
 
     public static void validoiOtsikko(Validointi validointi, Tekstiosa osa, Set<Kieli> kielet, LokalisoituTeksti parent) {
-        LokalisoituTeksti.validoi(validointi, osa.getOtsikko(), kielet, parent);
+        LokalisoituTeksti.validoi(validointi, kielet, osa.getOtsikko(), parent);
     }
 
     public static void validoiTeksti(Validointi validointi, Tekstiosa osa, Set<Kieli> kielet, LokalisoituTeksti parent) {
-        LokalisoituTeksti.validoi(validointi, osa.getTeksti(), kielet, parent);
+        LokalisoituTeksti.validoi(validointi, kielet, osa.getTeksti(), parent);
     }
 }

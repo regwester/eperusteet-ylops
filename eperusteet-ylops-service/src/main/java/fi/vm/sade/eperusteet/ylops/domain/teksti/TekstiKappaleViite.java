@@ -122,7 +122,7 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
         return root;
     }
 
-    static public void validoi(Validointi validointi, TekstiKappaleViite viite, Set<Kieli> julkaisukielet, LokalisoituTeksti parent) {
+    static public void validoi(Validointi validointi, TekstiKappaleViite viite, Set<Kieli> julkaisukielet) {
         if (viite == null || viite.getLapset() == null) {
             return;
         }
@@ -130,13 +130,15 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
         LokalisoituTeksti teksti = viite.getTekstiKappale() != null ? viite.getTekstiKappale().getNimi() : null;
 
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
-            if (lapsi.getTekstiKappale() != null && lapsi.pakollinen) {
-                LokalisoituTeksti.validoi(validointi, lapsi.getTekstiKappale().getNimi(), julkaisukielet, parent);
+            if (lapsi.pakollinen) {
+                if (lapsi.getTekstiKappale() != null) {
+                    LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getNimi(), teksti);
+                }
+                else {
+                    validointi.lisaaVirhe(Validointi.luoVirhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti));
+                }
             }
-            else {
-                validointi.lisaaVirhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti, parent);
-            }
-            validoi(validointi, lapsi, julkaisukielet, teksti);
+            validoi(validointi, lapsi, julkaisukielet);
         }
     }
 }

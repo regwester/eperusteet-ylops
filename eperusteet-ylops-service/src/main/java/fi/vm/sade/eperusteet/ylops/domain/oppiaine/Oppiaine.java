@@ -325,8 +325,8 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         return o;
     }
 
-    static public void validoi(Validointi validointi, Oppiaine oa, Set<Kieli> kielet, LokalisoituTeksti parent) {
-        LokalisoituTeksti.validoi(validointi, oa.getNimi(), kielet, parent);
+    static public void validoi(Validointi validointi, Oppiaine oa, Set<Kieli> kielet) {
+        LokalisoituTeksti.validoi(validointi, kielet, oa.getNimi());
 
         for (Oppiaineenvuosiluokkakokonaisuus ovlk : oa.getVuosiluokkakokonaisuudet()) {
             Oppiaineenvuosiluokkakokonaisuus.validoi(validointi, ovlk, kielet);
@@ -334,7 +334,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
 
         if (oa.getOppimaarat() != null) {
             for (Oppiaine om : oa.getOppimaarat()) {
-                validoi(validointi, om, kielet, oa.getNimi());
+                validoi(validointi, om, kielet);
             }
         }
     }
