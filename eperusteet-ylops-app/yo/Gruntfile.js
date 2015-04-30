@@ -148,7 +148,8 @@ module.exports = function(grunt) {
       },
       all: [
         'Gruntfile.js',
-        '<%= yeoman.app %>/scripts/**/*.js'
+        '<%= yeoman.app %>/scripts/**/*.js',
+        '<%= yeoman.app %>/ckeditor-plugins/**/*.js',
       ]
     },
     // not used since Uglify task does concat,
@@ -275,12 +276,27 @@ module.exports = function(grunt) {
             '**',
             '!samples/**'
           ]
-        }, {
+        },{
+            expand: true,
+            cwd: '<%= yeoman.app %>/bower_components/ng-file-upload',
+            dest: '<%= yeoman.dist %>/bower_components/ng-file-upload',
+            src: [
+                'FileAPI.flash.swf',
+                'FileAPI.min.js'
+            ]
+        },{
           expand: true,
           cwd: '<%= yeoman.app %>/localisation',
           dest: '<%= yeoman.dist %>/localisation',
           src: [
             '*.json'
+          ]
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/ckeditor-plugins',
+          dest: '<%= yeoman.dist %>/ckeditor-plugins',
+          src: [
+            '**',
           ]
         }, {
           expand: true,

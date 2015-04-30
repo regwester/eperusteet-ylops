@@ -50,7 +50,6 @@ public class CacheHeaderInterceptor implements HandlerInterceptor {
                     date = (new Date().getTime()) + cc.age() * 1000;
                     cacheControl = CacheControls.buildCacheControl(cc);
                 }
-                response.setDateHeader(HttpHeaders.EXPIRES, date);
                 response.setHeader(HttpHeaders.CACHE_CONTROL, cacheControl);
             }
         }

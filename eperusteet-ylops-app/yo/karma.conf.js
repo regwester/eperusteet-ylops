@@ -37,6 +37,7 @@ module.exports = function(config) {
       'app/bower_components/momentjs/moment.js',
       'app/bower_components/angular-cache/dist/angular-cache.min.js',
       'app/bower_components/angular-ui-select/dist/select.min.js',
+      'app/bower_components/ng-file-upload/ng-file-upload.min.js',
       'app/scripts/*.js',
       'app/scripts/**/*.js',
       '../test/js/**/*.spec.js',

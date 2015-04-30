@@ -45,7 +45,7 @@
     </h3>
 
     <div collapse="options.ohjeistusCollapsed" class="teksti-well">
-      <span ng-bind-html="ohje.teksti | kaanna | unsafe"></span>
+      <span ng-bind-html="ohje.teksti | kaanna | kuvalinkit | unsafe"></span>
       <span class="empty-placeholder" ng-if="isEmpty(ohje.teksti)" kaanna="'ei-maaritetty'"></span>
     </div>
 
@@ -55,7 +55,7 @@
     </h3>
 
     <div collapse="options.perusteentekstiCollapsed" class="teksti-well">
-      <span ng-bind-html="perusteteksti.teksti | kaanna | unsafe"></span>
+      <span ng-bind-html="perusteteksti.teksti | kaanna | kuvalinkit | unsafe"></span>
       <span class="empty-placeholder" ng-if="isEmpty(perusteteksti.teksti)" kaanna="'ei-maaritetty'"></span>
     </div>
 
@@ -65,7 +65,7 @@
     </h3>
 
     <div collapse="options.tekstiCollapsed" class="teksti-well">
-      <span ng-bind-html="model.tekstiKappale.teksti | kaanna | unsafe"></span>
+      <span ng-bind-html="model.tekstiKappale.teksti | kaanna | kuvalinkit |unsafe"></span>
       <span class="empty-placeholder" ng-if="isEmpty(model.tekstiKappale.teksti)" kaanna="'ei-maaritetty'"></span>
     </div>
 

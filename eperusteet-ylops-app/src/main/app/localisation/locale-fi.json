@@ -269,5 +269,18 @@
   "yhteystiedot": "Yhteystiedot",
   "yhteystiedot-placeholder": "Lisää yhteystiedot",
   "ylikirjoita-uusi-sisalto": "Jatka muokkaamista",
-  "ylikirjoittaessasi-voit-palauttaa": "Jatkaessasi voit ylikirjoittaa toisten muutokset. Ne säilyvät edelleen muutoshistoriassa ja voit palauttaa ne sieltä"
+  "ylikirjoittaessasi-voit-palauttaa": "Jatkaessasi voit ylikirjoittaa toisten muutokset. Ne säilyvät edelleen muutoshistoriassa ja voit palauttaa ne sieltä",
+
+  "epimage-plugin-select-placeholder": "Valitse kuva...",
+  "epimage-plugin-title": "Lisää kuva",
+  "epimage-plugin-menu-muokkaa": "Muokkaa kuvaa",
+  "epimage-plugin-menu-poista": "Poista kuva",
+  "epimage-plugin-button-label": "Kuva",
+  "epimage-plugin-label": "Kuva",
+  "epimage-plugin-label-epimage": "Kuva",
+  "ei-kuvia": "Ei kuvia",
+  "epimage-plugin-virhe-kuva-tyhja": "Valitse kuva.",
+  "epimage-plugin-lisaa-uusi": "Lataa uusi kuva",
+  "epimage-plugin-valitse": "Valitse tiedosto...",
+  "epimage-plugin-tallennettu": "Kuva tallennettu.",
 }

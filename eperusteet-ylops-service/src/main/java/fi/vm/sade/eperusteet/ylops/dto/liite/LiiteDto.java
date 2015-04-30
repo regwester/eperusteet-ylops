@@ -13,26 +13,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+package fi.vm.sade.eperusteet.ylops.dto.liite;
 
-package fi.vm.sade.eperusteet.ylops.service.exception;
-
-import org.springframework.core.NestedRuntimeException;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import java.util.Date;
+import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- *  Kantaluokka palvelukerroksen poikkeuksille
+ *
  * @author jhyoty
  */
-@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-public class ServiceException extends NestedRuntimeException {
-
-    public ServiceException(String message) {
-        super(message);
-    }
-
-    public ServiceException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
+@Getter
+@Setter
+public class LiiteDto {
+    private UUID id;
+    private String tyyppi;
+    private String nimi;
+    private Date luotu;
 }

@@ -26,7 +26,7 @@
     </span>
   </h4>
   <div ng-if="editMode" ckeditor ng-model="muokattava.teksti" slocalized></div>
-  <div ng-if="!editMode" ng-bind-html="muokattava.teksti | kaanna | unsafe"></div>
+  <div class="tekstiosan-teksti" ng-if="!editMode" ng-bind-html="muokattava.teksti | kaanna | unsafe"></div>
   <p class="empty-notice" ng-show="!editMode && !muokattava.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
 
 </div>
