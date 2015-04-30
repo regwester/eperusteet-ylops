@@ -16,7 +16,6 @@
 
 
 'use strict';
-/* global _, moment */
 
 ylopsApp.service('Profiili', function($http, $q) {
     var info = {};
@@ -48,4 +47,4 @@ ylopsApp.service('Profiili', function($http, $q) {
       groups: function() { return info.groups; },
       profiili: function() { return info; }
     };
-  })
+  });
