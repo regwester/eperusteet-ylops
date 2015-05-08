@@ -47,15 +47,19 @@ ylopsApp
   };
 
   $scope.showLess = function() {
-      $scope.opsLimit = $scope.pohjaMinLimit;
-   };
+    $scope.opsLimit = $scope.pohjaMinLimit;
+  };
 
 })
 
-.controller('PohjaSisaltoController', function ($scope, $q, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
-  Notifikaatiot, $state, TekstikappaleOps) {
+.controller('PohjaSisaltoController', function($scope, $q, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
+  Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD) {
   $scope.kappaleEdit = null;
   $scope.$$rakenneEdit = false;
+
+  $scope.sync = function() {
+    OpetussuunnitelmaCRUD.syncPeruste({ id: $scope.model.id }, _.bind(Notifikaatiot.onnistui, {}, 'paivitys-onnistui'), Notifikaatiot.serverCb);
+  };
 
   function mapModel() {
     Algoritmit.traverse($scope.model.tekstit, 'lapset', function (teksti) {

@@ -328,6 +328,30 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public void syncPohja(Long pohjaId) {
+        Opetussuunnitelma pohja = repository.findOne(pohjaId);
+        if (pohja.getPohja() != null) {
+            throw new BusinessRuleViolationException("OPS ei ollut pohja");
+        }
+
+        pohja.setOppiaineet(null);
+        pohja.setVuosiluokkakokonaisuudet(null);
+
+        Peruste peruste = eperusteetService.getPeruste(pohja.getPerusteenDiaarinumero());
+        lisaaPerusteenSisalto(pohja, peruste);
+    }
+
+    private Opetussuunnitelma lisaaPerusteenSisalto(Opetussuunnitelma ops, Peruste peruste) {
+        if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
+            return addPohjaPerusopetus(ops, peruste);
+        } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi() || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()) {
+            return addPohjaLisaJaEsiopetus(ops, peruste);
+        } else {
+            throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
+        }
+    }
+
+    @Override
     public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
         // Jokainen pohja sisältää OPH:n organisaationaan
@@ -358,17 +382,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunLapset(ops);
 
         Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-        if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
-            ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
-            ops = addPohjaPerusopetus(ops, peruste);
-        } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi() ||
-             KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()) {
-            ops = addPohjaLisaJaEsiopetus(ops, peruste);
-        } else {
-            throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
-        }
-
-        return mapper.map(ops, OpetussuunnitelmaDto.class);
+        ops.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi() : KoulutusTyyppi.PERUSOPETUS);
+        return mapper.map(lisaaPerusteenSisalto(ops, peruste), OpetussuunnitelmaDto.class);
     }
 
     private void lisaaTekstipuunJuuri(Opetussuunnitelma ops) {
@@ -385,8 +400,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         TekstiKappaleViiteDto.Matala ohjeistus = new TekstiKappaleViiteDto.Matala(ohjeistusTeksti);
         addTekstiKappale(ops.getId(), ohjeistus);
 
-        nimi = new LokalisoituTekstiDto(null,
-                                        Collections.singletonMap(Kieli.FI, "Opetuksen toteuttamisen lähtökohdat"));
+        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Opetuksen toteuttamisen lähtökohdat"));
         teksti = new LokalisoituTekstiDto(null, null);
         TekstiKappaleDto opetuksenJarjestaminenTeksti
             = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);

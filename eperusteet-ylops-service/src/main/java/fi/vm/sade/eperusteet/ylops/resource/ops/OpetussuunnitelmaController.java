@@ -75,6 +75,13 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.getLaajaalaisetosaamiset(id);
     }
 
+    @RequestMapping(value = "/{id}/sync", method = RequestMethod.POST)
+    @Timed
+    public ResponseEntity sync(@PathVariable("id") final Long id) {
+        opetussuunnitelmaService.syncPohja(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     @Timed
