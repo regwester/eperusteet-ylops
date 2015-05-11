@@ -38,6 +38,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -131,6 +132,16 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     @Cacheable("perusteet")
     public Peruste getPeruste(String diaarinumero) {
+        return getPerusteByDiaari(diaarinumero);
+    }
+
+    @Override
+    @CachePut("perusteet")
+    public Peruste getPerusteUpdateCache(String diaarinumero) {
+        return getPerusteByDiaari(diaarinumero);
+    }
+
+    private Peruste getPerusteByDiaari (String diaarinumero) {
         PerusteInfo perusteInfoDto = findPerusteet().stream()
             .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
             .findAny()

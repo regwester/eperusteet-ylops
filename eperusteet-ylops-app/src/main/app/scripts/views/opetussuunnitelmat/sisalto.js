@@ -98,12 +98,6 @@ ylopsApp
 
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit,
       Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko) {
-  if (!opsModel.pohja) {
-      Notifikaatiot.varoitus('pohjan-opetussuunnitelmaa-ei-voi-muokata');
-      $state.go('root.etusivu', { reload: true });
-      return;
-  }
-
   $scope.uusi = {nimi: {}};
   $scope.lukkotiedot = null;
   $scope.model = opsService.get($stateParams.id) || opsModel;

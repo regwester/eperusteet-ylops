@@ -80,6 +80,15 @@ public class EperusteetServiceMock implements EperusteetService {
 
     @Override
     public Peruste getPeruste(String diaariNumero) {
+        return getPerusteByDiaari(diaariNumero);
+    }
+
+    @Override
+    public Peruste getPerusteUpdateCache(String diaarinumero) {
+        return getPerusteByDiaari(diaarinumero);
+    }
+
+    private Peruste getPerusteByDiaari (String diaariNumero) {
         if (perusteDto != null && diaariNumero.equals(perusteDto.getDiaarinumero())) {
             return mapper.map(perusteDto, Peruste.class);
         }
