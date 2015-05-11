@@ -65,6 +65,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
     void removeOpetussuunnitelma(@P("opsId") Long id);
 
+    @PreAuthorize("hasPermission(#pohjaId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void syncPohja(Long pohjaId);
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     TekstiKappaleViiteDto.Puu getTekstit(@P("opsId") final Long opsId);
 

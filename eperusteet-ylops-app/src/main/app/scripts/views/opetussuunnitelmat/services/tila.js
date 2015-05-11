@@ -18,20 +18,44 @@
 /* global _ */
 
 ylopsApp
-.service('OpsinTila', function (OpetussuunnitelmaCRUD, Notifikaatiot) {
+.service('OpsinTila', function ($modal, OpetussuunnitelmaCRUD, Notifikaatiot) {
   this.palauta = function (ops, cb) {
     OpetussuunnitelmaCRUD.palauta({opsId: ops.id}, null, cb, Notifikaatiot.serverCb);
   };
 
   this.save = function (ops, tila, cb) {
-    OpetussuunnitelmaCRUD.setTila({opsId: ops.id, tila: tila}, null, cb, Notifikaatiot.serverCb);
+    cb = cb || angular.noop;
+    OpetussuunnitelmaCRUD.setTila({opsId: ops.id, tila: tila}, null, cb, function(res) {
+      // Todella rumaa
+      var virheet = _(res.data.data.virheet)
+        .filter(function(v) { return !_.isEmpty(v.nimi) && _.first(v.nimi).id; })
+        .groupBy(function(v) { return _.first(v.nimi).id; })
+        .values()
+        .map(function(v) {
+          var ongelmat = _.sortBy(_.unique(v, 'syy'), _.identity);
+          return {
+            nimi: _.first(_.first(ongelmat).nimi).teksti,
+            polku: _.first(ongelmat).nimi,
+            ongelmat: _.map(ongelmat, 'syy')
+          };
+        })
+        .value();
+
+      $modal.open({
+        templateUrl: 'views/opetussuunnitelmat/modals/validointivirheet.html',
+        controller: 'ValidointivirheetController',
+        size: 'lg',
+        resolve: {
+          virheet: _.constant(virheet)
+        }
+      }).result.then(angular.noop);
+    });
   };
 })
 
 .service('OpsinTilanvaihto', function ($modal) {
   var that = this;
   this.start = function(parametrit, setFn, successCb) {
-    console.log('what');
     successCb = successCb || angular.noop;
     if (_.isFunction(setFn)) {
       that.setFn = setFn;
@@ -60,7 +84,13 @@ ylopsApp
     that.setFn(status, successCb);
   };
 })
-.controller('OpsinTilanvaihtoController', function ($scope, $modal, $modalInstance, $state, data) {
+
+.controller('ValidointivirheetController', function ($scope, $modalInstance, $state, virheet) {
+  $scope.virheet = virheet;
+  $scope.ok = $modalInstance.dismiss;
+})
+
+.controller('OpsinTilanvaihtoController', function ($scope, $modalInstance, $state, data) {
   $scope.data = data;
   $scope.data.selected = null;
   $scope.data.editable = false;

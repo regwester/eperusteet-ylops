@@ -11,6 +11,7 @@
     </div>
     <div class="col-xs-3">
       <div class="pull-right">
+        <button ng-hide="$$rakenneEdit" class="btn btn-default" kaanna="'synkronoi-perusteeseen'" ng-click="sync()"></button>
         <button ng-hide="$$rakenneEdit" class="btn btn-default" kaanna="'muokkaa-rakennetta'" ng-click="rakenne.edit()"></button>
         <div ng-show="$$rakenneEdit">
           <button class="btn btn-primary" kaanna="'tallenna-rakenne'" ng-click="rakenne.save()"></button>

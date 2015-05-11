@@ -187,13 +187,8 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops = opetussuunnitelmaService.updateTila(id, Tila.VALMIS);
         assertEquals(Tila.VALMIS, ops.getTila());
 
-        try {
-            opetussuunnitelmaService.updateTila(id, Tila.JULKAISTU);
-            assertTrue(false); // Tähän ei pitäisi koskaan tulla
-        }
-        catch (ValidointiException e) {
-            assertEquals(e.getValidointi().getVirheet().isEmpty(), false);
-        }
+        opetussuunnitelmaService.updateTila(id, Tila.JULKAISTU);
+        assertEquals(Tila.VALMIS, ops.getTila());
     }
 
     @Test

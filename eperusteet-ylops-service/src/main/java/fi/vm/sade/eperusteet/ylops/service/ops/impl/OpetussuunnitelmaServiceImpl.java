@@ -328,6 +328,30 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public void syncPohja(Long pohjaId) {
+        Opetussuunnitelma pohja = repository.findOne(pohjaId);
+        if (pohja.getPohja() != null) {
+            throw new BusinessRuleViolationException("OPS ei ollut pohja");
+        }
+
+        pohja.setOppiaineet(null);
+        pohja.setVuosiluokkakokonaisuudet(null);
+
+        Peruste peruste = eperusteetService.getPeruste(pohja.getPerusteenDiaarinumero());
+        lisaaPerusteenSisalto(pohja, peruste);
+    }
+
+    private Opetussuunnitelma lisaaPerusteenSisalto(Opetussuunnitelma ops, Peruste peruste) {
+        if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
+            return addPohjaPerusopetus(ops, peruste);
+        } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi() || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()) {
+            return addPohjaLisaJaEsiopetus(ops, peruste);
+        } else {
+            throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
+        }
+    }
+
+    @Override
     public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
         // Jokainen pohja sisältää OPH:n organisaationaan
@@ -358,17 +382,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunLapset(ops);
 
         Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-        if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
-            ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
-            ops = addPohjaPerusopetus(ops, peruste);
-        } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi() ||
-             KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()) {
-            ops = addPohjaLisaJaEsiopetus(ops, peruste);
-        } else {
-            throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
-        }
-
-        return mapper.map(ops, OpetussuunnitelmaDto.class);
+        ops.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi() : KoulutusTyyppi.PERUSOPETUS);
+        return mapper.map(lisaaPerusteenSisalto(ops, peruste), OpetussuunnitelmaDto.class);
     }
 
     private void lisaaTekstipuunJuuri(Opetussuunnitelma ops) {
@@ -385,8 +400,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         TekstiKappaleViiteDto.Matala ohjeistus = new TekstiKappaleViiteDto.Matala(ohjeistusTeksti);
         addTekstiKappale(ops.getId(), ohjeistus);
 
-        nimi = new LokalisoituTekstiDto(null,
-                                        Collections.singletonMap(Kieli.FI, "Opetuksen toteuttamisen lähtökohdat"));
+        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Opetuksen toteuttamisen lähtökohdat"));
         teksti = new LokalisoituTekstiDto(null, null);
         TekstiKappaleDto opetuksenJarjestaminenTeksti
             = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
@@ -428,13 +442,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private void validoiOpetussuunnitelma(Opetussuunnitelma ops) {
         Set<Kieli> julkaisukielet = ops.getJulkaisukielet();
         Validointi validointi = new Validointi();
-        LokalisoituTeksti.validoi(validointi, ops.getNimi(), julkaisukielet, null);
 
         if (ops.getPerusteenDiaarinumero().isEmpty()) {
-            validointi.lisaaVirhe("opsilla-ei-perusteen-diaarinumeroa");
+            validointi.lisaaVirhe(Validointi.luoVirhe("opsilla-ei-perusteen-diaarinumeroa"));
         }
 
-        TekstiKappaleViite.validoi(validointi, ops.getTekstit(), julkaisukielet, ops.getNimi());
+        if (ops.getTekstit() != null && ops.getTekstit().getLapset() != null) {
+            for (TekstiKappaleViite teksti : ops.getTekstit().getLapset()) {
+                TekstiKappaleViite.validoi(validointi, teksti, julkaisukielet);
+            }
+        }
+
         ops.getVuosiluokkakokonaisuudet().stream()
             .filter(vlk -> vlk.isOma())
             .map(vlk -> vlk.getVuosiluokkakokonaisuus())
@@ -446,8 +464,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             .filter(oa -> oa.isOma())
             .map(oa -> oa.getOppiaine())
             .forEach(oa -> {
-                Oppiaine.validoi(validointi, oa, julkaisukielet, null);
                 PerusteOppiaine poppiaine = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
+                Oppiaine.validoi(validointi, oa, julkaisukielet);
                 Set<UUID> PerusteenTavoitteet = new HashSet<>();
 
                 poppiaine.getVuosiluokkakokonaisuudet().stream()
@@ -462,13 +480,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .collect(Collectors.toSet());
 
                 if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
-                    validointi.lisaaVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi(), poppiaine.getNimi());
-                }
-
-                if (oa.getOppimaarat() != null) {
-                    for (Oppiaine om : oa.getOppimaarat()) {
-                        Oppiaine.validoi(validointi, om, julkaisukielet, null);
-                    }
+//                    validointi.lisaaVirhe(Validointi.luoVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi()));
                 }
             });
 
@@ -481,10 +493,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             Ohje ohje = ohjeRepository.findFirstByKohde(lapsi.getTekstiKappale().getTunniste());
 
             if (ohje != null && (ohje.getTeksti() == null || !ohje.getTeksti().hasKielet(kielet))) {
-                validointi.lisaaVirhe("ops-pohja-ohjeistus-puuttuu", tkv.getTekstiKappale().getNimi(), tkv.getTekstiKappale().getNimi());
+                validointi.lisaaVirhe(Validointi.luoVirhe("ops-pohja-ohjeistus-puuttuu", tkv.getTekstiKappale().getNimi(), tkv.getTekstiKappale().getNimi()));
             }
             else {
-                validointi.lisaaVirhe("ops-pohja-ohjeistus-puuttuu");
+                validointi.lisaaVirhe(Validointi.luoVirhe("ops-pohja-ohjeistus-puuttuu"));
             }
             validoiOhjeistus(lapsi, kielet);
         }
