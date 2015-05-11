@@ -28,6 +28,7 @@ import java.util.Set;
  */
 public interface EperusteetService {
     Peruste getPeruste(String diaariNumero);
+    Peruste getPerusteUpdateCache(String diaarinumero);
     List<PerusteInfo> findPerusteet();
     List<PerusteInfo> findPerusteet(Set<KoulutusTyyppi> tyypit);
     List<PerusteInfo> findPerusopetuksenPerusteet();

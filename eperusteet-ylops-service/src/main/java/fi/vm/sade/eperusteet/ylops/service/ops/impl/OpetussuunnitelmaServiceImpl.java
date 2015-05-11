@@ -337,7 +337,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         pohja.setOppiaineet(null);
         pohja.setVuosiluokkakokonaisuudet(null);
 
-        Peruste peruste = eperusteetService.getPeruste(pohja.getPerusteenDiaarinumero());
+        Peruste peruste = eperusteetService.getPerusteUpdateCache(pohja.getPerusteenDiaarinumero());
         lisaaPerusteenSisalto(pohja, peruste);
     }
 
