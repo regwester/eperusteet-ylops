@@ -226,7 +226,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
 
-        Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD));
+        Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD, RolePermission.ADMIN));
         if (CollectionUtil.intersect(userOids, ops.getOrganisaatiot()).isEmpty()) {
             throw new BusinessRuleViolationException("Käyttäjällä ei ole luontioikeutta opetussuunnitelman organisaatioissa");
         }
