@@ -154,6 +154,11 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         if (viite.getLapset() != null && !viite.getLapset().isEmpty()) {
             throw new BusinessRuleViolationException("Sisällöllä on lapsia, ei voida poistaa");
         }
+
+        if (viite.isPakollinen()) {
+            throw new BusinessRuleViolationException("Pakollista tekstikappaletta ei voi poistaa");
+        }
+
         repository.lock(viite.getRoot());
         if (viite.getTekstiKappale() != null && viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
             lockMgr.lock(viite.getTekstiKappale().getId());
