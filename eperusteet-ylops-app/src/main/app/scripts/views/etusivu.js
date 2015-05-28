@@ -31,7 +31,7 @@ ylopsApp
       $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi', pohjaId: pohjaId});
     };
 
-    $scope.pohjat = OpsListaService.query(true);
+    $scope.pohjat = OpsListaService.query(false);
     $scope.sorter = Utils.sort;
   })
   .controller('EtusivuController', function () {
