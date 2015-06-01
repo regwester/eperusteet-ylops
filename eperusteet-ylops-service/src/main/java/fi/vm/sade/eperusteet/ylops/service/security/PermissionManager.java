@@ -99,9 +99,10 @@ public class PermissionManager {
         Pair<Tyyppi, Tila> tyyppiJaTila =
             targetId != null ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId) : null;
 
-        // Salli valmiiden pohjien lukeminen kaikilta joilla on CRUD-oikeus
+        // Salli valmiiden pohjien lukeminen kaikilta joilla on CRUD-oikeus tai ADMIN-oikeus
         if (perm == Permission.LUKU && targetId != null &&
-            hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.ANY)) {
+            (hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.ANY) ||
+             hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.ADMIN, Organization.ANY))) {
             if (tyyppiJaTila == null) {
                 throw new NotExistsException();
             }
@@ -118,11 +119,11 @@ public class PermissionManager {
                 break;
             case LUONTI:
             case POISTO:
-                permissions = EnumSet.of(RolePermission.CRUD);
+                permissions = EnumSet.of(RolePermission.CRUD, RolePermission.ADMIN);
                 break;
             case TILANVAIHTO:
             case MUOKKAUS:
-                permissions = EnumSet.of(RolePermission.CRUD, RolePermission.READ_UPDATE);
+                permissions = EnumSet.of(RolePermission.CRUD, RolePermission.READ_UPDATE, RolePermission.ADMIN);
                 break;
             case HALLINTA:
                 permissions = EnumSet.of(RolePermission.ADMIN);
