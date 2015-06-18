@@ -7,8 +7,8 @@
 
   <div class="ops-header-tiedot">
     <h1 ng-bind="model.nimi | kaanna"></h1>
-    <a ng-show="!isPohjaState && isPohjaTyyppi" ui-sref="root.pohjat.yksi.sisalto({pohjaId: opsId})">Näytä pohjana &gt;&gt;</a>
-    <a ng-show="isPohjaState" ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: pohjaId})">Näytä OPSina &gt;&gt;</a>
+    <a ng-show="!isPohjaState && isPohjaTyyppi" ui-sref="root.pohjat.yksi.sisalto({pohjaId: opsId})">{{'nayta-pohjana' | kaanna}} &gt;&gt;</a>
+    <a ng-show="isPohjaState" ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: pohjaId})">{{'nayta-opsina' | kaanna}} &gt;&gt;</a>
 
     <ul class="ops-header-linkit" role="navigation">
       <li ng-repeat="linkki in linkit" ng-class="{active: linkki.active}">
