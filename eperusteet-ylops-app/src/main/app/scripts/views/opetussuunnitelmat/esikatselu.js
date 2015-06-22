@@ -150,7 +150,7 @@ ylopsApp
 
 .controller('EsikatseluTekstikappaleController', function ($scope, $stateParams) {
   $scope.tekstikappaleViite = $scope.tekstikappaleMap[$stateParams.tekstikappaleId];
-  $scope.tekstikappale = $scope.tekstikappaleViite.tekstiKappale;
+  $scope.tekstikappaleLevel = $scope.tekstikappaleViite.depth === 0 ? -1 : 0;
 })
 
 .controller('EsikatseluVlkController', function ($scope, $stateParams, baseLaajaalaiset, Utils,
