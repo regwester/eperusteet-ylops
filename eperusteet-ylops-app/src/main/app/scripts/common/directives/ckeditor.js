@@ -26,26 +26,30 @@ ylopsApp
     CKEDITOR.plugins.addExternal('epimage', basePath + 'ckeditor-plugins/epimage/', 'plugin.js');
   })
   .constant('editorLayouts', {
-    minimal:
-      [
-        {name: 'clipboard', items: ['Cut', 'Copy', '-', 'Undo', 'Redo']},
-        {name: 'tools', items: ['About']}
-      ],
-    simplified:
-      [
-        {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo']},
-        {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
-        {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent']},
-        {name: 'tools', items: ['About']}
-      ],
-    normal:
-      [
-        {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
-        {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
-        {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']},
-        {name: 'insert', items: ['Table', 'HorizontalRule', 'SpecialChar', 'Link', 'epimage']},
-        {name: 'tools', items: ['About']}
-      ]
+    minimal: [
+      {name: 'clipboard', items: ['Cut', 'Copy', '-', 'Undo', 'Redo']},
+      {name: 'tools', items: ['About']}
+    ],
+    simplified: [
+      {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo']},
+      {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
+      {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent']},
+      {name: 'tools', items: ['About']}
+    ],
+    light: [
+      {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo']},
+      {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
+      {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent']},
+      {name: 'insert', items: ['Table', 'Link']},
+      {name: 'tools', items: ['About']}
+    ],
+    normal: [
+      {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
+      {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
+      {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']},
+      {name: 'insert', items: ['Table', 'HorizontalRule', 'SpecialChar', 'Link', 'epimage']},
+      {name: 'tools', items: ['About']}
+    ]
   })
 
   .config(function(uiSelectConfig) {
