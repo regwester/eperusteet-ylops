@@ -65,6 +65,9 @@
     </h3>
 
     <div collapse="options.tekstiCollapsed" class="teksti-well">
+      <div style="margin-bottom: 10px">
+        <muokkaustieto tiedot="$$muokkaustiedot"></muokkaustieto>
+      </div>
       <span ng-bind-html="model.tekstiKappale.teksti | kaanna | kuvalinkit |unsafe"></span>
       <span class="empty-placeholder" ng-if="isEmpty(model.tekstiKappale.teksti)" kaanna="'ei-maaritetty'"></span>
     </div>
