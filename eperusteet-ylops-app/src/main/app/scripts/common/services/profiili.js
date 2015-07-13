@@ -17,7 +17,7 @@
 
 'use strict';
 
-ylopsApp.service('Profiili', function($http, $q, Kieli) {
+ylopsApp.service('Profiili', function($http, $q) {
     var info = {};
 
     var prom = $q.defer();
