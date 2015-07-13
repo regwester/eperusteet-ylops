@@ -110,14 +110,14 @@ ylopsApp
     '    <h3>' +
     '      {{ viesti.nimi || viesti.muokkaaja }}' +
     '      <span class="pull-right" ng-if="selfOid === viesti.muokkaaja">' +
-    '        <a class="action-link" ng-click="startEditing(viesti)" icon-role="edit" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'muokkaus\' }"></a>' +
-    '        <a class="action-link" ng-click="poistaKommentti(viesti)" icon-role="remove" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'poisto\' }"></a>' +
+    '        <a href="" ng-click="startEditing(viesti)" icon-role="edit" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'muokkaus\' }"></a>' +
+    '        <a href="" ng-click="poistaKommentti(viesti)" icon-role="remove" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'poisto\' }"></a>' +
     '      </span>' +
     '    </h3>' +
     '    <div ng-hide="editoi === viesti.id">' +
     '      <p id="kommenttiviesti-{{ viesti.id }}" class="rajattu-viesti" ng-hide="viesti.$nayta">{{ viesti.sisalto }}</p>' +
     '      <p class="avattu-viesti" ng-show="viesti.$nayta">{{ viesti.sisalto }}</p>' +
-    '      <a ng-show="$checkOverflow(viesti)" class="action-link" ng-click="viesti.$nayta = !viesti.$nayta">' +
+    '      <a ng-show="$checkOverflow(viesti)" href="" ng-click="viesti.$nayta = !viesti.$nayta">' +
     '         <span ng-hide="viesti.$nayta" kaanna="\'nayta\'"></span>' +
     '         <span ng-show="viesti.$nayta" kaanna="\'piilota\'"></span>' +
     '      </a>' +
@@ -135,11 +135,11 @@ ylopsApp
     '    <div class="kommentti-footer">' +
     '      <span ng-if="viesti.muokattu" class="aikaleima"><span class="muokattu" kaanna="\'muokattu\'"></span>{{ viesti.muokattu | aikaleima }}</span>' +
     '      <span ng-if="!viesti.muokattu" class="aikaleima">{{ viesti.luotu | aikaleima }}</span>' +
-    '      <a class="action-link" ng-click="viesti.$lisaa = true" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'muokkaus\' }">' +
+    '      <a href="" ng-click="viesti.$lisaa = true" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'muokkaus\' }">' +
     '        <span kaanna>vastaa</span>' +
     '      </a>' +
     '      <span ng-show="viesti.viestit.length > 0">' +
-    '        <a class="action-link" ng-click="viesti.$piilotaAliviestit = !viesti.$piilotaAliviestit">' +
+    '        <a href="" ng-click="viesti.$piilotaAliviestit = !viesti.$piilotaAliviestit">' +
     '          <span ng-show="viesti.$piilotaAliviestit" kaanna>nayta-aliviestit</span>' +
     '          <span ng-hide="viesti.$piilotaAliviestit" kaanna>piilota-aliviestit</span>' +
     '          (<span ng-bind="viesti.viestit.length"></span>)' +
