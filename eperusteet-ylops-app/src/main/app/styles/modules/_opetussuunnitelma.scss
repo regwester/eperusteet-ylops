@@ -90,8 +90,8 @@ h1.plain {
     font-size: 110%;
   }
   .kontrollit {
-    position: absolute;
-    right: 5px;
+    float: right;
+
     .lukko-wrapper {
       position: relative;
       top: -10px;
@@ -119,6 +119,15 @@ h1.plain {
   .list-group-item:hover .kappale-ops {
     visibility: visible;
   }
+}
+
+.button-link {
+  background: none !important;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: $brand-primary;
+  cursor: pointer;
 }
 
 .tekstikappaleet {

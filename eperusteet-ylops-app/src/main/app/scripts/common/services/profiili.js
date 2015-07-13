@@ -17,7 +17,7 @@
 
 'use strict';
 
-ylopsApp.service('Profiili', function($http, $q) {
+ylopsApp.service('Profiili', function($http, $q, Kieli) {
     var info = {};
 
     var prom = $q.defer();
@@ -28,6 +28,7 @@ ylopsApp.service('Profiili', function($http, $q) {
       $http
         .get('/cas/me')
         .success(function(res) {
+          console.log(res);
           if (res.oid) {
             info.oid = res.oid;
             info.lang = res.lang;

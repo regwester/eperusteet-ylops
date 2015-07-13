@@ -29,8 +29,10 @@
           <div ng-hide="osio.tekstiKappale.$$edit">
             <span ng-bind="osio.tekstiKappale.nimi | kaanna"></span>
             <span ng-show="!$$rakenneEdit" class="pull-right">
-              <a ng-click="opsOtsikot.edit(osio)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}"></a>
-              <a ng-click="pohjaOps.delete(model.tekstit, osio)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></a>
+              <!-- <a> <!&#45;&#45; hax &#45;&#45;> -->
+                <button class="button-link" ng-click="opsOtsikot.edit(osio)" icon-role="edit" ng-attr-title="{{'muokkaa-otsikkoa' | kaanna}}"></button>
+                <button class="button-link" ng-click="pohjaOps.delete(model.tekstit, osio)" icon-role="remove" ng-attr-title="{{'poista' | kaanna}}"></button>
+              <!-- </a> -->
             </span>
           </div>
           <div ng-show="osio.tekstiKappale.$$edit">
