@@ -129,7 +129,7 @@ ylopsApp
   refresh();
 })
 .controller('KasitteetMuokkausController', function ($scope, termimodel, Varmistusdialogi,
-    $modalInstance, $rootScope, KasitteetService) {
+    $modalInstance, KasitteetService, $rootScope) {
   $scope.termimodel = termimodel;
   // $scope.creating = !termimodel;
   // if ($scope.creating) {

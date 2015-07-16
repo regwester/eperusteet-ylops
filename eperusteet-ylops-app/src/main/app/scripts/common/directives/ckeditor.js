@@ -24,6 +24,7 @@ ylopsApp
     var basePath = CKEDITOR.basePath;
     basePath = basePath.substr(0, basePath.indexOf('bower_components/'));
     CKEDITOR.plugins.addExternal('epimage', basePath + 'ckeditor-plugins/epimage/', 'plugin.js');
+    CKEDITOR.plugins.addExternal('termi', basePath + 'ckeditor-plugins/termi/', 'plugin.js');
   })
   .constant('editorLayouts', {
     minimal: [
@@ -47,13 +48,102 @@ ylopsApp
       {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
       {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
       {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']},
-      {name: 'insert', items: ['Table', 'HorizontalRule', 'SpecialChar', 'Link', 'epimage']},
+      {name: 'insert', items: ['Table', 'HorizontalRule', 'SpecialChar', 'Link', 'Termi', 'epimage']},
       {name: 'tools', items: ['About']}
     ]
   })
 
   .config(function(uiSelectConfig) {
     uiSelectConfig.theme = 'bootstrap';
+  })
+
+  .controller('TermiPluginController', function ($scope, KasitteetService, Kaanna, Algoritmit, $timeout) {
+    $scope.service = KasitteetService;
+    $scope.filtered = [];
+    $scope.termit = [];
+    $scope.model = {
+      chosen: null,
+      newTermi: ''
+    };
+    var callback = angular.noop;
+    var setDeferred = null;
+
+    function setChosenValue (value) {
+      var found = _.find($scope.termit, function (termi) {
+        return termi.avain === value;
+      });
+      $scope.model.chosen = found || null;
+    }
+
+    function doSort(items) {
+      return _.sortBy(items, function (item) {
+        return Kaanna.kaanna(item.termi).toLowerCase();
+      });
+    }
+
+    $scope.init = function () {
+      $scope.service.getAll().then(function (res) {
+        $scope.termit = res;
+        $scope.filtered = doSort(res);
+        if (setDeferred) {
+          setChosenValue(_.cloneDeep(setDeferred));
+          setDeferred = null;
+        }
+      });
+    };
+
+    $scope.filterTermit = function (value) {
+      $scope.filtered = _.filter(doSort($scope.termit), function (item) {
+        return Algoritmit.match(value, item.termi);
+      });
+    };
+
+    // data from angular model to plugin
+    $scope.registerListener = function (cb) {
+      callback = cb;
+    };
+    $scope.$watch('model.chosen', function (value) {
+      callback(value);
+    });
+
+    // data from plugin to angular model
+    $scope.setValue = function (value) {
+      $scope.$apply(function () {
+        if (_.isEmpty($scope.termit)) {
+          setDeferred = value;
+        } else {
+          setChosenValue(value);
+        }
+      });
+    };
+
+    $scope.addNew = function () {
+      $scope.adding = !$scope.adding;
+      if ($scope.adding) {
+        $scope.model.newTermi = null;
+      }
+    };
+
+    $scope.closeMessage = function () {
+      $scope.message = null;
+    };
+
+    $scope.saveNew = function () {
+      var termi = $scope.service.newTermi($scope.model.newTermi);
+      $scope.service.save(termi).then(function () {
+        $scope.message = 'termi-plugin-tallennettu';
+        $timeout(function () {
+          $scope.closeMessage();
+        }, 8000);
+        $scope.adding = false;
+        setDeferred = _.clone(termi.avain);
+        $scope.init();
+      });
+    };
+
+    $scope.cancelNew = function () {
+      $scope.adding = false;
+    };
   })
 
   .directive('ckeditor', function($q, $filter, $rootScope, editorLayouts, $timeout, Kaanna, EpImageService) {
@@ -103,7 +193,7 @@ ylopsApp
         editor = CKEDITOR.inline(element[0], {
           toolbar: toolbarLayout,
           removePlugins: 'resize,elementspath,scayt,wsc,image',
-          extraPlugins: 'divarea,sharedspace,epimage',
+          extraPlugins: 'divarea,sharedspace,epimage,termi',
           disallowedContent: 'br; tr td{width,height}',
           extraAllowedContent: 'img[!data-uid,src]',
           disableObjectResizing: true, // doesn't seem to work with inline editor
