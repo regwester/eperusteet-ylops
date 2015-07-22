@@ -48,6 +48,13 @@ public class TermistoController {
         return termistoService.getTermit(opsId);
     }
 
+    @RequestMapping(value = "/termi/{avain}", method = GET)
+    public TermiDto get(
+        @PathVariable("opsId") final Long opsId,
+        @PathVariable("avain") final String avain) {
+        return termistoService.getTermi(opsId, avain);
+    }
+
     @RequestMapping(value = "/termisto", method = POST)
     @ResponseStatus(HttpStatus.CREATED)
     public TermiDto addTermi(

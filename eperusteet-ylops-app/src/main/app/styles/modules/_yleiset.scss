@@ -29,6 +29,10 @@ button {
   color: $brand-primary;
 }
 
+abbr[data-viite] {
+  border-bottom: 1px dotted #999;
+}
+
 /* animointia varten */
 .ng-hide-add, .ng-hide-remove {
   display: block !important;

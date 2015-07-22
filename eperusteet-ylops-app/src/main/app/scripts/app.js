@@ -103,4 +103,19 @@ ylopsApp
     } else {
       console.warn('angular-ui-select korjaus (IE9), bootstrap/choices.tpl.html on muuttunut');
     }
+  })
+  .run(function() {
+    _.mixin({zipBy: function(array, kfield, vfield) {
+        if (_.isArray(array) && kfield) {
+          if (vfield) {
+            return _.zipObject(_.map(array, kfield), _.map(array, vfield));
+          }
+          else {
+            return _.zipObject(_.map(array, kfield), array);
+          }
+        }
+        else {
+          return {};
+        }
+      }});
   });

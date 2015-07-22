@@ -54,6 +54,14 @@ public class TermistoServiceImpl implements TermistoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public TermiDto getTermi(Long opsId, String avain) {
+        Opetussuunnitelma ops = opsit.findOne(opsId);
+        Termi termi = termisto.findOneByOpsAndAvain(ops, avain);
+        return mapper.map(termi, TermiDto.class);
+    }
+
+    @Override
     public TermiDto addTermi(Long opsId, TermiDto dto) {
         Opetussuunnitelma ops = opsit.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");

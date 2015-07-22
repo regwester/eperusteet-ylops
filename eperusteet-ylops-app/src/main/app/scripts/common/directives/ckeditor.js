@@ -57,7 +57,7 @@ ylopsApp
     uiSelectConfig.theme = 'bootstrap';
   })
 
-  .controller('TermiPluginController', function ($scope, KasitteetService, Kaanna, Algoritmit, $timeout) {
+  .controller('TermiPluginController', function ($scope, $stateParams, $timeout, KasitteetService, Kaanna, Algoritmit) {
     $scope.service = KasitteetService;
     $scope.filtered = [];
     $scope.termit = [];
@@ -82,7 +82,7 @@ ylopsApp
     }
 
     $scope.init = function () {
-      $scope.service.getAll().then(function (res) {
+      $scope.service.get($stateParams.id).then(function (res) {
         $scope.termit = res;
         $scope.filtered = doSort(res);
         if (setDeferred) {

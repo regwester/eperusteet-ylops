@@ -20,41 +20,49 @@ ylopsApp
 .factory('KasitteetResource', function($resource, SERVICE_LOC) {
   return $resource(SERVICE_LOC + '/opetussuunnitelmat/:opsId/termisto/:id', {
     opsId: '@opsId',
-    id: '@id'
-  }, { });
+    id: '@id',
+    avain: '@avain'
+  }, {
+    getByAvain: { method: 'GET', url: SERVICE_LOC + '/opetussuunnitelmat/:opsId/termi/:avain' }
+  });
 })
-.service('KasitteetService', function(KasitteetResource) {
+.service('KasitteetService', function($q, KasitteetResource) {
   function makeKey(item) {
     var termi = _.first(_.compact(_.values(item.termi))) || '';
     return termi.replace(/[^a-zA-Z0-9]/g, '') + (new Date()).getTime();
   }
 
-  var save = function(opsId, item) {
+  function save(opsId, item) {
     if (!item.avain) { item.avain = makeKey(item); }
     return KasitteetResource.save((item.id ?
          { opsId: opsId, id: item.id } :
          { opsId: opsId }),
         item).$promise;
-  };
+  }
 
-  var get = function(opsId, id) {
+  function get(opsId, id) {
     return id ? KasitteetResource.get({
           opsId: opsId,
           id: id
         }).$promise : KasitteetResource.query({ opsId: opsId }).$promise;
-  };
+  }
 
-  var remove = function(opsId, id) {
+  function remove(opsId, id) {
     return KasitteetResource.remove({
       opsId: opsId,
       id: id
     }).$promise;
-  };
+  }
+
+  function getWithAvain(opsId, avain) {
+    return KasitteetResource.getByAvain({ opsId: opsId, avain: avain }).$promise;
+  }
 
   return {
     save: save,
     get: get,
-    remove: remove
+    remove: remove,
+    getWithAvain: getWithAvain
   };
 })
 .controller('KasitteetController', function($scope, $stateParams, $modal, KasitteetService, Algoritmit, Kaanna, Varmistusdialogi) {

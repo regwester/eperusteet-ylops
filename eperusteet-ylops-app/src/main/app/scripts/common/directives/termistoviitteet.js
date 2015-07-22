@@ -25,7 +25,7 @@ ylopsApp
       template: '<p ng-bind-html="model | kaanna | unsafe" termisto-viitteet="model"></p>'
     };
   })
-  .directive('termistoViitteet', function (Kaanna, TermistoService, $document, $timeout) {
+  .directive('termistoViitteet', function ($stateParams, Kaanna, KasitteetService, $document, $timeout) {
     var TERMI_MATCHER = 'abbr[data-viite]';
     return {
       restrict: 'A',
@@ -34,6 +34,7 @@ ylopsApp
       },
       link: function (scope, element) {
         scope.popovers = [];
+
         function destroy() {
           element.find(TERMI_MATCHER).each(function () {
             var jqEl = angular.element(this);
@@ -43,31 +44,30 @@ ylopsApp
           });
           scope.popovers = [];
         }
+
         function setup() {
           element.find(TERMI_MATCHER).each(function () {
             var jqEl = angular.element(this);
             var viiteId = jqEl.attr('data-viite');
-            if (viiteId) {
-              TermistoService.preload();
-            }
-            var popover = jqEl.popover({
-              placement: 'auto',
-              html: true,
-              title: Kaanna.kaanna('termin-selitys'),
-              trigger: 'click'
-            }).on('show.bs.popover', function () {
-              var res = TermistoService.getWithAvain(viiteId, true);
-              var content = res ? Kaanna.kaanna(res.selitys) : Kaanna.kaanna('termia-ei-loytynyt');
-              popover.attr('data-content', content);
-              if (res) {
-                popover.attr('data-original-title', Kaanna.kaanna(res.termi));
-              }
-              _.each(scope.popovers, function (po) {
-                if (po !== popover) {
-                  po.popover('hide');
+
+            KasitteetService.getWithAvain($stateParams.id, viiteId).then(function(res) {
+              var popover = jqEl.popover({
+                placement: 'auto',
+                html: true,
+                title: Kaanna.kaanna('termin-selitys'),
+                trigger: 'click'
+              })
+              .on('show.bs.popover', function() {
+                var content = res ? Kaanna.kaanna(res.selitys) : Kaanna.kaanna('termia-ei-loytynyt');
+                popover.attr('data-content', content);
+                if (res) {
+                  popover.attr('data-original-title', Kaanna.kaanna(res.termi));
                 }
-              });
-              $timeout(function () {
+                _.each(scope.popovers, function (po) {
+                  if (po !== popover) {
+                    po.popover('hide');
+                  }
+                });
                 var thisPopover = popover.next('.popover');
                 var title = thisPopover.find('.popover-title');
                 var closer = angular.element(
@@ -76,9 +76,9 @@ ylopsApp
                 closer.on('click', function () {
                   popover.popover('hide');
                 });
-              }, 100);
+                scope.popovers.push(popover);
+              });
             });
-            scope.popovers.push(popover);
           });
         }
 
