@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import java.util.List;
@@ -52,6 +54,15 @@ public class UlkopuolisetController {
 
     @Autowired
     private EperusteetService eperusteetService;
+
+    @Autowired
+    private KayttajanTietoService kayttajanTietoService;
+
+    @RequestMapping(value = "/kayttajatiedot/{oid:.+}", method = GET)
+    @ResponseBody
+    public ResponseEntity<KayttajanTietoDto> get(@PathVariable("oid") final String oid) {
+        return new ResponseEntity<>(kayttajanTietoService.hae(oid), HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/julkaistutperusteet", method = GET)
     @ResponseBody

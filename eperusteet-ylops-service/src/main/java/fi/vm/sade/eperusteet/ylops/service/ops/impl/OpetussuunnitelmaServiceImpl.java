@@ -344,7 +344,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private Opetussuunnitelma lisaaPerusteenSisalto(Opetussuunnitelma ops, Peruste peruste) {
         if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
             return addPohjaPerusopetus(ops, peruste);
-        } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi() || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()) {
+        } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi()
+                || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()
+                || KoulutusTyyppi.VARHAISKASVATUS == peruste.getKoulutustyyppi()) {
             return addPohjaLisaJaEsiopetus(ops, peruste);
         } else {
             throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");

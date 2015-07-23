@@ -166,7 +166,16 @@ ylopsApp
           }]
         }
       })
-
+      .state('root.opetussuunnitelmat.yksi.kasitteet', {
+        url: '/kasitteet',
+        templateUrl: 'views/opetussuunnitelmat/kasitteet.html',
+        controller: 'KasitteetController',
+        resolve: {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
+          }]
+        }
+      })
       .state('root.opetussuunnitelmat.yksi.esikatselu', {
         url: '/esikatselu?menu',
         templateUrl: 'views/opetussuunnitelmat/esikatselu.html',

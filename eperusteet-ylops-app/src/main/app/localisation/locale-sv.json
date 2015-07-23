@@ -269,5 +269,8 @@
   "yhteystiedot": "Kontaktuppgifter",
   "yhteystiedot-placeholder": "Lägg till kontaktuppgifter",
   "ylikirjoita-uusi-sisalto": "Fortsätt redigera",
-  "ylikirjoittaessasi-voit-palauttaa": "När du fortsätter kan du skriva över ändringar som andra har gjort. De blir kvar i ändringshistoriken och du kan återställa dem därifrån."
+  "ylikirjoittaessasi-voit-palauttaa": "När du fortsätter kan du skriva över ändringar som andra har gjort. De blir kvar i ändringshistoriken och du kan återställa dem därifrån.",
+  
+  "nayta-opsina": "Visa som läroplan",
+  "nayta-pohjana": "Visa som botten"
 }

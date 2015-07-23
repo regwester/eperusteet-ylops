@@ -8,6 +8,7 @@ $statusbadge-width: 95px;
   display: table;
   text-align: center;
   background-color: $brand-primary;
+  border: none;
   .status-name {
     text-transform: uppercase;
   }

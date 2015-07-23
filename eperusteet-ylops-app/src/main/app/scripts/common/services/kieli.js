@@ -141,7 +141,6 @@ ylopsApp
       stateInit.resolve();
     });
 
-
     $q.all([stateInit.promise, info.fetchPromise]).then(function () {
       var lang = Profiili.lang();
       // Disable ui language change if language preference found in CAS

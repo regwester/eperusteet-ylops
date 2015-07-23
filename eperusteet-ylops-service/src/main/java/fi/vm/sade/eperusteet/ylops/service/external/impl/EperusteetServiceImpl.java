@@ -54,7 +54,7 @@ import org.springframework.web.client.RestTemplate;
 public class EperusteetServiceImpl implements EperusteetService {
 
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
-    private String koodistoServiceUrl;
+    private String eperusteetServiceUrl;
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
     private String koulutustyyppiPerusopetus;
 
@@ -76,7 +76,8 @@ public class EperusteetServiceImpl implements EperusteetService {
         KoulutusTyyppi[] vaihtoehdot = {
             KoulutusTyyppi.ESIOPETUS,
             KoulutusTyyppi.PERUSOPETUS,
-            KoulutusTyyppi.LISAOPETUS
+            KoulutusTyyppi.LISAOPETUS,
+            KoulutusTyyppi.VARHAISKASVATUS
         };
         return new HashSet<>(Arrays.asList(vaihtoehdot));
     }
@@ -91,7 +92,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         List<PerusteInfo> infot = new ArrayList<>();
         for (KoulutusTyyppi tyyppi : tyypit) {
             PerusteInfoWrapperDto wrapperDto
-                = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
+                = client.getForObject(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
                                       PerusteInfoWrapperDto.class, tyyppi.toString(), 100);
 
             // Filtteröi pois perusteet jotka eivät enää ole voimassa
@@ -106,7 +107,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     public List<PerusteInfo> findPerusopetuksenPerusteet() {
         PerusteInfoWrapperDto wrapperDto
-            = client.getForObject(koodistoServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
+            = client.getForObject(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
                                   PerusteInfoWrapperDto.class, koulutustyyppiPerusopetus, 100);
 
         // Filtteröi pois perusteet jotka eivät enää ole voimassa
@@ -119,7 +120,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     @Cacheable("perusteet")
     public Peruste getPerusopetuksenPeruste(final Long id) {
-        PerusopetusPerusteDto peruste = client.getForObject(koodistoServiceUrl
+        PerusopetusPerusteDto peruste = client.getForObject(eperusteetServiceUrl
             + "/api/perusteet/{id}/kaikki", PerusopetusPerusteDto.class, id);
 
         if (peruste == null || !getKoulutuskoodit().contains(peruste.getKoulutustyyppi())) {
@@ -156,7 +157,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         if (jalkeen != null) {
             params = "?alkaen=" + String.valueOf(jalkeen);
         }
-        JsonNode tiedotteet = client.getForObject(koodistoServiceUrl + "/api/tiedotteet" + params, JsonNode.class);
+        JsonNode tiedotteet = client.getForObject(eperusteetServiceUrl + "/api/tiedotteet" + params, JsonNode.class);
         return tiedotteet;
     }
 

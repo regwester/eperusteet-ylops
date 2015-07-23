@@ -90,8 +90,8 @@ h1.plain {
     font-size: 110%;
   }
   .kontrollit {
-    position: absolute;
-    right: 5px;
+    float: right;
+
     .lukko-wrapper {
       position: relative;
       top: -10px;

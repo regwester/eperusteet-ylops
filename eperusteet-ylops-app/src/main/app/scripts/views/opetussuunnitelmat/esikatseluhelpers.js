@@ -46,6 +46,7 @@ ylopsApp
         depth: depth,
         valmis: lapsi.valmis
       });
+      lapsi.depth = depth;
       nodemap[lapsi.id] = lapsi;
     });
     return arr;

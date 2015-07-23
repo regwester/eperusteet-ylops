@@ -43,6 +43,12 @@ ylopsApp
     var savingValmis = false;
     var TYYPIT = ['ohje', 'perusteteksti'];
 
+    $scope.$$muokkaustiedot = {
+      luotu: $scope.model.luotu,
+      muokattu: $scope.model.muokattu,
+      muokkaajaOid: $scope.model.muokkaaja
+    };
+
     $scope.opsId = $stateParams.id;
     $scope.options = {
       isCollapsed: true
