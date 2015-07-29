@@ -105,7 +105,8 @@ ylopsApp
     }
   })
   .run(function() {
-    _.mixin({zipBy: function(array, kfield, vfield) {
+    _.mixin({
+      zipBy: function(array, kfield, vfield) {
         if (_.isArray(array) && kfield) {
           if (vfield) {
             return _.zipObject(_.map(array, kfield), _.map(array, vfield));
@@ -117,5 +118,11 @@ ylopsApp
         else {
           return {};
         }
-      }});
+      },
+      equals: function(expected, field) {
+        return function(given) {
+          return field ? given[field] === expected : given === expected;
+        };
+      }
+    });
   });
