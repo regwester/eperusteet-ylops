@@ -20,6 +20,7 @@ import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
+import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
@@ -99,6 +100,16 @@ public class OpetussuunnitelmaController {
             return new ResponseEntity<>(opetussuunnitelmaService.addOpetussuunnitelma(opetussuunnitelmaDto),
                 HttpStatus.OK);
         }
+    }
+
+    @RequestMapping(value = "/{id}/oppiainejarjestys", method = RequestMethod.POST)
+    @ResponseBody
+    @Timed
+    public ResponseEntity updateOpetussuunnitelma(
+            @PathVariable("id") final Long id,
+            @RequestBody List<JarjestysDto> oppiainejarjestys) {
+        opetussuunnitelmaService.updateOppiainejarjestys(id, oppiainejarjestys);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)

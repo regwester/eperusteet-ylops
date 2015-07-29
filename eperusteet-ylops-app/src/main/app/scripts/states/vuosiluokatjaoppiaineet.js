@@ -20,6 +20,21 @@ ylopsApp
   .config(function($stateProvider) {
     $stateProvider
 
+      .state('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuussort', {
+        url: '/vuosiluokat/:vlkId/jarjesta',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlksort.html',
+        controller: 'VuosiluokkakokonaisuusSortController',
+        resolve: {
+          vuosiluokatService: 'VuosiluokatService',
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
+          }]
+        }
+      })
+
       .state('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {
         url: '/vuosiluokat/:vlkId',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlk.html',

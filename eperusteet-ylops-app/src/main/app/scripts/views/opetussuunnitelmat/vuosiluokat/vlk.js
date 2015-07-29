@@ -79,6 +79,89 @@ ylopsApp
   this.createEmptyText = createEmptyText;
 })
 
+.controller('VuosiluokkakokonaisuusSortController', function($state, $scope, Editointikontrollit, OpsNavigaatio,
+      vlk, vlkId, opsModel, OpetussuunnitelmaCRUD, Notifikaatiot) {
+  OpsNavigaatio.setActive(false);
+
+  $scope.oppiaineet = _(opsModel.oppiaineet)
+    .map('oppiaine')
+    .map(function(oa) {
+      return [oa, oa.oppimaarat || []];
+    })
+    .flatten(true)
+    .filter(function(oa) {
+      oa.$$vklid = _.findIndex(oa.vuosiluokkakokonaisuudet, function(oavlk) {
+        return vlk._tunniste === oavlk._vuosiluokkakokonaisuus;
+      });
+      return -1 !== oa.$$vklid;
+    })
+    .each(function(oa) {
+      oa.$$jnro = oa.vuosiluokkakokonaisuudet[oa.$$vklid].jnro;
+    })
+    .sortBy('$$jnro')
+    .value();
+
+  $scope.sortableOptions = {
+    handle: '> .handle',
+    placeholder: 'placeholder-vklsort',
+    connectWith: '.container-items',
+    cursor: 'move',
+    cursorAt: {top : 2, left: 2},
+    tolerance: 'pointer',
+  };
+
+  $scope.sortableOptionsOa = {
+    handle: '> .handle',
+    placeholder: 'placeholder-vklsort',
+    connectWith: '.container-items-oa',
+    cursor: 'move',
+    cursorAt: {top : 2, left: 2},
+    tolerance: 'pointer',
+  };
+
+  var callbacks = {
+    edit: function() {
+    },
+    validate: function() {
+      return true;
+    },
+    save: function() {
+      var jrnoMap = _($scope.oppiaineet)
+        .filter(function(oa) {
+          return oa.$$vklid >= 0;
+        })
+        .map(function(oa) {
+          return [oa, oa.oppimaarat || []];
+        })
+        .flatten(true)
+        .map(function(oa, idx) {
+          console.log(oa);
+          return {
+            id: opsModel.id,
+            lisaIdt: [oa.vuosiluokkakokonaisuudet[oa.$$vklid].id],
+            jnro: idx
+          };
+        })
+        .value();
+
+      OpetussuunnitelmaCRUD.jarjestaOppiaineet({
+        opsId: opsModel.id
+      }, jrnoMap, function() {
+        Notifikaatiot.onnistui('tallennettu-ok');
+        $state.go('root.opetussuunnitelmat.yksi.sisalto');
+        // TODO refetch
+      });
+    },
+    cancel: function() {
+      $state.go('root.opetussuunnitelmat.yksi.sisalto');
+    },
+    notify: _.noop
+  };
+
+  Editointikontrollit.registerCallback(callbacks);
+  Editointikontrollit.startEditing();
+})
+
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
   MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
   baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,

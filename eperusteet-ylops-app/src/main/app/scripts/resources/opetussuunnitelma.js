@@ -35,6 +35,7 @@ ylopsApp
       palauta: {method: 'POST', url: YlopsResources.OPS + '/palauta'},
       lisaaKielitarjonta: {method: 'POST', url: YlopsResources.OPS + '/kielitarjonta', isArray: true},
       syncPeruste: {method: 'POST', url: YlopsResources.OPS + '/sync'},
+      jarjestaOppiaineet: {method: 'POST', url: YlopsResources.OPS + '/oppiainejarjestys', isArray: true}
     });
   })
   .factory('OpetussuunnitelmaOikeudet', function ($resource, YlopsResources) {
