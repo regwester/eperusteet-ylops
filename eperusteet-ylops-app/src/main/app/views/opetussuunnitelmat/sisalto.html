@@ -58,12 +58,18 @@
       </div>
     </div>
   </div>
+
   <div ng-if="model.koulutustyyppi === 'koulutustyyppi_16'" class="col-md-4 col-sm-6">
     <div class="list-group">
-      <a class="list-group-item list-group-header" kaanna="'vuosiluokat-ja-oppiaineet'"
-         ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: 'vuosiluokat'})"></a>
-      <a class="list-group-item" ng-repeat="item in vuosiluokkakokonaisuudet" ng-bind="item.vuosiluokkakokonaisuus.nimi | kaanna"
-         ui-sref="root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus({vlkId: item.vuosiluokkakokonaisuus.id})"></a>
+      <div class="list-group-item list-group-header">
+        <a kaanna="'vuosiluokat-ja-oppiaineet'" ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: 'vuosiluokat'})"></a>
+      </div>
+      <div ng-repeat="item in vuosiluokkakokonaisuudet" class="list-group-item">
+        <a ng-bind="item.vuosiluokkakokonaisuus.nimi | kaanna"
+          ui-sref="root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus({vlkId: item.vuosiluokkakokonaisuus.id})"></a>
+        <a class="pull-right" href="" icon-role="sort"
+           ui-sref="root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuussort({vlkId: item.vuosiluokkakokonaisuus.id})"></a>
+      </div>
     </div>
   </div>
 </div>

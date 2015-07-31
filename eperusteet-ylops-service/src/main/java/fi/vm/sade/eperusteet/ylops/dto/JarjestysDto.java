@@ -13,31 +13,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.ops;
+package fi.vm.sade.eperusteet.ylops.dto;
 
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 /**
  *
- * @author mikkom
+ * @author nkala
  */
 @Getter
 @Setter
-public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
-    private Long id;
-    private Reference vuosiluokkakokonaisuus;
-    private TekstiosaDto tehtava;
-    private TekstiosaDto tyotavat;
-    private TekstiosaDto ohjaus;
-    private TekstiosaDto arviointi;
-    private TekstiosaDto sisaltoalueinfo;
-    private Integer jnro;
-
-    private Set<OppiaineenVuosiluokkaDto> vuosiluokat;
+public class JarjestysDto {
+    Long id;
+    List<Long> lisaIdt;
+    Integer jnro;
 }

@@ -11,6 +11,33 @@ $tavoite-border: 1px solid #ccc;
 
 $active-tab-bg: #e4e4e4;
 
+.vkl-sortable {
+  margin: 3px;
+  padding: 5px;
+  border: $tavoite-border;
+
+  &:hover {
+    background: #eee;
+  }
+
+  .handle {
+    &:hover {
+      cursor: move;
+    }
+  }
+}
+
+.vkl-sortable-oppimaarat {
+  margin: 5px;
+}
+
+.placeholder-vklsort {
+  height: 30px;
+  margin: 3px;
+  padding: 5px;
+  border: 2px solid $brand-primary;
+}
+
 .vuosiluokka {
   h2 {
     margin-bottom: 40px;

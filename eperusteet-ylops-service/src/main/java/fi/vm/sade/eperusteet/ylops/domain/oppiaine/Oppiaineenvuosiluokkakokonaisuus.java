@@ -91,6 +91,10 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
     private Tekstiosa arviointi;
 
+    @Getter
+    @Setter
+    private Integer jnro;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinTable
     @OrderColumn

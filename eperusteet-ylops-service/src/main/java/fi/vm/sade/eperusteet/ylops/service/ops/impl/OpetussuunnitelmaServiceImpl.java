@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
@@ -34,6 +35,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
@@ -180,6 +182,32 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus().getLaajaalaisetosaamiset();
     }
 
+    @Override
+    public void updateOppiainejarjestys(Long opsId, List<JarjestysDto> oppiainejarjestys) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Map<Long, Oppiaineenvuosiluokkakokonaisuus> oppiaineet = new HashMap<>();
+
+        for (OpsOppiaine oa : ops.getOppiaineet()) {
+            for (Oppiaineenvuosiluokkakokonaisuus oavlk : oa.getOppiaine().getVuosiluokkakokonaisuudet()) {
+                oppiaineet.put(oavlk.getId(), oavlk);
+            }
+            if (oa.getOppiaine().getOppimaarat() != null) {
+                for (Oppiaine oppimaara : oa.getOppiaine().getOppimaarat()) {
+                    for (Oppiaineenvuosiluokkakokonaisuus oavlk : oppimaara.getVuosiluokkakokonaisuudet()) {
+                        oppiaineet.put(oavlk.getId(), oavlk);
+                    }
+                }
+            }
+        }
+
+        for (JarjestysDto node : oppiainejarjestys) {
+            Oppiaineenvuosiluokkakokonaisuus oavlk = oppiaineet.get(node.getLisaIdt().get(0));
+            assertExists(oavlk, "Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei ole");
+            oavlk.setJnro(node.getJnro());
+        }
+    }
+
     private void fetchKuntaNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
         for (KoodistoDto koodistoDto : opetussuunnitelmaDto.getKunnat()) {
             Map<String, String> tekstit = new HashMap<>();
@@ -324,6 +352,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .map(OpsDtoMapper::fromEperusteet)
                 .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
         }
+
+        // Alustetaan järjestys ePerusteista saatuun järjestykseen
+        Integer idx = 0;
+        for (OpsOppiaine oa : ops.getOppiaineet()) {
+            for (Oppiaineenvuosiluokkakokonaisuus oavlk : oa.getOppiaine().getVuosiluokkakokonaisuudet()) {
+                oavlk.setJnro(idx);
+            }
+            ++idx;
+        }
+
         return ops;
     }
 

@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.peruste;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -42,12 +43,12 @@ public class PerusteOppiaine implements ReferenceableDto {
     private PerusteTekstiOsa tehtava;
     private Set<PerusteOppiaine> oppimaarat;
     private Set<PerusteOpetuksenkohdealue> kohdealueet;
-    private Set<PerusteOppiaineenVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
+    private List<PerusteOppiaineenVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
 
     public Optional<PerusteOppiaineenVuosiluokkakokonaisuus> getVuosiluokkakokonaisuus(Reference tunniste) {
         return getVuosiluokkakokonaisuus(UUID.fromString(tunniste.toString()));
     }
-    
+
     public Optional<PerusteOppiaineenVuosiluokkakokonaisuus> getVuosiluokkakokonaisuus(UUID tunniste) {
         return vuosiluokkakokonaisuudet.stream()
             .filter(v -> v.getVuosiluokkaKokonaisuus().getTunniste().equals(tunniste))
