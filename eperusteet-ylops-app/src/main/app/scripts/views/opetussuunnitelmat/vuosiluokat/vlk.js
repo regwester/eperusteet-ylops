@@ -148,8 +148,7 @@ ylopsApp
         opsId: opsModel.id
       }, jrnoMap, function() {
         Notifikaatiot.onnistui('tallennettu-ok');
-        $state.go('root.opetussuunnitelmat.yksi.sisalto');
-        // TODO refetch
+        $state.go('root.opetussuunnitelmat.yksi.sisalto', {}, { reload: true });
       });
     },
     cancel: function() {

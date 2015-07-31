@@ -22,7 +22,6 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonais
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksenkohdealue;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteTekstiOsa;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.LaajaalainenosaaminenDto;
@@ -31,14 +30,11 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,9 +58,10 @@ public class OpsDtoMapper {
         }
 
         if (dto.getVuosiluokkakokonaisuudet() != null) {
-            dto.getVuosiluokkakokonaisuudet()
-                .forEach(ovk -> oppiaine.addVuosiluokkaKokonaisuus(
-                        mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class)));
+            for (OppiaineenVuosiluokkakokonaisuusDto ovk : dto.getVuosiluokkakokonaisuudet()) {
+                oppiaine.addVuosiluokkaKokonaisuus(
+                        mapper.map(ovk, Oppiaineenvuosiluokkakokonaisuus.class));
+            }
         }
 
         return oppiaine;

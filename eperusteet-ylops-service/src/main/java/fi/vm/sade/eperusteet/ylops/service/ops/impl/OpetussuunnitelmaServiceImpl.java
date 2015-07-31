@@ -352,6 +352,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .map(OpsDtoMapper::fromEperusteet)
                 .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
         }
+
+        // Alustetaan järjestys ePerusteista saatuun järjestykseen
+        Integer idx = 0;
+        for (OpsOppiaine oa : ops.getOppiaineet()) {
+            for (Oppiaineenvuosiluokkakokonaisuus oavlk : oa.getOppiaine().getVuosiluokkakokonaisuudet()) {
+                oavlk.setJnro(idx);
+            }
+            ++idx;
+        }
+
         return ops;
     }
 
