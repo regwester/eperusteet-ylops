@@ -129,7 +129,6 @@ public class OppiaineController {
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     @CacheControl(nonpublic = false, age = 3600)
     public ResponseEntity<PerusteOppiaine> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-
         Peruste p = ops.getPeruste(opsId);
         return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
             .flatMap(a -> p.getPerusopetus().getOppiaine(a.getOppiaine().getTunniste())));
