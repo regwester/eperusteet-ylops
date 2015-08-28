@@ -314,6 +314,14 @@
   "termi-plugin-lisaa-uusi": "Lisää uusi käsite",
   "termi-plugin-tallennettu": "Käsite tallennettu. Voit muokata sitä Käsitteet-näkymässä.",
 
+  "tilastot": "Tilastot",
+  "maarat-kielittain": "Kielittäin",
+  "maarat-kuntatasoittain": "Tasoittain",
+  "maarat-koulutustyypeittain": "Koulutustyypeittäin",
+  "kuntataso-0": "Koulut",
+  "kuntataso-1": "Kunnat",
+  "kuntataso-2": "Seutukunnat",
+
   "epimage-plugin-virhe-viite-tyhja": "Lisättävää kuvaa ei ole valittu.",
   "epimage-plugin-hylatty": "Voit ladata vain jpg- tai png-tyyppisiä kuvia.",
   "epimage-plugin-select-placeholder": "Valitse kuva...",

@@ -13,7 +13,7 @@
       </div>
       <div class="list-group-item">
         <ul class="ek-menu">
-          <li ng-repeat="item in texttree track by $index" ng-hide="item.$hidden" ng-class="{active: item.$active, header: item.$header}">
+          <li ng-repeat="item in texttree" ng-hide="item.$hidden" ng-class="{active: item.$active, header: item.$header}">
             <a ng-href="{{item.url}}" kaanna="item.label" ng-style="{'margin-left': item.depth*15}"></a>
           </li>
         </ul>
@@ -34,7 +34,7 @@
       <div ng-show="model.oppiaineet.length > 0" class="list-group-item" collapse="osiot.opetus">
 
         <ul ng-if="isState('vuosiluokittain')" class="ek-menu">
-          <li ng-repeat="vlk in vlkMenu track by $index" ng-hide="vlk.$hidden"
+          <li ng-repeat="vlk in vlkMenu" ng-hide="vlk.$hidden"
               ng-class="{active: vlk.$active, header: vlk.$header, 'vuosiluokka-item': !vlk.url}">
             <a ng-href="{{vlk.url}}" ng-style="{'margin-left': vlk.depth*15}" ng-click="!vlk.url && toggleVlk($index)">
               <span kaanna="vlk.nimi"></span>

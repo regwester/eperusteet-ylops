@@ -1,7 +1,45 @@
 <h1 kaanna="'hallinta'"></h1>
 
-<div class="action-buttons">
+  <h2>
+    <a href="" ng-click="$$collapsestats = !$$collapsestats">
+      <span ng-show="$$collapsestats" icon-role="chevron-down"></span>
+      <span ng-hide="$$collapsestats" icon-role="chevron-right"></span>
+      <span kaanna="'tilastot'"></span>
+    </a>
+  </h2>
+  <div collapse="!$$collapsestats">
+    <div class="row">
+      <div class="col-xs-4">
+        <h3 kaanna="'maarat-kuntatasoittain'"></h3>
+        <ul>
+          <li ng-repeat="(taso, arr) in statsit.maaratTasoittain">
+            <label kaanna="'{{ 'kuntataso-' + taso }}'"></label>:
+            {{ arr.length || 0 }}
+          </li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <h3 kaanna="'maarat-koulutustyypeittain'"></h3>
+        <ul>
+          <li ng-repeat="(tyyppi, arr) in statsit.maaratTyypeittain">
+            <label kaanna="tyyppi"></label>:
+            {{ arr.length || 0 }}
+          </li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <h3 kaanna="'maarat-kielittain'"></h3>
+        <ul>
+          <li ng-repeat="(kieli, maara) in statsit.maaratKielittain">
+            <label kaanna="kieli"></label>:
+            {{ maara || 0 }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
+<div class="action-buttons">
 </div>
 
 <div class="admin-rajaus">
@@ -27,6 +65,16 @@
         </span>
       </a>
     </th>
+
+    <th class="ops-th-koulutustyyppi">
+      <a ng-click="sorter.set('koulutustyyppi')">
+        <span kaanna="'koulutustyyppi'"></span>
+        <span ng-show="sorter.key === 'koulutustyyppi'" class="glyphicon"
+              ng-class="sorter.desc ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet'">
+        </span>
+      </a>
+    </th>
+
     <th ng-if="opsiLista" class="ops-th-koulutustoimija">
       <a ng-click="sorter.set('koulutustoimija')">
         <span kaanna="'koulutustoimija'"></span>
@@ -35,6 +83,7 @@
         </span>
       </a>
     </th>
+
     <th class="ops-th-tila">
       <a ng-click="sorter.set('tila')">
         <span kaanna="'tila'"></span>
@@ -43,6 +92,7 @@
         </span>
       </a>
     </th>
+
     <th class="ops-th-muokattu">
       <a ng-click="sorter.set('muokattu')">
         <span kaanna="'muokattu-viimeksi'"></span>
@@ -51,15 +101,20 @@
         </span>
       </a>
     </th>
+
     <th class="ops-th-toiminto">
       <span kaanna="'toiminto'"></span>
     </th>
 
   </tr>
+
   <tr ng-if="!items.$resolved"><td colspan="4"><small-spinner></small-spinner></td></tr>
   <tr ng-if="items.$resolved" ng-repeat="item in filtered | orderBy:sorter.fn:sorter.desc | startFrom:(paginate.current-1)*paginate.perPage | limitTo: paginate.perPage">
     <td>
       <a ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
+    </td>
+    <td>
+      <span kaanna="item.koulutustyyppi"></span>
     </td>
     <td>
       <span ng-repeat="org in item.organisaatiot | filter:{tyypit:'koulutustoimija'} | orderBy:nimiSort"><span ng-bind="org.nimi | kaanna"></span><br ng-if="!$last"></span>

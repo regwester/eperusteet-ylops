@@ -20,7 +20,6 @@ ylopsApp
 .controller('PohjaTekstikappaleController', function ($scope, tekstikappaleModel, Editointikontrollit,
   Notifikaatiot, TekstikappaleOps, $timeout, $state, $stateParams, OhjeCRUD, OpetussuunnitelmanTekstit,
   Utils, $rootScope, MurupolkuData, OpsService) {
-  console.log('hello');
 
   $scope.pohjaId = $stateParams.pohjaId;
   $scope.model = tekstikappaleModel;

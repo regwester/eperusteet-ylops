@@ -33,9 +33,39 @@ ylopsApp
       $scope.filtered.length);
   }
 
+  function generoiStatsit(items) {
+    var statsit = {};
+    statsit.maaratKielittain = _.reduce(items, function(acc, item) {
+      _.each(item.julkaisukielet, function(jk) {
+        acc[jk] = _.isNumber(acc[jk]) ? acc[jk] + 1 : 0;
+      });
+      return acc;
+    }, {});
+    _.each(items, function(item) {
+      item.$$taso = 1;
+      var koulutasoinen = _.any(item.organisaatiot, function(org) {
+        return _.findIndex(org.tyypit, 'Oppilaitos') !== -1;
+      });
+
+      if (koulutasoinen) {
+        item.$$taso = 0;
+      }
+
+      if (_.size(item.kunnat) > 1) {
+        item.$$taso = 2;
+      }
+    });
+
+    statsit.maaratTyypeittain = _.groupBy(items, 'koulutustyyppi');
+    statsit.maaratTasoittain = _.groupBy(items, '$$taso');
+    return statsit;
+  }
+
   $scope.$watch('items', function () {
     $scope.search.changed();
     updatePageinfo();
+
+    $scope.statsit = generoiStatsit($scope.items);
   }, true);
 
   $scope.$watch('search.tilaRajain', function () {

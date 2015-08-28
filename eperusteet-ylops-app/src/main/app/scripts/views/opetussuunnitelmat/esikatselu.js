@@ -25,7 +25,8 @@ ylopsApp
   };
 })
 
-.controller('EsikatseluController', function ($scope, $state, Algoritmit, Utils, $stateParams, StateHelperService, TreeHelper) {
+.controller('EsikatseluController', function ($scope, $state, Algoritmit, Utils, $stateParams, StateHelperService, TreeHelper, $q,
+      VuosiluokkakokonaisuusCRUD) {
   function updateNavi() {
     TreeHelper.updateTreeNavi($scope.texttree);
     TreeHelper.updateTreeNavi($scope.oppiaineMenu, 'oppiaine');
@@ -44,95 +45,99 @@ ylopsApp
   $scope.valinnaiset = _.negate($scope.yhteiset);
 
   function buildOppiaineMenu() {
-    _($scope.model.oppiaineet).filter($scope.yhteiset).sortBy($scope.oppiaineSort).each(function(oppiaine) {
-      $scope.oppiaineMenu.push(oppiaine.oppiaine);
-      oppiaine.oppiaine.depth = 0;
-      _(oppiaine.oppiaine.oppimaarat).sortBy(Utils.sort).each(function(oppimaara) {
-        $scope.oppiaineMenu.push(oppimaara);
-        oppimaara.depth = 1;
-      }).value();
-    }).value();
+    _($scope.model.oppiaineet)
+      .filter($scope.yhteiset)
+      .sortBy($scope.oppiaineSort)
+      .each(function(oppiaine) {
+        $scope.oppiaineMenu.push(oppiaine.oppiaine);
+        oppiaine.oppiaine.depth = 0;
+
+        // FIXME
+        _(oppiaine.oppiaine.oppimaarat)
+          .sortBy(Utils.sort)
+          .each(function(oppimaara) {
+            $scope.oppiaineMenu.push(oppimaara);
+            oppimaara.depth = 1;
+          })
+          .value();
+      })
+      .value();
+
     $scope.oppiaineMenu.push({label: 'valinnaiset-oppiaineet', depth: 0});
-    _($scope.model.oppiaineet).filter($scope.valinnaiset).sortBy($scope.oppiaineSort).each(function(oppiaine) {
-      $scope.oppiaineMenu.push(oppiaine.oppiaine);
-      oppiaine.oppiaine.depth = 1;
-    }).value();
+
+    _($scope.model.oppiaineet)
+      .filter($scope.valinnaiset)
+      .sortBy($scope.oppiaineSort)
+      .each(function(oppiaine) {
+        $scope.oppiaineMenu.push(oppiaine.oppiaine);
+        oppiaine.oppiaine.depth = 1;
+      })
+      .value();
   }
 
-  var vlkOppiaineMap = {};
-  function preprocessVuosiluokat() {
-    _.each($scope.vuosiluokkakokonaisuudet, function (vlk) {
-      vlkOppiaineMap[vlk.vuosiluokkakokonaisuus._tunniste] = {
-        nimi: vlk.vuosiluokkakokonaisuus.nimi,
-        vuosiluokkaMap: {},
-        oppiaineMap: {}
-      };
-    });
-    function storeOppiaine(oa) {
-      _.each(oa.vuosiluokkakokonaisuudet, function (opVlk) {
-        vlkOppiaineMap[opVlk._vuosiluokkakokonaisuus].oppiaineMap[oa.tunniste] = oa;
-        _.each(opVlk.vuosiluokat, function (vl) {
-          if (!vlkOppiaineMap[opVlk._vuosiluokkakokonaisuus].vuosiluokkaMap[vl.vuosiluokka]) {
-            vlkOppiaineMap[opVlk._vuosiluokkakokonaisuus].vuosiluokkaMap[vl.vuosiluokka] = {
-              oppiaineet: {},
-              vuosiluokka: vl.vuosiluokka
-            };
-          }
-          vlkOppiaineMap[opVlk._vuosiluokkakokonaisuus].vuosiluokkaMap[vl.vuosiluokka].oppiaineet[oa.tunniste] = oa;
-        });
-      });
-    }
-    _.each($scope.model.oppiaineet, function (oppiaine) {
-      var oa = oppiaine.oppiaine;
-      storeOppiaine(oa);
-      _.each(oa.oppimaarat, storeOppiaine);
-    });
-    _.each(vlkOppiaineMap, function (vlkObj) {
-      vlkObj.vuosiluokat = _.sortBy(vlkObj.vuosiluokkaMap, 'vuosiluokka');
-    });
-  }
-
-  $scope.vlkMenu = [];
   function buildVuosiluokkaMenu() {
-    _.each($scope.vuosiluokkakokonaisuudet, function (vlk) {
-      var item = _.extend({
-        url: $state.href('root.opetussuunnitelmat.yksi.esikatselu.vuosiluokkakokonaisuus', {
-          vlkId: vlk.vuosiluokkakokonaisuus.id,
-          menu: null
-        }),
-        depth: 0
-      }, vlk.vuosiluokkakokonaisuus);
-      $scope.vlkMenu.push(item);
-      _.each(vlkOppiaineMap[vlk.vuosiluokkakokonaisuus._tunniste].vuosiluokat, function (vl) {
-        item = {
-          nimi: 'vuosiluokka',
-          numero: vl.vuosiluokka,
-          id: vl.vuosiluokka,
-          depth: 1
-        };
-        $scope.vlkMenu.push(item);
-        _.each(vl.oppiaineet, function (oa) {
-          item = _.clone(oa);
-          item.depth = 2;
-          item.vuosiluokka = vl.vuosiluokka;
-          item.url = $state.href('root.opetussuunnitelmat.yksi.esikatselu.oppiaine', {
-            oppiaineId: oa.id,
-            oppiaineTyyppi: oa.tyyppi,
-            vuosiluokka: vl.vuosiluokka
-          });
-          $scope.vlkMenu.push(item);
-        });
-      });
-    });
+    return _($scope.vuosiluokkakokonaisuudet)
+      .map('vuosiluokkakokonaisuus')
+      .map(function (vlk) {
+        return [_.merge(_.clone(vlk), {
+          url: $state.href('root.opetussuunnitelmat.yksi.esikatselu.vuosiluokkakokonaisuus', {
+            vlkId: vlk.id,
+            menu: null
+          }),
+          depth: 0
+        }), _(vlk.$$perusteenSisalto.vuosiluokat)
+          .sort()
+          .map(function(vuosiluokka) {
+            return [{
+              nimi: 'vuosiluokka',
+              numero: vuosiluokka,
+              id: vuosiluokka,
+              depth: 1
+            }, _($scope.model.oppiaineet)
+              .map('oppiaine')
+              .filter(function(x) {
+                var oavlk = _.find(x.vuosiluokkakokonaisuudet, _.equals(vlk._tunniste, '_vuosiluokkakokonaisuus'));
+                return oavlk && _.any(oavlk.vuosiluokat, _.equals(vuosiluokka, 'vuosiluokka'));
+              })
+              .map(function(oppiaine) {
+                return _.merge(_.clone(oppiaine), {
+                  depth: 2,
+                  vuosiluokka: vuosiluokka,
+                  url: $state.href('root.opetussuunnitelmat.yksi.esikatselu.oppiaine', {
+                    oppiaineId: oppiaine.id,
+                    oppiaineTyyppi: oppiaine.tyyppi,
+                    vuosiluokka: vuosiluokka
+                  })
+                });
+              })
+              .value()];
+          })
+          .value()];
+      })
+      .flatten(true)
+      .value();
   }
 
   $scope.tekstikappaleMap = {};
   $scope.texttree = TreeHelper.createTextTree($scope.model.tekstit, $scope.tekstikappaleMap);
   $scope.oppiaineMenu = [];
-  buildOppiaineMenu();
-  preprocessVuosiluokat();
-  buildVuosiluokkaMenu();
 
+  $q.all(_($scope.vuosiluokkakokonaisuudet)
+      .map(function(vlk) {
+        return VuosiluokkakokonaisuusCRUD.peruste({
+          opsId: $stateParams.id,
+          vlkId: vlk.vuosiluokkakokonaisuus.id
+        }).$promise;
+      })
+      .value())
+    .then(function(res) {
+      _.each($scope.vuosiluokkakokonaisuudet, function(v, idx) {
+        v.vuosiluokkakokonaisuus.$$perusteenSisalto = res[idx];
+      });
+      buildOppiaineMenu();
+      $scope.vlkMenu = buildVuosiluokkaMenu();
+      $scope.vlkMenu[0].$active = true;
+    });
 
   $scope.switchTab = function (tabId) {
     $state.go($state.current, {menu: tabId});
@@ -160,10 +165,11 @@ ylopsApp
   });
   $scope.vlk = $scope.vuosiluokkakokonaisuus ? $scope.vuosiluokkakokonaisuus.vuosiluokkakokonaisuus : {};
   var laajaalaisetosaamiset = _.indexBy(baseLaajaalaiset, 'tunniste');
-  var laajaalaisetOrder = _(baseLaajaalaiset).sortBy(Utils.sort).map('tunniste').value();
-  $scope.orderFn = function (tunniste) {
-    return laajaalaisetOrder.indexOf(tunniste);
-  };
+  var laajaalaisetOrder = _(baseLaajaalaiset)
+    .sortBy(Utils.sort)
+    .map('tunniste')
+    .value();
+  $scope.orderFn = function(tunniste) { return laajaalaisetOrder.indexOf(tunniste); };
   VuosiluokkakokonaisuusMapper.init($scope, laajaalaisetosaamiset);
 })
 

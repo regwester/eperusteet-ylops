@@ -106,6 +106,7 @@ ylopsApp
   })
   .run(function() {
     _.mixin({
+      // TODO: Deprekoitunut, vaihda indexBy:hin
       zipBy: function(array, kfield, vfield) {
         if (_.isArray(array) && kfield) {
           if (vfield) {
