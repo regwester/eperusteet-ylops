@@ -26,13 +26,13 @@
 
   <div ng-if="oppiaine.tyyppi !== 'yhteinen'">
     <h3 ng-bind-html="vlk.tehtava.otsikko | kaanna | unsafe"></h3>
-    <div ng-bind-html="vlk.tehtava.teksti | kaanna | unsafe"></div>
+    <div termisto-viitteet="vlk.tehtava.teksti" ng-bind-html="vlk.tehtava.teksti | kaanna | unsafe"></div>
     <h3 ng-bind-html="vlk.tyotavat.otsikko | kaanna | unsafe"></h3>
-    <div ng-bind-html="vlk.tyotavat.teksti | kaanna | unsafe"></div>
+    <div termisto-viitteet="vlk.tyotavat.teksti" ng-bind-html="vlk.tyotavat.teksti | kaanna | unsafe"></div>
     <h3 ng-bind-html="vlk.ohjaus.otsikko | kaanna | unsafe"></h3>
-    <div ng-bind-html="vlk.ohjaus.teksti | kaanna | unsafe"></div>
+    <div termisto-viitteet="vlk.ohjaus.teksti" ng-bind-html="vlk.ohjaus.teksti | kaanna | unsafe"></div>
     <h3 ng-bind-html="vlk.arviointi.otsikko | kaanna | unsafe"></h3>
-    <div ng-bind-html="vlk.arviointi.teksti | kaanna | unsafe"></div>
+    <div termisto-viitteet="vlk.arviointi.teksti" ng-bind-html="vlk.arviointi.teksti | kaanna | unsafe"></div>
   </div>
 
   <div ng-repeat="vuosiluokka in vlk.vuosiluokat | filter:vuosiluokkaFilter | orderBy:'vuosiluokka' track by vuosiluokka.vuosiluokka">
@@ -79,7 +79,7 @@
           </div>
 
         </div>
-        <div class="esitys-paikallinen" ng-bind-html="vs.muokattavat[tunniste].teksti | kaanna | unsafe"></div>
+        <div class="esitys-paikallinen" termisto-viitteet="vs.muokattavat[tunniste].teksti" ng-bind-html="vs.muokattavat[tunniste].teksti | kaanna | unsafe"></div>
       </div>
 
       <h3 ng-if="!vuosiluokkaSisallot[vlk._vuosiluokkakokonaisuus][vuosiluokka.vuosiluokka].perusteOpVlk.sisaltoalueinfo.otsikko"
@@ -91,8 +91,8 @@
       <div ng-repeat="tunniste in vuosiluokkaSisallot[vlk._vuosiluokkakokonaisuus][vuosiluokka.vuosiluokka].sisaltoaluetunnisteet"
         ng-init="vs = vuosiluokkaSisallot[vlk._vuosiluokkakokonaisuus][vuosiluokka.vuosiluokka]" class="tavoite">
         <h4 class="tavoite-otsikko" ng-bind-html="vs.perusteSisaltoalueet[tunniste].nimi | kaanna | unsafe"></h4>
-        <div class="esitys-peruste" ng-bind-html="vs.perusteSisaltoalueet[tunniste].kuvaus | kaanna | unsafe"></div>
-        <div class="esitys-paikallinen" ng-bind-html="vs.sisaltoaluemuokattavat[tunniste].teksti | kaanna | unsafe"></div>
+        <div class="esitys-peruste" termisto-viitteet="vs.perusteSisaltoalueet[tunniste].kuvaus" ng-bind-html="vs.perusteSisaltoalueet[tunniste].kuvaus | kaanna | unsafe"></div>
+        <div class="esitys-paikallinen" termisto-viitteet="vs.sisaltoaluemuokattavat[tunniste].teksti" ng-bind-html="vs.sisaltoaluemuokattavat[tunniste].teksti | kaanna | unsafe"></div>
       </div>
 
     </div>
@@ -100,7 +100,7 @@
     <div ng-if="oppiaine.tyyppi !== 'yhteinen'">
       <div ng-repeat="tavoite in vuosiluokkaSisallot[vlk._vuosiluokkakokonaisuus][vuosiluokka.vuosiluokka].valinnaisenTekstiosat">
         <h4 ng-bind-html="tavoite.otsikko | kaanna | unsafe"></h4>
-        <div ng-bind-html="tavoite.teksti | kaanna | unsafe"></div>
+        <div termisto-vitteet="tavoite.teksti" ng-bind-html="tavoite.teksti | kaanna | unsafe"></div>
       </div>
     </div>
 

@@ -24,7 +24,7 @@
     </div>
 
     <div ng-show="$type === 'kieli' && $valittu.nimi">
-      <div ng-bind-html="$valittu.tehtava.teksti | kaanna | unsafe"></div>
+      <termistoteksti teksti="$valittu.tehtava.teksti"></termistoteksti>
       <div class="row" ng-show="$onAbstrakti">
         <div class="col-xs-4"><h4 kaanna="'pohja'"></h4></div>
         <div class="col-xs-8">

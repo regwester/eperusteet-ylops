@@ -9,7 +9,7 @@
       <span ng-bind="options.collapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></span>
     </a>
     <div class="ohjeellinen ikoni-peruste" ng-class="{collapsed: options.collapsed}">
-      <div class="teksti" collapse="options.collapsed" ng-bind-html="model.teksti | kaanna | unsafe"></div>
+      <termistoteksti class="teksti" collapse="options.collapsed" teksti="model.teksti"></termistoteksti>
     </div>
   </div>
 </div>
@@ -26,7 +26,6 @@
     </span>
   </h4>
   <div ng-if="editMode" ckeditor ng-model="muokattava.teksti" slocalized></div>
-  <div class="tekstiosan-teksti" ng-if="!editMode" ng-bind-html="muokattava.teksti | kaanna | unsafe"></div>
+  <termistoteksti teksti="muokattava.teksti" class="tekstiosan-teksti" ng-if="!editMode"></termistoteksti>
   <p class="empty-notice" ng-show="!editMode && !muokattava.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
-
 </div>

@@ -18,11 +18,12 @@
 /* global _ */
 
 ylopsApp
-  .directive('termistoTekstikentta', function() {
+  .directive('termistoteksti', function() {
     return {
       restrict: 'E',
-      scope: { model: '=tekstikentta' },
-      template: '<p ng-bind-html="model | kaanna | unsafe" termisto-viitteet="model"></p>'
+      scope: { teksti: '=' },
+      transclude: true,
+      template: '<p termisto-viitteet="teksti" ng-bind-html="teksti | kaanna | unsafe"></p>'
     };
   })
   .directive('termistoViitteet', function ($stateParams, Kaanna, KasitteetService, $document, $timeout) {
