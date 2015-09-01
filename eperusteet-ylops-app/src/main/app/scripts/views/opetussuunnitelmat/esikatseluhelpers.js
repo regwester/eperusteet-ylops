@@ -117,10 +117,13 @@ ylopsApp
       model: '=',
       level: '@'
     },
-    template: '<span class="otsikko-wrap"><span ng-bind-html="model.tekstiKappale.nimi | kaanna | unsafe"></span>' +
+    template: '' +
+    '<span class="otsikko-wrap">' +
+    '  <termistoteksti teksti="model.tekstiKappale.nimi"></termistoteksti>' +
     '  <span ng-if="false" class="teksti-linkki">' +
     '    <a ui-sref="^.tekstikappale({tekstikappaleId: model.id})" icon-role="new-window"></a>' +
-    '  </span></span>',
+    '  </span>' +
+    '</span>',
     link: function (scope, element) {
       var headerEl = angular.element('<h' + scope.level + '>');
       element.find('.otsikko-wrap').wrap(headerEl);
@@ -137,9 +140,12 @@ ylopsApp
       showPeruste: '=',
       hideOtsikko: '='
     },
-    template: '<div ng-if="hasText()"><h2 ng-hide="hideOtsikko" ng-bind-html="perusteModel.otsikko | kaanna | unsafe"></h2>' +
-      '<div class="esitys-peruste" ng-if="showPeruste" ng-bind-html="perusteModel.teksti | kaanna | unsafe"></div>' +
-      '<div class="esitys-paikallinen" ng-bind-html="model.teksti | kaanna | unsafe"></div></div>',
+    template: '' +
+      '<div ng-if="hasText()">' +
+      '  <h2 ng-hide="hideOtsikko" ng-bind-html="perusteModel.otsikko | kaanna | unsafe"></h2>' +
+      '  <div class="esitys-peruste" ng-if="showPeruste" ng-bind-html="perusteModel.teksti | kaanna | unsafe"></div>' +
+      '  <div termisto-viitteet="model.teksti" class="esitys-paikallinen" ng-bind-html="model.teksti | kaanna | unsafe"></div>' +
+      '</div>',
     controller: function ($scope, Kieli) {
       $scope.hasText = function () {
         var hasPeruste = $scope.perusteModel && !_.isEmpty($scope.perusteModel.teksti) && !_.isEmpty($scope.perusteModel.teksti[Kieli.getSisaltokieli()]);
