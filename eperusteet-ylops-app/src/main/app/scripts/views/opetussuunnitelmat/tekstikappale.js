@@ -66,6 +66,17 @@ ylopsApp
     $scope.model = {};
     var originalOtsikko = null;
 
+    function updateMuokkaustieto() {
+      if ($scope.model.tekstiKappale) {
+        $scope.$$muokkaustiedot = {
+          luotu: $scope.model.tekstiKappale.luotu,
+          muokattu: $scope.model.tekstiKappale.muokattu,
+          muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
+        };
+      }
+    }
+    updateMuokkaustieto();
+
     function fetchOhje(model, cb) {
       OhjeCRUD.forTekstikappale({uuid: model.tekstiKappale.tunniste}, function (ohje) {
         _.each(TYYPIT, function (tyyppi) {
@@ -99,11 +110,7 @@ ylopsApp
           originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
           MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
           fetchOhje(res, cb);
-          $scope.$$muokkaustiedot = {
-            luotu: res.tekstiKappale.luotu,
-            muokattu: res.tekstiKappale.muokattu,
-            muokkaajaOid: res.tekstiKappale.muokkaaja
-          };
+          updateMuokkaustieto();
         }, Notifikaatiot.serverCb);
         if (!noLockCheck) {
           Lukko.isLocked($scope, commonParams);

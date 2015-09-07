@@ -74,9 +74,20 @@ ylopsApp
     });
   }
 
+  function updateMuokkaustieto() {
+    if ($scope.model.tekstiKappale) {
+      $scope.$$muokkaustiedot = {
+        luotu: $scope.model.tekstiKappale.luotu,
+        muokattu: $scope.model.tekstiKappale.muokattu,
+        muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
+      };
+    }
+  }
+
   function fetch(initial) {
     if (initial) {
       fetchOhje($scope.model);
+      updateMuokkaustieto();
       return;
     }
     OpetussuunnitelmanTekstit.get({
@@ -87,11 +98,7 @@ ylopsApp
       MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
       saveOriginal('teksti', res);
       fetchOhje(res);
-      $scope.$$muokkaustiedot = {
-        luotu: $scope.model.tekstiKappale.luotu,
-        muokattu: $scope.model.tekstiKappale.muokattu,
-        muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
-      };
+      updateMuokkaustieto();
     }, Notifikaatiot.serverCb);
   }
   fetch(true);
