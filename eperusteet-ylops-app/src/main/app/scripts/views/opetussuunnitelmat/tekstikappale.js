@@ -43,12 +43,6 @@ ylopsApp
     var savingValmis = false;
     var TYYPIT = ['ohje', 'perusteteksti'];
 
-    $scope.$$muokkaustiedot = {
-      luotu: $scope.model.luotu,
-      muokattu: $scope.model.muokattu,
-      muokkaajaOid: $scope.model.muokkaaja
-    };
-
     $scope.opsId = $stateParams.id;
     $scope.options = {
       isCollapsed: true
@@ -105,6 +99,11 @@ ylopsApp
           originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
           MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
           fetchOhje(res, cb);
+          $scope.$$muokkaustiedot = {
+            luotu: res.tekstiKappale.luotu,
+            muokattu: res.tekstiKappale.muokattu,
+            muokkaajaOid: res.tekstiKappale.muokkaaja
+          };
         }, Notifikaatiot.serverCb);
         if (!noLockCheck) {
           Lukko.isLocked($scope, commonParams);
@@ -167,8 +166,9 @@ ylopsApp
       });
     };
 
-    var successCb = function (res) {
+    var successCb = function(res) {
       $scope.model = res;
+      console.log(res);
       Notifikaatiot.onnistui('tallennettu-ok');
       if ($stateParams.tekstikappaleId === 'uusi') {
         $state.go($state.current.name, {tekstikappaleId: res.id}, {reload: true});
@@ -176,6 +176,7 @@ ylopsApp
         Lukko.unlock(commonParams, function () {
           $scope.lukkotiedot = null;
         });
+        fetch();
       }
       if (savingValmis || !Utils.compareLocalizedText(originalOtsikko, res.tekstiKappale.nimi)) {
         savingValmis = false;
@@ -210,7 +211,7 @@ ylopsApp
       asyncValidate: function (cb) {
         Lukko.lock(commonParams, cb);
       },
-      save: function () {
+      save: function() {
         var params = {opsId: $stateParams.id};
         if ($stateParams.tekstikappaleId === 'uusi') {
           OpetussuunnitelmanTekstit.save(params, $scope.model, successCb, Notifikaatiot.serverCb);

@@ -34,13 +34,6 @@ ylopsApp
     perusteteksti: null
   };
 
-  console.log($scope.model);
-  $scope.$$muokkaustiedot = {
-    luotu: $scope.model.tekstiKappale.luotu,
-    muokattu: $scope.model.tekstiKappale.muokattu,
-    muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
-  };
-
   $scope.isEmpty = function (model) {
     return _.isEmpty(model);
   };
@@ -94,6 +87,11 @@ ylopsApp
       MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
       saveOriginal('teksti', res);
       fetchOhje(res);
+      $scope.$$muokkaustiedot = {
+        luotu: $scope.model.tekstiKappale.luotu,
+        muokattu: $scope.model.tekstiKappale.muokattu,
+        muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
+      };
     }, Notifikaatiot.serverCb);
   }
   fetch(true);

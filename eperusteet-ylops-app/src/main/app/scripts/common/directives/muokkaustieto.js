@@ -20,7 +20,7 @@ angular.module('ylopsApp')
   .directive('muokkaustieto', function($rootScope, EperusteetKayttajatiedot) {
     return {
       template:
-        '<div class="dir-muokkaustieto">' +
+        '<div ng-if="tiedot && tiedot.luotu" class="dir-muokkaustieto">' +
         '  <span>' +
         '    <span class="muokkaustieto-topic" kaanna="muokattu-viimeksi"></span>:' +
         '    <span class="muokkaustieto-data" ng-bind="(tiedot.muokattu || tiedot.luotu) | aikaleima"></span>' +
@@ -33,16 +33,16 @@ angular.module('ylopsApp')
       scope: {
         tiedot: '='
       },
-      link: function() {
-      },
       controller: function($scope) {
-        EperusteetKayttajatiedot.get({
-          oid: $scope.tiedot.muokkaajaOid
-        }, function(res) {
-          if (res.sukunimi && (res.kutsumanimi || res.etunimet)) {
-            $scope.muokkaajanNimi = (res.kutsumanimi || res.etunimet) + ' ' + res.sukunimi;
-          }
-        });
+        if ($scope.tiedot && $scope.tiedot.muokkaajaOid) {
+          EperusteetKayttajatiedot.get({
+            oid: $scope.tiedot.muokkaajaOid
+          }, function(res) {
+            if (res.sukunimi && (res.kutsumanimi || res.etunimet)) {
+              $scope.muokkaajanNimi = (res.kutsumanimi || res.etunimet) + ' ' + res.sukunimi;
+            }
+          });
+        }
       }
     };
   });
