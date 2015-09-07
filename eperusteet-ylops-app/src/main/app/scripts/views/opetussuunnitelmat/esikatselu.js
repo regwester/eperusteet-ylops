@@ -85,7 +85,8 @@ ylopsApp
             menu: null
           }),
           depth: 0
-        }), _(vlk.$$perusteenSisalto.vuosiluokat)
+        }),
+        _(vlk.$$perusteenSisalto.vuosiluokat)
           .sort()
           .map(function(vuosiluokka) {
             return [{

@@ -6,32 +6,25 @@
   </div>
 
   <div ng-if="editMode" class="teksti-edit-mode">
-
     <h2>
       <input ng-model="model.tekstiKappale.nimi" slocalized class="form-control" placeholder="{{'kappaleen-otsikko'|kaanna}}">
     </h2>
 
     <h3 collapse-toggler="options.ohjeistusCollapsed" kaanna="'ohjeistus'"></h3>
-
     <div collapse="options.ohjeistusCollapsed" class="teksti-well">
       <div ckeditor ng-model="ohje.teksti" slocalized></div>
     </div>
 
     <h3 collapse-toggler="options.perusteentekstiCollapsed" kaanna="'perusteen-teksti'"></h3>
-
     <div collapse="options.perusteentekstiCollapsed" class="teksti-well">
       <div ckeditor ng-model="perusteteksti.teksti" slocalized></div>
     </div>
 
-    <h3 collapse-toggler="options.tekstiCollapsed">
-      <span kaanna="'opsin-teksti'"></span>
-    </h3>
+    <h3 collapse-toggler="options.tekstiCollapsed" kaanna="'opsin-teksti'"></h3>
     <label><input type="checkbox" ng-model="model.pakollinen"><span kaanna="'pakollinen'"></span></label>
-
     <div collapse="options.tekstiCollapsed" class="teksti-well">
       <div ckeditor ng-model="model.tekstiKappale.teksti" slocalized></div>
     </div>
-
   </div>
 
 
@@ -68,6 +61,7 @@
       <div style="margin-bottom: 10px">
         <muokkaustieto tiedot="$$muokkaustiedot"></muokkaustieto>
       </div>
+
       <span ng-bind-html="model.tekstiKappale.teksti | kaanna | kuvalinkit |unsafe"></span>
       <span class="empty-placeholder" ng-if="isEmpty(model.tekstiKappale.teksti)" kaanna="'ei-maaritetty'"></span>
     </div>

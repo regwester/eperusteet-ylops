@@ -135,7 +135,6 @@ ylopsApp
         })
         .flatten(true)
         .map(function(oa, idx) {
-          console.log(oa);
           return {
             id: opsModel.id,
             lisaIdt: [oa.vuosiluokkakokonaisuudet[oa.$$vklid].id],
