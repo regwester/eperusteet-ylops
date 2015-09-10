@@ -78,9 +78,13 @@ ylopsApp
 
     if (scope.onValinnaiselle) {
       var otsikot = _.map(scope.tavoitteet, 'tavoite');
-      var tekstit = _(scope.tavoitteet).map('sisaltoalueet').map(_.first).map(function (id) {
-        return scope.sisaltoAlueetMap[id].kuvaus;
-      }).value();
+      var tekstit = _(scope.tavoitteet)
+        .map('sisaltoalueet')
+        .map(_.first)
+        .map(function (id) {
+          return scope.sisaltoAlueetMap[id].kuvaus;
+        })
+        .value();
 
       scope.valinnaisenTekstiosat = _.map(_.zip(otsikot, tekstit), function(values) {
         return _.zipObject(['otsikko', 'teksti'], values);
@@ -98,9 +102,12 @@ ylopsApp
       { teksti: {}, sisaltoalue: {} };
     });
 
-    scope.valinnaisenTavoitteet = _(scope.muokattavat).map(function (tavoite) {
-      return { otsikko: tavoite.teksti, teksti: tavoite.sisaltoalue.kuvaus };
-    }).value();
+    scope.valinnaisenTavoitteet = _.map(scope.muokattavat, function(tavoite) {
+        return {
+          otsikko: tavoite.teksti,
+          teksti: tavoite.sisaltoalue ? tavoite.sisaltoalue.kuvaus : {}
+        };
+      });
   }
 
 
@@ -112,7 +119,11 @@ ylopsApp
   };
 
   this.mapSisaltoalueet = function (scope, tunnisteVar, muokattavaVar) {
-    scope[tunnisteVar] = _(scope.sisaltoalueet).sortBy(Utils.sort).map('tunniste').value();
+    scope[tunnisteVar] = _(scope.sisaltoalueet)
+      .sortBy(Utils.sort)
+      .map('tunniste')
+      .value();
+
     _.each(scope[tunnisteVar], function (tunniste) {
       var paikallinen = _.find(scope.sisaltoalueet, function (alue) {
         return alue.tunniste === tunniste;
