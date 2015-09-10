@@ -137,7 +137,7 @@ ylopsApp
     _(oppiaineet)
       .each(alustaVlk)
       .filter(function(oa) {
-        return oa.$$oavlk || _.any(oa.oppimaarat, function(om) {
+        return oa.$$oavlk || oa.koodiArvo === 'VK' || _.any(oa.oppimaarat, function(om) {
           return _.find(om.vuosiluokkakokonaisuudet, _.equals(obj._tunniste, '_vuosiluokkakokonaisuus'));
         });
       })
