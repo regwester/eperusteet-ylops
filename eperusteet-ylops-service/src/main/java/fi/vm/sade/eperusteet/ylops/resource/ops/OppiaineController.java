@@ -22,7 +22,6 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
@@ -127,7 +126,6 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
-    @CacheControl(nonpublic = false, age = 3600)
     public ResponseEntity<PerusteOppiaine> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         Peruste p = ops.getPeruste(opsId);
         return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
