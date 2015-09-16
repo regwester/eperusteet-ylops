@@ -33,6 +33,9 @@ public interface KommenttiRepository extends JpaRepository<Kommentti, Long> {
     @Query("SELECT k FROM Kommentti k WHERE k.opetussuunnitelmaId = ?1 AND k.tekstiKappaleViiteId = ?2")
     List<Kommentti> findByTekstiKappaleViiteId(Long opsId, Long tekstiKappaleViiteId);
 
+    @Query("SELECT k FROM Kommentti k WHERE k.opetussuunnitelmaId = ?1 AND k.vlkId = ?2 AND k.oppiaineId = ?3")
+    List<Kommentti> findByOppiaine(Long opsId, Long vlkId, Long oppiaineId);
+
     List<Kommentti> findByParentId(Long parentId);
 
     List<Kommentti> findByYlinId(Long ylinId);

@@ -58,7 +58,15 @@ ylopsApp
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
   VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, OppiaineCRUD, OpsService, Notifikaatiot,
-  VuosiluokkakokonaisuusMapper, Lukko) {
+  VuosiluokkakokonaisuusMapper, Lukko, Kommentit, KommentitByOppiaine) {
+
+  Kommentit.haeKommentit(KommentitByOppiaine, {
+    id: $stateParams.oppiaineId,
+    opsId: $stateParams.id,
+    oppiaineId: $stateParams.oppiaineId,
+    vlkId: $stateParams.vlkId
+  });
+
   $scope.lukkotiedot = null;
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;

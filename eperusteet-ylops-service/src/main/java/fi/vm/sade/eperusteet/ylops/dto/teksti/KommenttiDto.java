@@ -39,4 +39,6 @@ public class KommenttiDto {
     private Long opetussuunnitelmaId;
     private Boolean poistettu;
     private Long tekstiKappaleViiteId;
+    private Long oppiaineId;
+    private Long vlkId;
 }

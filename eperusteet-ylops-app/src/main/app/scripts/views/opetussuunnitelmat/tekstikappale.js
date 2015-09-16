@@ -34,7 +34,12 @@ ylopsApp
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
     KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode, Varmistusdialogi) {
 
-    Kommentit.haeKommentit(KommentitByTekstikappaleViite, {id: $stateParams.tekstikappaleId, opsId: $stateParams.id});
+    Kommentit.haeKommentit(KommentitByTekstikappaleViite, {
+      id: $stateParams.tekstikappaleId,
+      tekstiKappaleViiteId: $stateParams.tekstikappaleId,
+      opsId: $stateParams.id
+    });
+
     $scope.ohje = {};
     $scope.lukkotiedot = null;
     $scope.perusteteksti = {};
