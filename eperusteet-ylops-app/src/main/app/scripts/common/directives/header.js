@@ -43,8 +43,7 @@ ylopsApp
     };
   })
 
-  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData, Kaanna, KeyboardListener) {
-    KeyboardListener.init();
+  .controller('YlopsHeaderController', function ($scope, $state, Oikeudet, MurupolkuData, Kaanna) {
     var currentState = null;
 
     var STATES = {

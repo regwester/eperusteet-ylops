@@ -7,7 +7,6 @@
  *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -34,15 +33,17 @@ angular.module('ylopsApp')
         tiedot: '='
       },
       controller: function($scope) {
-        if ($scope.tiedot && $scope.tiedot.muokkaajaOid) {
-          EperusteetKayttajatiedot.get({
-            oid: $scope.tiedot.muokkaajaOid
-          }, function(res) {
-            if (res.sukunimi && (res.kutsumanimi || res.etunimet)) {
-              $scope.muokkaajanNimi = (res.kutsumanimi || res.etunimet) + ' ' + res.sukunimi;
-            }
-          });
-        }
+        $scope.$watch('tiedot', function(tiedot) {
+          if (tiedot && tiedot.muokkaajaOid) {
+            EperusteetKayttajatiedot.get({
+              oid: tiedot.muokkaajaOid
+            }, function(res) {
+              if (res.sukunimi && (res.kutsumanimi || res.etunimet)) {
+                $scope.muokkaajanNimi = (res.kutsumanimi || res.etunimet) + ' ' + res.sukunimi;
+              }
+            });
+          }
+        }, true);
       }
     };
   });
