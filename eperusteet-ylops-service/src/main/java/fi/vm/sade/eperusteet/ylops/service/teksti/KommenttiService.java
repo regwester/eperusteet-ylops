@@ -30,6 +30,9 @@ public interface KommenttiService {
     public List<KommenttiDto> getAllByTekstiKappaleViite(Long opsId, Long tekstiKappaleViiteId);
 
     @PreAuthorize("isAuthenticated()")
+    List<KommenttiDto> getAllByOppiaine(Long opsId, Long vlkId, Long oppiaineId);
+
+    @PreAuthorize("isAuthenticated()")
     public List<KommenttiDto> getAllByOpetussuunnitelma(Long opsId);
 
     @PreAuthorize("isAuthenticated()")

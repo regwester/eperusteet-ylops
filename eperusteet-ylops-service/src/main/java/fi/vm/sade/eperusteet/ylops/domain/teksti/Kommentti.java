@@ -59,4 +59,12 @@ public class Kommentti extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     private Long tekstiKappaleViiteId;
+
+    @Getter
+    @Setter
+    private Long oppiaineId;
+
+    @Getter
+    @Setter
+    private Long vlkId;
 }

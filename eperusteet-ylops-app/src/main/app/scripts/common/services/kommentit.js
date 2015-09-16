@@ -27,6 +27,11 @@ ylopsApp
     get: { method: 'GET', isArray: true }
   });
 })
+.factory('KommentitByOppiaine', function(SERVICE_LOC, $resource) {
+  return $resource(SERVICE_LOC + '/kommentit/opetussuunnitelmat/:opsId/vuosiluokat/:vlkId/oppiaine/:id', {}, {
+    get: { method: 'GET', isArray: true }
+  });
+})
 .factory('KommentitByTekstikappaleViite', function(SERVICE_LOC, $resource) {
   return $resource(SERVICE_LOC + '/kommentit/opetussuunnitelmat/:opsId/tekstikappaleviitteet/:id', {}, {
     get: { method: 'GET', isArray: true }
@@ -93,14 +98,14 @@ ylopsApp
 
   function lisaaKommentti(parent, viesti, success) {
     success = success || angular.noop;
-    var payload = _.merge(_.clone(nykyinenParams), {
+
+    var payload = _.merge({
       parentId: parent && parent.id ? parent.id : null,
       sisalto: viesti,
-      opetussuunnitelmaId: nykyinenParams.opsId,
-      tekstiKappaleViiteId: nykyinenParams.id
-    });
-    delete payload.id;
+      opetussuunnitelmaId: nykyinenParams.opsId
+    }, _.clone(nykyinenParams));
 
+    delete payload.id;
     KommentitCRUD.save(payload, function(res) {
       res.muokattu = null;
       res.viestit = [];
