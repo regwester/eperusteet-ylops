@@ -132,7 +132,6 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
   .directive('ngEnter', function() {
     return function(scope, element, attrs) {
       element.bind('keydown keypress', function(event) {
-        console.log('watenter');
         if (event.which === 13) {
           scope.$apply(function(){
             scope.$eval(attrs.ngEnter);
@@ -146,7 +145,6 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
   .directive('ngEsc', function() {
     return function(scope, element, attrs) {
       element.bind('keydown keypress', function(event) {
-        console.log('watesc');
         if (event.which === 27) {
           scope.$apply(function(){
             scope.$eval(attrs.ngEsc);
