@@ -44,7 +44,7 @@ public interface KommenttiService {
     @PreAuthorize("isAuthenticated()")
     public KommenttiDto get(Long kommenttiId);
 
-    @PreAuthorize("hasPermission(#k.opetussuunnitelmaId, 'opetussuunnitelma', 'KOMMENTOINTI')")
+    @PreAuthorize("hasPermission(#k.opetussuunnitelmaId, 'opetussuunnitelma', 'LUKU')")
     public KommenttiDto add(@P("k") final KommenttiDto kommenttiDto);
 
     @PreAuthorize("isAuthenticated()")
