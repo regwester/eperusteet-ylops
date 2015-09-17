@@ -105,6 +105,7 @@ ylopsApp
     $scope.containers.tavoitteet.items = _.clone($scope.tavoitteet);
     var usedTavoitteet = {};
     var unused = [];
+
     _.each($scope.containers, function (container, key) {
       if (key !== 'tavoitteet') {
         _.each(container.items, function (tavoite) {
@@ -112,13 +113,19 @@ ylopsApp
         });
       }
     });
+
     _.each($scope.containers.tavoitteet.items, function (tavoite) {
       tavoite.$kaytossa = usedTavoitteet[tavoite.tunniste];
       if (!tavoite.$kaytossa) {
         unused.push(tavoite);
       }
     });
-    $scope.allDragged = unused.length === 0;
+
+    $scope.allDragged = unused.length === 0 || _($scope.containers)
+      .omit('tavoitteet')
+      .map('items')
+      .flatten()
+      .isEmpty();
   }
 
   function initVuosiluokkaContainers() {
