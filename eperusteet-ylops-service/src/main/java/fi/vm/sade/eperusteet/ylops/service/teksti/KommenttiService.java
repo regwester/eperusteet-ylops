@@ -26,13 +26,13 @@ import java.util.List;
  * @author mikkom
  */
 public interface KommenttiService {
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     public List<KommenttiDto> getAllByTekstiKappaleViite(Long opsId, Long tekstiKappaleViiteId);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<KommenttiDto> getAllByOppiaine(Long opsId, Long vlkId, Long oppiaineId);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     public List<KommenttiDto> getAllByOpetussuunnitelma(Long opsId);
 
     @PreAuthorize("isAuthenticated()")

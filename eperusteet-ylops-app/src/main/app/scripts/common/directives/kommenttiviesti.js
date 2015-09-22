@@ -109,8 +109,8 @@ ylopsApp
     '  <div class="kommentti-sisalto">' +
     '    <h3>' +
     '      {{ viesti.nimi || viesti.muokkaaja }}' +
-    '      <span class="pull-right" ng-if="selfOid === viesti.muokkaaja">' +
-    '        <a href="" ng-click="startEditing(viesti)" icon-role="edit" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'muokkaus\' }"></a>' +
+    '      <span class="pull-right">' +
+    '        <a href="" ng-if="selfOid === viesti.muokkaaja" ng-click="startEditing(viesti)" icon-role="edit" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'luku\' }"></a>' +
     '        <a href="" ng-click="poistaKommentti(viesti)" icon-role="remove" oikeustarkastelu="{ target: \'opetussuunnitelma\', permission: \'poisto\' }"></a>' +
     '      </span>' +
     '    </h3>' +
