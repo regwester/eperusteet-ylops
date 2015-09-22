@@ -51,6 +51,7 @@ public class PermissionManager {
     public enum TargetType {
 
         POHJA("pohja"),
+        TARKASTELU("tarkastelu"),
         OPETUSSUUNNITELMA("opetussuunnitelma");
 
         private final String target;
@@ -95,6 +96,11 @@ public class PermissionManager {
     @Transactional(readOnly = true)
     public boolean hasPermission(Authentication authentication, Serializable targetId, TargetType target,
         Permission perm) {
+
+        if (perm == Permission.HALLINTA && targetId == null && target == TargetType.TARKASTELU &&
+                hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.OPH)) {
+            return true;
+        }
 
         Pair<Tyyppi, Tila> tyyppiJaTila =
             targetId != null ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId) : null;
