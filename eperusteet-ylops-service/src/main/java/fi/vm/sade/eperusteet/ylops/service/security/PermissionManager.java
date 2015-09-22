@@ -67,7 +67,6 @@ public class PermissionManager {
 
     public enum Permission {
 
-        TARKASTELU("tarkastelu"), // OPH-organisaatiolle perustietojen tarkasteluun
         LUKU("luku"),
         MUOKKAUS("muokkaus"),
         KOMMENTOINTI("kommentointi"),
@@ -110,11 +109,6 @@ public class PermissionManager {
             if (tyyppiJaTila.getFirst() == Tyyppi.POHJA && tyyppiJaTila.getSecond() == Tila.VALMIS) {
                 return true;
             }
-        }
-
-        if (perm == Permission.TARKASTELU && targetId == null &&
-            hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.ADMIN, Organization.OPH)) {
-            return true;
         }
 
         Set<RolePermission> permissions;
