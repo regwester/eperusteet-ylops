@@ -38,7 +38,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Set<PerusteLaajaalainenosaaminen> getLaajaalaisetosaamiset(@P("opsId") Long id);
 
-    @PreAuthorize("(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and hasPermission(null, 'opetussuunnitelma', 'LUKU')) || " +
+    @PreAuthorize("(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and (hasPermission(null, 'opetussuunnitelma', 'LUKU') || (hasPermission(null, 'opetussuunnitelma', 'TARKASTELU')))) || " +
         "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
