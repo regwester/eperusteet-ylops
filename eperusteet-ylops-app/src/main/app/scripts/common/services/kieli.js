@@ -129,7 +129,7 @@ ylopsApp
   .controller('KieliController', function($scope, Kieli, $q, Profiili) {
     $scope.isModal = $scope.modal === 'true';
     $scope.sisaltokielet = Kieli.getSisaltokielet();
-    $scope.sisaltokieli = Kieli.getSisaltokieli();
+    $scope.sisaltokieli = Kieli.getUiKieli();
     $scope.uikielet = Kieli.UIKIELET;
     $scope.uikieli = Kieli.getUiKieli();
     $scope.uiLangChangeAllowed = true;

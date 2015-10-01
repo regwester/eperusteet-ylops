@@ -96,11 +96,28 @@ ylopsApp
   };
 })
 
-.controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit,
-      Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko) {
+.controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit, $templateCache,
+      Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q) {
   $scope.uusi = {nimi: {}};
   $scope.lukkotiedot = null;
   $scope.model = opsService.get($stateParams.id) || opsModel;
+
+  // FIXME: Just testing
+  $scope.tekstitProvider = $q(function(resolve, reject) {
+    resolve({
+      root: _.constant($q.when($scope.model.tekstit)),
+      hidden: _.constant(false),
+      template: _.constant('<div>{{ node.$$depth }} test {{ node.id }}<button ng-click="testClick()">Test</button></div>'),
+      children: function(node) {
+        return $q.when(node && node.lapset ? node.lapset : []);
+      },
+      extension: function(node, scope) {
+        scope.testClick = function() {
+          console.log('hello world', node);
+        };
+      }
+    });
+  });
 
   $scope.isAdding = function () {
     return _.any($scope.model.tekstit.lapset, '$$adding');
