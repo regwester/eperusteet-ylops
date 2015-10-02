@@ -2,6 +2,7 @@ $ops-header-background: rgba(20, 158, 203, 0.06);
 $ops-header-height: 96px;
 $ops-header-padding: 6px;
 $ops-border: 1px solid #ddd;
+$ops-tekstisisalto-border: 1px solid #ddd;
 
 .ops-header {
   background-color: $ops-header-background;
@@ -247,5 +248,33 @@ h1.plain {
     button {
       margin: 8px 0 0 0;
     }
+  }
+}
+
+.tekstisisalto {
+  margin-top: 20px;
+
+  .tekstisisalto-otsikko-solmu {
+    background: #fcfcfc;
+  }
+
+  .tekstisisalto-chevron {
+    padding: 2px 0 0 2px;
+  }
+
+  .tekstisisalto-solmu {
+    padding: 8px 0 5px 7px;
+    border-bottom: $ops-tekstisisalto-border
+  }
+
+  .treehandle {
+    cursor: move;
+  }
+
+  .placeholder {
+    height: 1px;
+    // margin: 5px 200px 5px 200px;
+    width: 100%;
+    background: #999999;
   }
 }

@@ -95,25 +95,79 @@ ylopsApp
     })();
   };
 })
-
+.run(function($templateCache) {
+    $templateCache.put('sisaltoNodeEditingTemplate', '' +
+            '<div ng-class="{ \'tekstisisalto-otsikko-solmu\': node.$$hasChildren }"' +
+            '     class="tekstisisalto-solmu" style="margin-left: {{ 20 * node.$$depth }}px">' +
+            '    <span class="treehandle" icon-role="drag"></span>' +
+            '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '</div>'
+            );
+    $templateCache.put('sisaltoNodeTemplate', '' +
+            '<div ng-class="{ \'tekstisisalto-otsikko-solmu\': node.$$hasChildren }" class="tekstisisalto-solmu" style="margin-left: {{ 20 * node.$$depth }}px">' +
+            '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
+            '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
+            '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
+            '    </span>' +
+            '    <a href="" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({ tekstikappaleId: node.id })">' +
+            '       <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '    </a>' +
+            '    <span class="pull-right">' +
+            '        <span valmius-ikoni="node"></span>' +
+            '        <a icon-role="remove" ng-click="poistaTekstikappale(node.$$nodeParent, node)"></a>' +
+            '        <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
+            '    </span>' +
+            '</div>'
+            );
+})
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit, $templateCache,
       Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q) {
   $scope.uusi = {nimi: {}};
   $scope.lukkotiedot = null;
   $scope.model = opsService.get($stateParams.id) || opsModel;
 
-  // FIXME: Just testing
-  $scope.tekstitProvider = $q(function(resolve, reject) {
+  $scope.muokkaaRakennetta = function() {
+    $scope.$$isRakenneMuokkaus = !$scope.$$isRakenneMuokkaus ;
+    $rootScope.$broadcast('genericTree:refresh');
+  };
+
+  $scope.tekstitProvider = $q(function(resolve) {
     resolve({
       root: _.constant($q.when($scope.model.tekstit)),
-      hidden: _.constant(false),
-      template: _.constant('<div>{{ node.$$depth }} test {{ node.id }}<button ng-click="testClick()">Test</button></div>'),
+      hidden: function(node) {
+          if ($scope.$$isRakenneMuokkaus || !node.$$nodeParent) {
+            return false;
+          }
+          else {
+            return node.$$nodeParent.$$hidden;
+          }
+      },
+      template: function() {
+        return $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate';
+      },
       children: function(node) {
         return $q.when(node && node.lapset ? node.lapset : []);
       },
+      useUiSortable: function() {
+        return !$scope.$$isRakenneMuokkaus;
+      },
       extension: function(node, scope) {
         scope.testClick = function() {
-          console.log('hello world', node);
+            _.each(node.lapset, function(child) {
+                child.$$hidden = !child.$$hidden;
+            });
+        };
+        scope.poistaTekstikappale = function(osio, node) {
+          lockTeksti(node.id, function () {
+            TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
+              osio = osio || $scope.model.tekstit;
+              TekstikappaleOps.delete($scope.model, osio, $stateParams.id, node, function() {
+                _.remove(osio.lapset, node);
+              });
+            }, function () {
+              unlockTeksti(node.id);
+            });
+          });
         };
       }
     });
@@ -161,38 +215,23 @@ ylopsApp
     return Lukko.unlockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
   }
 
+  $scope.lisaaTekstikappale = function() {
+      OpetussuunnitelmanTekstit.save({
+        opsId: $stateParams.id
+      }, {}, function(res) {
+        Notifikaatiot.onnistui('tallennettu-ok');
+        $scope.model.tekstit.lapset.push(res);
+      }, Notifikaatiot.serverCb);
+  };
+
   $scope.rakenne = {
     add: function (osio, event) {
       stopEvent(event);
       osio.$$adding = true;
     },
-    doAdd: function (osio) {
-      Lukko.lock(commonParams, function () {
-        TekstikappaleOps.lisaa(osio, $stateParams.id, osio.$$uusi, function () {
-          Lukko.unlock(commonParams, function () {
-            fetch();
-          });
-        });
-      });
-    },
     cancelAdd: function (osio) {
       osio.$$adding = false;
       $scope.uusi = {nimi: {}};
-    },
-    deleteKappale: function (osio, item) {
-      lockTeksti(item.id, function () {
-        TekstikappaleOps.varmistusdialogi(item.tekstiKappale.nimi, function () {
-          TekstikappaleOps.delete($scope.model, osio, $stateParams.id, item, fetch);
-        }, function () {
-          unlockTeksti(item.id);
-        });
-      });
-    },
-    editTitle: function (osio, kappale) {
-      lockTeksti(kappale.id, function () {
-        $scope.kappaleEdit = kappale;
-        kappale.$original = _.cloneDeep(kappale.tekstiKappale);
-      });
     },
     cancelTitle: function (kappale) {
       unlockTeksti(kappale.id, function () {

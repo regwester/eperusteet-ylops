@@ -212,6 +212,7 @@
   "tavoitteiden-muokkauksen-ohjeteksti": "Pääset muokkaamaan tavoitteita ja sisältöjä vuosiluokittain luonnin jälkeenkin.",
   "tavoitteiden-vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet",
   "tekstikappaleet": "Tekstikappaleet",
+  "lisaa-tekstikappale": "Lisää tekstikappale",
   "tekstikentalla-ei-sisaltoa-kielella-fi": "FI",
   "tekstikentalla-ei-sisaltoa-kielella-fi-kuvaus": "Sisältö puuttuu suomeksi",
   "tekstikentalla-ei-sisaltoa-kielella-se": "SE",
@@ -336,7 +337,7 @@
   "epimage-plugin-lisaa-uusi": "Lataa uusi kuva",
   "epimage-plugin-valitse": "Valitse tiedosto...",
   "epimage-plugin-tallennettu": "Kuva tallennettu.",
-  
+
   "nayta-opsina": "Näytä OPSina",
   "nayta-pohjana": "Näytä pohjana"
 }
