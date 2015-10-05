@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import java.util.List;
@@ -44,7 +45,7 @@ public interface OpetussuunnitelmaService {
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaDto getOpetussuunnitelma(@P("opsId") Long id);
+    OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUONTI')")
     OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto);

@@ -13,22 +13,28 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.ops;
+package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  *
- * @author mikkom
+ * @author nkala
  */
 @Getter
 @Setter
-public class OppiaineenVuosiluokkakokonaisuusSuppeaDto implements ReferenceableDto {
+public class TekstiKappaleViiteKevytDto {
     private Long id;
-    private Reference vuosiluokkakokonaisuus;
-    private Integer jnro;
-//    private Set<Reference> vuosiluokat;
+    @JsonProperty("_tekstiKappale")
+    private Reference tekstiKappaleRef;
+    private TekstiKappaleKevytDto tekstiKappale;
+    private Omistussuhde omistussuhde;
+    private boolean pakollinen;
+    private boolean valmis;
+    private List<TekstiKappaleViiteKevytDto> lapset;
 }
