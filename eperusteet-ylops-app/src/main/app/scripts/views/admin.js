@@ -22,6 +22,7 @@ ylopsApp
   $scope.opsiLista = true;
   $scope.tilat = ['luonnos', 'valmis', 'poistettu'];
   $scope.items = opsStatistiikka;
+  $scope.$$collapsestats = true;
 
   $scope.paginate = {
     perPage: 10,
@@ -81,6 +82,7 @@ ylopsApp
 
     statsit.maaratTyypeittain = _.groupBy(items, 'koulutustyyppi');
     statsit.maaratTasoittain = _.groupBy(items, '$$taso');
+    statsit.maaratTiloittain = _.groupBy(items, 'tila');
     return statsit;
   }
 

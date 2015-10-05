@@ -9,7 +9,7 @@
   </h2>
   <div collapse="!$$collapsestats">
     <div class="row">
-      <div class="col-xs-4">
+      <div class="col-md-3">
         <h3 kaanna="'maarat-kuntatasoittain'"></h3>
         <ul>
           <li ng-repeat="(taso, arr) in statsit.maaratTasoittain">
@@ -18,7 +18,7 @@
           </li>
         </ul>
       </div>
-      <div class="col-xs-4">
+      <div class="col-md-3">
         <h3 kaanna="'maarat-koulutustyypeittain'"></h3>
         <ul>
           <li ng-repeat="(tyyppi, arr) in statsit.maaratTyypeittain">
@@ -27,12 +27,21 @@
           </li>
         </ul>
       </div>
-      <div class="col-xs-4">
+      <div class="col-md-3">
         <h3 kaanna="'maarat-kielittain'"></h3>
         <ul>
           <li ng-repeat="(kieli, maara) in statsit.maaratKielittain">
             <label kaanna="kieli"></label>:
             {{ maara || 0 }}
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-3">
+        <h3 kaanna="'maarat-tiloittain'"></h3>
+        <ul>
+          <li ng-repeat="(tila, opsit) in statsit.maaratTiloittain">
+            <label kaanna="tila"></label>:
+            {{ opsit.length || 0 }}
           </li>
         </ul>
       </div>
