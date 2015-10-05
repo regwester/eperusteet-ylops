@@ -131,6 +131,10 @@ ylopsApp
     $rootScope.$broadcast('genericTree:refresh');
   };
 
+  $scope.sortableConfig = {
+
+  };
+
   $scope.tekstitProvider = $q(function(resolve) {
     resolve({
       root: _.constant($q.when($scope.model.tekstit)),
@@ -146,10 +150,17 @@ ylopsApp
         return $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate';
       },
       children: function(node) {
-        return $q.when(node && node.lapset ? node.lapset : []);
+        return 'lapset';
+        // return $q.when(node && node.lapset ? node.lapset : []);
       },
+      // children: function(node) {
+      //   return $q.when(node && node.lapset ? node.lapset : []);
+      // },
       useUiSortable: function() {
         return !$scope.$$isRakenneMuokkaus;
+      },
+      initNode: function(node) {
+        // console.log('initing node:', node);
       },
       extension: function(node, scope) {
         scope.poistaTekstikappale = function(osio, node) {

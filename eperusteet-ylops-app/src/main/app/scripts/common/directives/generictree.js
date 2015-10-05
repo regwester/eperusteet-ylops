@@ -28,6 +28,7 @@ ylopsApp
             uiSortableConfig: '='
         },
         controller: function($scope) {
+            $scope.treeProvider.initNode($scope.node);
             $scope.treeProvider.extension($scope.node, $scope);
             $scope.isHidden = function(node) {
                 return $scope.treeProvider.hidden(node);
@@ -49,27 +50,26 @@ ylopsApp
             }
 
             var node = scope.node;
+            var children = scope.treeProvider.children(node);
             element.empty();
-            scope.treeProvider.children(node)
-                .then(function(children) {
-                    setContext(node, children);
-                    var template = '';
-                    template += getTemplate(node);
-                    if (children) {
-                        template += '<div ui-sortable="uiSortableConfig" id="recursivetree" ng-model="children">';
-                        scope.children = children;
-                        if (!_.isEmpty(children)) {
-                            template += '' +
-                                '<div ng-repeat="node in children" ng-model="node">' +
-                                '    <generic-tree-node node="node" ng-show="!isHidden(node)" ui-sortable-config="uiSortableConfig"' +
-                                '                       tree-provider="treeProvider"></generic-tree-node>' +
-                                '</div>';
-                        }
-                        template += '</div>';
-                    }
-                    element.append(template);
-                    $compile(element.contents())(scope);
-                });
+            setContext(node, node[children]);
+            var template = '';
+            template += getTemplate(node);
+            if (node[children]) {
+                template += '<div ui-sortable="uiSortableConfig" class="recursivetree" ng-model="node[children]">';
+                scope.children = children;
+                scope.parentNode = node;
+                if (!_.isEmpty(node[children])) {
+                    template += '' +
+                        '<div ng-repeat="node in parentNode[children]">' +
+                        '    <generic-tree-node node="node" ng-show="!isHidden(node)" ui-sortable-config="uiSortableConfig"' +
+                        '                       tree-provider="treeProvider"></generic-tree-node>' +
+                        '</div>';
+                }
+                template += '</div>';
+            }
+            element.append(template);
+            $compile(element.contents())(scope);
         }
     };
 })
@@ -84,11 +84,10 @@ ylopsApp
         controller: function($scope) {
             function run(provider) {
                 $scope.tprovider = provider;
+                $scope.tprovider.initNode = provider.initNode || _.noop;
                 provider.root()
-                    .then(provider.children)
-                    .then(function(children) {
-                        console.log(children);
-                        $scope.children = children;
+                    .then(function(root) {
+                        $scope.children = root[provider.children()];
                     })
                     .catch(Notifikaatiot.serverCb);
             }
@@ -103,7 +102,7 @@ ylopsApp
             function refresh(tree) {
                 if (tree) {
                     scope.sortableConfig = _.merge({
-                        connectWith: '#recursivetree',
+                        connectWith: '.recursivetree',
                         handle: '.treehandle',
                         cursorAt: { top : 2, left: 2 },
                         cursor: 'move',
