@@ -152,11 +152,6 @@ ylopsApp
         return !$scope.$$isRakenneMuokkaus;
       },
       extension: function(node, scope) {
-        scope.testClick = function() {
-            _.each(node.lapset, function(child) {
-                child.$$hidden = !child.$$hidden;
-            });
-        };
         scope.poistaTekstikappale = function(osio, node) {
           lockTeksti(node.id, function () {
             TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {

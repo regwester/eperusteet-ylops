@@ -42,7 +42,12 @@ ylopsApp
       .state('root.admin', {
         url: '/admin',
         templateUrl: 'views/admin.html',
-        controller: 'AdminController'
+        controller: 'AdminController',
+        resolve: {
+          opsStatistiikka: function(OpetussuunnitelmaCRUD) {
+            return OpetussuunnitelmaCRUD.tilastot();
+          }
+        }
       })
 
       .state('root.virhe', {

@@ -44,6 +44,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -155,6 +156,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             fetchOrganisaatioNimet(dto);
         });
         return dtot;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
+        List<Opetussuunnitelma> opsit = repository.findAllByTyyppi(Tyyppi.OPS);
+        List<OpetussuunnitelmaStatistiikkaDto> opsDtot = mapper.mapAsList(opsit, OpetussuunnitelmaStatistiikkaDto.class);
+        return opsDtot;
     }
 
     @Override

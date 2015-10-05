@@ -26,7 +26,7 @@ ylopsApp
     this.VUOSILUOKKAVALINNAINEN = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId/vuosiluokat/:vvlId/valinnainen';
   })
 
-  .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources) {
+  .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources, SERVICE_LOC) {
     return $resource(YlopsResources.OPS, {
       opsId: '@id'
     }, {
@@ -35,7 +35,8 @@ ylopsApp
       palauta: {method: 'POST', url: YlopsResources.OPS + '/palauta'},
       lisaaKielitarjonta: {method: 'POST', url: YlopsResources.OPS + '/kielitarjonta', isArray: true},
       syncPeruste: {method: 'POST', url: YlopsResources.OPS + '/sync'},
-      jarjestaOppiaineet: {method: 'POST', url: YlopsResources.OPS + '/oppiainejarjestys', isArray: true}
+      jarjestaOppiaineet: {method: 'POST', url: YlopsResources.OPS + '/oppiainejarjestys', isArray: true},
+      tilastot: { method: 'GET', url: SERVICE_LOC + '/opetussuunnitelmat/tilastot', isArray: true }
     });
   })
   .factory('OpetussuunnitelmaOikeudet', function ($resource, YlopsResources) {

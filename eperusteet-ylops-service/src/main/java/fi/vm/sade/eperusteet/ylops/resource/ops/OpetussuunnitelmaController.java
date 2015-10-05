@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,12 @@ public class OpetussuunnitelmaController {
     @Timed
     public List<OpetussuunnitelmaInfoDto> getAll(@RequestParam(value="tyyppi", required=false) Tyyppi tyyppi) {
         return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi);
+    }
+
+    @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
+    @ResponseBody
+    public List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
+        return opetussuunnitelmaService.getStatistiikka();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
