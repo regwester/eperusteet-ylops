@@ -4,15 +4,13 @@
       <h2>
         <span kaanna="'tekstikappaleet'"></span>
         <span class="pull-right">
-          <button icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
-          <span ng-hide="$$isRakenneMuokkaus">
-            <button icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()"></button>
-          </span>
+          <button ng-hide="$$isRakenneMuokkaus" icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
+          <button ng-hide="$$isRakenneMuokkaus" icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()" kaanna="'muokkaa-rakennetta'"></button>
         </span>
       </h2>
     </div>
     <div class="tekstisisalto">
-        <generic-tree ui-sortable-config="sortableConfig" tree-provider="tekstitProvider"></generic-tree>
+      <generic-tree ui-sortable-config="sortableConfig" tree-provider="tekstitProvider"></generic-tree>
     </div>
   </div>
 

@@ -278,7 +278,12 @@ ylopsApp
       .state('root.pohjat.yksi.sisalto', {
         url: '/sisalto',
         templateUrl: 'views/opetussuunnitelmat/pohja/sisalto.html',
-        controller: 'PohjaSisaltoController'
+        controller: 'PohjaSisaltoController',
+        resolve: {
+          pohjaOps: ['OpsService', '$stateParams', function(OpsService, $stateParams) {
+            return OpsService.haeOikeasti($stateParams.pohjaId);
+          }]
+        }
       })
 
       .state('root.pohjat.yksi.tiedot', {

@@ -123,8 +123,6 @@ ylopsApp
 })
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit, $templateCache, $timeout,
       Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q, Editointikontrollit) {
-  $scope.uusi = {nimi: {}};
-  $scope.lukkotiedot = null;
   $scope.model = opsService.get($stateParams.id) || opsModel;
   var commonParams = {
     opsId: $stateParams.id,
@@ -163,46 +161,44 @@ ylopsApp
     placeholder: 'placeholder'
   };
 
-  $scope.tekstitProvider = $q(function(resolve) {
-    resolve({
-      root: _.constant($q.when($scope.model.tekstit)),
-      hidden: function(node) {
-          if ($scope.$$isRakenneMuokkaus || !node.$$nodeParent) {
-            return false;
-          }
-          else {
-            return node.$$nodeParent.$$hidden;
-          }
-      },
-      template: function() {
-        return $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate';
-      },
-      children: function(node) {
-        return $q.when(node && node.lapset ? node.lapset : []);
-      },
-      useUiSortable: function() {
-        return !$scope.$$isRakenneMuokkaus;
-      },
-      extension: function(node, scope) {
-        switch (node.$$depth) {
-          case 0: scope.taustanVari = '#f9f9f9'; break;
-          case 1: scope.taustanVari = '#fcfcfc'; break;
-          default:
-            scope.taustanVari = '#fff';
+  $scope.tekstitProvider = $q.when({
+    root: _.constant($q.when($scope.model.tekstit)),
+    hidden: function(node) {
+        if ($scope.$$isRakenneMuokkaus || !node.$$nodeParent) {
+          return false;
         }
-
-        scope.poistaTekstikappale = function(osio, node) {
-          TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
-            osio = osio || $scope.model.tekstit;
-            TekstikappaleOps.delete($scope.model, osio, $stateParams.id, node, function() {
-              _.remove(osio.lapset, node);
-            });
-          }, function () {
-            unlockTeksti(node.id);
-          });
-        };
+        else {
+          return node.$$nodeParent.$$hidden;
+        }
+    },
+    template: function() {
+      return $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate';
+    },
+    children: function(node) {
+      return $q.when(node && node.lapset ? node.lapset : []);
+    },
+    useUiSortable: function() {
+      return !$scope.$$isRakenneMuokkaus;
+    },
+    extension: function(node, scope) {
+      switch (node.$$depth) {
+        case 0: scope.taustanVari = '#f9f9f9'; break;
+        case 1: scope.taustanVari = '#fcfcfc'; break;
+        default:
+          scope.taustanVari = '#fff';
       }
-    });
+
+      scope.poistaTekstikappale = function(osio, node) {
+        TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
+          osio = osio || $scope.model.tekstit;
+          TekstikappaleOps.delete($scope.model, osio, $stateParams.id, node, function() {
+            _.remove(osio.lapset, node);
+          });
+        }, function () {
+          unlockTeksti(node.id);
+        });
+      };
+    }
   });
 
   function unlockTeksti(id, cb) {

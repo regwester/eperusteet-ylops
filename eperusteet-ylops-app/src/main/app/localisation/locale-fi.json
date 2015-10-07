@@ -338,7 +338,10 @@
   "epimage-plugin-lisaa-uusi": "Lataa uusi kuva",
   "epimage-plugin-valitse": "Valitse tiedosto...",
   "epimage-plugin-tallennettu": "Kuva tallennettu.",
+  "paivitys-onnistui": "Päivitys onnistui",
 
   "nayta-opsina": "Näytä OPSina",
-  "nayta-pohjana": "Näytä pohjana"
+  "nayta-pohjana": "Näytä pohjana",
+  "synkronoi-perusteeseen": "Synkronoi opetussuunnitelmiin",
+  "ops-pohja": "Pohjan sisältö"
 }

@@ -28,7 +28,7 @@ ylopsApp
   };
 })
 
-.service('OpsService', function (OpetussuunnitelmaCRUD, Notifikaatiot, MurupolkuData, Kieli) {
+.service('OpsService', function ($q, OpetussuunnitelmaCRUD, Notifikaatiot, MurupolkuData, Kieli) {
   var opsId = null;
   var ops = null;
   var deferred = null;
@@ -91,12 +91,31 @@ ylopsApp
   this.refetch = refetch;
   this.refetchPohja = refetch;
   this.get = get;
-  this.getPohja = get;
   this.getId = function () {
     return opsId;
   };
   this.isEditable = function () {
     return ops && ops.tila === 'luonnos';
+  };
+  this.haeOikeasti = function(id) {
+    if (id === 'uusi') {
+      MurupolkuData.set('opsNimi', 'uusi');
+      return $q.when(uusi());
+    }
+    else {
+      return $q(function(resolve, reject) {
+        OpetussuunnitelmaCRUD.get({
+          opsId: id
+        }, function (res) {
+          MurupolkuData.set('opsNimi', angular.copy(res.nimi));
+          asetaOps(res);
+          resolve(res);
+        }, function(err) {
+          Notifikaatiot.serverCb(err);
+          reject(err);
+        });
+      });
+    }
   };
 })
 
