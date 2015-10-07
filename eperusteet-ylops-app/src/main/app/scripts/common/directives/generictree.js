@@ -22,6 +22,7 @@ ylopsApp
     return {
         restrict: 'E',
         replace: true,
+        template: '',
         scope: {
             node: '=',
             treeProvider: '=',
@@ -36,7 +37,6 @@ ylopsApp
         },
         link: function(scope, element) {
             function setContext(node, children) {
-                node.$$depth = node.$$depth || 0;
                 node.$$hasChildren = !_.isEmpty(children);
                 _.each(children, function(cnode) {
                     cnode.$$depth = node.$$depth + 1;
@@ -50,33 +50,36 @@ ylopsApp
             }
 
             var node = scope.node;
-            var children = scope.treeProvider.children(node);
-            element.empty();
-            setContext(node, node[children]);
-            var template = '';
-            template += getTemplate(node);
-            if (node[children]) {
-                template += '<div ui-sortable="uiSortableConfig" class="recursivetree" ng-model="node[children]">';
-                scope.children = children;
-                scope.parentNode = node;
-                if (!_.isEmpty(node[children])) {
-                    template += '' +
-                        '<div ng-repeat="node in parentNode[children]">' +
-                        '    <generic-tree-node node="node" ng-show="!isHidden(node)" ui-sortable-config="uiSortableConfig"' +
-                        '                       tree-provider="treeProvider"></generic-tree-node>' +
-                        '</div>';
-                }
-                template += '</div>';
-            }
-            element.append(template);
-            $compile(element.contents())(scope);
+            scope.treeProvider.children(node)
+                .then(function(children) {
+                    element.empty();
+                    setContext(node, children);
+                    var template = '';
+                    template += getTemplate(node);
+                    if (children) {
+                        template += '<div ui-sortable="uiSortableConfig" class="recursivetree" ng-model="children">';
+                        scope.children = children;
+                        scope.parentNode = node;
+                        if (!_.isEmpty(children)) {
+                            template += '' +
+                                '<div ng-repeat="node in children">' +
+                                '    <generic-tree-node node="node" ng-show="!isHidden(node)" ui-sortable-config="uiSortableConfig"' +
+                                '                       tree-provider="treeProvider"></generic-tree-node>' +
+                                '</div>';
+                        }
+                        template += '</div>';
+                    }
+                    element.append(template);
+                    $compile(element.contents())(scope);
+                });
         }
     };
 })
-.directive('genericTree', function($compile, $q, $templateCache, Notifikaatiot) {
+.directive('genericTree', function($compile, $q, $log, $templateCache, Notifikaatiot) {
     return {
         restrict: 'E',
         replace: true,
+        template: '',
         scope: {
             treeProvider: '=', // FIXME: Add interface
             uiSortableConfig: '=?'
@@ -86,8 +89,9 @@ ylopsApp
                 $scope.tprovider = provider;
                 $scope.tprovider.initNode = provider.initNode || _.noop;
                 provider.root()
-                    .then(function(root) {
-                        $scope.children = root[provider.children()];
+                    .then(provider.children)
+                    .then(function(children) {
+                        $scope.children = children;
                     })
                     .catch(Notifikaatiot.serverCb);
             }
@@ -95,12 +99,17 @@ ylopsApp
             $scope.treeProvider
                 .then(run)
                 .catch(function(err) {
-                    console.log(err);
+                    $log.error(err);
                 });
         },
         link: function(scope, element) {
-            function refresh(tree) {
+            function refresh(tree, old) {
                 if (tree) {
+                    _.each(scope.children, function(child) {
+                        child.$$nodeParent = undefined;
+                        child.$$depth = 0;
+                    });
+
                     scope.sortableConfig = _.merge({
                         connectWith: '.recursivetree',
                         handle: '.treehandle',
@@ -109,18 +118,11 @@ ylopsApp
                         delay: 100,
                         disabled: scope.tprovider.useUiSortable(),
                         tolerance: 'pointer',
-                        // placeholder: 'placeholder',
-                        // // start: function(e, ui) {
-                        // //     ui.placeholder.html('<div class="group-placeholder"></div>');
-                        // // },
-                        // // cancel: '.ui-state-disabled',
-                        // // update: TreeDragAndDrop.update
                     }, scope.uiSortableConfig || {});
 
-                    console.log('forcing redraw');
                     element.empty();
                     element.append('' +
-                            '<div ui-sortable="sortableConfig" id="recursivetree" ng-model="children">' +
+                            '<div ui-sortable="sortableConfig" class="recursivetree" ng-model="children">' +
                             '    <div ng-repeat="node in children">' +
                             '       <generic-tree-node node="node" ui-sortable-config="sortableConfig" tree-provider="tprovider"></generic-tree-node>' +
                             '    </div>' +
@@ -128,7 +130,10 @@ ylopsApp
                     $compile(element.contents())(scope);
                 }
             }
-            scope.$on('genericTree:refresh', refresh);
+
+            scope.$on('genericTree:refresh', function() {
+                refresh(scope.children, scope.children);
+            });
             scope.$watch('children', refresh, true);
         }
     };

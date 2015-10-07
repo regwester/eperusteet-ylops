@@ -254,6 +254,14 @@ h1.plain {
 .tekstisisalto {
   margin-top: 20px;
 
+  .recursivetree {
+    margin-left: 30px;
+  }
+
+  .recursivetree:empty {
+    padding-bottom: 8px;
+  }
+
   .tekstisisalto-otsikko-solmu {
     background: #fcfcfc;
   }
@@ -272,9 +280,10 @@ h1.plain {
   }
 
   .placeholder {
-    height: 1px;
+    height: 40px;
+    padding: 3px;
     // margin: 5px 200px 5px 200px;
     width: 100%;
-    background: #999999;
+    background: #bbb;
   }
 }

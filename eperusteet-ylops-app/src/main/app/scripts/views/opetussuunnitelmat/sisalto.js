@@ -98,13 +98,16 @@ ylopsApp
 .run(function($templateCache) {
     $templateCache.put('sisaltoNodeEditingTemplate', '' +
             '<div ng-class="{ \'tekstisisalto-otsikko-solmu\': node.$$hasChildren }"' +
-            '     class="tekstisisalto-solmu" style="margin-left: {{ 20 * node.$$depth }}px">' +
+            '     class="tekstisisalto-solmu">' +
             '    <span class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '    <span class="pull-right">' +
+            '        <a icon-role="remove" ng-click="poistaTekstikappale(node.$$nodeParent, node)"></a>' +
+            '    </span>' +
             '</div>'
             );
     $templateCache.put('sisaltoNodeTemplate', '' +
-            '<div ng-class="{ \'tekstisisalto-otsikko-solmu\': node.$$hasChildren }" class="tekstisisalto-solmu" style="margin-left: {{ 20 * node.$$depth }}px">' +
+            '<div ng-class="{ \'tekstisisalto-otsikko-solmu\': node.$$hasChildren }" class="tekstisisalto-solmu">' +
             '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
@@ -114,7 +117,6 @@ ylopsApp
             '    </a>' +
             '    <span class="pull-right">' +
             '        <span valmius-ikoni="node"></span>' +
-            '        <a icon-role="remove" ng-click="poistaTekstikappale(node.$$nodeParent, node)"></a>' +
             '        <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
             '    </span>' +
             '</div>'
@@ -132,7 +134,11 @@ ylopsApp
   };
 
   $scope.sortableConfig = {
-
+    placeholder: 'placeholder',
+    // start: function(e, ui) {
+    //   console.log(e, ui);
+    //   ui.placeholder.html('<div class="placeholder">morjens</div>');
+    // }
   };
 
   $scope.tekstitProvider = $q(function(resolve) {
@@ -150,12 +156,8 @@ ylopsApp
         return $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate';
       },
       children: function(node) {
-        return 'lapset';
-        // return $q.when(node && node.lapset ? node.lapset : []);
+        return $q.when(node && node.lapset ? node.lapset : []);
       },
-      // children: function(node) {
-      //   return $q.when(node && node.lapset ? node.lapset : []);
-      // },
       useUiSortable: function() {
         return !$scope.$$isRakenneMuokkaus;
       },
