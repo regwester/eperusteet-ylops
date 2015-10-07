@@ -112,6 +112,8 @@ ylopsApp
                         connectWith: '.recursivetree',
                         handle: '.treehandle',
                         cursorAt: { top : 2, left: 2 },
+                        helper: 'clone',
+                        option: 'x',
                         cursor: 'move',
                         delay: 100,
                         disabled: scope.tprovider.useUiSortable(),
