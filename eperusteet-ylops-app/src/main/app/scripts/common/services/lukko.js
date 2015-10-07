@@ -34,6 +34,7 @@ ylopsApp
   });
 })
 
+// FIXME: Korjaa käyttämään promiseja
 .service('Lukko', function(OpetussuunnitelmanTekstitLukko, OpetussuunnitelmanTekstitRakenneLukko,
                            OppiaineenVuosiluokkakokonaisuusLukko,
                            Notifikaatiot, $state, Editointikontrollit, $modal, Kaanna, $rootScope) {
@@ -51,8 +52,9 @@ ylopsApp
     }, Editointikontrollit.cancelEditing);
   }
 
-  function doLock(resource, params, cb) {
+  function doLock(resource, params, cb, failCb) {
     cb = cb || angular.noop;
+    failCb = failCb || angular.noop;
 
     resource.save(params, {}, function(res, headers) {
       if (etag && headers().etag !== etag && Editointikontrollit.getEditMode()) {
@@ -61,7 +63,10 @@ ylopsApp
         etag = headers().etag;
         cb(res);
       }
-    }, Notifikaatiot.serverLukitus);
+    }, function(err) {
+      Notifikaatiot.serverLukitus(err);
+      failCb();
+    });
   }
 
   function resourceFromState() {
@@ -108,9 +113,9 @@ ylopsApp
     resource.get(params, cb, Notifikaatiot.serverLukitus);
   }
 
-  function lock(params, cb) {
+  function lock(params, cb, failCb) {
     var resource = resourceFromState();
-    doLock(resource, params, cb);
+    doLock(resource, params, cb, failCb);
   }
 
   function unlock(params, cb) {

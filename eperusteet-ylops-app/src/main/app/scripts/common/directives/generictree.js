@@ -29,7 +29,6 @@ ylopsApp
             uiSortableConfig: '='
         },
         controller: function($scope) {
-            $scope.treeProvider.initNode($scope.node);
             $scope.treeProvider.extension($scope.node, $scope);
             $scope.isHidden = function(node) {
                 return $scope.treeProvider.hidden(node);
@@ -87,7 +86,6 @@ ylopsApp
         controller: function($scope) {
             function run(provider) {
                 $scope.tprovider = provider;
-                $scope.tprovider.initNode = provider.initNode || _.noop;
                 provider.root()
                     .then(provider.children)
                     .then(function(children) {
@@ -103,7 +101,7 @@ ylopsApp
                 });
         },
         link: function(scope, element) {
-            function refresh(tree, old) {
+            function refresh(tree) {
                 if (tree) {
                     _.each(scope.children, function(child) {
                         child.$$nodeParent = undefined;

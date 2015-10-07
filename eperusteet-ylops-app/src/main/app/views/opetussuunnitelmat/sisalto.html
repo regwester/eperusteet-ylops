@@ -1,75 +1,13 @@
 <div class="row" ng-show="model.$resolved">
-  <!-- <div class="col&#45;md&#45;4 col&#45;sm&#45;6" ng&#45;repeat="osio in model.tekstit.lapset"> -->
-  <!--   <div class="list&#45;group sisalto&#45;osio"> -->
-  <!--     <a class="list&#45;group&#45;item list&#45;group&#45;header" -->
-  <!--        ui&#45;sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: osio.id})"> -->
-  <!--        <div class="kontrollit" ng&#45;hide="osio.$$edit" ng&#45;if="isEditable()"> -->
-  <!--          <span ng&#45;if="lukkotiedot.lukittu" class="lukko&#45;wrapper"> -->
-  <!--            <lukko tip="lukkotiedot.tip" size="small"></lukko> -->
-  <!--          </span> -->
-  <!--          <button class="button&#45;link" ng&#45;hide="lukkotiedot.lukittu || isAdding()" ng&#45;click="rakenne.add(osio, $event)" icon&#45;role="add" -->
-  <!--                  ng&#45;attr&#45;title="{{'luo&#45;uusi&#45;tekstikappale' | kaanna}}" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button> -->
-  <!--          <button class="button&#45;link" ng&#45;hide="lukkotiedot.lukittu" ng&#45;click="rakenne.edit(osio, $event)" icon&#45;role="edit" -->
-  <!--                  ng&#45;attr&#45;title="{{'muokkaa&#45;rakennetta' | kaanna}}" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button> -->
-  <!--        </div> -->
-  <!--       <span ng&#45;bind="osio.tekstiKappale.nimi | kaanna"></span> -->
-  <!--     </a> -->
-  <!--  -->
-  <!--     <div ng&#45;if="osio.$$adding" class="list&#45;group&#45;item addnew"> -->
-  <!--       <div class="addnew&#45;closer"><a ng&#45;attr&#45;title="{{'sulje'|kaanna}}" icon&#45;role="remove" ng&#45;click="rakenne.cancelAdd(osio)"></a></div> -->
-  <!--       <div class="input&#45;group"> -->
-  <!--         <input class="form&#45;control" ng&#45;model="osio.$$uusi" slocalized ng&#45;enter="hasText(osio.$$uusi) &#38;&#38; rakenne.doAdd(osio)" -->
-  <!--                placeholder="{{'luo&#45;uusi&#45;tekstikappale'|kaanna}}" ng&#45;esc="rakenne.cancelAdd(osio)"> -->
-  <!--         <span class="input&#45;group&#45;btn"> -->
-  <!--           <button class="btn btn&#45;primary" kaanna="'lisaa'" ng&#45;click="rakenne.doAdd(osio)" ng&#45;disabled="!hasText(osio.$$uusi)"></button> -->
-  <!--         </span> -->
-  <!--       </div> -->
-  <!--     </div> -->
-  <!--  -->
-  <!--     <div ng&#45;if="!osio.$$edit" class="list&#45;group&#45;item" ng&#45;repeat="item in osio.lapset"> -->
-  <!--       <a ng&#45;if="kappaleEdit !== item" ui&#45;sref="root.opetussuunnitelmat.yksi.tekstikappale({tekstikappaleId: item.id})" -->
-  <!--          ng&#45;class="{editable: canRemove(item)}"> -->
-  <!--          <span valmius&#45;ikoni="item"></span><span ng&#45;bind="item.tekstiKappale.nimi | kaanna"></span> -->
-  <!--       </a> -->
-  <!--       <div class="input&#45;group" ng&#45;if="kappaleEdit === item"> -->
-  <!--         <input ng&#45;model="item.tekstiKappale.nimi" slocalized class="form&#45;control"> -->
-  <!--         <span class="input&#45;group&#45;btn"> -->
-  <!--           <button class="btn btn&#45;default" ng&#45;click="rakenne.cancelTitle(item)" kaanna="'peruuta'"></button> -->
-  <!--           <button class="btn btn&#45;primary" ng&#45;click="rakenne.saveTitle(item)" kaanna="'tallenna'"></button> -->
-  <!--         </span> -->
-  <!--       </div> -->
-  <!--       <div class="floater&#45;ops" ng&#45;if="isEditable() &#38;&#38; canRemove(item) &#38;&#38; !kappaleEdit"> -->
-  <!--         <span class="kappale&#45;ops" ng&#45;click="rakenne.editTitle(osio, item)" icon&#45;role="edit" ng&#45;attr&#45;title="{{'muokkaa&#45;otsikkoa' | kaanna}}" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span> -->
-  <!--         <span class="kappale&#45;ops" ng&#45;click="rakenne.deleteKappale(osio, item)" icon&#45;role="remove" ng&#45;attr&#45;title="{{'poista' | kaanna}}" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span> -->
-  <!--       </div> -->
-  <!--     </div> -->
-  <!--  -->
-  <!--     <div ng&#45;if="osio.$$edit" class="list&#45;group&#45;item pohjan&#45;muokkaus"> -->
-  <!--       <div class="rakenne"> -->
-  <!--  -->
-  <!--         <button class="btn btn&#45;default" kaanna="'peru&#45;rakenne'" ng&#45;click="rakenne.cancel(osio)"></button> -->
-  <!--         <button class="btn btn&#45;primary" kaanna="'tallenna&#45;rakenne'" ng&#45;click="rakenne.save(osio)"></button> -->
-  <!--  -->
-  <!--         <div ng&#45;show="osio.lapset.length > 0" ui&#45;tree class="tekstikappaleet" data&#45;empty&#45;place&#45;holder&#45;enabled="true"> -->
-  <!--           <ul ui&#45;tree&#45;nodes ng&#45;model="osio.lapset"> -->
-  <!--             <li ng&#45;repeat="kappale in osio.lapset" ui&#45;tree&#45;node ng&#45;include="'views/opetussuunnitelmat/treenode.html'"></li> -->
-  <!--           </ul> -->
-  <!--         </div> -->
-  <!--  -->
-  <!--       </div> -->
-  <!--     </div> -->
-  <!--   </div> -->
-  <!-- </div> -->
-
   <div ng-if="model.koulutustyyppi === 'koulutustyyppi_16'" class="col-md-8 col-sm-6">
     <div>
       <h2>
         <span kaanna="'tekstikappaleet'"></span>
         <span class="pull-right">
+          <button icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
           <span ng-hide="$$isRakenneMuokkaus">
-            <button icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
+            <button icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()"></button>
           </span>
-          <button icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()"></button>
         </span>
       </h2>
     </div>
