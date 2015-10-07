@@ -45,7 +45,7 @@ ylopsApp
         controller: 'AdminController',
         resolve: {
           opsStatistiikka: function(OpetussuunnitelmaCRUD) {
-            return OpetussuunnitelmaCRUD.tilastot();
+            return OpetussuunnitelmaCRUD.tilastot().$promise;
           }
         }
       })
