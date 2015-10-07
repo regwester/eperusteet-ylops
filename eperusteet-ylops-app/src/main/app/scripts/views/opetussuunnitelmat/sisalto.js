@@ -126,13 +126,13 @@ ylopsApp
   $scope.uusi = {nimi: {}};
   $scope.lukkotiedot = null;
   $scope.model = opsService.get($stateParams.id) || opsModel;
+  var commonParams = {
+    opsId: $stateParams.id,
+  };
 
   // FIXME: Ota kunnon editointikontrollit käyttöön
   Editointikontrollit.registerCallback({
     edit: function() {
-      Lukko.lock(commonParams, _.noop, function() {
-        $timeout(Editointikontrollit.cancelEditing); // FIXME: Poista kun editointikontrollit on korjattu
-      });
     },
     asyncValidate: function(cb) {
       TekstikappaleOps.saveRakenne($scope.model, function () {
@@ -140,19 +140,24 @@ ylopsApp
       });
     },
     save: function() {
+      // Lukko.unlock();
+      Lukko.unlock(commonParams);
       $scope.$$isRakenneMuokkaus = false;
       $rootScope.$broadcast('genericTree:refresh');
     },
     cancel: function() {
+      Lukko.unlock(commonParams);
       $scope.$$isRakenneMuokkaus = false;
       $rootScope.$broadcast('genericTree:refresh');
     }
   });
 
   $scope.muokkaaRakennetta = function() {
-    Editointikontrollit.startEditing();
-    $scope.$$isRakenneMuokkaus = true;
-    $rootScope.$broadcast('genericTree:refresh');
+    Lukko.lock(commonParams, function() {
+      Editointikontrollit.startEditing();
+      $scope.$$isRakenneMuokkaus = true;
+      $rootScope.$broadcast('genericTree:refresh');
+    });
   };
 
   $scope.sortableConfig = {
@@ -202,10 +207,6 @@ ylopsApp
       }
     });
   });
-
-  var commonParams = {
-    opsId: $stateParams.id,
-  };
 
   function lockTeksti(id, cb) {
     return Lukko.lockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
