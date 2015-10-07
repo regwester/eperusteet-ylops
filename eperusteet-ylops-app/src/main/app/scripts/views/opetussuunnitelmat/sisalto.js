@@ -205,10 +205,6 @@ ylopsApp
     });
   });
 
-  function lockTeksti(id, cb) {
-    return Lukko.lockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
-  }
-
   function unlockTeksti(id, cb) {
     return Lukko.unlockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
   }
