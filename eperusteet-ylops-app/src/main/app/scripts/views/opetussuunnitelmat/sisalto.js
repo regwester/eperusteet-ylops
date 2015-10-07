@@ -140,7 +140,6 @@ ylopsApp
       });
     },
     save: function() {
-      // Lukko.unlock();
       Lukko.unlock(commonParams);
       $scope.$$isRakenneMuokkaus = false;
       $rootScope.$broadcast('genericTree:refresh');
@@ -193,15 +192,13 @@ ylopsApp
         }
 
         scope.poistaTekstikappale = function(osio, node) {
-          lockTeksti(node.id, function () {
-            TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
-              osio = osio || $scope.model.tekstit;
-              TekstikappaleOps.delete($scope.model, osio, $stateParams.id, node, function() {
-                _.remove(osio.lapset, node);
-              });
-            }, function () {
-              unlockTeksti(node.id);
+          TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
+            osio = osio || $scope.model.tekstit;
+            TekstikappaleOps.delete($scope.model, osio, $stateParams.id, node, function() {
+              _.remove(osio.lapset, node);
             });
+          }, function () {
+            unlockTeksti(node.id);
           });
         };
       }
