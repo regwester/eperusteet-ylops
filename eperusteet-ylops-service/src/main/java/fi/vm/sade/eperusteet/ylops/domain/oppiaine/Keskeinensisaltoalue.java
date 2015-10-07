@@ -52,7 +52,7 @@ public class Keskeinensisaltoalue extends AbstractReferenceableEntity {
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
     public static Keskeinensisaltoalue copyOf(Keskeinensisaltoalue other) {

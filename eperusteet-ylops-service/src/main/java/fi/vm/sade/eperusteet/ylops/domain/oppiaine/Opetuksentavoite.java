@@ -51,7 +51,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti tavoite;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
