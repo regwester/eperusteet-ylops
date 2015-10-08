@@ -16,6 +16,8 @@
 
 'use strict';
 
+/* global _, tinycolor */
+
 ylopsApp
 .service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
   Varmistusdialogi, Kaanna, OpsService, $rootScope) {
@@ -97,7 +99,7 @@ ylopsApp
 })
 .run(function($templateCache) {
     $templateCache.put('sisaltoNodeEditingTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
             '    <span class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    <span class="pull-right">' +
@@ -106,7 +108,7 @@ ylopsApp
             '</div>'
             );
     $templateCache.put('sisaltoNodeTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
             '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
@@ -116,7 +118,10 @@ ylopsApp
             '    </a>' +
             '    <span class="pull-right">' +
             '        <span valmius-ikoni="node.tekstiKappale"></span>' +
-            '        <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
+            '        <span class="muokattu-aika">' +
+            '             <span kaanna="\'muokattu-viimeksi\'"></span>:' +
+            '             <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
+            '        </span>' +
             '    </span>' +
             '</div>'
             );
@@ -182,10 +187,14 @@ ylopsApp
     },
     extension: function(node, scope) {
       switch (node.$$depth) {
-        case 0: scope.taustanVari = '#f9f9f9'; break;
-        case 1: scope.taustanVari = '#fcfcfc'; break;
+        case 0: scope.taustanVari = '#f2f2f2'; break;
+        case 1: scope.taustanVari = '#fafafa'; break;
         default:
-          scope.taustanVari = '#fff';
+          scope.taustanVari = '#fff'
+      }
+
+      if (node.omistussuhde === 'oma') {
+        scope.taustanVari = tinycolor.mix(scope.taustanVari, '#ddddff', 12).toHexString();
       }
 
       scope.poistaTekstikappale = function(osio, node) {
@@ -208,7 +217,10 @@ ylopsApp
   $scope.lisaaTekstikappale = function() {
       OpetussuunnitelmanTekstit.save({
         opsId: $stateParams.id
-      }, {}, function(res) {
+      }, {
+        nimi: { fi: 'Uusi tekstikappale' },
+        lapset: []
+      }, function(res) {
         Notifikaatiot.onnistui('tallennettu-ok');
         $scope.model.tekstit.lapset.push(res);
       }, Notifikaatiot.serverCb);

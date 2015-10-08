@@ -53,7 +53,7 @@ ylopsApp
 })
 .run(function($templateCache) {
     $templateCache.put('pohjaSisaltoNodeEditingTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
             '    <span class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    <span class="pull-right">' +
@@ -62,7 +62,7 @@ ylopsApp
             '</div>'
             );
     $templateCache.put('pohjaSisaltoNodeTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
             '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
@@ -71,7 +71,10 @@ ylopsApp
             '       <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    </a>' +
             '    <span class="pull-right">' +
-            '        <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
+            '        <span class="muokattu-aika">' +
+            '             <span kaanna="\'muokattu-viimeksi\'"></span>:' +
+            '             <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
+            '        </span>' +
             '    </span>' +
             '</div>'
             );
