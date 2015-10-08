@@ -190,7 +190,7 @@ ylopsApp
         case 0: scope.taustanVari = '#f2f2f2'; break;
         case 1: scope.taustanVari = '#fafafa'; break;
         default:
-          scope.taustanVari = '#fff'
+          scope.taustanVari = '#fff';
       }
 
       if (node.omistussuhde === 'oma') {
