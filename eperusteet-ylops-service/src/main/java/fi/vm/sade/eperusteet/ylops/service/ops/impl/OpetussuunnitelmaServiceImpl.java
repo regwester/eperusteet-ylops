@@ -191,6 +191,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return dto;
     }
 
+    private void fetchLapsiOpetussuunnitelmat(Long id, Set<Opetussuunnitelma> opsit) {
+        opsit.addAll(repository.findAllByPohjaId(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Set<Opetussuunnitelma> result = new HashSet<>();
+        fetchLapsiOpetussuunnitelmat(id, result);
+        return mapper.mapAsList(result, OpetussuunnitelmaInfoDto.class);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public OpetussuunnitelmaDto getOpetussuunnitelmaKaikki(Long id) {

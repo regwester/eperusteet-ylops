@@ -73,6 +73,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
     void removeOpetussuunnitelma(@P("opsId") Long id);
 
+    @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
+    List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(Long id);
+
     @PreAuthorize("hasPermission(#pohjaId, 'opetussuunnitelma', 'MUOKKAUS')")
     void syncPohja(Long pohjaId);
 
