@@ -19,8 +19,13 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kommentti;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.KommenttiDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.KommenttiRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.Permission;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +34,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @author mikkom
@@ -45,6 +52,9 @@ public class KommenttiServiceImpl implements KommenttiService {
 
     @Autowired
     private DtoMapper mapper;
+
+    @Autowired
+    private PermissionManager permissionManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -105,6 +115,17 @@ public class KommenttiServiceImpl implements KommenttiService {
         }
     }
 
+    private void assertRights(Kommentti kommentti, Permission p) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        KayttajanTietoDto kirjautunut = kayttajat.haeKirjautaunutKayttaja();
+        if (kirjautunut.getOidHenkilo().equals(kommentti.getMuokkaaja())) {
+            return;
+        }
+        if (!permissionManager.hasPermission(authentication, kommentti.getOpetussuunnitelmaId(), TargetType.OPETUSSUUNNITELMA, p)) {
+            throw new BusinessRuleViolationException("Ei oikeutta");
+        }
+    }
+
     @Override
     public KommenttiDto add(@P("k") KommenttiDto kommenttiDto) {
         Kommentti kommentti = mapper.map(kommenttiDto, Kommentti.class);
@@ -122,7 +143,7 @@ public class KommenttiServiceImpl implements KommenttiService {
     public KommenttiDto update(Long kommenttiId, KommenttiDto kommenttiDto) {
         Kommentti kommentti = repository.findOne(kommenttiId);
         assertExists(kommentti, "Päivitettävää kommenttia ei ole olemassa");
-        // TODO: Security- ja permission-tarkistukset
+        assertRights(kommentti, Permission.LUKU);
         kommentti.setSisalto(clip(kommenttiDto.getSisalto()));
         return mapper.map(repository.save(kommentti), KommenttiDto.class);
     }
@@ -131,13 +152,16 @@ public class KommenttiServiceImpl implements KommenttiService {
     public void delete(Long kommenttiId) {
         Kommentti kommentti = repository.findOne(kommenttiId);
         assertExists(kommentti, "Poistettavaa kommenttia ei ole olemassa");
-        // TODO: Security- ja permission-tarkistukset
+        assertRights(kommentti, Permission.LUONTI);
         kommentti.setSisalto(null);
         kommentti.setPoistettu(true);
     }
 
     @Override
     public void deleteReally(Long kommenttiId) {
+        Kommentti kommentti = repository.findOne(kommenttiId);
+        assertExists(kommentti, "Poistettavaa kommenttia ei ole olemassa");
+        assertRights(kommentti, Permission.HALLINTA);
         repository.delete(kommenttiId);
     }
 

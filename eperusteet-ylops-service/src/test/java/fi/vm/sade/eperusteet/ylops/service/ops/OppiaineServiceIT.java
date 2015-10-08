@@ -112,7 +112,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testCRUD() {
-        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(opsId);
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
 
         VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
         vlk.setNimi(Optional.of(lt("ykköskakkoset")));

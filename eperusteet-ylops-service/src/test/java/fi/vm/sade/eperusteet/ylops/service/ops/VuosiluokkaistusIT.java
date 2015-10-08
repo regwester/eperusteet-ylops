@@ -117,7 +117,7 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
 
     @Test
     public void testVuosiluokkaistus() {
-        OpetussuunnitelmaDto opsDto = opsit.getOpetussuunnitelma(opsId);
+        OpetussuunnitelmaDto opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
         Peruste peruste = opsit.getPeruste(opsId);
 
         opsDto.getOppiaineet().stream()
@@ -135,7 +135,7 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
                 });
             });
 
-        opsDto = opsit.getOpetussuunnitelma(opsId);
+        opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
         opsDto.getOppiaineet().stream()
             .flatMap(o -> Stream.of(o.getOppiaine()))
             .forEach(oa -> {

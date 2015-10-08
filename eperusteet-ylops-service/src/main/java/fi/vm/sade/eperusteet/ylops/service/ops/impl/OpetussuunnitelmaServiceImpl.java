@@ -43,6 +43,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -89,6 +90,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -97,6 +100,8 @@ import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 @Service
 @Transactional
 public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
+
+    static private final Logger logger = LoggerFactory.getLogger(OpetussuunnitelmaServiceImpl.class);
 
     @Autowired
     private DtoMapper mapper;
@@ -175,7 +180,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public OpetussuunnitelmaDto getOpetussuunnitelma(Long id) {
+    public OpetussuunnitelmaKevytDto getOpetussuunnitelma(Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
+        logger.info("Haetaan kuntien nimet opetussuunnitelmalle:" + id);
+        fetchKuntaNimet(dto);
+        logger.info("Haetaan organisaatioiden nimet opetussuunnitelmalle:" + id);
+        fetchOrganisaatioNimet(dto);
+        return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OpetussuunnitelmaDto getOpetussuunnitelmaKaikki(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaDto dto = mapper.map(ops, OpetussuunnitelmaDto.class);

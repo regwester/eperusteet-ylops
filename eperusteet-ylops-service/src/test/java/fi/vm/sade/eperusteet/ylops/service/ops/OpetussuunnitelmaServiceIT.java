@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -104,7 +105,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         Long id = opsit.get(0).getId();
         assertNotNull(id);
-        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        OpetussuunnitelmaKevytDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertNotNull(ops);
         assertEquals(id, ops.getId());
         assertEquals(EperusteetServiceMock.DIAARINUMERO, ops.getPerusteenDiaarinumero());
@@ -116,7 +117,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(1, opsit.size());
 
         Long id = opsit.get(0).getId();
-        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
         Tila vanhaTila = ops.getTila();
         String kuvaus = uniikkiString();
         ops.setKuvaus(lt(kuvaus));
@@ -125,7 +126,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setPaatospaivamaara(pvm);
         opetussuunnitelmaService.updateOpetussuunnitelma(ops);
 
-        ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
         assertEquals(kuvaus, ops.getKuvaus().get(Kieli.FI));
         assertEquals(vanhaTila, ops.getTila());
         assertEquals(pvm, ops.getPaatospaivamaara());
@@ -138,7 +139,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         Long id = opsit.get(0).getId();
         {
-            OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+            OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
             assertEquals(Tila.VALMIS, ops.getTila());
 
             ops = opetussuunnitelmaService.updateTila(id, Tila.LUONNOS);
@@ -161,10 +162,10 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);
         assertEquals(2, opsit.size());
 
-        luotu = opetussuunnitelmaService.getOpetussuunnitelma(luotu.getId());
+        luotu = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(luotu.getId());
         assertEquals(Tila.VALMIS, luotu.getTila());
 
-        luotu = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        luotu = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
         assertEquals(Tila.POISTETTU, luotu.getTila());
     }
 
@@ -174,7 +175,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(1, opsit.size());
 
         Long id = opsit.get(0).getId();
-        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
         assertEquals(Tila.LUONNOS, ops.getTila());
 
         // Opsin voi palauttaa valmiista luonnokseksi, muuten normaali tilan eteneminen

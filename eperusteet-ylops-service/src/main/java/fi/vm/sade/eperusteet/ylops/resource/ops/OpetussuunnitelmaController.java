@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -72,7 +73,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaDto> get(@PathVariable("id") final Long id) {
+    public ResponseEntity<OpetussuunnitelmaKevytDto> get(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelma(id), HttpStatus.OK);
     }
 

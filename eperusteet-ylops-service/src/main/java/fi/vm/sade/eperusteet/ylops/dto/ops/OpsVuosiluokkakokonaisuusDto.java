@@ -25,7 +25,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OpsVuosiluokkakokonaisuusDto {
-
     private boolean oma;
     private VuosiluokkakokonaisuusDto vuosiluokkakokonaisuus;
 }

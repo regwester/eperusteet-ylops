@@ -32,6 +32,7 @@ public abstract class OppiaineBaseDto {
     private UUID tunniste;
     private Tila tila;
     private OppiaineTyyppi tyyppi;
+    private Long jnro;
     private Integer laajuus;
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;
