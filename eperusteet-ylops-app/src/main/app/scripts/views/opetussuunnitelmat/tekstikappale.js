@@ -180,7 +180,6 @@ ylopsApp
 
     var successCb = function(res) {
       $scope.model = res;
-      console.log(res);
       Notifikaatiot.onnistui('tallennettu-ok');
       if ($stateParams.tekstikappaleId === 'uusi') {
         $state.go($state.current.name, {tekstikappaleId: res.id}, {reload: true});
@@ -251,7 +250,7 @@ ylopsApp
     Editointikontrollit.registerCallback(callbacks);
 
     $scope.setValmis = function (value) {
-      $scope.model.valmis = value;
+      $scope.model.tekstiKappale.valmis = value;
       savingValmis = true;
       if (!$scope.editMode) {
         Lukko.lock(commonParams, function () {

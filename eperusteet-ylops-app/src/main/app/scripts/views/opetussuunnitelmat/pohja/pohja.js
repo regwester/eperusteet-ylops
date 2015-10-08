@@ -71,7 +71,7 @@ ylopsApp
             '       <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    </a>' +
             '    <span class="pull-right">' +
-            '        <span valmius-ikoni="node"></span>' +
+            '        <span valmius-ikoni="node.tekstiKappale"></span>' +
             '        <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
             '    </span>' +
             '</div>'

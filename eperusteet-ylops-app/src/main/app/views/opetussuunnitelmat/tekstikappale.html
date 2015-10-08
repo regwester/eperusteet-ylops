@@ -49,17 +49,24 @@
     <button ng-if="model.omistussuhde === 'lainattu'" ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'kopioi-muokattavaksi'" icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   </div>
 
-  <div class="teksti-valmis" ng-if="isEditable()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }">
+  <div ng-show="editMode" class="teksti-valmis" ng-if="isEditable()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }">
     <div class="btn-group" dropdown>
       <a class="btn-valmis" dropdown-toggle>
-        <span valmius-ikoni="model"></span><span ng-bind="(model.valmis ? 'valmis' : 'luonnos') | kaanna"></span>&nbsp;<span class="caret"></span>
+        <span valmius-ikoni="model.tekstiKappale"></span>
+        <span ng-bind="(model.tekstiKappale.valmis ? 'valmis' : 'luonnos') | kaanna"></span>&nbsp;<span class="caret"></span>
       </a>
       <ul class="dropdown-menu dropdown-menu-right" role="menu">
-        <li ng-class="{active: !model.valmis}">
-          <a ng-click="setValmis(false)"><span valmius-ikoni="valmisOptions[0]"></span><span kaanna="'luonnos'"></span></a>
+        <li ng-class="{active: !model.tekstiKappale.valmis}">
+          <a ng-click="model.tekstiKappale.valmis = false">
+            <span valmius-ikoni="valmisOptions[0]"></span>
+            <span kaanna="'luonnos'"></span>
+          </a>
         </li>
-        <li ng-class="{active: model.valmis}">
-          <a ng-click="setValmis(true)"><span valmius-ikoni="valmisOptions[1]"></span><span kaanna="'valmis'"></span></a>
+        <li ng-class="{active: model.tekstiKappale.valmis}">
+          <a ng-click="model.tekstiKappale.valmis = true">
+            <span valmius-ikoni="valmisOptions[1]"></span>
+            <span kaanna="'valmis'"></span>
+          </a>
         </li>
       </ul>
     </div>

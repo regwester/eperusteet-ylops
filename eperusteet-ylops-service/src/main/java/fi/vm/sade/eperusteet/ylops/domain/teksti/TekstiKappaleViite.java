@@ -67,10 +67,6 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     private Long id;
 
-    /**
-     * Kertoo että onko viitattava tekstikappale merkitty pakolliseksi
-     * ts. sitä ei voi poistaa eikä sen otsikkoa muokata.
-     */
     @Getter
     @Setter
     private boolean pakollinen;

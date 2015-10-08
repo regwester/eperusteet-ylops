@@ -138,7 +138,7 @@ ylopsApp
         id: lapsi.id,
         url: $state.href('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: lapsi.id}),
         depth: depth,
-        valmis: lapsi.valmis
+        valmis: lapsi.tekstiKappale.valmis
       });
     });
     return arr;

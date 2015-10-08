@@ -66,6 +66,18 @@ public class TekstiKappale extends AbstractAuditedEntity
     @Setter
     private LokalisoituTeksti nimi;
 
+    @Getter
+    @Setter
+    private Boolean valmis;
+
+    /**
+     * Kertoo että onko viitattava tekstikappale merkitty pakolliseksi
+     * ts. sitä ei voi poistaa eikä sen otsikkoa muokata.
+     */
+    @Getter
+    @Setter
+    private Boolean pakollinen;
+
     @ValidHtml
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
