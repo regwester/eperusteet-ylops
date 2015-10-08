@@ -246,16 +246,13 @@ ylopsApp
 .controller('OpsAlihierarkiaModalController', function($scope, $modalInstance, ops, aliOpsit, OpetussuunnitelmaCRUD) {
   $scope.ops = ops;
   $scope.aliOpsit = aliOpsit;
-  console.log(ops);
 
   $scope.paivitaRakenne = function() {
     OpetussuunnitelmaCRUD.opetussuunnitelmatSync({
       id: ops.id
     }).$promise.then(function(res) {
-      console.log(res);
     })
     .catch(function(err) {
-      console.log(err);
     });
   };
 

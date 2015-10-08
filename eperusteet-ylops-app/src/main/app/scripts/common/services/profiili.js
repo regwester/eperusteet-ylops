@@ -28,7 +28,6 @@ ylopsApp.service('Profiili', function($http, $q) {
       $http
         .get('/cas/me')
         .success(function(res) {
-          console.log(res);
           if (res.oid) {
             info.oid = res.oid;
             info.lang = res.lang;
