@@ -127,7 +127,8 @@ ylopsApp
             );
 })
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit, $templateCache, $timeout,
-      Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q, Editointikontrollit) {
+      Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q, Editointikontrollit,
+      $modal, OpetussuunnitelmaCRUD) {
   $scope.model = opsService.get($stateParams.id) || opsModel;
   var commonParams = {
     opsId: $stateParams.id,
@@ -214,14 +215,50 @@ ylopsApp
     return Lukko.unlockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
   }
 
-  $scope.lisaaTekstikappale = function() {
-      OpetussuunnitelmanTekstit.save({
-        opsId: $stateParams.id
-      }, {
-        lapset: []
-      }, function(res) {
-        Notifikaatiot.onnistui('tallennettu-ok');
-        $scope.model.tekstit.lapset.push(res);
-      }, Notifikaatiot.serverCb);
+  $scope.muokkaaAlihierarkiaa = function() {
+    $modal.open({
+      templateUrl: 'views/opetussuunnitelmat/modals/alihierarkia.html',
+      controller: 'OpsAlihierarkiaModalController',
+      size: 'lg',
+      resolve: {
+        ops: _.constant($q.when(_.cloneDeep($scope.model))),
+        aliOpsit: function() {
+          return OpetussuunnitelmaCRUD.opetussuunnitelmat({
+            opsId: $scope.model.id
+          }).$promise;
+        }
+      }
+    })
+    .result.then(_.noop);
   };
+
+  $scope.lisaaTekstikappale = function() {
+    OpetussuunnitelmanTekstit.save({
+      opsId: $stateParams.id
+    }, {
+      lapset: []
+    }, function(res) {
+      Notifikaatiot.onnistui('tallennettu-ok');
+      $scope.model.tekstit.lapset.push(res);
+    }, Notifikaatiot.serverCb);
+  };
+})
+.controller('OpsAlihierarkiaModalController', function($scope, $modalInstance, ops, aliOpsit, OpetussuunnitelmaCRUD) {
+  $scope.ops = ops;
+  $scope.aliOpsit = aliOpsit;
+  console.log(ops);
+
+  $scope.paivitaRakenne = function() {
+    OpetussuunnitelmaCRUD.opetussuunnitelmatSync({
+      id: ops.id
+    }).$promise.then(function(res) {
+      console.log(res);
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+  };
+
+  $scope.ok = $modalInstance.close;
+  $scope.peruuta = $modalInstance.dismiss;
 });

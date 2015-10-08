@@ -4,6 +4,7 @@
       <h2>
         <span kaanna="'tekstikappaleet'"></span>
         <span class="pull-right">
+          <button ng-hide="$$isRakenneMuokkaus" class="btn btn-default" icon-role="list-alt" kaanna="'muokkaa-hierarkiaa'" ng-click="muokkaaAlihierarkiaa()"></button>
           <button ng-hide="$$isRakenneMuokkaus" icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
           <button ng-hide="$$isRakenneMuokkaus" icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()" kaanna="'muokkaa-rakennetta'"></button>
         </span>

@@ -491,6 +491,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Transactional(readOnly = false)
+    public void updateLapsiOpetussuunnitelmat(Long opsId) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
+        Set<Opetussuunnitelma> aliopsit = repository.findAllByPohjaId(opsId);
+//        for (Opetussuunnitelma aliops : aliopsit) {
+//            Long id = aliops.getId();
+//        }
+    }
+
+    @Override
     public OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");

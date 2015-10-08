@@ -340,6 +340,13 @@
   "epimage-plugin-tallennettu": "Kuva tallennettu.",
   "paivitys-onnistui": "Päivitys onnistui",
 
+  "muokkaa-hierarkiaa": "Muokkaa hierarkiaa",
+
+  "ops-alihierarkia-muokkaus": "Opetussuunnitelman hierarkian muokkaus",
+  "opsilla-ei-aliopseja": "Opetussuunnitelman pohjalta ei ole tehty yhtään opetussuunnitelmaa.",
+  "paivita-rakenne": "Päivitä rakenne",
+  "paivita-rakenne-ohje": "Päivittää opetussuunnitelman rakenteen kaikkiin sen pohjalta tehtyihin opetussuunnitelmiin.",
+
   "nayta-opsina": "Näytä OPSina",
   "nayta-pohjana": "Näytä pohjana",
   "synkronoi-perusteeseen": "Synkronoi opetussuunnitelmiin",

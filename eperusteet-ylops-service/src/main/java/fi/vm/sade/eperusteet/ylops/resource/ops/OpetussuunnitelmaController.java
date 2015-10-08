@@ -137,6 +137,15 @@ public class OpetussuunnitelmaController {
                 HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.POST)
+//    @ResponseBody
+    @Timed
+    public ResponseEntity updateLapsiOpetussuunnitelmat(
+            @PathVariable("id") final Long id) {
+        opetussuunnitelmaService.updateLapsiOpetussuunnitelmat(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}/tila/{tila}", method = RequestMethod.POST)
     @ResponseBody
     @Timed

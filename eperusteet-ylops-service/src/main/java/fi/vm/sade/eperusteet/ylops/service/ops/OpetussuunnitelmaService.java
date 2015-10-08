@@ -76,6 +76,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
     List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(Long id);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateLapsiOpetussuunnitelmat(Long opsId);
+
     @PreAuthorize("hasPermission(#pohjaId, 'opetussuunnitelma', 'MUOKKAUS')")
     void syncPohja(Long pohjaId);
 

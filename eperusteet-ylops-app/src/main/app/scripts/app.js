@@ -86,11 +86,15 @@ ylopsApp
   })
   .config(function ($tooltipProvider) {
     $tooltipProvider.setTriggers({
-        'mouseenter': 'mouseleave',
-        'click': 'click',
-        'focus': 'blur',
-        'never': 'mouseleave',
-        'show': 'hide'
+      mouseenter: 'mouseleave',
+      click: 'click',
+      focus: 'blur',
+      never: 'mouseleave',
+      show: 'hide'
+    });
+    $tooltipProvider.options({
+      popupDelay: 500,
+      placement: 'bottom'
     });
   })
   .run(function($templateCache) {
