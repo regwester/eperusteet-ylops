@@ -16,7 +16,7 @@
 
 'use strict';
 
-/* global _, tinycolor */
+/* global _ */
 
 ylopsApp
 .service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
@@ -194,9 +194,9 @@ ylopsApp
           scope.taustanVari = '#fff';
       }
 
-      if (node.omistussuhde === 'oma') {
-        scope.taustanVari = tinycolor.mix(scope.taustanVari, '#ddddff', 12).toHexString();
-      }
+      // if (node.omistussuhde === 'oma') {
+      //   scope.taustanVari = tinycolor.mix(scope.taustanVari, '#ddddff', 12).toHexString();
+      // }
 
       scope.poistaTekstikappale = function(osio, node) {
         TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
