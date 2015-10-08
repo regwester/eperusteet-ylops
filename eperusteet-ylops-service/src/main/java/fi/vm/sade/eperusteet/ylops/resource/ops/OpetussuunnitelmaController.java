@@ -95,7 +95,6 @@ public class OpetussuunnitelmaController {
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
-
         if (opetussuunnitelmaDto.getTyyppi() == null) {
             opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         }

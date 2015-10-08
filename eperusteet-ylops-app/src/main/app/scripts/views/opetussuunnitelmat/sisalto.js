@@ -218,7 +218,6 @@ ylopsApp
       OpetussuunnitelmanTekstit.save({
         opsId: $stateParams.id
       }, {
-        nimi: { fi: 'Uusi tekstikappale' },
         lapset: []
       }, function(res) {
         Notifikaatiot.onnistui('tallennettu-ok');
