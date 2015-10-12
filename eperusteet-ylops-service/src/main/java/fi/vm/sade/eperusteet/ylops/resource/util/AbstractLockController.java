@@ -44,13 +44,15 @@ public abstract class AbstractLockController<T> {
     }
 
     @RequestMapping(method = POST)
-    public ResponseEntity<LukkoDto> lock(T ctx, @RequestHeader(value = "If-Match", required = false) String eTag) {
+    public ResponseEntity<LukkoDto> lock(T ctx,
+                                         @RequestHeader(value = "If-Match", required = false) String eTag) {
         LukkoDto lock = service().lock(ctx, Etags.revisionOf(eTag));
         if (lock == null) {
             return new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
         } else {
             return new ResponseEntity<>(lock, Etags.eTagHeader(lock.getRevisio()), HttpStatus.CREATED);
         }
+
     }
 
     @RequestMapping(method = DELETE)
