@@ -99,8 +99,8 @@ ylopsApp
 })
 .run(function($templateCache) {
     $templateCache.put('sisaltoNodeEditingTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
-            '    <span class="treehandle" icon-role="drag"></span>' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
+            '    <span ng-show="node.$$depth !== 0" class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    <span class="pull-right">' +
             '        <a ng-show="node.omistussuhde === \'oma\'" icon-role="remove" ng-click="poistaTekstikappale(node.$$nodeParent, node)"></a>' +
@@ -108,7 +108,7 @@ ylopsApp
             '</div>'
             );
     $templateCache.put('sisaltoNodeTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
             '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
@@ -149,9 +149,7 @@ ylopsApp
       $rootScope.$broadcast('genericTree:refresh');
     },
     cancel: function() {
-      Lukko.unlock(commonParams);
-      $scope.$$isRakenneMuokkaus = false;
-      $rootScope.$broadcast('genericTree:refresh');
+      Lukko.unlock(commonParams, $state.reload);
     }
   });
 
@@ -164,7 +162,11 @@ ylopsApp
   };
 
   $scope.sortableConfig = {
-    placeholder: 'placeholder'
+    placeholder: 'placeholder',
+    // start: function(e, ui) {
+    //   console.log(e);
+    //   ui.placeholder.html('voi morjens');
+    // }
   };
 
   $scope.tekstitProvider = $q.when({
@@ -186,6 +188,15 @@ ylopsApp
     useUiSortable: function() {
       return !$scope.$$isRakenneMuokkaus;
     },
+    acceptDrop: function(node, target) {
+      return target !== $scope.model.tekstit;
+    },
+    sortableClass: function(node) {
+      console.log(node);
+      if (node !== $scope.model.tekstit) {
+        return 'is-draggable-into';
+      }
+    },
     extension: function(node, scope) {
       switch (node.$$depth) {
         case 0: scope.taustanVari = '#f2f2f2'; break;
@@ -193,10 +204,6 @@ ylopsApp
         default:
           scope.taustanVari = '#fff';
       }
-
-      // if (node.omistussuhde === 'oma') {
-      //   scope.taustanVari = tinycolor.mix(scope.taustanVari, '#ddddff', 12).toHexString();
-      // }
 
       scope.poistaTekstikappale = function(osio, node) {
         TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
@@ -250,9 +257,11 @@ ylopsApp
   $scope.paivitaRakenne = function() {
     OpetussuunnitelmaCRUD.opetussuunnitelmatSync({
       id: ops.id
-    }).$promise.then(function() {
+    }).$promise.then(function(res) {
+      console.log(res);
     })
-    .catch(function() {
+    .catch(function(err) {
+      console.log(err);
     });
   };
 
