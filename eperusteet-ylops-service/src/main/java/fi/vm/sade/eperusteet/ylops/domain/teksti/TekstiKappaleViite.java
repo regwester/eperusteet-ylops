@@ -20,8 +20,11 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -108,6 +111,31 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
 
     public TekstiKappaleViite(Omistussuhde omistussuhde) {
         this.omistussuhde = omistussuhde;
+    }
+
+    // Kopioi viitehierarkian ja siirtää irroitetut paikoilleen
+    // UUID parentin tunniste
+    public TekstiKappaleViite kopioiHierarkia(Map<UUID, TekstiKappaleViite> irroitetut) {
+        TekstiKappaleViite result = new TekstiKappaleViite();
+        result.setTekstiKappale(this.getTekstiKappale());
+        result.setOmistussuhde(this.getOmistussuhde());
+
+        if (lapset != null) {
+            List<TekstiKappaleViite> ilapset = new ArrayList<>();
+            for (TekstiKappaleViite lapsi : lapset) {
+                TekstiKappaleViite uusiLapsi = lapsi.kopioiHierarkia(irroitetut);
+                uusiLapsi.setVanhempi(result);
+                ilapset.add(uusiLapsi);
+            }
+            for (Map.Entry<UUID, TekstiKappaleViite> lapsi : irroitetut.entrySet()) {
+                if (this.getTekstiKappale().getTunniste() == lapsi.getKey()) {
+                    ilapset.add(lapsi.getValue());
+                    irroitetut.remove(lapsi.getKey());
+                }
+            }
+            result.setLapset(ilapset);
+        }
+        return result;
     }
 
     public TekstiKappaleViite getRoot() {

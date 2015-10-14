@@ -490,15 +490,44 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
+    private void flattenTekstikappaleviitteet(Map<UUID, TekstiKappaleViite> viitteet, TekstiKappaleViite tov) {
+        if (tov.getLapset() == null) {
+            return;
+        }
+        for (TekstiKappaleViite lapsi : tov.getLapset()) {
+            // Tätä tarkistusta ei välttämättä tarvitse
+            if (viitteet.get(lapsi.getTekstiKappale().getTunniste()) != null) {
+                continue;
+            }
+            viitteet.put(lapsi.getTekstiKappale().getTunniste(), lapsi);
+            flattenTekstikappaleviitteet(viitteet, lapsi);
+        }
+    }
+
     @Override
     @Transactional(readOnly = false)
     public void updateLapsiOpetussuunnitelmat(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
         Set<Opetussuunnitelma> aliopsit = repository.findAllByPohjaId(opsId);
-//        for (Opetussuunnitelma aliops : aliopsit) {
-//            Long id = aliops.getId();
-//        }
+
+        for (Opetussuunnitelma aliops : aliopsit) {
+            Map<UUID, TekstiKappaleViite> aliopsTekstit = new HashMap<>();
+            flattenTekstikappaleviitteet(aliopsTekstit, aliops.getTekstit());
+            aliops.getTekstit().getLapset().clear();
+            aliopsTekstit.values().stream()
+                    .forEach((teksti) -> {
+                        teksti.setVanhempi(aliops.getTekstit());
+                        teksti.getLapset().clear();
+                    });
+//            aliops.getTekstit().getLapset().addAll(aliopsTekstit.values());
+//            for (TekstiKappaleViite lapsi : ops.getTekstit().getLapset()) {
+//                TekstiKappaleViite uusiSolmu = viiteRepository.save(lapsi.kopioiHierarkia(aliopsTekstit));
+//                uusiSolmu.setVanhempi(aliops.getTekstit());
+//                aliops.getTekstit().getLapset().add(uusiSolmu);
+//            }
+//            aliops.getTekstit().getLapset().addAll(aliopsTekstit.values());
+        }
     }
 
     @Override
