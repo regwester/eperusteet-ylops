@@ -121,6 +121,10 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public TekstiKappaleViiteDto updateTekstiKappaleViite(
         @P("opsId") Long opsId, Long viiteId, TekstiKappaleViiteDto uusi) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
+        // Nopea ratkaisu sisällön häviämiseen, korjaantuu oikein uuden näkymän avulla
+        if (uusi.getTekstiKappale().getTeksti() == null) {
+            uusi.getTekstiKappale().setTeksti(mapper.map(viite.getTekstiKappale(), TekstiKappaleDto.class).getTeksti());
+        }
         repository.lock(viite.getRoot());
         lockMgr.lock(viite.getTekstiKappale().getId());
         updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), false /* TODO: pakota lukitus */);
