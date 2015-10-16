@@ -81,7 +81,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
      */
     @Getter
     @Setter
-    private Integer laajuus;
+    private String laajuus;
 
     @Getter
     @Setter
