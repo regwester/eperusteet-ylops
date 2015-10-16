@@ -33,7 +33,7 @@ public abstract class OppiaineBaseDto {
     private Tila tila;
     private OppiaineTyyppi tyyppi;
     private Long jnro;
-    private Integer laajuus;
+    private String laajuus;
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;
     private Boolean abstrakti;
