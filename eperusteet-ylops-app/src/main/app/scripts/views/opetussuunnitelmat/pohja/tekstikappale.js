@@ -26,7 +26,7 @@ ylopsApp
   MurupolkuData.set('tekstiNimi', $scope.model.tekstiKappale.nimi);
   $scope.ohje = {};
   $scope.perusteteksti = {};
-  $scope.options = {tekstiCollapsed: true};
+  //$scope.options = {tekstiCollapsed: true};  this was causing bug
   var TYYPIT = ['ohje', 'perusteteksti'];
   var originals = {
     teksti: _.cloneDeep($scope.model),
