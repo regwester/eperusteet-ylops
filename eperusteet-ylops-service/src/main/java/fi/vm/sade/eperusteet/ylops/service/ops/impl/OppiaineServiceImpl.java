@@ -415,8 +415,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkaDto dto) {
-        Oppiaineenvuosiluokka oppiaineenVuosiluokka = assertExists(findVuosiluokka(opsId, id, dto.getId()), "Vuosiluokkaa ei löydy");
+    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(@P("opsId") Long opsId, Long oppiaineId, OppiaineenVuosiluokkaDto dto) {
+        if (!oppiaineet.isOma(opsId, oppiaineId)) {
+            throw new BusinessRuleViolationException("vain-omaa-oppiainetta-saa-muokata");
+        }
+
+        Oppiaineenvuosiluokka oppiaineenVuosiluokka = assertExists(findVuosiluokka(opsId, oppiaineId, dto.getId()), "Vuosiluokkaa ei löydy");
 
         // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden ja tavoitteiden kuvaukset,
         // noin muutoin sisältöön ei pidä kajoaman

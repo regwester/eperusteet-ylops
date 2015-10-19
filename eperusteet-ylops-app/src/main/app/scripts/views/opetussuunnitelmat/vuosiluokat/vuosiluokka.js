@@ -152,7 +152,9 @@ ylopsApp
 
   $scope.options = {
     editing: false,
-    isEditable: OpsService.isEditable
+    isEditable: function() {
+      return $scope.oppiaine.oma && OpsService.isEditable();
+    }
   };
 
   $scope.callbacks = {
@@ -250,7 +252,9 @@ ylopsApp
 
   $scope.options = {
     editing: false,
-    isEditable: OpsService.isEditable
+    isEditable: function() {
+      return $scope.oppiaine.oma && OpsService.isEditable();
+    }
   };
 
   $scope.callbacks = {
