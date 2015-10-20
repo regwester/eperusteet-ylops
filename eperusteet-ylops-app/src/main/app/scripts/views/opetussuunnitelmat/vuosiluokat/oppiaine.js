@@ -36,6 +36,15 @@ ylopsApp
     }
   }
 
+  $scope.hasTavoitteet = function() {
+    var vlkAll = _.cloneDeep($scope.perusteOppiaine.vuosiluokkakokonaisuudet);
+    return _.filter(vlkAll, function(vlk) {
+      return ((_.indexOf(vlk.vuosiluokat, 'vuosiluokka_1') > 0 ||
+      _.indexOf(vlk.vuosiluokat, 'vuosiluokka_2') > 0) &&
+        vlk.tavoitteet.length)
+      }).length;
+  };
+
   $scope.$on('oppiainevlk:updated', function (event, value) {
     $scope.oppiaineenVlk = value;
     $scope.oppiaine = OppiaineService.getOppiaine();

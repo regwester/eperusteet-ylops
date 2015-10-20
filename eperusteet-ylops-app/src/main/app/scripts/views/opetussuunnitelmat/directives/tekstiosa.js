@@ -32,7 +32,7 @@ ylopsApp
     link: function (scope, element, attrs) {
       scope.editable = !!attrs.muokattava;
       scope.options = {
-        collapsed: scope.editable
+        collapsed: true //scope.editable --> this was causing only a few non-editable, random text fields to be uncollapsed?
       };
       scope.focusAndScroll = function () {
         $timeout(function () {

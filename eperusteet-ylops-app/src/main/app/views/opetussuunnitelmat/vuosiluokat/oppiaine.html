@@ -22,7 +22,7 @@
 
 <div class="tekstiosa-wrapper" ng-show="!oppiaine.koosteinen && oppiaineenVlk">
   <h3>
-    <div class="action-buttons-inline" ng-if="isEditable()">
+    <div class="action-buttons-inline" ng-if="isEditable() && hasTavoitteet()">
       <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="lukkotiedot.lukittu" class="btn btn-default"
               icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"
               oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
