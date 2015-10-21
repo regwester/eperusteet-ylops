@@ -17,8 +17,15 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineBaseController', function ($scope, perusteOppiaine, MurupolkuData, $stateParams,
-  $rootScope, OppiaineService, VuosiluokatService, Notifikaatiot) {
+.controller('OppiaineBaseController', function (
+    $scope,
+    perusteOppiaine,
+    MurupolkuData,
+    $stateParams,
+    $rootScope,
+    OppiaineService,
+    VuosiluokatService) {
+
     $scope.oppiaine = OppiaineService.getOppiaine();
     $scope.oppiaineenVlk = OppiaineService.getOpVlk();
 
