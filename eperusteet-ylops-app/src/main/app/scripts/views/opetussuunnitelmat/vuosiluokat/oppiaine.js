@@ -18,32 +18,48 @@
 
 ylopsApp
 .controller('OppiaineBaseController', function ($scope, perusteOppiaine, MurupolkuData, $stateParams,
-  $rootScope, OppiaineService) {
-  $scope.oppiaine = OppiaineService.getOppiaine();
-  $scope.oppiaineenVlk = OppiaineService.getOpVlk();
+  $rootScope, OppiaineService, VuosiluokatService, Notifikaatiot) {
+    $scope.oppiaine = OppiaineService.getOppiaine();
+    $scope.oppiaineenVlk = OppiaineService.getOpVlk();
 
-  if (perusteOppiaine) {
-    if (perusteOppiaine.eiPerustetta) {
-      $scope.eiPerustetta = true;
+    if (perusteOppiaine) {
+      if (perusteOppiaine.eiPerustetta) {
+        $scope.eiPerustetta = true;
+      }
+      if (perusteOppiaine.tunniste === $scope.oppiaine.tunniste) {
+        $scope.perusteOppiaine = perusteOppiaine;
+      }
+      else {
+        $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, function (om) {
+          return om.tunniste === $scope.oppiaine.tunniste;
+        });
+      }
     }
-    if (perusteOppiaine.tunniste === $scope.oppiaine.tunniste) {
-      $scope.perusteOppiaine = perusteOppiaine;
-    }
-    else {
-      $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, function(om) {
-        return om.tunniste === $scope.oppiaine.tunniste;
+
+
+    VuosiluokatService.getVuosiluokkakokonaisuus($stateParams.id, $stateParams.vlkId).$promise
+      .then(function(res) {
+        var vlkNimi = res.nimi.fi;
+        console.log(vlkNimi)
+        $scope.hasTavoitteet = hasTvt(vlkNimi);
       });
-    }
-  }
 
-  $scope.hasTavoitteet = function() {
-    var vlkAll = _.cloneDeep($scope.perusteOppiaine.vuosiluokkakokonaisuudet);
-    return _.filter(vlkAll, function(vlk) {
-      return ((_.indexOf(vlk.vuosiluokat, 'vuosiluokka_1') > 0 ||
-      _.indexOf(vlk.vuosiluokat, 'vuosiluokka_2') > 0) &&
-        vlk.tavoitteet.length)
+
+    var vlkListaMap = {
+     "VUOSILUOKAT 1-2": ['vuosiluokka_1', 'vuosiluokka_2'],
+     "VUOSILUOKAT 3-6": ['vuosiluokka_3', 'vuosiluokka_4', 'vuosiluokka_5', 'vuosiluokka_6'],
+     "VUOSILUOKAT 7-9": ['vuosiluokka_7', 'vuosiluokka_9']
+    };
+
+    function hasTvt(vlkNimi) {
+      var vlkAll = _.cloneDeep($scope.perusteOppiaine.vuosiluokkakokonaisuudet);
+       return _.filter(vlkAll, function (vlk) {
+        return _.reduce(vlkListaMap[vlkNimi], function (a, b) {
+          if ((vlk.vuosiluokat.indexOf(b) > 0) && vlk.tavoitteet.length) { a = true };
+          return a;
+        }, false);
       }).length;
-  };
+    };
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
     $scope.oppiaineenVlk = value;
@@ -53,6 +69,7 @@ ylopsApp
   $scope.$on('oppiaine:reload', function () {
     OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId);
   });
+
 })
 
 .service('TextUtils', function () {
