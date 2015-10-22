@@ -23,8 +23,7 @@ ylopsApp
     MurupolkuData,
     $stateParams,
     $rootScope,
-    OppiaineService,
-    VuosiluokatService) {
+    OppiaineService) {
 
     $scope.oppiaine = OppiaineService.getOppiaine();
     $scope.oppiaineenVlk = OppiaineService.getOpVlk();
