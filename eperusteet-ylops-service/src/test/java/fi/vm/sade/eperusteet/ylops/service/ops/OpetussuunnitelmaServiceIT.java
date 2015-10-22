@@ -105,7 +105,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         Long id = opsit.get(0).getId();
         assertNotNull(id);
-        OpetussuunnitelmaKevytDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
         assertNotNull(ops);
         assertEquals(id, ops.getId());
         assertEquals(EperusteetServiceMock.DIAARINUMERO, ops.getPerusteenDiaarinumero());

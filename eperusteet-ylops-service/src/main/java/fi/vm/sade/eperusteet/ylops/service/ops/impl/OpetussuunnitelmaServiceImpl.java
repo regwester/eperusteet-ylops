@@ -171,13 +171,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public OpetussuunnitelmaKevytDto getOpetussuunnitelma(Long id) {
+    public OpetussuunnitelmaDto getOpetussuunnitelma(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
-        logger.info("Haetaan kuntien nimet opetussuunnitelmalle:" + id);
+        OpetussuunnitelmaDto dto = mapper.map(ops, OpetussuunnitelmaDto.class);
         fetchKuntaNimet(dto);
-        logger.info("Haetaan organisaatioiden nimet opetussuunnitelmalle:" + id);
         fetchOrganisaatioNimet(dto);
         return dto;
     }
