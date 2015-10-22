@@ -43,32 +43,12 @@ ylopsApp
       }
     }
 
-    /**
-     * function hasTvt: Vuosiluokkaistamis painike poistu jos ei tavoitteet
-     */
-
-    VuosiluokatService.getVuosiluokkakokonaisuus($stateParams.id, $stateParams.vlkId).$promise
-      .then(function(res) {
-        var vlkNimi = res.nimi.fi;
-        console.log(vlkNimi);
-        $scope.hasTavoitteet = hasTvt(vlkNimi);
-      });
-
-    var vlkListaMap = {
-     "VUOSILUOKAT 1-2": ['vuosiluokka_1', 'vuosiluokka_2'],
-     "VUOSILUOKAT 3-6": ['vuosiluokka_3', 'vuosiluokka_4', 'vuosiluokka_5', 'vuosiluokka_6'],
-     "VUOSILUOKAT 7-9": ['vuosiluokka_7', 'vuosiluokka_9']
-    };
-
-    function hasTvt(vlkNimi) {
-      var vlkAll = _.cloneDeep($scope.perusteOppiaine.vuosiluokkakokonaisuudet);
-       return _.filter(vlkAll, function (vlk) {
-        return _.reduce(vlkListaMap[vlkNimi], function (a, b) {
-          if ((vlk.vuosiluokat.indexOf(b) > 0) && vlk.tavoitteet.length) { a = true }
-            return a;
-          }, false);
-       }).length;
-    }
+  $scope.isVuosiluokkaistettava = !_($scope.perusteOppiaine.vuosiluokkakokonaisuudet)
+    .filter(function(vlk) {
+      return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus &&
+          !_.isEmpty(vlk.tavoitteet);
+    })
+    .isEmpty();
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
     $scope.oppiaineenVlk = value;
