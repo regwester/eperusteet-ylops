@@ -29,7 +29,7 @@
     <span kaanna="'tavoitteet-ja-sisallot-vuosiluokittain'"></span>
   </h3>
 
-  <p class="empty-notice" ng-if="!vuosiluokat || vuosiluokat.length === 0">
+  <p class="empty-notice" ng-if="!vuosiluokat || vuosiluokat.length === 0 && isVuosiluokkaistettava">
     <span kaanna="'vuosiluokkaistamista-ei-viela-tehty'"></span>
     <span ng-if="oppiaine.oma" kaanna="'aloita-vuosiluokkaistaminen'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></span>
   </p>
