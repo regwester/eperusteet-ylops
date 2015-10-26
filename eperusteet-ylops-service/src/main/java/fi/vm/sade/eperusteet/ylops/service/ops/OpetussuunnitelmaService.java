@@ -50,7 +50,7 @@ public interface OpetussuunnitelmaService {
     List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka();
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long id);
+    OpetussuunnitelmaDto getOpetussuunnitelma(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaDto getOpetussuunnitelmaKaikki (@P("opsId") Long id);
