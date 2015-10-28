@@ -1,11 +1,8 @@
-<div ng-hide="luonnissa || editMode" class="navigaatio-takaisin plain">
-  <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" ui-sref-opts="{reload:true}" icon-role="chevron-left" kaanna="'takaisin-osioihin'"></a>
-</div>
-
 <div class="ops-edit-container">
   <h2 ng-hide="luonnissa">
     <div class="action-buttons-inline">
-      <button ng-if="isEditable()" ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }" icon-role="edit" ng-click="edit()"></button>
+      <button ng-if="isEditable()" ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'"
+              oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }" icon-role="edit" ng-click="edit()"></button>
     </div>
     <span kaanna="'opsn-tiedot'"></span>
   </h2>
@@ -133,7 +130,7 @@
       <div class="col-sm-4 formfield-data" ng-class="{viewmode: !(editMode || luonnissa)}">
         <div ng-if="!(editMode || luonnissa)" ng-bind="editableModel.koulutustyyppi"></div>
 
-        <ui-select ng-if="(editMode || luonnissa)" on-select="avataInputs($item)" ng-disabled="editMode" class="ui-select" ng-model="editableModel.koulutustyyppi">
+        <ui-select ng-if="(luonnissa)" on-select="avataInputs($item)" ng-disabled="editMode" class="ui-select" ng-model="editableModel.koulutustyyppi">
           <ui-select-choices repeat="koulutustyyppi in ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6']">
             <div ng-bind-html="koulutustyyppi | kaanna"></div>
           </ui-select-choices>
@@ -143,7 +140,7 @@
       </div>
     </div>
 
-    <div ng-show="koulutustyyppiOnValittu">
+    <div ng-show="!luonnissa || koulutustyyppiOnValittu">
 
       <div ng-if="luonnissa && editableModel.koulutustyyppi === 'koulutustyyppi_16'" class="row">
         <div class="col-sm-3 formfield-label">
