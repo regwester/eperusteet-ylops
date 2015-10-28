@@ -24,6 +24,7 @@ ylopsApp
   function mapSisalto(root) {
     return {
       id: root.id,
+      tekstiKappale: _.isObject(root.tekstiKappale) ? _.pick(root.tekstiKappale, 'id', 'tunniste') : null,
       lapset: _.map(root.lapset, mapSisalto)
     };
   }
@@ -197,12 +198,7 @@ ylopsApp
       }
     },
     extension: function(node, scope) {
-      switch (node.$$depth) {
-        case 0: scope.taustanVari = '#f2f2f2'; break;
-        case 1: scope.taustanVari = '#fafafa'; break;
-        default:
-          scope.taustanVari = '#fff';
-      }
+      scope.taustanVari = node.$$depth === 0 ? '#f2f2f2' : '#ffffff';
 
       scope.poistaTekstikappale = function(osio, node) {
         TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {

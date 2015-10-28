@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import java.util.UUID;
 
 /**
  * @author mikkom
@@ -138,6 +140,26 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Transactional(readOnly = false)
     public void reorderSubTree(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
         TekstiKappaleViite viite = findViite(opsId, rootViiteId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+
+        if (ops == null) {
+            throw new BusinessRuleViolationException("Opetussuunnitelmaa ei olemassa.");
+        }
+
+        Opetussuunnitelma pohja = ops.getPohja();
+        if (pohja != null) {
+            Set<UUID> pohjaTekstit = pohja.getTekstit().getLapset().stream()
+                    .map(x -> x.getTekstiKappale().getTunniste())
+                    .collect(Collectors.toSet());
+
+            // Pois päätason tekstit joita ei pohjassa ole määritelty
+            uusi.setLapset(uusi.getLapset().stream()
+                    .filter(x -> {
+                        return pohjaTekstit.contains(x.getTekstiKappale().getTunniste());
+                    })
+                    .collect(Collectors.toList()));
+        }
+
         repository.lock(viite.getRoot());
         Set<TekstiKappaleViite> refs = Collections.newSetFromMap(new IdentityHashMap<>());
         refs.add(viite);

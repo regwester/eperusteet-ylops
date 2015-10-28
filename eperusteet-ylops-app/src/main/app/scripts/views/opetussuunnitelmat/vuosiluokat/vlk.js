@@ -119,12 +119,9 @@ ylopsApp
     tolerance: 'pointer',
   };
 
-  var callbacks = {
-    edit: function() {
-    },
-    validate: function() {
-      return true;
-    },
+  Editointikontrollit.registerCallback({
+    edit: _.noop,
+    validate: _.constant(true),
     save: function() {
       var jrnoMap = _($scope.oppiaineet)
         .filter(function(oa) {
@@ -154,9 +151,8 @@ ylopsApp
       $state.go('root.opetussuunnitelmat.yksi.sisalto');
     },
     notify: _.noop
-  };
+  });
 
-  Editointikontrollit.registerCallback(callbacks);
   Editointikontrollit.startEditing();
 })
 

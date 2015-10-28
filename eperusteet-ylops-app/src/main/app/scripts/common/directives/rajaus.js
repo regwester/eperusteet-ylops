@@ -26,13 +26,14 @@
 ylopsApp
   .directive('rajaus', function () {
     return {
-      template: '<div ng-class="applyClasses()">' +
-  '<span class="input-group-addon" ng-class="{\'input-sm\': size === \'small\'}" icon-role="search"></span>' +
-  '<input ng-change="changed()" ng-model="model" ng-model-options="{debounce: 200}" placeholder="{{ (placeholderstring || \'\') | kaanna }}"' +
-  '       class="form-control" ng-class="{\'input-sm\': size === \'small\'}" ui-keydown="{esc: \'clear($event)\'}">' +
-  '<span ng-show="model" class="input-group-addon rajaus-clear" ng-class="{\'input-sm\': size === \'small\'}"' +
-  '      title="{{\'tyhjenna-rajaus-tooltip\'|kaanna}}" ng-click="clear()" icon-role="remove"></span>' +
-  '</div>',
+      template: '' +
+        '<div ng-class="applyClasses()">' +
+        '  <span class="input-group-addon" ng-class="{\'input-sm\': size === \'small\'}" icon-role="search"></span>' +
+        '  <input ng-change="changed()" ng-model="model" ng-model-options="{debounce: 200}" placeholder="{{ (placeholderstring || \'\') | kaanna }}"' +
+        '         class="form-control" ng-class="{\'input-sm\': size === \'small\'}" ui-keydown="{esc: \'clear($event)\'}">' +
+        '  <span ng-show="model" class="input-group-addon rajaus-clear" ng-class="{\'input-sm\': size === \'small\'}"' +
+        '        title="{{\'tyhjenna-rajaus-tooltip\'|kaanna}}" ng-click="clear()" icon-role="remove"></span>' +
+        '</div>',
       restrict: 'EA',
       scope: {
         model: '=',
