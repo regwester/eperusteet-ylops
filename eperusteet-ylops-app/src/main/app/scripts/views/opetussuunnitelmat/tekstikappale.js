@@ -163,14 +163,11 @@ ylopsApp
     $scope.remove = function () {
       Lukko.lock(commonParams, function () {
         TekstikappaleOps.varmistusdialogi($scope.model.tekstiKappale.nimi, function () {
-          $scope.model.$delete({opsId: $stateParams.id}, function () {
+          $scope.model.$delete({
+            opsId: $stateParams.id
+          }, function () {
             Notifikaatiot.onnistui('poisto-onnistui');
-            OpsService.refetch(function () {
-              $rootScope.$broadcast('rakenne:updated');
-            });
-            $timeout(function () {
-              $state.go('root.opetussuunnitelmat.yksi.sisalto');
-            });
+            $state.go('root.opetussuunnitelmat.yksi.sisalto', { reload: true });
           }, Notifikaatiot.serverCb);
         }, function () {
           Lukko.unlock(commonParams);

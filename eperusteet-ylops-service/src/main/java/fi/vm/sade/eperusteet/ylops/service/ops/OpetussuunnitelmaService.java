@@ -50,7 +50,7 @@ public interface OpetussuunnitelmaService {
     List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka();
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaDto getOpetussuunnitelma(@P("opsId") Long id);
+    OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaDto getOpetussuunnitelmaKaikki (@P("opsId") Long id);
@@ -86,7 +86,7 @@ public interface OpetussuunnitelmaService {
     void updateOppiainejarjestys(Long opsId, List<JarjestysDto> oppiainejarjestys);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    TekstiKappaleViiteDto.Puu getTekstit(@P("opsId") final Long opsId);
+    <T> T getTekstit(@P("opsId") final Long opsId, Class<T> t);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappale(@P("opsId") final Long opsId, TekstiKappaleViiteDto.Matala viite);

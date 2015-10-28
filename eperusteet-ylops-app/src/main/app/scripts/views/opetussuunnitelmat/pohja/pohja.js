@@ -76,8 +76,9 @@ ylopsApp
             );
 })
 .controller('PohjaSisaltoController', function($rootScope, $scope, $q, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
-  Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD, pohjaOps, Editointikontrollit, Lukko) {
+  Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD, pohjaOps, Editointikontrollit, Lukko, tekstit) {
   $scope.model = pohjaOps;
+  $scope.model.tekstit = tekstit;
 
   var commonParams = {
     opsId: $stateParams.pohjaId,
@@ -103,8 +104,7 @@ ylopsApp
     },
     cancel: function() {
       Lukko.unlock(commonParams);
-      $scope.$$isRakenneMuokkaus = false;
-      $rootScope.$broadcast('genericTree:refresh');
+      $state.reload();
     }
   });
 

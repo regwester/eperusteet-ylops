@@ -103,9 +103,6 @@ ylopsApp
             '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
             '    <span ng-show="node.$$depth !== 0" class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
-            '    <span class="pull-right">' +
-            '        <a ng-show="node.omistussuhde === \'oma\'" icon-role="remove" ng-click="poistaTekstikappale(node.$$nodeParent, node)"></a>' +
-            '    </span>' +
             '</div>'
             );
     $templateCache.put('sisaltoNodeTemplate', '' +
@@ -129,8 +126,10 @@ ylopsApp
 })
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit, $templateCache, $timeout,
       Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q, Editointikontrollit,
-      $modal, OpetussuunnitelmaCRUD) {
-  $scope.model = opsService.get($stateParams.id) || opsModel;
+      $modal, OpetussuunnitelmaCRUD, tekstit) {
+  $scope.model = opsModel;
+  $scope.model.tekstit = tekstit;
+
   var commonParams = {
     opsId: $stateParams.id,
   };
@@ -163,11 +162,7 @@ ylopsApp
   };
 
   $scope.sortableConfig = {
-    placeholder: 'placeholder',
-    // start: function(e, ui) {
-    //   console.log(e);
-    //   ui.placeholder.html('voi morjens');
-    // }
+    placeholder: 'placeholder'
   };
 
   $scope.tekstitProvider = $q.when({
@@ -199,23 +194,8 @@ ylopsApp
     },
     extension: function(node, scope) {
       scope.taustanVari = node.$$depth === 0 ? '#f2f2f2' : '#ffffff';
-
-      scope.poistaTekstikappale = function(osio, node) {
-        TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
-          osio = osio || $scope.model.tekstit;
-          TekstikappaleOps.delete($scope.model, osio, $stateParams.id, node, function() {
-            _.remove(osio.lapset, node);
-          });
-        }, function () {
-          unlockTeksti(node.id);
-        });
-      };
     }
   });
-
-  function unlockTeksti(id, cb) {
-    return Lukko.unlockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
-  }
 
   $scope.muokkaaAlihierarkiaa = function() {
     $modal.open({

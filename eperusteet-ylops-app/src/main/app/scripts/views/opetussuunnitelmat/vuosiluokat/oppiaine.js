@@ -69,7 +69,7 @@ ylopsApp
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
   VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, OppiaineCRUD, OpsService, Notifikaatiot,
-  VuosiluokkakokonaisuusMapper, Lukko, Kommentit, KommentitByOppiaine) {
+  VuosiluokkakokonaisuusMapper, Lukko, Kommentit, KommentitByOppiaine, opsModel) {
 
   Kommentit.haeKommentit(KommentitByOppiaine, {
     id: $stateParams.oppiaineId,
@@ -96,13 +96,15 @@ ylopsApp
     return _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
   }
 
-  OppiaineService.getParent(function(res) {
-    $scope.oppiaine.$parent = res;
-    $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
-    if ($scope.$onKieliTaiUskonto) {
-      $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
-    }
-  });
+  OppiaineService.getParent()
+    .then(function(res) {
+      $scope.oppiaine.$parent = res;
+      $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
+      if ($scope.$onKieliTaiUskonto) {
+        $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
+      }
+    })
+    .catch(_.noop);
 
   $scope.perusteOpVlk = $scope.perusteOppiaine ?
     _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
@@ -120,16 +122,21 @@ ylopsApp
     $scope.valitseOppimaara = function() {
       var opsId = $stateParams.id;
       Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, function (res) {
-        var ops = OpsService.get(opsId);
+        // var ops = OpsService.get(opsId);
+        var ops = opsModel;
+        console.log(ops);
 
         var tunnisteet = _.map(res.vuosiluokkakokonaisuudet, '_vuosiluokkakokonaisuus');
-        var lisatytVlkt =
-          // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
-          _(ops.vuosiluokkakokonaisuudet).map('vuosiluokkakokonaisuus').filter(function (vlk) {
-            return _.includes(tunnisteet, vlk._tunniste);
-          }).sortBy(function (vlk) {
-            return Kaanna.kaanna(vlk.nimi);
-          }).value();
+        // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
+        var lisatytVlkt = _(ops.vuosiluokkakokonaisuudet)
+            .map('vuosiluokkakokonaisuus')
+            .filter(function (vlk) {
+              return _.includes(tunnisteet, vlk._tunniste);
+            })
+            .sortBy(function (vlk) {
+              return Kaanna.kaanna(vlk.nimi);
+            })
+            .value();
 
         Notifikaatiot.onnistui(
           Kaanna.kaanna(res.nimi) +

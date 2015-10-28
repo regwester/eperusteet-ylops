@@ -32,7 +32,6 @@ ylopsApp
             })
             .first();
           if ($state.is('root.opetussuunnitelmat.yksi.opetus')) {
-            console.log('reloading');
             $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', { vlkId: vlk.id }, { reload: true });
           }
         }]
@@ -66,7 +65,7 @@ ylopsApp
             return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
           }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
-            return vuosiluokatService.getLaajaalaiset(opsId);
+            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
           }],
           naviState: ['baseLaajaalaiset', 'OpsNavigaatio', function (baseLaajaalaiset, OpsNavigaatio) {
             // Odota laaja-alaiset ennen sivunavin aktivointia niin UI-elementit ei pompi

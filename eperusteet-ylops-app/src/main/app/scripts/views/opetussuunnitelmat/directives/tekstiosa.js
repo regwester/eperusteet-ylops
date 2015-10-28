@@ -24,16 +24,13 @@ ylopsApp
       model: '=perusteenTekstiosa',
       muokattava: '=?',
       callbacks: '=',
-      config: '=',
+      startCollapsed: '=?',
       ohjepallo: '='
     },
     templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
     controller: 'TekstiosaController',
     link: function (scope, element, attrs) {
       scope.editable = !!attrs.muokattava;
-      scope.options = {
-        collapsed: true //scope.editable --> this was causing only a few non-editable, random text fields to be uncollapsed?
-      };
       scope.focusAndScroll = function () {
         $timeout(function () {
           var el = element.find('[ckeditor]');
@@ -49,6 +46,7 @@ ylopsApp
 
 .controller('TekstiosaController', function ($state, $scope, Editointikontrollit, Kieli) {
   $scope.editMode = false;
+  $scope.collapsed = _.isUndefined($scope.startCollapsed) ? true : $scope.startCollapsed;
 
   function validoi() {
     if ($scope.muokattava) {

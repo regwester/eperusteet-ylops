@@ -4,12 +4,12 @@
     <ohje ng-if="ohjepallo" teksti="ohjepallo"></ohje>
   </h3>
   <div ng-if="model.otsikko || model.teksti" class="tekstiosa perusteen-teksti">
-    <a class="toggle-perusteen-teksti" ng-click="options.collapsed = !options.collapsed">
-      <span class="glyphicon" ng-class="{'glyphicon-chevron-down': !options.collapsed, 'glyphicon-chevron-right': options.collapsed}"></span>
-      <span ng-bind="options.collapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></span>
+    <a class="toggle-perusteen-teksti" ng-click="collapsed = !collapsed">
+      <span class="glyphicon" ng-class="{'glyphicon-chevron-down': !collapsed, 'glyphicon-chevron-right': collapsed}"></span>
+      <span ng-bind="collapsed && 'nayta-perusteen-teksti' || 'piilota-perusteen-teksti' | kaanna"></span>
     </a>
 
-    <div class="ohjeellinen" ng-show="!options.collapsed">
+    <div class="ohjeellinen" ng-show="!collapsed">
       <span class="ikoni-peruste-container ikoni-peruste"></span>
       <termistoteksti class="teksti" teksti="model.teksti"></termistoteksti>
     </div>

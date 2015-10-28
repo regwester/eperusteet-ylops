@@ -36,6 +36,7 @@ ylopsApp
   $scope.chosen = 0;
   $scope.collapsed = true;
   $scope.showTakaisin = false;
+  $scope.items = [];
 
   function listener(value) {
     $scope.isActive = value;
@@ -156,16 +157,20 @@ ylopsApp
     });
   }
 
-  $scope.$watch('model.tekstit.lapset', function () {
-    if ($scope.model && $scope.model.tekstit) {
-      $scope.items = mapLapset($scope.model.tekstit.lapset);
-      var vuosiluokat = {
-        label: 'vuosiluokat-ja-oppiaineet',
-        id: 'vuosiluokat',
-        url: $state.href('root.opetussuunnitelmat.yksi.opetus.sisaltoalue', {alueId: 'vuosiluokat'}),
-        items: VuosiluokatService.mapForMenu($scope.model)
-      };
-      $scope.items.push(vuosiluokat);
+  $scope.$watch('model', function () {
+    if ($scope.model) {
+      if ($scope.model.tekstit) {
+        $scope.items = mapLapset($scope.model.tekstit.lapset);
+      }
+      else {
+        var vuosiluokat = {
+          label: 'vuosiluokat-ja-oppiaineet',
+          id: 'vuosiluokat',
+          url: $state.href('root.opetussuunnitelmat.yksi.opetus.sisaltoalue', {alueId: 'vuosiluokat'}),
+          items: VuosiluokatService.mapForMenu($scope.model)
+        };
+        $scope.items.push(vuosiluokat);
+      }
       updateActive();
     }
   }, true);

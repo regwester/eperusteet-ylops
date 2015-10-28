@@ -112,6 +112,9 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/sisalto.html',
         controller: 'OpetussuunnitelmaSisaltoController',
         resolve: {
+          tekstit: ['OpetussuunnitelmanTekstit', '$stateParams', function(ot, $stateParams) {
+            return ot.otsikot({ opsId: $stateParams.id }).$promise;
+          }],
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive(false);
           }]
@@ -282,6 +285,9 @@ ylopsApp
         resolve: {
           pohjaOps: ['OpsService', '$stateParams', function(OpsService, $stateParams) {
             return OpsService.haeOikeasti($stateParams.pohjaId);
+          }],
+          tekstit: ['OpetussuunnitelmanTekstit', '$stateParams', function(ot, $stateParams) {
+            return ot.otsikot({ opsId: $stateParams.pohjaId }).$promise;
           }]
         }
       })
