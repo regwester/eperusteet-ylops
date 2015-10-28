@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-.controller('PohjaController', function ($scope, $state, pohjaModel, opsService) {
+.controller('PohjaController', function ($scope, $state, pohjaModel) {
   if ($state.current.name === 'root.pohjat.yksi') {
     $state.go('root.pohjat.yksi.sisalto', {}, {location: 'replace'});
   }
