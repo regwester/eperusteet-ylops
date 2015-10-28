@@ -251,3 +251,20 @@ a, a:focus {
   color: #777;
   padding-right: 5px;
 }
+
+.eperusteet-otsikko {
+  margin: 0 0 25px 0;
+}
+
+.nav.nav-tabs {
+  li > a {
+    background: #f1f9fc;
+  }
+  li > a:hover {
+    cursor: pointer;
+  }
+
+  li.active > a {
+    background: #fff;
+  }
+}

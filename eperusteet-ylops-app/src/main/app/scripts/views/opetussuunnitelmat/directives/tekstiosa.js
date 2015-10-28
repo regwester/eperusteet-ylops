@@ -52,7 +52,7 @@ ylopsApp
 
   function validoi() {
     if ($scope.muokattava) {
-      if (!$scope.model && $state.current.name === 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine') {
+      if (!$scope.model && $state.current.name === 'root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine') {
         return;
       }
       $scope.muokattava.otsikko = $scope.muokattava.otsikko || {};

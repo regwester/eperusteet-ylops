@@ -86,34 +86,34 @@ ylopsApp
         useData: 'tekstiNimi',
         parent: 'root.pohjat.yksi.sisalto'
       },
-      'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus': {
+      'root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus': {
         useData: 'vlkNimi',
         useId: 'vlkId',
         parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
       },
       'root.opetussuunnitelmat.yksi.valinnaiset': {
-        parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+        parent: 'root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus',
         label: 'valinnaiset-oppiaineet'
       },
       'root.opetussuunnitelmat.yksi.uusioppiaine': {
-        parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+        parent: 'root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus',
         label: 'uusi-oppiaine'
       },
-      'root.opetussuunnitelmat.yksi.oppiaine.oppiaine': {
+      'root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine': {
         useData: 'oppiaineNimi',
-        parent: 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus'
+        parent: 'root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus'
       },
-      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet': {
+      'root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.tavoitteet': {
         useData: 'vuosiluokkaNimi',
-        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
+        parent: 'root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine'
       },
-      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen': {
+      'root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokkaistaminen': {
         label: 'vuosiluokkaistaminen',
-        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
+        parent: 'root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine'
       },
-      'root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.sisaltoalueet': {
+      'root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.sisaltoalueet': {
         useData: 'vuosiluokkaNimi',
-        parent: 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine'
+        parent: 'root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine'
       }
     };
 

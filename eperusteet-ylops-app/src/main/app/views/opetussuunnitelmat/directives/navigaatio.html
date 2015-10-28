@@ -1,7 +1,3 @@
-<div class="navigaatio-takaisin" ng-if="isActive || showTakaisin">
-  <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" icon-role="chevron-left" kaanna="'takaisin-osioihin'"></a>
-</div>
-
 <div class="navigaatio-wrapper" ng-if="isActive">
   <div class="navigaatio-alataso-wrapper" ng-class="{collapsed: collapsed, open: !collapsed}">
 
@@ -13,10 +9,9 @@
         </div>
       </div>
     </div>
-
     <div navimenu="items[chosen].items"></div>
-
   </div>
+
   <div class="navigaatio-content">
     <div ng-transclude></div>
   </div>

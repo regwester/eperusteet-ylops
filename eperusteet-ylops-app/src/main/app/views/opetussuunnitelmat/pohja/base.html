@@ -1,4 +1,19 @@
 <ops-header model="model"></ops-header>
+
 <div class="navigaatio-content-plain">
-  <div ui-view></div>
+  <ul class="nav nav-tabs">
+    <li ui-sref-active="active">
+      <a ui-sref="root.pohjat.yksi.sisalto" kaanna="'yhteiset-osuudet'"></a>
+    </li>
+    <!-- <li ui&#45;sref&#45;active="active"> -->
+    <!--   <a ui&#45;sref="root.opetussuunnitelmat.yksi.sisalto({ id: model.id })" kaanna="'vuosiluokat&#45;ja&#45;oppiaineet'"></a> -->
+    <!-- </li> -->
+    <li ui-sref-active="active">
+      <a ui-sref="root.pohjat.yksi.tiedot" kaanna="'pohjan-tiedot'"></a>
+    </li>
+  </ul>
+
+    <!-- <a ng&#45;show="!isPohjaState &#38;&#38; isPohjaTyyppi" ui&#45;sref="root.pohjat.yksi.sisalto({pohjaId: opsId})">{{ 'nayta&#45;pohjana' | kaanna }} &#38;gt;&#38;gt;</a> -->
+    <!-- <a ng&#45;show="isPohjaState" ui&#45;sref="root.opetussuunnitelmat.yksi.sisalto({id: pohjaId})">{{ 'nayta&#45;opsina' | kaanna }} &#38;gt;&#38;gt;</a> -->
+  <div style="margin-top: 20px;" ui-view></div>
 </div>

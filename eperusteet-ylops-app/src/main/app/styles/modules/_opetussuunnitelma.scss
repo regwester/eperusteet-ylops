@@ -2,7 +2,7 @@ $ops-header-background: rgba(20, 158, 203, 0.06);
 $ops-header-height: 96px;
 $ops-header-padding: 6px;
 $ops-border: 1px solid #ddd;
-$ops-tekstisisalto-border: 1px solid #ddd;
+$ops-tekstisisalto-border: 1px solid #dfdfdf;
 
 .ops-header {
   background-color: $ops-header-background;
@@ -156,7 +156,6 @@ h1.plain {
 .ops-edit-container {
   margin-left: auto;
   margin-right: auto;
-  max-width: 1000px;
   .muokkaustiedot {
     color: #999;
   }
@@ -255,20 +254,21 @@ h1.plain {
   margin-top: 20px;
 
   .tekstisisalto-solmu-paataso {
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   .recursivetree {
-    margin-left: 30px;
+    margin-left: 23px;
+    // padding-bottom: 16px;
+    margin-top: 6px;
+  }
+
+  .recursivetree:empty {
     padding-bottom: 8px;
   }
 
-  // .recursivetree:empty {
-  //   padding-bottom: 8px;
-  // }
-
   .tekstisisalto-otsikko-solmu {
-    background: #fcfcfc;
+    background: #eee;
   }
 
   .tekstisisalto-chevron {
@@ -277,7 +277,7 @@ h1.plain {
 
   .tekstisisalto-solmu {
     padding: 8px 0 5px 7px;
-    border-bottom: $ops-tekstisisalto-border
+    border: $ops-tekstisisalto-border
   }
 
   .treehandle {

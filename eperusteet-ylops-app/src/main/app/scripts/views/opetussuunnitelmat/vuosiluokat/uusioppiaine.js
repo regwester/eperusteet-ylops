@@ -114,7 +114,7 @@ ylopsApp
 
   var successCb = function (res) {
     Notifikaatiot.onnistui('tallennettu-ok');
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+    $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
       oppiaineId: res.id,
       vlkId: $stateParams.vlkId,
       oppiaineTyyppi: res.tyyppi
@@ -157,7 +157,7 @@ ylopsApp
       }
       else {
         Lukko.unlock($scope.commonParams, function () {
-          $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', $stateParams);
+          $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', $stateParams);
         });
       }
     }

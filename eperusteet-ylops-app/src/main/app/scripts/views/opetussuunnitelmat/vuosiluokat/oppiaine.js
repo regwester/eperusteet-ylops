@@ -141,7 +141,7 @@ ylopsApp
         var vlkId =
           _(lisatytVlkt).map('id').includes(parseInt($stateParams.vlkId))? $stateParams.vlkId : lisatytVlkt[0].id;
 
-        $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+        $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
           oppiaineId: res.id,
           vlkId: vlkId,
           oppiaineTyyppi: res.tyyppi
@@ -246,12 +246,12 @@ ylopsApp
   }
 
   $scope.goToVuosiluokka = function (vuosiluokka) {
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {vlId: vuosiluokka.id});
+    $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka', {vlId: vuosiluokka.id});
   };
 
   $scope.startVuosiluokkaistaminen = function () {
     function start() {
-      $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
+      $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokkaistaminen', {
         vlkId: $stateParams.vlkId
       });
     }
@@ -264,7 +264,7 @@ ylopsApp
 
   $scope.editOppiaine = function () {
     Lukko.lock(commonParams, function () {
-      $state.go('root.opetussuunnitelmat.yksi.uusioppiaine', {
+      $state.go('root.opetussuunnitelmat.yksi.opetus.uusioppiaine', {
         vlkId: $stateParams.vlkId,
         oppiaineId: $scope.oppiaine.id
       });
@@ -280,7 +280,7 @@ ylopsApp
           $scope.oppiaine.$delete({opsId: OpsService.getId()}, function () {
             Lukko.unlock(commonParams);
             Notifikaatiot.onnistui('poisto-onnistui');
-            $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, {reload: true});
+            $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, {reload: true});
           }, function () {
             Lukko.unlock(commonParams);
             Notifikaatiot.serverCb();
@@ -303,7 +303,7 @@ ylopsApp
           oppiaineId: $stateParams.oppiaineId
         }, {}, function(res) {
           Notifikaatiot.onnistui('kopion-luonti-onnistui');
-          $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+          $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
             vlkId: $stateParams.vlkId,
             oppiaineId: res.id,
             oppiaineTyyppi: res.tyyppi

@@ -283,7 +283,7 @@ ylopsApp
           vlkId: $stateParams.vlkId
         }, {}, function(res) {
           Notifikaatiot.onnistui('kopion-luonti-onnistui');
-          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {
+          $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {
             vlkId: res.id
           }, { reload: true });
         }, Notifikaatiot.serverCb);

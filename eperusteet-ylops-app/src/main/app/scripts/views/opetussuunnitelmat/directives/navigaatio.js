@@ -114,9 +114,10 @@ ylopsApp
       item.active = false;
     });
 
-    var inVuosiluokat = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus');
-    var inValinnaiset = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.valinnaiset');
-    var inOppiaine = _.startsWith($state.current.name, 'root.opetussuunnitelmat.yksi.oppiaine');
+    var inVuosiluokat = $state.includes('**.opetus.vuosiluokkakokonaisuus.**');
+    var inValinnaiset = $state.includes('**.opetus.valinnaiset.**');
+    var inOppiaine = $state.includes('**.opetus.oppiaine.**');
+
     if (inVuosiluokat || inOppiaine || inValinnaiset) {
       $scope.chosen = $scope.items.length - 1;
       MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat'});
@@ -149,7 +150,7 @@ ylopsApp
       return {
         label: lapsi.tekstiKappale.nimi,
         id: lapsi.id,
-        url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: lapsi.id}),
+        url: $state.href('root.opetussuunnitelmat.yksi.opetus.sisaltoalue', {alueId: lapsi.id}),
         items: createNavimenu(lapsi)
       };
     });
@@ -161,7 +162,7 @@ ylopsApp
       var vuosiluokat = {
         label: 'vuosiluokat-ja-oppiaineet',
         id: 'vuosiluokat',
-        url: $state.href('root.opetussuunnitelmat.yksi.sisaltoalue', {alueId: 'vuosiluokat'}),
+        url: $state.href('root.opetussuunnitelmat.yksi.opetus.sisaltoalue', {alueId: 'vuosiluokat'}),
         items: VuosiluokatService.mapForMenu($scope.model)
       };
       $scope.items.push(vuosiluokat);

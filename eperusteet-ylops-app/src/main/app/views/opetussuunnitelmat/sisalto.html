@@ -1,31 +1,29 @@
 <div class="row" ng-show="model.$resolved">
-  <div ng-if="model.koulutustyyppi === 'koulutustyyppi_16'" class="col-md-8 col-sm-6">
-    <div>
-      <h2>
-        <span kaanna="'tekstikappaleet'"></span>
-        <span class="pull-right">
-          <button ng-hide="$$isRakenneMuokkaus" class="btn btn-default" icon-role="list-alt" kaanna="'muokkaa-hierarkiaa'" ng-click="muokkaaAlihierarkiaa()"></button>
-          <button ng-hide="$$isRakenneMuokkaus" icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
-          <button ng-hide="$$isRakenneMuokkaus" icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()" kaanna="'muokkaa-rakennetta'"></button>
-        </span>
-      </h2>
-    </div>
-    <div class="tekstisisalto">
-      <generic-tree ui-sortable-config="sortableConfig" tree-provider="tekstitProvider"></generic-tree>
-    </div>
+  <div>
+    <h2>
+      <span kaanna="'tekstikappaleet'"></span>
+      <span class="pull-right">
+        <button ng-hide="$$isRakenneMuokkaus" class="btn btn-default" icon-role="list-alt" kaanna="'muokkaa-hierarkiaa'" ng-click="muokkaaAlihierarkiaa()"></button>
+        <button ng-hide="$$isRakenneMuokkaus" icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
+        <button ng-hide="$$isRakenneMuokkaus" icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()" kaanna="'muokkaa-rakennetta'"></button>
+      </span>
+    </h2>
   </div>
-
-  <div ng-if="model.koulutustyyppi === 'koulutustyyppi_16'" class="col-md-4 col-sm-6">
-    <div class="list-group">
-      <div class="list-group-item list-group-header">
-        <a kaanna="'vuosiluokat-ja-oppiaineet'" ui-sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: 'vuosiluokat'})"></a>
-      </div>
-      <div ng-repeat="item in vuosiluokkakokonaisuudet" class="list-group-item">
-        <a ng-bind="item.vuosiluokkakokonaisuus.nimi | kaanna"
-          ui-sref="root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus({vlkId: item.vuosiluokkakokonaisuus.id})"></a>
-        <a class="pull-right" href="" icon-role="sort"
-           ui-sref="root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuussort({vlkId: item.vuosiluokkakokonaisuus.id})"></a>
-      </div>
-    </div>
+  <div class="tekstisisalto">
+    <generic-tree ui-sortable-config="sortableConfig" tree-provider="tekstitProvider"></generic-tree>
   </div>
 </div>
+
+<!-- <div ng&#45;if="model.koulutustyyppi === 'koulutustyyppi_16'" class="col&#45;md&#45;4 col&#45;sm&#45;6"> -->
+<!--   <div class="list&#45;group"> -->
+<!--     <div class="list&#45;group&#45;item list&#45;group&#45;header"> -->
+<!--       <a kaanna="'vuosiluokat&#45;ja&#45;oppiaineet'" ui&#45;sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: 'vuosiluokat'})"></a> -->
+<!--     </div> -->
+<!--     <div ng&#45;repeat="item in vuosiluokkakokonaisuudet" class="list&#45;group&#45;item"> -->
+<!--       <a ng&#45;bind="item.vuosiluokkakokonaisuus.nimi | kaanna" -->
+<!--         ui&#45;sref="root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus({vlkId: item.vuosiluokkakokonaisuus.id})"></a> -->
+<!--       <a class="pull&#45;right" href="" icon&#45;role="sort" -->
+<!--          ui&#45;sref="root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuussort({vlkId: item.vuosiluokkakokonaisuus.id})"></a> -->
+<!--     </div> -->
+<!--   </div> -->
+<!-- </div> -->

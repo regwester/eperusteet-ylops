@@ -192,7 +192,6 @@ ylopsApp
       return target !== $scope.model.tekstit;
     },
     sortableClass: function(node) {
-      console.log(node);
       if (node !== $scope.model.tekstit) {
         return 'is-draggable-into';
       }
