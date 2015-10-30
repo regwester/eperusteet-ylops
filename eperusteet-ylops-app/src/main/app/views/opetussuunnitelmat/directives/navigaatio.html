@@ -1,22 +1,17 @@
-<div class="navigaatio-takaisin" ng-if="isActive || showTakaisin">
-  <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" icon-role="chevron-left" kaanna="'takaisin-osioihin'"></a>
-</div>
-
 <div class="navigaatio-wrapper" ng-if="isActive">
   <div class="navigaatio-alataso-wrapper" ng-class="{collapsed: collapsed, open: !collapsed}">
 
     <div class="sivunavi-toggler-wrapper">
       <div class="sivunavi-toggler" ng-click="toggle()"
-        ng-attr-title="{{collapsed && ('sivunavigointi-avaa-menu'|kaanna) || ('sivunavigointi-sulje-menu'|kaanna)}}">
+           ng-attr-title="{{collapsed && ('sivunavigointi-avaa-menu'|kaanna) || ('sivunavigointi-sulje-menu'|kaanna)}}">
         <div class="sivunavi-valinta">
           <span class="glyphicon glyphicon-align-justify"></span>
         </div>
       </div>
     </div>
-
     <div navimenu="items[chosen].items"></div>
-
   </div>
+
   <div class="navigaatio-content">
     <div ng-transclude></div>
   </div>

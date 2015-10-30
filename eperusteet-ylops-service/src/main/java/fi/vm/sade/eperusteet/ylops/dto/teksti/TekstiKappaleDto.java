@@ -41,6 +41,8 @@ public class TekstiKappaleDto {
     private LokalisoituTekstiDto teksti;
     private Tila tila;
     private UUID tunniste;
+    private Boolean pakollinen;
+    private Boolean valmis;
 
     public TekstiKappaleDto() {}
 

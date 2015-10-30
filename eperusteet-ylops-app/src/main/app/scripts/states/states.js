@@ -42,7 +42,12 @@ ylopsApp
       .state('root.admin', {
         url: '/admin',
         templateUrl: 'views/admin.html',
-        controller: 'AdminController'
+        controller: 'AdminController',
+        resolve: {
+          opsStatistiikka: function(OpetussuunnitelmaCRUD) {
+            return OpetussuunnitelmaCRUD.tilastot().$promise;
+          }
+        }
       })
 
       .state('root.virhe', {
@@ -91,14 +96,11 @@ ylopsApp
             return opsOikeudet.fetch($stateParams);
           }]
         },
-        controller: function ($scope, opsModel, vuosiluokkakokonaisuudet, opsService, $rootScope) {
+        controller: function ($scope, $stateParams, opsModel, vuosiluokkakokonaisuudet, opsService) {
           $scope.model = opsModel;
           $scope.isEditable = opsService.isEditable;
           $scope.vuosiluokkakokonaisuudet = vuosiluokkakokonaisuudet;
-          $scope.$on('rakenne:updated', function () {
-            $scope.model = opsService.get();
-            $rootScope.$broadcast('murupolku:update');
-          });
+          $scope.luonnissa = $stateParams.id === 'uusi';
         }
       })
 
@@ -107,6 +109,9 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/sisalto.html',
         controller: 'OpetussuunnitelmaSisaltoController',
         resolve: {
+          tekstit: ['OpetussuunnitelmanTekstit', '$stateParams', function(ot, $stateParams) {
+            return ot.otsikot({ opsId: $stateParams.id }).$promise;
+          }],
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive(false);
           }]
@@ -162,7 +167,7 @@ ylopsApp
         controller: 'TekstikappaleController',
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
+            OpsNavigaatio.setActive(false);
           }]
         }
       })
@@ -183,6 +188,9 @@ ylopsApp
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive(false);
+          }],
+          tekstit: ['OpetussuunnitelmanTekstit', '$stateParams', function(ot, $stateParams) {
+            return ot.get({ opsId: $stateParams.id }).$promise;
           }]
         }
       })
@@ -273,7 +281,15 @@ ylopsApp
       .state('root.pohjat.yksi.sisalto', {
         url: '/sisalto',
         templateUrl: 'views/opetussuunnitelmat/pohja/sisalto.html',
-        controller: 'PohjaSisaltoController'
+        controller: 'PohjaSisaltoController',
+        resolve: {
+          pohjaOps: ['OpsService', '$stateParams', function(OpsService, $stateParams) {
+            return OpsService.haeOikeasti($stateParams.pohjaId);
+          }],
+          tekstit: ['OpetussuunnitelmanTekstit', '$stateParams', function(ot, $stateParams) {
+            return ot.otsikot({ opsId: $stateParams.pohjaId }).$promise;
+          }]
+        }
       })
 
       .state('root.pohjat.yksi.tiedot', {
@@ -303,10 +319,10 @@ ylopsApp
           }],
           tekstikappaleModel: ['pohjaId', 'tekstikappaleId', 'OpetussuunnitelmanTekstit', function (pohjaId, tekstikappaleId, OpetussuunnitelmanTekstit) {
             return OpetussuunnitelmanTekstit.get({opsId: pohjaId, viiteId: tekstikappaleId}).$promise;
+          }],
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
           }]
-          /*naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
-          }]*/
         }
       });
   });

@@ -24,14 +24,23 @@ $peruste-color: lighten(#a38566, 40%);
   padding: 10px 20px 10px 20px;
   background-color: $peruste-color;
   .teksti {
-    margin-top: 10px;
+    margin-top: -10px;
   }
 }
 
 $ohje-ikoni-size: 48px;
 
+.ikoni-peruste-container {
+  width: 50px;
+  float:left;
+  margin-right: 10px;
+  background-repeat: no-repeat;
+  background-size: $ohje-ikoni-size;
+  min-height: $ohje-ikoni-size;
+}
+
 .ohjeellinen {
-  margin-top: 15px;
+  margin-top: 10px;
   background-repeat: no-repeat;
   background-size: $ohje-ikoni-size;
   min-height: $ohje-ikoni-size;
@@ -172,4 +181,8 @@ $ohje-ikoni-size: 48px;
 
   .muokkaustieto-data {
   }
+}
+
+.ikoni-ojheistus-pd {
+  padding-top: 8px;
 }

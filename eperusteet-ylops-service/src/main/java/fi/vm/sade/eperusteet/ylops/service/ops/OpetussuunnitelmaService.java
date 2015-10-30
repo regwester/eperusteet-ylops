@@ -25,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +46,11 @@ public interface OpetussuunnitelmaService {
         "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka();
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaDto getOpetussuunnitelma(@P("opsId") Long id);
+    OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaDto getOpetussuunnitelmaKaikki (@P("opsId") Long id);
@@ -69,6 +73,12 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
     void removeOpetussuunnitelma(@P("opsId") Long id);
 
+    @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
+    List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(Long id);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateLapsiOpetussuunnitelmat(Long opsId);
+
     @PreAuthorize("hasPermission(#pohjaId, 'opetussuunnitelma', 'MUOKKAUS')")
     void syncPohja(Long pohjaId);
 
@@ -76,7 +86,7 @@ public interface OpetussuunnitelmaService {
     void updateOppiainejarjestys(Long opsId, List<JarjestysDto> oppiainejarjestys);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    TekstiKappaleViiteDto.Puu getTekstit(@P("opsId") final Long opsId);
+    <T> T getTekstit(@P("opsId") final Long opsId, Class<T> t);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappale(@P("opsId") final Long opsId, TekstiKappaleViiteDto.Matala viite);

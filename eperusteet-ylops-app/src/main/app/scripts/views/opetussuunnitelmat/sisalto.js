@@ -16,12 +16,15 @@
 
 'use strict';
 
+/* global _ */
+
 ylopsApp
 .service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
   Varmistusdialogi, Kaanna, OpsService, $rootScope) {
   function mapSisalto(root) {
     return {
       id: root.id,
+      tekstiKappale: _.isObject(root.tekstiKappale) ? _.pick(root.tekstiKappale, 'id', 'tunniste') : null,
       lapset: _.map(root.lapset, mapSisalto)
     };
   }
@@ -95,131 +98,189 @@ ylopsApp
     })();
   };
 })
+.run(function($templateCache) {
+    $templateCache.put('sisaltoNodeEditingTemplate', '' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'new-halo\': node.$$newHalo }">' +
+            '    <span ng-show="node.$$depth !== 0" class="treehandle" icon-role="drag"></span>' +
+            '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '</div>'
+            );
+    $templateCache.put('sisaltoNodeTemplate', '' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'search-halo\': node.$$showHalo, \'new-halo\': node.$$newHalo }">' +
+            '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
+            '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
+            '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
+            '    </span>' +
+            '    <a ng-if="node.$$depth > 0" href="" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({ tekstikappaleId: node.id })"' +
+            '          ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna">' +
+            '    </a>' +
+            '    <span ng-if="node.$$depth === 0" ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '    <a ng-click="addLapsi(node)" style="margin-left: 10px" ng-show="node.$$depth === 0" href="" icon-role="add" tooltip="{{ \'lisaa-aliotsikko\' | kaanna }}"></a>' +
+            '    <span class="pull-right">' +
+            '        <span valmius-ikoni="node.tekstiKappale"></span>' +
+            '        <span class="muokattu-aika">' +
+            '             <span kaanna="\'muokattu-viimeksi\'"></span>:' +
+            '             <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
+            '        </span>' +
+            '    </span>' +
+            '</div>'
+            );
+})
+.controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit, $templateCache, $timeout,
+      Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q, Editointikontrollit,
+      $modal, OpetussuunnitelmaCRUD, tekstit, Algoritmit) {
+  $scope.model = opsModel;
+  $scope.model.tekstit = tekstit;
 
-.controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit,
-      Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko) {
-  $scope.uusi = {nimi: {}};
-  $scope.lukkotiedot = null;
-  $scope.model = opsService.get($stateParams.id) || opsModel;
+  $scope.rajaus = {
+    term: '',
+    onUpdate: function(term) {
+      Algoritmit.traverse($scope.model.tekstit, 'lapset', function(node) {
+        node.$$showHalo = false;
 
-  $scope.isAdding = function () {
-    return _.any($scope.model.tekstit.lapset, '$$adding');
-  };
-
-  $scope.hasText = function(str) {
-    return Utils.hasLocalizedText(str);
-  };
-
-  $scope.canRemove = function (kappale) {
-    return kappale.omistussuhde === 'oma';
+        if (_.isEmpty(term)) {
+          node.$$searchHidden = false;
+        }
+        else if (!Algoritmit.match(term, node.tekstiKappale.nimi)) {
+          node.$$searchHidden = true;
+        }
+        else {
+          node.$$searchHidden = false;
+          node.$$showHalo = true;
+          var p = node.$$traverseParent;
+          while (p) {
+            p.$$searchHidden = false;
+            p = p.$$traverseParent;
+          }
+        }
+      });
+    }
   };
 
   var commonParams = {
     opsId: $stateParams.id,
   };
-  Lukko.isLocked($scope, commonParams);
 
-  function fetch(cb, notify) {
-    opsService.refetch(function (res) {
-      $scope.model = res;
-      (cb || angular.noop)(res);
-      if (notify) {
-        $rootScope.$broadcast('rakenne:updated');
-      }
-    });
-  }
-
-  $scope.kappaleEdit = null;
-
-  function stopEvent(event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  function lockTeksti(id, cb) {
-    return Lukko.lockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
-  }
-
-  function unlockTeksti(id, cb) {
-    return Lukko.unlockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
-  }
-
-  $scope.rakenne = {
-    add: function (osio, event) {
-      stopEvent(event);
-      osio.$$adding = true;
+  // FIXME: Ota kunnon editointikontrollit käyttöön
+  Editointikontrollit.registerCallback({
+    edit: function() {
     },
-    doAdd: function (osio) {
-      Lukko.lock(commonParams, function () {
-        TekstikappaleOps.lisaa(osio, $stateParams.id, osio.$$uusi, function () {
-          Lukko.unlock(commonParams, function () {
-            fetch();
-          });
-        });
-      });
-    },
-    cancelAdd: function (osio) {
-      osio.$$adding = false;
-      $scope.uusi = {nimi: {}};
-    },
-    deleteKappale: function (osio, item) {
-      lockTeksti(item.id, function () {
-        TekstikappaleOps.varmistusdialogi(item.tekstiKappale.nimi, function () {
-          TekstikappaleOps.delete($scope.model, osio, $stateParams.id, item, fetch);
-        }, function () {
-          unlockTeksti(item.id);
-        });
-      });
-    },
-    editTitle: function (osio, kappale) {
-      lockTeksti(kappale.id, function () {
-        $scope.kappaleEdit = kappale;
-        kappale.$original = _.cloneDeep(kappale.tekstiKappale);
-      });
-    },
-    cancelTitle: function (kappale) {
-      unlockTeksti(kappale.id, function () {
-        $scope.kappaleEdit = null;
-        kappale.tekstiKappale = _.cloneDeep(kappale.$original);
-        delete kappale.$original;
-      });
-    },
-    saveTitle: function (kappale) {
-      var params = {opsId: $stateParams.id};
-      OpetussuunnitelmanTekstit.save(params, _.omit(kappale, 'lapset'), function () {
-        unlockTeksti(kappale.id, function () {
-          $scope.kappaleEdit = null;
-          Notifikaatiot.onnistui('tallennettu-ok');
-          opsService.refetch(function () {
-            $rootScope.$broadcast('rakenne:updated');
-          });
-          delete kappale.$original;
-        });
-      }, Notifikaatiot.serverCb);
-    },
-    edit: function (osio, event) {
-      stopEvent(event);
-      $scope.rakenne.cancelAdd(osio);
-      Lukko.lock(commonParams, function () {
-        osio.$$edit = true;
-      });
-    },
-    cancel: function (osio) {
-      Lukko.unlock(commonParams, function () {
-        $scope.lukkotiedot = null;
-        fetch(function() {
-          osio.$$edit = false;
-        });
-      });
-    },
-    save: function (osio) {
+    asyncValidate: function(cb) {
       TekstikappaleOps.saveRakenne($scope.model, function () {
-        Lukko.unlock(commonParams, function () {
-          $scope.lukkotiedot = null;
-          osio.$$edit = false;
-          fetch(angular.noop, true);
-        });
+        Lukko.unlock(commonParams, cb);
       });
+    },
+    save: function() {
+      Lukko.unlock(commonParams);
+      $scope.$$isRakenneMuokkaus = false;
+      $rootScope.$broadcast('genericTree:refresh');
+    },
+    cancel: function() {
+      Lukko.unlock(commonParams, $state.reload);
     }
+  });
+
+  $scope.muokkaaRakennetta = function() {
+    Lukko.lock(commonParams, function() {
+      Editointikontrollit.startEditing();
+      $scope.$$isRakenneMuokkaus = true;
+      $rootScope.$broadcast('genericTree:refresh');
+    });
   };
+
+  $scope.sortableLiittamattomatConfig = {
+    connectWith: '.recursivetree',
+    handle: '.treehandle',
+    placeholder: 'placeholder'
+  };
+
+  $scope.sortableConfig = {
+    placeholder: 'placeholder'
+  };
+
+  $scope.tekstitProvider = $q.when({
+    root: _.constant($q.when($scope.model.tekstit)),
+    hidden: function(node) {
+        if ($scope.$$isRakenneMuokkaus || !node.$$nodeParent) {
+          return false;
+        }
+        else {
+          return (_.isEmpty($scope.rajaus.term) && node.$$nodeParent.$$hidden) || node.$$searchHidden;
+        }
+    },
+    template: function() {
+      return $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate';
+    },
+    children: function(node) {
+      return $q.when(node && node.lapset ? node.lapset : []);
+    },
+    useUiSortable: function() {
+      return !$scope.$$isRakenneMuokkaus;
+    },
+    acceptDrop: function(node, target, parentScope) {
+      return target !== $scope.model.tekstit || parentScope === $scope;
+    },
+    sortableClass: function(node) {
+      if (node !== $scope.model.tekstit) {
+        return 'is-draggable-into';
+      }
+    },
+    extension: function(node, scope) {
+      scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
+      scope.addLapsi = lisaaTekstikappale;
+    }
+  });
+
+  $scope.muokkaaAlihierarkiaa = function() {
+    $modal.open({
+      templateUrl: 'views/opetussuunnitelmat/modals/alihierarkia.html',
+      controller: 'OpsAlihierarkiaModalController',
+      size: 'lg',
+      resolve: {
+        ops: _.constant($q.when(_.cloneDeep($scope.model))),
+        aliOpsit: function() {
+          return OpetussuunnitelmaCRUD.opetussuunnitelmat({
+            opsId: $scope.model.id
+          }).$promise;
+        }
+      }
+    })
+    .result.then(_.noop);
+  };
+
+  function lisaaTekstikappale(parentTk) {
+    OpetussuunnitelmanTekstit.addChild({
+      opsId: $stateParams.id,
+      viiteId: parentTk.id
+    }, {
+      tekstiKappale: {
+        nimi: { fi: 'Uusi tekstikappale' }
+      },
+      lapset: []
+    }).$promise
+    .then(function(res) {
+      res.lapset = [];
+      res.$$newHalo = true;
+      parentTk.lapset.push(res);
+    })
+    .catch(Notifikaatiot.serverCb);
+  }
+})
+.controller('OpsAlihierarkiaModalController', function($scope, $modalInstance, ops, aliOpsit, OpetussuunnitelmaCRUD) {
+  $scope.ops = ops;
+  $scope.aliOpsit = aliOpsit;
+
+  $scope.paivitaRakenne = function() {
+    OpetussuunnitelmaCRUD.opetussuunnitelmatSync({
+      id: ops.id
+    }).$promise.then(function(res) {
+      console.log(res);
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+  };
+
+  $scope.ok = $modalInstance.close;
+  $scope.peruuta = $modalInstance.dismiss;
 });

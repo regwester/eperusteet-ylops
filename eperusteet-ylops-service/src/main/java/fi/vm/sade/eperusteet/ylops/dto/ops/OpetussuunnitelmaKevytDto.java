@@ -15,8 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
-import java.util.Optional;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +27,6 @@ import lombok.Setter;
 @Setter
 public class OpetussuunnitelmaKevytDto extends OpetussuunnitelmaBaseDto {
     private OpetussuunnitelmaNimiDto pohja;
-    private Optional<TekstiKappaleViiteKevytDto> tekstit;
-    private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
+    private Set<OpsVuosiluokkakokonaisuusKevytDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineKevytDto> oppiaineet;
 }

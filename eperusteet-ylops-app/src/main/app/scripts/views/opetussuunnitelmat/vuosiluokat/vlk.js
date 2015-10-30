@@ -119,12 +119,9 @@ ylopsApp
     tolerance: 'pointer',
   };
 
-  var callbacks = {
-    edit: function() {
-    },
-    validate: function() {
-      return true;
-    },
+  Editointikontrollit.registerCallback({
+    edit: _.noop,
+    validate: _.constant(true),
     save: function() {
       var jrnoMap = _($scope.oppiaineet)
         .filter(function(oa) {
@@ -154,13 +151,12 @@ ylopsApp
       $state.go('root.opetussuunnitelmat.yksi.sisalto');
     },
     notify: _.noop
-  };
+  });
 
-  Editointikontrollit.registerCallback(callbacks);
   Editointikontrollit.startEditing();
 })
 
-.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
+.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit, OpsNavigaatio,
   MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
   baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,
   OpsService, Varmistusdialogi) {
@@ -283,7 +279,7 @@ ylopsApp
           vlkId: $stateParams.vlkId
         }, {}, function(res) {
           Notifikaatiot.onnistui('kopion-luonti-onnistui');
-          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {
+          $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {
             vlkId: res.id
           }, { reload: true });
         }, Notifikaatiot.serverCb);

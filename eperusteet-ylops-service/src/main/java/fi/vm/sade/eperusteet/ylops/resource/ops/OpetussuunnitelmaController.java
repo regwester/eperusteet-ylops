@@ -25,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import java.util.List;
 import java.util.Map;
@@ -63,11 +64,24 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi);
     }
 
+    @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<List<OpetussuunnitelmaStatistiikkaDto>> getStatistiikka() {
+        return new ResponseEntity<>(opetussuunnitelmaService.getStatistiikka(), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaDto> get(@PathVariable("id") final Long id) {
+    public ResponseEntity<OpetussuunnitelmaKevytDto> get(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelma(id), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<List<OpetussuunnitelmaInfoDto>> getLapsiOpetussuunnitelmat(@PathVariable("id") final Long id) {
+        return new ResponseEntity<>(opetussuunnitelmaService.getLapsiOpetussuunnitelmat(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/laajaalaisetosaamiset", method = RequestMethod.GET)
@@ -89,7 +103,6 @@ public class OpetussuunnitelmaController {
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
-
         if (opetussuunnitelmaDto.getTyyppi() == null) {
             opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         }
@@ -122,6 +135,15 @@ public class OpetussuunnitelmaController {
         opetussuunnitelmaDto.setId(id);
         return new ResponseEntity<>(opetussuunnitelmaService.updateOpetussuunnitelma(opetussuunnitelmaDto),
                 HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.POST)
+//    @ResponseBody
+    @Timed
+    public ResponseEntity updateLapsiOpetussuunnitelmat(
+            @PathVariable("id") final Long id) {
+        opetussuunnitelmaService.updateLapsiOpetussuunnitelmat(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/tila/{tila}", method = RequestMethod.POST)

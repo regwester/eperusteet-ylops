@@ -17,18 +17,18 @@
 'use strict';
 
 ylopsApp
-.controller('PohjaController', function ($scope, $state, pohjaModel, opsService) {
+.controller('PohjaController', function ($scope, $state, pohjaModel, $stateParams) {
   if ($state.current.name === 'root.pohjat.yksi') {
     $state.go('root.pohjat.yksi.sisalto', {}, {location: 'replace'});
   }
   $scope.model = pohjaModel;
-  $scope.$on('rakenne:updated', function () {
-    $scope.model = opsService.getPohja();
-  });
+  $scope.luonnissa = $stateParams.pohjaId === 'uusi';
+  // FIXME: Miksi tämä on olemassa?
+  // $scope.$on('rakenne:updated', function () {
+  //   $scope.model = opsService.getPohja();
+  // });
 })
-
 .controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter, Notifikaatiot) {
-
   $scope.pohjaMaxLimit = 9999;
   $scope.pohjaMinLimit = 7;
 
@@ -51,109 +51,133 @@ ylopsApp
   };
 
 })
+.run(function($templateCache) {
+    $templateCache.put('pohjaSisaltoNodeEditingTemplate', '' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
+            '    <span class="treehandle" icon-role="drag"></span>' +
+            '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '</div>'
+            );
+    $templateCache.put('pohjaSisaltoNodeTemplate', '' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
+            '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
+            '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
+            '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
+            '    </span>' +
+            '    <a href="" ui-sref="root.pohjat.yksi.tekstikappale({ tekstikappaleId: node.id })">' +
+            '       <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '    </a>' +
+            '    <span class="pull-right">' +
+            '        <span class="muokattu-aika">' +
+            '             <span kaanna="\'muokattu-viimeksi\'"></span>:' +
+            '             <span ng-bind="node.tekstiKappale.muokattu | aikaleima"></span>' +
+            '        </span>' +
+            '    </span>' +
+            '</div>'
+            );
+})
+.controller('PohjaSisaltoController', function($rootScope, $scope, $q, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
+  Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD, pohjaOps, Editointikontrollit, Lukko, tekstit) {
+  $scope.model = pohjaOps;
+  $scope.model.tekstit = tekstit;
 
-.controller('PohjaSisaltoController', function($scope, $q, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
-  Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD) {
-  $scope.kappaleEdit = null;
-  $scope.$$rakenneEdit = false;
+  var commonParams = {
+    opsId: $stateParams.pohjaId,
+  };
 
   $scope.sync = function() {
     OpetussuunnitelmaCRUD.syncPeruste({ id: $scope.model.id }, _.bind(Notifikaatiot.onnistui, {}, 'paivitys-onnistui'), Notifikaatiot.serverCb);
   };
 
-  function mapModel() {
-    Algoritmit.traverse($scope.model.tekstit, 'lapset', function (teksti) {
-      teksti.$url = $state.href('root.pohjat.yksi.tekstikappale', {
-        pohjaId: $scope.model.id,
-        tekstikappaleId: teksti.id
-      });
-    });
-    if ($scope.model.tekstit) {
-      $scope.model.tekstit.lapset = _.map($scope.model.tekstit.lapset, function(lapsi) {
-        lapsi.$$ylataso = true;
-        return _.extend(lapsi, { $$nimi: {} });
-      });
-    }
-  }
-
-  $scope.uiTreeOptions = {
-    accept: function(source, destination) {
-      return (source.$modelValue.$$ylataso && destination.$modelValue === $scope.model.tekstit.lapset) ||
-        (!source.$modelValue.$$ylataso && destination.$modelValue !== $scope.model.tekstit.lapset);
-    }
-  };
-
-  $scope.$watch('model.tekstit', function () {
-    mapModel();
-  }, true);
-
-  $scope.hasText = function(str) {
-    return Utils.hasLocalizedText(str);
-  };
-
-  $scope.opsOtsikot = {
-    edit: function(kappale) {
-      kappale.tekstiKappale.$$original = _.cloneDeep(kappale.tekstiKappale);
-      kappale.tekstiKappale.$$edit = true;
-    },
-    save: function(kappale) {
-      $scope.pohjaOps.save(kappale, function() {
-        kappale.tekstiKappale.$$edit = false;
-      });
-    },
-    cancel: function(kappale) {
-      kappale.tekstiKappale = kappale.tekstiKappale.$$original;
-      kappale.tekstiKappale.$$edit = false;
-    }
-  };
-
-  $scope.pohjaOps = {
-    addNew: function (osio) {
-      TekstikappaleOps.lisaa(osio, $stateParams.pohjaId, osio.$$nimi, function () {
-        osio.$$nimi = {};
-        mapModel();
-      });
-    },
-    edit: function (kappale) {
-      $scope.kappaleEdit = kappale;
-      kappale.tekstiKappale.$$original = _.cloneDeep(kappale.tekstiKappale);
-    },
-    delete: function (osio, kappale) {
-      TekstikappaleOps.varmistusdialogi(kappale.tekstiKappale.nimi, function () {
-        TekstikappaleOps.delete($scope.model, osio, $stateParams.pohjaId, kappale, function () {
-          mapModel();
-        });
-      });
-    },
-    cancel: function (kappale) {
-      $scope.kappaleEdit = null;
-      kappale.tekstiKappale = _.cloneDeep(kappale.tekstiKappale.$$original);
-    },
-    save: function (kappale, cb) {
-      cb = cb || angular.noop;
-      $scope.kappaleEdit = null;
-      var params = {opsId: $stateParams.pohjaId};
-      OpetussuunnitelmanTekstit.save(params, _.omit(kappale, 'lapset'), function () {
-        Notifikaatiot.onnistui('tallennettu-ok');
-        kappale.tekstiKappale = _.omit(kappale.tekstiKappale, '$$original');
-        cb();
-      }, Notifikaatiot.serverCb);
-    }
-  };
-
-  $scope.rakenne = {
+  // FIXME: Ota kunnon editointikontrollit käyttöön
+  Editointikontrollit.registerCallback({
     edit: function() {
-      $scope.$$rakenneEdit = true;
-      $scope.$$originaalit = _.cloneDeep($scope.model.tekstit);
+    },
+    asyncValidate: function(cb) {
+      TekstikappaleOps.saveRakenne($scope.model, function () {
+        Lukko.unlock(commonParams, cb);
+      });
     },
     save: function() {
-      TekstikappaleOps.saveRakenne($scope.model, function () {
-        $scope.$$rakenneEdit = false;
-      });
+      Lukko.unlock(commonParams);
+      $scope.$$isRakenneMuokkaus = false;
+      $rootScope.$broadcast('genericTree:refresh');
     },
     cancel: function() {
-      $scope.$$rakenneEdit = false;
-      $scope.model.tekstit = $scope.$$originaalit;
+      Lukko.unlock(commonParams);
+      $state.reload();
     }
+  });
+
+  $scope.muokkaaRakennetta = function() {
+    Lukko.lock(commonParams, function() {
+      Editointikontrollit.startEditing();
+      $scope.$$isRakenneMuokkaus = true;
+      $rootScope.$broadcast('genericTree:refresh');
+    });
   };
+
+  $scope.sortableConfig = {
+    placeholder: 'placeholder'
+  };
+
+  $scope.tekstitProvider = $q(function(resolve) {
+    resolve({
+      root: _.constant($q.when($scope.model.tekstit)),
+      hidden: function(node) {
+          if ($scope.$$isRakenneMuokkaus || !node.$$nodeParent) {
+            return false;
+          }
+          else {
+            return node.$$nodeParent.$$hidden;
+          }
+      },
+      template: function() {
+        return $scope.$$isRakenneMuokkaus  ? 'pohjaSisaltoNodeEditingTemplate' : 'pohjaSisaltoNodeTemplate';
+      },
+      children: function(node) {
+        return $q.when(node && node.lapset ? node.lapset : []);
+      },
+      useUiSortable: function() {
+        return !$scope.$$isRakenneMuokkaus;
+      },
+      acceptDrop: _.constant(true),
+      sortableClass: _.constant('is-draggable-into'),
+      extension: function(node, scope) {
+        scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
+
+        scope.poistaTekstikappale = function(osio, node) {
+          TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
+            osio = osio || $scope.model.tekstit;
+            TekstikappaleOps.delete($scope.model, osio, $stateParams.pohjaId, node, function() {
+              _.remove(osio.lapset, node);
+            });
+          }, function () {
+            unlockTeksti(node.id);
+          });
+        };
+      }
+    });
+  });
+
+  function unlockTeksti(id, cb) {
+    return Lukko.unlockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
+  }
+
+  $scope.lisaaTekstikappale = function() {
+      OpetussuunnitelmanTekstit.save({
+        opsId: $stateParams.pohjaId
+      }, { }, function(res) {
+        res.lapset = res.lapset || [];
+        Notifikaatiot.onnistui('tallennettu-ok');
+        $scope.model.tekstit.lapset.push(res);
+      }, Notifikaatiot.serverCb);
+  };
+
+  // $scope.uiTreeOptions = {
+  //   accept: function(source, destination) {
+  //     return (source.$modelValue.$$ylataso && destination.$modelValue === $scope.model.tekstit.lapset) ||
+  //       (!source.$modelValue.$$ylataso && destination.$modelValue !== $scope.model.tekstit.lapset);
+  //   }
+  // };
 });

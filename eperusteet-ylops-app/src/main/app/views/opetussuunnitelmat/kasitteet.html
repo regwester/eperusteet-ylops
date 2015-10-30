@@ -1,16 +1,12 @@
 <!-- kasitteet.html -->
 
-<div class="navigaatio-takaisin plain">
-  <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" icon-role="back" kaanna="'takaisin-osioihin'"></a>
-</div>
-
 <div class="pull-right">
   <button class="btn btn-default" icon-role="add" kaanna="lisaa" ng-click="edit()"></button>
 </div>
 
 <h1>{{'opetussuunnitelman-termisto' | kaanna}} <ohje teksti="perusteen-termisto-ohje"></ohje></h1>
 
-<div class="row termisto-rajaus">
+<div class="termisto-rajaus">
     <rajaus model="search.phrase" callback="search.changed(value)" placeholder="rajaa-tuloksia"></rajaus>
 </div>
 

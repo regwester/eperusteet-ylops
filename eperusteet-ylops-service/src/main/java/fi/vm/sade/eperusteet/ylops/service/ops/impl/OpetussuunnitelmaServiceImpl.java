@@ -45,6 +45,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -163,6 +164,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
+        List<Opetussuunnitelma> opsit = repository.findAllByTyyppi(Tyyppi.OPS);
+        List<OpetussuunnitelmaStatistiikkaDto> opsDtot = mapper.mapAsList(opsit, OpetussuunnitelmaStatistiikkaDto.class);
+        return opsDtot;
+    }
+
+    @Override
     public Peruste getPeruste(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -171,13 +180,27 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public OpetussuunnitelmaDto getOpetussuunnitelma(Long id) {
+    public OpetussuunnitelmaKevytDto getOpetussuunnitelma(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmaDto dto = mapper.map(ops, OpetussuunnitelmaDto.class);
+        OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
         fetchKuntaNimet(dto);
         fetchOrganisaatioNimet(dto);
         return dto;
+    }
+
+    private void fetchLapsiOpetussuunnitelmat(Long id, Set<Opetussuunnitelma> opsit) {
+        opsit.addAll(repository.findAllByPohjaId(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Set<Opetussuunnitelma> result = new HashSet<>();
+        fetchLapsiOpetussuunnitelmat(id, result);
+        return mapper.mapAsList(result, OpetussuunnitelmaInfoDto.class);
     }
 
     @Override
@@ -465,6 +488,46 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
+    private void flattenTekstikappaleviitteet(Map<UUID, TekstiKappaleViite> viitteet, TekstiKappaleViite tov) {
+        if (tov.getLapset() == null) {
+            return;
+        }
+        for (TekstiKappaleViite lapsi : tov.getLapset()) {
+            // Tätä tarkistusta ei välttämättä tarvitse
+            if (viitteet.get(lapsi.getTekstiKappale().getTunniste()) != null) {
+                continue;
+            }
+            viitteet.put(lapsi.getTekstiKappale().getTunniste(), lapsi);
+            flattenTekstikappaleviitteet(viitteet, lapsi);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void updateLapsiOpetussuunnitelmat(Long opsId) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
+        Set<Opetussuunnitelma> aliopsit = repository.findAllByPohjaId(opsId);
+
+        for (Opetussuunnitelma aliops : aliopsit) {
+            Map<UUID, TekstiKappaleViite> aliopsTekstit = new HashMap<>();
+            flattenTekstikappaleviitteet(aliopsTekstit, aliops.getTekstit());
+            aliops.getTekstit().getLapset().clear();
+            aliopsTekstit.values().stream()
+                    .forEach((teksti) -> {
+                        teksti.setVanhempi(aliops.getTekstit());
+                        teksti.getLapset().clear();
+                    });
+//            aliops.getTekstit().getLapset().addAll(aliopsTekstit.values());
+//            for (TekstiKappaleViite lapsi : ops.getTekstit().getLapset()) {
+//                TekstiKappaleViite uusiSolmu = viiteRepository.save(lapsi.kopioiHierarkia(aliopsTekstit));
+//                uusiSolmu.setVanhempi(aliops.getTekstit());
+//                aliops.getTekstit().getLapset().add(uusiSolmu);
+//            }
+//            aliops.getTekstit().getLapset().addAll(aliopsTekstit.values());
+        }
+    }
+
     @Override
     public OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
@@ -617,17 +680,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public TekstiKappaleViiteDto.Puu getTekstit(Long opsId) {
+    public <T> T getTekstit(Long opsId, Class<T> t) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
-        return mapper.map(ops.getTekstit(), TekstiKappaleViiteDto.Puu.class);
+        return mapper.map(ops.getTekstit(), t);
     }
 
     @Override
     public TekstiKappaleViiteDto.Matala addTekstiKappale(Long opsId, TekstiKappaleViiteDto.Matala viite) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
-
         // Lisätään viite juurinoden alle
         return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, ops.getTekstit().getId(), viite);
     }

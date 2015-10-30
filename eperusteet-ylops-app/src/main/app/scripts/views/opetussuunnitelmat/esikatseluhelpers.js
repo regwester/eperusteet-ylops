@@ -44,7 +44,7 @@ ylopsApp
         id: lapsi.id,
         url: $state.href('root.opetussuunnitelmat.yksi.esikatselu.tekstikappale', {tekstikappaleId: lapsi.id}),
         depth: depth,
-        valmis: lapsi.valmis
+        valmis: lapsi.tekstiKappale.valmis
       });
       lapsi.depth = depth;
       nodemap[lapsi.id] = lapsi;

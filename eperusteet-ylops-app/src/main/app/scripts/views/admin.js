@@ -17,62 +17,17 @@
 'use strict';
 
 ylopsApp
-.controller('AdminController', function ($scope, ListaSorter, OpsListaService, Algoritmit, OpsinTila, Notifikaatiot) {
+.controller('AdminController', function ($scope, ListaSorter, Algoritmit, OpsinTila, Notifikaatiot, opsStatistiikka) {
   $scope.sorter = ListaSorter.init($scope);
   $scope.opsiLista = true;
   $scope.tilat = ['luonnos', 'valmis', 'poistettu'];
-  $scope.items = OpsListaService.query();
+  $scope.items = opsStatistiikka;
+  $scope.$$collapsestats = true;
 
   $scope.paginate = {
     perPage: 10,
     current: 1
   };
-
-  function updatePageinfo() {
-    $scope.lastVisible = Math.min(($scope.paginate.current - 1) * $scope.paginate.perPage + $scope.paginate.perPage,
-      $scope.filtered.length);
-  }
-
-  function generoiStatsit(items) {
-    var statsit = {};
-    statsit.maaratKielittain = _.reduce(items, function(acc, item) {
-      _.each(item.julkaisukielet, function(jk) {
-        acc[jk] = _.isNumber(acc[jk]) ? acc[jk] + 1 : 0;
-      });
-      return acc;
-    }, {});
-    _.each(items, function(item) {
-      item.$$taso = 1;
-      var koulutasoinen = _.any(item.organisaatiot, function(org) {
-        return _.findIndex(org.tyypit, 'Oppilaitos') !== -1;
-      });
-
-      if (koulutasoinen) {
-        item.$$taso = 0;
-      }
-
-      if (_.size(item.kunnat) > 1) {
-        item.$$taso = 2;
-      }
-    });
-
-    statsit.maaratTyypeittain = _.groupBy(items, 'koulutustyyppi');
-    statsit.maaratTasoittain = _.groupBy(items, '$$taso');
-    return statsit;
-  }
-
-  $scope.$watch('items', function () {
-    $scope.search.changed();
-    updatePageinfo();
-
-    $scope.statsit = generoiStatsit($scope.items);
-  }, true);
-
-  $scope.$watch('search.tilaRajain', function () {
-    $scope.search.changed($scope.search.term);
-  });
-
-  $scope.$watch('paginate.current', updatePageinfo);
 
   $scope.search = {
     term: '',
@@ -95,6 +50,50 @@ ylopsApp
       updatePageinfo();
     }
   };
+
+  function updatePageinfo() {
+    $scope.lastVisible = Math.min(($scope.paginate.current - 1) * $scope.paginate.perPage + $scope.paginate.perPage,
+      $scope.filtered.length);
+  }
+
+  function generoiStatsit(items) {
+    var statsit = {};
+    statsit.maaratKielittain = _.reduce(items, function(acc, item) {
+      _.each(item.julkaisukielet, function(jk) {
+        acc[jk] = _.isNumber(acc[jk]) ? acc[jk] + 1 : 0;
+      });
+      return acc;
+    }, {});
+
+    _.each(items, function(item) {
+      item.$$taso = 1;
+      var koulutasoinen = _.any(item.organisaatiot, function(org) {
+        return _.findIndex(org.tyypit, 'Oppilaitos') !== -1;
+      });
+
+      if (koulutasoinen) {
+        item.$$taso = 0;
+      }
+
+      if (_.size(item.kunnat) > 1) {
+        item.$$taso = 2;
+      }
+    });
+
+    statsit.maaratTyypeittain = _.groupBy(items, 'koulutustyyppi');
+    statsit.maaratTasoittain = _.groupBy(items, '$$taso');
+    statsit.maaratTiloittain = _.groupBy(items, 'tila');
+    return statsit;
+  }
+
+  // updatePageinfo();
+  $scope.statsit = generoiStatsit($scope.items);
+
+  $scope.$watch('search.tilaRajain', function () {
+    $scope.search.changed($scope.search.term);
+  });
+
+  $scope.$watch('paginate.current', updatePageinfo);
 
   $scope.palauta = function (ops) {
     OpsinTila.palauta(ops, function (res) {

@@ -7,9 +7,8 @@
 
   <div class="ops-header-tiedot">
     <h1 ng-bind="model.nimi | kaanna"></h1>
-    <a ng-show="!isPohjaState && isPohjaTyyppi" ui-sref="root.pohjat.yksi.sisalto({pohjaId: opsId})">{{ 'nayta-pohjana' | kaanna }} &gt;&gt;</a>
-    <a ng-show="isPohjaState" ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: pohjaId})">{{ 'nayta-opsina' | kaanna }} &gt;&gt;</a>
-
+    <button ng-if="!isPohjaState" ui-sref="root.opetussuunnitelmat.yksi.esikatselu" style="margin-top: 16px"
+            class="btn btn-default" icon-role="sunglasses" kaanna="'esikatselu'"></button>
     <ul class="ops-header-linkit" role="navigation">
       <li ng-repeat="linkki in linkit" ng-class="{active: linkki.active}">
         <a ng-hide="linkki.action" ng-href="{{linkki.url}}" icon-role="{{linkki.role}}"><span ng-bind="linkki.label | kaanna"></span></a>

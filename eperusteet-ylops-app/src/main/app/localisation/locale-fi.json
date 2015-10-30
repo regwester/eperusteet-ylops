@@ -27,9 +27,11 @@
   "ei-tekstikappaleita": "Ei tekstikappaleita",
   "ei-valinnaisia-aineita": "Valinnaisia aineita ei ole luotu.",
   "esikatselu": "Esikatselu",
-  "kasitteet": "Kasitteet",
+  "kasitteet": "Käsitteet",
+  "ei-termeja": "Käsitteitä ei ole määritelty",
   "opetussuunnitelman-termisto": "Opetussuunnitelman termistö",
   "etusivu": "Etusivu",
+  "esikatselu": "Esikatselu",
   "fi": "suomi",
   "hallinta": "Hallinta",
   "haluatko-jatkaa": "Haluatko jatkaa?",
@@ -44,6 +46,7 @@
   "kaikki-vuosiluokkaistettu": "Kaikki tavoitteet vuosiluokkaistettu",
   "kaikkia-ei-vuosiluokkaistettu": "Kaikkia tavoitteita ei ole vuosiluokkaistettu",
   "kappaleen-otsikko": "Otsikko",
+  "kasitteet": "Käsitteet",
   "kayta-pohjaa": "Käytä pohjana:",
   "kayta-pohjaa-info": "Mikäli koulukohtainen opetussuunnitelma laaditaan osana kunnan opetussuunnitelmaa valitse valikosta oman kuntasi pohja.",
   "kelvoton-pvm": "Kelvoton päivämäärä",
@@ -149,6 +152,7 @@
   "oppiaineittain": "Oppiaineittain",
   "oppimaaran-poisto-onnistui": "Oppimäärän poisto onnistui",
   "ops-tyokalu": "OPS-työkalu",
+  "eperusteet-ops-tyokalu": "ePerusteet OPS-työkalu",
   "opsin-kaikkia-oppiaineita-ei-ole-vuosiluokkaistettu": "Kaikkia oppiaineita ei ole vielä vuosiluokkaistettu",
   "opsin-nimi": "Opetussuunnitelman nimi",
   "opsin-teksti": "Opetussuunnitelman teksti",
@@ -204,6 +208,7 @@
   "tavoitteiden-muokkauksen-ohjeteksti": "Pääset muokkaamaan tavoitteita ja sisältöjä vuosiluokittain luonnin jälkeenkin.",
   "tavoitteiden-vuosiluokkaistaminen": "Vuosiluokkaista tavoitteet",
   "tekstikappaleet": "Tekstikappaleet",
+  "lisaa-tekstikappale": "Lisää tekstikappale",
   "tekstikentalla-ei-sisaltoa-kielella-fi": "FI",
   "tekstikentalla-ei-sisaltoa-kielella-fi-kuvaus": "Sisältö puuttuu suomeksi",
   "tekstikentalla-ei-sisaltoa-kielella-se": "SE",
@@ -289,6 +294,8 @@
   "ylikirjoita-uusi-sisalto": "Jatka muokkaamista",
   "ylikirjoittaessasi-voit-palauttaa": "Jatkaessasi voit ylikirjoittaa toisten muutokset. Ne säilyvät edelleen muutoshistoriassa ja voit palauttaa ne sieltä",
 
+  "hae-otsikoista": "Hae otsikoista",
+
   "termi-plugin-select-placeholder": "Valitse käsite...",
   "termi-plugin-title": "Lisää viittaus tai muokkaa viittausta käsitteeseen",
   "termi-plugin-menu-muokkaa": "Muokkaa viittausta käsitteeseen",
@@ -309,6 +316,7 @@
 
   "tilastot": "Tilastot",
   "maarat-kielittain": "Kielittäin",
+  "maarat-tiloittain": "Tiloittain",
   "maarat-kuntatasoittain": "Tasoittain",
   "maarat-koulutustyypeittain": "Koulutustyypeittäin",
   "kuntataso-0": "Koulut",
@@ -329,7 +337,18 @@
   "epimage-plugin-lisaa-uusi": "Lataa uusi kuva",
   "epimage-plugin-valitse": "Valitse tiedosto...",
   "epimage-plugin-tallennettu": "Kuva tallennettu.",
-  
+  "paivitys-onnistui": "Päivitys onnistui",
+
+  "muokkaa-hierarkiaa": "Muokkaa hierarkiaa",
+
+  "ops-alihierarkia-muokkaus": "Opetussuunnitelman hierarkian muokkaus",
+  "opsilla-ei-aliopseja": "Opetussuunnitelman pohjalta ei ole tehty yhtään opetussuunnitelmaa.",
+  "paivita-rakenne": "Päivitä rakenne",
+  "paivita-rakenne-ohje": "Päivittää opetussuunnitelman rakenteen kaikkiin sen pohjalta tehtyihin opetussuunnitelmiin.",
+
+  "yhteiset-osuudet": "Yhteiset osuudet",
   "nayta-opsina": "Näytä OPSina",
-  "nayta-pohjana": "Näytä pohjana"
+  "nayta-pohjana": "Näytä pohjana",
+  "synkronoi-perusteeseen": "Synkronoi opetussuunnitelmiin",
+  "ops-pohja": "Pohjan sisältö"
 }

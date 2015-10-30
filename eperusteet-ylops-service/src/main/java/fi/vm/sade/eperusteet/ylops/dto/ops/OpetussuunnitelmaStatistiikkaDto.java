@@ -13,12 +13,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.teksti;
+package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,16 +33,15 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TekstiKappaleKevytDto {
+public class OpetussuunnitelmaStatistiikkaDto implements Serializable {
     private Long id;
-    private Date luotu;
+    private Set<Kieli> julkaisukielet;
+    private Set<OrganisaatioDto> organisaatiot;
+    private Set<KoodistoDto> kunnat;
+    private LokalisoituTekstiDto kuvaus;
     private Date muokattu;
-    private String muokkaaja;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String muokkaajanNimi;
     private LokalisoituTekstiDto nimi;
+    private String perusteenDiaarinumero;
     private Tila tila;
-    private UUID tunniste;
-    private Boolean pakollinen;
-    private Boolean valmis;
+    private KoulutusTyyppi koulutustyyppi;
 }

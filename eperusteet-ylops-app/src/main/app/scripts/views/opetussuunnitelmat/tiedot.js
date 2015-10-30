@@ -19,7 +19,7 @@
 
 ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function ($scope, Editointikontrollit, $stateParams, $state,
-  $timeout, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
+  $timeout, $q, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
   PeruskoulutoimijaHaku, kunnat, Kieli) {
 
   $scope.kielivalinnat = []; // Täytetään pohjan perusteella
@@ -297,6 +297,13 @@ ylopsApp
       $scope.koululista = [];
     }
   };
+
+    $scope.koulutustyyppiOnValittu = false;
+
+    $scope.avataInputs = function(valittuKoulutustyyppi) {
+      var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6'];
+      return _.includes(validTyypit, valittuKoulutustyyppi) ? ($scope.koulutustyyppiOnValittu = true) : ($scope.koulutustyyppiOnValittu = false);
+    };
 
   $scope.haeKoulutoimijat = function () {
 

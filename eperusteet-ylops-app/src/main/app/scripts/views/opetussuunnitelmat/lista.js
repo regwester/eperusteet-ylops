@@ -21,7 +21,7 @@ ylopsApp
     this.init = function ($scope) {
       $scope.nimiSort = Utils.sort;
       return {
-        key: 'muokattu',
+        key: 'luotu',
         desc: true,
         set: function (key) {
           if (key === $scope.sorter.key) {
@@ -35,8 +35,8 @@ ylopsApp
           switch($scope.sorter.key) {
             case 'nimi':
               return Utils.sort(item);
-            case 'muokattu':
-              return item.muokattu;
+            case 'luotu':
+              return item.luotu;
             case 'tila':
               return Utils.nameSort(item, 'tila');
             case 'koulutustoimija':

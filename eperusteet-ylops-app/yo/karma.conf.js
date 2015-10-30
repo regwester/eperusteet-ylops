@@ -28,7 +28,7 @@ module.exports = function(config) {
       'app/bower_components/angular-ui-bootstrap-bower/ui-bootstrap.js',
       'app/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js',
       'app/bower_components/angular-ui-utils/ui-utils.js',
-      'app/bower_components/angular-ui-sortable/sortable.js',
+      'app/bower_components/angular-ui-sortable/src/sortable.js',
       'app/bower_components/angular-elastic/elastic.js',
       'app/bower_components/angular-ui-router/release/angular-ui-router.js',
       'app/bower_components/angular-ui-tree/dist/angular-ui-tree.min.js',
@@ -39,6 +39,7 @@ module.exports = function(config) {
       'app/bower_components/angular-ui-select/dist/select.min.js',
       'app/bower_components/ng-file-upload/ng-file-upload.min.js',
       'app/scripts/*.js',
+      'app/bower_components/eperusteet-frontend-utils/*.js',
       'app/scripts/**/*.js',
       '../test/js/**/*.spec.js',
       'app/views/**/*.html'

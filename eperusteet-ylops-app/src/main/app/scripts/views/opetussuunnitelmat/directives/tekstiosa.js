@@ -24,16 +24,13 @@ ylopsApp
       model: '=perusteenTekstiosa',
       muokattava: '=?',
       callbacks: '=',
-      config: '=',
+      startCollapsed: '=?',
       ohjepallo: '='
     },
     templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
     controller: 'TekstiosaController',
     link: function (scope, element, attrs) {
       scope.editable = !!attrs.muokattava;
-      scope.options = {
-        collapsed: scope.editable
-      };
       scope.focusAndScroll = function () {
         $timeout(function () {
           var el = element.find('[ckeditor]');
@@ -49,10 +46,11 @@ ylopsApp
 
 .controller('TekstiosaController', function ($state, $scope, Editointikontrollit, Kieli) {
   $scope.editMode = false;
+  $scope.collapsed = _.isUndefined($scope.startCollapsed) ? true : $scope.startCollapsed;
 
   function validoi() {
     if ($scope.muokattava) {
-      if (!$scope.model && $state.current.name === 'root.opetussuunnitelmat.yksi.oppiaine.oppiaine') {
+      if (!$scope.model && $state.current.name === 'root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine') {
         return;
       }
       $scope.muokattava.otsikko = $scope.muokattava.otsikko || {};

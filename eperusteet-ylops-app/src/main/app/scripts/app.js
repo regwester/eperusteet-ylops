@@ -30,7 +30,8 @@ var ylopsApp = angular.module('ylopsApp', [
   'ui.select',
   'ui.tree',
   'ui.sortable',
-  'ngFileUpload'
+  'ngFileUpload',
+  'eGenericTree'
 ]);
 
 /* jshint ignore:end */
@@ -54,6 +55,13 @@ ylopsApp
       VirheService.virhe({state: toState.to});
     });
 
+    function redirectTo(event, toState, toParams) {
+      if (_.isString(toState.redirectTo)) {
+        event.preventDefault();
+        $state.go(toState.redirectTo, toParams);
+      }
+    }
+
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       $rootScope.lastState = {
         state: _.clone(fromState),
@@ -73,6 +81,9 @@ ylopsApp
           primaryBtn: 'poistu-sivulta'
         })();
       }
+      else {
+        redirectTo(event, toState, toParams);
+      }
     });
 
     $window.addEventListener('beforeunload', function(event) {
@@ -85,11 +96,15 @@ ylopsApp
   })
   .config(function ($tooltipProvider) {
     $tooltipProvider.setTriggers({
-        'mouseenter': 'mouseleave',
-        'click': 'click',
-        'focus': 'blur',
-        'never': 'mouseleave',
-        'show': 'hide'
+      mouseenter: 'mouseleave',
+      click: 'click',
+      focus: 'blur',
+      never: 'mouseleave',
+      show: 'hide'
+    });
+    $tooltipProvider.options({
+      popupDelay: 500,
+      placement: 'bottom'
     });
   })
   .run(function($templateCache) {
