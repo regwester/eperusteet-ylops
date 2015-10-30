@@ -1,7 +1,7 @@
 <ops-header model="model"></ops-header>
 
 <div class="navigaatio-content-plain">
-  <ul class="nav nav-tabs">
+  <ul ng-if="!luonnissa" class="nav nav-tabs">
     <li ui-sref-active="active">
       <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" kaanna="'yhteiset-osuudet'"></a>
     </li>

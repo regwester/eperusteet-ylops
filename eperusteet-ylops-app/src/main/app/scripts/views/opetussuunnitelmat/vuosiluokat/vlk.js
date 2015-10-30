@@ -156,7 +156,7 @@ ylopsApp
   Editointikontrollit.startEditing();
 })
 
-.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
+.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit, OpsNavigaatio,
   MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
   baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,
   OpsService, Varmistusdialogi) {

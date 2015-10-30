@@ -144,7 +144,7 @@ ylopsApp
       acceptDrop: _.constant(true),
       sortableClass: _.constant('is-draggable-into'),
       extension: function(node, scope) {
-        scope.taustanVari = node.$$depth === 0 ? '#f2f2f2' : '#ffffff';
+        scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
 
         scope.poistaTekstikappale = function(osio, node) {
           TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {

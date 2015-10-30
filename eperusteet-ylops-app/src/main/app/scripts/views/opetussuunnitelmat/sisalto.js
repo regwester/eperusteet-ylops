@@ -208,7 +208,7 @@ ylopsApp
           return (_.isEmpty($scope.rajaus.term) && node.$$nodeParent.$$hidden) || node.$$searchHidden;
         }
     },
-    template: function(node) {
+    template: function() {
       return $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate';
     },
     children: function(node) {
@@ -226,7 +226,7 @@ ylopsApp
       }
     },
     extension: function(node, scope) {
-      scope.taustanVari = node.$$depth === 0 ? '#f2f2f2' : '#ffffff';
+      scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
       scope.addLapsi = lisaaTekstikappale;
     }
   });
@@ -264,7 +264,7 @@ ylopsApp
       parentTk.lapset.push(res);
     })
     .catch(Notifikaatiot.serverCb);
-  };
+  }
 })
 .controller('OpsAlihierarkiaModalController', function($scope, $modalInstance, ops, aliOpsit, OpetussuunnitelmaCRUD) {
   $scope.ops = ops;

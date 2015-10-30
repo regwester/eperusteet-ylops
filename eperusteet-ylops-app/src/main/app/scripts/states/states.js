@@ -96,14 +96,11 @@ ylopsApp
             return opsOikeudet.fetch($stateParams);
           }]
         },
-        controller: function ($scope, opsModel, vuosiluokkakokonaisuudet, opsService, $rootScope) {
+        controller: function ($scope, $stateParams, opsModel, vuosiluokkakokonaisuudet, opsService) {
           $scope.model = opsModel;
           $scope.isEditable = opsService.isEditable;
           $scope.vuosiluokkakokonaisuudet = vuosiluokkakokonaisuudet;
-          $scope.$on('rakenne:updated', function () {
-            $scope.model = opsService.get();
-            $rootScope.$broadcast('murupolku:update');
-          });
+          $scope.luonnissa = $stateParams.id === 'uusi';
         }
       })
 
@@ -191,6 +188,9 @@ ylopsApp
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive(false);
+          }],
+          tekstit: ['OpetussuunnitelmanTekstit', '$stateParams', function(ot, $stateParams) {
+            return ot.get({ opsId: $stateParams.id }).$promise;
           }]
         }
       })

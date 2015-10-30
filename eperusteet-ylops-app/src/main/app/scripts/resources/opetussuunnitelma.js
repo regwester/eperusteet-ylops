@@ -48,6 +48,7 @@ ylopsApp
       query: {method: 'GET', isArray: false}
     });
   })
+
   .factory('OpetussuunnitelmanTekstit', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/tekstit/:viiteId', {
       viiteId: '@id'
