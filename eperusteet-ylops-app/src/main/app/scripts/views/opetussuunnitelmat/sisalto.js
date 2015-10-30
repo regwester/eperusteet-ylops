@@ -111,9 +111,10 @@ ylopsApp
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
             '    </span>' +
-            '    <a href="" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({ tekstikappaleId: node.id })">' +
-            '       <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '    <a ng-if="node.$$depth > 0" href="" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({ tekstikappaleId: node.id })"' +
+            '          ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna">' +
             '    </a>' +
+            '    <span ng-if="node.$$depth === 0" ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    <a ng-click="addLapsi(node)" style="margin-left: 10px" ng-show="node.$$depth === 0" href="" icon-role="add" tooltip="{{ \'lisaa-aliotsikko\' | kaanna }}"></a>' +
             '    <span class="pull-right">' +
             '        <span valmius-ikoni="node.tekstiKappale"></span>' +
