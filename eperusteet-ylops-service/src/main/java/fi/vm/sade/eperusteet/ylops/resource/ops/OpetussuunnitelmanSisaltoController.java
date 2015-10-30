@@ -60,9 +60,10 @@ public class OpetussuunnitelmanSisaltoController {
     @ResponseBody
     public ResponseEntity<TekstiKappaleViiteDto.Matala> addTekstiKappaleLapsi(
             @PathVariable("opsId") final Long id,
-            @PathVariable("viiteId") final Long viiteId) {
+            @PathVariable("viiteId") final Long viiteId,
+            @RequestBody(required = false) TekstiKappaleViiteDto.Matala tekstiKappaleViiteDto) {
         return new ResponseEntity<>(
-                opetussuunnitelmaService.addTekstiKappaleLapsi(id, viiteId, null), HttpStatus.CREATED);
+                opetussuunnitelmaService.addTekstiKappaleLapsi(id, viiteId, tekstiKappaleViiteDto), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/tekstit/{parentId}/lapsi/{childId}", method = RequestMethod.POST)

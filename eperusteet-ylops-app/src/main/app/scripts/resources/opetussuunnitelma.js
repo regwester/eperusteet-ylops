@@ -53,6 +53,7 @@ ylopsApp
       viiteId: '@id'
     }, {
       setChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:parentId/lapsi/:childId'},
+      addChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/lapsi'},
       kloonaaTekstikappale: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/muokattavakopio'},
       otsikot: {method: 'GET', url: YlopsResources.OPS + '/otsikot'},
     });

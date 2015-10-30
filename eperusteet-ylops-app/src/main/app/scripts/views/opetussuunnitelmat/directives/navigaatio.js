@@ -80,7 +80,7 @@ ylopsApp
       _.each(item.items, function (alilapsi) {
         alilapsi.active = false;
       });
-      if (inTekstikappale) {
+      if (inTekstikappale && $scope.model.tekstit) {
         var root = _.find($scope.model.tekstit.lapset, {id: item.id});
         if (root) {
           var found = findChild(root, $stateParams.tekstikappaleId);

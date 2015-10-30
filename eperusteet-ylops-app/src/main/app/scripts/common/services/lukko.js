@@ -74,7 +74,7 @@ ylopsApp
 
     if (_.endsWith($state.current.name, 'yksi.tekstikappale')) {
       resource = OpetussuunnitelmanTekstitLukko;
-    } else if (_.endsWith($state.current.name, 'yksi.sisalto')) {
+    } else if (_.endsWith($state.current.name, 'yksi')) {
       resource = OpetussuunnitelmanTekstitRakenneLukko;
     } else if (_.endsWith($state.current.name, 'yksi.opetus.oppiaine.oppiaine') ||
                _.endsWith($state.current.name, 'yksi.uusioppiaine')) {

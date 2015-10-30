@@ -83,7 +83,9 @@ ylopsApp
     updateMuokkaustieto();
 
     function fetchOhje(model, cb) {
-      OhjeCRUD.forTekstikappale({uuid: model.tekstiKappale.tunniste}, function (ohje) {
+      OhjeCRUD.forTekstikappale({
+        uuid: model.tekstiKappale.tunniste
+      }, function(ohje) {
         _.each(TYYPIT, function (tyyppi) {
           var found = _.find(ohje, function (item) {
             return item.tyyppi === tyyppi;

@@ -1,29 +1,24 @@
 <div class="row" ng-show="model.$resolved">
-  <div>
-    <h2>
-      <span kaanna="'tekstikappaleet'"></span>
-      <span class="pull-right">
-        <button ng-hide="$$isRakenneMuokkaus" class="btn btn-default" icon-role="list-alt" kaanna="'muokkaa-hierarkiaa'" ng-click="muokkaaAlihierarkiaa()"></button>
-        <button ng-hide="$$isRakenneMuokkaus" icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
-        <button ng-hide="$$isRakenneMuokkaus" icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()" kaanna="'muokkaa-rakennetta'"></button>
-      </span>
-    </h2>
-  </div>
-  <div class="tekstisisalto">
-    <generic-tree ui-sortable-config="sortableConfig" tree-provider="tekstitProvider"></generic-tree>
-  </div>
+    <h2 style="margin-left: 10px;" kaanna="'tekstikappaleet'"></h2>
 </div>
 
-<!-- <div ng&#45;if="model.koulutustyyppi === 'koulutustyyppi_16'" class="col&#45;md&#45;4 col&#45;sm&#45;6"> -->
-<!--   <div class="list&#45;group"> -->
-<!--     <div class="list&#45;group&#45;item list&#45;group&#45;header"> -->
-<!--       <a kaanna="'vuosiluokat&#45;ja&#45;oppiaineet'" ui&#45;sref="root.opetussuunnitelmat.yksi.sisaltoalue({alueId: 'vuosiluokat'})"></a> -->
-<!--     </div> -->
-<!--     <div ng&#45;repeat="item in vuosiluokkakokonaisuudet" class="list&#45;group&#45;item"> -->
-<!--       <a ng&#45;bind="item.vuosiluokkakokonaisuus.nimi | kaanna" -->
-<!--         ui&#45;sref="root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus({vlkId: item.vuosiluokkakokonaisuus.id})"></a> -->
-<!--       <a class="pull&#45;right" href="" icon&#45;role="sort" -->
-<!--          ui&#45;sref="root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuussort({vlkId: item.vuosiluokkakokonaisuus.id})"></a> -->
-<!--     </div> -->
-<!--   </div> -->
-<!-- </div> -->
+<div class="row" ng-hide="$$isRakenneMuokkaus">
+    <div class="col-xs-8">
+        <div style="width: 400px" class="input-group">
+            <span class="input-group-addon" icon-role="search"></span>
+            <input ng-change="rajaus.onUpdate(rajaus.term)" class="form-control" ng-model="rajaus.term" placeholder="{{ 'hae-otsikoista' | kaanna }}"></input>
+            <span ng-show="rajaus.term.length > 0" class="input-group-addon rajaus-clear" ng-click="rajaus.term = ''; rajaus.onUpdate(rajaus.term)" icon-role="remove"></span>
+        </div>
+    </div>
+    <div class="col-xs-4">
+        <div class="pull-right">
+            <!-- Ota käyttöön myöhemmin -->
+            <!-- <button class="btn btn&#45;default" icon&#45;role="list&#45;alt" kaanna="'muokkaa&#45;hierarkiaa'" ng&#45;click="muokkaaAlihierarkiaa()"></button> -->
+            <button icon-role="sort" class="btn btn-default" ng-click="muokkaaRakennetta()" kaanna="'muokkaa-rakennetta'"></button>
+        </div>
+    </div>
+</div>
+
+<div class="tekstisisalto">
+    <generic-tree ui-sortable-config="sortableConfig" tree-provider="tekstitProvider"></generic-tree>
+</div>

@@ -170,7 +170,7 @@ ylopsApp
         controller: 'TekstikappaleController',
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
+            OpsNavigaatio.setActive(false);
           }]
         }
       })
@@ -319,10 +319,10 @@ ylopsApp
           }],
           tekstikappaleModel: ['pohjaId', 'tekstikappaleId', 'OpetussuunnitelmanTekstit', function (pohjaId, tekstikappaleId, OpetussuunnitelmanTekstit) {
             return OpetussuunnitelmanTekstit.get({opsId: pohjaId, viiteId: tekstikappaleId}).$promise;
+          }],
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
+            OpsNavigaatio.setActive(false);
           }]
-          /*naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
-          }]*/
         }
       });
   });

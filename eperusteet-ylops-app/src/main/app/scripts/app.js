@@ -55,6 +55,13 @@ ylopsApp
       VirheService.virhe({state: toState.to});
     });
 
+    function redirectTo(event, toState, toParams) {
+      if (_.isString(toState.redirectTo)) {
+        event.preventDefault();
+        $state.go(toState.redirectTo, toParams);
+      }
+    }
+
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       $rootScope.lastState = {
         state: _.clone(fromState),
@@ -73,6 +80,9 @@ ylopsApp
           lisaTeksti: 'haluatko-jatkaa',
           primaryBtn: 'poistu-sivulta'
         })();
+      }
+      else {
+        redirectTo(event, toState, toParams);
       }
     });
 

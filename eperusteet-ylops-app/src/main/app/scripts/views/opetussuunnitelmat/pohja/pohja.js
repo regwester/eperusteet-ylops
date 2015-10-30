@@ -17,11 +17,12 @@
 'use strict';
 
 ylopsApp
-.controller('PohjaController', function ($scope, $state, pohjaModel) {
+.controller('PohjaController', function ($scope, $state, pohjaModel, $stateParams) {
   if ($state.current.name === 'root.pohjat.yksi') {
     $state.go('root.pohjat.yksi.sisalto', {}, {location: 'replace'});
   }
   $scope.model = pohjaModel;
+  $scope.luonnissa = $stateParams.pohjaId === 'uusi';
   // FIXME: Miksi tämä on olemassa?
   // $scope.$on('rakenne:updated', function () {
   //   $scope.model = opsService.getPohja();
