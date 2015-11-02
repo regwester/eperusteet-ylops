@@ -18,28 +18,17 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import com.codepoetics.protonpack.StreamUtils;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksenkohdealue;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Tavoitteenarviointi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -54,15 +43,11 @@ import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -70,7 +55,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import java.util.Objects;
 
 /**
  * @author mikkom
@@ -336,7 +320,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                                 Opetuksentavoite t = new Opetuksentavoite();
                                 t.setTunniste(UUID.randomUUID());
                                 t.setTavoite(tekstiosa.getOtsikko());
-                                t.setSisaltoalueet(Collections.singleton(sisaltoalue));
+                                t.connectSisaltoalueet(Collections.singleton(sisaltoalue));
                                 return t;
                             })
                        .collect(Collectors.toList());
@@ -429,6 +413,20 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
                                      .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
+        dto.getTavoitteet().forEach(opetuksenTavoiteDto -> {
+            opetuksenTavoiteDto.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalueDto -> {
+                    OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue = oppiaineenVuosiluokka.getTavoite(opetuksenTavoiteDto.getTunniste())
+                            .get().getOpetuksenkeskeinenSisaltoalueById(opetuksenKeskeinensisaltoalueDto.getId()).get();
+
+                if (opetuksenKeskeinensisaltoalueDto.getOmaKuvaus() != null) {
+                    opetuksenKeskeinensisaltoalue.setOmaKuvaus(mapper.map(opetuksenKeskeinensisaltoalueDto.getOmaKuvaus(), LokalisoituTeksti.class));
+                }else{
+                    opetuksenKeskeinensisaltoalue.setOmaKuvaus(null);
+                }
+
+            });
+        });
+
         return mapper.map(oppiaineenVuosiluokka, OppiaineenVuosiluokkaDto.class);
     }
 
@@ -516,12 +514,14 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 opst.setLaajattavoitteet(t.getLaajattavoitteet().stream()
                     .map(l -> new LaajaalainenosaaminenViite(l.getTunniste().toString()))
                     .collect(Collectors.toSet()));
-                opst.setSisaltoalueet(t.getSisaltoalueet().stream()
-                    .map(s -> alueet.get(s.getTunniste()))
-                    .collect(Collectors.toSet()));
+
+                opst.connectSisaltoalueet(t.getSisaltoalueet().stream()
+                        .map(s -> alueet.get(s.getTunniste()))
+                        .collect(Collectors.toSet()));
+
                 opst.setKohdealueet(t.getKohdealueet().stream()
-                    .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
-                    .collect(Collectors.toSet()));
+                        .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
+                        .collect(Collectors.toSet()));
                 opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
                     .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getHyvanOsaamisenKuvaus())))
                     .collect(Collectors.toSet()));

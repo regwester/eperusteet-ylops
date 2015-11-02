@@ -141,6 +141,7 @@ ylopsApp
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.nimiOrder = Utils.sort;
+  $scope.options = {};
 
   function refetch() {
     OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
@@ -150,9 +151,25 @@ ylopsApp
   }
   refetch();
 
-  $scope.options = {
-    editing: false,
-    isEditable: OpsService.isEditable
+  $scope.muokkaaKuvausta = function( muokattava ){
+    muokattava.isEditing = true;
+    Editointikontrollit.startEditing();
+  };
+
+  $scope.naytaKuvaus = function(sisaltoalue, id, tavoiteTunniste){
+
+    var kuvaus = _.find( _.find( $scope.vuosiluokka.tavoitteet, { 'id': id }).sisaltoalueet, function(sAlue){
+      return (sisaltoalue.tunniste === sAlue.sisaltoalueet.tunniste);
+    });
+
+    $scope.muokattavat[tavoiteTunniste].muokattavaKuvaus = {
+      kaytaOmaaKuvausta: (kuvaus && kuvaus.omaKuvaus)?true:false,
+      omaKuvaus: (kuvaus && kuvaus.omaKuvaus)?kuvaus.omaKuvaus:{},
+      kuvaus: sisaltoalue.kuvaus,
+      sisaltoalueenId: kuvaus.id,
+      isEditing: false
+    };
+
   };
 
   $scope.callbacks = {
@@ -174,6 +191,14 @@ ylopsApp
         var postdata = angular.copy($scope.vuosiluokka);
         _.each(postdata.tavoitteet, function (tavoite) {
           tavoite.tavoite = $scope.muokattavat[tavoite.tunniste].teksti;
+
+          if( $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus ){
+            var sisaltoalue = _.findWhere( tavoite.sisaltoalueet, {id: $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.sisaltoalueenId});
+            sisaltoalue.omaKuvaus = ( $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.kaytaOmaaKuvausta )?
+                $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.omaKuvaus:null;
+            $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.isEditing = false;
+          }
+
           delete tavoite.$sisaltoalueet;
           delete tavoite.$kohdealue;
           delete tavoite.$laajaalaiset;
