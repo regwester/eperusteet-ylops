@@ -141,7 +141,6 @@ ylopsApp
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.nimiOrder = Utils.sort;
-  //$scope.options = {};
 
   function refetch() {
     OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
