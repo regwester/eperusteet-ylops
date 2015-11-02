@@ -1,8 +1,7 @@
 <div>
   <div>
     <h2>
-      <span kaanna="'ops-pohja'"></span>
-      (<span kaanna="model.koulutustyyppi"></span>)
+      <span kaanna="'tekstikappaleet'"></span>
       <span class="pull-right">
         <button ng-hide="$$isRakenneMuokkaus" icon-role="refresh" class="btn btn-default" kaanna="'synkronoi-perusteeseen'" ng-click="sync()"></button>
         <button ng-hide="$$isRakenneMuokkaus" icon-role="add" class="btn btn-default" kaanna="'lisaa-tekstikappale'" ng-click="lisaaTekstikappale()"></button>
@@ -10,6 +9,7 @@
       </span>
     </h2>
   </div>
+
   <div class="tekstisisalto">
       <generic-tree ui-sortable-config="sortableConfig" tree-provider="tekstitProvider"></generic-tree>
   </div>

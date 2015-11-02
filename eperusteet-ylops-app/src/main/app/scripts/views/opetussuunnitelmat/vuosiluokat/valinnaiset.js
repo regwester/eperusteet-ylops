@@ -29,7 +29,7 @@ ylopsApp
   }).value();
 
   $scope.addOppiaine = function () {
-    $state.go('root.opetussuunnitelmat.yksi.uusioppiaine', {
+    $state.go('root.opetussuunnitelmat.yksi.opetus.uusioppiaine', {
       vlkId: $stateParams.vlkId
     });
   };

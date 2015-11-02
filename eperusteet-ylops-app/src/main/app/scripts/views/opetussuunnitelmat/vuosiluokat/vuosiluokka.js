@@ -45,7 +45,7 @@ ylopsApp
     return _.endsWith($state.current.name, 'vuosiluokka.' + name);
   };
 
-  if ($state.is('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka')) {
+  if ($state.is('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka')) {
     $state.go('.tavoitteet', {}, {location: 'replace'});
   }
 })
@@ -67,7 +67,7 @@ ylopsApp
         item.$kohdealue = perusteKohdealueet[_.first(perusteTavoite.kohdealueet)];
         item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, function (tunniste) {
           var laajaalainen = scope.laajaalaiset[tunniste];
-          laajaalainen.$url = $state.href('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus',
+          laajaalainen.$url = $state.href('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus',
             {vlkId: $stateParams.vlkId}) + '#' + tunniste;
           return laajaalainen;
         });
@@ -152,7 +152,9 @@ ylopsApp
 
   $scope.options = {
     editing: false,
-    isEditable: OpsService.isEditable
+    isEditable: function() {
+      return $scope.oppiaine.oma && OpsService.isEditable();
+    }
   };
 
   $scope.callbacks = {
@@ -250,7 +252,9 @@ ylopsApp
 
   $scope.options = {
     editing: false,
-    isEditable: OpsService.isEditable
+    isEditable: function() {
+      return $scope.oppiaine.oma && OpsService.isEditable();
+    }
   };
 
   $scope.callbacks = {

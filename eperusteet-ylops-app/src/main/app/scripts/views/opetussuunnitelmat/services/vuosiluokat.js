@@ -130,7 +130,7 @@ ylopsApp
         label: oppiaine.nimi,
         id: oppiaine.id,
         vlkId: vlk.id,
-        url: $state.href('root.opetussuunnitelmat.yksi.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi}),
+        url: $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi}),
       };
     }
 
@@ -171,7 +171,7 @@ ylopsApp
       var item = {
         label: obj.nimi,
         id: obj.id,
-        url: $state.href('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: obj.id}),
+        url: $state.href('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {vlkId: obj.id}),
       };
       arr.push(item);
 

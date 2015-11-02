@@ -24,6 +24,7 @@ ylopsApp
   function mapSisalto(root) {
     return {
       id: root.id,
+      tekstiKappale: _.isObject(root.tekstiKappale) ? _.pick(root.tekstiKappale, 'id', 'tunniste') : null,
       lapset: _.map(root.lapset, mapSisalto)
     };
   }
@@ -99,23 +100,22 @@ ylopsApp
 })
 .run(function($templateCache) {
     $templateCache.put('sisaltoNodeEditingTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'new-halo\': node.$$newHalo }">' +
             '    <span ng-show="node.$$depth !== 0" class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
-            '    <span class="pull-right">' +
-            '        <a ng-show="node.omistussuhde === \'oma\'" icon-role="remove" ng-click="poistaTekstikappale(node.$$nodeParent, node)"></a>' +
-            '    </span>' +
             '</div>'
             );
     $templateCache.put('sisaltoNodeTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'search-halo\': node.$$showHalo, \'new-halo\': node.$$newHalo }">' +
             '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
             '    </span>' +
-            '    <a href="" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({ tekstikappaleId: node.id })">' +
-            '       <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '    <a ng-if="node.$$depth > 0" href="" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({ tekstikappaleId: node.id })"' +
+            '          ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna">' +
             '    </a>' +
+            '    <span ng-if="node.$$depth === 0" ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '    <a ng-click="addLapsi(node)" style="margin-left: 10px" ng-show="node.$$depth === 0" href="" icon-role="add" tooltip="{{ \'lisaa-aliotsikko\' | kaanna }}"></a>' +
             '    <span class="pull-right">' +
             '        <span valmius-ikoni="node.tekstiKappale"></span>' +
             '        <span class="muokattu-aika">' +
@@ -128,8 +128,35 @@ ylopsApp
 })
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit, $templateCache, $timeout,
       Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q, Editointikontrollit,
-      $modal, OpetussuunnitelmaCRUD) {
-  $scope.model = opsService.get($stateParams.id) || opsModel;
+      $modal, OpetussuunnitelmaCRUD, tekstit, Algoritmit) {
+  $scope.model = opsModel;
+  $scope.model.tekstit = tekstit;
+
+  $scope.rajaus = {
+    term: '',
+    onUpdate: function(term) {
+      Algoritmit.traverse($scope.model.tekstit, 'lapset', function(node) {
+        node.$$showHalo = false;
+
+        if (_.isEmpty(term)) {
+          node.$$searchHidden = false;
+        }
+        else if (!Algoritmit.match(term, node.tekstiKappale.nimi)) {
+          node.$$searchHidden = true;
+        }
+        else {
+          node.$$searchHidden = false;
+          node.$$showHalo = true;
+          var p = node.$$traverseParent;
+          while (p) {
+            p.$$searchHidden = false;
+            p = p.$$traverseParent;
+          }
+        }
+      });
+    }
+  };
+
   var commonParams = {
     opsId: $stateParams.id,
   };
@@ -161,12 +188,14 @@ ylopsApp
     });
   };
 
+  $scope.sortableLiittamattomatConfig = {
+    connectWith: '.recursivetree',
+    handle: '.treehandle',
+    placeholder: 'placeholder'
+  };
+
   $scope.sortableConfig = {
-    placeholder: 'placeholder',
-    // start: function(e, ui) {
-    //   console.log(e);
-    //   ui.placeholder.html('voi morjens');
-    // }
+    placeholder: 'placeholder'
   };
 
   $scope.tekstitProvider = $q.when({
@@ -176,7 +205,7 @@ ylopsApp
           return false;
         }
         else {
-          return node.$$nodeParent.$$hidden;
+          return (_.isEmpty($scope.rajaus.term) && node.$$nodeParent.$$hidden) || node.$$searchHidden;
         }
     },
     template: function() {
@@ -188,39 +217,19 @@ ylopsApp
     useUiSortable: function() {
       return !$scope.$$isRakenneMuokkaus;
     },
-    acceptDrop: function(node, target) {
-      return target !== $scope.model.tekstit;
+    acceptDrop: function(node, target, parentScope) {
+      return target !== $scope.model.tekstit || parentScope === $scope;
     },
     sortableClass: function(node) {
-      console.log(node);
       if (node !== $scope.model.tekstit) {
         return 'is-draggable-into';
       }
     },
     extension: function(node, scope) {
-      switch (node.$$depth) {
-        case 0: scope.taustanVari = '#f2f2f2'; break;
-        case 1: scope.taustanVari = '#fafafa'; break;
-        default:
-          scope.taustanVari = '#fff';
-      }
-
-      scope.poistaTekstikappale = function(osio, node) {
-        TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
-          osio = osio || $scope.model.tekstit;
-          TekstikappaleOps.delete($scope.model, osio, $stateParams.id, node, function() {
-            _.remove(osio.lapset, node);
-          });
-        }, function () {
-          unlockTeksti(node.id);
-        });
-      };
+      scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
+      scope.addLapsi = lisaaTekstikappale;
     }
   });
-
-  function unlockTeksti(id, cb) {
-    return Lukko.unlockTekstikappale(_.extend({viiteId: id}, commonParams), cb);
-  }
 
   $scope.muokkaaAlihierarkiaa = function() {
     $modal.open({
@@ -239,16 +248,23 @@ ylopsApp
     .result.then(_.noop);
   };
 
-  $scope.lisaaTekstikappale = function() {
-    OpetussuunnitelmanTekstit.save({
-      opsId: $stateParams.id
+  function lisaaTekstikappale(parentTk) {
+    OpetussuunnitelmanTekstit.addChild({
+      opsId: $stateParams.id,
+      viiteId: parentTk.id
     }, {
+      tekstiKappale: {
+        nimi: { fi: 'Uusi tekstikappale' }
+      },
       lapset: []
-    }, function(res) {
-      Notifikaatiot.onnistui('tallennettu-ok');
-      $scope.model.tekstit.lapset.push(res);
-    }, Notifikaatiot.serverCb);
-  };
+    }).$promise
+    .then(function(res) {
+      res.lapset = [];
+      res.$$newHalo = true;
+      parentTk.lapset.push(res);
+    })
+    .catch(Notifikaatiot.serverCb);
+  }
 })
 .controller('OpsAlihierarkiaModalController', function($scope, $modalInstance, ops, aliOpsit, OpetussuunnitelmaCRUD) {
   $scope.ops = ops;

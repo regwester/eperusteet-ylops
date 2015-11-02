@@ -31,4 +31,7 @@ public interface OppiaineenvuosiluokkaRepository extends JpaWithVersioningReposi
 
     @Query(value = "SELECT vl FROM Oppiaine o JOIN o.vuosiluokkakokonaisuudet k JOIN k.vuosiluokat vl WHERE o.id = ?1 AND vl.id = ?2)")
     Oppiaineenvuosiluokka findByOppiaine(Long oppiaineId, Long vuosiluokkaId);
+
+    @Query(value = "SELECT vl FROM Oppiaine o JOIN o.vuosiluokkakokonaisuudet k JOIN k.vuosiluokat vl WHERE o.id = ?1 AND vl.id = ?2)")
+    Oppiaineenvuosiluokka findByOpsAndOppiaine(Long opsId, Long oppiaineId, Long vuosiluokkaId);
 }

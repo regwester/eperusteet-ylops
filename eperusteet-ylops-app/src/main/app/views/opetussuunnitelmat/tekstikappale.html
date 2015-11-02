@@ -18,8 +18,8 @@
         <span class="glyphicon" ng-class="{'glyphicon-chevron-down': !options.ohjeistusCollapsed, 'glyphicon-chevron-right': options.ohjeistusCollapsed}"></span>
         <span ng-bind="options.ohjeistusCollapsed && 'nayta' || 'piilota' | kaanna"></span>
       </a>
-      <div class="ohjeellinen ikoni-ohjeistus" ng-class="{collapsed: options.ohjeistusCollapsed}">
-        <div class="teksti" collapse="options.ohjeistusCollapsed" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
+      <div class="ohjeellinen ikoni-ohjeistus ikoni-ojheistus-pd" ng-hide="!options.ohjeistusCollapsed">
+        <div class="teksti" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
       </div>
     </div>
   </div>
@@ -33,8 +33,8 @@
         <span class="glyphicon" ng-class="{'glyphicon-chevron-down': !options.perusteentekstiCollapsed, 'glyphicon-chevron-right': options.perusteentekstiCollapsed}"></span>
         <span ng-bind="options.perusteentekstiCollapsed && 'nayta' || 'piilota' | kaanna"></span>
       </a>
-      <div class="ohjeellinen ikoni-peruste" ng-class="{collapsed: options.perusteentekstiCollapsed}">
-        <div class="teksti" collapse="options.perusteentekstiCollapsed" ng-bind-html="perusteteksti.teksti | kaanna | unsafe"></div>
+      <div class="ohjeellinen ikoni-peruste ikoni-ojheistus-pd" ng-hide="!options.perusteentekstiCollapsed">
+        <div class="teksti" ng-bind-html="perusteteksti.teksti | kaanna | unsafe"></div>
       </div>
     </div>
   </div>
@@ -43,7 +43,9 @@
 <div class="panel-clear-fix tekstiosa single">
   <div class="action-buttons-inline" ng-if="isEditable()" ng-hide="editMode">
     <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip"></lukko>
-    <button ng-disabled="lukkotiedot.lukittu" ng-if="canRemove() && !model.lapset && !model.pakollinen" class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+    <button ng-disabled="lukkotiedot.lukittu" ng-show="canRemove() && (!model.lapset || model.lapset.length === 0) && !model.pakollinen"
+            class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()"
+            oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button class="btn btn-default" kaanna="'lisaa-aliotsikko'" icon-role="add" ng-click="addChild()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button ng-if="model.omistussuhde === 'oma'" ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit" ng-click="edit()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button ng-if="model.omistussuhde === 'lainattu'" ng-disabled="lukkotiedot.lukittu" class="btn btn-default" kaanna="'kopioi-muokattavaksi'" icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>

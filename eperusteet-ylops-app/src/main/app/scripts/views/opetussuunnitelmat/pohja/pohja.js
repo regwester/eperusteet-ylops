@@ -17,18 +17,18 @@
 'use strict';
 
 ylopsApp
-.controller('PohjaController', function ($scope, $state, pohjaModel, opsService) {
+.controller('PohjaController', function ($scope, $state, pohjaModel, $stateParams) {
   if ($state.current.name === 'root.pohjat.yksi') {
     $state.go('root.pohjat.yksi.sisalto', {}, {location: 'replace'});
   }
   $scope.model = pohjaModel;
-  $scope.$on('rakenne:updated', function () {
-    $scope.model = opsService.getPohja();
-  });
+  $scope.luonnissa = $stateParams.pohjaId === 'uusi';
+  // FIXME: Miksi tämä on olemassa?
+  // $scope.$on('rakenne:updated', function () {
+  //   $scope.model = opsService.getPohja();
+  // });
 })
-
 .controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter, Notifikaatiot) {
-
   $scope.pohjaMaxLimit = 9999;
   $scope.pohjaMinLimit = 7;
 
@@ -56,9 +56,6 @@ ylopsApp
             '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
             '    <span class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
-            '    <span class="pull-right">' +
-            '        <a ng-show="node.omistussuhde === \'oma\'" icon-role="remove" ng-click="poistaTekstikappale(node.$$nodeParent, node)"></a>' +
-            '    </span>' +
             '</div>'
             );
     $templateCache.put('pohjaSisaltoNodeTemplate', '' +
@@ -80,8 +77,9 @@ ylopsApp
             );
 })
 .controller('PohjaSisaltoController', function($rootScope, $scope, $q, Algoritmit, Utils, $stateParams, OpetussuunnitelmanTekstit,
-  Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD, pohjaOps, Editointikontrollit, Lukko) {
+  Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD, pohjaOps, Editointikontrollit, Lukko, tekstit) {
   $scope.model = pohjaOps;
+  $scope.model.tekstit = tekstit;
 
   var commonParams = {
     opsId: $stateParams.pohjaId,
@@ -107,8 +105,7 @@ ylopsApp
     },
     cancel: function() {
       Lukko.unlock(commonParams);
-      $scope.$$isRakenneMuokkaus = false;
-      $rootScope.$broadcast('genericTree:refresh');
+      $state.reload();
     }
   });
 
@@ -144,13 +141,10 @@ ylopsApp
       useUiSortable: function() {
         return !$scope.$$isRakenneMuokkaus;
       },
+      acceptDrop: _.constant(true),
+      sortableClass: _.constant('is-draggable-into'),
       extension: function(node, scope) {
-        switch (node.$$depth) {
-          case 0: scope.taustanVari = '#f9f9f9'; break;
-          case 1: scope.taustanVari = '#fcfcfc'; break;
-          default:
-            scope.taustanVari = '#fff';
-        }
+        scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
 
         scope.poistaTekstikappale = function(osio, node) {
           TekstikappaleOps.varmistusdialogi(node.tekstiKappale.nimi, function () {
@@ -173,7 +167,8 @@ ylopsApp
   $scope.lisaaTekstikappale = function() {
       OpetussuunnitelmanTekstit.save({
         opsId: $stateParams.pohjaId
-      }, {}, function(res) {
+      }, { }, function(res) {
+        res.lapset = res.lapset || [];
         Notifikaatiot.onnistui('tallennettu-ok');
         $scope.model.tekstit.lapset.push(res);
       }, Notifikaatiot.serverCb);

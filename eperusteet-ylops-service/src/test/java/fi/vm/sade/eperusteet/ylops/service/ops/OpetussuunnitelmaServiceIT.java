@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
@@ -218,12 +219,12 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         viiteDto.setPakollinen(true);
         viiteDto.setTekstiKappale(tekstiKappale);
 
-        TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsId);
+        TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsId, TekstiKappaleViiteDto.Puu.class);
         final int lastenMaara = tekstit.getLapset() != null ? tekstit.getLapset().size() : 0;
 
         viiteDto = opetussuunnitelmaService.addTekstiKappale(opsId, viiteDto);
 
-        tekstit = opetussuunnitelmaService.getTekstit(opsId);
+        tekstit = opetussuunnitelmaService.getTekstit(opsId, TekstiKappaleViiteDto.Puu.class);
         assertNotNull(tekstit);
         assertEquals(lastenMaara + 1, tekstit.getLapset().size());
 
@@ -247,8 +248,13 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         opetussuunnitelmaService.addTekstiKappaleLapsi(opsId, dto.getId(), viiteDto);
 
-        tekstit = opetussuunnitelmaService.getTekstit(opsId);
+        tekstit = opetussuunnitelmaService.getTekstit(opsId, TekstiKappaleViiteDto.Puu.class);
+        TekstiKappaleViiteKevytDto otsikot = opetussuunnitelmaService.getTekstit(opsId, TekstiKappaleViiteKevytDto.class);
         assertNotNull(tekstit);
+        assertNotNull(otsikot);
         assertEquals(1, tekstit.getLapset().get(lastenMaara).getLapset().size());
+        assertEquals(
+                otsikot.getLapset().get(lastenMaara).getLapset().size(),
+                tekstit.getLapset().get(lastenMaara).getLapset().size());
     }
 }

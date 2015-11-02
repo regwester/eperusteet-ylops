@@ -20,7 +20,24 @@ ylopsApp
   .config(function($stateProvider) {
     $stateProvider
 
-      .state('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuussort', {
+      .state('root.opetussuunnitelmat.yksi.opetus', {
+        url: '/opetus',
+        template: '<div ui-view></div>',
+        controller: ['$stateParams', '$state', 'vuosiluokkakokonaisuudet', function($stateParams, $state, vuosiluokkakokonaisuudet) {
+          // Go to the default view
+          var vlk = _(vuosiluokkakokonaisuudet)
+            .map('vuosiluokkakokonaisuus')
+            .sortBy(function(vlk) {
+              return vlk.nimi[$stateParams.lang];
+            })
+            .first();
+          if ($state.is('root.opetussuunnitelmat.yksi.opetus')) {
+            $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', { vlkId: vlk.id }, { reload: true });
+          }
+        }]
+      })
+
+      .state('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuussort', {
         url: '/vuosiluokat/:vlkId/jarjesta',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlksort.html',
         controller: 'VuosiluokkakokonaisuusSortController',
@@ -35,29 +52,29 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {
+      .state('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {
         url: '/vuosiluokat/:vlkId',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlk.html',
         controller: 'VuosiluokkakokonaisuusController',
         resolve: {
           vuosiluokatService: 'VuosiluokatService',
-          vlkId: ['$stateParams', function($stateParams){
+          vlkId: ['$stateParams', function($stateParams) {
             return $stateParams.vlkId;
           }],
           vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
             return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
           }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
-            return vuosiluokatService.getLaajaalaiset(opsId);
+            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
           }],
-          naviState: ['baseLaajaalaiset', 'OpsNavigaatio', function (baseLaajaalaiset, OpsNavigaatio) {
+          naviState: ['baseLaajaalaiset', 'vlk', 'OpsNavigaatio', function (baseLaajaalaiset, vlk, OpsNavigaatio) {
             // Odota laaja-alaiset ennen sivunavin aktivointia niin UI-elementit ei pompi
             OpsNavigaatio.setActive();
           }]
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.valinnaiset', {
+      .state('root.opetussuunnitelmat.yksi.opetus.valinnaiset', {
         url: '/vuosiluokat/:vlkId/valinnaiset',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/valinnaiset.html',
         controller: 'ValinnaisetOppiaineetController',
@@ -79,7 +96,7 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.oppiaine', {
+      .state('root.opetussuunnitelmat.yksi.opetus.oppiaine', {
         url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId?oppiaineTyyppi',
         template: '<div ui-view></div>',
         abstract: true,
@@ -104,18 +121,20 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+      .state('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
         url: '',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/oppiaine.html',
         controller: 'OppiaineController',
         resolve: {
           naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             OpsNavigaatio.setActive();
-          }]
+          }],
+          onEnter: function() {
+          }
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {
+      .state('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka', {
         url: '/vuosiluokka/:vlId',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokka.html',
         controller: 'VuosiluokkaBaseController',
@@ -129,19 +148,19 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.tavoitteet', {
+      .state('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.tavoitteet', {
         url: '/tavoitteet',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokantavoitteet.html',
         controller: 'VuosiluokkaTavoitteetController',
       })
 
-      .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka.sisaltoalueet', {
+      .state('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.sisaltoalueet', {
         url: '/sisaltoalueet',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokansisaltoalueet.html',
         controller: 'VuosiluokkaSisaltoalueetController',
       })
 
-      .state('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
+      .state('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokkaistaminen', {
         url: '/vuosiluokkaistaminen',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokkaistaminen.html',
         controller: 'VuosiluokkaistaminenController',
@@ -156,7 +175,7 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.uusioppiaine', {
+      .state('root.opetussuunnitelmat.yksi.opetus.uusioppiaine', {
         url: '/uusioppiaine/:vlkId?:oppiaineId',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/uusioppiaine.html',
         controller: 'UusiOppiaineController',
