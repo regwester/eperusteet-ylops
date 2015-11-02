@@ -259,13 +259,13 @@ h1.plain {
 
   .recursivetree {
     margin-left: 23px;
-    padding-bottom: 8px;
-    margin-top: 6px;
+    // padding-bottom: 8px;
+    margin-top: 4px;
     // padding-bottom: 8px;
   }
 
-  .recursivetree:empty {
-    // padding-bottom: 8px;
+  .recursivetree-empty {
+    padding-bottom: 8px;
   }
 
   .tekstisisalto-otsikko-solmu {
@@ -277,7 +277,7 @@ h1.plain {
   }
 
   .tekstisisalto-solmu {
-    padding: 8px 0 5px 7px;
+    padding: 4px 0 2px 7px;
     border: $ops-tekstisisalto-border
   }
 
@@ -286,25 +286,13 @@ h1.plain {
   }
 
   .recursivetree.is-draggable-into > .placeholder {
-    height: 33px;
-    padding: 2px;
-    margin-bottom: 14px;
-    // margin-bottom: 3px;
-    // margin: 5px 200px 5px 200px;
+    height: 22px;
+    margin-bottom: 16px;
     width: 100%;
     background: #f7f7f7;
     box-shadow: 0px 0px 3px #f7f7f7;
   }
 }
-
-// .tekstisisalto.ui-draggable-into-node > .placeholder {
-//   height: 28px;
-//   padding: 2px;
-//   margin: 3px;
-//   // margin: 5px 200px 5px 200px;
-//   width: 100%;
-//   background: #eee;
-// }
 
 .alihierarkia {
   .muokkauspainikkeet {

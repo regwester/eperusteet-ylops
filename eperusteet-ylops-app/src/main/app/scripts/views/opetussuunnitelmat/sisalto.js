@@ -221,9 +221,14 @@ ylopsApp
       return target !== $scope.model.tekstit || parentScope === $scope;
     },
     sortableClass: function(node) {
+      var result = '';
       if (node !== $scope.model.tekstit) {
-        return 'is-draggable-into';
+        result += 'is-draggable-into';
+        if ($scope.$$isRakenneMuokkaus && _.isEmpty(node.lapset)) {
+          result += ' recursivetree-empty';
+        }
       }
+      return result;
     },
     extension: function(node, scope) {
       scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
