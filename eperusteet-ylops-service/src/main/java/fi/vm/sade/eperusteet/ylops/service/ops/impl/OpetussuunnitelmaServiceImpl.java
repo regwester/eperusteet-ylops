@@ -184,9 +184,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
-        logger.info("Haetaan kuntien nimet opetussuunnitelmalle:" + id);
         fetchKuntaNimet(dto);
-        logger.info("Haetaan organisaatioiden nimet opetussuunnitelmalle:" + id);
         fetchOrganisaatioNimet(dto);
         return dto;
     }
@@ -682,17 +680,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public TekstiKappaleViiteDto.Puu getTekstit(Long opsId) {
+    public <T> T getTekstit(Long opsId, Class<T> t) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
-        return mapper.map(ops.getTekstit(), TekstiKappaleViiteDto.Puu.class);
+        return mapper.map(ops.getTekstit(), t);
     }
 
     @Override
     public TekstiKappaleViiteDto.Matala addTekstiKappale(Long opsId, TekstiKappaleViiteDto.Matala viite) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
-
         // Lisätään viite juurinoden alle
         return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, ops.getTekstit().getId(), viite);
     }

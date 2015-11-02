@@ -26,12 +26,15 @@ ylopsApp
   })
 
   .controller('EsikatseluController', function ($scope, $state, Algoritmit, Utils, $stateParams, StateHelperService, TreeHelper, $q,
-                                                VuosiluokkakokonaisuusCRUD) {
+                                                VuosiluokkakokonaisuusCRUD, opsModel, vuosiluokkakokonaisuudet, tekstit) {
     function updateNavi() {
       TreeHelper.updateTreeNavi($scope.texttree);
       TreeHelper.updateTreeNavi($scope.oppiaineMenu, 'oppiaine');
       TreeHelper.updateTreeNavi($scope.vlkMenu, 'vlk');
     }
+
+    $scope.model = opsModel;
+    $scope.model.tekstit = tekstit;
 
     $scope.$on('$stateChangeSuccess', updateNavi);
 

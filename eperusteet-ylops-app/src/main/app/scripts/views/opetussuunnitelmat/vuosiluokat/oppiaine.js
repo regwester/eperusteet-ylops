@@ -69,7 +69,7 @@ ylopsApp
 
 .controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
   VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, OppiaineCRUD, OpsService, Notifikaatiot,
-  VuosiluokkakokonaisuusMapper, Lukko, Kommentit, KommentitByOppiaine) {
+  VuosiluokkakokonaisuusMapper, Lukko, Kommentit, KommentitByOppiaine, opsModel) {
 
   Kommentit.haeKommentit(KommentitByOppiaine, {
     id: $stateParams.oppiaineId,
@@ -96,13 +96,15 @@ ylopsApp
     return _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
   }
 
-  OppiaineService.getParent(function(res) {
-    $scope.oppiaine.$parent = res;
-    $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
-    if ($scope.$onKieliTaiUskonto) {
-      $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
-    }
-  });
+  OppiaineService.getParent()
+    .then(function(res) {
+      $scope.oppiaine.$parent = res;
+      $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
+      if ($scope.$onKieliTaiUskonto) {
+        $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
+      }
+    })
+    .catch(_.noop);
 
   $scope.perusteOpVlk = $scope.perusteOppiaine ?
     _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
@@ -120,16 +122,21 @@ ylopsApp
     $scope.valitseOppimaara = function() {
       var opsId = $stateParams.id;
       Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, function (res) {
-        var ops = OpsService.get(opsId);
+        // var ops = OpsService.get(opsId);
+        var ops = opsModel;
+        console.log(ops);
 
         var tunnisteet = _.map(res.vuosiluokkakokonaisuudet, '_vuosiluokkakokonaisuus');
-        var lisatytVlkt =
-          // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
-          _(ops.vuosiluokkakokonaisuudet).map('vuosiluokkakokonaisuus').filter(function (vlk) {
-            return _.includes(tunnisteet, vlk._tunniste);
-          }).sortBy(function (vlk) {
-            return Kaanna.kaanna(vlk.nimi);
-          }).value();
+        // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
+        var lisatytVlkt = _(ops.vuosiluokkakokonaisuudet)
+            .map('vuosiluokkakokonaisuus')
+            .filter(function (vlk) {
+              return _.includes(tunnisteet, vlk._tunniste);
+            })
+            .sortBy(function (vlk) {
+              return Kaanna.kaanna(vlk.nimi);
+            })
+            .value();
 
         Notifikaatiot.onnistui(
           Kaanna.kaanna(res.nimi) +
@@ -141,7 +148,7 @@ ylopsApp
         var vlkId =
           _(lisatytVlkt).map('id').includes(parseInt($stateParams.vlkId))? $stateParams.vlkId : lisatytVlkt[0].id;
 
-        $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+        $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
           oppiaineId: res.id,
           vlkId: vlkId,
           oppiaineTyyppi: res.tyyppi
@@ -246,12 +253,12 @@ ylopsApp
   }
 
   $scope.goToVuosiluokka = function (vuosiluokka) {
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokka', {vlId: vuosiluokka.id});
+    $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka', {vlId: vuosiluokka.id});
   };
 
   $scope.startVuosiluokkaistaminen = function () {
     function start() {
-      $state.go('root.opetussuunnitelmat.yksi.oppiaine.vuosiluokkaistaminen', {
+      $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokkaistaminen', {
         vlkId: $stateParams.vlkId
       });
     }
@@ -264,7 +271,7 @@ ylopsApp
 
   $scope.editOppiaine = function () {
     Lukko.lock(commonParams, function () {
-      $state.go('root.opetussuunnitelmat.yksi.uusioppiaine', {
+      $state.go('root.opetussuunnitelmat.yksi.opetus.uusioppiaine', {
         vlkId: $stateParams.vlkId,
         oppiaineId: $scope.oppiaine.id
       });
@@ -280,7 +287,7 @@ ylopsApp
           $scope.oppiaine.$delete({opsId: OpsService.getId()}, function () {
             Lukko.unlock(commonParams);
             Notifikaatiot.onnistui('poisto-onnistui');
-            $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, {reload: true});
+            $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, {reload: true});
           }, function () {
             Lukko.unlock(commonParams);
             Notifikaatiot.serverCb();
@@ -303,7 +310,7 @@ ylopsApp
           oppiaineId: $stateParams.oppiaineId
         }, {}, function(res) {
           Notifikaatiot.onnistui('kopion-luonti-onnistui');
-          $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine', {
+          $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
             vlkId: $stateParams.vlkId,
             oppiaineId: res.id,
             oppiaineTyyppi: res.tyyppi

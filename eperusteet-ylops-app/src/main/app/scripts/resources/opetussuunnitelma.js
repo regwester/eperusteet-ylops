@@ -48,12 +48,15 @@ ylopsApp
       query: {method: 'GET', isArray: false}
     });
   })
+
   .factory('OpetussuunnitelmanTekstit', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/tekstit/:viiteId', {
       viiteId: '@id'
     }, {
       setChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:parentId/lapsi/:childId'},
-      kloonaaTekstikappale: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/muokattavakopio'}
+      addChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/lapsi'},
+      kloonaaTekstikappale: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/muokattavakopio'},
+      otsikot: {method: 'GET', url: YlopsResources.OPS + '/otsikot'},
     });
   })
 
@@ -69,6 +72,10 @@ ylopsApp
 
   .factory('OppiaineLukko', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/oppiaineet/:oppiaineId/lukko');
+  })
+
+  .factory('OppiaineenVuosiluokkakokonaisuusLukko', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.OPS + '/oppiaineet/:oppiaineId/vuosiluokkakokonaisuudet');
   })
 
   .factory('OppiaineenVuosiluokkakokonaisuusLukko', function ($resource, YlopsResources) {

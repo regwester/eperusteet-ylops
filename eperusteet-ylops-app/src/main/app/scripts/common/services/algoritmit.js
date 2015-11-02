@@ -24,7 +24,8 @@ ylopsApp
     }
     depth = depth || 0;
     _.forEach(objekti[lapsienAvain], function(solmu, index) {
-      if (!cb(solmu, depth, index, objekti[lapsienAvain])) {
+      if (!cb(solmu, depth, index, objekti[lapsienAvain], objekti)) {
+        solmu.$$traverseParent = objekti;
         traverse(solmu, lapsienAvain, cb, depth + 1);
       }
     });

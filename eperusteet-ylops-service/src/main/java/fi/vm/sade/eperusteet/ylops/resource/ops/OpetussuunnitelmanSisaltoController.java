@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,9 +60,10 @@ public class OpetussuunnitelmanSisaltoController {
     @ResponseBody
     public ResponseEntity<TekstiKappaleViiteDto.Matala> addTekstiKappaleLapsi(
             @PathVariable("opsId") final Long id,
-            @PathVariable("viiteId") final Long viiteId) {
+            @PathVariable("viiteId") final Long viiteId,
+            @RequestBody(required = false) TekstiKappaleViiteDto.Matala tekstiKappaleViiteDto) {
         return new ResponseEntity<>(
-                opetussuunnitelmaService.addTekstiKappaleLapsi(id, viiteId, null), HttpStatus.CREATED);
+                opetussuunnitelmaService.addTekstiKappaleLapsi(id, viiteId, tekstiKappaleViiteDto), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/tekstit/{parentId}/lapsi/{childId}", method = RequestMethod.POST)
@@ -79,7 +81,16 @@ public class OpetussuunnitelmanSisaltoController {
     @RequestMapping(value = "/tekstit", method = RequestMethod.GET)
     public ResponseEntity<TekstiKappaleViiteDto.Puu> getTekstit(
             @PathVariable("opsId") final Long opsId) {
-        TekstiKappaleViiteDto.Puu dto = opetussuunnitelmaService.getTekstit(opsId);
+        TekstiKappaleViiteDto.Puu dto = opetussuunnitelmaService.getTekstit(opsId, TekstiKappaleViiteDto.Puu.class);
+        if (dto == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/otsikot", method = RequestMethod.GET)
+    public ResponseEntity<TekstiKappaleViiteKevytDto> getTekstiOtsikot(@PathVariable("opsId") final Long opsId) {
+        TekstiKappaleViiteKevytDto dto = opetussuunnitelmaService.getTekstit(opsId, TekstiKappaleViiteKevytDto.class);
         if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

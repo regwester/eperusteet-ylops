@@ -1,4 +1,4 @@
-<div class="main-header">
+<div class="row main-header">
   <ol class="breadcrumb pull-left">
     <li>
       <a ui-sref="root.etusivu" icon-role="home"></a>
@@ -13,16 +13,13 @@
 <!--  <div class="header-links" kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'hallinta' }">
     <a icon-role="settings" kaanna="'hallinta'" ui-sref="root.admin"></a>
 </div>-->
-<hallintalinkki></hallintalinkki>
-
+  <hallintalinkki></hallintalinkki>
   <div class="header-links">
     <kielenvaihto></kielenvaihto>
   </div>
-
   <div class="header-links" ng-if="isLocal">
     <label><input ng-model="isVirkailija" type="checkbox"> Virkailijan oikeudet</label>
   </div>
-
-
 </div>
-<div class="clearfix"></div>
+
+<h1 class="eperusteet-otsikko" kaanna="'eperusteet-ops-tyokalu'"></h1>

@@ -15,7 +15,9 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import java.util.Set;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,8 +27,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class OpetussuunnitelmaKevytDto extends OpetussuunnitelmaBaseDto {
-    private OpetussuunnitelmaNimiDto pohja;
-    private Set<OpsVuosiluokkakokonaisuusKevytDto> vuosiluokkakokonaisuudet;
-    private Set<OpsOppiaineKevytDto> oppiaineet;
+public class VuosiluokkakokonaisuusSuppeaDto {
+    private Long id;
+    private Reference tunniste;
+    private LokalisoituTekstiDto nimi;
+    private Tila tila;
 }

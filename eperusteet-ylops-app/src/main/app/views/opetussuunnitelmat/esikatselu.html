@@ -4,9 +4,7 @@
 </div>
 
 <div class="row">
-
   <div class="col-md-3 esikatselu-menu">
-
     <div class="list-group">
       <div class="list-group-item menu-header">
         <h1 kaanna="'esikatselu'"></h1>
@@ -21,29 +19,28 @@
       <div ng-show="model.oppiaineet.length > 0" class="list-group-item menu-header" collapse-toggler="osiot.opetus">
         <h2 kaanna="'opetus'"></h2>
       </div>
-      <div ng-show="model.oppiaineet.length > 0" class="list-group-item navi-tabs-outer" collapse="osiot.opetus" ng-class="{collapsed: osiot.opetus}">
-        <ul class="navi-tabs">
-          <li role="presentation" ng-class="{active: isState('vuosiluokittain')}">
-            <a href="" ng-click="switchTab('vuosiluokittain')" kaanna="'vuosiluokittain'"></a>
-          </li>
-          <li role="presentation" ng-class="{active: isState('oppiaineittain')}">
-            <a href="" ng-click="switchTab('oppiaineittain')" kaanna="'oppiaineittain'"></a>
-          </li>
-        </ul>
-      </div>
+      <!-- <div ng&#45;show="model.oppiaineet.length > 0" class="list&#45;group&#45;item navi&#45;tabs&#45;outer" collapse="osiot.opetus" ng&#45;class="{collapsed: osiot.opetus}"> -->
+      <!--   <ul class="navi&#45;tabs"> -->
+      <!--     <li role="presentation" ng&#45;class="{active: isState('vuosiluokittain')}"> -->
+      <!--       <a href="" ng&#45;click="switchTab('vuosiluokittain')" kaanna="'vuosiluokittain'"></a> -->
+      <!--     </li> -->
+      <!--     <li role="presentation" ng&#45;class="{active: isState('oppiaineittain')}"> -->
+      <!--       <a href="" ng&#45;click="switchTab('oppiaineittain')" kaanna="'oppiaineittain'"></a> -->
+      <!--     </li> -->
+      <!--   </ul> -->
+      <!-- </div> -->
       <div ng-show="model.oppiaineet.length > 0" class="list-group-item" collapse="osiot.opetus">
+        <!-- <ul ng&#45;if="isState('vuosiluokittain')" class="ek&#45;menu"> -->
+        <!--   <li ng&#45;repeat="vlk in vlkMenu" ng&#45;hide="vlk.$hidden" -->
+        <!--       ng&#45;class="{active: vlk.$active, header: vlk.$header, 'vuosiluokka&#45;item': !vlk.url}"> -->
+        <!--     <a ng&#45;href="{{vlk.url}}" ng&#45;style="{'margin&#45;left': vlk.depth*15}" ng&#45;click="!vlk.url &#38;&#38; toggleVlk($index)"> -->
+        <!--       <span kaanna="vlk.nimi"></span> -->
+        <!--       <span ng&#45;if="vlk.numero" ng&#45;bind="' ' + (vlk.numero | kaanna)"></span> -->
+        <!--     </a> -->
+        <!--   </li> -->
+        <!-- </ul> -->
 
-        <ul ng-if="isState('vuosiluokittain')" class="ek-menu">
-          <li ng-repeat="vlk in vlkMenu" ng-hide="vlk.$hidden"
-              ng-class="{active: vlk.$active, header: vlk.$header, 'vuosiluokka-item': !vlk.url}">
-            <a ng-href="{{vlk.url}}" ng-style="{'margin-left': vlk.depth*15}" ng-click="!vlk.url && toggleVlk($index)">
-              <span kaanna="vlk.nimi"></span>
-              <span ng-if="vlk.numero" ng-bind="' ' + (vlk.numero | kaanna)"></span>
-            </a>
-          </li>
-        </ul>
-
-        <ul ng-if="isState('oppiaineittain')" class="ek-menu">
+        <ul class="ek-menu">
           <li ng-repeat="oppiaine in oppiaineMenu track by $index" ng-class="{'esitys-menu-oppimaara': oppiaine.depth > 0, active: oppiaine.$active, header: oppiaine.$header}">
             <a ng-if="oppiaine.nimi"
                ui-sref="root.opetussuunnitelmat.yksi.esikatselu.oppiaine({oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi, vuosiluokka: null})"
@@ -52,10 +49,7 @@
           </li>
         </ul>
       </div>
-
     </div>
-
-
   </div>
 
 

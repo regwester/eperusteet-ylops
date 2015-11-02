@@ -119,12 +119,9 @@ ylopsApp
     tolerance: 'pointer',
   };
 
-  var callbacks = {
-    edit: function() {
-    },
-    validate: function() {
-      return true;
-    },
+  Editointikontrollit.registerCallback({
+    edit: _.noop,
+    validate: _.constant(true),
     save: function() {
       var jrnoMap = _($scope.oppiaineet)
         .filter(function(oa) {
@@ -154,13 +151,12 @@ ylopsApp
       $state.go('root.opetussuunnitelmat.yksi.sisalto');
     },
     notify: _.noop
-  };
+  });
 
-  Editointikontrollit.registerCallback(callbacks);
   Editointikontrollit.startEditing();
 })
 
-.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
+.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit, OpsNavigaatio,
   MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
   baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,
   OpsService, Varmistusdialogi) {
@@ -173,12 +169,11 @@ ylopsApp
 
 
   // Lokalisaatioavaimet ohjepopover:ien sisällöille
-  var vlkNimi = vlk.nimi.fi;
-  $scope.vlkErityispiirteet = vlkNimi + '_erityispiirteet_ja_tehtavat_info';
+  $scope.vlkErityispiirteet = 'vuosiluokkakokonaisuuden-erityispiirteet-ja-tehtavat-info';
   $scope.siirtymaInfot = {};
-  $scope.siirtymaInfot.siirtymaEdellisesta = vlkNimi + '_siirtyma_aikaisempi_nykyinen_info';
-  $scope.siirtymaInfot.siirtymaSeuraavaan = vlkNimi + '_siirtymä_nykyinen_seuraava_info';
-  $scope.vlkLaajaalaiset = vlkNimi + '_laaja-alaisen_osaamisen_alueet_info';
+  $scope.siirtymaInfot.siirtymaEdellisesta = 'vuosiluokkakokonaisuuden-siirtyma-aikaisempi-nykyinen-info';
+  $scope.siirtymaInfot.siirtymaSeuraavaan = 'vuosiluokkakokonaisuuden-siirtymä-nykyinen-seuraava-info';
+  $scope.vlkLaajaalaiset = 'vuosiluokkakokonaisuuden-laaja-alaisen-osaamisen-alueet-info';
 
   var laajaalaisetosaamiset = _.indexBy(baseLaajaalaiset, 'tunniste');
   var laajaalaisetOrder = _(baseLaajaalaiset).sortBy(Utils.sort).map('tunniste').value();
@@ -284,7 +279,7 @@ ylopsApp
           vlkId: $stateParams.vlkId
         }, {}, function(res) {
           Notifikaatiot.onnistui('kopion-luonti-onnistui');
-          $state.go('root.opetussuunnitelmat.yksi.vuosiluokkakokonaisuus', {
+          $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {
             vlkId: res.id
           }, { reload: true });
         }, Notifikaatiot.serverCb);

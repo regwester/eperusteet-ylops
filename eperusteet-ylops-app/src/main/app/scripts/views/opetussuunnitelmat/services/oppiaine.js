@@ -38,11 +38,11 @@ ylopsApp
     promise.resolve();
   }
 
-  this.getParent = function(cb) {
-    OppiaineCRUD.getParent({
+  this.getParent = function() {
+    return OppiaineCRUD.getParent({
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id
-    }, cb);
+    }).$promise;
   };
   this.refresh = function (ops, oppiaineId, vlkId) {
     var promise = $q.defer();

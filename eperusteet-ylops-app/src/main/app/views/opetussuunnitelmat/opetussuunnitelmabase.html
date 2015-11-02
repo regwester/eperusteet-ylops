@@ -1,4 +1,22 @@
 <ops-header model="model"></ops-header>
-<ops-navigaatio model="model" vuosiluokat="vuosiluokkakokonaisuudet">
-  <div ui-view></div>
-</ops-navigaatio>
+
+<div class="navigaatio-content-plain">
+  <ul ng-if="!luonnissa" class="nav nav-tabs">
+    <li ui-sref-active="active">
+      <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" kaanna="'yhteiset-osuudet'"></a>
+    </li>
+    <li ng-show="model.koulutustyyppi === 'koulutustyyppi_16'" ui-sref-active="active">
+      <a ui-sref="root.opetussuunnitelmat.yksi.opetus" kaanna="'vuosiluokat-ja-oppiaineet'"></a>
+    </li>
+    <li ui-sref-active="active">
+      <a ui-sref="root.opetussuunnitelmat.yksi.tiedot" kaanna="'opsn-tiedot'"></a>
+    </li>
+    <li ui-sref-active="active">
+      <a ui-sref="root.opetussuunnitelmat.yksi.kasitteet" kaanna="'kasitteet'"></a>
+    </li>
+  </ul>
+
+  <ops-navigaatio model="model" vuosiluokat="vuosiluokkakokonaisuudet">
+    <div ui-view></div>
+  </ops-navigaatio>
+</div>

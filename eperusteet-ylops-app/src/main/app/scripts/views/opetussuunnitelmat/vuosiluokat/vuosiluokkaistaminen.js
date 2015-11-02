@@ -181,7 +181,7 @@ ylopsApp
   $scope.showKohdealueet = true;
 
   function goBack() {
-    $state.go('root.opetussuunnitelmat.yksi.oppiaine.oppiaine');
+    $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine');
   }
 
   $scope.cancel = function () {
