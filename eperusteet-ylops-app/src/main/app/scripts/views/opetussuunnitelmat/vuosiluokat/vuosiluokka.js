@@ -157,6 +157,27 @@ ylopsApp
     }
   };
 
+  $scope.muokkaaKuvausta = function( muokattava ){
+    muokattava.isEditing = true;
+    Editointikontrollit.startEditing();
+  };
+
+
+  $scope.naytaKuvaus = function(sisaltoalue, id, tavoiteTunniste) {
+    var kuvaus = _.find( _.find( $scope.vuosiluokka.tavoitteet, { 'id': id }).sisaltoalueet, function(sAlue){
+      return (sisaltoalue.tunniste === sAlue.sisaltoalueet.tunniste);
+    });
+
+    $scope.muokattavat[tavoiteTunniste].muokattavaKuvaus = {
+      kaytaOmaaKuvausta: !!(kuvaus && kuvaus.omaKuvaus),
+      omaKuvaus: (kuvaus && kuvaus.omaKuvaus) ? kuvaus.omaKuvaus : {},
+      kuvaus: sisaltoalue.kuvaus,
+      kuvauksenId: kuvaus.id,
+      sisaltoalueId: sisaltoalue.id,
+      isEditing: false
+    };
+  };
+
   $scope.callbacks = {
     edit: function () {
       //refetch();
@@ -176,6 +197,14 @@ ylopsApp
         var postdata = angular.copy($scope.vuosiluokka);
         _.each(postdata.tavoitteet, function (tavoite) {
           tavoite.tavoite = $scope.muokattavat[tavoite.tunniste].teksti;
+
+          if( $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus ){
+            var sisaltoalue = _.findWhere( tavoite.sisaltoalueet, {id: $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.kuvauksenId});
+            sisaltoalue.omaKuvaus = ( $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.kaytaOmaaKuvausta )?
+                $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.omaKuvaus:null;
+            $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.isEditing = false;
+          }
+
           delete tavoite.$sisaltoalueet;
           delete tavoite.$kohdealue;
           delete tavoite.$laajaalaiset;

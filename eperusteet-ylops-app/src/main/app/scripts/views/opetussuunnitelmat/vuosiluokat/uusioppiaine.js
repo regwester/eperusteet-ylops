@@ -153,7 +153,7 @@ ylopsApp
     },
     cancel: function () {
       if ($scope.luonnissa) {
-        $state.go('root.opetussuunnitelmat.yksi.valinnaiset', { vlkId: $stateParams.vlkId });
+        $state.go('root.opetussuunnitelmat.yksi.opetus.valinnaiset', { vlkId: $stateParams.vlkId });
       }
       else {
         Lukko.unlock($scope.commonParams, function () {

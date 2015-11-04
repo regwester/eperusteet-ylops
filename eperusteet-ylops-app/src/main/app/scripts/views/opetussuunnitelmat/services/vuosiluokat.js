@@ -185,7 +185,7 @@ ylopsApp
         label: 'valinnaiset-oppiaineet',
         id: 'valinnaiset',
         vlkId: vlk.vuosiluokkakokonaisuus.id,
-        url: $state.href('root.opetussuunnitelmat.yksi.valinnaiset', {vlkId: vlk.vuosiluokkakokonaisuus.id})
+        url: $state.href('root.opetussuunnitelmat.yksi.opetus.valinnaiset', {vlkId: vlk.vuosiluokkakokonaisuus.id})
       });
 
       populateMenuItems(arr, obj, _.reject(oppiaineet, _.equals('yhteinen', 'tyyppi')));

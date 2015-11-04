@@ -1,6 +1,5 @@
 <div class="tavoitteet" ng-if="!onValinnaiselle">
   <div class="tavoite" ng-repeat="tunniste in tunnisteet">
-
     <div class="header" ng-class="{kohdealueeton: !tavoiteMap[tunniste].$kohdealue}">
       <div class="kohdealue" ng-bind="tavoiteMap[tunniste].$kohdealue.nimi | kaanna"></div>
       <div class="toggle-nimi">
@@ -17,7 +16,14 @@
           <h4 kaanna="'sisaltoalueet'"></h4>
           <ul>
             <li ng-repeat="sisaltoalue in tavoiteMap[tunniste].$sisaltoalueet | orderBy:nimiOrder">
-              <a ng-bind="sisaltoalue.nimi | kaanna" ng-href="{{sisaltoalue.$url}}"></a>
+              <a ng-href="" ng-click="naytaKuvaus(sisaltoalue, tavoiteMap[tunniste].id, tunniste)">
+                <span kaanna="sisaltoalue.nimi"></span>
+                <span ng-hide="options.editing">
+                  <span ng-show="muokattavat[tunniste].muokattavaKuvaus.sisaltoalueId === sisaltoalue.id" icon-role="chevron-down"></span>
+                  <span ng-hide="muokattavat[tunniste].muokattavaKuvaus.sisaltoalueId === sisaltoalue.id" icon-role="chevron-right"></span>
+                </span>
+                    <!-- class="glyphicon collkapse&#45;toggler ng&#45;scope glyphicon&#45;chevron&#45;right" ng&#45;hide="options.editing"></span> -->
+              </a>
             </li>
           </ul>
         </div>
@@ -30,6 +36,44 @@
           </ul>
         </div>
       </div>
+
+      <div ng-if="muokattavat[tunniste].muokattavaKuvaus">
+        <div>
+          <h4 style="display: inline;">
+            <span ng-show="!muokattavat[tunniste].muokattavaKuvaus.isEditing && muokattavat[tunniste].muokattavaKuvaus.kaytaOmaaKuvausta"
+                  kaanna="'sisaltoalueen-tavoitekohtainen-kuvaus'"></span>
+            <span ng-hide="!muokattavat[tunniste].muokattavaKuvaus.isEditing && muokattavat[tunniste].muokattavaKuvaus.kaytaOmaaKuvausta"
+                  kaanna="'sisaltoalueen-kuvaus'"></span>
+          </h4>
+          <div class="action-buttons-inline ng-scope">
+            <button oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }" class="btn btn-default"
+                    ng-click="muokkaaKuvausta(muokattavat[tunniste].muokattavaKuvaus)" ng-hide="options.editing">
+              <span icon-role="edit" kaanna="'muokkaa'"></span>
+            </button>
+          </div>
+
+          <div ng-if="muokattavat[tunniste].muokattavaKuvaus.isEditing">
+            <label style="display: inline; float: right;">
+              <input type="checkbox" ng-model="muokattavat[tunniste].muokattavaKuvaus.kaytaOmaaKuvausta"
+                     class="ng-pristine ng-untouched ng-valid"/>
+              {{'kayta-tavoitekohtaista-kuvausta' | kaanna}}
+            </label>
+          </div>
+        </div>
+
+        <br/>
+        <div ng-show="!muokattavat[tunniste].muokattavaKuvaus.isEditing && muokattavat[tunniste].muokattavaKuvaus.kaytaOmaaKuvausta"
+             ng-bind-html="muokattavat[tunniste].muokattavaKuvaus.omaKuvaus | kaanna | unsafe"></div>
+        <div ng-hide="muokattavat[tunniste].muokattavaKuvaus.kaytaOmaaKuvausta"
+             ng-bind-html="muokattavat[tunniste].muokattavaKuvaus.kuvaus | kaanna | unsafe"></div>
+
+        <div contenteditable="true" slocalized="" ng-model="muokattavat[tunniste].muokattavaKuvaus.omaKuvaus"
+             layout="light" ckeditor="" ng-if="muokattavat[tunniste].muokattavaKuvaus.isEditing && muokattavat[tunniste].muokattavaKuvaus.kaytaOmaaKuvausta"
+             class="ng-pristine ng-valid ng-scope ng-isolate-scope edit-mode cke_editable cke_editable_inline cke_contents_ltr cke_show_borders ng-touched"
+             style="position: relative;" tabindex="0" spellcheck="false" role="textbox" aria-label="false" aria-describedby="cke_38">
+        </div>
+      </div>
+
       <div class="arviointi" ng-if="tavoiteMap[tunniste].$arvioinninkohteet.length > 0">
         <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
         <table class="table table-bordered kriteerit">

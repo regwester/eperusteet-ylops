@@ -19,19 +19,12 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import java.util.stream.Stream;
+import javax.persistence.*;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -66,13 +59,14 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
 
     @Getter
     @Setter
-    private UUID tunniste;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @BatchSize(size = 25)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "opetuksentavoite")
+    private Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = new HashSet<>();
 
     @Getter
     @Setter
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    @BatchSize(size = 25)
-    private Set<Keskeinensisaltoalue> sisaltoalueet = new HashSet<>();
+    private UUID tunniste;
 
     @Getter
     @Setter
@@ -110,8 +104,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
             .map(LaajaalainenosaaminenViite::new)
             .collect(Collectors.toSet())
         );
-        ot.setSisaltoalueet(
-            other.getSisaltoalueet().stream()
+        ot.connectSisaltoalueet(other.getSisaltoalueet().stream()
             .map(s -> sisaltoalueet.get(s.getId()))
             .collect(Collectors.toSet())
         );
@@ -126,5 +119,20 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
             .collect(Collectors.toSet())
         );
         return ot;
+    }
+
+    public Optional<OpetuksenKeskeinensisaltoalue> getOpetuksenkeskeinenSisaltoalueById(Long id) {
+        return this.sisaltoalueet.stream()
+                .filter(k -> (Long.compare(k.getId(), id) == 0))
+                .findAny();
+    }
+
+    public void connectSisaltoalueet(Set<Keskeinensisaltoalue> connectSisaltoalueet) {
+        connectSisaltoalueet.forEach(sisaltoalue -> {
+            OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue = new OpetuksenKeskeinensisaltoalue();
+            opetuksenKeskeinensisaltoalue.setSisaltoalueet(sisaltoalue);
+            opetuksenKeskeinensisaltoalue.setOpetuksentavoite( this );
+            sisaltoalueet.add(opetuksenKeskeinensisaltoalue);
+        });
     }
 }

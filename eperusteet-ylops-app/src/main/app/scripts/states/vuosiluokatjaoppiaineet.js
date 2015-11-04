@@ -65,7 +65,7 @@ ylopsApp
             return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
           }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
-            return vuosiluokatService.getLaajaalaiset(opsId).$promise;
+            return vuosiluokatService.getLaajaalaiset(opsId);
           }],
           naviState: ['baseLaajaalaiset', 'vlk', 'OpsNavigaatio', function (baseLaajaalaiset, vlk, OpsNavigaatio) {
             // Odota laaja-alaiset ennen sivunavin aktivointia niin UI-elementit ei pompi

@@ -15,9 +15,12 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OpetuksenKeskeinensisaltoalue;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -34,8 +37,9 @@ public class OpetuksenTavoiteDto implements ReferenceableDto {
     private UUID tunniste;
 
     private LokalisoituTekstiDto tavoite;
-    private Set<Reference> sisaltoalueet;
     private Set<Reference> laajattavoitteet;
     private Set<Reference> kohdealueet;
     private Set<TavoitteenArviointiDto> arvioinninkohteet;
+    private Set<OpetuksenKeskeinensisaltoalueDto> sisaltoalueet;
+
 }

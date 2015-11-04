@@ -29,6 +29,8 @@ ylopsApp
     $scope.editableModel.julkaisukielet = [_.first($scope.kielivalinnat)];
     $scope.editableModel._pohja = $stateParams.pohjaId === '' ? null : $stateParams.pohjaId;
   }
+
+  $scope.$$isOps = true;
   $scope.editMode = false;
   $scope.loading = false;
   $scope.kuntalista = [];
@@ -135,6 +137,7 @@ ylopsApp
         if (aktiivinenPohja) {
           $scope.pohjaVaroitus = false;
           OpetussuunnitelmaCRUD.get({opsId: aktiivinenPohja.id}, asetaKieletJaVlk);
+          $scope.avataInputs(koulutustyyppi);
         } else {
           $scope.pohjaVaroitus = true;
         }
@@ -301,6 +304,7 @@ ylopsApp
     $scope.koulutustyyppiOnValittu = false;
 
     $scope.avataInputs = function(valittuKoulutustyyppi) {
+      $scope.koulutustyyppiOnValittu = false;
       var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6'];
       return _.includes(validTyypit, valittuKoulutustyyppi) ? ($scope.koulutustyyppiOnValittu = true) : ($scope.koulutustyyppiOnValittu = false);
     };
