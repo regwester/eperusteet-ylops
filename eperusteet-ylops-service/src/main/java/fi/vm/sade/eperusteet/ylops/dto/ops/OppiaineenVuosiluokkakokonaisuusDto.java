@@ -33,6 +33,7 @@ public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private Long id;
     private Reference vuosiluokkakokonaisuus;
     private TekstiosaDto tehtava;
+    private TekstiosaDto yleistavoitteet;
     private TekstiosaDto tyotavat;
     private TekstiosaDto ohjaus;
     private TekstiosaDto arviointi;
