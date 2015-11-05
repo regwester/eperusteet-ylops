@@ -25,24 +25,24 @@ ylopsApp
     $rootScope,
     OppiaineService) {
 
-    $scope.oppiaine = OppiaineService.getOppiaine();
-    $scope.oppiaineenVlk = OppiaineService.getOpVlk();
+  $scope.oppiaine = OppiaineService.getOppiaine();
+  $scope.oppiaineenVlk = OppiaineService.getOpVlk();
 
-    if (perusteOppiaine) {
-      if (perusteOppiaine.eiPerustetta) {
-        $scope.eiPerustetta = true;
-      }
-      if (perusteOppiaine.tunniste === $scope.oppiaine.tunniste) {
-        $scope.perusteOppiaine = perusteOppiaine;
-      }
-      else {
-        $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, function (om) {
-          return om.tunniste === $scope.oppiaine.tunniste;
-        });
-      }
+  if (perusteOppiaine) {
+    if (perusteOppiaine.eiPerustetta) {
+      $scope.eiPerustetta = true;
     }
+    if (perusteOppiaine.tunniste === $scope.oppiaine.tunniste) {
+      $scope.perusteOppiaine = perusteOppiaine;
+    }
+    else {
+      $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, function (om) {
+        return om.tunniste === $scope.oppiaine.tunniste;
+      });
+    }
+  }
 
-  $scope.isVuosiluokkaistettava = $scope.eiPerustetta && _.any($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
+  $scope.isVuosiluokkaistettava = !!perusteOppiaine && _.any($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus && !_.isEmpty(vlk.tavoitteet);
   });
 
