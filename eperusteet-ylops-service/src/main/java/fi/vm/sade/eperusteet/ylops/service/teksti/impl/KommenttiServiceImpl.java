@@ -118,7 +118,7 @@ public class KommenttiServiceImpl implements KommenttiService {
     private void assertRights(Kommentti kommentti, Permission p) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         KayttajanTietoDto kirjautunut = kayttajat.haeKirjautaunutKayttaja();
-        if (kirjautunut.getOidHenkilo().equals(kommentti.getMuokkaaja())) {
+        if (kirjautunut.getOidHenkilo().equals(kommentti.getLuoja())) {
             return;
         }
         if (!permissionManager.hasPermission(authentication, kommentti.getOpetussuunnitelmaId(), TargetType.OPETUSSUUNNITELMA, p)) {
