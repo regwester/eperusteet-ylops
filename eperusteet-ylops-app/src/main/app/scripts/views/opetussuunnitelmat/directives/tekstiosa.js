@@ -55,7 +55,7 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/directives/yksinkertainentekstiosa.html',
     controller: 'TekstiosaController',
-    link: function (scope, element, attrs) {
+    link: function (scope, element) {
       scope.focusAndScroll = function () {
         $timeout(function () {
           var el = element.find('[ckeditor]');
