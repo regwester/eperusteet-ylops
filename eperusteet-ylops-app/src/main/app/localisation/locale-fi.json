@@ -114,6 +114,8 @@
   "luo-uusi-valinnainen-aine": "Luo uusi valinnainen",
   "luonnos": "Luonnos",
   "luonti-vuosiluokka-valinta-info": "Vuosiluokat voi valita vain opetussuunnitelman luonnissa. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
+  "vahvista-vuosiluokkakokonaisuudet-muokkaus-otsikko": "Muokkaa OPS:n tietoja",
+  "vahvista-vuosiluokkakokonaisuudet-muokkaus-teksti": "Tallenna muutokset? Vuosiluokkakokonaisuuden valinnan poisto hävittää sen sisällöt.",
   "luotu": "Luotu",
   "mandatory-odottamaton-virhe": "Kaikkia pakollisia kenttiä ei ole täytetty",
   "muokattavana": "Muokattavana",

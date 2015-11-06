@@ -76,6 +76,12 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
     private Tekstiosa tehtava;
 
+    // Yleistavoitteet ovat tavoitteita, joita ei vuosiluokkaisteta, vaan annetaan vapaana tekstinä.
+    @Getter
+    @Setter
+    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
+    private Tekstiosa yleistavoitteet;
+
     @Getter
     @Setter
     @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)

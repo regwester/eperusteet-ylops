@@ -329,13 +329,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
         boolean onPohjastaTehtyPohja = ylinpohja.getId().equals(pohja.getId());
 
-        ops.setOppiaineet(
-            pohja.getOppiaineet().stream()
-            .map(ooa -> teeKopio
-                    ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine(), !onPohjastaTehtyPohja), true)
-                    : new OpsOppiaine(ooa.getOppiaine(), false))
-            .collect(Collectors.toSet()));
 
+        ops.setOppiaineet(
+                pohja.getOppiaineet().stream()
+                        .map(ooa -> teeKopio
+                                ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine(), !onPohjastaTehtyPohja), true)
+                                : new OpsOppiaine(ooa.getOppiaine(), false))
+                        .collect(Collectors.toSet()));
         Set<OpsVuosiluokkakokonaisuus> ovlkoot = pohja.getVuosiluokkakokonaisuudet().stream()
             .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
                 .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste().equals(ovlk.getVuosiluokkakokonaisuus().getTunniste())))
