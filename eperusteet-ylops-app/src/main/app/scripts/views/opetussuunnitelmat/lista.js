@@ -55,9 +55,9 @@ ylopsApp
   })
 
   .controller('OpetussuunnitelmatListaController', function ($scope, $state,
-    OpetussuunnitelmaCRUD, Utils, ListaSorter, Notifikaatiot, OpetussuunnitelmaOikeudetService) {
+    OpetussuunnitelmaCRUD, Utils, ListaSorter, Notifikaatiot) {
 
-    $scope.luontiOikeus = true;
+    // $scope.luontiOikeus = true;
     // $scope.luontiOikeus = OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luku', true)
     //   || OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luku', true);
     $scope.opsMaxLimit = 9999;
