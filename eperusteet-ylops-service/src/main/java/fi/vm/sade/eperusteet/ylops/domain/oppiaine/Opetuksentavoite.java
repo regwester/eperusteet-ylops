@@ -104,10 +104,13 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
             .map(LaajaalainenosaaminenViite::new)
             .collect(Collectors.toSet())
         );
-        ot.connectSisaltoalueet(other.getSisaltoalueet().stream()
-            .map(s -> sisaltoalueet.get(s.getId()))
-            .collect(Collectors.toSet())
+
+        ot.setSisaltoalueet(
+            other.getSisaltoalueet().stream()
+                .map(s -> OpetuksenKeskeinensisaltoalue.copyOf(s, ot))
+                .collect(Collectors.toSet())
         );
+
         ot.setKohdealueet(
             other.getKohdealueet().stream()
             .map(k -> kohdealueet.get(k.getId()))

@@ -12,6 +12,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.stream.Collectors;
 
 /**
  * Created by autio on 28.10.2015.
@@ -48,5 +49,13 @@ public class OpetuksenKeskeinensisaltoalue implements Serializable{
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti omaKuvaus;
+
+    public static OpetuksenKeskeinensisaltoalue copyOf(OpetuksenKeskeinensisaltoalue other, Opetuksentavoite opetuksentavoite) {
+        OpetuksenKeskeinensisaltoalue ks = new OpetuksenKeskeinensisaltoalue();
+        ks.setOmaKuvaus( other.getOmaKuvaus() );
+        ks.setSisaltoalueet( Keskeinensisaltoalue.copyOf( other.getSisaltoalueet() ));
+        ks.setOpetuksentavoite( opetuksentavoite );
+        return ks;
+    }
 
 }
