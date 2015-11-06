@@ -145,13 +145,13 @@
     </div>
 
     <div ng-show="(!luonnissa || koulutustyyppiOnValittu) && !pohjaVaroitus">
-      <div ng-if="luonnissa && editableModel.koulutustyyppi === 'koulutustyyppi_16'" class="row">
+      <div ng-if="editableModel.koulutustyyppi === 'koulutustyyppi_16' && editVuosiluokkakokonaisuudet" class="row">
         <div class="col-sm-3 formfield-label">
           <label><span kaanna="'vuosiluokkakokonaisuudet'"></span>*</label>
         </div>
         <div class="col-sm-9 formfield-data">
           <label ng-repeat="vlk in editableModel.vuosiluokkakokonaisuudet | orderBy:nimiOrder" class="julkaisukieli">
-            <input type="checkbox" ng-model="vlk.valittu">
+            <input type="checkbox" ng-model="vlk.valittu" ng-click="toggle(vlk)">
             <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span>
           </label>
           <ohje teksti="luonti-vuosiluokka-valinta-info"></ohje>
