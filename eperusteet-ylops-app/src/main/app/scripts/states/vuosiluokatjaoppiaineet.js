@@ -67,7 +67,7 @@ ylopsApp
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
             return vuosiluokatService.getLaajaalaiset(opsId);
           }],
-          naviState: ['baseLaajaalaiset', 'vlk', 'OpsNavigaatio', function (baseLaajaalaiset, vlk, OpsNavigaatio) {
+          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
             // Odota laaja-alaiset ennen sivunavin aktivointia niin UI-elementit ei pompi
             OpsNavigaatio.setActive();
           }]

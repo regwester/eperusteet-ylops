@@ -57,8 +57,11 @@ ylopsApp
   .controller('OpetussuunnitelmatListaController', function ($scope, $state,
     OpetussuunnitelmaCRUD, Utils, ListaSorter, Notifikaatiot) {
 
+    // $scope.luontiOikeus = true;
+    // $scope.luontiOikeus = OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luku', true)
+    //   || OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luku', true);
     $scope.opsMaxLimit = 9999;
-    $scope.opsMinLimit = 7;
+    $scope.opsMinLimit = 3;
 
     $scope.sorter = ListaSorter.init($scope);
     $scope.opsiLista = true;
@@ -70,8 +73,6 @@ ylopsApp
       $scope.items.$resolved = true;
     }, Notifikaatiot.serverCb);
 
-
-
     $scope.opsLimit = $state.is('root.etusivu') ? $scope.opsMinLimit : $scope.opsMaxLimit;
 
     $scope.showAll = function() {
@@ -81,7 +82,6 @@ ylopsApp
     $scope.showLess = function() {
       $scope.opsLimit = $scope.opsMinLimit;
     };
-
   })
 
   .controller('TiedotteetController', function ($scope) {
