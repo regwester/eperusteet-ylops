@@ -1,64 +1,62 @@
-<div class="row etusivu-osiot" kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'luku' }">
-  <div class="osio col-md-8 col-sm-9">
-    <h2 kaanna="'omat-opetussuunnitelmat'"></h2>
-    <div ng-controller="OpetussuunnitelmatListaController">
-      <div ng-include="'views/opetussuunnitelmat/taulukko.html'"></div>
-    </div>
-  </div>
-
-  <div class="osio col-md-4 col-sm-3" kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'luonti' }">
-    <h2 kaanna="'aloita-uusi-ops'"></h2>
-    <form name="aloitauusiForm" ng-controller="UusiOpsController">
-      <label>
-        <input type="radio" ng-model="pohja.active" value="1">
-        <span kaanna="'kayta-pohjaa'"></span>
-      </label>
-      <select class="pohja-select form-control" ng-model="pohja.model"
-              ng-options="(item.nimi | kaanna) for item in pohjat | filter:{tila:'!poistettu'} | orderBy:sorter"
-              ng-change="pohja.active = '1'">
-        <option value="">{{'valitse-pohja' | kaanna}}</option>
-      </select>
-      <ohje teksti="kayta-pohjaa-info"></ohje>
-      <br/>
-      <label>
-        <input type="radio" ng-model="pohja.active" value="0">
-        <span kaanna="'tyhja-pohja'"></span>
-      </label>
-      <ohje teksti="tyhja-pohja-info"></ohje>
-      <br/>
-      <button class="btn btn-primary luo-nappi" ng-click="addNew()" ng-disabled="pohja.active === '1' && !pohja.model"
-              kaanna="'luo-projekti'"></button>
-    </form>
-
-  </div>
-
-  <!-- <div class="osio col-md-3 col-sm-12">
-    <h2></h2>
-    <div ng-controller="TiedotteetController" class="etusivu-tiedotteet">
-      <h3 kaanna="'tiedotteet'"></h3>
-      <div class="tiedote-list-item" ng-repeat="tiedote in tiedotteet">
-        <a ng-bind="tiedote.nimi | kaanna"></a>
-        <div class="tiedote-lista-tiedot">
-          <span ng-bind="tiedote.muokattu"></span>
-        </div>
+<div class="row">
+  <div class="etusivu-osiot col-md-8 col-sm-9">
+    <div class="osio" kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'luku' }">
+      <h2 kaanna="'omat-opetussuunnitelmat'"></h2>
+      <div ng-controller="OpetussuunnitelmatListaController">
+        <div ng-include="'views/opetussuunnitelmat/taulukko.html'"></div>
       </div>
     </div>
-  </div> -->
 
-</div>
-
-<div ng-controller="EtusivuController">
-  <div ng-if="isVirkailija()" class="row etusivu-osiot" kayttajaoikeustarkastelu="{ target: 'pohja', permission: 'luku' }">
-    <div class="osio col-md-8 col-sm-9">
+    <div class="osio" ng-if="isVirkailija()" class="row etusivu-osiot" kayttajaoikeustarkastelu="{ target: 'pohja', permission: 'luku' }">
       <h2 kaanna="'pohjat'"></h2>
       <div ng-controller="PohjaListaController">
         <div ng-include="'views/opetussuunnitelmat/taulukko.html'"></div>
       </div>
     </div>
+  </div>
 
-    <div class="osio col-md-4 col-sm-3" kayttajaoikeustarkastelu="{ target: 'pohja', permission: 'luonti' }">
-      <h2 kaanna="'aloita-uusi-pohja'"></h2>
+  <div class="etusivu-osiot etusivu-lisaajat col-md-4 col-sm-3">
+    <div kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'luonti' }">
+      <h2 kaanna="'aloita-uusi-ops'"></h2>
+      <form name="aloitauusiForm" ng-controller="UusiOpsController">
+        <label>
+          <input type="radio" ng-model="pohja.active" value="1">
+          <span kaanna="'kayta-pohjaa'"></span>
+        </label>
+        <select class="pohja-select form-control" ng-model="pohja.model"
+                ng-options="(item.nimi | kaanna) for item in pohjat | filter:{tila:'!poistettu'} | orderBy:sorter"
+                ng-change="pohja.active = '1'">
+          <option value="">{{'valitse-pohja' | kaanna}}</option>
+        </select>
+        <ohje teksti="kayta-pohjaa-info"></ohje>
+        <br/>
+        <label>
+          <input type="radio" ng-model="pohja.active" value="0">
+          <span kaanna="'tyhja-pohja'"></span>
+        </label>
+        <ohje teksti="tyhja-pohja-info"></ohje>
+        <br/>
+        <button class="btn btn-primary luo-nappi" ng-click="addNew()" ng-disabled="pohja.active === '1' && !pohja.model"
+                kaanna="'luo-projekti'"></button>
+      </form>
+    </div>
+
+    <div class="pohjaosio" kayttajaoikeustarkastelu="{ target: 'pohja', permission: 'luonti' }">
+      <h2 class="otsikko" kaanna="'aloita-uusi-pohja'"></h2>
       <button class="btn btn-primary luo-nappi" ng-click="addNewPohja()" kaanna="'luo-pohja'"></button>
     </div>
   </div>
 </div>
+
+<!-- <div class="osio col-md-3 col-sm-12">
+  <h2></h2>
+  <div ng-controller="TiedotteetController" class="etusivu-tiedotteet">
+    <h3 kaanna="'tiedotteet'"></h3>
+    <div class="tiedote-list-item" ng-repeat="tiedote in tiedotteet">
+      <a ng-bind="tiedote.nimi | kaanna"></a>
+      <div class="tiedote-lista-tiedot">
+        <span ng-bind="tiedote.muokattu"></span>
+      </div>
+    </div>
+  </div>
+</div> -->

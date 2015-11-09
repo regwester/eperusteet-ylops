@@ -24,7 +24,6 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -47,7 +46,6 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -233,6 +231,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaineenvuosiluokkakokonaisuus oavlk = new Oppiaineenvuosiluokkakokonaisuus();
         oavlk.setVuosiluokkakokonaisuus(vlk.getTunniste());
         oavlk.setTehtava(mapper.map(oavlktDto.getTehtava(), Tekstiosa.class));
+        oavlk.setYleistavoitteet(mapper.map(oavlktDto.getYleistavoitteet(), Tekstiosa.class));
         oavlk.setTyotavat(mapper.map(oavlktDto.getTyotavat(), Tekstiosa.class));
         oavlk.setOhjaus(mapper.map(oavlktDto.getOhjaus(), Tekstiosa.class));
         oavlk.setArviointi(mapper.map(oavlktDto.getArviointi(), Tekstiosa.class));
@@ -390,6 +389,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei löydy"));
 
         oavlk.setTehtava(mapper.map(dto.getTehtava(), Tekstiosa.class));
+        oavlk.setYleistavoitteet(mapper.map(dto.getYleistavoitteet(), Tekstiosa.class));
         oavlk.setTyotavat(mapper.map(dto.getTyotavat(), Tekstiosa.class));
         oavlk.setOhjaus(mapper.map(dto.getOhjaus(), Tekstiosa.class));
         oavlk.setArviointi(mapper.map(dto.getArviointi(), Tekstiosa.class));

@@ -20,7 +20,7 @@
 ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function ($scope, Editointikontrollit, $stateParams, $state,
   $timeout, $q, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
-  PeruskoulutoimijaHaku, kunnat, Kieli) {
+  PeruskoulutoimijaHaku, kunnat, Kieli, OpetussuunnitelmaOikeudetService, Varmistusdialogi) {
 
   $scope.kielivalinnat = []; // Täytetään pohjan perusteella
   $scope.luonnissa = $stateParams.id === 'uusi';
@@ -28,6 +28,10 @@ ylopsApp
   if ($scope.luonnissa) {
     $scope.editableModel.julkaisukielet = [_.first($scope.kielivalinnat)];
     $scope.editableModel._pohja = $stateParams.pohjaId === '' ? null : $stateParams.pohjaId;
+    $scope.editVuosiluokkakokonaisuudet = true;
+  }else{
+    $scope.editVuosiluokkakokonaisuudet = OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luonti', true) ||
+        OpetussuunnitelmaOikeudetService.onkoOikeudet('opetussuunnitelma', 'tilanvaihto', true);
   }
 
   $scope.$$isOps = true;
@@ -61,7 +65,7 @@ ylopsApp
     var nimiOk = Utils.hasLocalizedText(model.nimi);
     var organisaatiotOk = model.kunnat && model.kunnat.length > 0 && model.koulutoimijat && model.koulutoimijat.length > 0;
     var julkaisukieletOk = _.any(_.values($scope.julkaisukielet));
-    var vlkOk = !$scope.luonnissa || model.koulutustyyppi !== 'koulutustyyppi_16' ||
+    var vlkOk = (!$scope.luonnissa && !$scope.editVuosiluokkakokonaisuudet) || model.koulutustyyppi !== 'koulutustyyppi_16' ||
       _(model.vuosiluokkakokonaisuudet).filter({valittu: true}).size() > 0;
     return nimiOk && organisaatiotOk && julkaisukieletOk && vlkOk;
   };
@@ -105,6 +109,7 @@ ylopsApp
   }
 
   function asetaKieletJaVlk(ops) {
+    $scope.opsvuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
     $scope.editableModel.vuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
     $scope.kielivalinnat = ops.julkaisukielet;
     if (_.isEmpty($scope.editableModel.julkaisukielet) ||
@@ -162,7 +167,17 @@ ylopsApp
   function fetch(notify) {
     OpsService.refetch(function (res) {
       $scope.model = res;
+      var vuosiluokkakokonaisuudet = _.chain(res.vuosiluokkakokonaisuudet).map(function(v) {
+        v.valittu = true;
+        return v;
+      }).concat( $scope.opsvuosiluokkakokonaisuudet ).value();
+
+      vuosiluokkakokonaisuudet = _.uniq(vuosiluokkakokonaisuudet,function(c){
+        return c.vuosiluokkakokonaisuus._tunniste;
+      });
+
       $scope.editableModel = res;
+      $scope.editableModel.vuosiluokkakokonaisuudet = vuosiluokkakokonaisuudet;
       $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
       $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
       fixTimefield('paatospaivamaara');
@@ -187,6 +202,17 @@ ylopsApp
       $scope.loading = true;
       fetch();
     },
+    asyncValidate: function( save ){
+      var muokattuVuosiluokkakokonaisuuksia = _.some(_.pluck($scope.editableModel.vuosiluokkakokonaisuudet, 'muutettu'));
+      if( !$scope.luonnissa && muokattuVuosiluokkakokonaisuuksia ){
+        Varmistusdialogi.dialogi({
+          otsikko: 'vahvista-vuosiluokkakokonaisuudet-muokkaus-otsikko',
+          teksti: 'vahvista-vuosiluokkakokonaisuudet-muokkaus-teksti'
+        })(save);
+      }else{
+        save();
+      }
+    },
     validate: function () {
       return $scope.hasRequiredFields();
     },
@@ -197,8 +223,9 @@ ylopsApp
       $scope.editableModel.organisaatiot = $scope.editableModel.koulutoimijat.concat($scope.editableModel.koulut);
       delete $scope.editableModel.tekstit;
       delete $scope.editableModel.oppiaineet;
+
+      $scope.editableModel.vuosiluokkakokonaisuudet = _.remove($scope.editableModel.vuosiluokkakokonaisuudet, {valittu: true});
       if ($scope.luonnissa) {
-        $scope.editableModel.vuosiluokkakokonaisuudet = _.remove($scope.editableModel.vuosiluokkakokonaisuudet, {valittu: true});
         OpetussuunnitelmaCRUD.save({}, $scope.editableModel, successCb, Notifikaatiot.serverCb);
       } else {
         $scope.editableModel.$save({}, successCb, Notifikaatiot.serverCb);
@@ -217,6 +244,10 @@ ylopsApp
     }
   };
   Editointikontrollit.registerCallback(callbacks);
+
+  $scope.toggle = function(vkl){
+    vkl.muutettu = (vkl.muutettu === undefined) ? true : !vkl.muutettu;
+  };
 
   $scope.uusi = {
     cancel: function () {

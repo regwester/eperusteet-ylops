@@ -1,12 +1,15 @@
 .etusivu-osiot {
   .osio {
     padding-right: 25px;
-  }
-  h2 {
-    height: 50px;
+    margin-top: 20px;
+
+    .osiotausta {
+      padding: 10px;
+    }
   }
   .luo-nappi {
     margin: 20px;
+    margin-left: 0;
     padding: 10px 20px;
   }
   .pohja-select {
@@ -14,6 +17,15 @@
     margin-bottom: 10px;
     display: inline-block;
   }
+}
+
+.pohjaosio {
+  margin-top: 40px;
+}
+
+.etusivu-lisaajat {
+  margin-top: 70px;
+  background: #EBF3F6;
 }
 
 .see-more {

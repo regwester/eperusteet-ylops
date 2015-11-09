@@ -44,6 +44,31 @@ ylopsApp
   };
 })
 
+.directive('yksinkertainenTekstiosa', function ($timeout, $window) {
+  return {
+    restrict: 'A',
+    scope: {
+      model: '=yksinkertainenTekstiosa',
+      callbacks: '=',
+      startCollapsed: '=?',
+      otsikko: '@?'
+    },
+    templateUrl: 'views/opetussuunnitelmat/directives/yksinkertainentekstiosa.html',
+    controller: 'TekstiosaController',
+    link: function (scope, element) {
+      scope.focusAndScroll = function () {
+        $timeout(function () {
+          var el = element.find('[ckeditor]');
+          if (el && el.length > 0) {
+            el[0].focus();
+            $window.scrollTo(0, el.eq(0).offset().top - 200);
+          }
+        }, 300);
+      };
+    }
+  };
+})
+
 .controller('TekstiosaController', function ($state, $scope, Editointikontrollit, Kieli) {
   $scope.editMode = false;
   $scope.collapsed = _.isUndefined($scope.startCollapsed) ? true : $scope.startCollapsed;
