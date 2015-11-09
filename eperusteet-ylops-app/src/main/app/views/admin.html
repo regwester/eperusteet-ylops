@@ -111,9 +111,9 @@
     <!--   </a> -->
     <!-- </th> -->
 
-    <!-- <th class="ops&#45;th&#45;toiminto"> -->
-    <!--   <span kaanna="'toiminto'"></span> -->
-    <!-- </th> -->
+    <th class="ops-th-toiminto">
+      <span kaanna="'toiminto'"></span>
+    </th>
 
   </tr>
 
@@ -130,7 +130,7 @@
     <!-- </td> -->
     <td><span class="taulukko-tila" ng-class="'tila-'+item.tila" ng-bind="item.tila | kaanna"></span></td>
     <!-- <td><span ng&#45;bind="item.muokattu | aikaleima:'short'"></span></td> -->
-    <!-- <td><button ng&#45;click="palauta(item)" class="btn btn&#45;default" ng&#45;if="item.tila === 'poistettu'" kaanna="'palauta'"></button></td> -->
+    <td><button ng-click="palauta(item)" class="btn btn-default" ng-if="item.tila === 'poistettu'" kaanna="'palauta'"></button></td>
   </tr>
 </table>
 <p ng-if="filtered.length === 0" kaanna="'ei-opetussuunnitelmia'"></p>
