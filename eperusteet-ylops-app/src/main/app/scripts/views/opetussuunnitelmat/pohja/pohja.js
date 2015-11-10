@@ -55,7 +55,7 @@ ylopsApp
             '</div>'
             );
     $templateCache.put('pohjaSisaltoNodeTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'search-halo\': node.$$showHalo, \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
             '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
@@ -80,6 +80,41 @@ ylopsApp
   $scope.shouldShow = function() {
     return $state.is('root.pohjat.yksi.sisalto.tekstikappale');
   };
+
+  $scope.rajaus = {
+    term: '',
+    onUpdate: function(term) {
+      Algoritmit.traverse($scope.model.tekstit, 'lapset', function(node) {
+        node.$$showHalo = false;
+
+        if (_.isEmpty(term)) {
+          node.$$searchHidden = false;
+        }
+        else if (!Algoritmit.match(term, node.tekstiKappale.nimi)) {
+          node.$$searchHidden = true;
+        }
+        else {
+          node.$$searchHidden = false;
+          node.$$showHalo = true;
+          var p = node.$$traverseParent;
+          while (p) {
+            p.$$searchHidden = false;
+            p = p.$$traverseParent;
+          }
+        }
+      });
+    }
+  };
+
+  $scope.toggleState = function() {
+    $scope.opened = !$scope.opened;
+    _.deepFlatten(tekstit, _.property('lapset'), function(obj, depth) {
+        if (depth > 1) {
+          obj.$$hidden = $scope.opened;
+        }
+      });
+  };
+  $scope.toggleState();
 
   var commonParams = {
     opsId: $stateParams.pohjaId,
@@ -129,7 +164,7 @@ ylopsApp
             return false;
           }
           else {
-            return node.$$nodeParent.$$hidden;
+            return (_.isEmpty($scope.rajaus.term) && node.$$nodeParent.$$hidden) || node.$$searchHidden;
           }
       },
       template: function() {

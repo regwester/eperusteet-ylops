@@ -121,7 +121,7 @@ ylopsApp
   })
   .run(function() {
     _.mixin({
-      flattestMap: function flattestMap(obj, accessor, op, depth) {
+      deepFlatten: function flattestMap(obj, accessor, op, depth) {
         depth = depth || 0;
         if (_.isArray(obj)) {
           return _.map(obj, _.partial(flattestMap, _, accessor, op, depth));

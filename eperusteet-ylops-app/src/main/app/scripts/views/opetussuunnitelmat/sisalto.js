@@ -88,7 +88,7 @@ ylopsApp
   this.rakennaSivunavi = function(tekstit, isPohja) {
     var state = isPohja ? 'root.pohjat.yksi.sisalto.tekstikappale' : 'root.opetussuunnitelmat.yksi.sisalto.tekstikappale';
 
-    return _(_.flattestMap(tekstit, _.property('lapset'), function(obj, depth) {
+    return _(_.deepFlatten(tekstit, _.property('lapset'), function(obj, depth) {
       if (obj.tekstiKappale) {
         var result = {
           id: obj.id,
@@ -152,6 +152,7 @@ ylopsApp
   $scope.model = opsModel;
   $scope.model.tekstit = tekstit;
   $scope.navi = TekstikappaleOps.rakennaSivunavi(tekstit);
+  $scope.opened = false;
   $scope.shouldShow = function() {
     return $state.is('root.opetussuunnitelmat.yksi.sisalto.tekstikappale');
   };
@@ -180,6 +181,17 @@ ylopsApp
       });
     }
   };
+
+
+  $scope.toggleState = function() {
+    $scope.opened = !$scope.opened;
+    _.deepFlatten(tekstit, _.property('lapset'), function(obj, depth) {
+        if (depth > 1) {
+          obj.$$hidden = $scope.opened;
+        }
+      });
+  };
+  $scope.toggleState();
 
   var commonParams = {
     opsId: $stateParams.id,
