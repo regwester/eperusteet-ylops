@@ -49,7 +49,7 @@ ylopsApp
 })
 .run(function($templateCache) {
     $templateCache.put('pohjaSisaltoNodeEditingTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'recursivetree-empty\': (node.lapset.length === 0) }">' +
             '    <span class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '</div>'
