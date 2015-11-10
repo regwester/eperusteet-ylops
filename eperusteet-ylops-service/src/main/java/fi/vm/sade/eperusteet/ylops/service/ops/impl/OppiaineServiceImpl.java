@@ -30,11 +30,7 @@ import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakoko
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkaRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkakokonaisuusRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -363,6 +359,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             ops.removeOppiaine(oppiaine);
         }
 
+        mapper.map(oppiaine, OppiaineDto.class);
         oppiaineet.delete(oppiaine);
     }
 

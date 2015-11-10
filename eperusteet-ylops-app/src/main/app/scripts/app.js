@@ -121,6 +121,20 @@ ylopsApp
   })
   .run(function() {
     _.mixin({
+      deepFlatten: function flattestMap(obj, accessor, op, depth) {
+        depth = depth || 0;
+        if (_.isArray(obj)) {
+          return _.map(obj, _.partial(flattestMap, _, accessor, op, depth));
+        }
+        else if (_.isObject(obj)) {
+          return [op(obj, depth)].concat(_(accessor(obj))
+              .map(_.partial(flattestMap, _, accessor, op, depth + 1))
+              .value());
+        }
+        else {
+          return [];
+        }
+      },
       // TODO: Deprekoitunut, vaihda indexBy:hin
       zipBy: function(array, kfield, vfield) {
         if (_.isArray(array) && kfield) {

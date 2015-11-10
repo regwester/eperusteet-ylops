@@ -100,26 +100,26 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
         ot.setTunniste(other.getTunniste());
         ot.setTavoite(other.getTavoite());
         ot.setLaajattavoitteet(
-            other.getLaajattavoitteet().stream()
-            .map(LaajaalainenosaaminenViite::new)
-            .collect(Collectors.toSet())
+                other.getLaajattavoitteet().stream()
+                        .map(LaajaalainenosaaminenViite::new)
+                        .collect(Collectors.toSet())
         );
 
         ot.setSisaltoalueet(
-            other.getSisaltoalueet().stream()
-                .map(s -> OpetuksenKeskeinensisaltoalue.copyOf(s, ot))
-                .collect(Collectors.toSet())
+                other.getSisaltoalueet().stream()
+                        .map(s -> OpetuksenKeskeinensisaltoalue.copyOf(s, ot))
+                        .collect(Collectors.toSet())
         );
 
         ot.setKohdealueet(
-            other.getKohdealueet().stream()
-            .map(k -> kohdealueet.get(k.getId()))
-            .collect(Collectors.toSet())
+                other.getKohdealueet().stream()
+                        .map(k -> kohdealueet.get(k.getId()))
+                        .collect(Collectors.toSet())
         );
         ot.setArvioinninkohteet(
-            other.getArvioinninkohteet().stream()
-            .map(a -> Tavoitteenarviointi.copyOf(a))
-            .collect(Collectors.toSet())
+                other.getArvioinninkohteet().stream()
+                        .map(a -> Tavoitteenarviointi.copyOf(a))
+                        .collect(Collectors.toSet())
         );
         return ot;
     }
@@ -129,12 +129,21 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
                 .filter(k -> (Long.compare(k.getId(), id) == 0))
                 .findAny();
     }
+    
+    public Optional<OpetuksenKeskeinensisaltoalue> getOpetuksenkeskeinenSisaltoalueBySisaltoalueId(Long id) {
+        return this.sisaltoalueet.stream()
+                .filter(k -> (id != null && Long.compare(k.getSisaltoalueet().getId(), id) == 0))
+                .findAny();
+    }
 
     public void connectSisaltoalueet(Set<Keskeinensisaltoalue> connectSisaltoalueet) {
         connectSisaltoalueet.forEach(sisaltoalue -> {
-            OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue = new OpetuksenKeskeinensisaltoalue();
+            Optional<OpetuksenKeskeinensisaltoalue> keskeinensisaltoalue = getOpetuksenkeskeinenSisaltoalueBySisaltoalueId(sisaltoalue.getId());
+            OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue = (keskeinensisaltoalue.isPresent()) ?
+                    keskeinensisaltoalue.get() : new OpetuksenKeskeinensisaltoalue();
+
             opetuksenKeskeinensisaltoalue.setSisaltoalueet(sisaltoalue);
-            opetuksenKeskeinensisaltoalue.setOpetuksentavoite( this );
+            opetuksenKeskeinensisaltoalue.setOpetuksentavoite(this);
             sisaltoalueet.add(opetuksenKeskeinensisaltoalue);
         });
     }

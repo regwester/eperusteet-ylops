@@ -21,6 +21,8 @@ ylopsApp
   $state, OppiaineenVlk, $stateParams, OpsService, Kaanna, Notifikaatiot, VuosiluokatService,
   $rootScope, OppiaineService, Varmistusdialogi, Utils, $window) {
 
+  $rootScope.$broadcast('navigaatio:hide');
+
   var TAVOITTEET = 'tavoite-list';
   var VUOSILUOKKA = 'vuosiluokka-list';
   $scope.perusteOpVlk = {};

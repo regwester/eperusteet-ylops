@@ -23,206 +23,43 @@ ylopsApp
     templateUrl: 'views/opetussuunnitelmat/directives/navigaatio.html',
     controller: 'OpsNavigaatioController',
     scope: {
-      model: '=',
-      vuosiluokat: '='
+      shouldShow: '=',
+      items: '='
     },
     transclude: true
   };
 })
 
-.controller('OpsNavigaatioController', function ($scope, OpsNavigaatio, $state, $stateParams, Algoritmit,
-  VuosiluokatService, MurupolkuData) {
-  $scope.isActive = true;
+.controller('OpsNavigaatioController', function ($scope, $state, $stateParams
+  /*, MurupolkuData*/) {
+  $scope.isActive = false;
   $scope.chosen = 0;
   $scope.collapsed = true;
   $scope.showTakaisin = false;
-  $scope.items = [];
 
-  function listener(value) {
-    $scope.isActive = value;
-  }
-  OpsNavigaatio.listen(listener);
-  $scope.$on('$destroy', function () {
-    OpsNavigaatio.stopListening();
-  });
-
-  function findChild(node, viiteId) {
-    var found = null;
-    _.each(node.lapset, function (lapsi) {
-      if ('' + lapsi.id === '' + viiteId) {
-        found = lapsi;
-      }
-    });
-    if (!found) {
-      var childFound = false;
-      _.each(node.lapset, function (lapsi) {
-        if (findChild(lapsi, viiteId)) {
-          childFound = true;
-        }
-      });
-      found = childFound;
-    }
-    return found;
-  }
-
-  function stateMatch(id, paramName) {
-    return '' + id === '' + $stateParams[paramName];
-  }
-
-  function findActiveTeksti() {
-    var inTekstikappale = $state.is('root.opetussuunnitelmat.yksi.tekstikappale');
-    _.each($scope.items, function (item, index) {
-      item.active = $stateParams.alueId === '' + item.id;
-      if (item.active) {
-        $scope.chosen = index;
-        MurupolkuData.set({osioNimi: item.label, alueId: item.id});
-      }
-      _.each(item.items, function (alilapsi) {
-        alilapsi.active = false;
-      });
-      if (inTekstikappale && $scope.model.tekstit) {
-        var root = _.find($scope.model.tekstit.lapset, {id: item.id});
-        if (root) {
-          var found = findChild(root, $stateParams.tekstikappaleId);
-          item.active = !!found;
-          if (item.active) {
-            $scope.chosen = index;
-            MurupolkuData.set({osioNimi: item.label, alueId: item.id});
-          }
-          _.each(item.items, function (alilapsi) {
-            alilapsi.active = stateMatch(alilapsi.id, 'tekstikappaleId');
-          });
-        }
-      }
-    });
-  }
-
-  function findActiveVuosiluokkaOrOppiaine(isOppiaine, isValinnaiset) {
-    _.each($scope.items[$scope.chosen].items, function (item) {
-      var vlkMatch = stateMatch(item.id, 'vlkId');
-      var itemVlkMatch = stateMatch(item.vlkId, 'vlkId');
-      item.active = (isValinnaiset && itemVlkMatch && item.id === 'valinnaiset') ||
-                    (isOppiaine && stateMatch(item.id, 'oppiaineId') && itemVlkMatch) ||
-                    (!isOppiaine && !isValinnaiset && vlkMatch);
-      if (!item.active && vlkMatch) {
-        MurupolkuData.set({vlkNimi: item.label, vlkId: item.id});
-      }
-    });
-  }
+  var shouldShow = $scope.shouldShow || _.constant(true);
 
   function updateActive() {
-    _.each($scope.items, function (item) {
-      item.active = false;
-    });
-
-    var inVuosiluokat = $state.includes('**.opetus.vuosiluokkakokonaisuus.**');
-    var inValinnaiset = $state.includes('**.opetus.valinnaiset.**');
-    var inOppiaine = $state.includes('**.opetus.oppiaine.**');
-
-    if (inVuosiluokat || inOppiaine || inValinnaiset) {
-      $scope.chosen = $scope.items.length - 1;
-      MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat'});
-      $scope.items[$scope.chosen].active = true;
-      findActiveVuosiluokkaOrOppiaine(inOppiaine, inValinnaiset);
-    } else {
-      findActiveTeksti();
-    }
-
-    var items = $scope.items[$scope.chosen];
-    OpsNavigaatio.setItems(items);
-  }
-
-  function createNavimenu(node) {
-    var arr = [];
-    Algoritmit.traverse(node, 'lapset', function (lapsi, depth) {
-      arr.push({
-        label: lapsi.tekstiKappale ? lapsi.tekstiKappale.nimi : '[tyhjä viite]',
-        id: lapsi.id,
-        url: $state.href('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: lapsi.id}),
-        depth: depth,
-        valmis: lapsi.tekstiKappale.valmis
+    if (shouldShow()) {
+      var currentUrl = $state.href($state.current, $stateParams);
+      var deepest = _.reduce($scope.items, function(acc, item) {
+        return item.url && _.startsWith(currentUrl, item.url.split('?')[0]) ?
+          (acc && (acc.depth || 0) > (item.depth || 0) ? acc : item) :
+          acc;
       });
-    });
-    return arr;
+      if (deepest) {
+        _.each($scope.items, function(item) { item.active = false; });
+        deepest.active = true;
+        $scope.isActive = true;
+      }
+    }
+    else {
+      $scope.isActive = false;
+    }
   }
+  updateActive();
 
-  function mapLapset(node) {
-    return _.map(node, function (lapsi) {
-      return {
-        label: lapsi.tekstiKappale.nimi,
-        id: lapsi.id,
-        url: $state.href('root.opetussuunnitelmat.yksi.opetus.sisaltoalue', {alueId: lapsi.id}),
-        items: createNavimenu(lapsi)
-      };
-    });
-  }
-
-  $scope.$watch('model', function () {
-    if ($scope.model) {
-      if ($scope.model.tekstit) {
-        $scope.items = mapLapset($scope.model.tekstit.lapset);
-      }
-      else {
-        var vuosiluokat = {
-          label: 'vuosiluokat-ja-oppiaineet',
-          id: 'vuosiluokat',
-          url: $state.href('root.opetussuunnitelmat.yksi.opetus.sisaltoalue', {alueId: 'vuosiluokat'}),
-          items: VuosiluokatService.mapForMenu($scope.model)
-        };
-        $scope.items.push(vuosiluokat);
-      }
-      updateActive();
-    }
-  }, true);
-
-  $scope.$on('$stateChangeSuccess', function () {
-    updateActive();
-    $scope.collapsed = true;
-  });
-
-  $scope.toggle = function () {
-    $scope.collapsed = !$scope.collapsed;
-  };
-
-})
-
-.service('OpsNavigaatio', function ($location, $timeout) {
-  var active = true;
-  var callback = angular.noop;
-  var items = null;
-
-  this.setActive = function (value) {
-    $timeout(function () {
-      active = _.isUndefined(value) || !!value;
-      callback(active);
-    });
-  };
-
-  this.setItems = function (newItems) {
-    items = newItems;
-  };
-
-  this.listen = function (cb) {
-    var first = callback === angular.noop;
-    callback = cb;
-    if (first) {
-      callback(active);
-    }
-  };
-
-  this.stopListening = function () {
-    callback = angular.noop;
-  };
-
-  this.selectFirst = function () {
-    if (_.isObject(items)) {
-      var first = _(items.items).filter(function (item) {
-        return _.isUndefined(item.depth) || item.depth === 0;
-      }).first();
-      if (first && _.isString(first.url)) {
-        $location.path(first.url.substr(1));
-        $location.replace();
-      }
-    }
-  };
+  $scope.$on('$stateChangeSuccess', updateActive);
+  $scope.$on('navigaatio:hide', function() { $scope.isActive = false; });
+  $scope.$on('navigaatio:show', function() { $scope.isActive = true; });
 });

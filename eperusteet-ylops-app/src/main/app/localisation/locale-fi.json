@@ -3,8 +3,8 @@
   "vuosiluokkakokonaisuuden-laaja-alaisen-osaamisen-alueet-info": "Mitkä ovat laaja-alaisen osaamisen tavoitteet vuosiluokilla (perusteiden tavoitekuvauksia voidaan hyödyntää sellaisenaan) sekä niiden mahdolliset paikalliset painotukset ja miten oppilaiden laaja-alaisen osaamisen kehittymistä tuetaan vuosiluokilla?",
   "vuosiluokkakokonaisuuden-siirtyma-aikaisempi-nykyinen-info": "Miten tuetaan oppilaiden siirtymistä esiopetuksesta perusopetukseen? Toimintatavat siirtymävaiheessa. Tarvittava yhteistyö, työnjako ja vastuut.",
   "vuosiluokkakokonaisuuden-siirtymä-nykyinen-seuraava-info": "Miten tuetaan oppilaiden siirtymistä toiselta kolmannelle vuosiluokalle? Toimintatavat siirtymävaiheessa. Tarvittava yhteistyö, työnjako ja vastuut.",
-  "aloita-uusi-ops": "Aloita uusi opetussuunnitelma",
-  "aloita-uusi-pohja": "Aloita uusi pohja",
+  "aloita-uusi-ops": "Luo uusi opetussuunnitelma",
+  "aloita-uusi-pohja": "Luo uusi pohja",
   "anna-hyvaksymispvm": "Anna hyväksymispäivämäärä",
   "anna-paatospaivamaara": "Anna hyväksymispäivämäärä",
   "aloita-vuosiluokkaistaminen": "Aloita valitsemalla 'Vuosiluokkaista tavoitteet'.",
@@ -301,6 +301,9 @@
 
   "hae-otsikoista": "Hae otsikoista",
 
+  "termi": "Käsite",
+  "muokkaa-termia": "Muokkaa käsitettä",
+  "loydetty-termien-maara": "Opetussuunnitelmassa käytettyjen termien määrä:",
   "termi-plugin-select-placeholder": "Valitse käsite...",
   "termi-plugin-title": "Lisää viittaus tai muokkaa viittausta käsitteeseen",
   "termi-plugin-menu-muokkaa": "Muokkaa viittausta käsitteeseen",

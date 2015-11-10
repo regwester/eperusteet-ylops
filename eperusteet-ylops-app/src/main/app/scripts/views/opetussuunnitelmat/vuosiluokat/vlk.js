@@ -79,9 +79,8 @@ ylopsApp
   this.createEmptyText = createEmptyText;
 })
 
-.controller('VuosiluokkakokonaisuusSortController', function($state, $scope, Editointikontrollit, OpsNavigaatio,
+.controller('VuosiluokkakokonaisuusSortController', function($state, $scope, Editointikontrollit,
       vlk, vlkId, opsModel, OpetussuunnitelmaCRUD, Notifikaatiot) {
-  OpsNavigaatio.setActive(false);
 
   $scope.oppiaineet = _(opsModel.oppiaineet)
     .map('oppiaine')
@@ -156,7 +155,7 @@ ylopsApp
   Editointikontrollit.startEditing();
 })
 
-.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit, OpsNavigaatio,
+.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
   MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
   baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,
   OpsService, Varmistusdialogi) {

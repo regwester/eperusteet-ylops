@@ -112,9 +112,14 @@ ylopsApp
           tekstit: ['OpetussuunnitelmanTekstit', '$stateParams', function(ot, $stateParams) {
             return ot.otsikot({ opsId: $stateParams.id }).$promise;
           }],
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }]
+        }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.sisalto.tekstikappale', {
+        url: '/tekstikappale/:tekstikappaleId',
+        templateUrl: 'views/opetussuunnitelmat/tekstikappale.html',
+        controller: 'TekstikappaleController',
+        resolve: {
         }
       })
 
@@ -123,9 +128,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/tiedot.html',
         controller: 'OpetussuunnitelmaTiedotController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }],
           tiedotId: ['$stateParams', function ($stateParams) {
             return $stateParams.id;
           }],
@@ -138,47 +140,11 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.sisaltoalue', {
-        url: '/osiot/:alueId',
-        templateUrl: 'views/opetussuunnitelmat/sisaltoalue.html',
-        controller: 'OpetussuunnitelmaSisaltoAlueController',
-        resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
-          }]
-        }
-      })
-
-      /* väliaikainen (proto) muokkaustila */
-      /*.state('root.opetussuunnitelmat.yksi.opetussuunnitelma', {
-        url: '/ops',
-        templateUrl: 'views/opetussuunnitelmat/opetussuunnitelma.html',
-        controller: 'OpetussuunnitelmaController',
-        resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }]
-        }
-      })*/
-
-      .state('root.opetussuunnitelmat.yksi.tekstikappale', {
-        url: '/tekstikappale/:tekstikappaleId',
-        templateUrl: 'views/opetussuunnitelmat/tekstikappale.html',
-        controller: 'TekstikappaleController',
-        resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }]
-        }
-      })
       .state('root.opetussuunnitelmat.yksi.kasitteet', {
         url: '/kasitteet',
         templateUrl: 'views/opetussuunnitelmat/kasitteet.html',
         controller: 'KasitteetController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }]
         }
       })
       .state('root.opetussuunnitelmat.yksi.esikatselu', {
@@ -186,9 +152,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/esikatselu.html',
         controller: 'EsikatseluController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }],
           tekstit: ['OpetussuunnitelmanTekstit', '$stateParams', function(ot, $stateParams) {
             return ot.get({ opsId: $stateParams.id }).$promise;
           }]
@@ -199,9 +162,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/esikatselu/tekstikappale.html',
         controller: 'EsikatseluTekstikappaleController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }]
         }
       })
       .state('root.opetussuunnitelmat.yksi.esikatselu.vuosiluokkakokonaisuus', {
@@ -209,9 +169,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/esikatselu/vlk.html',
         controller: 'EsikatseluVlkController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }],
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
             return vuosiluokatService.getLaajaalaiset(opsId);
           }],
@@ -222,9 +179,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/esikatselu/oppiaine.html',
         controller: 'EsikatseluOppiaineController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }],
           oppiaineId: ['$stateParams', function($stateParams){
             return $stateParams.oppiaineId;
           }],
@@ -309,7 +263,7 @@ ylopsApp
         }
       })
 
-      .state('root.pohjat.yksi.tekstikappale', {
+      .state('root.pohjat.yksi.sisalto.tekstikappale', {
         url: '/tekstikappale/:tekstikappaleId',
         templateUrl: 'views/opetussuunnitelmat/pohja/tekstikappale.html',
         controller: 'PohjaTekstikappaleController',
@@ -320,9 +274,6 @@ ylopsApp
           tekstikappaleModel: ['pohjaId', 'tekstikappaleId', 'OpetussuunnitelmanTekstit', function (pohjaId, tekstikappaleId, OpetussuunnitelmanTekstit) {
             return OpetussuunnitelmanTekstit.get({opsId: pohjaId, viiteId: tekstikappaleId}).$promise;
           }],
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }]
         }
       });
   });
