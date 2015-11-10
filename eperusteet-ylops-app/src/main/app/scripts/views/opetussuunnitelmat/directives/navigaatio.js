@@ -32,7 +32,7 @@ ylopsApp
 
 .controller('OpsNavigaatioController', function ($scope, OpsNavigaatio, $state, $stateParams, Algoritmit,
   VuosiluokatService, MurupolkuData) {
-  $scope.isActive = true;
+  $scope.isActive = false;
   $scope.chosen = 0;
   $scope.collapsed = true;
   $scope.showTakaisin = false;
@@ -70,7 +70,7 @@ ylopsApp
   }
 
   function findActiveTeksti() {
-    var inTekstikappale = $state.is('root.opetussuunnitelmat.yksi.tekstikappale');
+    var inTekstikappale = $state.includes('**.tekstikappale');
     _.each($scope.items, function (item, index) {
       item.active = $stateParams.alueId === '' + item.id;
       if (item.active) {
@@ -80,6 +80,7 @@ ylopsApp
       _.each(item.items, function (alilapsi) {
         alilapsi.active = false;
       });
+
       if (inTekstikappale && $scope.model.tekstit) {
         var root = _.find($scope.model.tekstit.lapset, {id: item.id});
         if (root) {
@@ -138,7 +139,7 @@ ylopsApp
       arr.push({
         label: lapsi.tekstiKappale ? lapsi.tekstiKappale.nimi : '[tyhjä viite]',
         id: lapsi.id,
-        url: $state.href('root.opetussuunnitelmat.yksi.tekstikappale', {tekstikappaleId: lapsi.id}),
+        url: $state.href('root.opetussuunnitelmat.yksi.sisalto.tekstikappale', {tekstikappaleId: lapsi.id}),
         depth: depth,
         valmis: lapsi.tekstiKappale.valmis
       });
@@ -187,7 +188,7 @@ ylopsApp
 })
 
 .service('OpsNavigaatio', function ($location, $timeout) {
-  var active = true;
+  var active = false;
   var callback = angular.noop;
   var items = null;
 

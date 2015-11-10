@@ -23,10 +23,6 @@ ylopsApp
   }
   $scope.model = pohjaModel;
   $scope.luonnissa = $stateParams.pohjaId === 'uusi';
-  // FIXME: Miksi tämä on olemassa?
-  // $scope.$on('rakenne:updated', function () {
-  //   $scope.model = opsService.getPohja();
-  // });
 })
 .controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter, Notifikaatiot) {
   $scope.pohjaMaxLimit = 9999;
@@ -64,7 +60,7 @@ ylopsApp
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
             '    </span>' +
-            '    <a href="" ui-sref="root.pohjat.yksi.tekstikappale({ tekstikappaleId: node.id })">' +
+            '    <a href="" ui-sref="root.pohjat.yksi.sisalto.tekstikappale({ tekstikappaleId: node.id })">' +
             '       <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    </a>' +
             '    <span class="pull-right">' +

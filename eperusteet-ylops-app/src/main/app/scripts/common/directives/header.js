@@ -71,7 +71,7 @@ ylopsApp
       'root.opetussuunnitelmat.yksi.esikatselu.oppiaine': {
         parent: 'root.opetussuunnitelmat.yksi.esikatselu'
       },
-      'root.opetussuunnitelmat.yksi.tekstikappale': {
+      'root.opetussuunnitelmat.yksi.sisalto.tekstikappale': {
         useData: 'tekstiNimi',
         parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
       },
