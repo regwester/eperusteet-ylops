@@ -85,7 +85,9 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   }
 
-  this.rakennaSivunavi = function(tekstit) {
+  this.rakennaSivunavi = function(tekstit, isPohja) {
+    var state = isPohja ? 'root.pohjat.yksi.sisalto.tekstikappale' : 'root.opetussuunnitelmat.yksi.sisalto.tekstikappale';
+
     return _(_.flattestMap(tekstit, _.property('lapset'), function(obj, depth) {
       if (obj.tekstiKappale) {
         var result = {
@@ -93,8 +95,7 @@ ylopsApp
           label: obj.tekstiKappale.nimi,
           valmis: obj.tekstiKappale.valmis,
           depth: depth - 1,
-          active: obj.id == $stateParams.tekstikappaleId,
-          url: depth > 1 ? $state.href('root.opetussuunnitelmat.yksi.sisalto.tekstikappale', { tekstikappaleId: obj.id }) : undefined
+          url: depth > 1 || isPohja ? $state.href(state, { tekstikappaleId: obj.id }) : undefined
         };
         return result;
       }

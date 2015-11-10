@@ -76,6 +76,10 @@ ylopsApp
   Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD, pohjaOps, Editointikontrollit, Lukko, tekstit) {
   $scope.model = pohjaOps;
   $scope.model.tekstit = tekstit;
+  $scope.navi = TekstikappaleOps.rakennaSivunavi(tekstit, true);
+  $scope.shouldShow = function() {
+    return $state.is('root.pohjat.yksi.sisalto.tekstikappale');
+  };
 
   var commonParams = {
     opsId: $stateParams.pohjaId,

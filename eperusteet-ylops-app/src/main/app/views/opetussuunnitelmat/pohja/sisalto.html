@@ -1,5 +1,6 @@
-<div>
-  <div>
+<!-- <div ng&#45;if="'root.pohjat.yksi.sisalto' | isState"> -->
+<div ng-show="'root.pohjat.yksi.sisalto' | isState">
+  <div style="margin-top: 20px" class="row" ng-hide="$$isRakenneMuokkaus">
     <h2>
       <span kaanna="'tekstikappaleet'"></span>
       <span class="pull-right">
@@ -14,3 +15,7 @@
       <generic-tree ui-sortable-config="sortableConfig" tree-provider="tekstitProvider"></generic-tree>
   </div>
 </div>
+
+<ops-navigaatio items="navi" should-show="shouldShow">
+  <div class="ui-view"></div>
+</ops-navigaatio>

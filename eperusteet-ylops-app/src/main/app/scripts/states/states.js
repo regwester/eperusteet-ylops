@@ -263,7 +263,7 @@ ylopsApp
         }
       })
 
-      .state('root.pohjat.yksi.tekstikappale', {
+      .state('root.pohjat.yksi.sisalto.tekstikappale', {
         url: '/tekstikappale/:tekstikappaleId',
         templateUrl: 'views/opetussuunnitelmat/pohja/tekstikappale.html',
         controller: 'PohjaTekstikappaleController',
