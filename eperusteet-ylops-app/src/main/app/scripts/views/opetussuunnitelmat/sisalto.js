@@ -148,7 +148,7 @@ ylopsApp
 })
 .controller('OpetussuunnitelmaSisaltoController', function ($scope, $state, OpetussuunnitelmanTekstit, $templateCache, $timeout,
       Notifikaatiot, opsService, opsModel, $rootScope, $stateParams, TekstikappaleOps, Utils, Lukko, $q, Editointikontrollit,
-      $modal, OpetussuunnitelmaCRUD, tekstit, Algoritmit, OpsNavigaatio) {
+      $modal, OpetussuunnitelmaCRUD, tekstit, Algoritmit) {
   $scope.model = opsModel;
   $scope.model.tekstit = tekstit;
   $scope.navi = TekstikappaleOps.rakennaSivunavi(tekstit);
