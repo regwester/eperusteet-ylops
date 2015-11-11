@@ -23,10 +23,6 @@ ylopsApp
   }
   $scope.model = pohjaModel;
   $scope.luonnissa = $stateParams.pohjaId === 'uusi';
-  // FIXME: Miksi tämä on olemassa?
-  // $scope.$on('rakenne:updated', function () {
-  //   $scope.model = opsService.getPohja();
-  // });
 })
 .controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter, Notifikaatiot) {
   $scope.pohjaMaxLimit = 9999;
@@ -53,18 +49,18 @@ ylopsApp
 })
 .run(function($templateCache) {
     $templateCache.put('pohjaSisaltoNodeEditingTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'recursivetree-empty\': (node.lapset.length === 0) }">' +
             '    <span class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '</div>'
             );
     $templateCache.put('pohjaSisaltoNodeTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'search-halo\': node.$$showHalo, \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
             '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
             '    </span>' +
-            '    <a href="" ui-sref="root.pohjat.yksi.tekstikappale({ tekstikappaleId: node.id })">' +
+            '    <a href="" ui-sref="root.pohjat.yksi.sisalto.tekstikappale({ tekstikappaleId: node.id })">' +
             '       <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    </a>' +
             '    <span class="pull-right">' +
@@ -80,6 +76,45 @@ ylopsApp
   Notifikaatiot, $state, TekstikappaleOps, OpetussuunnitelmaCRUD, pohjaOps, Editointikontrollit, Lukko, tekstit) {
   $scope.model = pohjaOps;
   $scope.model.tekstit = tekstit;
+  $scope.navi = TekstikappaleOps.rakennaSivunavi(tekstit, true);
+  $scope.shouldShow = function() {
+    return $state.is('root.pohjat.yksi.sisalto.tekstikappale');
+  };
+
+  $scope.rajaus = {
+    term: '',
+    onUpdate: function(term) {
+      Algoritmit.traverse($scope.model.tekstit, 'lapset', function(node) {
+        node.$$showHalo = false;
+
+        if (_.isEmpty(term)) {
+          node.$$searchHidden = false;
+        }
+        else if (!Algoritmit.match(term, node.tekstiKappale.nimi)) {
+          node.$$searchHidden = true;
+        }
+        else {
+          node.$$searchHidden = false;
+          node.$$showHalo = true;
+          var p = node.$$traverseParent;
+          while (p) {
+            p.$$searchHidden = false;
+            p = p.$$traverseParent;
+          }
+        }
+      });
+    }
+  };
+
+  $scope.toggleState = function() {
+    $scope.opened = !$scope.opened;
+    _.deepFlatten(tekstit, _.property('lapset'), function(obj, depth) {
+        if (depth > 1) {
+          obj.$$hidden = $scope.opened;
+        }
+      });
+  };
+  $scope.toggleState();
 
   var commonParams = {
     opsId: $stateParams.pohjaId,
@@ -129,7 +164,7 @@ ylopsApp
             return false;
           }
           else {
-            return node.$$nodeParent.$$hidden;
+            return (_.isEmpty($scope.rajaus.term) && node.$$nodeParent.$$hidden) || node.$$searchHidden;
           }
       },
       template: function() {

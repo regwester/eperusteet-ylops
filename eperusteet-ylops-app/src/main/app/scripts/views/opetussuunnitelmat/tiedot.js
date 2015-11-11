@@ -24,7 +24,7 @@ ylopsApp
 
   $scope.kielivalinnat = []; // Täytetään pohjan perusteella
   $scope.luonnissa = $stateParams.id === 'uusi';
-  $scope.editableModel = $scope.model;
+  $scope.editableModel = _.clone($scope.model);
   if ($scope.luonnissa) {
     $scope.editableModel.julkaisukielet = [_.first($scope.kielivalinnat)];
     $scope.editableModel._pohja = $stateParams.pohjaId === '' ? null : $stateParams.pohjaId;

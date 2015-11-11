@@ -7,6 +7,7 @@ var mountFolder = function(connect, dir) {
 var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
 
+
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-connect-proxy');
   grunt.loadNpmTasks('grunt-angular-templates');

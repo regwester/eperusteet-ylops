@@ -39,7 +39,7 @@
     <tr ng-if="!items.$resolved"><td colspan="4"><small-spinner></small-spinner></td></tr>
     <tr ng-if="items.$resolved" ng-repeat="item in items | orderBy:sorter.fn:sorter.desc | limitTo:opsLimit">
       <td>
-        <a ng-if="opsiLista" ui-sref="root.opetussuunnitelmat.yksi.sisalto({id: item.id})" ng-bind="item.nimi | kaanna"></a>
+        <a ng-if="opsiLista" ui-sref="root.opetussuunnitelmat.yksi.tiedot({id: item.id})" ng-bind="item.nimi | kaanna"></a>
         <a ng-if="!opsiLista" ui-sref="root.pohjat.yksi({pohjaId: item.id})" ng-bind="item.nimi | kaanna"></a>
       </td>
       <td ng-if="opsiLista">

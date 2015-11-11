@@ -72,7 +72,7 @@ ylopsApp
   function resourceFromState() {
     var resource = null;
 
-    if (_.endsWith($state.current.name, 'yksi.tekstikappale')) {
+    if (_.endsWith($state.current.name, '.tekstikappale')) {
       resource = OpetussuunnitelmanTekstitLukko;
     } else if (_.endsWith($state.current.name, 'yksi.sisalto')) {
       resource = OpetussuunnitelmanTekstitRakenneLukko;

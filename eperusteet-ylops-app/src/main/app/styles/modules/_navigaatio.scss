@@ -1,5 +1,9 @@
 $navigaatio-width: 280px;
 
+.navigaatio-wrapper {
+  margin-top: 20px;
+}
+
 .navigaatio-takaisin {
   margin: 15px 0 -25px 0;
 
@@ -20,6 +24,10 @@ $navigaatio-width: 280px;
 
 .navigaatio-content-plain {
   margin-top: 10px;
+
+  .tabitus {
+    margin-bottom: 15px;
+  }
 }
 
 .navigaatio-content {
@@ -119,12 +127,13 @@ $sivunavi-level-padding: 20px;
 
 .navimenu {
   margin-bottom: 0;
+  border: 1px solid #eee;
 
   .list-group-item:not(.active) {
-    border-top: none;
+    border: none;
   }
   .level, .level0 {
-    border-top: 1px solid #ddd !important;
+    background: #eeeeee;
     &.active {
       border-color: $brand-primary !important;
     }

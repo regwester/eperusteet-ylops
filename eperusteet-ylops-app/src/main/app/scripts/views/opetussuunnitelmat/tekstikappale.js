@@ -34,6 +34,8 @@ ylopsApp
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
     KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode, Varmistusdialogi) {
 
+    $rootScope.$broadcast('navi:show');
+
     Kommentit.haeKommentit(KommentitByTekstikappaleViite, {
       id: $stateParams.tekstikappaleId,
       tekstiKappaleViiteId: $stateParams.tekstikappaleId,
@@ -70,6 +72,7 @@ ylopsApp
 
     $scope.model = {};
     var originalOtsikko = null;
+    var originalTekstiKappale = null;
 
     function updateMuokkaustieto() {
       if ($scope.model.tekstiKappale) {
@@ -115,6 +118,7 @@ ylopsApp
         OpetussuunnitelmanTekstit.get(commonParams, function (res) {
           $scope.model = res;
           originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
+          originalTekstiKappale = _.cloneDeep($scope.model.tekstiKappale);
           MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
           fetchOhje(res, cb);
           updateMuokkaustieto();
@@ -183,16 +187,17 @@ ylopsApp
       if ($stateParams.tekstikappaleId === 'uusi') {
         $state.go($state.current.name, {tekstikappaleId: res.id}, {reload: true});
       } else {
+        var navigaatiomuutos = !_.isEqual(originalOtsikko, _.omit(res.tekstiKappale.nimi, '$$validointi')) ||
+          res.tekstiKappale.valmis !== originalTekstiKappale.valmis;
         Lukko.unlock(commonParams, function () {
           $scope.lukkotiedot = null;
+          if (navigaatiomuutos) {
+            $state.transitionTo($state.current, $stateParams, { reload: true, inherit: true });
+          }
         });
-        fetch();
       }
       if (savingValmis || !Utils.compareLocalizedText(originalOtsikko, res.tekstiKappale.nimi)) {
         savingValmis = false;
-        OpsService.refetch(function () {
-          $rootScope.$broadcast('rakenne:updated');
-        });
       }
       originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
     };

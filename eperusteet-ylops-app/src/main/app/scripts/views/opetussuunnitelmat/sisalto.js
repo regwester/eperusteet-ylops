@@ -19,7 +19,7 @@
 /* global _ */
 
 ylopsApp
-.service('TekstikappaleOps', function (OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
+.service('TekstikappaleOps', function ($state, $stateParams, OpetussuunnitelmanTekstit, Notifikaatiot, Algoritmit,
   Varmistusdialogi, Kaanna, OpsService, $rootScope) {
   function mapSisalto(root) {
     return {
@@ -85,6 +85,26 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   }
 
+  this.rakennaSivunavi = function(tekstit, isPohja) {
+    var state = isPohja ? 'root.pohjat.yksi.sisalto.tekstikappale' : 'root.opetussuunnitelmat.yksi.sisalto.tekstikappale';
+
+    return _(_.deepFlatten(tekstit, _.property('lapset'), function(obj, depth) {
+      if (obj.tekstiKappale) {
+        var result = {
+          id: obj.id,
+          label: obj.tekstiKappale.nimi,
+          valmis: obj.tekstiKappale.valmis,
+          depth: depth - 1,
+          url: depth > 1 || isPohja ? $state.href(state, { tekstikappaleId: obj.id }) : undefined
+        };
+        return result;
+      }
+    }))
+    .flatten(true)
+    .compact()
+    .value();
+  };
+
   this.saveRakenne = saveRakenne;
   this.lisaa = lisaa;
   this.delete = deleteKappale;
@@ -111,7 +131,7 @@ ylopsApp
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
             '    </span>' +
-            '    <a ng-if="node.$$depth > 0" href="" ui-sref="root.opetussuunnitelmat.yksi.tekstikappale({ tekstikappaleId: node.id })"' +
+            '    <a ng-if="node.$$depth > 0" href="" ui-sref=".tekstikappale({ tekstikappaleId: node.id })"' +
             '          ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna">' +
             '    </a>' +
             '    <span ng-if="node.$$depth === 0" ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
@@ -131,6 +151,11 @@ ylopsApp
       $modal, OpetussuunnitelmaCRUD, tekstit, Algoritmit) {
   $scope.model = opsModel;
   $scope.model.tekstit = tekstit;
+  $scope.navi = TekstikappaleOps.rakennaSivunavi(tekstit);
+  $scope.opened = false;
+  $scope.shouldShow = function() {
+    return $state.is('root.opetussuunnitelmat.yksi.sisalto.tekstikappale');
+  };
 
   $scope.rajaus = {
     term: '',
@@ -156,6 +181,17 @@ ylopsApp
       });
     }
   };
+
+
+  $scope.toggleState = function() {
+    $scope.opened = !$scope.opened;
+    _.deepFlatten(tekstit, _.property('lapset'), function(obj, depth) {
+        if (depth > 1) {
+          obj.$$hidden = $scope.opened;
+        }
+      });
+  };
+  $scope.toggleState();
 
   var commonParams = {
     opsId: $stateParams.id,

@@ -22,17 +22,17 @@ ylopsApp
 
       .state('root.opetussuunnitelmat.yksi.opetus', {
         url: '/opetus',
-        template: '<div ui-view></div>',
-        controller: ['$stateParams', '$state', 'vuosiluokkakokonaisuudet', function($stateParams, $state, vuosiluokkakokonaisuudet) {
-          // Go to the default view
-          var vlk = _(vuosiluokkakokonaisuudet)
-            .map('vuosiluokkakokonaisuus')
-            .sortBy(function(vlk) {
-              return vlk.nimi[$stateParams.lang];
-            })
-            .first();
+        templateUrl: 'views/opetussuunnitelmat/opetus.html',
+        controller: ['$scope', '$state', 'VuosiluokatService', 'opsModel', function(
+            $scope,
+            $state,
+            VuosiluokatService,
+            opsModel) {
+
+          $scope.navi = VuosiluokatService.mapForMenu(opsModel);
+
           if ($state.is('root.opetussuunnitelmat.yksi.opetus')) {
-            $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', { vlkId: vlk.id }, { reload: true });
+            $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', { vlkId: _.first($scope.navi).id });
           }
         }]
       })
@@ -67,10 +67,6 @@ ylopsApp
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
             return vuosiluokatService.getLaajaalaiset(opsId);
           }],
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            // Odota laaja-alaiset ennen sivunavin aktivointia niin UI-elementit ei pompi
-            OpsNavigaatio.setActive();
-          }]
         }
       })
 
@@ -80,9 +76,6 @@ ylopsApp
         controller: 'ValinnaisetOppiaineetController',
         resolve: {
           vuosiluokatService: 'VuosiluokatService',
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
-          }],
           vlkId: ['$stateParams', function($stateParams){
             return $stateParams.vlkId;
           }],
@@ -126,9 +119,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/oppiaine.html',
         controller: 'OppiaineController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
-          }],
           onEnter: function() {
           }
         }
@@ -139,9 +129,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokka.html',
         controller: 'VuosiluokkaBaseController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive();
-          }],
           baseLaajaalaiset: ['VuosiluokatService', 'opsId', function (VuosiluokatService, opsId) {
             return VuosiluokatService.getLaajaalaiset(opsId);
           }],
@@ -169,9 +156,6 @@ ylopsApp
           /*tavoitteet: ['vuosiluokatService', function (vuosiluokatService) {
             return vuosiluokatService.getTavoitteet(oppiaineenVlkId);
           }],*/
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }]
         }
       })
 
@@ -180,9 +164,6 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/uusioppiaine.html',
         controller: 'UusiOppiaineController',
         resolve: {
-          naviState: ['OpsNavigaatio', function (OpsNavigaatio) {
-            OpsNavigaatio.setActive(false);
-          }],
           vuosiluokatService: 'VuosiluokatService',
           vlkId: ['$stateParams', function($stateParams) {
             return $stateParams.vlkId;
