@@ -17,32 +17,18 @@
 'use strict';
 
 ylopsApp
-  .service('TekstikappaleEditMode', function () {
-    this.mode = false;
-    this.setMode = function (mode) {
-      this.mode = mode;
-    };
-    this.getMode = function () {
-      var ret = this.mode;
-      this.mode = false;
-      return ret;
+  .service('reresolver', function($state, $injector) {
+    return function(field) {
+      return $injector.invoke($state.current.resolve[field]);
     };
   })
 
   .controller('TekstikappaleController', function ($scope, Editointikontrollit,
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit, Kieli,
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
-    KommentitByTekstikappaleViite, Lukko, TekstikappaleEditMode, Varmistusdialogi) {
+    KommentitByTekstikappaleViite, Lukko, Varmistusdialogi, teksti,
+    reresolver) {
 
-    $rootScope.$broadcast('navi:show');
-
-    Kommentit.haeKommentit(KommentitByTekstikappaleViite, {
-      id: $stateParams.tekstikappaleId,
-      tekstiKappaleViiteId: $stateParams.tekstikappaleId,
-      opsId: $stateParams.id
-    });
-
-    $scope.ohje = {};
     $scope.lukkotiedot = null;
     $scope.perusteteksti = {};
     $scope.options = {tekstiCollapsed: true};
@@ -56,11 +42,11 @@ ylopsApp
     };
     $scope.editMode = false;
 
-    if ($stateParams.tekstikappaleId === 'uusi' || TekstikappaleEditMode.getMode()) {
-      $timeout(function () {
-        $scope.edit();
-      }, 200);
-    }
+    Kommentit.haeKommentit(KommentitByTekstikappaleViite, {
+      id: $stateParams.tekstikappaleId,
+      tekstiKappaleViiteId: $stateParams.tekstikappaleId,
+      opsId: $stateParams.id
+    });
 
     $scope.canRemove = function () {
       return $scope.model && $scope.model.omistussuhde === 'oma';
@@ -70,20 +56,8 @@ ylopsApp
       return _.isEmpty(model);
     };
 
-    $scope.model = {};
     var originalOtsikko = null;
     var originalTekstiKappale = null;
-
-    function updateMuokkaustieto() {
-      if ($scope.model.tekstiKappale) {
-        $scope.$$muokkaustiedot = {
-          luotu: $scope.model.tekstiKappale.luotu,
-          muokattu: $scope.model.tekstiKappale.muokattu,
-          muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
-        };
-      }
-    }
-    updateMuokkaustieto();
 
     function fetchOhje(model, cb) {
       OhjeCRUD.forTekstikappale({
@@ -101,38 +75,40 @@ ylopsApp
       });
     }
 
+    function setup(value) {
+      $scope.model = value;
+      if ($stateParams.id !== 'uusi') {
+        originalOtsikko = _.cloneDeep(value.tekstiKappale.nimi);
+        originalTekstiKappale = _.cloneDeep(value.tekstiKappale);
+        MurupolkuData.set('tekstiNimi', value.tekstiKappale.nimi);
+      }
+    }
+    setup(teksti);
+    fetchOhje(teksti);
+
+    function updateMuokkaustieto() {
+      if ($scope.model.tekstiKappale) {
+        $scope.$$muokkaustiedot = {
+          luotu: $scope.model.tekstiKappale.luotu,
+          muokattu: $scope.model.tekstiKappale.muokattu,
+          muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
+        };
+      }
+    }
+    updateMuokkaustieto();
+
     var commonParams = {
       opsId: $stateParams.id,
       viiteId: $stateParams.tekstikappaleId
     };
 
-    function fetch(noLockCheck, cb) {
-      if ($stateParams.tekstikappaleId === 'uusi') {
-        $scope.model = {
-          tekstiKappale: {
-            nimi: {},
-            teksti: {}
-          }
-        };
-      } else {
-        OpetussuunnitelmanTekstit.get(commonParams, function (res) {
-          $scope.model = res;
-          originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
-          originalTekstiKappale = _.cloneDeep($scope.model.tekstiKappale);
-          MurupolkuData.set('tekstiNimi', res.tekstiKappale.nimi);
-          fetchOhje(res, cb);
-          updateMuokkaustieto();
-        }, Notifikaatiot.serverCb);
-        if (!noLockCheck) {
-          Lukko.isLocked($scope, commonParams);
-        }
-      }
-    }
-    fetch();
-
-    $scope.edit = function () {
+    $scope.edit = function() {
       Lukko.lock(commonParams, function () {
-        Editointikontrollit.startEditing();
+        reresolver('teksti').then(function(res) {
+          setup(res);
+          $scope.editMode = true;
+          Editointikontrollit.startEditing();
+        });
       });
     };
 
@@ -157,7 +133,6 @@ ylopsApp
         TekstikappaleOps.lisaa($scope.model, $stateParams.id, {fi: 'Uusi tekstikappale'}, function (res) {
           Lukko.unlockRakenne(lukkoParams, function () {
             var newParams = _.extend(_.clone($stateParams), {tekstikappaleId: res.id});
-            TekstikappaleEditMode.setMode(true);
             $timeout(function () {
               $state.go('^.tekstikappale', newParams, {reload: true});
             });
@@ -185,7 +160,7 @@ ylopsApp
       $scope.model = res;
       Notifikaatiot.onnistui('tallennettu-ok');
       if ($stateParams.tekstikappaleId === 'uusi') {
-        $state.go($state.current.name, {tekstikappaleId: res.id}, {reload: true});
+        $state.reload();
       } else {
         var navigaatiomuutos = !_.isEqual(originalOtsikko, _.omit(res.tekstiKappale.nimi, '$$validointi')) ||
           res.tekstiKappale.valmis !== originalTekstiKappale.valmis;
@@ -202,26 +177,8 @@ ylopsApp
       originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
     };
 
-    $scope.$watch('model', function(val) {
-      if (val && val.tekstiKappale) {
-        val.tekstiKappale.nimi = val.tekstiKappale.nimi || {};
-        val.tekstiKappale.nimi.$$validointi = Kieli.validoi(val.tekstiKappale.nimi);
-        val.tekstiKappale.teksti = val.tekstiKappale.teksti || {};
-        val.tekstiKappale.teksti.$$validointi = Kieli.validoi(val.tekstiKappale.teksti);
-      }
-    });
-
     var callbacks = {
       edit: function () {
-        fetch(true, function () {
-          $timeout(function () {
-            var el = angular.element('#ops-ckeditor');
-            if (el && el.length > 0) {
-              el[0].focus();
-              el[0].scrollIntoView();
-            }
-          }, 300);
-        });
       },
       asyncValidate: function (cb) {
         Lukko.lock(commonParams, cb);
@@ -237,20 +194,18 @@ ylopsApp
       },
       cancel: function () {
         if ($stateParams.tekstikappaleId === 'uusi') {
-          $timeout(function () {
-            $state.go('root.opetussuunnitelmat.yksi.sisalto');
-          });
-        } else {
+          $state.go('root.opetussuunnitelmat.yksi.sisalto');
+        }
+        else {
           Lukko.unlock(commonParams, function () {
             $scope.lukkotiedot = null;
-            fetch();
+            $state.reload();
           });
         }
       },
-      notify: function (mode) {
-        $scope.editMode = mode;
-      }
+      notify: _.noop
     };
+
     Editointikontrollit.registerCallback(callbacks);
 
     $scope.setValmis = function (value) {
@@ -262,7 +217,6 @@ ylopsApp
         });
       }
     };
-
   })
 
   .directive('valmiusIkoni', function () {

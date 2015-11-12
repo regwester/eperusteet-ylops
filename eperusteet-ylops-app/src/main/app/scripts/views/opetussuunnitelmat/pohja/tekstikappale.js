@@ -19,7 +19,7 @@
 ylopsApp
 .controller('PohjaTekstikappaleController', function ($scope, tekstikappaleModel, Editointikontrollit,
   Notifikaatiot, TekstikappaleOps, $timeout, $state, $stateParams, OhjeCRUD, OpetussuunnitelmanTekstit,
-  Utils, $rootScope, MurupolkuData, OpsService) {
+  Utils, $rootScope, MurupolkuData, OpsService, Lukko) {
 
   $scope.pohjaId = $stateParams.pohjaId;
   $scope.model = tekstikappaleModel;
@@ -33,13 +33,25 @@ ylopsApp
     ohje: null,
     perusteteksti: null
   };
+  var commonParams = {
+    opsId: $stateParams.pohjaId,
+    viiteId: $stateParams.tekstikappaleId
+  };
 
   $scope.isEmpty = function (model) {
     return _.isEmpty(model);
   };
 
   $scope.edit = function () {
-    Editointikontrollit.startEditing();
+    Lukko.lock(commonParams, function () {
+      // reresolver('teksti').then(function(res) {
+        // setup(res);
+      $scope.editMode = true;
+      Editointikontrollit.startEditing();
+      // });
+    });
+    // $scope.editMode = true;
+    // Editointikontrollit.startEditing();
   };
 
   function saveOriginal(key, teksti) {
@@ -84,7 +96,7 @@ ylopsApp
     }
   }
 
-  function fetch(initial) {
+  function fetch(initial, cb) {
     if (initial) {
       fetchOhje($scope.model);
       updateMuokkaustieto();
@@ -99,17 +111,22 @@ ylopsApp
       saveOriginal('teksti', res);
       fetchOhje(res);
       updateMuokkaustieto();
+      (cb || _.noop)();
     }, Notifikaatiot.serverCb);
   }
   fetch(true);
 
   var successCb = function (res) {
     $scope.model = res;
+    $scope.editMode = false;
     saveOriginal('teksti', res);
     Notifikaatiot.onnistui('tallennettu-ok');
     if ($stateParams.tekstikappaleId === 'uusi') {
       $state.go($state.current.name, {tekstikappaleId: res.id}, {reload: true});
     }
+    Lukko.unlock(commonParams, function() {
+      $state.reload();
+    });
   };
 
   function saveOhje(tyyppi) {
@@ -159,11 +176,6 @@ ylopsApp
       // Päivitä modelit ckeditorilta ennen muutosten tarkastelua
       $rootScope.$broadcast('notifyCKEditor');
       var changed = checkChanges();
-      if (changed.teksti.changed) {
-        var params = {opsId: $stateParams.pohjaId};
-        // Pelkkää tekstikappaletta muokattaessa lapset-kenttä tulee jättää pois
-        _.omit($scope.model, 'lapset').$save(params, successCb, Notifikaatiot.serverCb);
-      }
       _.each(TYYPIT, function (tyyppi) {
         if (changed[tyyppi].deleted) {
           $scope.ohjeOps.delete(null, $scope[tyyppi]);
@@ -171,13 +183,14 @@ ylopsApp
           saveOhje(tyyppi);
         }
       });
+      var params = {opsId: $stateParams.pohjaId};
+      _.omit($scope.model, 'lapset').$save(params, successCb, Notifikaatiot.serverCb);
     },
     cancel: function () {
-      fetch();
+      $scope.editMode = false;
+      Lukko.unlock(commonParams, $state.reload);
     },
-    notify: function (mode) {
-      $scope.editMode = mode;
-    }
+    notify: _.noop
   };
   Editointikontrollit.registerCallback(callbacks);
 

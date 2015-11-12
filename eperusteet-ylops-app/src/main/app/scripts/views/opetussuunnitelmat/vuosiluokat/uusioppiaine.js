@@ -20,6 +20,7 @@ ylopsApp
 .controller('UusiOppiaineController', function ($scope, $stateParams, $state, $rootScope, Utils, OpsService, vlk,
                                                 vlkPeruste, MurupolkuData, Notifikaatiot, OppiaineCRUD, Kieli, Kaanna, Lukko) {
   MurupolkuData.set({osioNimi: 'vuosiluokat-ja-oppiaineet', alueId: 'vuosiluokat', vlkNimi: vlk.nimi, vlkId: vlk.id});
+  $rootScope.$broadcast('navigaatio:hide');
 
   $scope.luonnissa = $stateParams.oppiaineId === 'uusi' || !$stateParams.oppiaineId;
   $scope.options = {};

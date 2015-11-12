@@ -114,8 +114,7 @@ ylopsApp
   }
 
   function lock(params, cb, failCb) {
-    var resource = resourceFromState();
-    doLock(resource, params, cb, failCb);
+    doLock(resourceFromState(), params, cb, failCb);
   }
 
   function unlock(params, cb) {
