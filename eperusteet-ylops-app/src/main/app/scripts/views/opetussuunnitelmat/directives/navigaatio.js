@@ -59,6 +59,11 @@ ylopsApp
   }
   updateActive();
 
+  $scope.toggle = function() {
+    $scope.collapsed = !$scope.collapsed;
+  };
+
+  $scope.$on('$stateChangeStart', function() { $scope.collapsed = true; });
   $scope.$on('$stateChangeSuccess', updateActive);
   $scope.$on('navigaatio:hide', function() { $scope.isActive = false; });
   $scope.$on('navigaatio:show', function() { $scope.isActive = true; });
