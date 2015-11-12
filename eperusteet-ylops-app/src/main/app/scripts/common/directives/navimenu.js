@@ -170,9 +170,9 @@ ylopsApp
   }
 
   $scope.toggle = function (items, item, $event, state) {
-    // if ($event) {
-    //   $event.preventDefault();
-    // }
+    if ($event) {
+      $event.preventDefault();
+    }
 
     var index = _.indexOf(items, item);
     state = _.isUndefined(state) ? !item.$collapsed : state;
