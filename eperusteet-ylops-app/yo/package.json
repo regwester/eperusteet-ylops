@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "xlsx": "~0.5.0"
   },
   "devDependencies": {
     "connect-livereload": "~0.4.0",
@@ -39,7 +38,7 @@
     "node-sass": "0.9.3"
   },
   "engines": {
-    "node": ">=0.8.0"
+    "node": ">=0.10.37"
   },
   "scripts": {
     "test": "grunt test"
