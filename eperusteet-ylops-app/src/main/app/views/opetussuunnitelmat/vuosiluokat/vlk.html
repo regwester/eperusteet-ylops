@@ -5,6 +5,10 @@
 
 <h2 ng-bind="vlk.nimi | kaanna"></h2>
 
+<div class="pull-right">
+  <button ng-click="sortOppiaineet()" class="btn btn-default" icon-role="sort" kaanna="'jarjesta-oppiaineita'"></button>
+</div>
+
 <p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>
 
 <div class="vuosiluokkakokonaisuus">

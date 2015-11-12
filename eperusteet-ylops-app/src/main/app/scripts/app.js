@@ -47,12 +47,14 @@ ylopsApp
     paginationConfig.maxSize = 5;
     paginationConfig.rotate = false;
 
-    $rootScope.$on('$stateChangeError', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.name});
+    $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
+      var details = { to: toState.name, from: fromState.name, toParams: toParams, fromParams: fromParams, message: error };
+      VirheService.virhe({state: toState.name}, details);
     });
 
-    $rootScope.$on('$stateNotFound', function(event, toState/*, toParams, fromState*/) {
-      VirheService.virhe({state: toState.to});
+    $rootScope.$on('$stateNotFound', function(event, toState, fromState, fromParams) {
+      var details = { to: toState.to, from: fromState.name, fromParams: fromParams };
+      VirheService.virhe({state: toState.to}, details);
     });
 
     function redirectTo(event, toState, toParams) {

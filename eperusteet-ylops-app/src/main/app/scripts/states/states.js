@@ -53,6 +53,7 @@ ylopsApp
       .state('root.virhe', {
         url: '/virhe',
         templateUrl: 'views/virhe.html',
+        params: { lisatiedot: null},
         controller: 'VirheController'
       })
 
@@ -120,6 +121,22 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/tekstikappale.html',
         controller: 'TekstikappaleController',
         resolve: {
+          tekstikappaleId: ['$stateParams', function ($stateParams) {
+            return $stateParams.tekstikappaleId;
+          }],
+          teksti: ['$q', '$stateParams', 'OpetussuunnitelmanTekstit', function($q, $stateParams, OpetussuunnitelmanTekstit) {
+            if ($stateParams.id === 'uusi') {
+              return $q.when({
+                tekstiKappale: {
+                  nimi: {},
+                  teksti: {}
+                }
+              });
+            }
+            else {
+              return OpetussuunnitelmanTekstit.get({ opsId: $stateParams.id, viiteId: $stateParams.tekstikappaleId }).$promise;
+            }
+          }],
         }
       })
 

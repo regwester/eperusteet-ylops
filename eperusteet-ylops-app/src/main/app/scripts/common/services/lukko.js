@@ -77,12 +77,12 @@ ylopsApp
     } else if (_.endsWith($state.current.name, 'yksi.sisalto')) {
       resource = OpetussuunnitelmanTekstitRakenneLukko;
     } else if (_.endsWith($state.current.name, 'yksi.opetus.oppiaine.oppiaine') ||
-               _.endsWith($state.current.name, 'yksi.uusioppiaine')) {
+               _.endsWith($state.current.name, 'yksi.opetus.uusioppiaine')) {
       resource = OppiaineenVuosiluokkakokonaisuusLukko;
     }
 
     if (!resource) {
-      console.warn('Ei lukkoresurssia!');
+      console.warn('Ei lukkoresurssia:', $state.current.name);
     }
     return resource;
   }
@@ -114,8 +114,7 @@ ylopsApp
   }
 
   function lock(params, cb, failCb) {
-    var resource = resourceFromState();
-    doLock(resource, params, cb, failCb);
+    doLock(resourceFromState(), params, cb, failCb);
   }
 
   function unlock(params, cb) {

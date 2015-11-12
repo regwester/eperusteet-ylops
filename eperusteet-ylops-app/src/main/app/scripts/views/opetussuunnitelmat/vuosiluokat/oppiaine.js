@@ -124,7 +124,6 @@ ylopsApp
       Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, function (res) {
         // var ops = OpsService.get(opsId);
         var ops = opsModel;
-        console.log(ops);
 
         var tunnisteet = _.map(res.vuosiluokkakokonaisuudet, '_vuosiluokkakokonaisuus');
         // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?

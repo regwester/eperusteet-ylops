@@ -37,21 +37,6 @@ ylopsApp
         }]
       })
 
-      .state('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuussort', {
-        url: '/vuosiluokat/:vlkId/jarjesta',
-        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlksort.html',
-        controller: 'VuosiluokkakokonaisuusSortController',
-        resolve: {
-          vuosiluokatService: 'VuosiluokatService',
-          vlkId: ['$stateParams', function($stateParams){
-            return $stateParams.vlkId;
-          }],
-          vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
-            return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
-          }]
-        }
-      })
-
       .state('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {
         url: '/vuosiluokat/:vlkId',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlk.html',
@@ -67,6 +52,21 @@ ylopsApp
           baseLaajaalaiset: ['vuosiluokatService', 'opsId', function (vuosiluokatService, opsId) {
             return vuosiluokatService.getLaajaalaiset(opsId);
           }],
+        }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuussort', {
+        url: '/vuosiluokat/:vlkId/jarjesta',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlksort.html',
+        controller: 'VuosiluokkakokonaisuusSortController',
+        resolve: {
+          vuosiluokatService: 'VuosiluokatService',
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
+          }]
         }
       })
 

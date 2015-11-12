@@ -18,7 +18,7 @@
         <span class="glyphicon" ng-class="{'glyphicon-chevron-down': !options.ohjeistusCollapsed, 'glyphicon-chevron-right': options.ohjeistusCollapsed}"></span>
         <span ng-bind="options.ohjeistusCollapsed && 'nayta' || 'piilota' | kaanna"></span>
       </a>
-      <div class="ohjeellinen ikoni-ohjeistus ikoni-ojheistus-pd" ng-hide="!options.ohjeistusCollapsed">
+      <div class="ohjeellinen ikoni-ohjeistus ikoni-ohjeistus-pd" ng-hide="!options.ohjeistusCollapsed">
         <div class="teksti" ng-bind-html="ohje.teksti | kaanna | unsafe"></div>
       </div>
     </div>
@@ -33,7 +33,7 @@
         <span class="glyphicon" ng-class="{'glyphicon-chevron-down': !options.perusteentekstiCollapsed, 'glyphicon-chevron-right': options.perusteentekstiCollapsed}"></span>
         <span ng-bind="options.perusteentekstiCollapsed && 'nayta' || 'piilota' | kaanna"></span>
       </a>
-      <div class="ohjeellinen ikoni-peruste ikoni-ojheistus-pd" ng-hide="!options.perusteentekstiCollapsed">
+      <div class="ohjeellinen ikoni-peruste ikoni-ohjeistus-pd" ng-hide="!options.perusteentekstiCollapsed">
         <div class="teksti" ng-bind-html="perusteteksti.teksti | kaanna | unsafe"></div>
       </div>
     </div>
@@ -88,7 +88,8 @@
     <div id="ops-ckeditor" ckeditor class="bigger" ng-model="model.tekstiKappale.teksti" slocalized></div>
   </div>
   <div ng-if="!editMode">
-    <div class="tekstiosan-teksti" termisto-viitteet="model.tekstiKappale.teksti" ng-bind-html="model.tekstiKappale.teksti | kaanna | kuvalinkit | unsafe"></div>
+    <div class="tekstiosan-teksti" termisto-viitteet="model.tekstiKappale.teksti"
+         ng-bind-html="model.tekstiKappale.teksti | kaanna | kuvalinkit | unsafe"></div>
     <p class="empty-notice" ng-show="!model.tekstiKappale.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
   </div>
 </div>
