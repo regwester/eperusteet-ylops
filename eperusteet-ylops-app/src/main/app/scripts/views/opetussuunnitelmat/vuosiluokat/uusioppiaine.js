@@ -156,9 +156,8 @@ ylopsApp
         $state.go('root.opetussuunnitelmat.yksi.opetus.valinnaiset', { vlkId: $stateParams.vlkId });
       }
       else {
-        Lukko.unlock($scope.commonParams, function () {
-          $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', $stateParams);
-        });
+        Lukko.unlock($scope.commonParams);
+        $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', $stateParams);
       }
     }
   };
