@@ -272,5 +272,16 @@
   "ylikirjoittaessasi-voit-palauttaa": "När du fortsätter kan du skriva över ändringar som andra har gjort. De blir kvar i ändringshistoriken och du kan återställa dem därifrån.",
   
   "nayta-opsina": "Visa som läroplan",
-  "nayta-pohjana": "Visa som botten"
+  "nayta-pohjana": "Visa som botten",
+
+  "virhe": "Fel",
+  "virhe-sivua-ei-loytynyt": "Sidan kunde inte hittas",
+  "virhe-muu": "Okänt fel",
+  "virhe-tilan-vaihtamisessa": "Ändra programstatus misslyckades",
+  "virhe-edelliseen-nakymaan": "Tidigare vy",
+  "virhe-ylempaan-nakymaan": "Övre vy",
+  "virhe-opetussuunnitelmaan": "Läroplanen",
+  "virhe-nayta-lisatiedot": "Visa teknisk information om felet",
+  "virhe-piilota-lisatiedot": "Dölj teknisk information om felet"
 }
+
