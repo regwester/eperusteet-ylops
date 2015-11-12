@@ -53,6 +53,7 @@ ylopsApp
       .state('root.virhe', {
         url: '/virhe',
         templateUrl: 'views/virhe.html',
+        params: { lisatiedot: null},
         controller: 'VirheController'
       })
 
