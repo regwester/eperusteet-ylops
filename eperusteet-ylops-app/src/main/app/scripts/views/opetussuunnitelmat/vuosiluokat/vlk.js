@@ -79,9 +79,9 @@ ylopsApp
   this.createEmptyText = createEmptyText;
 })
 
-.controller('VuosiluokkakokonaisuusSortController', function($state, $scope, Editointikontrollit,
-      vlk, vlkId, opsModel, OpetussuunnitelmaCRUD, Notifikaatiot) {
-
+.controller('VuosiluokkakokonaisuusSortController', function($rootScope, $state, $scope, Editointikontrollit,
+      vlk, opsModel, vlkId, OpetussuunnitelmaCRUD, Notifikaatiot, $timeout, $stateParams) {
+  $rootScope.$broadcast('navigaatio:hide');
   $scope.oppiaineet = _(opsModel.oppiaineet)
     .map('oppiaine')
     .map(function(oa) {
@@ -119,7 +119,9 @@ ylopsApp
   };
 
   Editointikontrollit.registerCallback({
-    edit: _.noop,
+    edit: function() {
+      console.log('starting edit');
+    },
     validate: _.constant(true),
     save: function() {
       var jrnoMap = _($scope.oppiaineet)
@@ -143,22 +145,28 @@ ylopsApp
         opsId: opsModel.id
       }, jrnoMap, function() {
         Notifikaatiot.onnistui('tallennettu-ok');
-        $state.go('root.opetussuunnitelmat.yksi.sisalto', {}, { reload: true });
+        $state.go('^.vuosiluokkakokonaisuus', $stateParams, { reload: true });
       });
     },
     cancel: function() {
-      $state.go('root.opetussuunnitelmat.yksi.sisalto');
+      $state.go('^.vuosiluokkakokonaisuus', $stateParams);
     },
     notify: _.noop
   });
 
-  Editointikontrollit.startEditing();
+  $timeout(function() {
+    Editointikontrollit.startEditing();
+  });
 })
 
 .controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
   MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
   baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,
   OpsService, Varmistusdialogi) {
+
+  $scope.sortOppiaineet = function() {
+    $state.go('^.vuosiluokkakokonaisuussort', $stateParams);
+  };
 
   $timeout(function () {
     if ($location.hash()) {
