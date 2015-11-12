@@ -44,7 +44,7 @@ ylopsApp
 
     function getType() {
       if (!_.isString(oppiaine.koodiArvo)) {
-        console.log('Oppiaineen koodia ei ole määritelty');
+        console.warn('Oppiaineen koodia ei ole määritelty');
         return '';
       }
 
@@ -56,7 +56,7 @@ ylopsApp
         return 'uskonto';
       }
       else {
-        console.log('Oppiaineen täytyy olla kieli tai uskonto');
+        console.warn('Oppiaineen täytyy olla kieli tai uskonto');
         return '';
       }
     }

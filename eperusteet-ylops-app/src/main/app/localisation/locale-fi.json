@@ -38,6 +38,7 @@
   "huom": "Huom!",
   "hyvaksymispvm-label": "Hyväksymispäivämäärä",
   "jarjestelmavirhe-teksti": "Tapahtui järjestelmävirhe {{virhekoodi}}. Ole hyvä ja yritä uudelleen. Jos ongelma toistuu ota yhteyttä palvelun ylläpitäjään.",
+  "jarjesta-oppiaineita": "Järjestä oppiaineita",
   "jatka": "Jatka",
   "joku-toinen-on-muokannut-dokumenttia": "Joku toinen henkilö on muokannut dokumenttia. Voit joko perua omat muutoksesi tai jatkaa dokumentin editointia ja ylikirjoittaa toisen muutokset.",
   "julkaistu": "Julkaistu",
