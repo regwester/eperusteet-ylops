@@ -56,11 +56,11 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, Utils
 
     return {
       startEditing: function() {
-        if(scope.editingCallback) {
+        if (scope.editingCallback) {
           scope.editingCallback.edit();
           setEditMode(true);
+          $rootScope.$broadcast('enableEditing');
         }
-        $rootScope.$broadcast('enableEditing');
       },
       saveEditing: function(kommentti) {
         var err;
