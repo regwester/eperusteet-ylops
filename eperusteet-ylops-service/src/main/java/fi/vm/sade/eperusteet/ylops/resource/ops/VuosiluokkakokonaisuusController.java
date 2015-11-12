@@ -78,10 +78,10 @@ public class VuosiluokkakokonaisuusController {
         throw new UnsupportedOperationException("Ei ole toteutettu");
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public Set<VuosiluokkakokonaisuusDto> getAll(@PathVariable("opsId") final Long opsId) {
-        throw new UnsupportedOperationException("TODO: toteuta");
-    }
+//    @RequestMapping(method = RequestMethod.GET)
+//    public Set<VuosiluokkakokonaisuusDto> getAll(@PathVariable("opsId") final Long opsId) {
+//        throw new UnsupportedOperationException("TODO: toteuta");
+//    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public UnwrappedOpsVuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId,

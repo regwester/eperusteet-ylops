@@ -22,7 +22,7 @@
     "angular-ui-utils": "~0.1.1",
     "bootstrap-sass-official": "3.3.3",
     "ckeditor": "~4.4.5",
-    "eperusteet-frontend-utils": "https://github.com/Opetushallitus/eperusteet-frontend-utils.git",
+    "eperusteet-frontend-utils": "Opetushallitus/eperusteet-frontend-utils#master",
     "es5-shim": "~2.3.0",
     "jquery": "~1.11.0",
     "json3": "~3.2.4",
