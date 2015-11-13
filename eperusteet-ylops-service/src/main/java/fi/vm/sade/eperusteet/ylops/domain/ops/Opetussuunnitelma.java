@@ -98,7 +98,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     private Tila tila = Tila.LUONNOS;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
