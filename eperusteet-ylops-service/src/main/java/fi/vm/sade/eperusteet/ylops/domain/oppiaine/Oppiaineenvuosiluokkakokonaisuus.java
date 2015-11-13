@@ -42,6 +42,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -104,6 +105,7 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinTable
     @OrderColumn
+    @BatchSize(size = 5)
     private Set<Oppiaineenvuosiluokka> vuosiluokat = new HashSet<>();
 
     public Set<Oppiaineenvuosiluokka> getVuosiluokat() {
