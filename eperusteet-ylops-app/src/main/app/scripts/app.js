@@ -72,7 +72,6 @@ ylopsApp
 
       if (Editointikontrollit.getEditMode()) {
         event.preventDefault();
-
         var data = {toState: toState, toParams: toParams};
         Varmistusdialogi.dialogi({
           successCb: function(data) {
