@@ -34,6 +34,7 @@ eperusteet-ylops-app:
 
 eperusteet-ylops-service: 
 
+    mvn install
     cd eperusteet-ylops-service
     (jos muisti loppuu: MAVEN_OPTS="-Xmx2048m")
     mvn tomcat7:run -Deperusteet-ylops.devdb.user=<user> -Deperusteet-ylops.devdb.password=<password> -Deperusteet-ylops.devdb.jdbcurl=<jdbcurl>
