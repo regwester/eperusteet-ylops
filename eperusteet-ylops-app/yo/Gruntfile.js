@@ -21,7 +21,7 @@ module.exports = function(grunt) {
   };
 
   var tsconfig = require(yeomanConfig.app + '/tsconfig.json');
-  console.log(tsconfig.files);
+  var tsconfigTest = require(yeomanConfig.test + '/tsconfig.json');
 
   try {
     yeomanConfig.app = require('./bower.json').appPath || yeomanConfig.app;
@@ -37,9 +37,22 @@ module.exports = function(grunt) {
         target: 'es5',
         sourceMap: true
       },
-      files: tsconfig.files.map(function(file) {
-        return yeomanConfig.app + '/' + file;
-      })
+      tests: {
+        files: [{
+          src: tsconfigTest.files.map(function(file) {
+            return yeomanConfig.test + '/' + file;
+          }),
+          dest: yeomanConfig.test + '/'
+        }]
+      },
+      sources: {
+        files: [{
+          src: tsconfig.files.map(function(file) {
+            return yeomanConfig.app + '/' + file;
+          }),
+          dest: yeomanConfig.app
+        }]
+      }
     },
     focus: {
       dev: {
@@ -53,7 +66,7 @@ module.exports = function(grunt) {
       },
       test: {
         files: ['<%= yeoman.app %>/**/*.{js,html}', '<%= yeoman.test %>/**/*.js','!<%= yeoman.app %>/bower_components/**'],
-        tasks: ['karma:unit', 'jshint', 'regex-check']
+        tasks: ['karma:unit', 'regex-check']
       },
       livereload: {
         options: {
@@ -154,16 +167,6 @@ module.exports = function(grunt) {
         }]
       },
       server: '.tmp'
-    },
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: [
-        'Gruntfile.js',
-        '<%= yeoman.app %>/scripts/**/*.js',
-        '<%= yeoman.app %>/ckeditor-plugins/**/*.js',
-      ]
     },
     // not used since Uglify task does concat,
     // but still available if needed
@@ -475,14 +478,13 @@ module.exports = function(grunt) {
     'autoprefixer',
 //  'connect:test',
     'regex-check',
-    'jshint',
     'maxlines',
     'karma'
   ]);
 
   grunt.registerTask('build', [
-    'ts',
     'clean:dist',
+    'ts',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
