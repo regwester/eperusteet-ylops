@@ -26,12 +26,11 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonais
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisalto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminen;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -46,6 +45,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisalto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -404,6 +404,40 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return ops;
     }
 
+    private Opetussuunnitelma addPohjaLukiokoulutus(Opetussuunnitelma ops, Peruste peruste) {
+        Long opsId = ops.getId();
+
+        LukiokoulutuksenPerusteenSisalto sisalto = peruste.getLukiokoulutus();
+        /*
+
+        if (sisalto.getVuosiluokkakokonaisuudet() != null) {
+            sisalto.getVuosiluokkakokonaisuudet()
+                    .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
+                            new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
+
+            if (sisalto.getOppiaineet() != null) {
+                sisalto.getOppiaineet().stream()
+                        .map(OpsDtoMapper::fromEperusteet)
+                        .forEach(oa -> oppiaineService.add(opsId, oa));
+            }
+
+            sisalto.getVuosiluokkakokonaisuudet().stream()
+                    .map(OpsDtoMapper::fromEperusteet)
+                    .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
+        }
+
+        // Alustetaan järjestys ePerusteista saatuun järjestykseen
+        Integer idx = 0;
+        for (OpsOppiaine oa : ops.getOppiaineet()) {
+            for (Oppiaineenvuosiluokkakokonaisuus oavlk : oa.getOppiaine().getVuosiluokkakokonaisuudet()) {
+                oavlk.setJnro(idx);
+            }
+            ++idx;
+        }
+*/
+        return ops;
+    }
+
     @Override
     public void syncPohja(Long pohjaId) {
         Opetussuunnitelma pohja = repository.findOne(pohjaId);
@@ -425,6 +459,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.VARHAISKASVATUS == peruste.getKoulutustyyppi()) {
             return addPohjaLisaJaEsiopetus(ops, peruste);
+        } else if (KoulutusTyyppi.LUKIOKOULUTUS == peruste.getKoulutustyyppi()) {
+            return addPohjaLukiokoulutus(ops, peruste);
         } else {
             throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
         }

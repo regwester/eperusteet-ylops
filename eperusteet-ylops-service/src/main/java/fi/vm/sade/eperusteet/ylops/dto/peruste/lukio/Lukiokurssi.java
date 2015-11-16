@@ -13,36 +13,27 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.Kurssi;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsa;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 /**
- *
- * @author jhyoty
+ * User: jsikio
  */
 @Getter
 @Setter
-public abstract class PerusteBase implements Serializable {
-    private Long id;
-    private LokalisoituTekstiDto nimi;
-    private KoulutusTyyppi koulutustyyppi;
-    private Set<PerusteKoulutus> koulutukset;
-    private Set<Kieli> kielet;
-    private LokalisoituTekstiDto kuvaus;
-    private String diaarinumero;
-    private Date voimassaoloAlkaa;
-    private Date siirtymaPaattyy;
-    private Date voimassaoloLoppuu;
-    private Date muokattu;
-    private String tila;
-    private String tyyppi;
-    private Set<String> korvattavatDiaarinumerot;
+public class Lukiokurssi extends Kurssi {
+
+    private LukiokurssiTyyppi tyyppi;
+    private LukioOpetussuunnitelmaRakenne opetussuunnitelma;
+    private PerusteTekstiOsa tavoitteet;
+    private PerusteTekstiOsa keskeinenSisalto;
+    private PerusteTekstiOsa tavoitteetJaKeskeinenSisalto;
+
 }

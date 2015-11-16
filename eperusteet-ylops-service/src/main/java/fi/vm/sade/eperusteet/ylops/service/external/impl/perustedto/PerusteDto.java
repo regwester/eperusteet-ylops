@@ -13,22 +13,35 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.*;
-import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+import java.util.Set;
+
 /**
- *
- * @author jhyoty
+ * Created by jsikio.
  */
 @Getter
 @Setter
-public class PerusteTavoitteenArviointi implements ReferenceableDto {
+public class PerusteDto {
     private Long id;
-    private LokalisoituTekstiDto arvioinninKohde;
-    private LokalisoituTekstiDto hyvanOsaamisenKuvaus;
+    private LokalisoituTekstiDto nimi;
+    private KoulutusTyyppi koulutustyyppi;
+    private Set<KoulutusDto> koulutukset;
+    private Set<Kieli> kielet;
+    private LokalisoituTekstiDto kuvaus;
+    private String diaarinumero;
+    private Date voimassaoloAlkaa;
+    private Date siirtymaPaattyy;
+    private Date voimassaoloLoppuu;
+    private Date muokattu;
+    private String tila;
+    private String tyyppi;
+    private Set<String> korvattavatDiaarinumerot;
 }

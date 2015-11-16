@@ -13,24 +13,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
- *
- * @author jhyoty
+ * Created by jsikio.
  */
 @Getter
 @Setter
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class PerusteOpetuksenkohdealue implements ReferenceableDto {
-    public Long id;
-    public LokalisoituTekstiDto nimi;
-    public LokalisoituTekstiDto kuvaus;
+public class LukioPerusteSisalto implements Serializable {
+
+    private Long id;
+    private List<LukioPerusteTekstikappaleViite> lapset;
+
 }

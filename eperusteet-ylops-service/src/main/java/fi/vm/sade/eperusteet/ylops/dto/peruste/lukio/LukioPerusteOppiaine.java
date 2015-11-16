@@ -13,45 +13,39 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsa;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+import java.util.UUID;
+
 /**
- *
- * @author jhyoty
+ * Created by jsikio.
  */
 @Getter
 @Setter
-public class PerusteOppiaine implements ReferenceableDto {
+public class LukioPerusteOppiaine {
 
     private Long id;
     private UUID tunniste;
     private String koodiUri;
     private String koodiArvo;
     private Boolean koosteinen;
+    private Integer jarjestys;
     private Boolean abstrakti;
     private LokalisoituTekstiDto nimi;
+    private LokalisoituTekstiDto pakollinenKurssiKuvaus;
+    private LokalisoituTekstiDto syventavaKurssiKuvaus;
+    private LokalisoituTekstiDto soveltavaKurssiKuvaus;
     private PerusteTekstiOsa tehtava;
-    private Set<PerusteOppiaine> oppimaarat;
-    private Set<PerusteOpetuksenkohdealue> kohdealueet;
-    private List<PerusteOppiaineenVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
+    private PerusteTekstiOsa tavoitteet;
+    private PerusteTekstiOsa arviointi;
 
-    public Optional<PerusteOppiaineenVuosiluokkakokonaisuus> getVuosiluokkakokonaisuus(Reference tunniste) {
-        return getVuosiluokkakokonaisuus(UUID.fromString(tunniste.toString()));
-    }
+    private Set<LukioPerusteOppiaine> oppimaarat;
+    private Set<Lukiokurssi> kurssit;
 
-    public Optional<PerusteOppiaineenVuosiluokkakokonaisuus> getVuosiluokkakokonaisuus(UUID tunniste) {
-        return vuosiluokkakokonaisuudet.stream()
-            .filter(v -> v.getVuosiluokkaKokonaisuus().getTunniste().equals(tunniste))
-            .findAny();
-    }
 }

@@ -13,24 +13,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
-
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.*;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  *
- * @author harrik
+ * @author jhyoty
  */
 @Getter
 @Setter
-public class PerusteKoulutus {
-    private LokalisoituTekstiDto nimi;
-    private String koulutuskoodiArvo;
-    private String koulutuskoodiUri;
-    private String koulutusalakoodi;
-    private String opintoalakoodi;
+public class PerusteTekstiKappaleViite {
+    private Long id;
+    private PerusteTekstiKappale tesktiKappale;
+    private List<PerusteTekstiKappaleViite> lapset;
 }

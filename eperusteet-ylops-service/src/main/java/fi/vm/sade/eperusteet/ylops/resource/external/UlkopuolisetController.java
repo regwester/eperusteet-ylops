@@ -17,8 +17,8 @@ package fi.vm.sade.eperusteet.ylops.resource.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -80,6 +80,18 @@ public class UlkopuolisetController {
     @ResponseBody
     public Peruste getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
         return eperusteetService.getPerusopetuksenPeruste(id);
+    }
+
+    @RequestMapping(value = "/lukiokoulutusperusteet", method = GET)
+    @ResponseBody
+    public ResponseEntity<List<PerusteInfo>> getLukiokoulutusperusteet() {
+        return new ResponseEntity<>(eperusteetService.findLukiokoulutusPerusteet(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/lukiokoulutusperusteet/{id}", method = GET)
+    @ResponseBody
+    public Peruste getLukiokoulutusperuste(@PathVariable(value = "id") final Long id) {
+        return eperusteetService.getLukiokoulutuksenPeruste(id);
     }
 
     @RequestMapping(value = "/tiedotteet", method = GET)

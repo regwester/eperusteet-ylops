@@ -13,27 +13,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
-
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.UUID;
+
 /**
- *
- * @author nkala
+ * User: jsikio
  */
 @Getter
 @Setter
-public class PerusteInfo {
+public class Aihekokonaisuus implements Serializable {
+
+    private UUID tunniste;
     private Long id;
-    private LokalisoituTekstiDto nimi;
-    private String diaarinumero;
-    private Date voimassaoloAlkaa;
-    private Date voimassaoloLoppuu;
-    private Date muokattu;
-    private String tila;
+    private LokalisoituTekstiDto otsikko;
+    private LokalisoituTekstiDto yleiskuvaus;
+    private Long jnro;
+
 }

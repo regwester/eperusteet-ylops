@@ -254,9 +254,9 @@ ylopsApp
           pohjaId: ['$stateParams', function ($stateParams) {
             return $stateParams.pohjaId;
           }],
-          perusteet: ['EperusteetValmiitPerusteet', 'pohjaId', function (EperusteetPerusopetus, pohjaId) {
+          perusteet: ['EperusteetValmiitPerusteet', 'pohjaId', function (EperusteetValmiitPerusteet, pohjaId) {
             if (pohjaId === 'uusi') {
-              return EperusteetPerusopetus.query({}).$promise;
+              return EperusteetValmiitPerusteet.query({}).$promise;
             }
             return null;
           }]

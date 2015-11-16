@@ -13,25 +13,28 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
+
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  *
- * @author jhyoty
+ * @author nkala
  */
 @Getter
 @Setter
-public class PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminen implements ReferenceableDto {
+public class PerusteInfo {
     private Long id;
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("_laajaalainenosaaminen")
-    private PerusteLaajaalainenosaaminen laajaalainenOsaaminen;
-    private LokalisoituTekstiDto kuvaus;
+    private LokalisoituTekstiDto nimi;
+    private String diaarinumero;
+    private Date voimassaoloAlkaa;
+    private Date voimassaoloLoppuu;
+    private Date muokattu;
+    private String tila;
+    private KoulutusTyyppi koulutustyyppi;
 }

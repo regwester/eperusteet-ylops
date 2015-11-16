@@ -20,11 +20,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.Peruste;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.LukiokoulutusPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.ArrayList;
@@ -58,6 +59,9 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
     private String koulutustyyppiPerusopetus;
 
+    @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_lukiokoilutus:koulutustyyppi_2}")
+    private String koulutustyyppiLukiokoulutus;
+
     @Autowired
     private DtoMapper mapper;
 
@@ -77,7 +81,8 @@ public class EperusteetServiceImpl implements EperusteetService {
             KoulutusTyyppi.ESIOPETUS,
             KoulutusTyyppi.PERUSOPETUS,
             KoulutusTyyppi.LISAOPETUS,
-            KoulutusTyyppi.VARHAISKASVATUS
+            KoulutusTyyppi.VARHAISKASVATUS,
+            KoulutusTyyppi.LUKIOKOULUTUS
         };
         return new HashSet<>(Arrays.asList(vaihtoehdot));
     }
@@ -118,6 +123,19 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
+    public List<PerusteInfo> findLukiokoulutusPerusteet() {
+        PerusteInfoWrapperDto wrapperDto
+                = client.getForObject(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
+                PerusteInfoWrapperDto.class, koulutustyyppiLukiokoulutus, 100);
+
+        // Filtteröi pois perusteet jotka eivät enää ole voimassa
+        Date now = new Date();
+        return wrapperDto.getData().stream()
+                .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Cacheable("perusteet")
     public Peruste getPerusopetuksenPeruste(final Long id) {
         PerusopetusPerusteDto peruste = client.getForObject(eperusteetServiceUrl
@@ -125,6 +143,19 @@ public class EperusteetServiceImpl implements EperusteetService {
 
         if (peruste == null || !getKoulutuskoodit().contains(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Perustetta ei löytynyt tai se ei ole perusopetuksen peruste");
+        }
+
+        return mapper.map(peruste, Peruste.class);
+    }
+
+    @Override
+    @Cacheable("perusteet")
+    public Peruste getLukiokoulutuksenPeruste(final Long id) {
+        LukiokoulutusPerusteDto peruste = client.getForObject(eperusteetServiceUrl
+                + "/api/perusteet/{id}/kaikki", LukiokoulutusPerusteDto.class, id);
+
+        if (peruste == null || !getKoulutuskoodit().contains(peruste.getKoulutustyyppi())) {
+            throw new BusinessRuleViolationException("Perustetta ei löytynyt tai se ei ole tyypiltään tuettu peruste");
         }
 
         return mapper.map(peruste, Peruste.class);
@@ -148,7 +179,11 @@ public class EperusteetServiceImpl implements EperusteetService {
             .findAny()
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
 
-        return getPerusopetuksenPeruste(perusteInfoDto.getId());
+        if( perusteInfoDto.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS ) {
+            return getLukiokoulutuksenPeruste(perusteInfoDto.getId());
+        } else {
+            return getPerusopetuksenPeruste(perusteInfoDto.getId());
+        }
     }
 
     @Override

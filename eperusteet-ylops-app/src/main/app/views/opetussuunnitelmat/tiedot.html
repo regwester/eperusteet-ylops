@@ -133,7 +133,7 @@
         <div ng-if="!(editMode || luonnissa)" ng-bind="editableModel.koulutustyyppi"></div>
 
         <ui-select ng-if="(luonnissa)" on-select="avataInputs($item)" ng-disabled="editMode || ($$isOps && $$pohja)" class="ui-select" ng-model="editableModel.koulutustyyppi">
-          <ui-select-choices repeat="koulutustyyppi in ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6']">
+          <ui-select-choices repeat="koulutustyyppi in ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6', 'koulutustyyppi_2']">
             <div ng-bind-html="koulutustyyppi | kaanna"></div>
           </ui-select-choices>
           <ui-select-match class="ui-select-match" placeholder="{{'valitse' | kaanna}}">

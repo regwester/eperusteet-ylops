@@ -19,7 +19,7 @@
 ylopsApp
 .controller('PohjaTiedotController', function ($scope, $stateParams, $state,
   OpetussuunnitelmaCRUD, Notifikaatiot, Utils, OpsService, $rootScope,
-  Editointikontrollit, $timeout, Kieli, Varmistusdialogi, EperusteetPerusopetus, perusteet) {
+  Editointikontrollit, $timeout, Kieli, Varmistusdialogi, EperusteetPerusopetus, EperusteetLukiokoulutus, perusteet) {
 
     $scope.luonnissa = $stateParams.pohjaId === 'uusi';
     $scope.kieliOrderFn = Kieli.orderFn;
@@ -115,9 +115,18 @@ ylopsApp
         return;
       }
 
-      EperusteetPerusopetus.query({}, function (perusteet) {
-        $scope.perustelista = perusteet;
-      }, Notifikaatiot.serverCb);
+        console.log($scope.model);
+
+      if( $scope.model.koulutustyyppi === 'koulutustyyppi_2' ) {
+          EperusteetLukiokoulutus.query({}, function (perusteet) {
+              $scope.perustelista = perusteet;
+          }, Notifikaatiot.serverCb);
+
+      } else {
+        EperusteetPerusopetus.query({}, function (perusteet) {
+            $scope.perustelista = perusteet;
+        }, Notifikaatiot.serverCb);
+      }
     };
 
     $scope.delete = function () {
