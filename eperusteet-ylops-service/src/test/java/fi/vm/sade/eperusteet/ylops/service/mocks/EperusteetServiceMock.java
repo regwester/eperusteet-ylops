@@ -79,6 +79,7 @@ public class EperusteetServiceMock implements EperusteetService {
     @Override
     public PerusteDto getEperusteetPeruste(Long id) {
         PerusteDto peruste = new PerusteDto();
+        peruste.setId(id);
         peruste.setDiaarinumero(DIAARINUMERO);
         PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
         sisalto.setOppiaineet(Collections.emptySet());
