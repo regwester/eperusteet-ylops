@@ -83,7 +83,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @JoinColumn(name = "cached_peruste", nullable = false)
+    @JoinColumn(name = "cached_peruste")
     private PerusteCache cachedPeruste;
 
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
