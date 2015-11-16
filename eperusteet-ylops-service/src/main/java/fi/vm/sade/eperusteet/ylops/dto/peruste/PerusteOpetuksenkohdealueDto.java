@@ -13,14 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.util.Set;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,16 +28,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusteOpetuksentavoite implements ReferenceableDto {
-    private Long id;
-    private UUID tunniste;
-    private LokalisoituTekstiDto tavoite;
-    @JsonIdentityReference(alwaysAsId = true)
-    private Set<PerusteKeskeinensisaltoalue> sisaltoalueet;
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("laajaalaisetosaamiset")
-    private Set<PerusteLaajaalainenosaaminen> laajattavoitteet;
-    @JsonIdentityReference(alwaysAsId = true)
-    private Set<PerusteOpetuksenkohdealue> kohdealueet;
-    private Set<PerusteTavoitteenArviointi> arvioinninkohteet;
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class PerusteOpetuksenkohdealueDto implements ReferenceableDto {
+    public Long id;
+    public LokalisoituTekstiDto nimi;
+    public LokalisoituTekstiDto kuvaus;
 }

@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
@@ -31,7 +31,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusteOppiaine implements ReferenceableDto {
+public class PerusteOppiaineDto implements ReferenceableDto {
 
     private Long id;
     private UUID tunniste;
@@ -40,16 +40,16 @@ public class PerusteOppiaine implements ReferenceableDto {
     private Boolean koosteinen;
     private Boolean abstrakti;
     private LokalisoituTekstiDto nimi;
-    private PerusteTekstiOsa tehtava;
-    private Set<PerusteOppiaine> oppimaarat;
-    private Set<PerusteOpetuksenkohdealue> kohdealueet;
-    private List<PerusteOppiaineenVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
+    private PerusteTekstiOsaDto tehtava;
+    private Set<PerusteOppiaineDto> oppimaarat;
+    private Set<PerusteOpetuksenkohdealueDto> kohdealueet;
+    private List<PerusteOppiaineenVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
 
-    public Optional<PerusteOppiaineenVuosiluokkakokonaisuus> getVuosiluokkakokonaisuus(Reference tunniste) {
+    public Optional<PerusteOppiaineenVuosiluokkakokonaisuusDto> getVuosiluokkakokonaisuus(Reference tunniste) {
         return getVuosiluokkakokonaisuus(UUID.fromString(tunniste.toString()));
     }
 
-    public Optional<PerusteOppiaineenVuosiluokkakokonaisuus> getVuosiluokkakokonaisuus(UUID tunniste) {
+    public Optional<PerusteOppiaineenVuosiluokkakokonaisuusDto> getVuosiluokkakokonaisuus(UUID tunniste) {
         return vuosiluokkakokonaisuudet.stream()
             .filter(v -> v.getVuosiluokkaKokonaisuus().getTunniste().equals(tunniste))
             .findAny();

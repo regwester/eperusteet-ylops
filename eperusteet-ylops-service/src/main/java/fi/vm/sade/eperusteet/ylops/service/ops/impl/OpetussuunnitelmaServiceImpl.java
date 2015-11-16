@@ -26,12 +26,11 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonais
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -49,6 +48,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
@@ -145,6 +145,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Autowired
     private OhjeRepository ohjeRepository;
 
+    @Autowired
+    private PerusteCacheRepository perusteCacheRepository;
+
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
@@ -172,7 +175,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public Peruste getPeruste(Long opsId) {
+    public PerusteDto getPeruste(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
@@ -215,7 +218,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public Set<PerusteLaajaalainenosaaminen> getLaajaalaisetosaamiset(Long id) {
+    public Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus().getLaajaalaisetosaamiset();
@@ -320,6 +323,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         ops.setPohja(pohja);
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
+        ops.setCachedPeruste(ops.getCachedPeruste());
+        if (ops.getCachedPeruste() == null) {
+            PerusteDto peruste = eperusteetService.getPerusteUpdateCache(ops.getPerusteenDiaarinumero());
+            ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
+        }
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
@@ -366,15 +374,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, Peruste peruste) {
+    private Opetussuunnitelma addPohjaLukiokoulutus(Opetussuunnitelma ops, PerusteDto peruste) {
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
         return ops;
     }
 
-    private Opetussuunnitelma addPohjaPerusopetus(Opetussuunnitelma ops, Peruste peruste) {
+    private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, PerusteDto peruste) {
+        ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
+        return ops;
+    }
+
+    private Opetussuunnitelma addPohjaPerusopetus(Opetussuunnitelma ops, PerusteDto peruste) {
         Long opsId = ops.getId();
 
-        PerusopetuksenPerusteenSisalto sisalto = peruste.getPerusopetus();
+        PerusopetuksenPerusteenSisaltoDto sisalto = peruste.getPerusopetus();
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
@@ -414,13 +427,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         pohja.setOppiaineet(null);
         pohja.setVuosiluokkakokonaisuudet(null);
 
-        Peruste peruste = eperusteetService.getPerusteUpdateCache(pohja.getPerusteenDiaarinumero());
+        PerusteDto peruste = eperusteetService.getPerusteUpdateCache(pohja.getPerusteenDiaarinumero());
+        pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
         lisaaPerusteenSisalto(pohja, peruste);
     }
 
-    private Opetussuunnitelma lisaaPerusteenSisalto(Opetussuunnitelma ops, Peruste peruste) {
+    private Opetussuunnitelma lisaaPerusteenSisalto(Opetussuunnitelma ops, PerusteDto peruste) {
         if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
             return addPohjaPerusopetus(ops, peruste);
+        } else if (KoulutusTyyppi.LUKIOKOULUTUS == peruste.getKoulutustyyppi()) {
+            return addPohjaLukiokoulutus(ops, peruste);
         } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.VARHAISKASVATUS == peruste.getKoulutustyyppi()) {
@@ -460,7 +476,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops = repository.save(ops);
         lisaaTekstipuunLapset(ops);
 
-        Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi() : KoulutusTyyppi.PERUSOPETUS);
         return mapper.map(lisaaPerusteenSisalto(ops, peruste), OpetussuunnitelmaDto.class);
     }
@@ -577,13 +594,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             .map(vlk -> vlk.getVuosiluokkakokonaisuus())
             .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(validointi, vlk, julkaisukielet));
 
-        Peruste peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        //TODO:should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
+        PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
 
         ops.getOppiaineet().stream()
             .filter(oa -> oa.isOma())
             .map(oa -> oa.getOppiaine())
             .forEach(oa -> {
-                PerusteOppiaine poppiaine = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
+                PerusteOppiaineDto poppiaine = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
                 Oppiaine.validoi(validointi, oa, julkaisukielet);
                 Set<UUID> PerusteenTavoitteet = new HashSet<>();
 

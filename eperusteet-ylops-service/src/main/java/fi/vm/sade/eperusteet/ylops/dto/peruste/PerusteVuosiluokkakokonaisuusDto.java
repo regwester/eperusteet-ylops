@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,16 +33,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "tunniste")
-public class PerusteVuosiluokkakokonaisuus implements ReferenceableDto {
+public class PerusteVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private Long id;
     private UUID tunniste;
     private Set<Vuosiluokka> vuosiluokat;
     private LokalisoituTekstiDto nimi;
-    private PerusteTekstiOsa siirtymaEdellisesta;
-    private PerusteTekstiOsa tehtava;
-    private PerusteTekstiOsa siirtymaSeuraavaan;
-    private PerusteTekstiOsa laajaalainenOsaaminen;
+    private PerusteTekstiOsaDto siirtymaEdellisesta;
+    private PerusteTekstiOsaDto tehtava;
+    private PerusteTekstiOsaDto siirtymaSeuraavaan;
+    private PerusteTekstiOsaDto laajaalainenOsaaminen;
     @JsonProperty("laajaalaisetosaamiset")
-    private Set<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminen> laajaalaisetOsaamiset;
-    private PerusteTekstiOsa paikallisestiPaatettavatAsiat;
+    private Set<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto> laajaalaisetOsaamiset;
+    private PerusteTekstiOsaDto paikallisestiPaatettavatAsiat;
 }

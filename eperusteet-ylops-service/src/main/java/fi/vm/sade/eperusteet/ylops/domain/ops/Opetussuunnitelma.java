@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
@@ -77,6 +78,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Getter
     @Setter
     private String perusteenDiaarinumero;
+
+    @Getter
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cached_peruste", nullable = false)
+    private PerusteCache cachedPeruste;
 
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

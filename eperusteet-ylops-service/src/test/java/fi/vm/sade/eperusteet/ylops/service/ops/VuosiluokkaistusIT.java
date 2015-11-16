@@ -19,10 +19,10 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
@@ -118,19 +118,19 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
     @Test
     public void testVuosiluokkaistus() {
         OpetussuunnitelmaDto opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
-        Peruste peruste = opsit.getPeruste(opsId);
+        PerusteDto peruste = opsit.getPeruste(opsId);
 
         opsDto.getOppiaineet().stream()
             .flatMap(o -> Stream.of(o.getOppiaine()))
             .forEach(oa -> {
-                PerusteOppiaine po = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
+                PerusteOppiaineDto po = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
                 oa.getVuosiluokkakokonaisuudet().forEach(vk -> {
-                    PerusteOppiaineenVuosiluokkakokonaisuus pvk =
+                    PerusteOppiaineenVuosiluokkakokonaisuusDto pvk =
                         po.getVuosiluokkakokonaisuus(UUID.fromString(vk.getVuosiluokkakokonaisuus().toString())).get();
                     Map<Vuosiluokka, Set<UUID>> tavoitteet = new HashMap<>();
                     pvk.getVuosiluokkaKokonaisuus().getVuosiluokat().forEach(
                         l -> tavoitteet.put(l, pvk.getTavoitteet().stream()
-                                                  .map(PerusteOpetuksentavoite::getTunniste).collect(Collectors.toSet())));
+                                                  .map(PerusteOpetuksentavoiteDto::getTunniste).collect(Collectors.toSet())));
                     oppiaineet.updateVuosiluokkienTavoitteet(opsId, oa.getId(), vk.getId(), tavoitteet);
                 });
             });
@@ -139,14 +139,14 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
         opsDto.getOppiaineet().stream()
             .flatMap(o -> Stream.of(o.getOppiaine()))
             .forEach(oa -> {
-                PerusteOppiaine po = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
+                PerusteOppiaineDto po = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
                 oa.getVuosiluokkakokonaisuudet().forEach(vk -> {
-                    PerusteOppiaineenVuosiluokkakokonaisuus pvk =
+                    PerusteOppiaineenVuosiluokkakokonaisuusDto pvk =
                         po.getVuosiluokkakokonaisuus(UUID.fromString(vk.getVuosiluokkakokonaisuus().toString())).get();
                     Map<Vuosiluokka, Set<UUID>> tavoitteet = new HashMap<>();
                     pvk.getVuosiluokkaKokonaisuus().getVuosiluokat().forEach(
                         l -> tavoitteet.put(l, pvk.getTavoitteet().stream()
-                                                  .map(PerusteOpetuksentavoite::getTunniste).collect(Collectors.toSet())));
+                                                  .map(PerusteOpetuksentavoiteDto::getTunniste).collect(Collectors.toSet())));
                     Assert.assertEquals(tavoitteet.values().stream().filter(s -> !s.isEmpty()).count(), vk.getVuosiluokat().size());
                     vk.getVuosiluokat().forEach(l -> {
                         Assert.assertEquals(pvk.getTavoitteet().size(), l.getTavoitteet().size());

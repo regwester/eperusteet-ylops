@@ -13,11 +13,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.*;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,15 +30,19 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusteTekstiKappale {
+public abstract class PerusteBaseDto implements Serializable {
     private Long id;
-    private Date luotu;
-    private Date muokattu;
-    private String muokkaaja;
-    private String muokkaajanNimi;
     private LokalisoituTekstiDto nimi;
-    private LokalisoituTekstiDto teksti;
+    private KoulutusTyyppi koulutustyyppi;
+    private Set<PerusteKoulutusDto> koulutukset;
+    private Set<Kieli> kielet;
+    private LokalisoituTekstiDto kuvaus;
+    private String diaarinumero;
+    private Date voimassaoloAlkaa;
+    private Date siirtymaPaattyy;
+    private Date voimassaoloLoppuu;
+    private Date muokattu;
     private String tila;
-    private String tunniste;
-    private String osanTyyppi;
+    private String tyyppi;
+    private Set<String> korvattavatDiaarinumerot;
 }

@@ -21,9 +21,9 @@ import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksentavoite;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -88,14 +88,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long vlkId, Map<Vuosiluokka, Set<UUID>> tavoitteet) {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        Peruste peruste = perusteet.getPeruste(ops.getPerusteenDiaarinumero());
+        //TODO:should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
+        PerusteDto peruste = perusteet.getPeruste(ops.getPerusteenDiaarinumero());
 
         Oppiaineenvuosiluokkakokonaisuus ovk = oppiaine.getVuosiluokkakokonaisuudet().stream()
             .filter(vk -> vk.getId().equals(vlkId))
             .findAny()
             .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa"));
 
-        PerusteOppiaineenVuosiluokkakokonaisuus pov
+        PerusteOppiaineenVuosiluokkakokonaisuusDto pov
             = peruste.getPerusopetus().getOppiaine(oppiaine.getTunniste())
             .flatMap(po -> po.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus().getId()))
             .orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta tai vuosiluokkakokonaisuutta ei ole perusteessa"));
@@ -460,7 +461,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     private void updateVuosiluokkakokonaisuudenTavoitteet(
         Oppiaineenvuosiluokkakokonaisuus v,
-        PerusteOppiaineenVuosiluokkakokonaisuus vuosiluokkakokonaisuus,
+        PerusteOppiaineenVuosiluokkakokonaisuusDto vuosiluokkakokonaisuus,
         Map<Vuosiluokka, Set<UUID>> tavoitteet) {
 
         if (!vuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet())) {
@@ -482,8 +483,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             });
     }
 
-    private void mergePerusteTavoitteet(Oppiaineenvuosiluokka ov, PerusteOppiaineenVuosiluokkakokonaisuus pvk, Set<UUID> tavoiteIds) {
-        List<PerusteOpetuksentavoite> filtered = pvk.getTavoitteet().stream()
+    private void mergePerusteTavoitteet(Oppiaineenvuosiluokka ov, PerusteOppiaineenVuosiluokkakokonaisuusDto pvk, Set<UUID> tavoiteIds) {
+        List<PerusteOpetuksentavoiteDto> filtered = pvk.getTavoitteet().stream()
             .filter(t -> tavoiteIds.contains(t.getTunniste()))
             .collect(Collectors.toList());
 

@@ -19,10 +19,10 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOpetuksenkohdealue;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksenkohdealueDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.LaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
@@ -95,7 +95,7 @@ public class OpsDtoMapper {
     }
 
     public static VuosiluokkakokonaisuusDto fromEperusteet(
-        PerusteVuosiluokkakokonaisuus dto) {
+        PerusteVuosiluokkakokonaisuusDto dto) {
         VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new Reference(dto.getTunniste().toString()));
         vk.setNimi(Optional.ofNullable(dto.getNimi()));
         vk.setTunniste(Optional.ofNullable(Reference.of(dto.getTunniste())));
@@ -111,7 +111,7 @@ public class OpsDtoMapper {
     }
 
     public static OppiaineDto oppimaaraFromEperusteet(
-        PerusteOppiaine oa) {
+        PerusteOppiaineDto oa) {
         OppiaineDto dto = new OppiaineDto();
         dto.setTila(Tila.LUONNOS);
 
@@ -142,7 +142,7 @@ public class OpsDtoMapper {
     }
 
     public static OppiaineLaajaDto fromEperusteet(
-        PerusteOppiaine oa) {
+        PerusteOppiaineDto oa) {
         OppiaineLaajaDto dto = new OppiaineLaajaDto();
         dto.setTila(Tila.LUONNOS);
 
@@ -175,7 +175,7 @@ public class OpsDtoMapper {
         return dto;
     }
 
-    public static OppiaineenVuosiluokkakokonaisuusDto fromEperusteet(PerusteOppiaineenVuosiluokkakokonaisuus ovk) {
+    public static OppiaineenVuosiluokkakokonaisuusDto fromEperusteet(PerusteOppiaineenVuosiluokkakokonaisuusDto ovk) {
         OppiaineenVuosiluokkakokonaisuusDto dto = new OppiaineenVuosiluokkakokonaisuusDto();
         dto.setTehtava(new TekstiosaDto());
         dto.setTyotavat(new TekstiosaDto());
@@ -188,7 +188,7 @@ public class OpsDtoMapper {
     }
 
     public static OpetuksenKohdealueDto fromEperusteet(
-        PerusteOpetuksenkohdealue dto) {
+        PerusteOpetuksenkohdealueDto dto) {
         return new OpetuksenKohdealueDto(dto.getNimi());
     }
 }

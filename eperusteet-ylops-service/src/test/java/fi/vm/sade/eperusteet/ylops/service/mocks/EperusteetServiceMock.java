@@ -21,12 +21,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusopetuksenPerusteenSisalto;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,55 +44,55 @@ import org.springframework.stereotype.Service;
 public class EperusteetServiceMock implements EperusteetService {
 
     public static final String DIAARINUMERO = "mock-diaarinumero";
-    private PerusopetusPerusteDto perusteDto = null;
+    private EperusteetPerusteDto perusteDto = null;
 
     @Autowired
     private DtoMapper mapper;
 
     @Override
-    public List<PerusteInfo> findPerusteet(Set<KoulutusTyyppi> tyypit) {
-        PerusteInfo perusteInfo = new PerusteInfo();
+    public List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit) {
+        PerusteInfoDto perusteInfo = new PerusteInfoDto();
         perusteInfo.setDiaarinumero(DIAARINUMERO);
         return Collections.singletonList(perusteInfo);
     }
 
     @Override
-    public List<PerusteInfo> findPerusteet() {
+    public List<PerusteInfoDto> findPerusteet() {
         return findPerusteet(null);
     }
 
     @Override
-    public List<PerusteInfo> findPerusopetuksenPerusteet() {
-        PerusteInfo perusteInfo = new PerusteInfo();
+    public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
+        PerusteInfoDto perusteInfo = new PerusteInfoDto();
         perusteInfo.setDiaarinumero(DIAARINUMERO);
         return Collections.singletonList(perusteInfo);
     }
 
     @Override
-    public Peruste getPerusopetuksenPeruste(Long id) {
-        Peruste peruste = new Peruste();
+    public PerusteDto getEperusteetPeruste(Long id) {
+        PerusteDto peruste = new PerusteDto();
         peruste.setDiaarinumero(DIAARINUMERO);
-        PerusopetuksenPerusteenSisalto sisalto = new PerusopetuksenPerusteenSisalto();
+        PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
         sisalto.setOppiaineet(Collections.emptySet());
         peruste.setPerusopetus(sisalto);
         return peruste;
     }
 
     @Override
-    public Peruste getPeruste(String diaariNumero) {
+    public PerusteDto getPeruste(String diaariNumero) {
         return getPerusteByDiaari(diaariNumero);
     }
 
     @Override
-    public Peruste getPerusteUpdateCache(String diaarinumero) {
+    public PerusteDto getPerusteUpdateCache(String diaarinumero) {
         return getPerusteByDiaari(diaarinumero);
     }
 
-    private Peruste getPerusteByDiaari (String diaariNumero) {
+    private PerusteDto getPerusteByDiaari (String diaariNumero) {
         if (perusteDto != null && diaariNumero.equals(perusteDto.getDiaarinumero())) {
-            return mapper.map(perusteDto, Peruste.class);
+            return mapper.map(perusteDto, PerusteDto.class);
         }
-        return getPerusopetuksenPeruste(0L);
+        return getEperusteetPeruste(0L);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class EperusteetServiceMock implements EperusteetService {
             om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
             om.registerModule(new Jdk8Module());
             om.setPropertyNamingStrategy(new ReferenceNamingStrategy());
-            perusteDto = om.readValue(is, PerusopetusPerusteDto.class);
+            perusteDto = om.readValue(is, EperusteetPerusteDto.class);
         }
     }
 

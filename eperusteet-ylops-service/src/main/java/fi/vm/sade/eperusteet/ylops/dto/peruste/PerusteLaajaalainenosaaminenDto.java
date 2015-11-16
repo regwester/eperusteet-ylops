@@ -13,14 +13,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,19 +29,10 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class PerusteBase implements Serializable {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "tunniste")
+public class PerusteLaajaalainenosaaminenDto implements ReferenceableDto {
     private Long id;
+    private UUID tunniste;
     private LokalisoituTekstiDto nimi;
-    private KoulutusTyyppi koulutustyyppi;
-    private Set<PerusteKoulutus> koulutukset;
-    private Set<Kieli> kielet;
     private LokalisoituTekstiDto kuvaus;
-    private String diaarinumero;
-    private Date voimassaoloAlkaa;
-    private Date siirtymaPaattyy;
-    private Date voimassaoloLoppuu;
-    private Date muokattu;
-    private String tila;
-    private String tyyppi;
-    private Set<String> korvattavatDiaarinumerot;
 }

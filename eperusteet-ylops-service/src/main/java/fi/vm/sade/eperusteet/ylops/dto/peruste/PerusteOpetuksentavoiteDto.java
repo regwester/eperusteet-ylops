@@ -13,12 +13,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,10 +30,16 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminen implements ReferenceableDto {
+public class PerusteOpetuksentavoiteDto implements ReferenceableDto {
     private Long id;
+    private UUID tunniste;
+    private LokalisoituTekstiDto tavoite;
     @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty("_laajaalainenosaaminen")
-    private PerusteLaajaalainenosaaminen laajaalainenOsaaminen;
-    private LokalisoituTekstiDto kuvaus;
+    private Set<PerusteKeskeinensisaltoalueDto> sisaltoalueet;
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("laajaalaisetosaamiset")
+    private Set<PerusteLaajaalainenosaaminenDto> laajattavoitteet;
+    @JsonIdentityReference(alwaysAsId = true)
+    private Set<PerusteOpetuksenkohdealueDto> kohdealueet;
+    private Set<PerusteTavoitteenArviointiDto> arvioinninkohteet;
 }

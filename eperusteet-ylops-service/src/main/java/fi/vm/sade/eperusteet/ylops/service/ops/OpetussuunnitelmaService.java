@@ -17,10 +17,9 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
@@ -39,7 +38,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    Set<PerusteLaajaalainenosaaminen> getLaajaalaisetosaamiset(@P("opsId") Long id);
+    Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(null, 'tarkastelu', 'HALLINTA') ||" +
         "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and (hasPermission(null, 'opetussuunnitelma', 'LUKU'))) || " +
@@ -101,5 +100,5 @@ public interface OpetussuunnitelmaService {
      * @return Peruste
      */
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public Peruste getPeruste(@P("opsId") Long opsId);
+    public PerusteDto getPeruste(@P("opsId") Long opsId);
 }

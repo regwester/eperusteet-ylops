@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import fi.vm.sade.eperusteet.ylops.service.util.Nulls;
 import java.io.Serializable;
@@ -31,14 +31,14 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusopetuksenPerusteenSisalto implements Serializable {
+public class PerusopetuksenPerusteenSisaltoDto implements Serializable {
 
-    private PerusteTekstiKappaleViite sisalto;
-    private Set<PerusteLaajaalainenosaaminen> laajaalaisetosaamiset;
-    private Set<PerusteVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
-    private Set<PerusteOppiaine> oppiaineet;
+    private PerusteTekstiKappaleViiteDto sisalto;
+    private Set<PerusteLaajaalainenosaaminenDto> laajaalaisetosaamiset;
+    private Set<PerusteVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
+    private Set<PerusteOppiaineDto> oppiaineet;
 
-    public Optional<PerusteOppiaine> getOppiaine(UUID tunniste) {
+    public Optional<PerusteOppiaineDto> getOppiaine(UUID tunniste) {
         return oppiaineet.stream()
             .flatMap(oa -> Stream.concat(Stream.of(oa), Nulls.nullToEmpty(oa.getOppimaarat()).stream()))
             .filter(oa -> Objects.equals(oa.getTunniste(), tunniste))

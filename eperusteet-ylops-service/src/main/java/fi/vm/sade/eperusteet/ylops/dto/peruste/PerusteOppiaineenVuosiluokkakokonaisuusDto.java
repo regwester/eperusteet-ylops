@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.domain.peruste;
+package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,26 +33,26 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusteOppiaineenVuosiluokkakokonaisuus implements ReferenceableDto {
+public class PerusteOppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
 
     private Long id;
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("_vuosiluokkakokonaisuus")
-    private PerusteVuosiluokkakokonaisuus vuosiluokkaKokonaisuus;
-    private PerusteTekstiOsa tehtava;
-    private PerusteTekstiOsa tyotavat;
-    private PerusteTekstiOsa ohjaus;
-    private PerusteTekstiOsa arviointi;
-    private PerusteTekstiOsa sisaltoalueinfo;
-    private List<PerusteOpetuksentavoite> tavoitteet;
-    private List<PerusteKeskeinensisaltoalue> sisaltoalueet;
+    private PerusteVuosiluokkakokonaisuusDto vuosiluokkaKokonaisuus;
+    private PerusteTekstiOsaDto tehtava;
+    private PerusteTekstiOsaDto tyotavat;
+    private PerusteTekstiOsaDto ohjaus;
+    private PerusteTekstiOsaDto arviointi;
+    private PerusteTekstiOsaDto sisaltoalueinfo;
+    private List<PerusteOpetuksentavoiteDto> tavoitteet;
+    private List<PerusteKeskeinensisaltoalueDto> sisaltoalueet;
 
     public Set<Vuosiluokka> getVuosiluokat() {
         return vuosiluokkaKokonaisuus.getVuosiluokat();
     }
 
     @JsonIgnore
-    public Optional<PerusteOpetuksentavoite> getTavoite(UUID tunniste) {
+    public Optional<PerusteOpetuksentavoiteDto> getTavoite(UUID tunniste) {
         return tavoitteet.stream()
             .filter(t -> t.getTunniste().equals(tunniste))
             .findAny();
