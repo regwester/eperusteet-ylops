@@ -81,6 +81,7 @@ ylopsApp
   $scope.lukkotiedot = null;
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
+  $scope.startEditing = function() { Editointikontrollit.startEditing(); };
 
   var commonParams = $scope.oppiaineenVlk ? {
     opsId: $stateParams.id,
@@ -236,7 +237,8 @@ ylopsApp
       OppiaineService.saveVlk($scope.oppiaineenVlk);
     },
     cancel: function () {
-      refetch();
+      //refetch();
+      $state.reload();
     },
     notify: function (mode) {
       $scope.options.editing = mode;

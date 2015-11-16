@@ -7,13 +7,17 @@
   <button ng-if="!oppiaine.oma && !oppiaine.$parent" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'" icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
 </div>
 <div ng-if="isEditable() && oppiaine.oma" class="action-buttons-inline">
+  <button ng-if="$onKieliTaiUskonto" ng-hide="options.editing" class="btn btn-default" ng-click="startEditing()" icon-role="edit" kaanna="'muuta-nimea'"
+          oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="valitseOppimaara" class="btn btn-default" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="$onKieliTaiUskonto" class="btn btn-default" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
 </div>
 
-<h2 ng-bind="oppiaine.nimi | kaanna"></h2>
+<h2 ng-hide="options.editing && $onKieliTaiUskonto" ng-bind="oppiaine.nimi | kaanna"></h2>
+<input ng-show="options.editing && $onKieliTaiUskonto" class="form-control" slocalized ng-model="oppiaine.nimi"></input>
+
 <p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>
 
 <div ng-show="$onKieliTaiUskonto" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
