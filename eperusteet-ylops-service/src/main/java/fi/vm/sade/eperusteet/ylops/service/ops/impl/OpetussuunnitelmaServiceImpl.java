@@ -311,7 +311,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
         ops.setCachedPeruste(ops.getCachedPeruste());
         if (ops.getCachedPeruste() == null) {
-            PerusteDto peruste = eperusteetService.getPerusteUpdateCache(ops.getPerusteenDiaarinumero());
+            PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
             ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
         }
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
@@ -477,7 +477,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (StringUtils.isBlank(diaarinumero)) {
             throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei ole määritelty");
         } else if (eperusteetService.findPerusteet().stream()
-            .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
+                .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
             throw new BusinessRuleViolationException("Diaarinumerolla " + diaarinumero +
                  " ei löydy voimassaolevaa perustetta");
         }

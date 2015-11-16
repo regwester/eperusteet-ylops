@@ -96,14 +96,25 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public List<PerusteInfoDto> findPerusteet() {
-        return findPerusteet(getKoulutuskoodit());
+        return findPerusteet(getKoulutuskoodit(), false);
+    }
+
+    private List<PerusteInfoDto> findPerusteet(boolean forceRefresh) {
+        return findPerusteet(getKoulutuskoodit(), forceRefresh);
     }
 
     @Override
     public List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit) {
+        return findPerusteet(tyypit, false);
+    }
+
+    private List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit, boolean forceRefresh) {
         try {
             return updateMissingToCache(findPerusteetFromEperusteService(tyypit), tyypit);
         } catch (Exception e) {
+            if (forceRefresh) {
+                throw e;
+            }
             logger.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
                     + " Trying from DB-cache.", e);
             return perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
@@ -159,14 +170,18 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Cacheable("perusteet")
     @Transactional
     public PerusteDto getEperusteetPeruste(final Long id) {
-        EperusteetPerusteDto peruste = getNewestPeruste(id);
+        return getEperusteetPeruste(id, false);
+    }
+
+    private PerusteDto getEperusteetPeruste(final Long id, boolean forceRefresh) {
+        EperusteetPerusteDto peruste = getNewestPeruste(id, forceRefresh);
         if (peruste == null || !getKoulutuskoodit().contains(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Perustetta ei löytynyt tai se ei ole perusopetuksen peruste");
         }
         return mapper.map(peruste, PerusteDto.class);
     }
 
-    private EperusteetPerusteDto getNewestPeruste(final long id) {
+    private EperusteetPerusteDto getNewestPeruste(final long id, boolean forceRefresh) {
         try {
             EperusteetPerusteDto peruste = client.getForObject(eperusteetServiceUrl
                     + "/api/perusteet/{id}/kaikki", EperusteetPerusteDto.class, id);
@@ -177,6 +192,9 @@ public class EperusteetServiceImpl implements EperusteetService {
             }
             return peruste;
         } catch (Exception e) {
+            if (forceRefresh) {
+                throw e;
+            }
             logger.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
                     + " Trying from DB-cache.", e);
             PerusteCache found = perusteCacheRepository.findNewestEntryForPeruste(id);
@@ -216,23 +234,23 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Cacheable("perusteet")
     @Transactional
     public PerusteDto getPeruste(String diaarinumero) {
-        return getPerusteByDiaari(diaarinumero);
+        return getPerusteByDiaari(diaarinumero, false);
     }
 
     @Override
     @CachePut("perusteet")
     @Transactional
     public PerusteDto getPerusteUpdateCache(String diaarinumero) {
-        return getPerusteByDiaari(diaarinumero);
+        return getPerusteByDiaari(diaarinumero, true);
     }
 
-    private PerusteDto getPerusteByDiaari (String diaarinumero) {
-        PerusteInfoDto perusteInfoDto = findPerusteet().stream()
+    private PerusteDto getPerusteByDiaari (String diaarinumero, boolean forceRefresh) {
+        PerusteInfoDto perusteInfoDto = findPerusteet(forceRefresh).stream()
             .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
             .findAny()
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
 
-        return getEperusteetPeruste(perusteInfoDto.getId());
+        return getEperusteetPeruste(perusteInfoDto.getId(), forceRefresh);
     }
 
     @Override
