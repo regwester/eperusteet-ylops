@@ -40,7 +40,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisalto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -402,7 +402,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
         Long opsId = ops.getId();
 
-        LukiokoulutuksenPerusteenSisalto sisalto = peruste.getLukiokoulutus();
+        LukiokoulutuksenPerusteenSisaltoDto sisalto = peruste.getLukiokoulutus();
         /*
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {

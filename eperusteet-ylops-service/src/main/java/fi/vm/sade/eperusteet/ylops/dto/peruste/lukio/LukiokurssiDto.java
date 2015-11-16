@@ -16,7 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.peruste.KurssiDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsa;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,11 +26,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LukiokurssiDto extends KurssiDto {
-
     private LukiokurssiTyyppi tyyppi;
     private LukioOpetussuunnitelmaRakenneDto opetussuunnitelma;
-    private PerusteTekstiOsa tavoitteet;
-    private PerusteTekstiOsa keskeinenSisalto;
-    private PerusteTekstiOsa tavoitteetJaKeskeinenSisalto;
-
+    private PerusteTekstiOsaDto tavoitteet;
+    private PerusteTekstiOsaDto keskeinenSisalto;
+    private PerusteTekstiOsaDto tavoitteetJaKeskeinenSisalto;
 }

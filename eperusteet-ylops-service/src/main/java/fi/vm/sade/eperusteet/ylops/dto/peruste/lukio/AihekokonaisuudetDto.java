@@ -29,12 +29,10 @@ import java.util.UUID;
 @Getter
 @Setter
 public class AihekokonaisuudetDto implements Serializable {
-
     private UUID uuidTunniste;
     private Long id;
     private LokalisoituTekstiDto otsikko;
     private LokalisoituTekstiDto yleiskuvaus;
-    private LukiokoulutuksenPerusteenSisalto sisalto;
-    private Set<Aihekokonaisuus> aihekokonaisuudet;
-
+    private LukiokoulutuksenPerusteenSisaltoDto sisalto;
+    private Set<AihekokonaisuusDto> aihekokonaisuudet;
 }

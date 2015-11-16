@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsa;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +29,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class LukioPerusteOppiaineDto {
-
     private Long id;
     private UUID tunniste;
     private String koodiUri;
@@ -41,11 +40,9 @@ public class LukioPerusteOppiaineDto {
     private LokalisoituTekstiDto pakollinenKurssiKuvaus;
     private LokalisoituTekstiDto syventavaKurssiKuvaus;
     private LokalisoituTekstiDto soveltavaKurssiKuvaus;
-    private PerusteTekstiOsa tehtava;
-    private PerusteTekstiOsa tavoitteet;
-    private PerusteTekstiOsa arviointi;
-
+    private PerusteTekstiOsaDto tehtava;
+    private PerusteTekstiOsaDto tavoitteet;
+    private PerusteTekstiOsaDto arviointi;
     private Set<LukioPerusteOppiaineDto> oppimaarat;
-    private Set<Lukiokurssi> kurssit;
-
+    private Set<LukiokurssiDto> kurssit;
 }

@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappale;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +12,6 @@ import java.util.List;
 @Setter
 public class LukioPerusteTekstikappaleViiteDto {
     private Long id;
-    private LukioPerusteenOsa perusteenOsa;
+    private LukioPerusteenOsaDto perusteenOsa;
     private List<LukioPerusteTekstikappaleViiteDto> lapset;
 }

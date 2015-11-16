@@ -27,10 +27,8 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class LukiokoulutuksenPerusteenSisaltoDto implements Serializable {
-
     private LukioPerusteSisaltoDto sisalto;
     private LukioOpetussuunnitelmaRakenneDto rakenne;
     private AihekokonaisuudetDto aihekokonaisuudet;
     private OpetuksenYleisetTavoitteetDto opetuksenYleisetTavoitteet;
-
 }

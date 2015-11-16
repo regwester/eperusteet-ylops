@@ -28,11 +28,9 @@ import java.util.UUID;
 @Getter
 @Setter
 public class AihekokonaisuusDto implements Serializable {
-
     private UUID tunniste;
     private Long id;
     private LokalisoituTekstiDto otsikko;
     private LokalisoituTekstiDto yleiskuvaus;
     private Long jnro;
-
 }

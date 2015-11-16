@@ -15,7 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisalto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,5 +29,5 @@ import lombok.Setter;
 public class PerusteDto extends PerusteBaseDto {
     private PerusteVersionDto globalVersion;
     private PerusopetuksenPerusteenSisaltoDto perusopetus;
-    private LukiokoulutuksenPerusteenSisalto lukiokoulutus;
+    private LukiokoulutuksenPerusteenSisaltoDto lukiokoulutus;
 }
