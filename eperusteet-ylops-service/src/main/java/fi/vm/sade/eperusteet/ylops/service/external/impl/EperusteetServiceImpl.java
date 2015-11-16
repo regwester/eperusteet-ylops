@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -37,7 +36,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -66,6 +64,8 @@ public class EperusteetServiceImpl implements EperusteetService {
     private String eperusteetServiceUrl;
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
     private String koulutustyyppiPerusopetus;
+    @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_lukiokoilutus:koulutustyyppi_2}")
+    private String koulutustyyppiLukiokoulutus;
     // feature that could be used to populate data and turned off after all existing
     // perusteet in the environment has been synced:
     @Value("${fi.vm.sade.eperusteet.ylops.update-peruste-cache-for-all-missing:false}")
@@ -147,15 +147,12 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
-        PerusteInfoWrapperDto wrapperDto
-            = client.getForObject(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
-                                  PerusteInfoWrapperDto.class, koulutustyyppiPerusopetus, 100);
+        return findPerusteet(new HashSet<>(singletonList(KoulutusTyyppi.PERUSOPETUS)));
+    }
 
-        // Filtteröi pois perusteet jotka eivät enää ole voimassa
-        Date now = new Date();
-        return wrapperDto.getData().stream()
-            .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
-            .collect(Collectors.toList());
+    @Override
+    public List<PerusteInfoDto> findLukiokoulutusPerusteet() {
+        return findPerusteet(new HashSet<>(singletonList(KoulutusTyyppi.LUKIOKOULUTUS)));
     }
 
     @Override

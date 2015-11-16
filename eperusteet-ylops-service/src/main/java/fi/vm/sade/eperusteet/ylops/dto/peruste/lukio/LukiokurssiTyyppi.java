@@ -13,21 +13,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.peruste;
-
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisalto;
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
-import lombok.Getter;
-import lombok.Setter;
+package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
 /**
- *
- * @author nkala
+ * User: jsikio
  */
-@Getter
-@Setter
-public class PerusteDto extends PerusteBaseDto {
-    private PerusteVersionDto globalVersion;
-    private PerusopetuksenPerusteenSisaltoDto perusopetus;
-    private LukiokoulutuksenPerusteenSisalto lukiokoulutus;
+public enum LukiokurssiTyyppi {
+    PAKOLLINEN,
+    VALTAKUNNALLINEN_SYVENTAVA,
+    VALTAKUNNALLINEN_SOVELTAVA;
 }

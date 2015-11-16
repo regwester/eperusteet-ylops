@@ -13,31 +13,39 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
-package fi.vm.sade.eperusteet.ylops.dto.peruste;
-
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsa;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.util.Date;
-
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+import java.util.UUID;
+
 /**
- *
- * @author nkala
+ * Created by jsikio.
  */
 @Getter
 @Setter
-public class PerusteInfoDto {
+public class LukioPerusteOppiaineDto {
+
     private Long id;
-    private PerusteVersionDto globalVersion;
+    private UUID tunniste;
+    private String koodiUri;
+    private String koodiArvo;
+    private Boolean koosteinen;
+    private Integer jarjestys;
+    private Boolean abstrakti;
     private LokalisoituTekstiDto nimi;
-    private String diaarinumero;
-    private Date voimassaoloAlkaa;
-    private Date voimassaoloLoppuu;
-    private Date muokattu;
-    private String tila;
-    private KoulutusTyyppi koulutustyyppi;
+    private LokalisoituTekstiDto pakollinenKurssiKuvaus;
+    private LokalisoituTekstiDto syventavaKurssiKuvaus;
+    private LokalisoituTekstiDto soveltavaKurssiKuvaus;
+    private PerusteTekstiOsa tehtava;
+    private PerusteTekstiOsa tavoitteet;
+    private PerusteTekstiOsa arviointi;
+
+    private Set<LukioPerusteOppiaineDto> oppimaarat;
+    private Set<Lukiokurssi> kurssit;
+
 }

@@ -15,19 +15,25 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisalto;
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.Set;
+import java.util.UUID;
+
 /**
- *
- * @author nkala
+ * User: jsikio
  */
 @Getter
 @Setter
-public class PerusteDto extends PerusteBaseDto {
-    private PerusteVersionDto globalVersion;
-    private PerusopetuksenPerusteenSisaltoDto perusopetus;
-    private LukiokoulutuksenPerusteenSisalto lukiokoulutus;
+public class KurssiDto implements Serializable {
+    private long id;
+    private UUID tunniste;
+    protected LokalisoituTekstiDto nimi;
+    protected LokalisoituTekstiDto kuvaus;
+    protected String koodiUri;
+    protected String koodiArvo;
+    protected LokalisoituTekstiDto lokalisoituKoodi;
 }

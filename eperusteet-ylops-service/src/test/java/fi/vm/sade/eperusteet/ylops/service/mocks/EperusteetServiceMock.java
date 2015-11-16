@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
  * @author nkala
  */
 @Service
+@SuppressWarnings("TransactionalAnnotations")
 public class EperusteetServiceMock implements EperusteetService {
 
     public static final String DIAARINUMERO = "mock-diaarinumero";
@@ -63,6 +64,13 @@ public class EperusteetServiceMock implements EperusteetService {
 
     @Override
     public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
+        PerusteInfoDto perusteInfo = new PerusteInfoDto();
+        perusteInfo.setDiaarinumero(DIAARINUMERO);
+        return Collections.singletonList(perusteInfo);
+    }
+
+    @Override
+    public List<PerusteInfoDto> findLukiokoulutusPerusteet() {
         PerusteInfoDto perusteInfo = new PerusteInfoDto();
         perusteInfo.setDiaarinumero(DIAARINUMERO);
         return Collections.singletonList(perusteInfo);

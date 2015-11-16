@@ -26,10 +26,6 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonais
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
@@ -39,12 +35,12 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisalto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -69,29 +65,19 @@ import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -374,11 +360,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private Opetussuunnitelma addPohjaLukiokoulutus(Opetussuunnitelma ops, PerusteDto peruste) {
-        ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
-        return ops;
-    }
-
     private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, PerusteDto peruste) {
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
         return ops;
@@ -417,6 +398,41 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return ops;
     }
 
+    private Opetussuunnitelma addPohjaLukiokoulutus(Opetussuunnitelma ops, PerusteDto peruste) {
+        ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
+        Long opsId = ops.getId();
+
+        LukiokoulutuksenPerusteenSisalto sisalto = peruste.getLukiokoulutus();
+        /*
+
+        if (sisalto.getVuosiluokkakokonaisuudet() != null) {
+            sisalto.getVuosiluokkakokonaisuudet()
+                    .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
+                            new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
+
+            if (sisalto.getOppiaineet() != null) {
+                sisalto.getOppiaineet().stream()
+                        .map(OpsDtoMapper::fromEperusteet)
+                        .forEach(oa -> oppiaineService.add(opsId, oa));
+            }
+
+            sisalto.getVuosiluokkakokonaisuudet().stream()
+                    .map(OpsDtoMapper::fromEperusteet)
+                    .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
+        }
+
+        // Alustetaan järjestys ePerusteista saatuun järjestykseen
+        Integer idx = 0;
+        for (OpsOppiaine oa : ops.getOppiaineet()) {
+            for (Oppiaineenvuosiluokkakokonaisuus oavlk : oa.getOppiaine().getVuosiluokkakokonaisuudet()) {
+                oavlk.setJnro(idx);
+            }
+            ++idx;
+        }
+*/
+        return ops;
+    }
+
     @Override
     public void syncPohja(Long pohjaId) {
         Opetussuunnitelma pohja = repository.findOne(pohjaId);
@@ -435,12 +451,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private Opetussuunnitelma lisaaPerusteenSisalto(Opetussuunnitelma ops, PerusteDto peruste) {
         if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
             return addPohjaPerusopetus(ops, peruste);
-        } else if (KoulutusTyyppi.LUKIOKOULUTUS == peruste.getKoulutustyyppi()) {
-            return addPohjaLukiokoulutus(ops, peruste);
         } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.VARHAISKASVATUS == peruste.getKoulutustyyppi()) {
             return addPohjaLisaJaEsiopetus(ops, peruste);
+        } else if (KoulutusTyyppi.LUKIOKOULUTUS == peruste.getKoulutustyyppi()) {
+            return addPohjaLukiokoulutus(ops, peruste);
         } else {
             throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
         }
