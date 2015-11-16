@@ -19,7 +19,7 @@
 ylopsApp
 .service('Oikeudet', function($http, $q, $rootScope, $window, Kayttaja) {
   var isVirkailija = false;
-  var info = {};
+  var info: any = {};
   var GROUP = 'APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001';
 
   this.setVirkailija = function (value) {

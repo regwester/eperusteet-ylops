@@ -59,7 +59,7 @@ ylopsApp
     var originalOtsikko = null;
     var originalTekstiKappale = null;
 
-    function fetchOhje(model, cb) {
+    function fetchOhje(model, cb = _.noop) {
       OhjeCRUD.forTekstikappale({
         uuid: model.tekstiKappale.tunniste
       }, function(ohje) {
@@ -71,7 +71,7 @@ ylopsApp
             $scope[tyyppi] = found;
           }
         });
-        (cb || angular.noop)();
+        cb();
       });
     }
 
@@ -164,7 +164,7 @@ ylopsApp
       } else {
         var navigaatiomuutos = !_.isEqual(originalOtsikko, _.omit(res.tekstiKappale.nimi, '$$validointi')) ||
           res.tekstiKappale.valmis !== originalTekstiKappale.valmis;
-        Lukko.unlock(commonParams, function () {
+          Lukko.unlock(commonParams, function () {
           $scope.lukkotiedot = null;
           if (navigaatiomuutos) {
             $state.transitionTo($state.current, $stateParams, { reload: true, inherit: true });

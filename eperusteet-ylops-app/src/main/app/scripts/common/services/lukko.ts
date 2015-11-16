@@ -52,10 +52,7 @@ ylopsApp
     }, Editointikontrollit.cancelEditing);
   }
 
-  function doLock(resource, params, cb, failCb) {
-    cb = cb || angular.noop;
-    failCb = failCb || angular.noop;
-
+  function doLock(resource, params, cb = _.noop, failCb = _.noop) {
     resource.save(params, {}, function(res, headers) {
       if (etag && headers().etag !== etag && Editointikontrollit.getEditMode()) {
         muuttunutModal(headers());

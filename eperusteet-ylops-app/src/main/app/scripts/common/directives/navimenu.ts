@@ -152,7 +152,7 @@ ylopsApp
     return !!item.active;
   }
 
-  function updateModel(items, doUncollapse) {
+  function updateModel(items, doUncollapse?) {
     if (!items) {
       return;
     }

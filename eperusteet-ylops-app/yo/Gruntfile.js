@@ -7,7 +7,6 @@ var mountFolder = function(connect, dir) {
 var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
 
-
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-connect-proxy');
   grunt.loadNpmTasks('grunt-angular-templates');
@@ -21,6 +20,9 @@ module.exports = function(grunt) {
     test: '../src/test/js'
   };
 
+  var tsconfig = require(yeomanConfig.app + '/tsconfig.json');
+  console.log(tsconfig.files);
+
   try {
     yeomanConfig.app = require('./bower.json').appPath || yeomanConfig.app;
   } catch (e) {
@@ -29,6 +31,16 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     yeoman: yeomanConfig,
+    ts: {
+      options: {
+        module: '',
+        target: 'es5',
+        sourceMap: true
+      },
+      files: tsconfig.files.map(function(file) {
+        return yeomanConfig.app + '/' + file;
+      })
+    },
     focus: {
       dev: {
         exclude: ['test']
@@ -456,6 +468,7 @@ module.exports = function(grunt) {
   grunt.registerTask('dev', devTask(true));
 
   grunt.registerTask('test', [
+    'ts',
     'clean:server',
     'copy:fonts', // needed if testing while "grunt dev" is running :)
     'concurrent:test',
@@ -468,6 +481,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'ts',
     'clean:dist',
     'useminPrepare',
     'concurrent:dist',

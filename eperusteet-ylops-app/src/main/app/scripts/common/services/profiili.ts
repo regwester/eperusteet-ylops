@@ -18,7 +18,7 @@
 'use strict';
 
 ylopsApp.service('Profiili', function($http, $q) {
-    var info = {};
+    var info: any = {};
 
     var prom = $q.defer();
     info.fetchPromise = prom.promise;

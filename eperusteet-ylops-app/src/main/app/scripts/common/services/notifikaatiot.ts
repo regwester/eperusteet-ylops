@@ -35,7 +35,7 @@ ylopsApp.controller('JarjestelmaVirheModalController', function ($scope, $modalI
       }, NOTIFICATION_DELAY_SUCCESS);
     }
 
-    var uusiViesti = function (tyyppi, viesti, ilmanKuvaa) {
+    var uusiViesti = function (tyyppi, viesti, ilmanKuvaa?) {
       if (_.isObject(viesti) && viesti.data && viesti.data.syy) {
         viesti = viesti.data.syy;
       }

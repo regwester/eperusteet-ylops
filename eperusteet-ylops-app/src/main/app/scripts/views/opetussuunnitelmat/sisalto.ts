@@ -41,7 +41,7 @@ ylopsApp
   }
 
   function lisaa(parent, opsId, uusi, cb) {
-    var newNode = {tekstiKappale: { nimi: angular.copy(uusi) }, lapset: []};
+    var newNode: any = {tekstiKappale: { nimi: angular.copy(uusi) }, lapset: []};
 
     OpetussuunnitelmanTekstit.setChild({
       parentId: parent.id,

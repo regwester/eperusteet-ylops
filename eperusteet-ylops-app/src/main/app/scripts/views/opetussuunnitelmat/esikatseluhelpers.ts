@@ -64,7 +64,7 @@ ylopsApp
     return parent;
   }
 
-  function openTree(tree, originIndex, force, toggle) {
+  function openTree(tree, originIndex, force?, toggle?) {
     var childIndex = originIndex + 1;
     while (childIndex < tree.length && tree[childIndex].depth > tree[originIndex].depth) {
       if (tree[childIndex].depth === 1 || force) {

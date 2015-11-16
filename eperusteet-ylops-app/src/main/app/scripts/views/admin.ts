@@ -57,7 +57,7 @@ ylopsApp
   }
 
   function generoiStatsit(items) {
-    var statsit = {};
+    var statsit: any = {};
     statsit.maaratKielittain = _.reduce(items, function(acc, item) {
       _.each(item.julkaisukielet, function(jk) {
         acc[jk] = _.isNumber(acc[jk]) ? acc[jk] + 1 : 0;
