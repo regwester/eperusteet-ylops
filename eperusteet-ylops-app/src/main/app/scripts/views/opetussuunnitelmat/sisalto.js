@@ -314,7 +314,7 @@ ylopsApp
   $scope.paivitaRakenne = function() {
     OpetussuunnitelmaCRUD.opetussuunnitelmatSync({
       id: ops.id
-    }).$promise.then(function(res) {
+    }).$promise.then(function() {
     })
     .catch(function(err) {
       console.warn(err);
