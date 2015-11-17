@@ -404,9 +404,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
 
         LukiokoulutuksenPerusteenSisaltoDto lukioSisalto = peruste.getLukiokoulutus();
-        importLukioRakenne(lukioSisalto.getRakenne(), ops);
-        importAihekokonaisuudet(lukioSisalto.getAihekokonaisuudet(), ops);
-        importYleisetTavoitteet(lukioSisalto.getOpetuksenYleisetTavoitteet(), ops);
+        if (lukioSisalto == null) {
+            throw new IllegalStateException("Lukiokoutuksen sisältöä ei löytynyt.");
+        }
+        if (lukioSisalto.getRakenne() != null) {
+            importLukioRakenne(lukioSisalto.getRakenne(), ops);
+        }
+        if (lukioSisalto.getAihekokonaisuudet() != null) {
+            importAihekokonaisuudet(lukioSisalto.getAihekokonaisuudet(), ops);
+        }
+        if (lukioSisalto.getOpetuksenYleisetTavoitteet() != null) {
+            importYleisetTavoitteet(lukioSisalto.getOpetuksenYleisetTavoitteet(), ops);
+        }
         return ops;
     }
 

@@ -23,9 +23,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.Kurssi;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -157,6 +155,18 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Audited
     @OneToMany(mappedBy = "opetussuunnitelma", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Kurssi> kurssit = new HashSet<>(0);
+
+    @Getter
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private Aihekokonaisuudet aihekokonaisuudet;
+
+    @Getter
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private OpetuksenYleisetTavoitteet opetuksenYleisetTavoitteet;
 
 
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {

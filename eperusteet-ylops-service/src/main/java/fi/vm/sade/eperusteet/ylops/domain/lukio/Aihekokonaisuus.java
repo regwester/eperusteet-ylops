@@ -13,11 +13,9 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  European Union Public Licence for more details.
  */
-
 package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
@@ -27,55 +25,39 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-/**
- * User: tommiratamaa
- * Date: 17.11.2015
- * Time: 14.02
- */
 @Entity
-@Table(name = "kurssi", schema = "public")
 @Audited
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Kurssi extends AbstractAuditedReferenceableEntity {
-
+@Table(name = "aihekokonaisuus", schema = "public")
+public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity {
+    @Column(nullable = false, unique = true, updatable = false)
     @Getter
     @Setter
-    @Column(nullable = false, unique = true, updatable = false)
     private UUID tunniste;
 
     @Getter
     @Setter
-    @NotNull
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ValidHtml(whitelist = WhitelistType.MINIMAL)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "nimi_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "otsikko_id", nullable = true)
+    private LokalisoituTeksti otsikko;
+
+    @Getter
+    @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    protected LokalisoituTeksti nimi;
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "yleiskuvaus_id")
+    private LokalisoituTeksti yleiskuvaus;
 
     @Getter
     @Setter
-    @ValidHtml
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "kuvaus_id")
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    protected LokalisoituTeksti kuvaus;
+    private Long jnro;
 
     @Getter
     @Setter
-    @Column(name = "koodi_uri")
-    protected String koodiUri;
-
-    @Getter
-    @Setter
-    @Column(name = "koodi_arvo")
-    protected String koodiArvo;
-
-    @Getter
-    @Setter
-    @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Opetussuunnitelma opetussuunnitelma;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinColumn(name = "aihekokonaisuudet_id", nullable = false)
+    private Aihekokonaisuudet aihekokonaisuudet;
 }
