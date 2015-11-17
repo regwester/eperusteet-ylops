@@ -24,18 +24,20 @@ ylopsApp
   var oppiaine = null;
   var opetussuunnitelma = null;
 
-  function setup(ops, vlkId, oppiaineModel, promise) {
-    opetussuunnitelma = ops;
-    oppiaine = oppiaineModel;
-    MurupolkuData.set('oppiaineNimi', oppiaine.nimi);
-    var opsVlk = _.find(ops.vuosiluokkakokonaisuudet, function (vlk) {
-      return '' + vlk.vuosiluokkakokonaisuus.id === vlkId;
+  function setup(ops, vlkId, oppiaineModel) {
+    return $q((resolve, reject) => {
+      opetussuunnitelma = ops;
+      oppiaine = oppiaineModel;
+      MurupolkuData.set('oppiaineNimi', oppiaine.nimi);
+      var opsVlk = _.find(ops.vuosiluokkakokonaisuudet, function (vlk) {
+        return '' + vlk.vuosiluokkakokonaisuus.id === vlkId;
+      });
+      vlkTunniste = opsVlk ? opsVlk.vuosiluokkakokonaisuus._tunniste : null;
+      oppiaineenVlk = _.find(oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
+        return opVlk._vuosiluokkakokonaisuus === vlkTunniste;
+      });
+      resolve();
     });
-    vlkTunniste = opsVlk ? opsVlk.vuosiluokkakokonaisuus._tunniste : null;
-    oppiaineenVlk = _.find(oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
-      return opVlk._vuosiluokkakokonaisuus === vlkTunniste;
-    });
-    promise.resolve();
   }
 
   this.getParent = function() {
@@ -45,12 +47,14 @@ ylopsApp
     }).$promise;
   };
   this.refresh = function (ops, oppiaineId, vlkId) {
-    var promise = $q.defer();
-    VuosiluokatService.getOppiaine(oppiaineId).$promise.then(function (res) {
-      setup(ops, vlkId, res, promise);
-      $rootScope.$broadcast('oppiainevlk:updated', oppiaineenVlk);
+    return $q((resolve, reject) => {
+      VuosiluokatService.getOppiaine(oppiaineId).$promise
+        .then(function (res) {
+          setup(ops, vlkId, res).then(resolve);
+          $rootScope.$broadcast('oppiainevlk:updated', oppiaineenVlk);
+        })
+        .catch(reject);
     });
-    return promise.promise;
   };
   this.getOpVlk = function () {
     return oppiaineenVlk;
@@ -68,11 +72,11 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   };
   this.fetchVlk = function (vlkId, cb) {
-    OppiaineenVlk.get({
+    return OppiaineenVlk.get({
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id,
       vlkId: vlkId
-    }, cb, Notifikaatiot.serverCb);
+    }, cb, Notifikaatiot.serverCb).$promise;
   };
   this.saveVuosiluokka = function (model, cb) {
     VuosiluokkaCRUD.save({

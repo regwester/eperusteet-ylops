@@ -65,19 +65,20 @@ module.exports = function(grunt) {
         tasks: ['sass', 'copy:fonts', 'autoprefixer'],
       },
       test: {
-        files: ['<%= yeoman.app %>/**/*.{js,html}', '<%= yeoman.test %>/**/*.js','!<%= yeoman.app %>/bower_components/**'],
-        tasks: ['karma:unit', 'regex-check']
+        files: ['<%= yeoman.app %>/**/*.{ts,html}', '<%= yeoman.test %>/**/*.ts','!<%= yeoman.app %>/bower_components/**'],
+        tasks: ['ts', 'karma:unit', 'regex-check']
       },
       livereload: {
         options: {
           livereload: LIVERELOAD_PORT,
           open: false
         },
+        tasks: ['ts'],
         files: [
-          '<%= yeoman.app %>/**/*.{html,js}',
+          '<%= yeoman.app %>/**/*.{html,ts}',
           '!<%= yeoman.app %>/bower_components/**',
           '.tmp/styles/**/*.css',
-          '{.tmp,<%= yeoman.app %>}/scripts/**/*.js',
+          '{.tmp,<%= yeoman.app %>}/scripts/**/*.ts',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
