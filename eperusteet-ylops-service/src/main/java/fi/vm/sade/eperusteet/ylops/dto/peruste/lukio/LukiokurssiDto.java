@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LukiokurssiDto extends KurssiDto {
-    private LukiokurssiTyyppi tyyppi;
+    private PerusteenLukiokurssiTyyppi tyyppi;
     private LukioOpetussuunnitelmaRakenneDto opetussuunnitelma;
     private PerusteTekstiOsaDto tavoitteet;
     private PerusteTekstiOsaDto keskeinenSisalto;

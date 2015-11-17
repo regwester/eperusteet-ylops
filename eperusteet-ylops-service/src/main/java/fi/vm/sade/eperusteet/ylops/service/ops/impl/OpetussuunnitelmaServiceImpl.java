@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -40,7 +41,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -74,6 +75,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -400,37 +402,39 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private Opetussuunnitelma addPohjaLukiokoulutus(Opetussuunnitelma ops, PerusteDto peruste) {
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
-        Long opsId = ops.getId();
 
-        LukiokoulutuksenPerusteenSisaltoDto sisalto = peruste.getLukiokoulutus();
-        /*
-
-        if (sisalto.getVuosiluokkakokonaisuudet() != null) {
-            sisalto.getVuosiluokkakokonaisuudet()
-                    .forEach(vk -> vuosiluokkakokonaisuusviiteRepository.save(
-                            new Vuosiluokkakokonaisuusviite(vk.getTunniste(), vk.getVuosiluokat())));
-
-            if (sisalto.getOppiaineet() != null) {
-                sisalto.getOppiaineet().stream()
-                        .map(OpsDtoMapper::fromEperusteet)
-                        .forEach(oa -> oppiaineService.add(opsId, oa));
-            }
-
-            sisalto.getVuosiluokkakokonaisuudet().stream()
-                    .map(OpsDtoMapper::fromEperusteet)
-                    .forEach(vk -> vuosiluokkakokonaisuudet.add(opsId, vk));
-        }
-
-        // Alustetaan järjestys ePerusteista saatuun järjestykseen
-        Integer idx = 0;
-        for (OpsOppiaine oa : ops.getOppiaineet()) {
-            for (Oppiaineenvuosiluokkakokonaisuus oavlk : oa.getOppiaine().getVuosiluokkakokonaisuudet()) {
-                oavlk.setJnro(idx);
-            }
-            ++idx;
-        }
-*/
+        LukiokoulutuksenPerusteenSisaltoDto lukioSisalto = peruste.getLukiokoulutus();
+        importLukioRakenne(lukioSisalto.getRakenne(), ops);
+        importAihekokonaisuudet(lukioSisalto.getAihekokonaisuudet(), ops);
+        importYleisetTavoitteet(lukioSisalto.getOpetuksenYleisetTavoitteet(), ops);
         return ops;
+    }
+
+    private void importLukioRakenne(LukioOpetussuunnitelmaRakenneDto from, Opetussuunnitelma to) {
+        importOppiaineet(from.getOppiaineet(), oa -> to.getOppiaineet().add(new OpsOppiaine(oa, false)), null);
+    }
+
+    private void importOppiaineet(Collection<LukioPerusteOppiaineDto> from, Consumer<Oppiaine> to, Oppiaine parent) {
+        for (LukioPerusteOppiaineDto oppiaine : from) {
+            if (oppiaine.getAbstrakti() !=null && oppiaine.getAbstrakti()) { // miksi ihmeessä Boolean?
+                continue;
+            }
+            Oppiaine oa = new Oppiaine(oppiaine.getTunniste());
+            oa.setNimi(LokalisoituTeksti.of(oppiaine.getNimi().getTekstit()));
+            oa.setOppiaine(parent);
+            oa.setAbstrakti(false);
+            oa.setKoosteinen(oppiaine.isKoosteinen());
+            oa.setKoodiArvo(oppiaine.getKoodiArvo());
+            oa.setKoodiUri(oppiaine.getKoodiUri());
+            to.accept(oa);
+            importOppiaineet(oppiaine.getOppimaarat(), child -> oa.getOppimaarat().add(child), oa);
+        }
+    }
+
+    private void importAihekokonaisuudet(AihekokonaisuudetDto from, Opetussuunnitelma to) {
+    }
+
+    private void importYleisetTavoitteet(OpetuksenYleisetTavoitteetDto from, Opetussuunnitelma to) {
     }
 
     @Override

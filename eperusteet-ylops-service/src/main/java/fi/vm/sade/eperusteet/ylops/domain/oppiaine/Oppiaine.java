@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
@@ -87,8 +88,71 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
+    @Column(name = "jarjestys")
+    private Integer jarjestys;
+
+    @Getter
+    @Setter
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa tehtava;
+
+    @Getter
+    @Setter
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Tekstiosa tavoitteet;
+
+    @Getter
+    @Setter
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Tekstiosa arvioinnit;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "valtakunnallinen_pakollinen_kuvaus_id", nullable = true)
+    private TekstiKappale valtakunnallinenPakollinenKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "valtakunnallinen_syventava_kuvaus_id", nullable = true)
+    private TekstiKappale valtakunnallinenSyventavaKurssiKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "valtakunnallinen_soveltava_kuvaus_id", nullable = true)
+    private TekstiKappale valtakunnallinenSoveltavaKurssiKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "paikallinen_pakollinen_kuvaus_id", nullable = true)
+    private TekstiKappale paikallinenPakollinenKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "paikallinen_syventava_kuvaus_id", nullable = true)
+    private TekstiKappale paikallinenSyventavaKurssiKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "paikallinen_soveltava_kuvaus_id", nullable = true)
+    private TekstiKappale paikallinenSoveltavaKurssiKuvaus;
 
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY, orphanRemoval = true)
     @NotNull(groups = Strict.class)
@@ -126,6 +190,8 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @NotNull
     @Getter
     private Tila tila = Tila.LUONNOS;
+
+
 
     public Oppiaine(UUID tunniste) {
         this.tunniste = tunniste;
@@ -301,11 +367,9 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
                 || "AI".equalsIgnoreCase(other.koodiArvo));
 
         if (other.isKoosteinen() && copyOppimaarat && other.getOppiaine() == null) {
-            if (copyOppimaarat || other.koodiArvo == null || !isKielijoukko) {
-                other.getOppimaarat().forEach((om -> {
-                    o.addOppimaara(Oppiaine.copyOf(om));
-                }));
-            }
+            other.getOppimaarat().forEach((om -> {
+                o.addOppimaara(Oppiaine.copyOf(om));
+            }));
         }
 
         return o;

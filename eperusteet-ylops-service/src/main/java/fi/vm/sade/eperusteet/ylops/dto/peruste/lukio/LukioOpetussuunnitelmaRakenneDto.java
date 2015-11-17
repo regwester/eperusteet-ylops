@@ -21,6 +21,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * User: jsikio
@@ -28,8 +29,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class LukioOpetussuunnitelmaRakenneDto implements Serializable {
-
     private Long perusteId;
     private Set<LukioPerusteOppiaineDto> oppiaineet;
-
 }

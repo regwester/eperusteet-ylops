@@ -18,7 +18,7 @@ package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 /**
  * User: jsikio
  */
-public enum LukiokurssiTyyppi {
+public enum PerusteenLukiokurssiTyyppi {
     PAKOLLINEN,
     VALTAKUNNALLINEN_SYVENTAVA,
     VALTAKUNNALLINEN_SOVELTAVA;

@@ -22,6 +22,7 @@ import lombok.Setter;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Created by jsikio.
@@ -33,7 +34,7 @@ public class LukioPerusteOppiaineDto {
     private UUID tunniste;
     private String koodiUri;
     private String koodiArvo;
-    private Boolean koosteinen;
+    private boolean koosteinen;
     private Integer jarjestys;
     private Boolean abstrakti;
     private LokalisoituTekstiDto nimi;
