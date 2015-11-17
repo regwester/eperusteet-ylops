@@ -23,6 +23,9 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Kurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -36,24 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -166,6 +152,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @JoinTable(name = "opetussuunnitelma_liite", inverseJoinColumns = {@JoinColumn(name="liite_id")}, joinColumns = {@JoinColumn(name="opetussuunnitelma_id")})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<Liite> liitteet = new HashSet<>();
+
+    @Getter
+    @Audited
+    @OneToMany(mappedBy = "opetussuunnitelma", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Kurssi> kurssit = new HashSet<>(0);
+
 
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));

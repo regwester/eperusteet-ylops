@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
@@ -112,7 +113,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "valtakunnallinen_pakollinen_kuvaus_id", nullable = true)
-    private TekstiKappale valtakunnallinenPakollinenKuvaus;
+    private LokalisoituTeksti valtakunnallinenPakollinenKuvaus;
 
     @Getter
     @Setter
@@ -120,7 +121,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "valtakunnallinen_syventava_kuvaus_id", nullable = true)
-    private TekstiKappale valtakunnallinenSyventavaKurssiKuvaus;
+    private LokalisoituTeksti valtakunnallinenSyventavaKurssiKuvaus;
 
     @Getter
     @Setter
@@ -128,7 +129,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "valtakunnallinen_soveltava_kuvaus_id", nullable = true)
-    private TekstiKappale valtakunnallinenSoveltavaKurssiKuvaus;
+    private LokalisoituTeksti valtakunnallinenSoveltavaKurssiKuvaus;
 
     @Getter
     @Setter
@@ -136,7 +137,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "paikallinen_pakollinen_kuvaus_id", nullable = true)
-    private TekstiKappale paikallinenPakollinenKuvaus;
+    private LokalisoituTeksti paikallinenPakollinenKuvaus;
 
     @Getter
     @Setter
@@ -144,7 +145,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "paikallinen_syventava_kuvaus_id", nullable = true)
-    private TekstiKappale paikallinenSyventavaKurssiKuvaus;
+    private LokalisoituTeksti paikallinenSyventavaKurssiKuvaus;
 
     @Getter
     @Setter
@@ -152,7 +153,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinColumn(name = "paikallinen_soveltava_kuvaus_id", nullable = true)
-    private TekstiKappale paikallinenSoveltavaKurssiKuvaus;
+    private LokalisoituTeksti paikallinenSoveltavaKurssiKuvaus;
 
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY, orphanRemoval = true)
     @NotNull(groups = Strict.class)
@@ -191,7 +192,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Getter
     private Tila tila = Tila.LUONNOS;
 
-
+    @Getter
+    @Audited
+    @OneToMany(mappedBy = "oppiaine", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OppiaineLukiokurssi> lukiokurssit = new HashSet<>(0);
 
     public Oppiaine(UUID tunniste) {
         this.tunniste = tunniste;

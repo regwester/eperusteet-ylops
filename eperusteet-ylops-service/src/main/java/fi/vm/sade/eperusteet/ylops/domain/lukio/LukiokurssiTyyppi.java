@@ -17,6 +17,7 @@
 package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 
 import java.util.function.Function;
@@ -30,27 +31,39 @@ public enum LukiokurssiTyyppi {
     VALTAKUNNALLINEN_PAKOLLINEN(Oppiaine::getValtakunnallinenPakollinenKuvaus, Oppiaine::setValtakunnallinenPakollinenKuvaus),
     VALTAKUNNALLINEN_SYVENTAVA(Oppiaine::getValtakunnallinenSyventavaKurssiKuvaus, Oppiaine::setValtakunnallinenSyventavaKurssiKuvaus),
     VALTAKUNNALLINEN_SOVELTAVA(Oppiaine::getValtakunnallinenSoveltavaKurssiKuvaus, Oppiaine::setValtakunnallinenSoveltavaKurssiKuvaus),
-    PAIKALLINEN_PAKOLLINEN(Oppiaine::getPaikallinenPakollinenKuvaus, Oppiaine::setPaikallinenPakollinenKuvaus),
-    PAIKALLINEN_SYVENTAVA(Oppiaine::getPaikallinenSyventavaKurssiKuvaus, Oppiaine::setPaikallinenSyventavaKurssiKuvaus),
-    PAIKALLINEN_SOVELTAVA(Oppiaine::getPaikallinenSoveltavaKurssiKuvaus, Oppiaine::setPaikallinenSoveltavaKurssiKuvaus);
+    PAIKALLINEN_PAKOLLINEN(Oppiaine::getPaikallinenPakollinenKuvaus, Oppiaine::setPaikallinenPakollinenKuvaus, true),
+    PAIKALLINEN_SYVENTAVA(Oppiaine::getPaikallinenSyventavaKurssiKuvaus, Oppiaine::setPaikallinenSyventavaKurssiKuvaus, true),
+    PAIKALLINEN_SOVELTAVA(Oppiaine::getPaikallinenSoveltavaKurssiKuvaus, Oppiaine::setPaikallinenSoveltavaKurssiKuvaus, true);
 
     public interface Setter<ClassType,ValueType> {
         void set(ClassType obj, ValueType value);
     }
 
-    private final Function<Oppiaine, TekstiKappale> oppiaineKuvausGetter;
-    private final Setter<Oppiaine, TekstiKappale> oppiaineKuvausSetter;
+    // Vähän hassusti ovat nyt versioinnin takia samassa käsitteessä kaikki propertyinä, niin pientä helpotusta
+    private final Function<Oppiaine, LokalisoituTeksti> oppiaineKuvausGetter;
+    private final Setter<Oppiaine, LokalisoituTeksti> oppiaineKuvausSetter;
+    private final boolean paikallinen;
 
-    LukiokurssiTyyppi(Function<Oppiaine, TekstiKappale> oppiaineKuvausGetter, Setter<Oppiaine, TekstiKappale> oppiaineKuvausSetter) {
+    LukiokurssiTyyppi(Function<Oppiaine, LokalisoituTeksti> oppiaineKuvausGetter,
+                      Setter<Oppiaine, LokalisoituTeksti> oppiaineKuvausSetter) {
+        this(oppiaineKuvausGetter, oppiaineKuvausSetter, false);
+    }
+    LukiokurssiTyyppi(Function<Oppiaine, LokalisoituTeksti> oppiaineKuvausGetter,
+                      Setter<Oppiaine, LokalisoituTeksti> oppiaineKuvausSetter, boolean paikallinen) {
         this.oppiaineKuvausGetter = oppiaineKuvausGetter;
         this.oppiaineKuvausSetter = oppiaineKuvausSetter;
+        this.paikallinen = paikallinen;
     }
 
-    public Function<Oppiaine, TekstiKappale> oppiaineKuvausGetter() {
+    public Function<Oppiaine, LokalisoituTeksti> oppiaineKuvausGetter() {
         return oppiaineKuvausGetter;
     }
 
-    public Setter<Oppiaine, TekstiKappale> oppiaineKuvausSetter() {
+    public Setter<Oppiaine, LokalisoituTeksti> oppiaineKuvausSetter() {
         return oppiaineKuvausSetter;
+    }
+
+    public boolean isPaikallinen() {
+        return paikallinen;
     }
 }
