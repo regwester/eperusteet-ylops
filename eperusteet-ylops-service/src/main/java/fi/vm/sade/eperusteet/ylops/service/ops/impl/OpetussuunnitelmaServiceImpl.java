@@ -154,11 +154,23 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return dtot;
     }
 
+
     @Override
     @Transactional(readOnly = true)
-    public Page<OpetussuunnitelmaDto> findBy(PageRequest page, OpetussuunnitelmaQuery query) {
-        //Page<OpetussuunnitelmaDto> result = repository.findBy(page, query);
-        return null;
+    public OpetussuunnitelmaKevytDto getOpetussuunnitelmaJulkaistu(@P("opsId") Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+
+        if (ops.getTila() == Tila.JULKAISTU || ops.getTila() == Tila.VALMIS) {
+
+            OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
+            fetchKuntaNimet(dto);
+            fetchOrganisaatioNimet(dto);
+            return dto;
+        } else {
+            throw new BusinessRuleViolationException("Opetussuunnitelma ei ole julkinen");
+        }
+
     }
 
     @Override

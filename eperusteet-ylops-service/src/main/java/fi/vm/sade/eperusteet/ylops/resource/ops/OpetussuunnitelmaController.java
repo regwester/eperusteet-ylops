@@ -53,13 +53,6 @@ public class OpetussuunnitelmaController {
     @Autowired
     private PermissionManager permissionManager;
 
-    @RequestMapping(value = "/julkiset", method = RequestMethod.GET)
-    @ResponseBody
-    @Timed
-    public List<OpetussuunnitelmaDto> getAllJulkiset(@RequestParam(value="tyyppi", required=false) Tyyppi tyyppi) {
-        return opetussuunnitelmaService.getAllJulkiset(tyyppi == null ? Tyyppi.OPS : tyyppi);
-    }
-
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @Timed
