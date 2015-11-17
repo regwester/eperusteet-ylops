@@ -106,7 +106,7 @@ public class PermissionManager {
             targetId != null ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId) : null;
 
         // Salli valmiiden pohjien lukeminen kaikilta
-        if (perm == Permission.LUKU && targetId != null) {
+        if (perm == Permission.LUKU) {
             if (tyyppiJaTila == null) {
                 throw new NotExistsException();
             }
