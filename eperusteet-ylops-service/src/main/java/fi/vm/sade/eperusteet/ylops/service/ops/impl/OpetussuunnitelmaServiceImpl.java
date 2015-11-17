@@ -79,8 +79,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -143,35 +141,19 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OpetussuunnitelmaDto> getAllJulkiset(Tyyppi tyyppi) {
+    public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(Tyyppi tyyppi) {
         final List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsValmis(tyyppi);
 
-        final List<OpetussuunnitelmaDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaDto.class);
-        dtot.forEach(dto -> {
+        final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaJulkinenDto.class);
+
+
+        /*dtot.forEach(dto -> {
             fetchKuntaNimet(dto);
             fetchOrganisaatioNimet(dto);
-        });
+        });*/
         return dtot;
     }
 
-
-    @Override
-    @Transactional(readOnly = true)
-    public OpetussuunnitelmaKevytDto getOpetussuunnitelmaJulkaistu(@P("opsId") Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-
-        if (ops.getTila() == Tila.JULKAISTU || ops.getTila() == Tila.VALMIS) {
-
-            OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
-            fetchKuntaNimet(dto);
-            fetchOrganisaatioNimet(dto);
-            return dto;
-        } else {
-            throw new BusinessRuleViolationException("Opetussuunnitelma ei ole julkinen");
-        }
-
-    }
 
     @Override
     @Transactional(readOnly = true)

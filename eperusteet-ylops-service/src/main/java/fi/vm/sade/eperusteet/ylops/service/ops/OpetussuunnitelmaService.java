@@ -45,10 +45,7 @@ public interface OpetussuunnitelmaService {
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
     @PreAuthorize("permitAll()")
-    List<OpetussuunnitelmaDto> getAllJulkiset(Tyyppi tyyppi);
-
-    @PreAuthorize("permitAll()")
-    OpetussuunnitelmaKevytDto getOpetussuunnitelmaJulkaistu(@P("opsId") Long id);
+    List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(Tyyppi tyyppi);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka();
