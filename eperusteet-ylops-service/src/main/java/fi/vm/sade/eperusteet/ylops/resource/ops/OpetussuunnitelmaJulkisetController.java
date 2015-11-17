@@ -4,7 +4,6 @@ import com.codahale.metrics.annotation.Timed;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,4 +29,13 @@ public class OpetussuunnitelmaJulkisetController {
     public List<OpetussuunnitelmaJulkinenDto> getAll(@RequestParam(value="tyyppi", required=false) Tyyppi tyyppi) {
         return opetussuunnitelmaService.getAllJulkiset(tyyppi == null ? Tyyppi.OPS : tyyppi);
     }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<OpetussuunnitelmaJulkinenDto> get(@PathVariable("id") final Long id) {
+
+        return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkinen(id), HttpStatus.OK);
+    }
+
 }

@@ -50,4 +50,5 @@ public abstract class OpetussuunnitelmaBaseDto implements Serializable {
     private Tyyppi tyyppi;
     private KoulutusTyyppi koulutustyyppi;
     private Date paatospaivamaara;
+    private boolean esikatseltavissa;
 }

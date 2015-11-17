@@ -110,6 +110,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     private Tyyppi tyyppi = Tyyppi.OPS;
 
+    @Getter
+    @Setter
+    private boolean esikatseltavissa = false;
+
     @Enumerated(value = EnumType.STRING)
     @Getter
     @Setter

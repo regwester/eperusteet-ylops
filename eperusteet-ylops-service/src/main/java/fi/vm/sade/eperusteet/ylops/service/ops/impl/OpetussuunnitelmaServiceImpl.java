@@ -142,7 +142,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(Tyyppi tyyppi) {
-        final List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsValmis(tyyppi);
+        final List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsJulkaistu(tyyppi);
 
         final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaJulkinenDto.class);
 
@@ -152,6 +152,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             fetchOrganisaatioNimet(dto);
         });*/
         return dtot;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        OpetussuunnitelmaJulkinenDto dto = mapper.map(ops, OpetussuunnitelmaJulkinenDto.class);
+        //fetchKuntaNimet(dto);
+        //fetchOrganisaatioNimet(dto);
+        return dto;
     }
 
 

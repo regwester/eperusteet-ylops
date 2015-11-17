@@ -25,7 +25,7 @@ import java.util.List;
  */
 public interface OrganisaatioService {
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     JsonNode getOrganisaatio(String organisaatioOid);
 
     @PreAuthorize("isAuthenticated()")

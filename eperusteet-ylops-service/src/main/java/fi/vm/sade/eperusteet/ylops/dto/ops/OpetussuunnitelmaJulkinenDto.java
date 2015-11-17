@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
@@ -23,4 +24,6 @@ public class OpetussuunnitelmaJulkinenDto implements Serializable {
     private Set<KoodistoDto> kunnat;
     private LokalisoituTekstiDto nimi;
     private Tila tila;
+    private Tyyppi tyyppi;
+    private boolean esikatseltavissa;
 }

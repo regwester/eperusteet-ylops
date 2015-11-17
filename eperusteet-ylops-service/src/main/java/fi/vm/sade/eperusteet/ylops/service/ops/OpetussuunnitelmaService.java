@@ -47,6 +47,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("permitAll()")
     List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(Tyyppi tyyppi);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(@P("opsId") Long id);
+
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka();
 

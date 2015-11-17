@@ -105,6 +105,14 @@ public class PermissionManager {
         Pair<Tyyppi, Tila> tyyppiJaTila =
             targetId != null ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId) : null;
 
+        if (perm == Permission.LUKU && tyyppiJaTila != null) {
+            if (tyyppiJaTila.getSecond() == Tila.JULKAISTU) {
+                return true;
+            } else if (opetussuunnitelmaRepository.isEsikatseltavissa((long) targetId)) {
+                return true;
+            }
+        }
+
         // Salli valmiiden pohjien lukeminen kaikilta joilla on CRUD-oikeus tai ADMIN-oikeus
         if (perm == Permission.LUKU && targetId != null &&
                 (hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.ANY) ||

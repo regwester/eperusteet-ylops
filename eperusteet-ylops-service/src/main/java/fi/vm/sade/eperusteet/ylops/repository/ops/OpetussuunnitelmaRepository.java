@@ -41,14 +41,17 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     @Query(value = "SELECT NEW fi.vm.sade.eperusteet.ylops.service.util.Pair(o.tyyppi, o.tila) from Opetussuunnitelma o where o.id = ?1")
     public Pair<Tyyppi,Tila> findTyyppiAndTila(long id);
 
+    @Query(value = "SELECT NEW java.lang.Boolean(o.esikatseltavissa) from Opetussuunnitelma o where o.id = ?1")
+    public Boolean isEsikatseltavissa(long id);
+
     public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
     public Opetussuunnitelma findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
     public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
     public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
     public List<Opetussuunnitelma> findAllByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
 
-    @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE (o.tila = 'VALMIS' OR o.tila = 'JULKAISTU') AND o.tyyppi = :tyyppi")
-    public List<Opetussuunnitelma> findAllByTyyppiAndTilaIsValmis(@Param("tyyppi") Tyyppi tyyppi);
+    @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE (o.tila = 'JULKAISTU') AND o.tyyppi = :tyyppi")
+    public List<Opetussuunnitelma> findAllByTyyppiAndTilaIsJulkaistu(@Param("tyyppi") Tyyppi tyyppi);
 
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE o.pohja.id = ?1")
     public Set<Opetussuunnitelma> findAllByPohjaId(long id);
