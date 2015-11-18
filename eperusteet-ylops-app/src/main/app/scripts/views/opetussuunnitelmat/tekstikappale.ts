@@ -23,7 +23,7 @@ ylopsApp
     };
   })
 
-  .controller('TekstikappaleController', function ($scope, Editointikontrollit,
+  .controller('TekstikappaleController', function ($scope, $q, Editointikontrollit,
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit, Kieli,
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
     KommentitByTekstikappaleViite, Lukko, Varmistusdialogi, teksti,
@@ -33,7 +33,6 @@ ylopsApp
     $scope.perusteteksti = {};
     $scope.options = {tekstiCollapsed: true};
     $scope.valmisOptions = [{valmis: false}, {valmis: true}];
-    var savingValmis = false;
     var TYYPIT = ['ohje', 'perusteteksti'];
 
     $scope.opsId = $stateParams.id;
@@ -59,7 +58,7 @@ ylopsApp
     var originalOtsikko = null;
     var originalTekstiKappale = null;
 
-    function fetchOhje(model, cb) {
+    function fetchOhje(model, cb = _.noop) {
       OhjeCRUD.forTekstikappale({
         uuid: model.tekstiKappale.tunniste
       }, function(ohje) {
@@ -71,7 +70,7 @@ ylopsApp
             $scope[tyyppi] = found;
           }
         });
-        (cb || angular.noop)();
+        cb();
       });
     }
 
@@ -106,8 +105,9 @@ ylopsApp
       Lukko.lock(commonParams, function () {
         reresolver('teksti').then(function(res) {
           setup(res);
-          $scope.editMode = true;
-          Editointikontrollit.startEditing();
+          Editointikontrollit.startEditing().then(() => {
+            $scope.editMode = true;
+          });
         });
       });
     };
@@ -157,24 +157,27 @@ ylopsApp
     };
 
     var successCb = function(res) {
-      $scope.model = res;
-      Notifikaatiot.onnistui('tallennettu-ok');
-      if ($stateParams.tekstikappaleId === 'uusi') {
-        $state.reload();
-      } else {
-        var navigaatiomuutos = !_.isEqual(originalOtsikko, _.omit(res.tekstiKappale.nimi, '$$validointi')) ||
+      return $q((resolve, reject) => {
+        $scope.model = res;
+        Notifikaatiot.onnistui('tallennettu-ok');
+
+        if ($stateParams.tekstikappaleId === 'uusi') {
+          $state.reload();
+        }
+        else {
+          var navigaatiomuutos = !_.isEqual(originalOtsikko, _.omit(res.tekstiKappale.nimi, '$$validointi')) ||
           res.tekstiKappale.valmis !== originalTekstiKappale.valmis;
-        Lukko.unlock(commonParams, function () {
-          $scope.lukkotiedot = null;
-          if (navigaatiomuutos) {
-            $state.transitionTo($state.current, $stateParams, { reload: true, inherit: true });
-          }
-        });
-      }
-      if (savingValmis || !Utils.compareLocalizedText(originalOtsikko, res.tekstiKappale.nimi)) {
-        savingValmis = false;
-      }
-      originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
+          Lukko.unlock(commonParams, function () {
+            $scope.lukkotiedot = null;
+            if (navigaatiomuutos) {
+              $state.transitionTo($state.current, $stateParams, { reload: true, inherit: true });
+            }
+          });
+        }
+
+        originalOtsikko = _.cloneDeep($scope.model.tekstiKappale.nimi);
+        resolve();
+      });
     };
 
     var callbacks = {
@@ -184,13 +187,26 @@ ylopsApp
         Lukko.lock(commonParams, cb);
       },
       save: function() {
-        var params = {opsId: $stateParams.id};
-        if ($stateParams.tekstikappaleId === 'uusi') {
-          OpetussuunnitelmanTekstit.save(params, $scope.model, successCb, Notifikaatiot.serverCb);
-        } else {
-          // Pelkkää tekstikappaletta muokattaessa lapset-kenttä tulee jättää pois
-          _.omit($scope.model, 'lapset').$save(params, successCb, Notifikaatiot.serverCb);
-        }
+        return $q((resolve, reject) => {
+          var params = {opsId: $stateParams.id};
+          (() => {
+            return $q((resolve, reject) => {
+              if ($stateParams.tekstikappaleId === 'uusi') {
+                OpetussuunnitelmanTekstit.save(params, $scope.model, resolve, reject);
+              } else {
+                // Pelkkää tekstikappaletta muokattaessa lapset-kenttä tulee jättää pois
+                _.omit($scope.model, 'lapset').$save(params, resolve, reject);
+              }
+            });
+          })()
+          .then((res) => successCb(res)
+              .then(() => {
+                $scope.editMode = false;
+                resolve();
+              })
+              .catch(Notifikaatiot.serverCb))
+          .catch(Notifikaatiot.serverCb);
+        });
       },
       cancel: function () {
         if ($stateParams.tekstikappaleId === 'uusi') {
@@ -210,7 +226,6 @@ ylopsApp
 
     $scope.setValmis = function (value) {
       $scope.model.tekstiKappale.valmis = value;
-      savingValmis = true;
       if (!$scope.editMode) {
         Lukko.lock(commonParams, function () {
           callbacks.save();

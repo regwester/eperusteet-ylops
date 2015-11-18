@@ -96,7 +96,7 @@ ylopsApp
     }
   }
 
-  function fetch(initial, cb) {
+  function fetch(initial?, cb = _.noop) {
     if (initial) {
       fetchOhje($scope.model);
       updateMuokkaustieto();
@@ -111,7 +111,7 @@ ylopsApp
       saveOriginal('teksti', res);
       fetchOhje(res);
       updateMuokkaustieto();
-      (cb || _.noop)();
+      cb();
     }, Notifikaatiot.serverCb);
   }
   fetch(true);

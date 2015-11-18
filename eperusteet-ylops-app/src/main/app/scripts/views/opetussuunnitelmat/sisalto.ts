@@ -41,7 +41,7 @@ ylopsApp
   }
 
   function lisaa(parent, opsId, uusi, cb) {
-    var newNode = {tekstiKappale: { nimi: angular.copy(uusi) }, lapset: []};
+    var newNode: any = {tekstiKappale: { nimi: angular.copy(uusi) }, lapset: []};
 
     OpetussuunnitelmanTekstit.setChild({
       parentId: parent.id,
@@ -314,8 +314,7 @@ ylopsApp
   $scope.paivitaRakenne = function() {
     OpetussuunnitelmaCRUD.opetussuunnitelmatSync({
       id: ops.id
-    }).$promise.then(function(res) {
-    })
+    }).$promise.then(_.noop)
     .catch(function(err) {
       console.warn(err);
     });

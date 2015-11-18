@@ -112,9 +112,7 @@ ylopsApp
     return promisify(vuosiluokka);
   }
 
-  function populateMenuItems(arr, obj, oppiaineet, depth) {
-    depth = depth || 1;
-
+  function populateMenuItems(arr, obj, oppiaineet, depth = 1) {
     function alustaVlk(oa) {
       var oavlk = _.find(oa.vuosiluokkakokonaisuudet, _.equals(obj._tunniste, '_vuosiluokkakokonaisuus'));
 

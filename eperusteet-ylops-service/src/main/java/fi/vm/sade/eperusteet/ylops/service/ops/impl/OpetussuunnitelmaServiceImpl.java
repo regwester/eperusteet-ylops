@@ -31,7 +31,6 @@ import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteLaajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -40,12 +39,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -147,6 +141,33 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(Tyyppi tyyppi) {
+        final List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsJulkaistu(tyyppi);
+
+        final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaJulkinenDto.class);
+
+
+        /*dtot.forEach(dto -> {
+            fetchKuntaNimet(dto);
+            fetchOrganisaatioNimet(dto);
+        });*/
+        return dtot;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        OpetussuunnitelmaJulkinenDto dto = mapper.map(ops, OpetussuunnitelmaJulkinenDto.class);
+        //fetchKuntaNimet(dto);
+        //fetchOrganisaatioNimet(dto);
+        return dto;
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
         final List<Opetussuunnitelma> opetussuunnitelmat;
@@ -162,6 +183,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         });
         return dtot;
     }
+
+
 
     @Override
     @Transactional(readOnly = true)

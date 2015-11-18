@@ -42,9 +42,10 @@ ylopsApp
     }
   }
 
-  $scope.isVuosiluokkaistettava = !!perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
+  var onOma = $scope.oppiaine.oma && !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet.length);
+  $scope.isVuosiluokkaistettava = onOma || (!!perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus && !_.isEmpty(vlk.tavoitteet);
-  });
+  }));
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
     $scope.oppiaineenVlk = value;
@@ -81,6 +82,7 @@ ylopsApp
   $scope.lukkotiedot = null;
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
+  $scope.startEditing = function() { Editointikontrollit.startEditing(); };
 
   var commonParams = $scope.oppiaineenVlk ? {
     opsId: $stateParams.id,
@@ -236,7 +238,8 @@ ylopsApp
       OppiaineService.saveVlk($scope.oppiaineenVlk);
     },
     cancel: function () {
-      refetch();
+      //refetch();
+      $state.reload();
     },
     notify: function (mode) {
       $scope.options.editing = mode;

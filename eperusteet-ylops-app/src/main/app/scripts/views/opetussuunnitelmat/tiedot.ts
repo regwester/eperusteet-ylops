@@ -164,7 +164,7 @@ ylopsApp
     }
   }
 
-  function fetch(notify) {
+  function fetch(notify?) {
     OpsService.refetch(function (res) {
       $scope.model = res;
       var vuosiluokkakokonaisuudet = _.chain(res.vuosiluokkakokonaisuudet).map(function(v) {

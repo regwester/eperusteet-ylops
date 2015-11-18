@@ -47,9 +47,9 @@ ylopsApp
   this.perusteProjektiId = null;
 })
 .service('Kommentit', function($stateParams, $location, $timeout, $rootScope, Notifikaatiot, KommenttiSivuCache, KommentitCRUD) {
-  var nykyinen = {};
-  var nykyinenParams = {};
-  var stored = {};
+  var nykyinen: any = {};
+  var nykyinenParams: any = {};
+  var stored: any = {};
 
   function rakennaKommenttiPuu(viestit) {
     viestit = _(viestit).map(function(viesti) {
