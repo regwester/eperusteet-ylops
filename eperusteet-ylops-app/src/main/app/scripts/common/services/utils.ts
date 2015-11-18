@@ -161,7 +161,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
       require: 'ngModel',
       link: function (scope, element, attrs, ngModel) {
 
-        var parsedMoment = '';
+        var parsedMoment: any = '';
 
         ngModel.$parsers.unshift(function(viewValue) {
           return validate(viewValue);

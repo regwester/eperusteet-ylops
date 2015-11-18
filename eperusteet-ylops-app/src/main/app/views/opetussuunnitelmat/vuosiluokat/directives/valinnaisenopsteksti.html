@@ -21,7 +21,7 @@
       <span class="tekstikappale-error-badge" ng-repeat="virhe in muokattava.teksti.$$validointi"
           kaanna="virhe" tooltip="{{ virhe + '-kuvaus' | kaanna }}"></span>
     </span>
-    <!-- <termistoteksti ng&#45;if="!editMode" teksti="muokattava.teksti"></termistoteksti> -->
+    <termistoteksti ng-if="!editMode" teksti="muokattava.teksti"></termistoteksti>
     <div ng-if="editMode" ckeditor layout="simplified" ng-model="muokattava.teksti" slocalized></div>
   </div>
 </div>

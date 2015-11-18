@@ -294,32 +294,31 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                                                                     List<TekstiosaDto> tavoitteetDto) {
         List<Tekstiosa> tavoitteet = mapper.mapAsList(tavoitteetDto, Tekstiosa.class);
 
-        List<Keskeinensisaltoalue> sisaltoalueet =
-            tavoitteet.stream()
-                      .map(tekstiosa -> {
-                          Keskeinensisaltoalue k = new Keskeinensisaltoalue();
-                          k.setTunniste(UUID.randomUUID());
-                          k.setKuvaus(tekstiosa.getTeksti());
-                          return k;
-                      })
-                      .collect(Collectors.toList());
+        List<Keskeinensisaltoalue> sisaltoalueet = tavoitteet.stream()
+            .map(tekstiosa -> {
+                Keskeinensisaltoalue k = new Keskeinensisaltoalue();
+                k.setTunniste(UUID.randomUUID());
+                k.setKuvaus(tekstiosa.getTeksti());
+                return k;
+            })
+            .collect(Collectors.toList());
 
-        List<Keskeinensisaltoalue> oavlSisaltoalueet =
-            sisaltoalueet.stream()
-                         .map(k -> Keskeinensisaltoalue.copyOf(k))
-                         .collect(Collectors.toList());
-        oavl.setSisaltoalueet(oavlSisaltoalueet);
+        List<Keskeinensisaltoalue> oavlSisaltoalueet = sisaltoalueet.stream()
+            .map(k -> Keskeinensisaltoalue.copyOf(k))
+            .collect(Collectors.toList());
 
         List<Opetuksentavoite> oavlTavoitteet =
             StreamUtils.zip(tavoitteet.stream(), oavlSisaltoalueet.stream(),
-                            (tekstiosa, sisaltoalue) -> {
-                                Opetuksentavoite t = new Opetuksentavoite();
-                                t.setTunniste(UUID.randomUUID());
-                                t.setTavoite(tekstiosa.getOtsikko());
-                                t.connectSisaltoalueet(Collections.singleton(sisaltoalue));
-                                return t;
-                            })
-                       .collect(Collectors.toList());
+                        (tekstiosa, sisaltoalue) -> {
+                            Opetuksentavoite t = new Opetuksentavoite();
+                            t.setTunniste(UUID.randomUUID());
+                            t.setTavoite(tekstiosa.getOtsikko());
+                            t.connectSisaltoalueet(Collections.singleton(sisaltoalue));
+                            return t;
+                        })
+                   .collect(Collectors.toList());
+
+        oavl.setSisaltoalueet(oavlSisaltoalueet);
         oavl.setTavoitteet(oavlTavoitteet);
         return oavl;
     }
@@ -415,17 +414,17 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
                                      .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
-        dto.getTavoitteet().forEach(opetuksenTavoiteDto -> {
-            opetuksenTavoiteDto.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalueDto -> {
-                    OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue = oppiaineenVuosiluokka.getTavoite(opetuksenTavoiteDto.getTunniste())
-                            .get().getOpetuksenkeskeinenSisaltoalueById(opetuksenKeskeinensisaltoalueDto.getId()).get();
+        dto.getTavoitteet().stream()
+                .filter(tavoite -> tavoite.getSisaltoalueet() != null)
+                .forEach(opetuksenTavoiteDto -> { opetuksenTavoiteDto.getSisaltoalueet()
+                        .forEach(opetuksenKeskeinensisaltoalueDto -> {
+                            OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue
+                                = oppiaineenVuosiluokka.getTavoite(opetuksenTavoiteDto.getTunniste())
+                                    .get().getOpetuksenkeskeinenSisaltoalueById(opetuksenKeskeinensisaltoalueDto.getId()).get();
 
                 if (opetuksenKeskeinensisaltoalueDto.getOmaKuvaus() != null) {
                     opetuksenKeskeinensisaltoalue.setOmaKuvaus(mapper.map(opetuksenKeskeinensisaltoalueDto.getOmaKuvaus(), LokalisoituTeksti.class));
-                }else{
-                    opetuksenKeskeinensisaltoalue.setOmaKuvaus(null);
                 }
-
             });
         });
 
@@ -435,8 +434,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public OppiaineenVuosiluokkaDto updateValinnaisenVuosiluokanSisalto(@P("opsId") Long opsId, Long id,
                                                                         Long oppiaineenVuosiluokkaId,
                                                                         List<TekstiosaDto> tavoitteetDto) {
-
-
         Oppiaineenvuosiluokka oavl = assertExists(findVuosiluokka(opsId, id, oppiaineenVuosiluokkaId), "Vuosiluokkaa ei löydy");
 
         Oppiaine oppiaine = oppiaineet.findOne(id);

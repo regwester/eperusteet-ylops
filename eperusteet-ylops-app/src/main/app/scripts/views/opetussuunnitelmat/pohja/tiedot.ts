@@ -44,7 +44,7 @@ ylopsApp
       $scope.perustelista = perusteet;
     }
 
-    function fetch(notify) {
+    function fetch(notify?) {
       OpsService.refetchPohja(function (res) {
         $scope.model = res;
         if (notify) {

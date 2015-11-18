@@ -77,15 +77,15 @@ ylopsApp
     scope.tavoiteMap = _.indexBy(scope.tavoitteet, 'tunniste');
 
     if (scope.onValinnaiselle) {
-      var otsikot = _.map(scope.tavoitteet, 'tavoite');
-      var tekstit = _(scope.tavoitteet)
+      const otsikot = _.map(scope.tavoitteet, 'tavoite');
+      const tekstit = _(scope.tavoitteet)
         .map('sisaltoalueet')
-        .map(_.first)
-        .map(function (id) {
+        .flatten()
+        .map(_.property('sisaltoalueet.id'))
+        .map((id) => {
           return scope.sisaltoAlueetMap[id].kuvaus;
         })
         .value();
-
       scope.valinnaisenTekstiosat = _.map(_.zip(otsikot, tekstit), function(values) {
         return _.zipObject(['otsikko', 'teksti'], values);
       });

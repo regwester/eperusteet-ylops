@@ -27,14 +27,10 @@ ylopsApp
   var VUOSILUOKKA = 'vuosiluokka-list';
   $scope.perusteOpVlk = {};
   $scope.containers = {};
-  var exitOk = false;
-
-  function canExit() {
-    return exitOk;
-  }
+  $scope.exitOk = false;
 
   function nagMessage(event) {
-    if (!canExit()) {
+    if (!$scope.exitOk) {
       var confirmationMessage = Kaanna.kaanna('tallentamattomia-muutoksia');
       (event || window.event).returnValue = confirmationMessage;
       return confirmationMessage;
@@ -51,13 +47,13 @@ ylopsApp
       params: _.clone(fromParams)
     };
 
-    if (!canExit()) {
+    if (!$scope.exitOk) {
       event.preventDefault();
 
       var data = {toState: toState, toParams: toParams};
       Varmistusdialogi.dialogi({
         successCb: function(data) {
-          exitOk = true;
+          $scope.exitOk = true;
           $state.go(data.toState, data.toParams);
         }, data: data, otsikko: 'vahvista-liikkuminen', teksti: 'tallentamattomia-muutoksia',
         lisaTeksti: 'haluatko-jatkaa',
@@ -187,7 +183,7 @@ ylopsApp
   }
 
   $scope.cancel = function () {
-    exitOk = true;
+    $scope.exitOk = true;
     goBack();
   };
 
@@ -208,7 +204,7 @@ ylopsApp
   }
 
   $scope.save = function () {
-    exitOk = true;
+    $scope.exitOk = true;
     saveCb(goBack);
   };
 
