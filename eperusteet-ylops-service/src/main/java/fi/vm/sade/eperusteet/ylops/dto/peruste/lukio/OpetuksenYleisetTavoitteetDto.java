@@ -28,10 +28,8 @@ import java.util.UUID;
 @Getter
 @Setter
 public class OpetuksenYleisetTavoitteetDto implements Serializable {
-
     private UUID uuidTunniste;
     private Long id;
     private LokalisoituTekstiDto otsikko;
     private LokalisoituTekstiDto kuvaus;
-
 }

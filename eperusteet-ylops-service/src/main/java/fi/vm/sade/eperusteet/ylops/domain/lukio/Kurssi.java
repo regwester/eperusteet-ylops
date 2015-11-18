@@ -78,4 +78,12 @@ public class Kurssi extends AbstractAuditedReferenceableEntity {
     @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Opetussuunnitelma opetussuunnitelma;
+
+    public Kurssi() {
+    }
+
+    public Kurssi(Opetussuunnitelma opetussuunnitelma, UUID tunniste) {
+        this.opetussuunnitelma = opetussuunnitelma;
+        this.tunniste = tunniste;
+    }
 }

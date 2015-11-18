@@ -18,7 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.PerusteenLukiokurssiTyyppi;
 
 import java.util.function.Function;
 
@@ -34,6 +34,15 @@ public enum LukiokurssiTyyppi {
     PAIKALLINEN_PAKOLLINEN(Oppiaine::getPaikallinenPakollinenKuvaus, Oppiaine::setPaikallinenPakollinenKuvaus, true),
     PAIKALLINEN_SYVENTAVA(Oppiaine::getPaikallinenSyventavaKurssiKuvaus, Oppiaine::setPaikallinenSyventavaKurssiKuvaus, true),
     PAIKALLINEN_SOVELTAVA(Oppiaine::getPaikallinenSoveltavaKurssiKuvaus, Oppiaine::setPaikallinenSoveltavaKurssiKuvaus, true);
+
+    public static LukiokurssiTyyppi ofPerusteTyyppi(PerusteenLukiokurssiTyyppi tyyppi) {
+        switch (tyyppi) {
+            case PAKOLLINEN: return VALTAKUNNALLINEN_PAKOLLINEN;
+            case VALTAKUNNALLINEN_SOVELTAVA: return VALTAKUNNALLINEN_SOVELTAVA;
+            case VALTAKUNNALLINEN_SYVENTAVA: return VALTAKUNNALLINEN_SYVENTAVA;
+            default: throw new IllegalStateException("Unimplemented peruste lukiokurssityyppi: " + tyyppi);
+        }
+    }
 
     public interface Setter<ClassType,ValueType> {
         void set(ClassType obj, ValueType value);

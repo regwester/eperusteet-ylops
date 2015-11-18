@@ -33,8 +33,17 @@ import java.util.UUID;
 public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity {
     @Column(nullable = false, unique = true, updatable = false)
     @Getter
-    @Setter
     private UUID tunniste;
+
+    public Aihekokonaisuus() {
+        this.oma = true;
+    }
+
+    public Aihekokonaisuus(Aihekokonaisuudet aihekokonaisuudet, UUID tunniste) {
+        this.aihekokonaisuudet = aihekokonaisuudet;
+        this.tunniste = tunniste;
+        this.oma = false;
+    }
 
     @Getter
     @Setter
@@ -54,6 +63,10 @@ public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     private Long jnro;
+
+    @Getter
+    @Column(name = "oma", nullable = false)
+    private boolean oma;
 
     @Getter
     @Setter

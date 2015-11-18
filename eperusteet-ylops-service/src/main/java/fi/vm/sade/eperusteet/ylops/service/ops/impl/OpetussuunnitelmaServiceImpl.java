@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
@@ -80,6 +81,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
 
 /**
  *
@@ -420,10 +422,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void importLukioRakenne(LukioOpetussuunnitelmaRakenneDto from, Opetussuunnitelma to) {
-        importOppiaineet(from.getOppiaineet(), oa -> to.getOppiaineet().add(new OpsOppiaine(oa, false)), null);
+        importOppiaineet(to, from.getOppiaineet(), oa -> to.getOppiaineet().add(new OpsOppiaine(oa, false)),
+                null, new HashMap<>());
     }
 
-    private void importOppiaineet(Collection<LukioPerusteOppiaineDto> from, Consumer<Oppiaine> to, Oppiaine parent) {
+    private void importOppiaineet(Opetussuunnitelma ops,
+                                  Collection<LukioPerusteOppiaineDto> from, Consumer<Oppiaine> to,
+                                  Oppiaine parent, Map<UUID, Lukiokurssi> kurssit) {
         for (LukioPerusteOppiaineDto oppiaine : from) {
             if (oppiaine.getAbstrakti() !=null && oppiaine.getAbstrakti()) { // miksi ihmeessä Boolean?
                 continue;
@@ -436,14 +441,50 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oa.setKoodiArvo(oppiaine.getKoodiArvo());
             oa.setKoodiUri(oppiaine.getKoodiUri());
             to.accept(oa);
-            importOppiaineet(oppiaine.getOppimaarat(), child -> oa.getOppimaarat().add(child), oa);
+            importOppiaineet(ops, oppiaine.getOppimaarat(), child -> oa.getOppimaarat().add(child), oa, kurssit);
+            importKurssit(ops, oppiaine.getKurssit(), oa, kurssit);
         }
     }
 
+    private void importKurssit(Opetussuunnitelma ops, Set<LukiokurssiDto> from, Oppiaine to,
+                               Map<UUID, Lukiokurssi> luodut) {
+        for (LukiokurssiDto kurssiDto : from) {
+            Lukiokurssi kurssi = kurssiByTunniste(ops, to, kurssiDto, luodut);
+            to.getLukiokurssit().add(new OppiaineLukiokurssi(to, kurssi, kurssiDto.getJarjestys()));
+        }
+    }
+
+    private Lukiokurssi kurssiByTunniste(Opetussuunnitelma ops, Oppiaine to, LukiokurssiDto kurssiDto,
+                                         Map<UUID, Lukiokurssi> luodut) {
+        Lukiokurssi kurssi = luodut.get(kurssiDto.getTunniste());
+        if (kurssi != null) {
+            return kurssi;
+        }
+        kurssi = new Lukiokurssi(ops, to.getTunniste());
+        kurssi.setNimi(LokalisoituTeksti.of(kurssiDto.getNimi().getTekstit()));
+        kurssi.setTyyppi(LukiokurssiTyyppi.ofPerusteTyyppi(kurssiDto.getTyyppi()));
+        kurssi.setKoodiArvo(kurssiDto.getKoodiArvo());
+        kurssi.setKoodiUri(kurssiDto.getKoodiUri());
+        kurssi.setOpetussuunnitelma(ops);
+        luodut.put(kurssi.getTunniste(), kurssi);
+        return kurssi;
+    }
+
     private void importAihekokonaisuudet(AihekokonaisuudetDto from, Opetussuunnitelma to) {
+        to.setAihekokonaisuudet(new Aihekokonaisuudet(to ,from.getUuidTunniste()));
+        Long maxJnro = 0L;
+        for (AihekokonaisuusDto aihekokonaisuusDto : from.getAihekokonaisuudet()) {
+            Aihekokonaisuus aihekokonaisuus = new Aihekokonaisuus(to.getAihekokonaisuudet(),
+                    aihekokonaisuusDto.getTunniste());
+            aihekokonaisuus.setOtsikko(LokalisoituTeksti.of(aihekokonaisuusDto.getOtsikko().getTekstit()));
+            maxJnro = Math.max(maxJnro+1, Optional.ofNullable(aihekokonaisuus.getJnro()).orElse(0L));
+            aihekokonaisuus.setJnro(maxJnro);
+            to.getAihekokonaisuudet().getAihekokonaisuudet().add(aihekokonaisuus);
+        }
     }
 
     private void importYleisetTavoitteet(OpetuksenYleisetTavoitteetDto from, Opetussuunnitelma to) {
+        to.setOpetuksenYleisetTavoitteet(new OpetuksenYleisetTavoitteet(to, from.getUuidTunniste()));
     }
 
     @Override

@@ -34,8 +34,15 @@ public class OpetuksenYleisetTavoitteet extends AbstractAuditedReferenceableEnti
 
     @Column(name = "tunniste", nullable = false, unique = true, updatable = false)
     @Getter
-    @Setter
     private UUID uuidTunniste;
+
+    public OpetuksenYleisetTavoitteet() {
+    }
+
+    public OpetuksenYleisetTavoitteet(Opetussuunnitelma opetussuunnitelma, UUID uuidTunniste) {
+        this.opetussuunnitelma = opetussuunnitelma;
+        this.uuidTunniste = uuidTunniste;
+    }
 
     @Getter
     @Setter

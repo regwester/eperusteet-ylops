@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -30,6 +31,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * User: tommiratamaa
@@ -80,4 +82,11 @@ public class Lukiokurssi extends Kurssi {
     @Audited
     @OneToMany(mappedBy = "kurssi", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OppiaineLukiokurssi> oppiaineet = new HashSet<>(0);
+
+    public Lukiokurssi() {
+    }
+
+    public Lukiokurssi(Opetussuunnitelma opetussuunnitelma, UUID tunniste) {
+        super(opetussuunnitelma, tunniste);
+    }
 }

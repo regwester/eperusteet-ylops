@@ -39,6 +39,14 @@ public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity {
     @Setter
     private UUID uuidTunniste;
 
+    public Aihekokonaisuudet() {
+    }
+
+    public Aihekokonaisuudet(Opetussuunnitelma opetussuunnitelma, UUID uuidTunniste) {
+        this.opetussuunnitelma = opetussuunnitelma;
+        this.uuidTunniste = uuidTunniste;
+    }
+
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)

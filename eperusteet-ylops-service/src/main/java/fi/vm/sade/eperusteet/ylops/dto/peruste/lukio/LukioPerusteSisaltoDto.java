@@ -27,8 +27,6 @@ import java.util.List;
 @Getter
 @Setter
 public class LukioPerusteSisaltoDto implements Serializable {
-
     private Long id;
     private List<LukioPerusteTekstikappaleViiteDto> lapset;
-
 }

@@ -38,7 +38,7 @@ public class OppiaineLukiokurssi extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "kurssi_id", nullable = false)
     private Lukiokurssi kurssi;
 
@@ -52,4 +52,13 @@ public class OppiaineLukiokurssi extends AbstractAuditedReferenceableEntity {
     @Setter
     @Column(nullable = false)
     private Integer jarjestys;
+
+    public OppiaineLukiokurssi() {
+    }
+
+    public OppiaineLukiokurssi(Oppiaine oppiaine, Lukiokurssi kurssi, Integer jarjestys) {
+        this.oppiaine = oppiaine;
+        this.kurssi = kurssi;
+        this.jarjestys = jarjestys;
+    }
 }
