@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
@@ -36,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -225,6 +225,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
         return oppimaarat == null ? new HashSet<>() : new HashSet<>(oppimaarat);
     }
 
+    public Set<Oppiaine> getOppimaaratReal() {
+        return oppimaarat;
+    }
+
     public Set<Oppiaineenvuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
         return vuosiluokkakokonaisuudet == null ? Collections.emptySet()
             : Collections.unmodifiableSet(vuosiluokkakokonaisuudet);
@@ -391,5 +395,9 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
                 validoi(validointi, om, kielet);
             }
         }
+    }
+
+    public Stream<Oppiaine> maarineen() {
+        return Stream.concat(Stream.of(this), oppimaarat.stream());
     }
 }

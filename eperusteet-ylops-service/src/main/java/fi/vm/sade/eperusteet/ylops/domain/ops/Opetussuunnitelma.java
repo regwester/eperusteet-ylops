@@ -157,19 +157,19 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     @Getter
     @Audited
-    @OneToMany(mappedBy = "opetussuunnitelma", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY)
     private Set<Kurssi> kurssit = new HashSet<>(0);
 
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Aihekokonaisuudet aihekokonaisuudet;
 
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private OpetuksenYleisetTavoitteet opetuksenYleisetTavoitteet;
 
 
@@ -195,6 +195,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     public Set<OpsOppiaine> getOppiaineet() {
         return new HashSet<>(oppiaineet);
+    }
+
+    public Set<OpsOppiaine> getOppiaineetReal() {
+        return oppiaineet;
     }
 
     public void setOppiaineet(Set<OpsOppiaine> oppiaineet) {

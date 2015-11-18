@@ -38,7 +38,7 @@ public class OppiaineLukiokurssi extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "kurssi_id", nullable = false)
     private Lukiokurssi kurssi;
 
