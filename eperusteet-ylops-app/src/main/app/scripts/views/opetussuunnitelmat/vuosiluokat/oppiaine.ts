@@ -238,7 +238,9 @@ ylopsApp
       });
     }),
     cancel: refetch,
-    notify: (mode) => $scope.options.editing = mode
+    notify: (mode) => {
+      $scope.options.editing = mode
+    }
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 

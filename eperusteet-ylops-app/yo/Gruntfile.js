@@ -36,8 +36,8 @@ module.exports = function(grunt) {
         src: [
           '<%= yeoman.app %>/*.ts',
           '<%= yeoman.app %>/scripts/**/*.ts',
-          '<%= yeoman.app %>/eperusteet-esitys/**/*.ts'
-          //'<%= yeoman.test %>/**/*.ts'
+          '<%= yeoman.app %>/eperusteet-esitys/**/*.ts',
+          '<%= yeoman.test %>/**/*.ts'
         ],
         options: {
           module: 'amd',
@@ -45,14 +45,14 @@ module.exports = function(grunt) {
           sourceMap: true
         }
       },
-/*      tests: {
+      tests: {
         files: [{
           src: tsconfigTest.files.map(function(file) {
             return yeomanConfig.test + '/' + file;
           }),
           dest: yeomanConfig.test + '/'
         }]
-      },*/
+      },
       sources: {
         files: [{
           src: tsconfig.files.map(function(file) {
