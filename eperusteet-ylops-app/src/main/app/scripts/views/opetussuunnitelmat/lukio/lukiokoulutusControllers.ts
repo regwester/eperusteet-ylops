@@ -23,14 +23,12 @@ ylopsApp
                 {
                     url: $state.href('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet'),
                     label: 'lukio-aihekokonaisuudet',
-                    depth: 0,
-                    active: false
+                    depth: 0
                 },
                 {
                     url: $state.href('root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet'),
                     label: 'lukio-opetuksen-yleiset-tavoitteet',
-                    depth: 0,
-                    active: false
+                    depth: 0
                 }
             ];
             // TODO...

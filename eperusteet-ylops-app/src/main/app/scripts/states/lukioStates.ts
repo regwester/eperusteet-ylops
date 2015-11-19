@@ -55,7 +55,7 @@ ylopsApp
             controller: 'AihekokonaisuudetController'
         })
         .state('root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet', {
-            url: '/aihekokonaisuudet',
+            url: '/yleisetTavoitteet',
             templateUrl: 'views/opetussuunnitelmat/lukio/yleisettavoitteet.html',
             controller: 'OpetuksenYleisetTavoitteetController'
         })
