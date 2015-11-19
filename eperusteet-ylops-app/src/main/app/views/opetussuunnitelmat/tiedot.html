@@ -117,6 +117,14 @@
       </div>
     </div>
 
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label><span kaanna="'esikatselu'"></span></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <span kaanna="model.esikatseltavissa ? 'esikatseltavissa' : 'ei-esikatseltavissa' "></span>
+      </div>
+    </div>
 
   </div>
 
@@ -260,6 +268,15 @@
             </span>
           </span>
           <p class="alert alert-error" ng-show="opsForm.paatospaivamaara.$error.dateformatvalidator" kaanna="'kelvoton-pvm'"></p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-3 formfield-label">
+          <label><span kaanna="'esikatselu'"></span></label>
+        </div>
+        <div class="col-sm-9 formfield-data">
+          <input type="checkbox" ng-model="editableModel.esikatseltavissa">
         </div>
       </div>
 
