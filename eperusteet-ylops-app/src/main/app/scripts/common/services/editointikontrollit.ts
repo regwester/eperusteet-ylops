@@ -123,11 +123,13 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
         }
       },
       cancelEditing: function(tilanvaihto) {
-        handleBadCode(scope.editingCallback.cancel(), () => {
-          setEditMode(false);
-          $rootScope.$broadcast('disableEditing');
-          $rootScope.$broadcast('notifyCKEditor');
-        });
+        if( !_.isEmpty(scope.editingCallback)) {
+          handleBadCode(scope.editingCallback.cancel(), () => {
+            setEditMode(false);
+            $rootScope.$broadcast('disableEditing');
+            $rootScope.$broadcast('notifyCKEditor');
+          });
+        }
       },
       registerCallback: function(callback) {
         callback.validate = callback.validate || _.constant(true);
