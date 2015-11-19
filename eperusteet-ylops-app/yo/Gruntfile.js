@@ -32,19 +32,27 @@ module.exports = function(grunt) {
   grunt.initConfig({
     yeoman: yeomanConfig,
     ts: {
-      options: {
-        module: '',
-        target: 'es5',
-        sourceMap: true
+      default: {
+        src: [
+          '<%= yeoman.app %>/*.ts',
+          '<%= yeoman.app %>/scripts/**/*.ts',
+          '<%= yeoman.app %>/eperusteet-esitys/**/*.ts'
+          //'<%= yeoman.test %>/**/*.ts'
+        ],
+        options: {
+          module: 'amd',
+          target: 'es5',
+          sourceMap: true
+        }
       },
-      tests: {
+/*      tests: {
         files: [{
           src: tsconfigTest.files.map(function(file) {
             return yeomanConfig.test + '/' + file;
           }),
           dest: yeomanConfig.test + '/'
         }]
-      },
+      },*/
       sources: {
         files: [{
           src: tsconfig.files.map(function(file) {
@@ -73,11 +81,12 @@ module.exports = function(grunt) {
           livereload: LIVERELOAD_PORT,
           open: false
         },
+        tasks: ['ts'],
         files: [
-          '<%= yeoman.app %>/**/*.{html,js}',
+          '<%= yeoman.app %>/**/*.{html,ts}',
           '!<%= yeoman.app %>/bower_components/**',
           '.tmp/styles/**/*.css',
-          '{.tmp,<%= yeoman.app %>}/scripts/**/*.js',
+          '{.tmp,<%= yeoman.app %>}/scripts/**/*.ts',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
@@ -456,6 +465,7 @@ module.exports = function(grunt) {
       }
 
       grunt.task.run([
+        'ts',
         'clean:server',
         'concurrent:server',
         'copy:fonts',
@@ -499,6 +509,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('default', [
+    'ts',
     'test',
     'build'
   ]);

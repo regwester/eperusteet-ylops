@@ -95,6 +95,8 @@ ylopsApp
       if (!OpetussuunnitelmaOikeudetService.onkoOikeudet(isPohja ? 'pohja' : 'opetussuunnitelma', 'tilanvaihto')) {
         return;
       }
+      if ($scope.model.tila === 'julkaistu')
+        return;
 
       OpsinTilanvaihto.start({
         currentStatus: $scope.status,
