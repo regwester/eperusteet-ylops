@@ -352,16 +352,16 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     }
 
     public static Oppiaine copyOf(Oppiaine other, boolean copyOppimaarat) {
-        Copier<Oppiaine> copier = other.copier();
+        Copier<Oppiaine> copier = basicCopier().and(perusopetusCopier());
         if (copyOppimaarat) {
-            copier = copier.and(oppimaaraCopier(om -> copyOf(other, true)));
+            copier = copier.and(oppimaaraCopier(om -> copyOf(om, true)));
         }
         return copier.copied(other, new Oppiaine(other.getTunniste()));
     }
 
     @Override
     public Oppiaine copyInto(Oppiaine to) {
-        return basicCopier().and(perusopetusCopier()).copied(this, to);
+        return basicCopier().copied(this, to);
     }
 
     public static Copier<Oppiaine> basicCopier() {

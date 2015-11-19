@@ -373,10 +373,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(
                     oppiainePerusCopier.construct(oa -> new Oppiaine(oa.getTunniste()))));
         }
-        final Copier<Oppiaine> oppiaineCopierToUse = oppiaineCopier;
-        ConstructedCopier<OpsOppiaine> opsOppiaineCopier = OpsOppiaine.copier(oppiaineCopier
-                .construct(existing -> oppiaineCopierToUse.copied(existing, teeKopio
-                        ? new Oppiaine(existing.getTunniste()) : existing) ), teeKopio);
+        ConstructedCopier<OpsOppiaine> opsOppiaineCopier = OpsOppiaine.copier(
+                oppiaineCopier.construct(existing -> teeKopio ? new Oppiaine(existing.getTunniste()) : existing), teeKopio);
         ops.setOppiaineet(pohja.getOppiaineet().stream().map(opsOppiaineCopier::copy).collect(toSet()));
         Set<OpsVuosiluokkakokonaisuus> ovlkoot = pohja.getVuosiluokkakokonaisuudet().stream()
                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
