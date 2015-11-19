@@ -196,7 +196,7 @@ ylopsApp
     if ($scope.luonnissa) {
       $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
     } else {
-      fetch(true);
+      return fetch(true);
     }
   };
 
@@ -220,25 +220,30 @@ ylopsApp
     validate: function () {
       return $scope.hasRequiredFields();
     },
-    save: function () {
-      $scope.editableModel.julkaisukielet = _($scope.julkaisukielet).keys().filter(function (koodi) {
-        return $scope.julkaisukielet[koodi];
-      }).value();
+    save: () => $q((resolve, reject) => {
+      $scope.editableModel.julkaisukielet = _($scope.julkaisukielet)
+        .keys()
+        .filter((koodi) => {
+          return $scope.julkaisukielet[koodi];
+        })
+        .value();
       $scope.editableModel.organisaatiot = $scope.editableModel.koulutoimijat.concat($scope.editableModel.koulut);
       delete $scope.editableModel.tekstit;
       delete $scope.editableModel.oppiaineet;
 
       $scope.editableModel.vuosiluokkakokonaisuudet = _.remove($scope.editableModel.vuosiluokkakokonaisuudet, {valittu: true});
       if ($scope.luonnissa) {
-        OpetussuunnitelmaCRUD.save({}, $scope.editableModel, successCb, Notifikaatiot.serverCb);
+        OpetussuunnitelmaCRUD.save({}, $scope.editableModel, (res) => {
+          successCb(res).then(resolve);
+        }, Notifikaatiot.serverCb);
       } else {
-        $scope.editableModel.$save({}, successCb, Notifikaatiot.serverCb);
+        $scope.editableModel.$save({}, (res) => {
+          successCb(res).then(resolve);
+        }, Notifikaatiot.serverCb);
       }
-      return $q.when();
-    },
+    }),
     cancel: function () {
-      fetch();
-      return $q.when();
+      return fetch();
     },
     notify: function (mode) {
       $scope.editMode = mode;
