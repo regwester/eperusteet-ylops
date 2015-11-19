@@ -75,7 +75,7 @@ ylopsApp.directive('editointikontrollit', function($window) {
 
     setEditControls();
 
-    $scope.$on('$stateChangeSuccess', function() {
+    $scope.$on('$stateChangeStart', function() {
       Editointikontrollit.unregisterCallback();
       setEditControls();
     });

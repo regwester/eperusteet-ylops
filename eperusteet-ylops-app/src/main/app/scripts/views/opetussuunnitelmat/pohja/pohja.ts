@@ -125,27 +125,29 @@ ylopsApp
   };
 
   // FIXME: Ota kunnon editointikontrollit käyttöön
-  Editointikontrollit.registerCallback({
-    edit: function() {
-    },
-    asyncValidate: function(cb) {
-      TekstikappaleOps.saveRakenne($scope.model, function () {
-        Lukko.unlock(commonParams, cb);
-      });
-    },
-    save: function() {
-      Lukko.unlock(commonParams);
-      $scope.$$isRakenneMuokkaus = false;
-      $rootScope.$broadcast('genericTree:refresh');
-    },
-    cancel: function() {
-      Lukko.unlock(commonParams);
-      $state.reload();
-    }
-  });
+  var callbacks = {
+      edit: function() {
+      },
+      asyncValidate: function(cb) {
+          TekstikappaleOps.saveRakenne($scope.model, function () {
+              Lukko.unlock(commonParams, cb);
+          });
+      },
+      save: function() {
+          Lukko.unlock(commonParams);
+          $scope.$$isRakenneMuokkaus = false;
+          $rootScope.$broadcast('genericTree:refresh');
+      },
+      cancel: function() {
+        Lukko.unlock(commonParams);
+        $scope.$$isRakenneMuokkaus = false;
+        $state.reload();
+      }
+  };
 
   $scope.muokkaaRakennetta = function() {
     Lukko.lock(commonParams, function() {
+      Editointikontrollit.registerCallback(callbacks);
       Editointikontrollit.startEditing();
       $scope.$$isRakenneMuokkaus = true;
       $rootScope.$broadcast('genericTree:refresh');
