@@ -48,7 +48,8 @@ ylopsApp
 
     var STATES = {
       'root.opetussuunnitelmat.yksi.sisalto': {
-        useData: 'opsNimi'
+        useData: 'opsNimi',
+        useId: 'opsId'
       },
       'root.opetussuunnitelmat.yksi.sisaltoalue': {
         parent: 'root.opetussuunnitelmat.yksi.sisalto',
@@ -58,6 +59,10 @@ ylopsApp
       'root.opetussuunnitelmat.yksi.tiedot': {
         parent: 'root.opetussuunnitelmat.yksi.sisalto',
         label: 'opsn-tiedot'
+      },
+      'root.opetussuunnitelmat.yksi.kasitteet': {
+        parent: 'root.opetussuunnitelmat.yksi.sisalto',
+        label: 'kasitteet'
       },
       'root.opetussuunnitelmat.yksi.esikatselu': {
         parent: 'root.opetussuunnitelmat.yksi.sisalto'
@@ -75,6 +80,10 @@ ylopsApp
         useData: 'tekstiNimi',
         parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
       },
+      'root.opetussuunnitelmat.yksi.opetus': {
+        parent: 'root.opetussuunnitelmat.yksi.sisalto',
+        label: 'opetus-eri-vuosiluokilla'
+      },
       'root.pohjat.yksi.sisalto': {
         useData: 'opsNimi'
       },
@@ -89,7 +98,7 @@ ylopsApp
       'root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus': {
         useData: 'vlkNimi',
         useId: 'vlkId',
-        parent: 'root.opetussuunnitelmat.yksi.sisaltoalue'
+        parent: 'root.opetussuunnitelmat.yksi.opetus'
       },
       'root.opetussuunnitelmat.yksi.opetus.valinnaiset': {
         parent: 'root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus',
