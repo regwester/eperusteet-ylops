@@ -118,13 +118,13 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
           }
         }
       },
-      cancelEditing: function(tilanvaihto) {
+      cancelEditing: (tilanvaihto) => $q((resolve) => {
         handleBadCode(scope.editingCallback.cancel(), () => {
           setEditMode(false);
           $rootScope.$broadcast('disableEditing');
           $rootScope.$broadcast('notifyCKEditor');
         });
-      },
+      }),
       registerCallback: function(callback) {
         callback.validate = callback.validate || _.constant(true);
         callback.edit = callback.edit || _.noop;
@@ -147,13 +147,10 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
         cbListener();
       },
       unregisterCallback: function() {
-        console.log('unregistering');
         setEditMode(false);
         scope.editingCallback = null;
       },
-      editingEnabled: function() {
-        return !!scope.editingCallback;
-      },
+      editingEnabled: () => !!scope.editingCallback,
       registerCallbackListener: function(callbackListener) {
         cbListener = callbackListener;
       },
