@@ -30,7 +30,9 @@ ylopsApp
     function updateNavi() {
       TreeHelper.updateTreeNavi($scope.texttree);
       TreeHelper.updateTreeNavi($scope.oppiaineMenu, 'oppiaine');
-      TreeHelper.updateTreeNavi($scope.vlkMenu, 'vlk');
+      if ($scope.vlkMenu) {
+        TreeHelper.updateTreeNavi($scope.vlkMenu, 'vlk');
+      }
     }
 
     $scope.model = opsModel;
@@ -140,7 +142,9 @@ ylopsApp
         });
         buildOppiaineMenu();
         $scope.vlkMenu = buildVuosiluokkaMenu();
-        $scope.vlkMenu[0].$active = true;
+        if ($scope.vlkMenu.length) {
+          $scope.vlkMenu[0].$active = true;
+        }
       });
 
     $scope.switchTab = function (tabId) {

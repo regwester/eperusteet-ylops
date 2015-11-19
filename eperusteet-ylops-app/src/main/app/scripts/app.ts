@@ -38,7 +38,7 @@ var ylopsApp = angular.module('ylopsApp', [
 
 ylopsApp
   .run(function ($rootScope, VirheService, $window, Editointikontrollit, Kaanna,
-    Varmistusdialogi, $state, paginationConfig) {
+          Varmistusdialogi, $state, paginationConfig, $log) {
 
     paginationConfig.firstText = '';
     paginationConfig.previousText = '';
@@ -69,6 +69,12 @@ ylopsApp
         state: _.clone(fromState),
         params: _.clone(fromParams)
       };
+      if (fromState.name.indexOf('root.opetussuunnitelmat.') !== -1
+          && fromState.name.indexOf('root.opetussuunnitelmat.') !== -1
+          &&  fromParams.id && !toParams.id) {
+        // Redirect within opetusuunnitelmat (probably out or to yksi-scope)
+        toParams.id = fromParams.id;
+      }
 
       if (Editointikontrollit.getEditMode()) {
         event.preventDefault();

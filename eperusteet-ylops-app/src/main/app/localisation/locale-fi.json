@@ -371,5 +371,9 @@
   "virhe-ylempaan-nakymaan": "Ylempään näkymään",
   "virhe-opetussuunnitelmaan": "Opetussuunnitelmaan",
   "virhe-nayta-lisatiedot": "Näytä virheen tekniset tiedot",
-  "virhe-piilota-lisatiedot": "Piilota virheen tekniset tiedot"
+  "virhe-piilota-lisatiedot": "Piilota virheen tekniset tiedot",
+
+  "lukio-opetus": "Opetus",
+  "lukio-aihekokonaisuudet": "Aihekokonaisuudet",
+  "lukio-opetuksen-yleiset-tavoitteet": "Opetuksen yleiset tavoitteet"
 }
