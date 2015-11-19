@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,9 +28,14 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class OpetuksenYleisetTavoitteetDto implements Serializable {
+public class OpetuksenYleisetTavoitteetDto implements Serializable, PerusteenOsa {
     private UUID uuidTunniste;
     private Long id;
     private LokalisoituTekstiDto otsikko;
     private LokalisoituTekstiDto kuvaus;
+
+    @Override @JsonIgnore // uuidTunniste
+    public UUID getTunniste() {
+        return uuidTunniste;
+    }
 }

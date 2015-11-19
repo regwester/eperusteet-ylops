@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -30,19 +31,18 @@ import java.util.UUID;
 @Entity
 @Audited
 @Table(name = "aihekokonaisuus", schema = "public")
-public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity {
+public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity
+            implements Copyable<Aihekokonaisuus> {
     @Column(nullable = false, unique = true, updatable = false)
     @Getter
     private UUID tunniste;
 
-    public Aihekokonaisuus() {
-        this.oma = true;
+    protected Aihekokonaisuus() {
     }
 
     public Aihekokonaisuus(Aihekokonaisuudet aihekokonaisuudet, UUID tunniste) {
         this.aihekokonaisuudet = aihekokonaisuudet;
         this.tunniste = tunniste;
-        this.oma = false;
     }
 
     @Getter
@@ -65,12 +65,20 @@ public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity {
     private Long jnro;
 
     @Getter
-    @Column(name = "oma", nullable = false)
-    private boolean oma;
-
-    @Getter
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinColumn(name = "aihekokonaisuudet_id", nullable = false)
     private Aihekokonaisuudet aihekokonaisuudet;
+
+    public Aihekokonaisuus copy(Aihekokonaisuudet kokonaisuudet) {
+        return copyInto(new Aihekokonaisuus(kokonaisuudet, this.tunniste));
+    }
+
+    public Aihekokonaisuus copyInto(Aihekokonaisuus to) {
+        to.tunniste = this.tunniste;
+        to.jnro = this.jnro;
+        to.otsikko = this.otsikko;
+        to.yleiskuvaus = this.yleiskuvaus;
+        return to;
+    }
 }

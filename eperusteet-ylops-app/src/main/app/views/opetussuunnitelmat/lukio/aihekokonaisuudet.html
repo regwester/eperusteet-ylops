@@ -14,8 +14,8 @@
   ~  European Union Public Licence for more details.
   -->
 
-<h2>{{aihekokonaisuudet.otsikko | kaanna}}</h2>
+<h2>{{(aihekokonaisuudet.paikallinen.otsikko || aihekokonaisuudet.perusteen.otsikko) | kaanna}}</h2>
 
-<div ng-repeat="ak in aihekokonaisuudet.aihekokonaisuudet">
+<div ng-repeat="ak in aihekokonaisuudet.paikallinen.aihekokonaisuudet">
     <h3>{{ak.otsikko | kaanna}}</h3>
 </div>

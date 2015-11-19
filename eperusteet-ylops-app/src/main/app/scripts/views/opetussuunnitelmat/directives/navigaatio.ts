@@ -18,7 +18,7 @@
 
 interface NavigaatioItem {
   label: string, // lokalisaatioavain
-  url: string, // $state.href(...) or real url
+  url: string, // URL (provided by e.g. $state.href(...))
   depth?: number,
   active?: boolean
   valmis?: boolean

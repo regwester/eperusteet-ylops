@@ -157,8 +157,9 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     @Getter
     @Audited
-    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY)
-    private Set<Kurssi> kurssit = new HashSet<>(0);
+    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private Set<OppiaineLukiokurssi> lukiokurssit = new HashSet<>(0);
 
     @Getter
     @Setter

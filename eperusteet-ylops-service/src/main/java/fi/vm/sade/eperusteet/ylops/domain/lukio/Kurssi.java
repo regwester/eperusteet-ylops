@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -44,7 +45,7 @@ public class Kurssi extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     @Column(nullable = false, unique = true, updatable = false)
-    private UUID tunniste;
+    protected UUID tunniste;
 
     @Getter
     @Setter
@@ -73,17 +74,19 @@ public class Kurssi extends AbstractAuditedReferenceableEntity {
     @Column(name = "koodi_arvo")
     protected String koodiArvo;
 
-    @Getter
-    @Setter
-    @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Opetussuunnitelma opetussuunnitelma;
-
-    public Kurssi() {
+    protected Kurssi() {
     }
 
-    public Kurssi(Opetussuunnitelma opetussuunnitelma, UUID tunniste) {
-        this.opetussuunnitelma = opetussuunnitelma;
+    public Kurssi(UUID tunniste) {
         this.tunniste = tunniste;
+    }
+
+    public Kurssi copyInto(Kurssi kurssi) {
+        kurssi.setTunniste(this.tunniste);
+        kurssi.setNimi(this.nimi);
+        kurssi.setKuvaus(this.kuvaus);
+        kurssi.setKoodiUri(this.koodiUri);
+        kurssi.setKoodiArvo(this.koodiArvo);
+        return kurssi;
     }
 }

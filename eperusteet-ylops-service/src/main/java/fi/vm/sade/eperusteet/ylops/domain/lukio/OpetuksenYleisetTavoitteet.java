@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -30,7 +31,8 @@ import java.util.UUID;
 @Entity
 @Audited
 @Table(name = "lukiokoulutuksen_opetuksen_yleiset_tavoitteet", schema = "public")
-public class OpetuksenYleisetTavoitteet extends AbstractAuditedReferenceableEntity {
+public class OpetuksenYleisetTavoitteet extends AbstractAuditedReferenceableEntity
+            implements Copyable<OpetuksenYleisetTavoitteet> {
 
     @Column(name = "tunniste", nullable = false, unique = true, updatable = false)
     @Getter
@@ -65,4 +67,15 @@ public class OpetuksenYleisetTavoitteet extends AbstractAuditedReferenceableEnti
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
     private Opetussuunnitelma opetussuunnitelma;
+
+    public OpetuksenYleisetTavoitteet copy(Opetussuunnitelma to) {
+        return copyInto(new OpetuksenYleisetTavoitteet(to, this.uuidTunniste));
+    }
+
+    public OpetuksenYleisetTavoitteet copyInto(OpetuksenYleisetTavoitteet to) {
+        to.uuidTunniste = this.uuidTunniste;
+        to.otsikko = this.otsikko;
+        to.kuvaus = this.kuvaus;
+        return to;
+    }
 }

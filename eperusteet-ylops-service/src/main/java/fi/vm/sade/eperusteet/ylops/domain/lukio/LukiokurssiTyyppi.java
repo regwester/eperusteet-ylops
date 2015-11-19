@@ -19,6 +19,9 @@ package fi.vm.sade.eperusteet.ylops.domain.lukio;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.PerusteenLukiokurssiTyyppi;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Setter;
 
 import java.util.function.Function;
 
@@ -42,10 +45,6 @@ public enum LukiokurssiTyyppi {
             case VALTAKUNNALLINEN_SYVENTAVA: return VALTAKUNNALLINEN_SYVENTAVA;
             default: throw new IllegalStateException("Unimplemented peruste lukiokurssityyppi: " + tyyppi);
         }
-    }
-
-    public interface Setter<ClassType,ValueType> {
-        void set(ClassType obj, ValueType value);
     }
 
     // Vähän hassusti ovat nyt versioinnin takia samassa käsitteessä kaikki propertyinä, niin pientä helpotusta
@@ -74,5 +73,9 @@ public enum LukiokurssiTyyppi {
 
     public boolean isPaikallinen() {
         return paikallinen;
+    }
+
+    public Copier<Oppiaine> oppiaineKuvausCopier() {
+        return Copier.of(this.oppiaineKuvausGetter, this.oppiaineKuvausSetter);
     }
 }

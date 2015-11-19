@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,17 +23,24 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Created by jsikio.
  */
 @Getter
 @Setter
-public class AihekokonaisuudetDto implements Serializable {
-    private UUID uuidTunniste;
-    private Long id;
-    private LokalisoituTekstiDto otsikko;
-    private LokalisoituTekstiDto yleiskuvaus;
-    private LukiokoulutuksenPerusteenSisaltoDto sisalto;
+public class AihekokonaisuudetDto extends AihekokonaisuudetBaseDto
+        implements Serializable, PerusteenOsa {
     private Set<AihekokonaisuusDto> aihekokonaisuudet;
+
+    @Override @JsonIgnore // uuidTunniste
+    public UUID getTunniste() {
+        return getUuidTunniste();
+    }
+
+    @Override
+    public Stream<? extends PerusteenOsa> osat() {
+        return aihekokonaisuudet.stream();
+    }
 }

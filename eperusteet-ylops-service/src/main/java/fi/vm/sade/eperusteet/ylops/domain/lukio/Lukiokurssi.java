@@ -21,6 +21,8 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -40,7 +42,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "lukiokurssi", schema = "public")
-public class Lukiokurssi extends Kurssi {
+public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
 
     @Getter
     @Setter
@@ -83,10 +85,24 @@ public class Lukiokurssi extends Kurssi {
     @OneToMany(mappedBy = "kurssi", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OppiaineLukiokurssi> oppiaineet = new HashSet<>(0);
 
-    public Lukiokurssi() {
+    protected Lukiokurssi() {
     }
 
-    public Lukiokurssi(Opetussuunnitelma opetussuunnitelma, UUID tunniste) {
-        super(opetussuunnitelma, tunniste);
+    public Lukiokurssi(UUID tunniste) {
+        super(tunniste);
+    }
+
+    public Lukiokurssi copy() {
+        return copyInto(new Lukiokurssi(this.getTunniste()));
+    }
+
+    public Lukiokurssi copyInto(Lukiokurssi lukiokurssi) {
+        super.copyInto(lukiokurssi);
+        lukiokurssi.setTyyppi(this.tyyppi);
+        lukiokurssi.setLokalisoituKoodi(this.lokalisoituKoodi);
+        lukiokurssi.setTavoitteet(Tekstiosa.copyOf(this.tavoitteet));
+        lukiokurssi.setKeskeinenSisalto(Tekstiosa.copyOf(this.keskeinenSisalto));
+        lukiokurssi.setTavoitteetJaKeskeinenSisalto(Tekstiosa.copyOf(this.tavoitteetJaKeskeinenSisalto));
+        return lukiokurssi;
     }
 }

@@ -1,3 +1,9 @@
+/// <reference path="angular.d.ts" />
+
+import IDeferred = angular.IDeferred;
+import IPromise = angular.IPromise;
+import IQService = angular.IQService;
+
 declare var angular: any;
 declare var _: any;
 declare var CKEDITOR: any;

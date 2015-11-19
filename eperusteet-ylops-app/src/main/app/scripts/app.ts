@@ -16,6 +16,8 @@
 
 'use strict';
 
+/// <reference path="../angular.d.ts" />
+
 /* jshint ignore:start */
 
 var ylopsApp = angular.module('ylopsApp', [
@@ -163,3 +165,4 @@ ylopsApp
       }
     });
   });
+

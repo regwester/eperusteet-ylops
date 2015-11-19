@@ -1,3 +1,4 @@
+///<reference path="../services/lukioServices.ts"/>
 /*
  * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
  *
@@ -17,21 +18,44 @@
 'use strict';
 
 ylopsApp
-    .service('LukioNavigaatioProvider', function($state) {
-        var produceNavigation = function():NavigaatioItem[] {
-            return [
-                {
-                    url: $state.href('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet'),
-                    label: 'lukio-aihekokonaisuudet',
-                    depth: 0
-                },
-                {
-                    url: $state.href('root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet'),
-                    label: 'lukio-opetuksen-yleiset-tavoitteet',
-                    depth: 0
+    .service('LukioNavigaatioProvider', function($state, $q:IQService,
+                    LukioOpetussuunnitelmaService, Kaanna) {
+        var produceNavigation = function():IPromise<NavigaatioItem[]> {
+            var d = $q.defer<NavigaatioItem[]>(),
+                aihekok : AihekokonaisuudetPerusteenOsa = null;
+            $q.all([
+                LukioOpetussuunnitelmaService.getAihekokonaisuudet()
+                    .then(function(ak : AihekokonaisuudetPerusteenOsa) {aihekok = ak;})
+            ]).then(function() {
+                var items = <NavigaatioItem[]>[
+                    {
+                        url: $state.href('root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet'),
+                        label: 'lukio-opetuksen-yleiset-tavoitteet',
+                        depth: 0
+                    },
+                    {
+                        url: $state.href('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet'),
+                        label: 'lukio-aihekokonaisuudet',
+                        depth: 0
+                    }
+                ];
+                if (aihekok.paikallinen) {
+                    _.each(aihekok.paikallinen.aihekokonaisuudet, function(ak :OpsAihekokonaisuus) {
+                        items.push({
+                            url: $state.href('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet'),
+                            label: Kaanna.kaanna(ak.otsikko || (ak.perusteen ? ak.perusteen.otsikko : {})),
+                            depth: 1
+                        });
+                    });
                 }
-            ];
-            // TODO...
+                items.push({
+                    url: $state.href('root.opetussuunnitelmat.lukio.opetus.oppiaineet'),
+                    label: 'lukio-oppiaineet-oppimaarat',
+                    depth: 0
+                });
+                d.resolve(items);
+            });
+            return d.promise;
         };
 
         return {
@@ -42,25 +66,24 @@ ylopsApp
     .controller('LukioOpetusController', function (
             $scope, LukioNavigaatioProvider, MurupolkuData, $state, $stateParams,
             $rootScope, OppiaineService) {
-        $scope.navi = LukioNavigaatioProvider.produceNavigation();
+        LukioNavigaatioProvider.produceNavigation().then(function (items:NavigaatioItem[]) {
+            $scope.navi = items;
+        });
 
         if ($state.is('root.opetussuunnitelmat.lukio.opetus')) {
-            $state.go('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet');
+            $state.go('root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet');
         }
     })
     // a opetus controller:
-    .controller('AihekokonaisuudetController', function($scope) {
-        $scope.aihekokonaisuudet = {
-            otsikko: {fi: "Aihekokonaisuudet"},
-            aihekokonaisuudet: [
-                {
-                    otsikko: {fi: "Testi"}
-                }
-            ]
-        };
+    .controller('AihekokonaisuudetController', function($scope, LukioOpetussuunnitelmaService) {
+        $scope.aihekokonaisuudet = {};
+        LukioOpetussuunnitelmaService.getAihekokonaisuudet().then(function(ak : AihekokonaisuudetPerusteenOsa) {
+            $scope.aihekokonaisuudet = ak;
+        });
     })
-    .controller('OpetuksenYleisetTavoitteetController', function($scope) {
-        $scope.yleisetTavoitteet = {
-            otsikko: {fi: "Opetuksen yleiset tavoitteet"}
-        };
+    .controller('OpetuksenYleisetTavoitteetController', function($scope, LukioOpetussuunnitelmaService, $log) {
+        $scope.yleisetTavoitteet = {};
+        LukioOpetussuunnitelmaService.getOpetuksenYleisetTavoitteet().then(function(yt: OpetuksenYleisetTavoitteetPerusteenOsa) {
+            $scope.yleisetTavoitteet = yt;
+        });
     });
