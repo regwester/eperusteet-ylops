@@ -22,7 +22,7 @@ ylopsApp
       priority: 5,
       restrict: 'A',
       require: 'ngModel',
-      link: function(scope, element, attrs, ngModelCtrl) {
+      link: function(scope: any, element, attrs, ngModelCtrl) {
 
         ngModelCtrl.$formatters.push(function(modelValue) {
           if(angular.isUndefined(modelValue)) { return; }

@@ -222,7 +222,7 @@ ylopsApp
         teksti: {}
       });
       $timeout(function () {
-        var el = angular.element('[valinnaisen-ops-teksti]').last();
+        var el: any = angular.element('[valinnaisen-ops-teksti]').last();
         if (el.length === 1 && el.isolateScope()) {
           el.isolateScope().startEditing();
         }
@@ -328,7 +328,7 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/vuosiluokat/directives/opsteksti.html',
     controller: 'TekstiosaController',
-    link: function (scope, element, attrs) {
+    link: function (scope: any, element, attrs) {
       scope.editable = !!attrs.opsTeksti;
       scope.options = {
         collapsed: scope.editable
@@ -357,7 +357,7 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/vuosiluokat/directives/valinnaisenopsteksti.html',
     controller: 'TekstiosaController',
-    link: function (scope) {
+    link: function (scope: any) {
       scope.options = {
         collapsed: false
       };

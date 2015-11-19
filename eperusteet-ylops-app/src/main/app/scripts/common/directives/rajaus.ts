@@ -61,7 +61,7 @@ ylopsApp
           $scope.changed();
         };
       },
-      link: function (scope, element, attrs) {
+      link: function (scope: any, element, attrs) {
         attrs.$observe('placeholder', function (value) {
           scope.placeholderstring = value;
         });

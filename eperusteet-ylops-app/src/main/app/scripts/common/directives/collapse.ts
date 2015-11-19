@@ -23,7 +23,7 @@ ylopsApp
     scope: {
       isCollapsed: '=collapseToggler'
     },
-    link: function (scope, element) {
+    link: function (scope: any, element) {
       var toggler = angular.element('<span>')
         .addClass('glyphicon')
         .addClass('collapse-toggler')

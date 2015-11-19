@@ -59,7 +59,7 @@ ylopsApp
     };
   })
   .directive('kaanna', function(Kaanna, $compile, IconMapping) {
-    function getAttr(attr, scope) {
+    function getAttr(attr: any, scope: any) {
       if (!_.isString(attr) || _.size(attr) === 0) {
         return;
       }
@@ -67,11 +67,11 @@ ylopsApp
     }
     return {
       restrict: 'A',
-      link: function (scope, el, attrs) {
+      link: function (scope: any, el: any, attrs: any) {
         function kaannaValue(value) {
           return _.isObject(value) ? Kaanna.kaannaSisalto(value) : Kaanna.kaanna(value);
         }
-        var original = getAttr(attrs.kaanna, scope) || el.text();
+        var original: any = getAttr(attrs.kaanna, scope) || el.text();
         if (_.isObject(original)) {
           el.text(Kaanna.kaannaSisalto(original));
           if (attrs.iconRole) {
