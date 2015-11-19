@@ -9,6 +9,9 @@ $statusbadge-width: 95px;
   text-align: center;
   background-color: $brand-primary;
   border: none;
+  div:hover, div:focus, div:active {
+    text-decoration: none;
+  }
   .status-name {
     text-transform: uppercase;
   }

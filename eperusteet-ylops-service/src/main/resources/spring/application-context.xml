@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -45,7 +44,7 @@
                 <prop key="cas_key">eperusteet-ylops-service</prop>
                 <prop key="cas_service">${cas.service.eperusteet-ylops-service:''}</prop>
                 <prop key="cas_callback_url">${cas.callback.eperusteet-ylops-service:''}</prop>
-                <prop key="spring_security_default_access">isAuthenticated()</prop>
+                <prop key="spring_security_default_access">permitAll</prop>
             </util:properties>
         </property>
     </bean>

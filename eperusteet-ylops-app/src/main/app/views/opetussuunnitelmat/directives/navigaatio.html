@@ -1,5 +1,5 @@
-<div class="navigaatio-wrapper" ng-show="isActive && items.length > 0">
-  <div class="navigaatio-alataso-wrapper" ng-class="{collapsed: collapsed, open: !collapsed}">
+<div ng-class="{ 'navigaatio-wrapper': isActive && items.length > 0 }">
+  <div class="navigaatio-alataso-wrapper" ng-class="{collapsed: collapsed, open: !collapsed}" ng-show="isActive && items.length > 0">
     <div class="sivunavi-toggler-wrapper">
       <div class="sivunavi-toggler" ng-click="toggle()"
            ng-attr-title="{{collapsed && ('sivunavigointi-avaa-menu'|kaanna) || ('sivunavigointi-sulje-menu'|kaanna)}}">
@@ -11,11 +11,7 @@
     <div navimenu="items"></div>
   </div>
 
-  <div class="navigaatio-content">
+  <div ng-class="{ 'navigaatio-content': isActive && items.length > 0 }">
     <div ng-transclude></div>
   </div>
-</div>
-
-<div ng-if="!isActive || items.length === 0" class="navigaatio-content-plain">
-  <div ng-transclude></div>
 </div>

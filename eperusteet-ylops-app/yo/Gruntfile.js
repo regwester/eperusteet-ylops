@@ -7,7 +7,6 @@ var mountFolder = function(connect, dir) {
 var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
 
-
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-connect-proxy');
   grunt.loadNpmTasks('grunt-angular-templates');
@@ -21,6 +20,9 @@ module.exports = function(grunt) {
     test: '../src/test/js'
   };
 
+  var tsconfig = require(yeomanConfig.app + '/tsconfig.json');
+  var tsconfigTest = require(yeomanConfig.test + '/tsconfig.json');
+
   try {
     yeomanConfig.app = require('./bower.json').appPath || yeomanConfig.app;
   } catch (e) {
@@ -29,6 +31,37 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     yeoman: yeomanConfig,
+    ts: {
+      default: {
+        src: [
+          '<%= yeoman.app %>/*.ts',
+          '<%= yeoman.app %>/scripts/**/*.ts',
+          '<%= yeoman.app %>/eperusteet-esitys/**/*.ts',
+          '<%= yeoman.test %>/**/*.ts'
+        ],
+        options: {
+          module: 'amd',
+          target: 'es5',
+          sourceMap: true
+        }
+      },
+      tests: {
+        files: [{
+          src: tsconfigTest.files.map(function(file) {
+            return yeomanConfig.test + '/' + file;
+          }),
+          dest: yeomanConfig.test + '/'
+        }]
+      },
+      sources: {
+        files: [{
+          src: tsconfig.files.map(function(file) {
+            return yeomanConfig.app + '/' + file;
+          }),
+          dest: yeomanConfig.app
+        }]
+      }
+    },
     focus: {
       dev: {
         exclude: ['test']
@@ -40,19 +73,20 @@ module.exports = function(grunt) {
         tasks: ['sass', 'copy:fonts', 'autoprefixer'],
       },
       test: {
-        files: ['<%= yeoman.app %>/**/*.{js,html}', '<%= yeoman.test %>/**/*.js','!<%= yeoman.app %>/bower_components/**'],
-        tasks: ['karma:unit', 'jshint', 'regex-check']
+        files: ['<%= yeoman.app %>/**/*.{ts,html}', '<%= yeoman.test %>/**/*.ts','!<%= yeoman.app %>/bower_components/**'],
+        tasks: ['ts', 'karma:unit', 'regex-check']
       },
       livereload: {
         options: {
           livereload: LIVERELOAD_PORT,
           open: false
         },
+        tasks: ['ts'],
         files: [
-          '<%= yeoman.app %>/**/*.{html,js}',
+          '<%= yeoman.app %>/**/*.{html,ts}',
           '!<%= yeoman.app %>/bower_components/**',
           '.tmp/styles/**/*.css',
-          '{.tmp,<%= yeoman.app %>}/scripts/**/*.js',
+          '{.tmp,<%= yeoman.app %>}/scripts/**/*.ts',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
@@ -142,16 +176,6 @@ module.exports = function(grunt) {
         }]
       },
       server: '.tmp'
-    },
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: [
-        'Gruntfile.js',
-        '<%= yeoman.app %>/scripts/**/*.js',
-        '<%= yeoman.app %>/ckeditor-plugins/**/*.js',
-      ]
     },
     // not used since Uglify task does concat,
     // but still available if needed
@@ -441,6 +465,7 @@ module.exports = function(grunt) {
       }
 
       grunt.task.run([
+        'ts',
         'clean:server',
         'concurrent:server',
         'copy:fonts',
@@ -456,19 +481,20 @@ module.exports = function(grunt) {
   grunt.registerTask('dev', devTask(true));
 
   grunt.registerTask('test', [
+    'ts',
     'clean:server',
     'copy:fonts', // needed if testing while "grunt dev" is running :)
     'concurrent:test',
     'autoprefixer',
 //  'connect:test',
     'regex-check',
-    'jshint',
     'maxlines',
     'karma'
   ]);
 
   grunt.registerTask('build', [
     'clean:dist',
+    'ts',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
@@ -483,6 +509,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('default', [
+    'ts',
     'test',
     'build'
   ]);

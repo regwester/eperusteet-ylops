@@ -16,27 +16,24 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.wordnik.swagger.annotations.Api;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
-import java.util.Optional;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet")
@@ -60,12 +57,11 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
-    public fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-
-        final Peruste peruste = opetussuunnitelmat.getPeruste(opsId);
+    public PerusteVuosiluokkakokonaisuusDto getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        final PerusteDto peruste = opetussuunnitelmat.getPeruste(opsId);
         final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id).getVuosiluokkakokonaisuus();
 
-        Optional<fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteVuosiluokkakokonaisuus> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet()
+        Optional<PerusteVuosiluokkakokonaisuusDto> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet()
             .stream()
             .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
             .findAny();

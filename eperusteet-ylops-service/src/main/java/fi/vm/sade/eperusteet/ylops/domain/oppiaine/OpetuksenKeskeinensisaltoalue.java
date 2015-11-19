@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Entity
 @Audited
 @Table(name="opetuksen_tavoite_keskeinen_sisaltoalue")
-public class OpetuksenKeskeinensisaltoalue implements Serializable{
+public class OpetuksenKeskeinensisaltoalue implements Serializable {
 
     @Getter
     @Setter
@@ -31,14 +31,14 @@ public class OpetuksenKeskeinensisaltoalue implements Serializable{
 
     @Getter
     @Setter
-    @ManyToOne(optional = false, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "sisaltoalueet_id")
     @NotNull
     private Keskeinensisaltoalue sisaltoalueet;
 
     @Getter
     @Setter
-    @ManyToOne(optional = false, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "opetuksen_tavoite_id")
     @NotNull
     private Opetuksentavoite opetuksentavoite;

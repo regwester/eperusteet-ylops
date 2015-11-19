@@ -17,8 +17,8 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaineenVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
@@ -28,7 +28,6 @@ import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -122,12 +121,12 @@ public class OppiaineenVuosiluokkakokonaisuusController {
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     @CacheControl(nonpublic = false, age = 3600)
-    public ResponseEntity<PerusteOppiaineenVuosiluokkakokonaisuus> getPerusteSisalto(
+    public ResponseEntity<PerusteOppiaineenVuosiluokkakokonaisuusDto> getPerusteSisalto(
         @PathVariable("opsId") final Long opsId,
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id) {
 
-        final Peruste peruste = ops.getPeruste(opsId);
+        final PerusteDto peruste = ops.getPeruste(opsId);
         final Optional<OppiaineDto> aine = Optional.ofNullable(oppiaineService.get(opsId, oppiaineId).getOppiaine());
 
         return Responses.of(aine.flatMap(a -> a.getVuosiluokkakokonaisuudet().stream()

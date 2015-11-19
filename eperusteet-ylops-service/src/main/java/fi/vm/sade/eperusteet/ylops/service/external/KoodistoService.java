@@ -29,7 +29,7 @@ public interface KoodistoService {
     @PreAuthorize("isAuthenticated()")
     List<KoodistoKoodiDto> getAll(String koodisto);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     KoodistoKoodiDto get(String koodisto, String koodi);
 
     @PreAuthorize("isAuthenticated()")
