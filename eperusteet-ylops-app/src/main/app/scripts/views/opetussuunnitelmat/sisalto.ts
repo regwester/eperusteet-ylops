@@ -209,9 +209,7 @@ ylopsApp
     }),
     cancel: () => $q((resolve) => {
       resolve();
-      Lukko.unlock(commonParams, () => {
-        $state.reload()
-      });
+      Lukko.unlock(commonParams, $state.reload);
     })
   });
 

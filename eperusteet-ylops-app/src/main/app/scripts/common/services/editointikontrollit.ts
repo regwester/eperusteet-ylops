@@ -147,8 +147,9 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
         cbListener();
       },
       unregisterCallback: function() {
-        scope.editingCallback = null;
+        console.log('unregistering');
         setEditMode(false);
+        scope.editingCallback = null;
       },
       editingEnabled: function() {
         return !!scope.editingCallback;
