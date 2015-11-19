@@ -17,23 +17,20 @@ package fi.vm.sade.eperusteet.ylops.resource.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -66,20 +63,32 @@ public class UlkopuolisetController {
 
     @RequestMapping(value = "/julkaistutperusteet", method = GET)
     @ResponseBody
-    public ResponseEntity<List<PerusteInfo>> getPerusteet() {
+    public ResponseEntity<List<PerusteInfoDto>> getPerusteet() {
         return new ResponseEntity<>(eperusteetService.findPerusteet(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/perusopetusperusteet", method = GET)
     @ResponseBody
-    public ResponseEntity<List<PerusteInfo>> getPerusopetusperusteet() {
+    public ResponseEntity<List<PerusteInfoDto>> getPerusopetusperusteet() {
         return new ResponseEntity<>(eperusteetService.findPerusopetuksenPerusteet(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/perusopetusperusteet/{id}", method = GET)
     @ResponseBody
-    public Peruste getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
-        return eperusteetService.getPerusopetuksenPeruste(id);
+    public PerusteDto getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
+        return eperusteetService.getEperusteetPeruste(id);
+    }
+
+    @RequestMapping(value = "/lukiokoulutusperusteet", method = GET)
+    @ResponseBody
+    public ResponseEntity<List<PerusteInfoDto>> getLukiokoulutusperusteet() {
+        return new ResponseEntity<>(eperusteetService.findLukiokoulutusPerusteet(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/lukiokoulutusperusteet/{id}", method = GET)
+    @ResponseBody
+    public PerusteDto getLukiokoulutusperuste(@PathVariable(value = "id") final Long id) {
+        return eperusteetService.getEperusteetPeruste(id);
     }
 
     @RequestMapping(value = "/tiedotteet", method = GET)

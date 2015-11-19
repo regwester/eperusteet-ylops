@@ -85,6 +85,7 @@
   "koulutustyyppi_15": "Esiopetus",
   "koulutustyyppi_16": "Perusopetus",
   "koulutustyyppi_6": "Lisäopetus",
+  "koulutustyyppi_2": "Lukiokoulutus",
   "kunnalla-ei-kouluja": "Valitulle kunnalle ei löytynyt kouluja.",
   "kunnat": "Kunnat",
   "kunta": "Kunta",
@@ -370,5 +371,6 @@
   "virhe-ylempaan-nakymaan": "Ylempään näkymään",
   "virhe-opetussuunnitelmaan": "Opetussuunnitelmaan",
   "virhe-nayta-lisatiedot": "Näytä virheen tekniset tiedot",
-  "virhe-piilota-lisatiedot": "Piilota virheen tekniset tiedot"
+  "virhe-piilota-lisatiedot": "Piilota virheen tekniset tiedot",
+  "opetus-eri-vuosiluokilla": "Opetus eri vuosiluokilla"
 }

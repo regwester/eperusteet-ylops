@@ -4,6 +4,7 @@
     "sourceMap": true
   },
   "files": [
+    "typings/tsd.d.ts",
     "constants.ts",
     "scripts/app.ts",
     "scripts/views/etusivu.ts",

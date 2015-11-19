@@ -84,7 +84,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         @Cacheable("organisaatiot")
         public JsonNode getOrganisaatio(String organisaatioOid) {
-            CachingRestClient crc = restClientFactory.get(serviceUrl);
+            CachingRestClient crc = restClientFactory.getWithoutCas(serviceUrl);
             String url = serviceUrl + ORGANISAATIOT + organisaatioOid;
             try {
                 return mapper.readTree(crc.getAsString(url));
@@ -108,7 +108,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         }
 
         private JsonNode getPeruskoulut(String hakuehto) {
-            CachingRestClient crc = restClientFactory.get(serviceUrl);
+            CachingRestClient crc = restClientFactory.getWithoutCas(serviceUrl);
 
             try {
                 final String url =

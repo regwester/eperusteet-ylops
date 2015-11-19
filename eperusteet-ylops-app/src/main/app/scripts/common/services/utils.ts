@@ -92,7 +92,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
       scope: {},
       template: '<div id="backtotop" ng-hide="hidden" title="{{tooltip.label | kaanna}}">' +
         '<a class="action-link" icon-role="arrow-up" ng-click="backToTop()"></a></div>',
-      link: function (scope) {
+      link: function (scope: any) {
         var active = true;
         scope.backToTop = function () {
           Utils.scrollTo('#ylasivuankkuri');
@@ -159,7 +159,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
     return {
       restrict: 'A',
       require: 'ngModel',
-      link: function (scope, element, attrs, ngModel) {
+      link: function (scope: any, element: any, attrs: any, ngModel) {
 
         var parsedMoment: any = '';
 

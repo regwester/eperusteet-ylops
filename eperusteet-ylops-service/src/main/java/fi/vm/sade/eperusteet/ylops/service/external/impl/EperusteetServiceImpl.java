@@ -15,35 +15,40 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteInfo;
-import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
+import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusopetusPerusteDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.ExceptionUtil.wrapRuntime;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  *
@@ -51,25 +56,31 @@ import org.springframework.web.client.RestTemplate;
  */
 @Service
 @Profile(value = "default")
+@SuppressWarnings("TransactionalAnnotations")
 public class EperusteetServiceImpl implements EperusteetService {
+    private static final Logger logger = LoggerFactory.getLogger(EperusteetServiceImpl.class);
 
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String eperusteetServiceUrl;
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
     private String koulutustyyppiPerusopetus;
-
+    @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_lukiokoilutus:koulutustyyppi_2}")
+    private String koulutustyyppiLukiokoulutus;
+    // feature that could be used to populate data and turned off after all existing
+    // perusteet in the environment has been synced:
+    @Value("${fi.vm.sade.eperusteet.ylops.update-peruste-cache-for-all-missing:false}")
+    private boolean updateMissingToCache;
+    @Autowired
+    private PerusteCacheRepository perusteCacheRepository;
+    @Autowired
+    private JsonMapper jsonMapper;
     @Autowired
     private DtoMapper mapper;
+    private RestTemplate client;
 
-    private final RestTemplate client;
-
-    public EperusteetServiceImpl() {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.getObjectMapper().enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
-        converter.getObjectMapper().enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-        converter.getObjectMapper().registerModule(new Jdk8Module());
-        converter.getObjectMapper().setPropertyNamingStrategy(new ReferenceNamingStrategy());
-        client = new RestTemplate(Arrays.asList(converter));
+    @PostConstruct
+    protected void init() {
+        client = new RestTemplate(singletonList(jsonMapper.messageConverter().orElseThrow(IllegalStateException::new)));
     }
 
     private Set<KoulutusTyyppi> getKoulutuskoodit() {
@@ -77,19 +88,60 @@ public class EperusteetServiceImpl implements EperusteetService {
             KoulutusTyyppi.ESIOPETUS,
             KoulutusTyyppi.PERUSOPETUS,
             KoulutusTyyppi.LISAOPETUS,
-            KoulutusTyyppi.VARHAISKASVATUS
+            KoulutusTyyppi.VARHAISKASVATUS,
+            KoulutusTyyppi.LUKIOKOULUTUS
         };
         return new HashSet<>(Arrays.asList(vaihtoehdot));
     }
 
     @Override
-    public List<PerusteInfo> findPerusteet() {
-        return findPerusteet(getKoulutuskoodit());
+    public List<PerusteInfoDto> findPerusteet() {
+        return findPerusteet(getKoulutuskoodit(), false);
+    }
+
+    private List<PerusteInfoDto> findPerusteet(boolean forceRefresh) {
+        return findPerusteet(getKoulutuskoodit(), forceRefresh);
     }
 
     @Override
-    public List<PerusteInfo> findPerusteet(Set<KoulutusTyyppi> tyypit) {
-        List<PerusteInfo> infot = new ArrayList<>();
+    public List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit) {
+        return findPerusteet(tyypit, false);
+    }
+
+    private List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit, boolean forceRefresh) {
+        try {
+            return updateMissingToCache(findPerusteetFromEperusteService(tyypit), tyypit);
+        } catch (Exception e) {
+            if (forceRefresh) {
+                throw e;
+            }
+            logger.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
+                    + " Trying from DB-cache.", e);
+            return perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
+                .map(wrapRuntime(c -> c.getPerusteJson(jsonMapper),
+                        e1 -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e.getMessage(), e)))
+                    .map(f -> mapper.map(f, PerusteInfoDto.class))
+                    .collect(toList());
+        }
+    }
+
+    private<C extends Collection<PerusteInfoDto>> C updateMissingToCache(C perusteet, Set<KoulutusTyyppi> tyypit) {
+        if (updateMissingToCache) {
+            List<PerusteCache> currentList = perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit);
+            Map<Long, PerusteCache> byId = currentList.stream().collect(toMap(PerusteCache::getPerusteId, c->c));
+            perusteet.stream().filter(p -> p.getGlobalVersion() != null)
+                .forEach(p -> {
+                    PerusteCache current = byId.get(p.getId());
+                    if (current == null || current.getAikaleima().compareTo(p.getGlobalVersion().getAikaleima()) < 0) {
+                        getEperusteetPeruste(p.getId());
+                    }
+                });
+        }
+        return perusteet;
+    }
+
+    private List<PerusteInfoDto> findPerusteetFromEperusteService(Set<KoulutusTyyppi> tyypit) {
+        List<PerusteInfoDto> infot = new ArrayList<>();
         for (KoulutusTyyppi tyyppi : tyypit) {
             PerusteInfoWrapperDto wrapperDto
                 = client.getForObject(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
@@ -105,50 +157,100 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
-    public List<PerusteInfo> findPerusopetuksenPerusteet() {
-        PerusteInfoWrapperDto wrapperDto
-            = client.getForObject(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
-                                  PerusteInfoWrapperDto.class, koulutustyyppiPerusopetus, 100);
+    public List<PerusteInfoDto> findPerusopetuksenPerusteet() {
+        return findPerusteet(new HashSet<>(singletonList(KoulutusTyyppi.PERUSOPETUS)));
+    }
 
-        // Filtteröi pois perusteet jotka eivät enää ole voimassa
-        Date now = new Date();
-        return wrapperDto.getData().stream()
-            .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
-            .collect(Collectors.toList());
+    @Override
+    public List<PerusteInfoDto> findLukiokoulutusPerusteet() {
+        return findPerusteet(new HashSet<>(singletonList(KoulutusTyyppi.LUKIOKOULUTUS)));
     }
 
     @Override
     @Cacheable("perusteet")
-    public Peruste getPerusopetuksenPeruste(final Long id) {
-        PerusopetusPerusteDto peruste = client.getForObject(eperusteetServiceUrl
-            + "/api/perusteet/{id}/kaikki", PerusopetusPerusteDto.class, id);
+    @Transactional
+    public PerusteDto getEperusteetPeruste(final Long id) {
+        return getEperusteetPeruste(id, false);
+    }
 
+    private PerusteDto getEperusteetPeruste(final Long id, boolean forceRefresh) {
+        EperusteetPerusteDto peruste = getNewestPeruste(id, forceRefresh);
         if (peruste == null || !getKoulutuskoodit().contains(peruste.getKoulutustyyppi())) {
             throw new BusinessRuleViolationException("Perustetta ei löytynyt tai se ei ole perusopetuksen peruste");
         }
+        return mapper.map(peruste, PerusteDto.class);
+    }
 
-        return mapper.map(peruste, Peruste.class);
+    private EperusteetPerusteDto getNewestPeruste(final long id, boolean forceRefresh) {
+        try {
+            EperusteetPerusteDto peruste = client.getForObject(eperusteetServiceUrl
+                    + "/api/perusteet/{id}/kaikki", EperusteetPerusteDto.class, id);
+            Date newest = perusteCacheRepository.findNewestEntryAikaleimaForPeruste(id);
+            if (peruste.getGlobalVersion() != null // not all backend environments may return this info yet
+                    && (newest == null || newest.compareTo(peruste.getGlobalVersion().getAikaleima()) < 0)) {
+                savePerusteCahceEntry(peruste);
+            }
+            return peruste;
+        } catch (Exception e) {
+            if (forceRefresh) {
+                throw e;
+            }
+            logger.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
+                    + " Trying from DB-cache.", e);
+            PerusteCache found = perusteCacheRepository.findNewestEntryForPeruste(id);
+            if (found == null) {
+                logger.warn("No cache entry for Peruste id="+id);
+                throw e;
+            }
+            try {
+                return found.getPerusteJson(jsonMapper);
+            } catch (IOException e1) {
+                logger.error("Failed to fallback-unserialize PerusteCache entry: " + found.getId()
+                        + " for peruste id="+id, e1);
+                throw e;
+            }
+        }
+    }
+
+    private void savePerusteCahceEntry(EperusteetPerusteDto peruste) {
+        PerusteCache cache = new PerusteCache();
+        cache.setAikaleima(peruste.getGlobalVersion().getAikaleima());
+        cache.setPerusteId(peruste.getId());
+        cache.setKoulutustyyppi(peruste.getKoulutustyyppi());
+        cache.setDiaarinumero(peruste.getDiaarinumero());
+        cache.setVoimassaoloAlkaa(peruste.getVoimassaoloAlkaa());
+        cache.setVoimassaoloLoppuu(peruste.getVoimassaoloLoppuu());
+        cache.setNimi(LokalisoituTeksti.of(peruste.getNimi().getTekstit()));
+        try {
+            cache.setPerusteJson(peruste, jsonMapper);
+        } catch (IOException e) {
+            // Should not happen (EperusteetPerusteDto parsed from JSON to begin with)
+            throw new IllegalStateException("Could not serialize EperusteetPerusteDto for cache.", e);
+        }
+        perusteCacheRepository.saveAndFlush(cache);
     }
 
     @Override
     @Cacheable("perusteet")
-    public Peruste getPeruste(String diaarinumero) {
-        return getPerusteByDiaari(diaarinumero);
+    @Transactional
+    public PerusteDto getPeruste(String diaarinumero) {
+        return getPerusteByDiaari(diaarinumero, false);
     }
 
     @Override
     @CachePut("perusteet")
-    public Peruste getPerusteUpdateCache(String diaarinumero) {
-        return getPerusteByDiaari(diaarinumero);
+    @Transactional
+    public PerusteDto getPerusteUpdateCache(String diaarinumero) {
+        return getPerusteByDiaari(diaarinumero, true);
     }
 
-    private Peruste getPerusteByDiaari (String diaarinumero) {
-        PerusteInfo perusteInfoDto = findPerusteet().stream()
+    private PerusteDto getPerusteByDiaari (String diaarinumero, boolean forceRefresh) {
+        PerusteInfoDto perusteInfoDto = findPerusteet(forceRefresh).stream()
             .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
             .findAny()
             .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
 
-        return getPerusopetuksenPeruste(perusteInfoDto.getId());
+        return getEperusteetPeruste(perusteInfoDto.getId(), forceRefresh);
     }
 
     @Override
@@ -164,6 +266,6 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Getter
     @Setter
     private static class PerusteInfoWrapperDto {
-        private List<PerusteInfo> data;
+        private List<PerusteInfoDto> data;
     }
 }

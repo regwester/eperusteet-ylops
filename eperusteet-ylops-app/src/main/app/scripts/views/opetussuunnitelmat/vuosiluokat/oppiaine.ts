@@ -42,7 +42,7 @@ ylopsApp
     }
   }
 
-  var onOma = $scope.oppiaine.oma && $scope.oppiaine.vuosiluokkakokonaisuudet.length > 0;
+  var onOma = $scope.oppiaine.oma && !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet.length);
   $scope.isVuosiluokkaistettava = onOma || (!!perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus && !_.isEmpty(vlk.tavoitteet);
   }));

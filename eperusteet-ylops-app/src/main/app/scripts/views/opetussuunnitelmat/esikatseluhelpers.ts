@@ -124,7 +124,7 @@ ylopsApp
     '    <a ui-sref="^.tekstikappale({tekstikappaleId: model.id})" icon-role="new-window"></a>' +
     '  </span>' +
     '</span>',
-    link: function (scope, element) {
+    link: function (scope: any, element) {
       var headerEl = angular.element('<h' + scope.level + '>');
       element.find('.otsikko-wrap').wrap(headerEl);
     }

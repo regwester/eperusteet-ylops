@@ -164,13 +164,15 @@ ylopsApp
     }
   }
 
-  function fetch(notify?) {
-    OpsService.refetch(function (res) {
+  const fetch = (notify?) => $q((resolve, reject) => {
+    OpsService.refetch((res) => {
       $scope.model = res;
-      var vuosiluokkakokonaisuudet = _.chain(res.vuosiluokkakokonaisuudet).map(function(v) {
-        v.valittu = true;
-        return v;
-      }).concat( $scope.opsvuosiluokkakokonaisuudet ).value();
+      var vuosiluokkakokonaisuudet = _(res.vuosiluokkakokonaisuudet)
+        .each((v) => {
+          v.valittu = true;
+        })
+        .concat($scope.opsvuosiluokkakokonaisuudet )
+        .value();
 
       vuosiluokkakokonaisuudet = _.uniq(vuosiluokkakokonaisuudet,function(c){
         return c.vuosiluokkakokonaisuus._tunniste;
@@ -185,8 +187,9 @@ ylopsApp
         $rootScope.$broadcast('rakenne:updated');
       }
       $scope.loading = false;
+      resolve();
     });
-  }
+  });
 
   var successCb = function (res) {
     Notifikaatiot.onnistui('tallennettu-ok');
@@ -197,21 +200,22 @@ ylopsApp
     }
   };
 
-  var callbacks = {
+  const callbacks = {
     edit: function () {
       $scope.loading = true;
-      fetch();
+      return fetch();
     },
-    asyncValidate: function( save ){
+    asyncValidate: function(save){
       var muokattuVuosiluokkakokonaisuuksia = _.some(_.pluck($scope.editableModel.vuosiluokkakokonaisuudet, 'muutettu'));
-      if( !$scope.luonnissa && muokattuVuosiluokkakokonaisuuksia ){
+      if (!$scope.luonnissa && muokattuVuosiluokkakokonaisuuksia) {
         Varmistusdialogi.dialogi({
           otsikko: 'vahvista-vuosiluokkakokonaisuudet-muokkaus-otsikko',
           teksti: 'vahvista-vuosiluokkakokonaisuudet-muokkaus-teksti'
         })(save);
-      }else{
+      } else {
         save();
       }
+      return $q.when();
     },
     validate: function () {
       return $scope.hasRequiredFields();
@@ -230,9 +234,11 @@ ylopsApp
       } else {
         $scope.editableModel.$save({}, successCb, Notifikaatiot.serverCb);
       }
+      return $q.when();
     },
     cancel: function () {
       fetch();
+      return $q.when();
     },
     notify: function (mode) {
       $scope.editMode = mode;
@@ -336,7 +342,7 @@ ylopsApp
 
     $scope.avataInputs = function(valittuKoulutustyyppi) {
       $scope.koulutustyyppiOnValittu = false;
-      var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6'];
+      var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6', 'koulutustyyppi_2'];
       return _.includes(validTyypit, valittuKoulutustyyppi) ? ($scope.koulutustyyppiOnValittu = true) : ($scope.koulutustyyppiOnValittu = false);
     };
 

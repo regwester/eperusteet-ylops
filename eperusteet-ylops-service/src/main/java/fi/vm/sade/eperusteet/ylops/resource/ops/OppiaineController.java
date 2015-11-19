@@ -17,13 +17,12 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.Peruste;
-import fi.vm.sade.eperusteet.ylops.domain.peruste.PerusteOppiaine;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
@@ -126,8 +125,8 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
-    public ResponseEntity<PerusteOppiaine> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-        Peruste p = ops.getPeruste(opsId);
+    public ResponseEntity<PerusteOppiaineDto> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        PerusteDto p = ops.getPeruste(opsId);
         return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
             .flatMap(a -> p.getPerusopetus().getOppiaine(a.getOppiaine().getTunniste())));
     }

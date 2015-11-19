@@ -33,6 +33,11 @@ ylopsApp
       perusteId: '@id'
     });
   })
+  .factory('EperusteetLukiokoulutus', function(UlkopuolisetResources, $resource) {
+      return $resource(UlkopuolisetResources.ULKOPUOLISET + 'lukiokoulutusperusteet/:perusteId', {
+        perusteId: '@id'
+      });
+  })
   .factory('EperusteetKayttajatiedot', function(UlkopuolisetResources, $resource) {
     return $resource(UlkopuolisetResources.ULKOPUOLISET + 'kayttajatiedot/:oid', {
       oid: '@oid'

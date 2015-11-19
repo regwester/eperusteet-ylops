@@ -20,8 +20,10 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -35,24 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -77,6 +62,13 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Getter
     @Setter
     private String perusteenDiaarinumero;
+
+    @Getter
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @JoinColumn(name = "cached_peruste")
+    private PerusteCache cachedPeruste;
 
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -163,6 +155,24 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<Liite> liitteet = new HashSet<>();
 
+    @Getter
+    @Audited
+    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY)
+    private Set<Kurssi> kurssit = new HashSet<>(0);
+
+    @Getter
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private Aihekokonaisuudet aihekokonaisuudet;
+
+    @Getter
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private OpetuksenYleisetTavoitteet opetuksenYleisetTavoitteet;
+
+
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
     }
@@ -185,6 +195,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     public Set<OpsOppiaine> getOppiaineet() {
         return new HashSet<>(oppiaineet);
+    }
+
+    public Set<OpsOppiaine> getOppiaineetReal() {
+        return oppiaineet;
     }
 
     public void setOppiaineet(Set<OpsOppiaine> oppiaineet) {

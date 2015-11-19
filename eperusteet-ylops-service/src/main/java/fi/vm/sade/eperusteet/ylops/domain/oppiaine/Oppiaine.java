@@ -17,37 +17,25 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -101,8 +89,71 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
+    @Column(name = "jarjestys")
+    private Integer jarjestys;
+
+    @Getter
+    @Setter
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa tehtava;
+
+    @Getter
+    @Setter
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Tekstiosa tavoitteet;
+
+    @Getter
+    @Setter
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Tekstiosa arvioinnit;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "valtakunnallinen_pakollinen_kuvaus_id", nullable = true)
+    private LokalisoituTeksti valtakunnallinenPakollinenKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "valtakunnallinen_syventava_kuvaus_id", nullable = true)
+    private LokalisoituTeksti valtakunnallinenSyventavaKurssiKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "valtakunnallinen_soveltava_kuvaus_id", nullable = true)
+    private LokalisoituTeksti valtakunnallinenSoveltavaKurssiKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "paikallinen_pakollinen_kuvaus_id", nullable = true)
+    private LokalisoituTeksti paikallinenPakollinenKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "paikallinen_syventava_kuvaus_id", nullable = true)
+    private LokalisoituTeksti paikallinenSyventavaKurssiKuvaus;
+
+    @Getter
+    @Setter
+    @ValidHtml
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinColumn(name = "paikallinen_soveltava_kuvaus_id", nullable = true)
+    private LokalisoituTeksti paikallinenSoveltavaKurssiKuvaus;
 
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY, orphanRemoval = true)
     @NotNull(groups = Strict.class)
@@ -141,6 +192,11 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Getter
     private Tila tila = Tila.LUONNOS;
 
+    @Getter
+    @Audited
+    @OneToMany(mappedBy = "oppiaine", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OppiaineLukiokurssi> lukiokurssit = new HashSet<>(0);
+
     public Oppiaine(UUID tunniste) {
         this.tunniste = tunniste;
     }
@@ -167,6 +223,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
             return null;
         }
         return oppimaarat == null ? new HashSet<>() : new HashSet<>(oppimaarat);
+    }
+
+    public Set<Oppiaine> getOppimaaratReal() {
+        return oppimaarat;
     }
 
     public Set<Oppiaineenvuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
@@ -315,11 +375,9 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
                 || "AI".equalsIgnoreCase(other.koodiArvo));
 
         if (other.isKoosteinen() && copyOppimaarat && other.getOppiaine() == null) {
-            if (copyOppimaarat || other.koodiArvo == null || !isKielijoukko) {
-                other.getOppimaarat().forEach((om -> {
-                    o.addOppimaara(Oppiaine.copyOf(om));
-                }));
-            }
+            other.getOppimaarat().forEach((om -> {
+                o.addOppimaara(Oppiaine.copyOf(om));
+            }));
         }
 
         return o;
@@ -337,5 +395,9 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
                 validoi(validointi, om, kielet);
             }
         }
+    }
+
+    public Stream<Oppiaine> maarineen() {
+        return Stream.concat(Stream.of(this), oppimaarat.stream());
     }
 }

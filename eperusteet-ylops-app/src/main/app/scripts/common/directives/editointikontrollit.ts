@@ -20,7 +20,7 @@ ylopsApp.directive('editointikontrollit', function($window) {
     return {
       templateUrl: 'views/common/directives/editointikontrollit.html',
       restrict: 'E',
-      link: function(scope) {
+      link: function(scope: any) {
         var window = angular.element($window),
             container = angular.element('.edit-controls'),
             wrapper = angular.element('.editointi-wrapper');
@@ -65,9 +65,10 @@ ylopsApp.directive('editointikontrollit', function($window) {
     $scope.kommentti = '';
     $scope.hideControls = true;
     function setEditControls() {
-      if(Editointikontrollit.editingEnabled()) {
+      if (Editointikontrollit.editingEnabled()) {
         $scope.hideControls = false;
-      } else {
+      }
+      else {
         $scope.hideControls = true;
         $scope.editStarted = false;
       }
@@ -75,7 +76,7 @@ ylopsApp.directive('editointikontrollit', function($window) {
 
     setEditControls();
 
-    $scope.$on('$stateChangeSuccess', function() {
+    $scope.$on('$stateChangeStart', function() {
       Editointikontrollit.unregisterCallback();
       setEditControls();
     });

@@ -61,7 +61,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @Setter
     @ElementCollection(fetch = FetchType.LAZY)
     @BatchSize(size = 25)
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "opetuksentavoite")
+    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "opetuksentavoite")
     private Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = new HashSet<>();
 
     @Getter
@@ -129,7 +129,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
                 .filter(k -> (Long.compare(k.getId(), id) == 0))
                 .findAny();
     }
-    
+
     public Optional<OpetuksenKeskeinensisaltoalue> getOpetuksenkeskeinenSisaltoalueBySisaltoalueId(Long id) {
         return this.sisaltoalueet.stream()
                 .filter(k -> (id != null && Long.compare(k.getSisaltoalueet().getId(), id) == 0))

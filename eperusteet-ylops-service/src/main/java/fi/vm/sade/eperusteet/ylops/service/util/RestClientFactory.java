@@ -41,14 +41,24 @@ public class RestClientFactory {
     private final ConcurrentMap<String, CachingRestClient> cache = new ConcurrentHashMap<>();
 
     public CachingRestClient get(String service) {
+        return get(service, true);
+    }
+
+    public CachingRestClient getWithoutCas(String service) {
+        return get(service, false);
+    }
+
+    public CachingRestClient get(String service, boolean requireCas) {
         if (cache.containsKey(service)) {
             return cache.get(service);
         } else {
             CachingRestClient crc = new CachingRestClient(TIMEOUT);
-            crc.setUsername(username);
-            crc.setPassword(password);
-            crc.setWebCasUrl(casUrl);
-            crc.setCasService(service + "/j_spring_cas_security_check");
+            if (requireCas) {
+                crc.setUsername(username);
+                crc.setPassword(password);
+                crc.setWebCasUrl(casUrl);
+                crc.setCasService(service + "/j_spring_cas_security_check");
+            }
             cache.putIfAbsent(service, crc);
             return cache.get(service);
         }

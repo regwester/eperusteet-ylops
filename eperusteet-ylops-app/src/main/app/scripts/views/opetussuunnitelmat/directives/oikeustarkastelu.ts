@@ -20,7 +20,7 @@ ylopsApp
   .directive('oikeustarkastelu', function (OpetussuunnitelmaOikeudetService) {
     return {
       restrict: 'A',
-      link: function postLink(scope, element, attrs) {
+      link: function postLink(scope: any, element, attrs) {
         var oikeudet = scope.$eval(attrs.oikeustarkastelu);
         if (!angular.isArray(oikeudet)) {
           oikeudet = [oikeudet];
@@ -36,7 +36,7 @@ ylopsApp
   .directive('kayttajaoikeustarkastelu', function (OpetussuunnitelmaOikeudetService) {
     return {
       restrict: 'A',
-      link: function postLink(scope, element, attrs) {
+      link: function postLink(scope: any, element, attrs) {
         var oikeudet = scope.$eval(attrs.kayttajaoikeustarkastelu);
         if (!angular.isArray(oikeudet)) {
           oikeudet = [oikeudet];
