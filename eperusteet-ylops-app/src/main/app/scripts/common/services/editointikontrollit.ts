@@ -150,7 +150,9 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
         setEditMode(false);
         scope.editingCallback = null;
       },
-      editingEnabled: () => !!scope.editingCallback,
+      editingEnabled: () => {
+          return !!scope.editingCallback;
+      },
       registerCallbackListener: function(callbackListener) {
         cbListener = callbackListener;
       },

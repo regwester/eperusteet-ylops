@@ -216,10 +216,10 @@ ylopsApp
   });
 
   const refetch = () => $q((resolve) =>{
+    resolve();
     OppiaineService.fetchVlk($scope.oppiaineenVlk.id, (res) => {
       $scope.oppiaineenVlk = res;
       updateVuosiluokat();
-      resolve(res);
     });
   });
 
@@ -232,15 +232,17 @@ ylopsApp
 
   $scope.callbacks = {
     edit: refetch,
+    cancel: refetch,
     save: () => $q((resolve) => {
       $scope.oppiaine.$save({ opsId: $stateParams.id }, () => {
         OppiaineService.saveVlk($scope.oppiaineenVlk).then(resolve);
       });
     }),
-    cancel: refetch,
     notify: (mode) => {
-      $scope.options.editing = mode
-    }
+      $scope.options.editing = mode;
+      $scope.callbacks.notifier(mode);
+    },
+    notifier: _.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 

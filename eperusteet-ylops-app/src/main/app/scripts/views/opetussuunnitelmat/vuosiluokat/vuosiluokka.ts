@@ -136,18 +136,19 @@ ylopsApp
   };
 })
 
-.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils,
+.controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils, $q,
   $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $stateParams, $rootScope, VuosiluokkaMapper, OpsService, $timeout) {
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.nimiOrder = Utils.sort;
 
-  function refetch() {
-    OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
+  const refetch = () => $q((resolve) => {
+    OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, (res) => {
       $scope.vuosiluokka = res;
       VuosiluokkaMapper.mapModel($scope);
+      resolve();
     });
-  }
+  });
   refetch();
 
   $scope.options = {
@@ -179,17 +180,17 @@ ylopsApp
   };
 
   $scope.callbacks = {
-    edit: function () {
-      //refetch();
-    },
-    save: function () {
+    edit: refetch,
+    cancel: refetch,
+    save: () => $q((resolve) => {
       if ($scope.onValinnaiselle) {
         $rootScope.$broadcast('notifyCKEditor');
         var tavoitteet = angular.copy($scope.valinnaisenTavoitteet);
 
-        OppiaineService.saveValinnainenVuosiluokka($scope.vuosiluokka.id, tavoitteet, function (res) {
+        OppiaineService.saveValinnainenVuosiluokka($scope.vuosiluokka.id, tavoitteet, (res) => {
           Notifikaatiot.onnistui('tallennettu-ok');
           $scope.vuosiluokka = res;
+          resolve();
           // FIXME Kaikki näyttäisi toimivan
           // VuosiluokkaMapper.mapModel($scope);
         });
@@ -209,30 +210,31 @@ ylopsApp
           delete tavoite.$kohdealue;
           delete tavoite.$laajaalaiset;
         });
-        OppiaineService.saveVuosiluokka(postdata, function (res) {
+        OppiaineService.saveVuosiluokka(postdata, (res) => {
           $scope.vuosiluokka = res;
+          resolve();
           // FIXME Kaikki näyttäisi toimivan
           // VuosiluokkaMapper.mapModel($scope);
         });
       }
-    },
-    add: function () {
+    }),
+    add: () => {
       $scope.valinnaisenTavoitteet.push({
         otsikko: {},
         teksti: {}
       });
-      $timeout(function () {
+      $timeout(() => {
         var el: any = angular.element('[valinnaisen-ops-teksti]').last();
         if (el.length === 1 && el.isolateScope()) {
           el.isolateScope().startEditing();
         }
       }, 300);
     },
-    remove: function (item) {
+    remove: (item) => {
       Varmistusdialogi.dialogi({
         otsikko: 'varmista-poisto',
         primaryBtn: 'poista',
-        successCb: function () {
+        successCb: () => {
           var tavoitteet = _.without($scope.valinnaisenTavoitteet, item);
 
           OppiaineService.saveValinnainenVuosiluokka($scope.vuosiluokka.id, tavoitteet, function (res) {
@@ -243,20 +245,17 @@ ylopsApp
         }
       })();
     },
-    cancel: function () {
-      refetch();
-    },
-    notify: function (mode) {
+    notify: (mode) => {
       $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
-    notifier: angular.noop
+    notifier: _.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 
 }) // end of VuosiluokkaTavoitteetController
 
-.controller('VuosiluokkaSisaltoalueetController', function ($scope, Editointikontrollit,
+.controller('VuosiluokkaSisaltoalueetController', function ($q, $scope, Editointikontrollit,
   $timeout, $location, $anchorScroll, OppiaineService, VuosiluokkaMapper, OpsService) {
 
   $scope.tunnisteet = [];
@@ -271,12 +270,13 @@ ylopsApp
 
   // FIXME mapOnce saattaa hajottaa jotain
   var mapOnce = _.once(mapModel);
-  function refetch() {
-    OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, function (res) {
+  const refetch = () => $q((resolve) => {
+    OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, (res) => {
       $scope.vuosiluokka = res;
       mapOnce();
+      resolve();
     });
-  }
+  });
   refetch();
 
   $scope.options = {
@@ -287,26 +287,22 @@ ylopsApp
   };
 
   $scope.callbacks = {
-    edit: function () {
-      refetch();
-    },
-    save: function () {
-      _.each($scope.vuosiluokka.sisaltoalueet, function (alue) {
+    edit: refetch,
+    cancel: refetch,
+    save: () => $q((resolve) => {
+      _.each($scope.vuosiluokka.sisaltoalueet, (alue) => {
         alue.kuvaus = $scope.muokattavat[alue.tunniste].teksti;
       });
-      OppiaineService.saveVuosiluokka($scope.vuosiluokka, function (res) {
+      OppiaineService.saveVuosiluokka($scope.vuosiluokka, (res) => {
         $scope.vuosiluokka = res;
-        // mapModel();
+        resolve();
       });
-    },
-    cancel: function () {
-      refetch();
-    },
+    }),
     notify: function (mode) {
       $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
-    notifier: angular.noop
+    notifier: _.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 
