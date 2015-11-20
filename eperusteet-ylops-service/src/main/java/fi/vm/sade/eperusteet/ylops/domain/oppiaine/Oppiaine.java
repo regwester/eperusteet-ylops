@@ -169,7 +169,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     private Set<Oppiaineenvuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
 
     @Getter
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     /**
      * oppiaine johon oppimäärä kuuluu tai null jos kyseessä itse oppiaine.
      */
@@ -187,7 +187,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
 
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @BatchSize(size = 5)
-    private Set<Oppiaine> oppimaarat;
+    private Set<Oppiaine> oppimaarat = new HashSet<>(0);
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable
