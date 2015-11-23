@@ -7,8 +7,8 @@
 
   <div class="ops-header-tiedot">
     <h1 ng-bind="model.nimi | kaanna"></h1>
-    <button ng-if="!isPohjaState" ui-sref="root.opetussuunnitelmat.yksi.esikatselu" style="margin-top: 16px"
-            class="btn btn-default" icon-role="sunglasses" kaanna="'esikatselu'"></button>
+    <a ng-if="!isPohjaState && model.esikatseltavissa" href="{{createUrl(model)}}" style="margin-top: 16px"
+            class="btn btn-default" icon-role="sunglasses" kaanna="'esikatselu'"></a>
     <ul class="ops-header-linkit" role="navigation">
       <li ng-repeat="linkki in linkit" ng-class="{active: linkki.active}">
         <a ng-hide="linkki.action" ng-href="{{linkki.url}}" icon-role="{{linkki.role}}"><span ng-bind="linkki.label | kaanna"></span></a>
