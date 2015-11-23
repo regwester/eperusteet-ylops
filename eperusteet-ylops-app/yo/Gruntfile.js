@@ -36,8 +36,8 @@ module.exports = function(grunt) {
         src: [
           '<%= yeoman.app %>/*.ts',
           '<%= yeoman.app %>/scripts/**/*.ts',
-          '<%= yeoman.app %>/eperusteet-esitys/**/*.ts'
-          //'<%= yeoman.test %>/**/*.ts'
+          '<%= yeoman.app %>/eperusteet-esitys/**/*.ts',
+          '<%= yeoman.test %>/**/*.ts'
         ],
         options: {
           module: 'amd',
@@ -45,14 +45,14 @@ module.exports = function(grunt) {
           sourceMap: true
         }
       },
-/*      tests: {
+      tests: {
         files: [{
           src: tsconfigTest.files.map(function(file) {
             return yeomanConfig.test + '/' + file;
           }),
           dest: yeomanConfig.test + '/'
         }]
-      },*/
+      },
       sources: {
         files: [{
           src: tsconfig.files.map(function(file) {
@@ -70,7 +70,7 @@ module.exports = function(grunt) {
     watch: {
       css: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.scss'],
-        tasks: ['sass', 'copy:fonts', 'autoprefixer'],
+        tasks: ['sass', 'copy:fonts', 'autoprefixer']
       },
       test: {
         files: ['<%= yeoman.app %>/**/*.{ts,html}', '<%= yeoman.test %>/**/*.ts','!<%= yeoman.app %>/bower_components/**'],
@@ -447,13 +447,13 @@ module.exports = function(grunt) {
         options: {
           limit: 300
         },
-        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}],
+        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}]
       },
       scss: {
         options: {
           limit: 500
         },
-        files: [{src: ['<%= yeoman.app %>/styles/**/*.scss']}],
+        files: [{src: ['<%= yeoman.app %>/styles/**/*.scss']}]
       }
     }
   });

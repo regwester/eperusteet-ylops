@@ -68,7 +68,7 @@ ylopsApp
   };
 })
 
-.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
+.controller('OppiaineController', function ($scope, $state, $stateParams, $q, Editointikontrollit, Varmistusdialogi,
   VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, OppiaineCRUD, OpsService, Notifikaatiot,
   VuosiluokkakokonaisuusMapper, Lukko, Kommentit, KommentitByOppiaine, opsModel) {
 
@@ -215,12 +215,13 @@ ylopsApp
     updateVuosiluokat();
   });
 
-  function refetch() {
-    OppiaineService.fetchVlk($scope.oppiaineenVlk.id, function (res) {
+  const refetch = () => $q((resolve) =>{
+    resolve();
+    OppiaineService.fetchVlk($scope.oppiaineenVlk.id, (res) => {
       $scope.oppiaineenVlk = res;
       updateVuosiluokat();
     });
-  }
+  });
 
   $scope.options = {
     editing: false,
@@ -230,22 +231,18 @@ ylopsApp
   };
 
   $scope.callbacks = {
-    edit: function () {
-      refetch();
-    },
-    save: function () {
-      $scope.oppiaine.$save({ opsId: $stateParams.id });
-      OppiaineService.saveVlk($scope.oppiaineenVlk);
-    },
-    cancel: function () {
-      //refetch();
-      $state.reload();
-    },
-    notify: function (mode) {
+    edit: refetch,
+    cancel: refetch,
+    save: () => $q((resolve) => {
+      $scope.oppiaine.$save({ opsId: $stateParams.id }, () => {
+        OppiaineService.saveVlk($scope.oppiaineenVlk).then(resolve);
+      });
+    }),
+    notify: (mode) => {
       $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
-    notifier: angular.noop
+    notifier: _.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 
