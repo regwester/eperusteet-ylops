@@ -165,14 +165,13 @@ ylopsApp
   };
 
   $scope.naytaKuvaus = function(sisaltoalue, id, tavoiteTunniste) {
-    var kuvaus = _.find( _.find( $scope.vuosiluokka.tavoitteet, { 'id': id }).sisaltoalueet, function(sAlue){
-      return (sisaltoalue.tunniste === sAlue.sisaltoalueet.tunniste);
-    });
+    const kuvaus = _.find(_.find($scope.vuosiluokka.tavoitteet, { 'id': id }).sisaltoalueet,
+      (alue) => sisaltoalue.tunniste === alue.sisaltoalueet.tunniste);
 
     $scope.muokattavat[tavoiteTunniste].muokattavaKuvaus = {
       kaytaOmaaKuvausta: !!(kuvaus && kuvaus.omaKuvaus),
       omaKuvaus: (kuvaus && kuvaus.omaKuvaus) ? kuvaus.omaKuvaus : {},
-      kuvaus: sisaltoalue.kuvaus,
+      kuvaus: kuvaus.sisaltoalueet.kuvaus || sisaltoalue.kuvaus,
       kuvauksenId: kuvaus.id,
       sisaltoalueId: sisaltoalue.id,
       isEditing: false

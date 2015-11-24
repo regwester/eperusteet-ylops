@@ -45,8 +45,6 @@ ylopsApp
     "koulutustyyppi_2": "lukiokoulutus"
   };
 
-  console.log($stateParams);
-
   $scope.createUrl = function(model){
     return 'https://eperusteet.opintopolku.fi/#/' + $stateParams.lang + '/ops/' + koulutusTyypit[model.koulutustyyppi] + "/" + model.id;
   };

@@ -88,7 +88,7 @@ ylopsApp
     opsId: $stateParams.id,
     vlkId: $scope.oppiaineenVlk.id,
     oppiaineId: $stateParams.oppiaineId
-    } : null;
+  } : null;
 
   if (commonParams) {
     Lukko.isLocked($scope, commonParams);
