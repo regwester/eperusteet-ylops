@@ -15,11 +15,13 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetuksenkeskeinenSisaltoalueRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -49,6 +51,9 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
 
     @Autowired
     private DtoMapper mapper;
+
+    @Autowired
+    private OpetuksenkeskeinenSisaltoalueRepository opetuksenkeskeinenSisaltoalueRepository;
 
     @Override
     public VuosiluokkakokonaisuusDto add(Long opsId, VuosiluokkakokonaisuusDto dto) {
@@ -92,6 +97,18 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
                 kokonaisuudet.delete(vk);
             }
         }
+    }
+
+    @Override
+    public void removeSisaltoalueetInKeskeinensisaltoalueet(Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus) {
+        vuosiluokkakokonaisuus.getVuosiluokat().forEach( oppiaineenvuosiluokka -> {
+            oppiaineenvuosiluokka.getTavoitteet().forEach( opetuksentavoite -> {
+                opetuksentavoite.getSisaltoalueet().forEach( opetuksenKeskeinensisaltoalue -> {
+                    opetuksenkeskeinenSisaltoalueRepository.delete( opetuksenKeskeinensisaltoalue );
+                } );
+            });
+        });
+
     }
 
     @Override
