@@ -158,11 +158,11 @@ ylopsApp
     }
   };
 
-  $scope.muokkaaKuvausta = function( muokattava ){
-    muokattava.isEditing = true;
-    Editointikontrollit.startEditing();
+  $scope.muokkaaKuvausta = (muokattava) => {
+    Editointikontrollit.startEditing().then(() => {
+      muokattava.isEditing = true;
+    });
   };
-
 
   $scope.naytaKuvaus = function(sisaltoalue, id, tavoiteTunniste) {
     var kuvaus = _.find( _.find( $scope.vuosiluokka.tavoitteet, { 'id': id }).sisaltoalueet, function(sAlue){
@@ -180,7 +180,8 @@ ylopsApp
   };
 
   $scope.callbacks = {
-    edit: refetch,
+    edit: () => $q((resolve) => resolve()), // FIXME: Tämän pitäisi ladata sisällöt uudestaan
+    // edit: refetch,
     cancel: refetch,
     save: () => $q((resolve) => {
       if ($scope.onValinnaiselle) {
@@ -194,12 +195,13 @@ ylopsApp
           // FIXME Kaikki näyttäisi toimivan
           // VuosiluokkaMapper.mapModel($scope);
         });
-      } else {
+      }
+      else {
         var postdata = angular.copy($scope.vuosiluokka);
         _.each(postdata.tavoitteet, function (tavoite) {
           tavoite.tavoite = $scope.muokattavat[tavoite.tunniste].teksti;
 
-          if( $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus ){
+          if ($scope.muokattavat[tavoite.tunniste].muokattavaKuvaus) {
             var sisaltoalue = _.findWhere( tavoite.sisaltoalueet, {id: $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.kuvauksenId});
             sisaltoalue.omaKuvaus = ( $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.kaytaOmaaKuvausta )?
                 $scope.muokattavat[tavoite.tunniste].muokattavaKuvaus.omaKuvaus:null;
@@ -237,7 +239,7 @@ ylopsApp
         successCb: () => {
           var tavoitteet = _.without($scope.valinnaisenTavoitteet, item);
 
-          OppiaineService.saveValinnainenVuosiluokka($scope.vuosiluokka.id, tavoitteet, function (res) {
+          OppiaineService.saveValinnainenVuosiluokka($scope.vuosiluokka.id, tavoitteet, (res) => {
             Notifikaatiot.onnistui('poisto-onnistui');
             $scope.vuosiluokka = res;
             VuosiluokkaMapper.mapModel($scope);
@@ -252,7 +254,6 @@ ylopsApp
     notifier: _.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
-
 }) // end of VuosiluokkaTavoitteetController
 
 .controller('VuosiluokkaSisaltoalueetController', function ($q, $scope, Editointikontrollit,
