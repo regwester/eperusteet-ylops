@@ -415,7 +415,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                                      .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
         dto.getTavoitteet().stream()
-                .filter(tavoite -> tavoite.getSisaltoalueet() != null)
                 .forEach(opetuksenTavoiteDto -> { opetuksenTavoiteDto.getSisaltoalueet()
                         .forEach(opetuksenKeskeinensisaltoalueDto -> {
                             OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue
@@ -424,6 +423,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
                 if (opetuksenKeskeinensisaltoalueDto.getOmaKuvaus() != null) {
                     opetuksenKeskeinensisaltoalue.setOmaKuvaus(mapper.map(opetuksenKeskeinensisaltoalueDto.getOmaKuvaus(), LokalisoituTeksti.class));
+                }
+                else {
+                    opetuksenKeskeinensisaltoalue.setOmaKuvaus(null);
                 }
             });
         });
