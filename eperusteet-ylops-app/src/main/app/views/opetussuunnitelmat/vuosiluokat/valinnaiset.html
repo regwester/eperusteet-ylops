@@ -28,9 +28,8 @@
                     <strong><span ng-bind="vuosiluokka.vuosiluokka | kaanna"></span><span ng-bind="'vuosiluokka-paate' | kaanna"></span></strong>
                          <ul>
                              <li ng-if="isEditable() && (!vuosiluokka.tavoitteet || vuosiluokka.tavoitteet.length === 0)">
-                                 <span ng-bind="'tavoitteet-ja-sisallot-maarittelematta' | kaanna"></span>
-                                 <!-- <a ui&#45;sref="root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.tavoitteet({vlkId: vlk.id, oppiaineId: oppiaine.id, vlId: vuosiluokka.id})" -->
-                                 <!--   ng&#45;bind="'tavoitteet&#45;ja&#45;sisallot&#45;maarittelematta' | kaanna"></a> -->
+                                 <a ui-sref="root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.tavoitteet({vlkId: vlk.id, oppiaineId: oppiaine.id, vlId: vuosiluokka.id})"
+                                   ng-bind="'tavoitteet-ja-sisallot-maarittelematta' | kaanna"></a>
                              </li>
                             <li ng-repeat="tavoite in vuosiluokka.tavoitteet">
                                <span ng-bind="tavoite.tavoite | kaanna"></span>

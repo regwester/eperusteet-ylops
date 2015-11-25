@@ -42,8 +42,9 @@ ylopsApp
     }
   }
 
-  var onOma = $scope.oppiaine.oma && !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet.length);
-  $scope.isVuosiluokkaistettava = onOma || (!!perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
+  const onOma = $scope.oppiaine.oma;
+  const hasVuosiluokkakokonaisuudet = !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet);
+  $scope.isVuosiluokkaistettava = (hasVuosiluokkakokonaisuudet && onOma) || (!!perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus && !_.isEmpty(vlk.tavoitteet);
   }));
 
@@ -63,7 +64,7 @@ ylopsApp
     return String(text).replace(/<[^>]+>/gm, '');
   };
   this.getCode = function (text) {
-    var match = text.match(/(^|[^A-Za-z])([A-Za-z]\d{1,2})($|[^0-9])/);
+    const match = text.match(/(^|[^A-Za-z])([A-Za-z]\d{1,2})($|[^0-9])/);
     return match ? match[2] : null;
   };
 })
@@ -84,11 +85,11 @@ ylopsApp
   $scope.alueOrder = Utils.sort;
   $scope.startEditing = function() { Editointikontrollit.startEditing(); };
 
-  var commonParams = $scope.oppiaineenVlk ? {
+  const commonParams = $scope.oppiaineenVlk ? {
     opsId: $stateParams.id,
     vlkId: $scope.oppiaineenVlk.id,
     oppiaineId: $stateParams.oppiaineId
-    } : null;
+  } : null;
 
   if (commonParams) {
     Lukko.isLocked($scope, commonParams);
