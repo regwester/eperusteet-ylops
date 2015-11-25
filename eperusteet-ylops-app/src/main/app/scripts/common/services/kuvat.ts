@@ -26,11 +26,14 @@ ylopsApp
       var deferred = $q.defer();
       var url = (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId());
 
+      console.log(image);
       Upload.upload({
         url: url,
         file: image,
         fields: {
-          nimi: image.name
+          nimi: image.name,
+          width: image.width,
+          height: image.height
         }}).success(function (data) {
           deferred.resolve(data);
         }).error(function(data) {
@@ -58,8 +61,26 @@ ylopsApp
     $scope.$watch('model.files[0]', function () {
       if (_.isArray($scope.model.files) && $scope.model.files.length > 0) {
         $scope.showPreview = true;
+        console.log( '> ', $scope.model.files[0]);
+        getDimensions();
       }
     });
+
+    function getDimensions(){
+      var fr = new FileReader;
+      fr.onload = function() { // file is loaded
+        var img = new Image;
+        img.onload = function() { // image is loaded; sizes are available
+          console.log("w/h", img.width, img.height);
+          $scope.model.files[0].width = img.width;
+          $scope.model.files[0].height = img.height;
+          $scope.$apply();
+        };
+        img.src = fr.result; // is the data URL because called with readAsDataURL
+      };
+      fr.readAsDataURL($scope.model.files[0]);
+    }
+
     $scope.$watch('model.chosen', function () {
       $scope.showPreview = false;
     });

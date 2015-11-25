@@ -48,6 +48,11 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
             '  <div><button class="btn btn-default" ng-model-rejected="model.rejected" ngf-accept="\'.jpg,.jpeg,.png\'" ngf-select ng-model="model.files"><span kaanna="\'epimage-plugin-valitse\'"></span></button>' +
             '    <button ng-disabled="!model.files || model.files.length !== 1" class="btn btn-primary" ng-click="saveNew()" kaanna="lisaa"></button>' +
             '    <img ng-show="showPreview" ngf-thumbnail="model.files[0]" class="epimage-thumb">' +
+            '    <div ng-show="showPreview">' +
+            '     <input style="max-width: 50px;" ng-model="model.files[0].width" class="form-control ng-pristine ng-valid ng-isolate-scope ng-touched"/> ' +
+            '     <p>X</p>' +
+            '     <input style="max-width: 50px;" ng-model="model.files[0].height" class="form-control ng-pristine ng-valid ng-isolate-scope ng-touched"/>' +
+            '    </div>' +
             '  </div>' +
             '  <p class="success-message" ng-show="message">{{message|kaanna}}</p>' +
             '  <p class="error-message" ng-show="model.rejected.length > 0">{{\'epimage-plugin-hylatty\'|kaanna}}</p>' +
@@ -84,7 +89,7 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
             }
           }
         ]
-      },
+      }
     ],
     onShow: function () {
       var selection = editor.getSelection();

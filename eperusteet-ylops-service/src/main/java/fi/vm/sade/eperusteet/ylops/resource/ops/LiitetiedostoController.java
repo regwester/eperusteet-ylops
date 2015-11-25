@@ -18,17 +18,6 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PushbackInputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,14 +29,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PushbackInputStream;
+import java.util.*;
+import java.util.List;
 
 /**
  *
@@ -77,6 +70,8 @@ public class LiitetiedostoController {
         @P("opsId") Long opsId,
         @RequestParam("nimi") String nimi,
         @RequestParam("file") Part file,
+        @RequestParam("width") Integer width,
+        @RequestParam("height") Integer height,
         UriComponentsBuilder ucb)
         throws IOException, HttpMediaTypeNotSupportedException {
         final long koko = file.getSize();
@@ -91,11 +86,29 @@ public class LiitetiedostoController {
             if (!SUPPORTED_TYPES.contains(tyyppi)) {
                 throw new HttpMediaTypeNotSupportedException(tyyppi + "ei ole tuettu");
             }
+
+            if( width != null && height != null){
+                System.out.println("scale image!!!");
+                System.out.println( width + " -- " + height);
+
+            }
             UUID id = liitteet.add(opsId, tyyppi, nimi, koko, pis);
             HttpHeaders h = new HttpHeaders();
             h.setLocation(ucb.path("/opetussuunnitelmat/{opsId}/kuvat/{id}").buildAndExpand(opsId, id.toString()).toUri());
             return new ResponseEntity<>(id.toString(), h, HttpStatus.CREATED);
         }
+    }
+
+    private BufferedImage scaleImage(BufferedImage img, int maxDimension) {
+        int w = (img.getWidth() > img.getHeight() ? maxDimension :
+                (int)(((double)img.getWidth() / img.getHeight()) * maxDimension));
+
+        int h = (img.getHeight() > img.getWidth() ? maxDimension :
+                (int)(((double)img.getHeight() / img.getWidth()) * maxDimension));
+
+        BufferedImage preview = new BufferedImage(w, h, img.getType());
+        preview.createGraphics().drawImage(img.getScaledInstance(w, h, Image.SCALE_SMOOTH), 0, 0, null);
+        return preview;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
