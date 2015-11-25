@@ -85,6 +85,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuusService;
 
+    @Autowired
+    private OpetuksenkeskeinenSisaltoalueRepository opetuksenkeskeinenSisaltoalueRepository;
+
     public OppiaineServiceImpl() {
     }
 
@@ -321,6 +324,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                             return t;
                         })
                    .collect(Collectors.toList());
+
+        oavl.getTavoitteet().forEach( opetuksentavoite -> {
+            opetuksentavoite.getSisaltoalueet().forEach( opetuksenKeskeinensisaltoalue -> {
+                opetuksenkeskeinenSisaltoalueRepository.delete( opetuksenKeskeinensisaltoalue );
+            } );
+        });
 
         oavl.setSisaltoalueet(oavlSisaltoalueet);
         oavl.setTavoitteet(oavlTavoitteet);

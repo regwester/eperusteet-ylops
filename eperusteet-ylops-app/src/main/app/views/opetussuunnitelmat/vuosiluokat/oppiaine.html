@@ -17,24 +17,6 @@
 
 <h2 ng-hide="options.editing && $onKieliTaiUskonto" ng-bind="oppiaine.nimi | kaanna"></h2>
 <input ng-show="options.editing && $onKieliTaiUskonto" class="form-control" slocalized ng-model="oppiaine.nimi"></input>
-<!--&gt;> <pre>{{ oppiaine.vuosiluokkakokonaisuudet[0].vuosiluokat | json}}</pre>-->
-<!--<<< <pre>{{ vuosiluokat | json }}</pre>-->
-<!--<span ng-bind="(vuosiluokka | kaanna) + ('vuosiluokka-paate-lyhyt' | kaanna)" class="ng-binding"></span>-->
-<!--<table ng-show="vuosiluokat.length > 0" class="table table-hover vuosiluokat-table">-->
-  <!--<tr>-->
-    <!--<th kaanna="'vuosiluokka'"></th>-->
-  <!--</tr>-->
-  <!--<tr class="vuosiluokka-row" ng-repeat="vuosiluokka in vuosiluokat | orderBy:'$numero'" ng-click="goToVuosiluokka(vuosiluokka)">-->
-    <!--<td>-->
-      <!--<a ui-sref="root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka({vlId: vuosiluokka.id})">-->
-        <!--<span kaanna="'vuosiluokka'"></span> {{vuosiluokka.$numero}}-->
-      <!--</a>-->
-    <!--</td>-->
-  <!--</tr>-->
-<!--</table>-->
-
-
-
 
 <p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>
 
@@ -44,8 +26,7 @@
 <div class="tekstiosa-wrapper" ng-hide="oppiaine.tyyppi !== 'yhteinen' || (isVuosiluokkaistettava && !oppiaine.koosteinen && oppiaineenVlk)"
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
 
-<<< {{isVuosiluokkaistettava}} -- {{!oppiaine.koosteinen}} -- {{oppiaineenVlk}}
-<div class="tekstiosa-wrapper" ng-show="!isVuosiluokkaistettava && !oppiaine.koosteinen && oppiaineenVlk">
+<div class="tekstiosa-wrapper" ng-show="isVuosiluokkaistettava && !oppiaine.koosteinen && oppiaineenVlk">
   <h3>
     <div class="action-buttons-inline" ng-show="isEditable()">
       <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="lukkotiedot.lukittu" class="btn btn-default"

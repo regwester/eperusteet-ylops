@@ -108,7 +108,6 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
                 } );
             });
         });
-
     }
 
     @Override
