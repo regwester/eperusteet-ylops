@@ -70,7 +70,7 @@ module.exports = function(grunt) {
     watch: {
       css: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.scss'],
-        tasks: ['sass', 'copy:fonts', 'autoprefixer'],
+        tasks: ['sass', 'copy:fonts', 'autoprefixer']
       },
       test: {
         files: ['<%= yeoman.app %>/**/*.{ts,html}', '<%= yeoman.test %>/**/*.ts','!<%= yeoman.app %>/bower_components/**'],
@@ -447,13 +447,13 @@ module.exports = function(grunt) {
         options: {
           limit: 300
         },
-        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}],
+        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}]
       },
       scss: {
         options: {
           limit: 500
         },
-        files: [{src: ['<%= yeoman.app %>/styles/**/*.scss']}],
+        files: [{src: ['<%= yeoman.app %>/styles/**/*.scss']}]
       }
     }
   });
