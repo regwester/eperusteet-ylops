@@ -43,6 +43,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -80,6 +81,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Autowired
     private OppiaineenvuosiluokkakokonaisuusRepository oppiaineenKokonaisuudet;
+
+    @Autowired
+    private VuosiluokkakokonaisuusService vuosiluokkakokonaisuusService;
+
+    @Autowired
+    private OpetuksenkeskeinenSisaltoalueRepository opetuksenkeskeinenSisaltoalueRepository;
 
     public OppiaineServiceImpl() {
     }
@@ -318,6 +325,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                         })
                    .collect(Collectors.toList());
 
+        oavl.getTavoitteet().forEach( opetuksentavoite -> {
+            opetuksentavoite.getSisaltoalueet().forEach( opetuksenKeskeinensisaltoalue -> {
+                opetuksenkeskeinenSisaltoalueRepository.delete( opetuksenKeskeinensisaltoalue );
+            } );
+        });
+
         oavl.setSisaltoalueet(oavlSisaltoalueet);
         oavl.setTavoitteet(oavlTavoitteet);
         return oavl;
@@ -356,6 +369,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oppiaine.getOppiaine().removeOppimaara(oppiaine);
         } else {
             Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+            oppiaine.getVuosiluokkakokonaisuudet().forEach(vuosiluokkakokonaisuus -> {
+                vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(vuosiluokkakokonaisuus);
+            });
             ops.removeOppiaine(oppiaine);
         }
 

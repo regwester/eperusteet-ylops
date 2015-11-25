@@ -96,9 +96,10 @@ ylopsApp
       var paikallinen = _.find(scope.tavoitteet, function (tavoite) {
         return tavoite.tunniste === tunniste;
       });
+
       scope.muokattavat[tunniste] = (paikallinen && _.isObject(paikallinen.tavoite)) ?
       { teksti: paikallinen.tavoite,
-        sisaltoalue: scope.sisaltoAlueetMap[paikallinen.sisaltoalueet[0]] } :
+        sisaltoalue: (paikallinen.sisaltoalueet[0]) ? scope.sisaltoAlueetMap[paikallinen.sisaltoalueet[0].sisaltoalueet.id] : null } :
       { teksti: {}, sisaltoalue: {} };
     });
 
