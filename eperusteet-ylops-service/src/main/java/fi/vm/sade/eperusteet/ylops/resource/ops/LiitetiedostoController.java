@@ -32,13 +32,12 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PushbackInputStream;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -87,16 +86,29 @@ public class LiitetiedostoController {
                 throw new HttpMediaTypeNotSupportedException(tyyppi + "ei ole tuettu");
             }
 
+            UUID id = null;
             if( width != null && height != null){
-                System.out.println("scale image!!!");
-                System.out.println( width + " -- " + height);
-
+                ByteArrayOutputStream os = scaleImage(file, tyyppi, width, height);
+                id = liitteet.add(opsId, tyyppi, nimi, os.size(), new PushbackInputStream( new ByteArrayInputStream( os.toByteArray() )));
+            }else{
+                id = liitteet.add(opsId, tyyppi, nimi, koko, pis);
             }
-            UUID id = liitteet.add(opsId, tyyppi, nimi, koko, pis);
+
             HttpHeaders h = new HttpHeaders();
             h.setLocation(ucb.path("/opetussuunnitelmat/{opsId}/kuvat/{id}").buildAndExpand(opsId, id.toString()).toUri());
             return new ResponseEntity<>(id.toString(), h, HttpStatus.CREATED);
         }
+    }
+
+    private ByteArrayOutputStream scaleImage(@RequestParam("file") Part file, String tyyppi, Integer width, Integer height) throws IOException {
+        BufferedImage a = ImageIO.read(file.getInputStream());
+        BufferedImage preview = new BufferedImage(width, height, a.getType());
+        preview.createGraphics().drawImage(a.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(preview, tyyppi.replace("image/", ""), os);
+
+        return os;
     }
 
     private BufferedImage scaleImage(BufferedImage img, int maxDimension) {
