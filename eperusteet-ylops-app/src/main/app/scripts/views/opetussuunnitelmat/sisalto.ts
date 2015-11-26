@@ -198,7 +198,7 @@ ylopsApp
   };
 
   Editointikontrollit.registerCallback({
-    edit: () => $q((resolve) => resolve()),
+    edit: () => $q.when(),
     save: () => $q((resolve, reject) => {
       TekstikappaleOps.saveRakenne($scope.model, () => {
         Lukko.unlock(commonParams);
