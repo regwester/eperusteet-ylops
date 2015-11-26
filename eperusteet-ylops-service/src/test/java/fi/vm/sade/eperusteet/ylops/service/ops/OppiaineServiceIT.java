@@ -138,6 +138,45 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         return result;
     }
 
+    private OpetussuunnitelmaLuontiDto createOps() {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.OPS);
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.15252345624572462");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+        return ops;
+    }
+
+    private OppiaineDto createOppiaine() {
+        OppiaineDto result = new OppiaineDto();
+        result.setTunniste(UUID.randomUUID());
+        return result;
+    }
+
+    @Test
+    public void testMuokattavaksiKopioiminen() {
+        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+
+//        OpetussuunnitelmaLuontiDto ylaOpsDto = createOps();
+//        OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ylaOpsDto);
+//        oppiaineService.add(ylaOps.getId(), createOppiaine());
+//        oppiaineService.add(ylaOps.getId(), createOppiaine());
+//        oppiaineService.add(ylaOps.getId(), createOppiaine());
+
+//        OpetussuunnitelmaLuontiDto alaOpsDto = createOps();
+//        alaOpsDto.setPohja(Reference.of(ylaOps.getId()));
+//        OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
+//        oppiaineService.add(, oppiaineDto)
+    }
+
     @Test
     public void testValinnainenAine() {
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
