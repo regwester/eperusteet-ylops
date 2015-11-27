@@ -483,6 +483,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             throw new BusinessRuleViolationException("Yksi tai useampi vuosiluokka ei kuulu tähän vuosiluokkakokonaisuuteen");
         }
 
+        vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(v);
+
         tavoitteet.entrySet().stream()
             .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))
             .forEach(e -> {
