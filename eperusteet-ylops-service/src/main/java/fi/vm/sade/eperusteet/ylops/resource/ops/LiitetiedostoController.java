@@ -89,6 +89,7 @@ public class LiitetiedostoController {
             UUID id = null;
             if( width != null && height != null){
                 ByteArrayOutputStream os = scaleImage(file, tyyppi, width, height);
+                //TODO check max size
                 id = liitteet.add(opsId, tyyppi, nimi, os.size(), new PushbackInputStream( new ByteArrayInputStream( os.toByteArray() )));
             }else{
                 id = liitteet.add(opsId, tyyppi, nimi, koko, pis);

@@ -26,7 +26,6 @@ ylopsApp
       var deferred = $q.defer();
       var url = (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId());
 
-      console.log(image);
       Upload.upload({
         url: url,
         file: image,
@@ -59,9 +58,9 @@ ylopsApp
     };
 
     $scope.$watch('model.files[0]', function () {
+      console.log("filesss");
       if (_.isArray($scope.model.files) && $scope.model.files.length > 0) {
         $scope.showPreview = true;
-        console.log( '> ', $scope.model.files[0]);
         getDimensions();
       }
     });
@@ -71,7 +70,6 @@ ylopsApp
       fr.onload = function() { // file is loaded
         var img = new Image;
         img.onload = function() { // image is loaded; sizes are available
-          console.log("w/h", img.width, img.height);
           $scope.model.files[0].width = img.width;
           $scope.model.files[0].height = img.height;
           $scope.$apply();
@@ -80,6 +78,14 @@ ylopsApp
       };
       fr.readAsDataURL($scope.model.files[0]);
     }
+
+    //$scope.$watch('model.files[0].width', function(){
+    //  console.log("change ", $scope.model.files[0].width);
+    //});
+    //
+    //$scope.$watch('model.files[0].height', function(){
+    //  console.log("change ", $scope.model.files[0].width);
+    //});
 
     $scope.$watch('model.chosen', function () {
       $scope.showPreview = false;
