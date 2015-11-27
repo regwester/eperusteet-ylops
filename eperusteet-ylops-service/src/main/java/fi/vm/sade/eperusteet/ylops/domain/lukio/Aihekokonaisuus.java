@@ -45,6 +45,11 @@ public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity
         this.tunniste = tunniste;
     }
 
+    public Aihekokonaisuus(Aihekokonaisuudet aihekokonaisuudet, UUID tunniste, Aihekokonaisuus parent) {
+        this(aihekokonaisuudet, tunniste);
+        this.parent = parent;
+    }
+
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -66,12 +71,18 @@ public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity
 
     @Getter
     @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private Aihekokonaisuus parent;
+
+    @Getter
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinColumn(name = "aihekokonaisuudet_id", nullable = false)
     private Aihekokonaisuudet aihekokonaisuudet;
 
-    public Aihekokonaisuus copy(Aihekokonaisuudet kokonaisuudet) {
-        return copyInto(new Aihekokonaisuus(kokonaisuudet, this.tunniste));
+    public Aihekokonaisuus copy(Aihekokonaisuudet kokonaisuudet, Aihekokonaisuus parent) {
+        return copyInto(new Aihekokonaisuus(kokonaisuudet, this.tunniste, parent));
     }
 
     public Aihekokonaisuus copyInto(Aihekokonaisuus to) {

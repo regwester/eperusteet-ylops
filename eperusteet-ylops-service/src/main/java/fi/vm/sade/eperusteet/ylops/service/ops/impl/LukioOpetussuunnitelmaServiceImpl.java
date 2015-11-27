@@ -17,6 +17,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -42,6 +43,11 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Autowired
     private EperusteetService eperusteetService;
+
+    @Override
+    public LukioOpetussuunnitelmaRakenneOpsDto getRakenne(long opsId) {
+        return null;
+    }
 
     @Override
     @Transactional(readOnly = true)

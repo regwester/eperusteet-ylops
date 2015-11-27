@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 @Setter
 public class AihekokonaisuudetDto extends AihekokonaisuudetBaseDto
         implements Serializable, PerusteenOsa {
+    private AihekokonaisuudetDto parent;
     private Set<AihekokonaisuusDto> aihekokonaisuudet;
 
     @Override @JsonIgnore // uuidTunniste

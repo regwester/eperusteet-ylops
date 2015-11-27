@@ -16,8 +16,9 @@
 
 package fi.vm.sade.eperusteet.ylops.service.ops.lukio;
 
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetPerusteOpsDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetPerusteOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOpetussuunnitelmaRakenneOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.AihekokonaisuudetPerusteOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetPerusteOpsDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
@@ -26,6 +27,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * Time: 15.28
  */
 public interface LukioOpetussuunnitelmaService {
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    LukioOpetussuunnitelmaRakenneOpsDto getRakenne(long opsId);
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     AihekokonaisuudetPerusteOpsDto getAihekokonaisuudet(long opsId);
 

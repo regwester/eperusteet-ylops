@@ -14,20 +14,23 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
+package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
-import fi.vm.sade.eperusteet.ylops.dto.lukio.PerusteeseenViittaava;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * User: tommiratamaa
- * Date: 19.11.2015
- * Time: 14.41
+ * Date: 27.11.2015
+ * Time: 13.05
  */
 @Getter
 @Setter
-public class AihekokonaisuusOpsDto extends AihekokonaisuusDto
-            implements PerusteeseenViittaava<AihekokonaisuusDto> {
-    private AihekokonaisuusDto perusteen;
+public class LukioOpetussuunnitelmaRakenneOpsDto implements Serializable {
+    private Long opsId;
+    private List<LukioOppiaineListausDto> oppiaineet;
+
 }

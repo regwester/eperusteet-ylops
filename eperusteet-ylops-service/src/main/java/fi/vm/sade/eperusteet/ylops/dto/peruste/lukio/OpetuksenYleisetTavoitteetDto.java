@@ -29,6 +29,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class OpetuksenYleisetTavoitteetDto implements Serializable, PerusteenOsa {
+    private OpetuksenYleisetTavoitteetDto parent;
     private UUID uuidTunniste;
     private Long id;
     private LokalisoituTekstiDto otsikko;

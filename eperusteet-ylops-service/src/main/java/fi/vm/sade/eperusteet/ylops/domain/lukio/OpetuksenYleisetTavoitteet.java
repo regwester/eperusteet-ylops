@@ -46,6 +46,17 @@ public class OpetuksenYleisetTavoitteet extends AbstractAuditedReferenceableEnti
         this.uuidTunniste = uuidTunniste;
     }
 
+    public OpetuksenYleisetTavoitteet(Opetussuunnitelma opetussuunnitelma, UUID uuidTunniste, OpetuksenYleisetTavoitteet parent) {
+        this(opetussuunnitelma, uuidTunniste);
+        this.parent = parent;
+    }
+
+    @Getter
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private OpetuksenYleisetTavoitteet parent;
+
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -68,8 +79,8 @@ public class OpetuksenYleisetTavoitteet extends AbstractAuditedReferenceableEnti
     @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
     private Opetussuunnitelma opetussuunnitelma;
 
-    public OpetuksenYleisetTavoitteet copy(Opetussuunnitelma to) {
-        return copyInto(new OpetuksenYleisetTavoitteet(to, this.uuidTunniste));
+    public OpetuksenYleisetTavoitteet copy(Opetussuunnitelma to, OpetuksenYleisetTavoitteet parent) {
+        return copyInto(new OpetuksenYleisetTavoitteet(to, this.uuidTunniste, parent));
     }
 
     public OpetuksenYleisetTavoitteet copyInto(OpetuksenYleisetTavoitteet to) {

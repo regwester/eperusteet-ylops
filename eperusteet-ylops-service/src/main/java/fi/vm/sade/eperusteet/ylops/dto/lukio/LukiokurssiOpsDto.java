@@ -14,36 +14,21 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
+package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Stream;
+import java.io.Serializable;
 
 /**
  * User: tommiratamaa
- * Date: 19.11.2015
- * Time: 14.40
+ * Date: 27.11.2015
+ * Time: 13.12
  */
 @Getter
 @Setter
-public class AihekokonaisuudetOpsDto extends AihekokonaisuudetBaseDto
-            implements PerusteeseenViittaava<AihekokonaisuudetDto> {
-    @JsonIgnore
-    private AihekokonaisuudetDto perusteen;
-    private Set<AihekokonaisuusOpsDto> aihekokonaisuudet;
+public class LukiokurssiOpsDto implements Serializable {
 
-    @Override @JsonIgnore // already uuidTunniste
-    public UUID getTunniste() {
-        return getUuidTunniste();
-    }
 
-    @Override
-    public Stream<? extends PerusteeseenViittaava<?>> viittaukset() {
-        return aihekokonaisuudet.stream();
-    }
 }

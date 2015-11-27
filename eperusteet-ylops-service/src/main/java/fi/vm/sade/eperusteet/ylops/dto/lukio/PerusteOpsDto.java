@@ -14,8 +14,9 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
+package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.PerusteenOsa;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,7 +31,7 @@ import static java.util.stream.Collectors.toMap;
  * Time: 14.26
  */
 @Getter
-public class PerusteOpsDto<T extends PerusteenOsa, OpsT extends PerusteeseenViittaava<T>>
+public abstract class PerusteOpsDto<T extends PerusteenOsa, OpsT extends PerusteeseenViittaava<T>>
             implements PerusteeseenViittaava<T>, PerusteenOsa {
     private T perusteen;
     private OpsT paikallinen;

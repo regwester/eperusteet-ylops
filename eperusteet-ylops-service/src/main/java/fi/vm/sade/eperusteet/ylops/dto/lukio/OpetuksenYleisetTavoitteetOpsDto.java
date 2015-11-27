@@ -14,20 +14,20 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
+package fi.vm.sade.eperusteet.ylops.dto.lukio;
+
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * User: tommiratamaa
  * Date: 19.11.2015
- * Time: 15.35
+ * Time: 15.19
  */
-public class OpetuksenYleisetTavoitteetPerusteOpsDto extends PerusteOpsDto<OpetuksenYleisetTavoitteetDto,
-        OpetuksenYleisetTavoitteetOpsDto> {
-    public OpetuksenYleisetTavoitteetPerusteOpsDto(OpetuksenYleisetTavoitteetDto perusteen, OpetuksenYleisetTavoitteetOpsDto paikallinen) {
-        super(perusteen, paikallinen);
-    }
-
-    public OpetuksenYleisetTavoitteetPerusteOpsDto(OpetuksenYleisetTavoitteetOpsDto paikallinen) {
-        super(paikallinen);
-    }
+@Getter
+@Setter
+public class OpetuksenYleisetTavoitteetOpsDto extends OpetuksenYleisetTavoitteetDto
+            implements PerusteeseenViittaava<OpetuksenYleisetTavoitteetDto> {
+    private OpetuksenYleisetTavoitteetDto perusteen;
 }

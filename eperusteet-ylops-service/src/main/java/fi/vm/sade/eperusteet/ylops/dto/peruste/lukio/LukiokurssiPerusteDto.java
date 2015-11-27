@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class LukiokurssiDto extends KurssiDto {
+public class LukiokurssiPerusteDto extends KurssiDto {
     private Long oppiaineId;
     private Integer jarjestys;
     private PerusteenLukiokurssiTyyppi tyyppi;

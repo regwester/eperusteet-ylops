@@ -33,4 +33,5 @@ public class AihekokonaisuusDto implements Serializable, PerusteenOsa {
     private LokalisoituTekstiDto otsikko;
     private LokalisoituTekstiDto yleiskuvaus;
     private Long jnro;
+    private AihekokonaisuusDto parent;
 }

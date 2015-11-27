@@ -14,20 +14,29 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
+package fi.vm.sade.eperusteet.ylops.dto.lukio;
+
+import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * User: tommiratamaa
  * Date: 19.11.2015
- * Time: 14.27
+ * Time: 14.47
  */
-public class AihekokonaisuudetPerusteOpsDto extends PerusteOpsDto<AihekokonaisuudetDto,
-                    AihekokonaisuudetOpsDto> {
-    public AihekokonaisuudetPerusteOpsDto(AihekokonaisuudetOpsDto paikallinen) {
-        super(paikallinen);
+public interface PerusteeseenViittaava<T> {
+    T getPerusteen();
+
+    void setPerusteen(T vastaava);
+
+    UUID getTunniste();
+
+    default Stream<? extends PerusteeseenViittaava<?>> viittaukset() {
+        return Stream.empty();
     }
 
-    public AihekokonaisuudetPerusteOpsDto(AihekokonaisuudetDto perusteen, AihekokonaisuudetOpsDto paikallinen) {
-        super(perusteen, paikallinen);
+    default Stream<? extends PerusteeseenViittaava<?>> viittauksineen() {
+        return Stream.concat(Stream.of(this), viittaukset()
+                .filter(v -> v != null).flatMap(PerusteeseenViittaava::viittauksineen));
     }
 }

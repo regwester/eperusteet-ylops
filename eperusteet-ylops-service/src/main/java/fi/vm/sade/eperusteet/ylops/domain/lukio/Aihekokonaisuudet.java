@@ -55,6 +55,17 @@ public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity
         this.uuidTunniste = uuidTunniste;
     }
 
+    public Aihekokonaisuudet(Opetussuunnitelma opetussuunnitelma, UUID uuidTunniste, Aihekokonaisuudet parent) {
+        this(opetussuunnitelma, uuidTunniste);
+        this.parent = parent;
+    }
+
+    @Getter
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private Aihekokonaisuudet parent;
+
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -82,9 +93,9 @@ public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity
     @OrderBy("jnro")
     private Set<Aihekokonaisuus> aihekokonaisuudet = new HashSet<>(0);
 
-    public Aihekokonaisuudet copy(Opetussuunnitelma to) {
-        Aihekokonaisuudet newAk = new Aihekokonaisuudet(to, this.uuidTunniste);
-        return copier().and(aihekokonaisuudetCopier(a -> a.copy(newAk))).copied(this, newAk);
+    public Aihekokonaisuudet copy(Opetussuunnitelma to, Aihekokonaisuudet parent) {
+        Aihekokonaisuudet newAk = new Aihekokonaisuudet(to, this.uuidTunniste, parent);
+        return copier().and(aihekokonaisuudetCopier(a -> a.copy(newAk, a))).copied(this, newAk);
     }
 
     public static Copier<Aihekokonaisuudet> aihekokonaisuudetCopier(ConstructedCopier<Aihekokonaisuus> copier) {

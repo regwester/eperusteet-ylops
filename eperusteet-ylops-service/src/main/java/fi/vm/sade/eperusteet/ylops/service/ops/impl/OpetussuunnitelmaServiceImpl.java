@@ -414,10 +414,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private void luoLukiokoulutusPohjasta(Opetussuunnitelma from, Opetussuunnitelma to) {
         if (from.getAihekokonaisuudet() != null) {
-            to.setAihekokonaisuudet(from.getAihekokonaisuudet().copy(to));
+            to.setAihekokonaisuudet(from.getAihekokonaisuudet().copy(to, from.getAihekokonaisuudet()));
         }
         if (from.getOpetuksenYleisetTavoitteet() != null) {
-            to.setOpetuksenYleisetTavoitteet(from.getOpetuksenYleisetTavoitteet().copy(to));
+            to.setOpetuksenYleisetTavoitteet(from.getOpetuksenYleisetTavoitteet().copy(to,
+                    from.getOpetuksenYleisetTavoitteet()));
         }
     }
 
@@ -520,15 +521,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private void importKurssit(Opetussuunnitelma ops, Set<LukiokurssiDto> from, Oppiaine to,
+    private void importKurssit(Opetussuunnitelma ops, Set<LukiokurssiPerusteDto> from, Oppiaine to,
                                Map<UUID, Lukiokurssi> luodut) {
-        for (LukiokurssiDto kurssiDto : from) {
+        for (LukiokurssiPerusteDto kurssiDto : from) {
             ops.getLukiokurssit().add(new OppiaineLukiokurssi(ops, to, kurssiByTunniste(kurssiDto, luodut),
                     kurssiDto.getJarjestys(), true));
         }
     }
 
-    private Lukiokurssi kurssiByTunniste(LukiokurssiDto kurssiDto, Map<UUID, Lukiokurssi> luodut) {
+    private Lukiokurssi kurssiByTunniste(LukiokurssiPerusteDto kurssiDto, Map<UUID, Lukiokurssi> luodut) {
         Lukiokurssi kurssi = luodut.get(kurssiDto.getTunniste());
         if (kurssi != null) {
             return kurssi;
@@ -553,8 +554,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (byTunniste.containsKey(aihekokonaisuusDto.getTunniste())) {
                 continue;
             }
-            Aihekokonaisuus aihekokonaisuus = new Aihekokonaisuus(to.getAihekokonaisuudet(),
-                    aihekokonaisuusDto.getTunniste());
+            Aihekokonaisuus aihekokonaisuus = new Aihekokonaisuus(to.getAihekokonaisuudet(), aihekokonaisuusDto.getTunniste());
             aihekokonaisuus.setOtsikko(LokalisoituTeksti.of(aihekokonaisuusDto.getOtsikko().getTekstit()));
             maxJnro = Math.max(maxJnro+1, ofNullable(aihekokonaisuus.getJnro()).orElse(0L));
             aihekokonaisuus.setJnro(maxJnro);

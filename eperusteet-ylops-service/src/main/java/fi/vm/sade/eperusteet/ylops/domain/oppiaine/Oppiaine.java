@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier.nothing;
+import static java.util.stream.Collectors.toMap;
 
 /**
  *
@@ -418,5 +419,12 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
 
     public Stream<Oppiaine> maarineen() {
         return Stream.concat(Stream.of(this), oppimaarat.stream());
+    }
+
+    @Transient
+    public Map<LukiokurssiTyyppi, LokalisoituTeksti> getKurssiTyyppiKuvaukset() {
+        return Stream.of(LukiokurssiTyyppi.values()).collect(toMap(k -> k,
+            k -> k.oppiaineKuvausGetter().apply(this)
+        ));
     }
 }

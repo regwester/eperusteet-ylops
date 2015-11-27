@@ -22,7 +22,6 @@ import lombok.Setter;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 /**
  * Created by jsikio.
@@ -45,5 +44,5 @@ public class LukioPerusteOppiaineDto {
     private PerusteTekstiOsaDto tavoitteet;
     private PerusteTekstiOsaDto arviointi;
     private Set<LukioPerusteOppiaineDto> oppimaarat;
-    private Set<LukiokurssiDto> kurssit;
+    private Set<LukiokurssiPerusteDto> kurssit;
 }
