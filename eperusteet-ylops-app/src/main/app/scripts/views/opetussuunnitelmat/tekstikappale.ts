@@ -31,7 +31,6 @@ ylopsApp
 
     $scope.lukkotiedot = null;
     $scope.perusteteksti = {};
-    $scope.options = {tekstiCollapsed: true};
     $scope.valmisOptions = [{valmis: false}, {valmis: true}];
     const TYYPIT = ['ohje', 'perusteteksti'];
 

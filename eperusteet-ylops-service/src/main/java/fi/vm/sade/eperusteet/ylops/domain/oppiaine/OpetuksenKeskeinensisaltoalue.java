@@ -5,14 +5,12 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.stream.Collectors;
 
 /**
  * Created by autio on 28.10.2015.
