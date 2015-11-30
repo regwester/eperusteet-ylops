@@ -16,6 +16,9 @@
 
 package fi.vm.sade.eperusteet.ylops.service.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -25,6 +28,10 @@ import java.util.function.Function;
  */
 public class LambdaUtil {
     private LambdaUtil() {
+    }
+
+    public static <K,V> Function<K,List<V>> orEmpty(Function<K,List<V>> f) {
+        return k -> Optional.ofNullable(f.apply(k)).orElseGet(ArrayList::new);
     }
 
     @FunctionalInterface

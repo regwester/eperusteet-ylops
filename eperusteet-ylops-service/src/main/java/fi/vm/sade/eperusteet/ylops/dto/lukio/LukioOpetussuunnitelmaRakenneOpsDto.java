@@ -16,11 +16,17 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioOpetussuunnitelmaRakenneDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.PerusteenOsa;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * User: tommiratamaa
@@ -28,9 +34,26 @@ import java.util.List;
  * Time: 13.05
  */
 @Getter
-@Setter
-public class LukioOpetussuunnitelmaRakenneOpsDto implements Serializable {
+public class LukioOpetussuunnitelmaRakenneOpsDto implements Serializable,
+        PerusteeseenViittaava<LukioOpetussuunnitelmaRakenneDto>{
+    @Setter
     private Long opsId;
-    private List<LukioOppiaineListausDto> oppiaineet;
+    private LukioOpetussuunnitelmaRakenneDto perusteen;
+    @Setter
+    private List<LukioOppiaineListausDto> oppiaineet = new ArrayList<>();
 
+    public void setPerusteen(LukioOpetussuunnitelmaRakenneDto perusteen) {
+        this.perusteen = perusteen;
+        PerusteenOsa.map(this.perusteen, this);
+    }
+
+    @Override @JsonIgnore
+    public UUID getTunniste() {
+        return null;
+    }
+
+    @Override
+    public Stream<? extends PerusteeseenViittaava<?>> viittaukset() {
+        return oppiaineet.stream();
+    }
 }

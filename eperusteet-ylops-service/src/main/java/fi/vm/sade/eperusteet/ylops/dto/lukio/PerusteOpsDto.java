@@ -45,22 +45,7 @@ public abstract class PerusteOpsDto<T extends PerusteenOsa, OpsT extends Peruste
     }
 
     private void map() {
-        if (this.perusteen != null && this.paikallinen != null) {
-            Map<UUID, PerusteenOsa> perusteenOsat = this.perusteen.osineen()
-                .filter(o -> o != null && o.getTunniste() != null)
-                    .map(o -> (PerusteenOsa) o) // <-- required for javac /compiles without in Idea)
-                .collect(toMap(PerusteenOsa::getTunniste, o -> o));
-            this.paikallinen.viittauksineen().filter(p -> p != null && p.getTunniste() != null)
-                .forEach(p -> {
-                    //noinspection unchecked
-                    PerusteeseenViittaava viittaava = p;
-                    PerusteenOsa osa = perusteenOsat.get(p.getTunniste());
-                    if (osa != null) {
-                        //noinspection unchecked
-                        viittaava.setPerusteen(osa);
-                    }
-                });
-        }
+        PerusteenOsa.map(this.perusteen, this.paikallinen);
     }
 
     public PerusteOpsDto(OpsT paikallinen) {

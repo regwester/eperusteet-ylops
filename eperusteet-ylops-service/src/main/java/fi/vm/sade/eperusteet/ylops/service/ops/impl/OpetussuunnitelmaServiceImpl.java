@@ -396,20 +396,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 = pohja.getLukiokurssit().stream().collect(groupingBy(oak -> oak.getOppiaine().getId()));
         return (from, to) ->
                 ops.getLukiokurssit().addAll(ofNullable(lukiokurssitByPohjaOppiaineId.get(from.getId()))
-                        .map(list -> list.stream().map(oaKurssi -> {
-                                    Lukiokurssi kurssi = oaKurssi.getKurssi().getTunniste() == null
-                                            ? null : existingKurssit.get(oaKurssi.getKurssi().getTunniste());
-                                    if (kurssi == null) {
-                                        kurssi = oaKurssi.getKurssi().copy();
-                                        if (oaKurssi.getKurssi().getTunniste() != null) {
-                                            existingKurssit.put(oaKurssi.getKurssi().getTunniste(), kurssi);
-                                        }
+                    .map(list -> list.stream().map(oaKurssi -> {
+                                Lukiokurssi kurssi = oaKurssi.getKurssi().getTunniste() == null
+                                        ? null : existingKurssit.get(oaKurssi.getKurssi().getTunniste());
+                                if (kurssi == null) {
+                                    kurssi = teeKopio ? oaKurssi.getKurssi().copy() : oaKurssi.getKurssi();
+                                    if (oaKurssi.getKurssi().getTunniste() != null) {
+                                        existingKurssit.put(oaKurssi.getKurssi().getTunniste(), kurssi);
                                     }
-                                    return new OppiaineLukiokurssi(
-                                            ops, to, kurssi, oaKurssi.getJarjestys(), teeKopio
-                                    );
-                                }).collect(toList())
-                        ).orElse(emptyList()));
+                                }
+                                return new OppiaineLukiokurssi(
+                                        ops, to, kurssi, oaKurssi.getJarjestys(), teeKopio
+                                );
+                            }).collect(toList())
+                    ).orElse(emptyList()));
     }
 
     private void luoLukiokoulutusPohjasta(Opetussuunnitelma from, Opetussuunnitelma to) {
@@ -515,6 +515,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oa.setKoosteinen(oppiaine.isKoosteinen());
             oa.setKoodiArvo(oppiaine.getKoodiArvo());
             oa.setKoodiUri(oppiaine.getKoodiUri());
+            for (Map.Entry<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kv : oppiaine.kurssitTyyppiKuvaukset().entrySet()) {
+                kv.getKey().oppiaineKuvausSetter().set(oa, kv.getValue().map(LokalisoituTekstiDto::getTekstit)
+                        .map(LokalisoituTeksti::of).orElse(null));
+            }
             to.accept(oa);
             importOppiaineet(ops, oppiaine.getOppimaarat(), child -> oa.getOppimaaratReal().add(child), oa, kurssit);
             importKurssit(ops, oppiaine.getKurssit(), oa, kurssit);
@@ -539,6 +543,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         kurssi.setTyyppi(LukiokurssiTyyppi.ofPerusteTyyppi(kurssiDto.getTyyppi()));
         kurssi.setKoodiArvo(kurssiDto.getKoodiArvo());
         kurssi.setKoodiUri(kurssiDto.getKoodiUri());
+        kurssi.setLokalisoituKoodi(kurssiDto.getLokalisoituKoodi() == null ? null
+                : LokalisoituTeksti.of(kurssiDto.getLokalisoituKoodi().getTekstit()));
         luodut.put(kurssi.getTunniste(), kurssi);
         return kurssi;
     }

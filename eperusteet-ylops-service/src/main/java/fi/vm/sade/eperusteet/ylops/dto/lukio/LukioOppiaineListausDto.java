@@ -19,6 +19,7 @@ package fi.vm.sade.eperusteet.ylops.dto.lukio;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
@@ -26,6 +27,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * User: tommiratamaa
@@ -34,7 +36,9 @@ import java.util.*;
  */
 @Getter
 @Setter
-public class LukioOppiaineListausDto implements Serializable {
+public class LukioOppiaineListausDto implements Serializable,
+        PerusteeseenViittaava<LukioPerusteOppiaineDto> {
+    private LukioPerusteOppiaineDto perusteen;
     private Long id;
     private UUID tunniste;
     private Tila tila;
@@ -49,9 +53,14 @@ public class LukioOppiaineListausDto implements Serializable {
     private TekstiosaDto tehtava;
     private TekstiosaDto tavoitteet;
     private TekstiosaDto arvioinnit;
-    private Map<LukiokurssiTyyppi, LokalisoituTekstiDto> kurssiTyyppiKuvaukset = new HashMap<>();
-    private Set<LukioOppiaineListausDto> oppimaarat;
+    private Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kurssiTyyppiKuvaukset = new HashMap<>();
+    private List<LukioOppiaineListausDto> oppimaarat = new ArrayList<>();
     private String koodiUri;
     private String koodiArvo;
     private List<LukiokurssiOpsDto> kurssit = new ArrayList<>();
+
+    @Override
+    public Stream<? extends PerusteeseenViittaava<?>> viittaukset() {
+        return Stream.concat(oppimaarat.stream(), kurssit.stream());
+    }
 }

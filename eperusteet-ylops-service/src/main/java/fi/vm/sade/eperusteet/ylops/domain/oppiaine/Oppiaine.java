@@ -422,9 +422,9 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     }
 
     @Transient
-    public Map<LukiokurssiTyyppi, LokalisoituTeksti> getKurssiTyyppiKuvaukset() {
+    public Map<LukiokurssiTyyppi, Optional<LokalisoituTeksti>> getKurssiTyyppiKuvaukset() {
         return Stream.of(LukiokurssiTyyppi.values()).collect(toMap(k -> k,
-            k -> k.oppiaineKuvausGetter().apply(this)
+            k -> Optional.ofNullable(k.oppiaineKuvausGetter().apply(this))
         ));
     }
 }

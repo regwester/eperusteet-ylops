@@ -16,10 +16,15 @@
 
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -27,6 +32,16 @@ import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaServi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
+import static java.util.Comparator.comparing;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.*;
 
 /**
  * User: tommiratamaa
@@ -45,8 +60,41 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     private EperusteetService eperusteetService;
 
     @Override
+    @Transactional(readOnly = true)
     public LukioOpetussuunnitelmaRakenneOpsDto getRakenne(long opsId) {
-        return null;
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        PerusteDto perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        LukioOpetussuunnitelmaRakenneOpsDto rakenne = new LukioOpetussuunnitelmaRakenneOpsDto();
+        map(ops.getOppiaineet().stream().map(OpsOppiaine::getOppiaine),
+            ops.getOppiaineet().stream()
+                .collect(toMap(ooa -> ooa.getOppiaine().getId(), OpsOppiaine::isOma))::get,
+            rakenne.getOppiaineet(),
+            orEmpty(ops.getLukiokurssit().stream()
+                .sorted(comparing(OppiaineLukiokurssi::getJarjestys))
+                .collect(groupingBy(k -> k.getOppiaine().getId()))::get));
+        rakenne.setPerusteen(perusteDto.getLukiokoulutus().getRakenne());
+        return rakenne;
+    }
+
+    private void map(Stream<Oppiaine> from, Function<Long,Boolean> isOma, Collection<LukioOppiaineListausDto> to,
+                     Function<Long, List<OppiaineLukiokurssi>> lukiokurssiByOppiaineId) {
+        from.sorted(comparing(oa -> ofNullable(oa.getJarjestys()).orElse(0)))
+            .forEach(oa -> {
+                LukioOppiaineListausDto dto = mapper.map(oa, new LukioOppiaineListausDto());
+                dto.setOma(isOma.apply(oa.getId()));
+                dto.setKurssiTyyppiKuvaukset(LokalisoituTekstiDto.ofOptionalMap(oa.getKurssiTyyppiKuvaukset()));
+                dto.setKurssit(lukiokurssiByOppiaineId.apply(oa.getId()).stream()
+                        .map(this::mapKurssi).collect(toList()));
+                map(oa.getOppimaaratReal().stream(), child -> dto.isOma(),
+                        dto.getOppimaarat(), lukiokurssiByOppiaineId);
+                to.add(dto);
+            });
+    }
+
+    private LukiokurssiOpsDto mapKurssi(OppiaineLukiokurssi oaLk) {
+        LukiokurssiOpsDto kurssiDto = mapper.map(oaLk.getKurssi(), new LukiokurssiOpsDto());
+        kurssiDto.setOma(oaLk.isOma());
+        return kurssiDto;
     }
 
     @Override
