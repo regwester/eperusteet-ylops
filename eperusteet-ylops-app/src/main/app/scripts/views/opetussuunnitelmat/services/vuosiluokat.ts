@@ -123,11 +123,13 @@ ylopsApp
     }
 
     function generateOppiaineItem(oppiaine, vlk, depth) {
+      console.log(oppiaine);
       return {
         depth: depth || 1,
         label: oppiaine.nimi,
         id: oppiaine.id,
         vlkId: vlk.id,
+        tyyppi: oppiaine.tyyppi,
         url: $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi}),
       };
     }
@@ -178,7 +180,7 @@ ylopsApp
 
       // Vuosiluokan oppiaineet
       var oppiaineet = _.map(ops.oppiaineet, 'oppiaine');
-      populateMenuItems(arr, obj, _.filter(oppiaineet, _.equals('yhteinen', 'tyyppi')));
+      populateMenuItems(arr, obj, oppiaineet);
 
       // Vuosiluokan valinnaiset
       arr.push({
@@ -188,9 +190,8 @@ ylopsApp
         vlkId: vlk.vuosiluokkakokonaisuus.id,
         url: $state.href('root.opetussuunnitelmat.yksi.opetus.valinnaiset', {vlkId: vlk.vuosiluokkakokonaisuus.id})
       });
-
-      populateMenuItems(arr, obj, _.reject(oppiaineet, _.equals('yhteinen', 'tyyppi')));
     });
+    console.log(arr);
     return arr;
   }
 
