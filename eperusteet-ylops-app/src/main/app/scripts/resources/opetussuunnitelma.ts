@@ -91,6 +91,7 @@ ylopsApp
     return $resource(YlopsResources.LUKIO_OPS, {
     }, {
       aihekokonaisuudet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/aihekokonaisuudet', isArray: false},
+      rakenne: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/rakenne', isArray: false},
       opetuksenYleisetTavoitteet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/opetuksenYleisetTavoitteet', isArray: false}
     });
   })

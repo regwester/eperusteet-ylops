@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -35,6 +36,8 @@ import java.util.UUID;
 @Setter
 public class LukiokurssiOpsDto implements Serializable, PerusteeseenViittaava<LukiokurssiPerusteDto> {
     private LukiokurssiPerusteDto perusteen;
+    private Long id;
+    private Date muokattu;
     private UUID tunniste;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;

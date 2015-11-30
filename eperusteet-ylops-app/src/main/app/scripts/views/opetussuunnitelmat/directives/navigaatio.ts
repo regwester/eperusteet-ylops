@@ -16,14 +16,6 @@
 
 'use strict';
 
-interface NavigaatioItem {
-  label: string, // lokalisaatioavain
-  url: string, // URL (provided by e.g. $state.href(...))
-  depth?: number,
-  active?: boolean
-  valmis?: boolean
-}
-
 ylopsApp
 .directive('opsNavigaatio', function () {
   return {

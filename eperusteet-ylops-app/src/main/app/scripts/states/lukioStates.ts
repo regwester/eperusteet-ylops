@@ -59,4 +59,19 @@ ylopsApp
             templateUrl: 'views/opetussuunnitelmat/lukio/yleisettavoitteet.html',
             controller: 'OpetuksenYleisetTavoitteetController'
         })
+        .state('root.opetussuunnitelmat.lukio.opetus.oppiaineet', {
+            url: '/oppiaineet',
+            templateUrl: 'views/opetussuunnitelmat/lukio/oppiaineet.html',
+            controller: 'LukioOppiaineetController'
+        })
+        .state('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+            url: '/oppiaineet/:oppiaineId',
+            templateUrl: 'views/opetussuunnitelmat/lukio/oppiaine.html',
+            controller: 'LukioOppiaineController'
+        })
+        .state('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+            url: '/oppiaineet/:oppiaineId/kurssi/:kurssiId',
+            templateUrl: 'views/opetussuunnitelmat/lukio/kurssi.html',
+            controller: 'LukioKurssiController'
+        })
     });

@@ -40,12 +40,12 @@ public class LukioOppiaineListausDto implements Serializable,
         PerusteeseenViittaava<LukioPerusteOppiaineDto> {
     private LukioPerusteOppiaineDto perusteen;
     private Long id;
+    private Date muokattu;
     private UUID tunniste;
     private Tila tila;
     private boolean oma;
     private Integer jarjestys;
     private OppiaineTyyppi tyyppi;
-    private Long jnro;
     private String laajuus;
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;

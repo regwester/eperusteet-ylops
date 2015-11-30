@@ -162,6 +162,17 @@ ylopsApp
         return function(given) {
           return field ? given[field] === expected : given === expected;
         };
+      },
+      flattenTree: function (obj, extractChildren) {
+        if (!_.isArray(obj) && obj) {
+          obj = [obj];
+        }
+        if (_.isEmpty(obj)) {
+          return [];
+        }
+        return _.union(obj, _(obj).map(function (o) {
+          return _.flattenTree(extractChildren(o), extractChildren);
+        }).flatten().value());
       }
     });
   });
