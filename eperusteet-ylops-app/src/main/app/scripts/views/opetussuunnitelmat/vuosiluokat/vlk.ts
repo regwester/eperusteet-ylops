@@ -119,8 +119,8 @@ ylopsApp
   };
 
   Editointikontrollit.registerCallback({
-    edit: () => $q((resolve) => resolve()),
-    save: $q((resolve) => {
+    edit: () => $q.when(),
+    save: () => $q((resolve) => {
       resolve();
       var jrnoMap = _($scope.oppiaineet)
         .filter((oa) => oa.$$vklid >= 0)
@@ -136,13 +136,18 @@ ylopsApp
       OpetussuunnitelmaCRUD.jarjestaOppiaineet({
         opsId: opsModel.id
       }, jrnoMap, () => {
+        resolve();
         Notifikaatiot.onnistui('tallennettu-ok');
-        $state.go('^.vuosiluokkakokonaisuus', $stateParams, { reload: true });
+        $timeout(() => {
+          $state.go('^.vuosiluokkakokonaisuus', $stateParams, { reload: true });
+        });
       });
     }),
     cancel: () => $q((resolve) => {
       resolve();
-      $state.go('^.vuosiluokkakokonaisuus', $stateParams);
+      $timeout(() => {
+        $state.go('^.vuosiluokkakokonaisuus', $stateParams);
+      });
     }),
     notify: _.noop
   });
