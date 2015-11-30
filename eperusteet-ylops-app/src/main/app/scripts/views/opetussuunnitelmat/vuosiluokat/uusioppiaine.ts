@@ -101,7 +101,6 @@ ylopsApp
 
   $scope.hasRequiredFields = function () {
     var model = $scope.oppiaine;
-    console.log("has req");
     return model &&
            Utils.hasLocalizedText(model.nimi) &&
            _.any(_.values($scope.chosenVlk)) &&
