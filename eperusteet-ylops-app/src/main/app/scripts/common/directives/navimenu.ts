@@ -52,9 +52,14 @@ ylopsApp
     if (item.active) {
       classes.push('active');
     }
-    if(item.tyyppi !== 'yhteinen') {
-      classes.push('paikallinen');
-    }
+    return classes;
+  };
+
+  $scope.addIcon = function (item) {
+    var classes = [];
+    if(item.tyyppi && item.tyyppi !== 'yhteinen') {
+     classes.push('paikallinen');
+     }
     return classes;
   };
 

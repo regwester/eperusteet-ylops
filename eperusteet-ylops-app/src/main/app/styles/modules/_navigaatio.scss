@@ -130,8 +130,17 @@ $sivunavi-level-padding: 20px;
   border: 1px solid #eee;
 
   .paikallinen {
-    background-color: #fff0d8;
+    background-image: url('../../images/ikoni_paikallinen.svg');
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    margin-left: 3px;
   }
+
+ .valinnaisuus {
+   background-color: #fff0d8;
+ }
 
   .list-group-item:not(.active) {
     border: none;
