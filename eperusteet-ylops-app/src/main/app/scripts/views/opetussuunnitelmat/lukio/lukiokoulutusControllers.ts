@@ -81,8 +81,13 @@ ylopsApp
     .controller('LukioOpetusController', function ($scope, LukioNavigaatioProvider, MurupolkuData, $state) {
         $scope.navi = [];
         $scope.shouldShowNavigaatio = () => true;
-        LukioNavigaatioProvider.produceNavigation().then((items) =>
-            _.each(items, (i: sn.NavigaatioItem) => $scope.navi.push(i)));
+        LukioNavigaatioProvider.produceNavigation().then((items) => {
+            // Can not be replaced (otherwise the navigation won't show)
+            _.each(items, (i: sn.NavigaatioItem) => $scope.navi.push(i));
+            // Navigation won't show if sub page accessed directly unless called
+            $scope.$broadcast('navigaatio:show');
+            // One problem remains still: active navigation group gets collapsed (by random 1 out of 3 times)
+        });
         if ($state.is('root.opetussuunnitelmat.lukio.opetus')) {
             $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet');
         }
