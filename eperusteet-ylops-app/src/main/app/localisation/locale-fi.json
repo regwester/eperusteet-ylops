@@ -377,5 +377,11 @@
   "lukio-aihekokonaisuudet": "Aihekokonaisuudet",
   "lukio-opetuksen-yleiset-tavoitteet": "Opetuksen yleiset tavoitteet",
   "lukio-oppiaineet-oppimaarat": "Oppiaineet ja oppimäärät",
-  "lukio-oppiaineet-oppimaarat-title": "Oppiaineet"
+  "lukio-oppiaineet-oppimaarat-title": "Oppiaineet",
+  "kurssi-tyyppi-selite-pakollinen": "Pakollinen",
+  "kurssi-tyyppi-selite-syventava": "Syvntävä",
+  "kurssi-tyyppi-selite-soveltava": "Soveltava",
+  "kurssi-tyyppi-selite-paikallinen": "Paikallinen",
+  "kurssi-tyyppi-selite-valtakunnallinen": "Valtakunnallinen",
+  "avaa-sulje-kaikki": "Avaa / sulje kaikki"
 }

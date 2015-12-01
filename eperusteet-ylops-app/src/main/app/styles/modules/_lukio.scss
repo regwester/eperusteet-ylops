@@ -19,16 +19,9 @@ $puuviiva-vari: #ccc;
 $syventava-vari: #997bb6; // #bcda89;
 $soveltava-vari: #f8a35e; // #fcf281;
 $pakollinen-vari: #bddb8a; // #88d3e4;
+$valtakunnallinen-vari: #888;
+$paikallinen-vari: #ccc;
 $aikaleima-vari: #888;
-
-// Colorbox värit:
-$colorbox-vari: #06526c;
-$colorbox-open-vari: #29ABE2;
-$colorbox-empty-vari: #FDBB07;
-$colorbox-osaamisala-vari: #6d9aa8;
-$colorbox-maarittelematon-vari: #93278F;
-$colorbox-vieras-vari: #64a31d;
-
 
 .lukio-oppiaineet-puu {
   .main-column {
@@ -39,8 +32,9 @@ $colorbox-vieras-vari: #64a31d;
   .left {
     float: left;
   }
-  .ylapainikkeet {
-    margin-top: 20px;
+  .lukiotree-ylapainikkeet {
+    margin-top: 0px;
+    margin-bottom: 20px;
   }
   .search-field-container {
     padding-top: 2px;
@@ -70,10 +64,24 @@ $colorbox-vieras-vari: #64a31d;
     cursor: help;
   }
 
+  .legendContainer {
+    position: relative;
+    clear: left;
+    height: 33px;
+    width: 100%;
+    padding: 5px;
+    padding-right: 10px;
+    margin-top: 10px;
+    min-width: 650px;
+    border: 1px solid #ccc;
+  }
+
   .legends {
-    position: absolute;
-    top: 7px;
-    right: -180px;
+    position: relative;
+    float: right;
+    margin-right: 5px;
+    /*top: 7px;
+    right: -180px;*/
 
     .legend {
       margin-left: 40px;
@@ -88,7 +96,7 @@ $colorbox-vieras-vari: #64a31d;
       }
 
       .legend-name {
-        padding-top: 2px;
+        padding-top: 0px;
         display: block;
         float: left;
         margin-left: 30px;
@@ -192,10 +200,34 @@ $colorbox-vieras-vari: #64a31d;
   &.pakollinen {
     background-color: $pakollinen-vari;
   }
+  &.syventava {
+    background-color: $syventava-vari;
+  }
+  &.soveltava {
+    background-color: $soveltava-vari;
+  }
+  &.valtakunnallinen {
+    background-color: $valtakunnallinen-vari;
+  }
+  &.paikallinen {
+    background-color: $paikallinen-vari;
+  }
+  &.valtakunnallinen_pakollinen {
+    background-color: $pakollinen-vari;
+  }
   &.valtakunnallinen_syventava {
     background-color: $syventava-vari;
   }
   &.valtakunnallinen_soveltava {
+    background-color: $soveltava-vari;
+  }
+  &.paikallinen_pakollinen {
+    background-color: $pakollinen-vari;
+  }
+  &.paikallinen_syventava {
+    background-color: $syventava-vari;
+  }
+  &.paikallinen_soveltava {
     background-color: $soveltava-vari;
   }
 }
