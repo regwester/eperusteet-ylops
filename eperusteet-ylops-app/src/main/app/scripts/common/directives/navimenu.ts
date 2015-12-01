@@ -60,6 +60,9 @@ ylopsApp
     if(item.tyyppi && item.tyyppi !== 'yhteinen') {
      classes.push('paikallinen');
      }
+    if (item.active) {
+      classes.push('active');
+    }
     return classes;
   };
 
