@@ -1,21 +1,18 @@
 
 interface Cached<T> {
-    ($q:IQService, resolve:(id:number, d:IDeferred<T>) => void)
-    clear: (id?:number) => void
+    clear: (id?:number) => Cached<T>
     get: (id:number) => IPromise<T>
     related: <E>(resolve:(from:T) => {[key:number]: E}) => Joined<E,T>
 }
 interface Joined<E,T> {
-    ($q:IQService, parent:Cached<E>, resolve:(from:E) => {[key:number]: T})
-    clear: () => void
-    doClear: () => void
+    clear: () => Joined<E,T>
+    doClear: () => Joined<E,T>
     get: (parentId:number, id:number) => IPromise<T>
     related: <Target>(resolve:(from:T) => {[key:number]: Target}) => SecondJoined<E,T,Target>
 }
 interface SecondJoined<F,E,T> {
-    ($q:IQService, parent:Joined<F,E>, resolve:(from:E) => {[key:number]: T})
-    clear: () => void
-    doClear: () => void
+    clear: () => SecondJoined<F,E,T>
+    doClear: () => SecondJoined<F,E,T>
     get: (rootId:number, parentId:number, id:number) => IPromise<T>
 }
 
@@ -25,13 +22,15 @@ const secondJoined = <F,E,T>($q:IQService, parent:Joined<F,E>, resolve:(from:E) 
     var _resolver = resolve;
     var _resolved:{[key:number]: {[key:number]: {[key:number]: T}}} = {};
 
-    return {
+    var self = {
         clear: () => {
             _parent.clear();
+            return self;
         },
 
         doClear: () => {
             _resolved = {};
+            return self;
         },
 
         get: (rootId:number, parentId:number, id:number) => {
@@ -49,6 +48,7 @@ const secondJoined = <F,E,T>($q:IQService, parent:Joined<F,E>, resolve:(from:E) 
             return d.promise;
         }
     };
+    return self;
 };
 
 const joined = <E,T>($q:IQService, parent:Cached<E>, resolve:(from:E) => {[key:number]: T}) => {
@@ -61,11 +61,13 @@ const joined = <E,T>($q:IQService, parent:Cached<E>, resolve:(from:E) => {[key:n
     var self = {
         clear: () => {
             _parent.clear();
+            return self;
         },
 
         doClear: () => {
             _resolved = {};
             _.each(_related, (c:SecondJoined<E,T,any>) => c.doClear());
+            return self;
         },
 
         get: (parentId:number, id:number) => {
@@ -81,7 +83,7 @@ const joined = <E,T>($q:IQService, parent:Cached<E>, resolve:(from:E) => {[key:n
         },
 
         related: <Target>(resolve:(from:T) => {[key:number]: Target}) => {
-            var j = secondJoined<E,T,Target>(_q, <Joined<E,T>>self, resolve);
+            var j = secondJoined<E,T,Target>(_q, self, resolve);
             _related.push(<SecondJoined<E,T,any>>j);
             return j;
         }
@@ -103,6 +105,7 @@ const cached = <T>($q:IQService, resolve:(id:number, d:IDeferred<T>) => void) =>
                 _cache = {};
             }
             _.each(_related, (c:Joined<T,any>) => c.doClear());
+            return self;
         },
 
         get: (id:number) => {
@@ -116,7 +119,7 @@ const cached = <T>($q:IQService, resolve:(id:number, d:IDeferred<T>) => void) =>
         },
 
         related: <E>(resolve:(from:T) => {[key:number]: E}) => {
-            var j = joined<T,E>(_q, <Cached<T>>self, resolve);
+            var j = joined<T,E>(_q, self, resolve);
             _related.push(j);
             return j;
         }

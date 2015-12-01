@@ -80,6 +80,7 @@ ylopsApp
     // Base controller for opetus conttrollers
     .controller('LukioOpetusController', function ($scope, LukioNavigaatioProvider, MurupolkuData, $state) {
         $scope.navi = [];
+        $scope.shouldShowNavigaatio = () => true;
         LukioNavigaatioProvider.produceNavigation().then((items) =>
             _.each(items, (i: sn.NavigaatioItem) => $scope.navi.push(i)));
         if ($state.is('root.opetussuunnitelmat.lukio.opetus')) {
