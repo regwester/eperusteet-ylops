@@ -33,7 +33,7 @@ ylopsApp
                 OpetusuunnitelmaLukio.aihekokonaisuudet({opsId: id})
                     .$promise.then((aihekok: Lukio.AihekokonaisuudetPerusteenOsa) => d.resolve(aihekok),
                             Notifikaatiot.serverCb);
-        var aiheKokCache = new Cache.Cached<Lukio.AihekokonaisuudetPerusteenOsa>($q, doGetAihekokonaisuudet);
+        var aiheKokCache = cached<Lukio.AihekokonaisuudetPerusteenOsa>($q, doGetAihekokonaisuudet);
         var getAihekokonaisuudet = (id?: number) => aiheKokCache.get(id || $stateParams.id);
 
         var doGetOpetuksenYleisetTavoitteet =
@@ -41,14 +41,14 @@ ylopsApp
                 OpetusuunnitelmaLukio.opetuksenYleisetTavoitteet({opsId: id})
                     .$promise.then((yleisetTavoitteet: Lukio.OpetuksenYleisetTavoitteetPerusteenOsa) =>
                         d.resolve(yleisetTavoitteet), Notifikaatiot.serverCb);
-        var yleisetTavoitteetCache = new Cache.Cached<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>($q,
+        var yleisetTavoitteetCache = cached<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>($q,
             doGetOpetuksenYleisetTavoitteet);
         var getOpetuksenYleisetTavoitteet = (id?: number) => yleisetTavoitteetCache.get(id || $stateParams.id);
 
         var doGetRakenne = (id: number, d: IDeferred<Lukio.LukioOpetussuunnitelmaRakenneOps>) =>
             OpetusuunnitelmaLukio.rakenne({opsId: id})
                 .$promise.then((rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) => d.resolve(rakenne), Notifikaatiot.serverCb);
-        var rakenneCache = new Cache.Cached<Lukio.LukioOpetussuunnitelmaRakenneOps>($q, doGetRakenne);
+        var rakenneCache = cached<Lukio.LukioOpetussuunnitelmaRakenneOps>($q, doGetRakenne);
         var getRakenne = (id?: number) => rakenneCache.get(id || $stateParams.id);
 
         var oppiaineCache = rakenneCache.related((from: Lukio.LukioOpetussuunnitelmaRakenneOps) : {[key:number]: Lukio.LukioOppiaine} =>
