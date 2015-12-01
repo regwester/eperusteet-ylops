@@ -15,25 +15,23 @@
  * European Union Public Licence for more details.
  */
 
-import NavigaatioItem = Sivunavi.NavigaatioItem;
 'use strict';
 
 // states in states/lukioStates.ts
 
 ylopsApp
     .service('LukioNavigaatioProvider', function($state, $q:IQService,
-                    LukioOpetussuunnitelmaService, Kaanna, $log) {
+                    LukioOpetussuunnitelmaService, Kaanna) {
         var produceNavigation = function():IPromise<sn.NavigaatioItem[]> {
-            $log.info('Produce lukio navigation.');
             var d = $q.defer<sn.NavigaatioItem[]>(),
                 aihekok : Lukio.AihekokonaisuudetPerusteenOsa = null,
                 rakenne : Lukio.LukioOpetussuunnitelmaRakenneOps = null;
             $q.all([
                 LukioOpetussuunnitelmaService.getAihekokonaisuudet()
-                    .then(function(ak : Lukio.AihekokonaisuudetPerusteenOsa) {aihekok = ak;}),
+                    .then((ak : Lukio.AihekokonaisuudetPerusteenOsa) => aihekok = ak),
                 LukioOpetussuunnitelmaService.getRakenne()
-                    .then(function(r : Lukio.LukioOpetussuunnitelmaRakenneOps) {rakenne = r;})
-            ]).then(function() {
+                    .then((r : Lukio.LukioOpetussuunnitelmaRakenneOps) => rakenne = r)
+            ]).then(() => {
                 var items = <sn.NavigaatioItem[]>[
                     {
                         url: $state.href('root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet'),
@@ -47,34 +45,19 @@ ylopsApp
                     }
                 ];
                 if (aihekok.paikallinen) {
-                    _.each(aihekok.paikallinen.aihekokonaisuudet, function(ak :Lukio.OpsAihekokonaisuus) {
+                    _.each(aihekok.paikallinen.aihekokonaisuudet, (ak :Lukio.OpsAihekokonaisuus) =>
                         items.push({
                             url: $state.href('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet'),
                             label: Kaanna.kaanna(ak.otsikko || (ak.perusteen ? ak.perusteen.otsikko : {})),
                             depth: 1
-                        });
-                    });
+                        }));
                 }
                 items.push({
                     url: $state.href('root.opetussuunnitelmat.lukio.opetus.oppiaineet'),
                     label: 'lukio-oppiaineet-oppimaarat',
                     depth: 0
                 });
-                var mapKurssit = function(oa: Lukio.LukioOppiaine, depth: number) {
-                    $log.info('Map oppiaine', oa, 'kurssit', oa.kurssit);
-                    _.each(oa.kurssit, function(kurssi: Lukio.LukiokurssiOps) {
-                        $log.info('kurssi', kurssi);
-                        items.push({
-                            url: $state.href('root.opetussuunnitelmat.lukio.opetus.kurssi', {
-                                oppiaineId: oa.id,
-                                kurssiId: kurssi.id
-                            }),
-                            label: Lokalisointi.concat(kurssi.nimi, kurssi.koodiArvo ? ' (' + kurssi.koodiArvo + ')' : ''),
-                            depth: depth
-                        });
-                    })
-                };
-                var mapOppiaine = function(oa: Lukio.LukioOppiaine, dept: number) {
+                var mapOppiaine = (oa: Lukio.LukioOppiaine, dept: number) => {
                     items.push({
                         url: $state.href('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
                             oppiaineId: oa.id
@@ -82,15 +65,9 @@ ylopsApp
                         label: oa.nimi,
                         depth: dept
                     });
-                    _.each(oa.oppimaarat, function(om: Lukio.LukioOppiaine) {
-                        mapOppiaine(om, dept+1);
-                    });
-                    mapKurssit(oa, dept+1);
+                    _.each(oa.oppimaarat, (om: Lukio.LukioOppiaine) => mapOppiaine(om, dept+1));
                 };
-                _.each(rakenne.oppiaineet, function(oa: Lukio.LukioOppiaine) {
-                    mapOppiaine(oa, 1);
-                });
-                $log.info('items', items);
+                _.each(rakenne.oppiaineet,(oa: Lukio.LukioOppiaine) => mapOppiaine(oa, 1));
                 d.resolve(items);
             });
             return d.promise;
@@ -101,29 +78,22 @@ ylopsApp
         }
     })
     // Base controller for opetus conttrollers
-    .controller('LukioOpetusController', function (
-            $scope, LukioNavigaatioProvider, MurupolkuData, $state, $stateParams) {
+    .controller('LukioOpetusController', function ($scope, LukioNavigaatioProvider, MurupolkuData, $state) {
         $scope.navi = [];
-        LukioNavigaatioProvider.produceNavigation().then(function (items:sn.NavigaatioItem[]) {
-            _.each(items, function(i: sn.NavigaatioItem) {
-                $scope.navi.push(i);
-            });
-        });
-
+        LukioNavigaatioProvider.produceNavigation().then((items) =>
+            _.each(items, (i: sn.NavigaatioItem) => $scope.navi.push(i)));
         if ($state.is('root.opetussuunnitelmat.lukio.opetus')) {
             $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet');
         }
     })
     // a opetus controller:
-    .controller('AihekokonaisuudetController', function($scope, LukioOpetussuunnitelmaService) {
+    .controller('AihekokonaisuudetController', function($scope,
+                            LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI) {
         $scope.aihekokonaisuudet = {};
-        LukioOpetussuunnitelmaService.getAihekokonaisuudet().then(function(ak : Lukio.AihekokonaisuudetPerusteenOsa) {
-            $scope.aihekokonaisuudet = ak;
-        });
+        LukioOpetussuunnitelmaService.getAihekokonaisuudet().then(ak => $scope.aihekokonaisuudet = ak);
     })
-    .controller('OpetuksenYleisetTavoitteetController', function($scope, LukioOpetussuunnitelmaService, $log) {
+    .controller('OpetuksenYleisetTavoitteetController', function($scope, $log,
+                     LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI) {
         $scope.yleisetTavoitteet = {};
-        LukioOpetussuunnitelmaService.getOpetuksenYleisetTavoitteet().then(function(yt: Lukio.OpetuksenYleisetTavoitteetPerusteenOsa) {
-            $scope.yleisetTavoitteet = yt;
-        });
+        LukioOpetussuunnitelmaService.getOpetuksenYleisetTavoitteet().then(yt => $scope.yleisetTavoitteet = yt);
     });

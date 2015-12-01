@@ -10,7 +10,7 @@ module Cache {
             this._resolve = resolve;
         }
 
-        clear(id?: number): Cached<T> {
+        clear(id?: number) {
             if (id) {
                 delete this._cache[id];
             } else {
@@ -22,19 +22,17 @@ module Cache {
             return this;
         }
 
-        get(id: number): IPromise<T> {
+        get(id: number) {
             if (this._cache[id]) {
-                return this._q.when<T>(this._cache[id]);
+                return this._q.when<T>(_.cloneDeep(this._cache[id]));
             }
             var d:IDeferred<T> = this._q.defer<T>();
-            d.promise.then(function(value: T) {
-                this._cache[id] = value;
-            }.bind(this));
+            d.promise.then((value: T) => this._cache[id] = value);
             this._resolve(id, d);
             return d.promise;
         }
 
-        related<E>(resolve: (from: T) => {[key:number]: E}): Joined<T,E> {
+        related<E>(resolve: (from: T) => {[key:number]: E}) {
             var joined = new Joined<T,E>(this._q, this, resolve);
             this._related.push(joined);
             return joined;
@@ -54,7 +52,7 @@ module Cache {
             this._resolver = resolve;
         }
 
-        clear(): Joined<E,T> {
+        clear() {
             this._parent.clear();
             return this;
         }
@@ -66,19 +64,19 @@ module Cache {
             });
         }
 
-        get(parentId: number, id: number): IPromise<T> {
+        get(parentId: number, id: number) {
             if (this._resolved[parentId]) {
-                return this._q.when<T>(this._resolved[parentId][id]);
+                return this._q.when<T>(_.cloneDeep(this._resolved[parentId][id]));
             }
             var d:IDeferred<T> = this._q.defer<T>();
-            this._parent.get(parentId).then(function(parent: E) {
+            this._parent.get(parentId).then((parent: E) => {
                 this._resolved[parentId] = this._resolver(parent);
-                d.resolve(this._resolved[parentId][id]);
-            }.bind(this));
+                d.resolve(_.cloneDeep(this._resolved[parentId][id]));
+            });
             return d.promise;
         }
 
-        related<Target>(resolve: (from: T) => {[key:number]: Target}): SecondJoined<E,T,Target> {
+        related<Target>(resolve: (from: T) => {[key:number]: Target}) {
             var joined = new SecondJoined<E,T,Target>(this._q, this, resolve);
             this._related.push(joined);
             return joined;
@@ -97,7 +95,7 @@ module Cache {
             this._resolver = resolve;
         }
 
-        clear(): SecondJoined<F,E,T> {
+        clear() {
             this._parent.clear();
             return this;
         }
@@ -106,18 +104,18 @@ module Cache {
             this._resolved = {};
         }
 
-        get(rootId: number, parentId: number, id: number): IPromise<T> {
+        get(rootId: number, parentId: number, id: number) {
             if (this._resolved[rootId] && this._resolved[rootId][parentId]) {
-                return this._q.when<T>(this._resolved[rootId][parentId][id]);
+                return this._q.when<T>(_.cloneDeep(this._resolved[rootId][parentId][id]));
             }
             var d:IDeferred<T> = this._q.defer<T>();
-            this._parent.get(rootId, parentId).then(function(parent: E) {
+            this._parent.get(rootId, parentId).then((parent: E) => {
                 if (!this._resolved[rootId]) {
                     this._resolved[rootId] = {};
                 }
                 this._resolved[rootId][parentId] = this._resolver(parent);
-                d.resolve(this._resolved[rootId][parentId][id]);
-            }.bind(this));
+                d.resolve(_.cloneDeep(this._resolved[rootId][parentId][id]));
+            });
             return d.promise;
         }
     }

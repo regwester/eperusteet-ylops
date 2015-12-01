@@ -17,65 +17,50 @@
 import LukioOppiaine = Lukio.LukioOppiaine;
 'use strict';
 
+interface LukioOpetussuunnitelmaServiceI {
+    getAihekokonaisuudet(id?: number): IPromise<Lukio.AihekokonaisuudetPerusteenOsa>
+    getOpetuksenYleisetTavoitteet(id?: number) : IPromise<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>
+    getRakenne(id?: number): IPromise<Lukio.LukioOpetussuunnitelmaRakenneOps>
+    getOppiaine(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine>
+    getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
+}
 
 ylopsApp
     .service('LukioOpetussuunnitelmaService', function(OpetusuunnitelmaLukio, $q:IQService,
-                                                       Notifikaatiot, $stateParams, $log) {
-        var doGetAihekokonaisuudet = function(id: number, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) {
-            OpetusuunnitelmaLukio.aihekokonaisuudet({opsId: id})
-                    .$promise.then(function(aihekok: Lukio.AihekokonaisuudetPerusteenOsa) {
-                d.resolve(aihekok);
-            }, Notifikaatiot.serverCb);
-        };
+                                                       Notifikaatiot, $stateParams) {
+        var doGetAihekokonaisuudet =
+            (id: number, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) =>
+                OpetusuunnitelmaLukio.aihekokonaisuudet({opsId: id})
+                    .$promise.then((aihekok: Lukio.AihekokonaisuudetPerusteenOsa) => d.resolve(aihekok),
+                            Notifikaatiot.serverCb);
         var aiheKokCache = new Cache.Cached<Lukio.AihekokonaisuudetPerusteenOsa>($q, doGetAihekokonaisuudet);
-        var getAihekokonaisuudet = function(id?: number): IPromise<Lukio.AihekokonaisuudetPerusteenOsa> {
-            return aiheKokCache.get(id || $stateParams.id);
-        };
+        var getAihekokonaisuudet = (id?: number) => aiheKokCache.get(id || $stateParams.id);
 
-        var doGetOpetuksenYleisetTavoitteet = function(id: number, d: IDeferred<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>) {
-            OpetusuunnitelmaLukio.opetuksenYleisetTavoitteet({opsId: id})
-                    .$promise.then(function(yleisetTavoitteet: Lukio.OpetuksenYleisetTavoitteetPerusteenOsa) {
-                d.resolve(yleisetTavoitteet);
-            }, Notifikaatiot.serverCb);
-        };
-        var yleisetTavoitteetCache = new Cache.Cached<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>($q, doGetOpetuksenYleisetTavoitteet);
-        var getOpetuksenYleisetTavoitteet = function(id?: number): IPromise<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa> {
-            return yleisetTavoitteetCache.get(id || $stateParams.id);
-        };
+        var doGetOpetuksenYleisetTavoitteet =
+            (id: number, d: IDeferred<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>) =>
+                OpetusuunnitelmaLukio.opetuksenYleisetTavoitteet({opsId: id})
+                    .$promise.then((yleisetTavoitteet: Lukio.OpetuksenYleisetTavoitteetPerusteenOsa) =>
+                        d.resolve(yleisetTavoitteet), Notifikaatiot.serverCb);
+        var yleisetTavoitteetCache = new Cache.Cached<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>($q,
+            doGetOpetuksenYleisetTavoitteet);
+        var getOpetuksenYleisetTavoitteet = (id?: number) => yleisetTavoitteetCache.get(id || $stateParams.id);
 
-        var doGetRakenne = function(id: number, d: IDeferred<Lukio.LukioOpetussuunnitelmaRakenneOps>) {
+        var doGetRakenne = (id: number, d: IDeferred<Lukio.LukioOpetussuunnitelmaRakenneOps>) =>
             OpetusuunnitelmaLukio.rakenne({opsId: id})
-                    .$promise.then(function(rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) {
-                d.resolve(rakenne);
-            }, Notifikaatiot.serverCb);
-        };
+                .$promise.then((rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) => d.resolve(rakenne), Notifikaatiot.serverCb);
         var rakenneCache = new Cache.Cached<Lukio.LukioOpetussuunnitelmaRakenneOps>($q, doGetRakenne);
-        var getRakenne = function(id?: number): IPromise<Lukio.LukioOpetussuunnitelmaRakenneOps> {
-            return rakenneCache.get(id || $stateParams.id);
-        };
+        var getRakenne = (id?: number) => rakenneCache.get(id || $stateParams.id);
 
-        var oppiaineCache = rakenneCache.related(function(from: Lukio.LukioOpetussuunnitelmaRakenneOps)
-                    : {[key:number]: Lukio.LukioOppiaine} {
-            var oas = _(from.oppiaineet).flattenTree(function(oa: Lukio.LukioOppiaine) {
-                return oa.oppimaarat || [];
-            }).indexBy(_.property('id')).value();
-            $log.info('Get oppiaineet from', from, ' got ', oas);
-            return oas;
-        });
-        var getOppiaine = function(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine> {
-            return oppiaineCache.get(opsId || $stateParams.id, id);
-        };
-        var kurssiCache = oppiaineCache.related(function(from: Lukio.LukioOppiaine)
-                    : {[key:number]: Lukio.LukiokurssiOps} {
-            var kurssit = _(from.kurssit).indexBy(_.property('id')).value();
-            $log.info('Kurssit from ', from, ' got ', kurssit);
-            return kurssit;
-        });
-        var getKurssi = function(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps> {
-            return kurssiCache.get(opsId || $stateParams.id, oppiaineId, kurssiId);
-        };
+        var oppiaineCache = rakenneCache.related((from: Lukio.LukioOpetussuunnitelmaRakenneOps) : {[key:number]: Lukio.LukioOppiaine} =>
+            _(from.oppiaineet).flattenTree((oa: Lukio.LukioOppiaine) => oa.oppimaarat || [])
+                .indexBy(_.property('id')).value());
+        var getOppiaine = (id: number, opsId?: number) => oppiaineCache.get(opsId || $stateParams.id, id);
+        var kurssiCache = oppiaineCache.related((from: Lukio.LukioOppiaine) : {[key:number]: Lukio.LukiokurssiOps} =>
+            _(from.kurssit).indexBy(_.property('id')).value());
+        var getKurssi = (oppiaineId: number, kurssiId: number, opsId?: number) =>
+            kurssiCache.get(opsId || $stateParams.id, oppiaineId, kurssiId);
 
-        return {
+        return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
             getRakenne: getRakenne,

@@ -5,10 +5,11 @@
   },
   "files": [
     "constants.ts",
-    "scripts/app.ts",
     "scripts/types/lokalisointi.d.ts",
     "scripts/types/lukio.d.ts",
     "scripts/types/sivunavi.d.ts",
+
+    "scripts/app.ts",
     "scripts/common/lokalisointi.ts",
     "scripts/common/cache.ts",
     "scripts/views/etusivu.ts",
