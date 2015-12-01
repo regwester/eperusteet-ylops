@@ -6,7 +6,7 @@
             ng-class="{'glyphicon-chevron-right': item.$collapsed, 'glyphicon-chevron-down': !item.$collapsed}"></span>
     </div>
     <span class="linktext">
-      <span ng-bind="item.label | kaanna"></span>
+      <span ng-bind="item.label | kaanna |characters:24"></span>
       <span ng-class="addIcon(item)"></span>
       <span class="pull-right" ng-if="item.valmis === true" valmius-ikoni="item"></span>
     </span>
