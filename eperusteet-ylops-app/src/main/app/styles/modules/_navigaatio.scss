@@ -129,13 +129,21 @@ $sivunavi-level-padding: 20px;
   margin-bottom: 0;
   border: 1px solid #eee;
 
-  .paikallinen {
+  .paikallinen:not(.active)  {
     background-image: url('../../images/ikoni_paikallinen.svg');
     background-repeat: no-repeat;
-    width: 14px;
-    height: 14px;
-    display: inline-block;
-    margin-left: 3px;
+    width: 16px;
+    height: 16px;
+    //display: inline-block;
+    float: right;
+  }
+  .paikallinen.active {
+    background-image: url('../../images/ikoni_paikallinen_white-01.svg');
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    //display: inline-block;
+    float: right;
   }
 
  .valinnaisuus {
