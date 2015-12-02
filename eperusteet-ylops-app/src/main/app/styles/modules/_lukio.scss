@@ -25,8 +25,9 @@ $aikaleima-vari: #888;
 
 
 .lukionakyma {
-  a.container-link, span.container {
+  a.container-link, span.span-container {
     display: block;
+    position: relative;
     padding-left: 0px;
   }
   a.inline-container-link, span.inline-container {
@@ -83,7 +84,7 @@ $aikaleima-vari: #888;
   .aikaleima {
     display: inline-block;
     position: absolute;
-    right: 34px;
+    right: 4px;
     color: $aikaleima-vari;
     font-size: 0.7em;
     z-index: 0;
@@ -92,6 +93,12 @@ $aikaleima-vari: #888;
     margin-left: auto;
     overflow: hidden;
     cursor: help;
+  }
+
+  .container-link {
+    .aikaleima {
+      right: 34px;
+    }
   }
 
   .legendContainer {
@@ -358,16 +365,20 @@ $aikaleima-vari: #888;
     height: 0px;
   }
 
+  .container-link {
+    .puu-node {
+      @include after-arrow();
+      padding-right: 30px;
+    }
+  }
+
   .puu-node {
     min-width: 450px;
     @include lukio-tree-node();
-    padding-right: 30px;
 
     &.kurssi-node {
       margin-top: 0;
     }
-
-    @include after-arrow();
 
     &.oppiaine-node {
       .empty-node {
@@ -561,7 +572,9 @@ a.pointer {
 
   .liittamaton-kurssi {
     @include lukio-tree-node();
-    @include after-arrow();
+    &.container-link {
+      @include after-arrow();
+    }
 
     margin-bottom: 4px;
     width: 360px;

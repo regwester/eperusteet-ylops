@@ -2,7 +2,7 @@
 ylopsApp
     .controller('LukioOppiaineetController', function($scope, $q:IQService, $stateParams, Kaanna, $log,
                                                       LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
-                                                      LukioTreeUtils: LukioTreeUtilsI) {
+                                                      LukioTreeUtils: LukioTreeUtilsI, Kommentit) {
         $scope.editMode = false;
         var state:LukioKurssiTreeState = {
             isEditMode: () => $scope.editMode,
@@ -31,8 +31,11 @@ ylopsApp
                 var d = $q.defer<LukioKurssiTreeNode>();
                 LukioOpetussuunnitelmaService.getRakenne().then(rakenne => {
                     $scope.treeRoot = LukioTreeUtils.treeRootFromRakenne(rakenne);
-                    $scope.liitetytRoot.lapset = _($scope.treeRoot).flattenTree(_.property('lapset'))
-                        .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi).value();
+                    $scope.liitetytRoot.lapset.length =0;
+                    _.each(_($scope.treeRoot).flattenTree(_.property('lapset'))
+                            .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi).value(),
+                        (k: LukioKurssiTreeNode) => {$scope.liitetytRoot.lapset.push(k);}
+                    );
                     updatePagination();
                     d.resolve($scope.treeRoot);
                 });
@@ -70,6 +73,14 @@ ylopsApp
             }),
             acceptDrop: LukioTreeUtils.acceptMove
         });
+
+        $scope.toEditMode = () => {
+            $scope.editMode = true;
+            $scope.$broadcast('genericTree:refresh'); // templates get updated
+            //TODO:editointikontrollit
+        };
+
+        // TODO:kommentit
     })
     .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams,
                         LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {

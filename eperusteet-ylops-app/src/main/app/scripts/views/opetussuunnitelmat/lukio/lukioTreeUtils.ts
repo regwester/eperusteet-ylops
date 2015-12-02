@@ -56,14 +56,14 @@ interface PaginationDetails {
 ylopsApp
     .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli) {
         var templatesByState = (state:LukioKurssiTreeState) => {
-            var templateAround = (tmpl:string) => '<a class="container-link tree-list-item" '+(state.isEditMode() ? ' ng-href="{{createHref()}}"': '')+
+            var templateAround = (tmpl:string) => (!state.isEditMode() ? ' <a class="container-link' : '<span class="span-container')+
+                    ' tree-list-item" '+(!state.isEditMode() ? ' ng-href="{{createHref()}}"': '')+
                     ' ng-show="!node.$$hide" ng-class="{ \'opetussialtopuu-solmu-paataso\': (node.$$depth === 0), \'bubble\': dtypeString() != \'kurssi\',' +
                     '           \'bubble-osa\': dtypeString() == \'kurssi\',' +
-                    '           \'empty-item\': !node.lapset.length }">'+tmpl+'</a>';
-            var kurssiListaTemplateAround = (tmpl:string) =>
-                '<a class="container-link liittamaton-kurssi recursivetree tree-list-item bubble-osa empty-item"'
-                    + (state.isEditMode() ? ' ng-href="{{createHref()}}"': '')
-                    +' ng-show="!node.$$hide && node.$$pagingShow">'+tmpl+'</a>'
+                    '           \'empty-item\': !node.lapset.length }">'+tmpl +
+                    (!state.isEditMode() ? ' </a>' : '</span>');
+            var kurssiListaTemplateAround = (tmpl:string) => '<span class="span-container liittamaton-kurssi recursivetree tree-list-item bubble-osa empty-item"'
+                    +' ng-show="!node.$$hide && node.$$pagingShow">'+tmpl + '</span>';
             var templates = <LukioTreeTemplatesI>{
                 treeHandle: () => state.isEditMode() ? '<span icon-role="drag" class="treehandle"></span>' : '',
                 kurssiColorbox: () => '  <span class="colorbox kurssi-tyyppi {{node.tyyppi.toLowerCase()}}"></span>',
@@ -88,20 +88,20 @@ ylopsApp
                 nodeTemplate: (n:LukioKurssiTreeNode) => {
                     if (n.dtype == LukioKurssiTreeNodeType.kurssi) {
                         var remove = state.isEditMode() ? '   <span class="remove" icon-role="remove" ng-click="removeKurssiFromOppiaine(node)"></span>' : '';
-                        return templateAround('<span class="container puu-node kurssi-node" ng-class="{\'liittamaton\': node.oppiaineet.length === 0}">' +
+                        return templateAround('<span class="span-container puu-node kurssi-node" ng-class="{\'liittamaton\': node.oppiaineet.length === 0}">' +
                             templates.treeHandle() + templates.kurssiColorbox() + templates.timestamp() +
-                                '   <span class="container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
+                                '   <span class="span-container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
                             templates.name(n) + '   </span>' + remove + '</span>');
                     } else {
-                        return templateAround('<span class="container puu-node oppiaine-node">' + templates.treeHandle()
-                            + templates.collapse() + templates.timestamp() + '<span class="container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
+                        return templateAround('<span class="span-container puu-node oppiaine-node">' + templates.treeHandle()
+                            + templates.collapse() + templates.timestamp() + '<span class="span-container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
                             '<strong>' + templates.name(n) + '</strong></span></span>');
                     }
                 },
                 nodeTemplateKurssilista: (n:LukioKurssiTreeNode) =>
-                    kurssiListaTemplateAround('<span class="container puu-node kurssi-node">' +
+                    kurssiListaTemplateAround('<span class="span-container puu-node kurssi-node">' +
                         templates.treeHandle() + templates.kurssiColorbox() + templates.timestamp() +
-                        '   <span class="container node-content left">' + templates.name(n) + '</span>' +
+                        '   <span class="span-container node-content left">' + templates.name(n) + '</span>' +
                         '</span>')
             };
             return templates;
@@ -149,7 +149,8 @@ ylopsApp
                     return false;
                 };
                 scope.createHref = () => {
-                    if (node.dtype === LukioKurssiTreeNodeType.kurssi) {
+                    if (node.dtype === LukioKurssiTreeNodeType.kurssi
+                                && node.$$nodeParent) {
                         return $state.href('root.opetussuunnitelmat.lukio.opetus.kurssi', {
                             id: $stateParams.id,
                             oppiaineId: node.$$nodeParent.id,
