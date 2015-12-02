@@ -23,6 +23,13 @@ $valtakunnallinen-vari: #888;
 $paikallinen-vari: $valtakunnallinen-vari;
 $aikaleima-vari: #888;
 
+a.container-link, span.container {
+  display: block;
+}
+a.inline-container-link, span.inline-container {
+  display: inline-block;
+}
+
 .lukionakyma {
   .list-group-item.level0 {
     &.active {
