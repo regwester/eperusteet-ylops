@@ -14,11 +14,26 @@ ylopsApp
             cursorAt: { top : 5, left: 5 }
         };
         $scope.toggleCollapse = LukioTreeUtils.collapseToggler(() => $scope.treeRoot, state);
+        $scope.liittamattomatRoot = <LukioKurssiTreeNode>{
+            dtype: LukioKurssiTreeNodeType.root,
+            lapset: [] // should be none by default
+        };
+        $scope.liitetytRoot = <LukioKurssiTreeNode>{
+            dtype: LukioKurssiTreeNodeType.root,
+            lapset: [] // should be none by default
+        };
+        var updatePagination = () => {
+            LukioTreeUtils.updatePagination($scope.liittamattomatRoot.lapset, $scope.liittamattomatPagination);
+            LukioTreeUtils.updatePagination($scope.liitetytRoot.lapset, $scope.liitetytPagination);
+        };
         $scope.treeProvider = $q.when(<GenericTreeConfig<LukioKurssiTreeNode>>{
             root: () => {
                 var d = $q.defer<LukioKurssiTreeNode>();
                 LukioOpetussuunnitelmaService.getRakenne().then(rakenne => {
                     $scope.treeRoot = LukioTreeUtils.treeRootFromRakenne(rakenne);
+                    $scope.liitetytRoot.lapset = _($scope.treeRoot).flattenTree(_.property('lapset'))
+                        .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi).value();
+                    updatePagination();
                     d.resolve($scope.treeRoot);
                 });
                 return d.promise;
@@ -28,7 +43,30 @@ ylopsApp
             hidden: LukioTreeUtils.defaultHidden,
             template: node => LukioTreeUtils.templates(state).nodeTemplate(node),
             extension: LukioTreeUtils.extensions((n, scope) => {
+            }),
+            acceptDrop: LukioTreeUtils.acceptMove
+        });
 
+        $scope.liittamattomatPagination = <PaginationDetails>{showPerPage: 5, currentPage: 1};
+        $scope.liittamattomatTreeProvider = $q.when(<GenericTreeConfig<LukioKurssiTreeNode>>{
+            root: () => $q.when($scope.liittamattomatRoot),
+            children: node => $q.when(node.lapset || []),
+            useUiSortable: state.isEditMode,
+            hidden: LukioTreeUtils.defaultHidden,
+            template: node => LukioTreeUtils.templates(state).nodeTemplateKurssilista(node),
+            extension: LukioTreeUtils.extensions((n, scope) => {
+            }),
+            acceptDrop: LukioTreeUtils.acceptMove
+        });
+
+        $scope.liitetytPagination = <PaginationDetails>{showPerPage: 5, currentPage: 1};
+        $scope.liitetytTreeProvider = $q.when(<GenericTreeConfig<LukioKurssiTreeNode>>{
+            root: () => $q.when($scope.liitetytRoot),
+            children: node => $q.when(node.lapset || []),
+            useUiSortable: state.isEditMode,
+            hidden: LukioTreeUtils.defaultHidden,
+            template: node => LukioTreeUtils.templates(state).nodeTemplateKurssilista(node),
+            extension: LukioTreeUtils.extensions((n, scope) => {
             }),
             acceptDrop: LukioTreeUtils.acceptMove
         });

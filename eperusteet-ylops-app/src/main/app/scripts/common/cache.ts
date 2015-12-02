@@ -95,6 +95,7 @@ const cached = <T>($q:IQService, resolve:(id:number, d:IDeferred<T>) => void) =>
     var _q = $q;
     var _resolve = resolve;
     var _cache:{ [id: number]: T} = {};
+    var _promiseFor:{ [id:number]: IPromise<T> } = {};
     var _related:Joined<T,any>[] = [];
 
     var self = {
@@ -112,8 +113,15 @@ const cached = <T>($q:IQService, resolve:(id:number, d:IDeferred<T>) => void) =>
             if (_cache[id]) {
                 return _q.when<T>(_.cloneDeep(_cache[id]));
             }
+            if (_promiseFor[id]) {
+                return _promiseFor[id];
+            }
             var d:IDeferred<T> = _q.defer<T>();
-            d.promise.then((value:T) => _cache[id] = value);
+            _promiseFor[id] = d.promise;
+            d.promise.then((value:T) => {
+                _cache[id] = value;
+                delete _promiseFor[id];
+            });
             _resolve(id, d);
             return d.promise;
         },

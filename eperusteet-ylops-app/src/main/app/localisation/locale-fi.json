@@ -384,5 +384,13 @@
   "kurssi-tyyppi-selite-paikallinen": "Paikallinen",
   "kurssi-tyyppi-selite-valtakunnallinen": "Valtakunnallinen",
   "avaa-sulje-kaikki": "Avaa / sulje kaikki",
-  "lukio-etsi-oppiaineista-ja-kursseista": "Etsi"
+  "lukio-etsi-oppiaineista-ja-kursseista": "Etsi",
+  "tuo-oppiaine-perusteesta": "Tuo perusteesta",
+  "lukio-kurssipuu-muokkaa-rakennetta": "Muokkaa rakennetta",
+  "lukio-liitamattomat-kurssit": "Liittämättömät kurssit",
+  "lisaa-kurssi": "Lisää kurssi",
+  "lukio-etsi-liittamattomista-kursseista":"Etsi liittämättömistä kursseista",
+  "lukio-liitetyt-kurssit-ohje": "Voit lisätä saman kurssin toisen oppiaineen/oppimäärän toiminnon ’Muokkaa rakennetta’ kautta.",
+  "lukio-liitetyt-kurssit": "Liitetyt kurssit",
+  "lukio-etsi-liitetyista-kursseista": "Etsi liitetyistä kursseista"
 }

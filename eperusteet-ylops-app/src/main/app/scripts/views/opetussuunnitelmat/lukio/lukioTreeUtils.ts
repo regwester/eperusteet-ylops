@@ -9,6 +9,7 @@ interface LukioTreeUtilsI {
     collapseToggler: (treeRootProvider: Provider<LukioKurssiTreeNode>, state: LukioKurssiTreeState) => (() => void),
     extensions: (myExtensions?: ((node:LukioKurssiTreeNode, scope:any) => void)) => ((node:LukioKurssiTreeNode, scope:any) => void)
     acceptMove: (from:LukioKurssiTreeNode, to:LukioKurssiTreeNode, event:any, ui:any) => boolean
+    updatePagination: (arr:PaginationNode[], pagination:PaginationDetails) => void
 }
 interface Provider<T> {
     (): T
@@ -18,13 +19,17 @@ enum LukioKurssiTreeNodeType {
     kurssi,
     oppiaine
 }
-interface LukioKurssiTreeNode extends GenericTreeNode {
+interface PaginationNode extends GenericTreeNode {
+    $$hide?: boolean
+    $$index?: number
+    $$pagingShow?: boolean
+}
+interface LukioKurssiTreeNode extends PaginationNode {
     dtype: LukioKurssiTreeNodeType
     nimi?: l.Lokalisoitu //käytännössä not null (muilla kuin rootilla)
     id?: number, //käytännössä not null (muilla kuin rootilla)
     lapset?: LukioKurssiTreeNode[]
     $$nodeParent?: LukioKurssiTreeNode
-    $$hide?: boolean
     koosteinen?: boolean
     koodiArvo?: string
     lokalisoituKoodi?: l.Lokalisoitu
@@ -38,18 +43,27 @@ interface LukioTreeTemplatesI {
     collapse: () => string
     name: (node: LukioKurssiTreeNode) => string
     nodeTemplate: (node: LukioKurssiTreeNode) => string
+    nodeTemplateKurssilista: (n:LukioKurssiTreeNode) => string
+}
+interface PaginationDetails {
+    currentPage:number,
+    showPerPage:number,
+    total?:number,
+    multiPage?:boolean,
+    changePage:(to:number) => void
 }
 
 ylopsApp
     .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli) {
-        var templateAround = function(tmpl:string):string {
-            return '<a class="container-link tree-list-item" ng-href="{{createHref()}}" ng-show="!node.$$hide" ' +
-                'ng-class="{ \'opetussialtopuu-solmu-paataso\': (node.$$depth === 0), \'bubble\': node.dtype != \'kurssi\',' +
-                '           \'bubble-osa\': node.dtype === \'kurssi\',' +
-                '           \'empty-item\': !node.lapset.length }">'+tmpl+'</a>';
-        };
-
         var templatesByState = (state:LukioKurssiTreeState) => {
+            var templateAround = (tmpl:string) => '<a class="container-link tree-list-item" '+(state.isEditMode() ? ' ng-href="{{createHref()}}"': '')+
+                    ' ng-show="!node.$$hide" ng-class="{ \'opetussialtopuu-solmu-paataso\': (node.$$depth === 0), \'bubble\': dtypeString() != \'kurssi\',' +
+                    '           \'bubble-osa\': dtypeString() == \'kurssi\',' +
+                    '           \'empty-item\': !node.lapset.length }">'+tmpl+'</a>';
+            var kurssiListaTemplateAround = (tmpl:string) =>
+                '<a class="container-link liittamaton-kurssi recursivetree tree-list-item bubble-osa empty-item"'
+                    + (state.isEditMode() ? ' ng-href="{{createHref()}}"': '')
+                    +' ng-show="!node.$$hide && node.$$pagingShow">'+tmpl+'</a>'
             var templates = <LukioTreeTemplatesI>{
                 treeHandle: () => state.isEditMode() ? '<span icon-role="drag" class="treehandle"></span>' : '',
                 kurssiColorbox: () => '  <span class="colorbox kurssi-tyyppi {{node.tyyppi.toLowerCase()}}"></span>',
@@ -74,16 +88,21 @@ ylopsApp
                 nodeTemplate: (n:LukioKurssiTreeNode) => {
                     if (n.dtype == LukioKurssiTreeNodeType.kurssi) {
                         var remove = state.isEditMode() ? '   <span class="remove" icon-role="remove" ng-click="removeKurssiFromOppiaine(node)"></span>' : '';
-                        return templateAround('<span class="inline-container puu-node kurssi-node" ng-class="{\'liittamaton\': node.oppiaineet.length === 0}">' +
+                        return templateAround('<span class="container puu-node kurssi-node" ng-class="{\'liittamaton\': node.oppiaineet.length === 0}">' +
                             templates.treeHandle() + templates.kurssiColorbox() + templates.timestamp() +
                                 '   <span class="container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
                             templates.name(n) + '   </span>' + remove + '</span>');
                     } else {
-                        return templateAround('<span class="inline-container puu-node oppiaine-node">' + templates.treeHandle()
+                        return templateAround('<span class="container puu-node oppiaine-node">' + templates.treeHandle()
                             + templates.collapse() + templates.timestamp() + '<span class="container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
                             '<strong>' + templates.name(n) + '</strong></span></span>');
                     }
-                }
+                },
+                nodeTemplateKurssilista: (n:LukioKurssiTreeNode) =>
+                    kurssiListaTemplateAround('<span class="container puu-node kurssi-node">' +
+                        templates.treeHandle() + templates.kurssiColorbox() + templates.timestamp() +
+                        '   <span class="container node-content left">' + templates.name(n) + '</span>' +
+                        '</span>')
             };
             return templates;
         };
@@ -144,6 +163,9 @@ ylopsApp
                     }
                     return null;
                 };
+                scope.dtypeString = () => {
+                    return LukioKurssiTreeNodeType[node.dtype];
+                }
                 if (myExtensions) {
                     myExtensions(node, scope);
                 }
@@ -174,6 +196,53 @@ ylopsApp
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
                     && !to.koosteinen);
         };
+
+        var updatePagination = function (arr:PaginationNode[], pagination:PaginationDetails) {
+            var i = 0, startIndex,
+                endIndex;
+            if (pagination) {
+                startIndex = (pagination.currentPage-1) * pagination.showPerPage;
+                endIndex = startIndex + pagination.showPerPage-1;
+            }
+            _.each(arr, (item:PaginationNode) => {
+                item.$$index = i;
+                item.$$pagingShow = true;
+                if (pagination) {
+                    item.$$pagingShow = item.$$index >= startIndex && item.$$index <= endIndex;
+                }
+                if (!item.$$hide) {
+                    i++;
+                }
+            });
+            if (!pagination.currentPage || pagination.currentPage < 0) {
+                pagination.currentPage = 1;
+            }
+            if (!pagination.showPerPage || pagination.showPerPage < 0) {
+                pagination.showPerPage = 10;
+            }
+            if (!pagination.changePage) {
+                pagination.changePage = (pageNum:number) => changePage(arr, pagination, pageNum);
+            }
+            pagination.total = countNotHidden(arr);
+            pagination.multiPage = pagination.total  > pagination.showPerPage;
+            if (pagination.total > 0 && pagination.total <= (pagination.currentPage - 1) * pagination.showPerPage) {
+                changePage(arr, pagination, pagination.currentPage - 1);
+            }
+        };
+        var changePage = function(arr:PaginationNode[], pagination:PaginationDetails, to:number) {
+            pagination.currentPage = to;
+            updatePagination(arr, pagination);
+        };
+        var countNotHidden = function(arr:PaginationNode[]) {
+            var count:number = 0;
+            _.each(arr, (item:PaginationNode) => {
+                if (!item.$$hide) {
+                    count++;
+                }
+            });
+            return count;
+        };
+
         var textMatch = (txt:string[], to:string):boolean => {
             if (!to) {
                 return true;
@@ -220,6 +289,7 @@ ylopsApp
             collapseToggler: collapseToggler,
             extensions: extensions,
             acceptMove: acceptMove,
-            matchesSearch: matchesSearch
+            matchesSearch: matchesSearch,
+            updatePagination: updatePagination
         };
     });

@@ -24,6 +24,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -36,6 +37,8 @@ import java.util.stream.Stream;
 @Getter
 public class LukioOpetussuunnitelmaRakenneOpsDto implements Serializable,
         PerusteeseenViittaava<LukioOpetussuunnitelmaRakenneDto>{
+    @Setter
+    private Date muokattu;
     @Setter
     private Long opsId;
     private LukioOpetussuunnitelmaRakenneDto perusteen;

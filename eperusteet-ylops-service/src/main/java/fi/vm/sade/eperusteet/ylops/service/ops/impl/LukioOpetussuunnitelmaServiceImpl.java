@@ -65,6 +65,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         PerusteDto perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
         LukioOpetussuunnitelmaRakenneOpsDto rakenne = new LukioOpetussuunnitelmaRakenneOpsDto();
+        rakenne.setMuokattu(ops.getMuokattu());
+        rakenne.setOpsId(ops.getId());
         map(ops.getOppiaineet().stream().map(OpsOppiaine::getOppiaine),
             ops.getOppiaineet().stream()
                 .collect(toMap(ooa -> ooa.getOppiaine().getId(), OpsOppiaine::isOma))::get,
