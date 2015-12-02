@@ -33,7 +33,8 @@ ylopsApp
                     $scope.treeRoot = LukioTreeUtils.treeRootFromRakenne(rakenne);
                     $scope.liitetytRoot.lapset.length =0;
                     _.each(_($scope.treeRoot).flattenTree(_.property('lapset'))
-                            .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi).value(),
+                            .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi)
+                            .uniq((n:LukioKurssiTreeNode) => n.id).value(),
                         (k: LukioKurssiTreeNode) => {$scope.liitetytRoot.lapset.push(k);}
                     );
                     updatePagination();
