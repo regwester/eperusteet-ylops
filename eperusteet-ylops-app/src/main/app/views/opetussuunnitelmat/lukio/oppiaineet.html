@@ -19,11 +19,11 @@
 <div class="lukio-oppiaineet-puu lukio-oppiaine-tab">
     <div class="main-column tree">
         <div class="tree-con">
-            <!--<div class="left search-field-container">-->
-                <!--<rajaus size="small" classes="puun-rajaus" model="treehelpers.haku"-->
-                        <!--callback="treeHaku()"-->
-                        <!--placeholder="{{ 'lukio-etsi-oppiaineista-ja-kursseista' || kaanna }}"></rajaus>-->
-            <!--</div>-->
+            <div class="left search-field-container">
+                <rajaus size="small" classes="puun-rajaus" model="treehelpers.haku"
+                        callback="treeHaku()"
+                        placeholder="{{ 'lukio-etsi-oppiaineista-ja-kursseista' || kaanna }}"></rajaus>
+            </div>
             <div class="action-buttons left" ng-show="!editMode">
                 <button icon-role="add" class="floater btn"
                         oikeustarkastelu="[{ target: 'peruste', permission: 'muokkaus' }, { target: 'peruste', permission: 'korjaus' }]"
@@ -32,6 +32,14 @@
         </div>
         <div class="tree-con">
             <div class="opetussialtopuu tree" ng-class="{'tree-edit-mode': editMode}">
+                <div class="legendContainer">
+                    <div class="legends">
+                        <div class="left legend" ng-repeat="tyyppi in ['valtakunnallinen', 'paikallinen','pakollinen', 'syventava', 'soveltava']">
+                            <span class="colorbox kurssi-tyyppi {{tyyppi}}"></span>
+                            <span class="legend-name" ng-bind="'kurssi-tyyppi-selite-'+tyyppi | kaanna"></span>
+                        </div>
+                    </div>
+                </div>
                 <div class="lukiotree-ylapainikkeet" ng-show="!editMode">
                     <span class="rakenne-nimi ng-binding"> </span>
                     <div class="pull-right">
@@ -40,17 +48,8 @@
                         </a>
                     </div>
                 </div>
-                <div class="tree-yliviiva"></div>
                 <generic-tree tree-provider="treeProvider"
                               ui-sortable-config="sortableConfig"></generic-tree>
-            </div>
-            <div class="legendContainer">
-                <div class="legends">
-                    <div class="left legend" ng-repeat="tyyppi in ['valtakunnallinen', 'paikallinen','pakollinen', 'syventava', 'soveltava']">
-                        <span class="colorbox kurssi-tyyppi {{tyyppi}}"></span>
-                        <span class="legend-name" ng-bind="'kurssi-tyyppi-selite-'+tyyppi | kaanna"></span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

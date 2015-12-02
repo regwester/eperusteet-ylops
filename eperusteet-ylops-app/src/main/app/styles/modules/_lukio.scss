@@ -20,10 +20,29 @@ $syventava-vari: #997bb6; // #bcda89;
 $soveltava-vari: #f8a35e; // #fcf281;
 $pakollinen-vari: #bddb8a; // #88d3e4;
 $valtakunnallinen-vari: #888;
-$paikallinen-vari: #ccc;
+$paikallinen-vari: $valtakunnallinen-vari;
 $aikaleima-vari: #888;
 
+.lukionakyma {
+  .list-group-item.level0 {
+    &.active {
+      background-color: #0c566e !important;
+    }
+    .linktext {
+      text-transform: uppercase;
+    }
+  }
+}
+
 .lukio-oppiaineet-puu {
+  .search-field-container {
+    margin-left: 5px;
+  }
+
+  .tree-con {
+    min-width: 600px;
+  }
+
   .main-column {
     float: left;
     width: 60%;
@@ -33,8 +52,9 @@ $aikaleima-vari: #888;
     float: left;
   }
   .lukiotree-ylapainikkeet {
-    margin-top: 0px;
-    margin-bottom: 20px;
+    margin-top: 8px;
+    height: 10px;
+    margin-bottom: 15px;
   }
   .search-field-container {
     padding-top: 2px;
@@ -50,10 +70,11 @@ $aikaleima-vari: #888;
     text-overflow: ellipsis;
     background-color: #fff;
   }
+
   .aikaleima {
     display: inline-block;
     position: absolute;
-    right: 4px;
+    right: 34px;
     color: $aikaleima-vari;
     font-size: 0.7em;
     z-index: 0;
@@ -72,31 +93,38 @@ $aikaleima-vari: #888;
     padding: 5px;
     padding-right: 10px;
     margin-top: 10px;
-    min-width: 650px;
+    min-width: 600px;
+    right: -5px;
     border: 1px solid #ccc;
   }
 
   .legends {
     position: relative;
-    float: right;
+    float: left;
     margin-right: 5px;
     /*top: 7px;
     right: -180px;*/
 
     .legend {
-      margin-left: 40px;
+      margin-left: 10px;
+      margin-right: 20px;
+
+      &:last-child {
+        margin-right: 0px;
+      }
 
       .colorbox {
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
         margin-right: 10px;
         @include borderradius(4px);
         display: block;
         position: absolute;
+        margin-top: 3px;
       }
 
       .legend-name {
-        padding-top: 0px;
+        padding-top: 1px;
         display: block;
         float: left;
         margin-left: 30px;
@@ -178,6 +206,21 @@ $aikaleima-vari: #888;
   }
 }
 
+@mixin paikallinen-symboli($vari, $koko, $width, $top) {
+  &:after {
+    position: absolute;
+    width: $width;
+    left: 0px;
+    top: $top;
+    text-align: center;
+    font-family: "Glyphicons Halflings";
+    content: '';
+    vertical-align: middle;
+    color: $vari;
+    font-size: $koko;
+  }
+}
+
 .colorbox.kurssi-tyyppi {
   height: 30px;
   width: 30px;
@@ -210,7 +253,9 @@ $aikaleima-vari: #888;
     background-color: $valtakunnallinen-vari;
   }
   &.paikallinen {
-    background-color: $paikallinen-vari;
+    background-color: transparent;
+    overflow: visible;
+    @include paikallinen-symboli($paikallinen-vari, 12pt, 20px, -3px);
   }
   &.valtakunnallinen_pakollinen {
     background-color: $pakollinen-vari;
@@ -223,12 +268,15 @@ $aikaleima-vari: #888;
   }
   &.paikallinen_pakollinen {
     background-color: $pakollinen-vari;
+    @include paikallinen-symboli(white, 15pt, 30px, 1px);
   }
   &.paikallinen_syventava {
     background-color: $syventava-vari;
+    @include paikallinen-symboli(white, 15pt, 30px, 1px);
   }
   &.paikallinen_soveltava {
     background-color: $soveltava-vari;
+    @include paikallinen-symboli(white, 15pt, 30px, 1px);
   }
 }
 
@@ -271,7 +319,7 @@ $aikaleima-vari: #888;
   @include bubble-fix();
 
   .tree-yliviiva {
-    min-width: 630px;
+    min-width: 650px;
     background-color: $puuviiva-vari;
     height: 0px;
   }
@@ -279,9 +327,27 @@ $aikaleima-vari: #888;
   .puu-node {
     min-width: 450px;
     @include lukio-tree-node();
+    padding-right: 30px;
 
     &.kurssi-node {
       margin-top: 0;
+    }
+
+    &:after {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      background-color: #d1d2d4;
+      color: white;
+      font-weight: bold;
+      font-size: 10pt;
+      font-family: "Glyphicons Halflings";
+      content: '';
+      padding-top: 4px;
+      vertical-align: middle;
     }
 
     &.oppiaine-node {
@@ -326,7 +392,7 @@ $aikaleima-vari: #888;
 }
 
 .lukio-oppiaine-tab {
-  padding-top: 20px;
+  padding-top: 10px;
 
   .action-buttons.additional {
     right: 150px;

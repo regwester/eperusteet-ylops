@@ -7,7 +7,8 @@ interface LukioTreeUtilsI {
     treeRootFromRakenne: (rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) => LukioKurssiTreeNode,
     defaultHidden: (node: LukioKurssiTreeNode) => boolean
     collapseToggler: (treeRootProvider: Provider<LukioKurssiTreeNode>, state: LukioKurssiTreeState) => (() => void),
-    extensions: (myExtensions?: ((node:any, scope:any) => void)) => ((node:any, scope:any) => void)
+    extensions: (myExtensions?: ((node:LukioKurssiTreeNode, scope:any) => void)) => ((node:LukioKurssiTreeNode, scope:any) => void)
+    acceptMove: (from:LukioKurssiTreeNode, to:LukioKurssiTreeNode, event:any, ui:any) => boolean
 }
 interface Provider<T> {
     (): T
@@ -18,11 +19,17 @@ enum LukioKurssiTreeNodeType {
     oppiaine
 }
 interface LukioKurssiTreeNode extends GenericTreeNode {
-    id?: number,
     dtype: LukioKurssiTreeNodeType
+    nimi?: l.Lokalisoitu //käytännössä not null (muilla kuin rootilla)
+    id?: number, //käytännössä not null (muilla kuin rootilla)
     lapset?: LukioKurssiTreeNode[]
     $$nodeParent?: LukioKurssiTreeNode
     $$hide?: boolean
+    koosteinen?: boolean
+    koodiArvo?: string
+    lokalisoituKoodi?: l.Lokalisoitu
+    kurssit?: Lukio.LukiokurssiOps[]
+    oppimaarat?: Lukio.LukioOppiaine[]
 }
 interface LukioTreeTemplatesI {
     treeHandle: () => string
@@ -34,7 +41,7 @@ interface LukioTreeTemplatesI {
 }
 
 ylopsApp
-    .service('LukioTreeUtils', function ($log, $state, $stateParams) {
+    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli) {
         var templateAround = function(tmpl:string):string {
             return '<div class="tree-list-item" ng-show="!node.$$hide" ' +
                 'ng-class="{ \'opetussialtopuu-solmu-paataso\': (node.$$depth === 0), \'bubble\': node.dtype != \'kurssi\',' +
@@ -53,13 +60,13 @@ ylopsApp
                         ? '<span ng-bind="(node.nimi | kaanna) + ((node.lokalisoituKoodi | kaanna) ? \' (\'+(node.lokalisoituKoodi | kaanna)+\')\' : \'\')" title="{{node.nimi | kaanna}} {{(node.lokalisoituKoodi | kaanna) ? \'(\'+(node.lokalisoituKoodi | kaanna)+\')\' : \'\'}}"></span>'
                         : '{{ node.nimi | kaanna }}';
                     if (!state.isEditMode()) {
-                        return '<a ng-href="{{createHref(node)}}" '
+                        return '<a ng-href="{{createHref()}}" '
                             + (node.dtype != LukioKurssiTreeNodeType.kurssi ? ' title="' + base + '"' : '')
                             +'>' + base + '</a>';
                     }
                     return base;
                 },
-                collapse: () => !state.isEditMode() ? '<span ng-show="node.lapset.length" ng-click="toggle(node)"' +
+                collapse: () => !state.isEditMode() ? '<span ng-show="node.lapset.length" ng-click="toggle()"' +
                     '           class="colorbox collapse-toggle" ng-class="{\'suljettu\': node.$$collapsed}">' +
                     '    <span ng-hide="node.$$collapsed" class="glyphicon glyphicon-chevron-down"></span>' +
                     '    <span ng-show="node.$$collapsed" class="glyphicon glyphicon-chevron-right"></span>' +
@@ -69,9 +76,8 @@ ylopsApp
                         var remove = state.isEditMode() ? '   <span class="remove" icon-role="remove" ng-click="removeKurssiFromOppiaine(node)"></span>' : '';
                         return templateAround('<div class="puu-node kurssi-node" ng-class="{\'liittamaton\': node.oppiaineet.length === 0}">' +
                             templates.treeHandle() + templates.kurssiColorbox() + templates.timestamp() +
-                            '   <div class="node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
-                            templates.name(n) + '   </div>' + remove +
-                            '</div>');
+                                '   <div class="node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
+                            templates.name(n) + '   </div>' + remove + '</div>');
                     } else {
                         return templateAround('<div class="puu-node oppiaine-node">' + templates.treeHandle()
                             + templates.collapse() + templates.timestamp() + '<div class="node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
@@ -114,12 +120,12 @@ ylopsApp
         var collapseToggler = (treeRootProvider: Provider<LukioKurssiTreeNode>, state: LukioKurssiTreeState) => () => {
             state.defaultCollapse = !state.defaultCollapse;
             _.each(_(treeRootProvider()).flattenTree(_.property('lapset')).value(), ((n:LukioKurssiTreeNode) =>
-                n.$$collapsed = state.defaultCollapse));
+                {n.$$collapsed = state.defaultCollapse;}));
         };
-        var extensions = (myExtensions?: ((node:any, scope:any) => void)) => {
-            return (node:any, scope:any) => {
-                scope.toggle = (node: LukioKurssiTreeNode) => node.$$collapsed = !node.$$collapsed;;
-                scope.createHref = (node: LukioKurssiTreeNode) => {
+        var extensions = (myExtensions?: ((node:LukioKurssiTreeNode, scope:any) => void)) => {
+            return (node:LukioKurssiTreeNode, scope:any) => {
+                scope.toggle = () => node.$$collapsed = !node.$$collapsed;;
+                scope.createHref = () => {
                     if (node.dtype === LukioKurssiTreeNodeType.kurssi) {
                         return $state.href('root.opetussuunnitelmat.lukio.opetus.kurssi', {
                             id: $stateParams.id,
@@ -139,12 +145,77 @@ ylopsApp
                 }
             };
         };
-
+        var acceptMove = function(node: LukioKurssiTreeNode, to: LukioKurssiTreeNode, event, ui) {
+            if (!node) {
+                return false;
+            }
+            //Tarkistetaan, että onko kurssi jo kyseisen oppiaineen/oppimäärän kurssi, mikäli ei
+            // siirretä oppiaineen/oppimäärän sisällä. Jos on jo, siirtoa ei sallita.
+            if (node.dtype === LukioKurssiTreeNodeType.kurssi
+                        && to.dtype === LukioKurssiTreeNodeType.oppiaine
+                        && !to.koosteinen && ( _.isUndefined(node.$$nodeParent)
+                            || node.$$nodeParent.id !== to.id)
+                        && _.any(to.kurssit, kurssi => kurssi.id === node.id)) {
+                return false;
+            }
+            return (node.dtype === LukioKurssiTreeNodeType.oppiaine
+                            && to.dtype === LukioKurssiTreeNodeType.root
+                            && !node.koosteinen) ||
+                (node.dtype === LukioKurssiTreeNodeType.oppiaine
+                    && to.dtype === LukioKurssiTreeNodeType.oppiaine
+                    && to.koosteinen && !node.koosteinen) ||
+                (node.dtype === LukioKurssiTreeNodeType.oppiaine
+                    && to.dtype === LukioKurssiTreeNodeType.root ) ||
+                (node.dtype === LukioKurssiTreeNodeType.kurssi
+                    && to.dtype === LukioKurssiTreeNodeType.oppiaine
+                    && !to.koosteinen);
+        };
+        var textMatch = (txt:string[], to:string):boolean => {
+            if (!to) {
+                return true;
+            }
+            if (!txt.length) {
+                return false;
+            }
+            var words = to.toLowerCase().split(/\s+/);
+            var found = {};
+            for (var part in txt) {
+                if (!txt[part]) {
+                    continue;
+                }
+                var lower = txt[part].toLowerCase();
+                for (var i in words) {
+                    if (words[i] && lower.indexOf(words[i]) !== -1) {
+                        found[i] = true;
+                    }
+                }
+            }
+            for (var j = 0; j < words.length; ++j) {
+                if (!found[j]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        var matchesSearch = (node: LukioKurssiTreeNode, search:string):boolean => {
+            if (!search) {
+                return true;
+            }
+            var nimi = node.nimi,
+                koodiArvo = node.koodiArvo,
+                lokalisoituKoodi = node.lokalisoituKoodi ? Kaanna.kaanna(node.lokalisoituKoodi) : null;
+            if (_.isObject(node.nimi)) {
+                nimi = nimi[Kieli.getSisaltokieli().toLowerCase()];
+            }
+            return textMatch([nimi, koodiArvo, lokalisoituKoodi], search);
+        };
         return <LukioTreeUtilsI>{
             templates: templatesByState,
             treeRootFromRakenne: treeRootFromRakenne,
             defaultHidden: defaultHidden,
             collapseToggler: collapseToggler,
-            extensions: extensions
+            extensions: extensions,
+            acceptMove: acceptMove,
+            matchesSearch: matchesSearch
         };
     });

@@ -29,7 +29,8 @@ ylopsApp
             template: node => LukioTreeUtils.templates(state).nodeTemplate(node),
             extension: LukioTreeUtils.extensions((n, scope) => {
 
-            })
+            }),
+            acceptDrop: LukioTreeUtils.acceptMove
         });
     })
     .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams,
