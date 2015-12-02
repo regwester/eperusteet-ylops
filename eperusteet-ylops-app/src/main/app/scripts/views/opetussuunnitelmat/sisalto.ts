@@ -92,7 +92,7 @@ ylopsApp
       if (obj.tekstiKappale) {
         var result = {
           id: obj.id,
-          label: obj.tekstiKappale.nimi,
+          label: obj.tekstiKappale.nimi || '[otsikko]',
           valmis: obj.tekstiKappale.valmis,
           depth: depth - 1,
           url: depth > 1 || isPohja ? $state.href(state, { tekstikappaleId: obj.id }) : undefined
@@ -198,7 +198,7 @@ ylopsApp
   };
 
   Editointikontrollit.registerCallback({
-    edit: () => $q((resolve) => resolve()),
+    edit: () => $q.when(),
     save: () => $q((resolve, reject) => {
       TekstikappaleOps.saveRakenne($scope.model, () => {
         Lukko.unlock(commonParams);

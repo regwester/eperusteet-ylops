@@ -365,17 +365,17 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oppiaine.getOppimaarat().forEach(oppimaara -> delete(opsId, oppimaara.getId()));
         }
 
+        oppiaine.getVuosiluokkakokonaisuudet().forEach(vuosiluokkakokonaisuus -> {
+            vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(vuosiluokkakokonaisuus);
+        });
+
         if (oppiaine.getOppiaine() != null) {
             oppiaine.getOppiaine().removeOppimaara(oppiaine);
         } else {
             Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-            oppiaine.getVuosiluokkakokonaisuudet().forEach(vuosiluokkakokonaisuus -> {
-                vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(vuosiluokkakokonaisuus);
-            });
             ops.removeOppiaine(oppiaine);
         }
 
-        mapper.map(oppiaine, OppiaineDto.class);
         oppiaineet.delete(oppiaine);
     }
 
@@ -482,6 +482,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         if (!vuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet())) {
             throw new BusinessRuleViolationException("Yksi tai useampi vuosiluokka ei kuulu tähän vuosiluokkakokonaisuuteen");
         }
+
+        vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(v);
 
         tavoitteet.entrySet().stream()
             .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))

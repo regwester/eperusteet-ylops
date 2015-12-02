@@ -146,10 +146,44 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaJulkinenDto.class);
 
 
-        /*dtot.forEach(dto -> {
-            fetchKuntaNimet(dto);
-            fetchOrganisaatioNimet(dto);
-        });*/
+        dtot.forEach(dto -> {
+            for (KoodistoDto koodistoDto : dto.getKunnat()) {
+                Map<String, String> tekstit = new HashMap<>();
+                KoodistoKoodiDto kunta = koodistoService.get("kunta", koodistoDto.getKoodiUri());
+                if (kunta != null) {
+                    for (KoodistoMetadataDto metadata : kunta.getMetadata()) {
+                        tekstit.put(metadata.getKieli(), metadata.getNimi());
+                    }
+                }
+                koodistoDto.setNimi(new LokalisoituTekstiDto(tekstit));
+            }
+
+            for (OrganisaatioDto organisaatioDto : dto.getOrganisaatiot()) {
+                Map<String, String> tekstit = new HashMap<>();
+                List<String> tyypit = new ArrayList<>();
+                JsonNode organisaatio = organisaatioService.getOrganisaatio(organisaatioDto.getOid());
+                if (organisaatio != null) {
+                    JsonNode nimiNode = organisaatio.get("nimi");
+                    if (nimiNode != null) {
+                        Iterator<Map.Entry<String, JsonNode>> it = nimiNode.fields();
+                        while (it.hasNext()) {
+                            Map.Entry<String, JsonNode> field = it.next();
+                            tekstit.put(field.getKey(), field.getValue().asText());
+                        }
+                    }
+
+                    JsonNode tyypitNode = Optional.ofNullable(organisaatio.get("tyypit"))
+                            .orElse(organisaatio.get("organisaatiotyypit"));
+                    if (tyypitNode != null) {
+                        tyypit = StreamSupport.stream(tyypitNode.spliterator(), false)
+                                .map(JsonNode::asText)
+                                .collect(Collectors.toList());
+                    }
+                }
+                organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
+                organisaatioDto.setTyypit(tyypit);
+            }
+        });
         return dtot;
     }
 
