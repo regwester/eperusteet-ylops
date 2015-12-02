@@ -41,12 +41,31 @@ ylopsApp
         return deferred.promise;
     };
 
+    //this.update = function (image) {
+    //  var deferred = $q.defer();
+    //  var url = (YlopsResources.OPS + '/kuvat/'+image.id ).replace(':opsId', '' + OpsService.getId());
+    //
+    //  Upload.upload({
+    //    url: url,
+    //    file: image,
+    //    fields: {
+    //      nimi: image.name,
+    //      width: image.width,
+    //      height: image.height
+    //    }}).success(function (data) {
+    //    deferred.resolve(data);
+    //  }).error(function(data) {
+    //    deferred.reject(data);
+    //  });
+    //  return deferred.promise;
+    //};
+
     this.getUrl = function (image) {
       return (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId()) + '/' + image.id;
     };
   })
 
-  .controller('EpImagePluginController', function ($scope, EpImageService, Kaanna, Algoritmit, $timeout) {
+  .controller('EpImagePluginController', function ($scope, EpImageService, Kaanna, Algoritmit, $timeout, OpsService ) {
     $scope.service = EpImageService;
     $scope.filtered = [];
     $scope.images = [];
@@ -56,14 +75,26 @@ ylopsApp
       rejected: [],
       chosen: null
     };
+    $scope.scaleError = false;
 
     $scope.$watch('model.files[0]', function () {
-      console.log("filesss");
       if (_.isArray($scope.model.files) && $scope.model.files.length > 0) {
         $scope.showPreview = true;
         getDimensions();
       }
     });
+
+    $scope.widthChange = function(img){
+      $scope.scaleError = false;
+      var tmp = img.width / img.originalWidth;
+      img.height = Math.round( tmp * img.originalHeight );
+    };
+
+    $scope.heightChange = function(img){
+      $scope.scaleError = false;
+      var tmp = img.height / img.originalHeight;
+      img.width = Math.round( tmp * img.originalWidth);
+    };
 
     function getDimensions(){
       var fr = new FileReader;
@@ -72,6 +103,8 @@ ylopsApp
         img.onload = function() { // image is loaded; sizes are available
           $scope.model.files[0].width = img.width;
           $scope.model.files[0].height = img.height;
+          $scope.model.files[0].originalWidth = img.width;
+          $scope.model.files[0].originalHeight = img.height;
           $scope.$apply();
         };
         img.src = fr.result; // is the data URL because called with readAsDataURL
@@ -79,25 +112,37 @@ ylopsApp
       fr.readAsDataURL($scope.model.files[0]);
     }
 
-    //$scope.$watch('model.files[0].width', function(){
-    //  console.log("change ", $scope.model.files[0].width);
-    //});
-    //
-    //$scope.$watch('model.files[0].height', function(){
-    //  console.log("change ", $scope.model.files[0].width);
-    //});
-
     $scope.$watch('model.chosen', function () {
       $scope.showPreview = false;
     });
+
+    $scope.rescaleImg = function(){
+      $scope.service.update($scope.model.chosen);
+    };
 
     var callback = angular.noop;
     var setDeferred = null;
 
     function setChosenValue (value) {
+
+      function getMeta(url){
+        var img = new Image();
+        img.onload = function(){
+          $scope.model.chosen.width = this.width;
+          $scope.model.chosen.height = this.height;
+          $scope.model.chosen.originalWidth = this.width;
+          $scope.model.chosen.originalHeight = this.height;
+        };
+        img.src = url;
+      }
+
       var found = _.find($scope.images, function (image) {
         return image.id === value;
       });
+
+      var imgurl = EpImageService.getUrl(found);
+      getMeta( imgurl );
+
       $scope.model.chosen = found || null;
     }
 
@@ -152,7 +197,13 @@ ylopsApp
     };
 
     $scope.saveNew = function () {
+
       var image = $scope.model.files[0];
+      if( !(image.width > 0 && image.height > 0) ){
+        $scope.scaleError = 'epimage-plugin-scale-invalid';
+        return;
+      }
+
       $scope.service.save(image).then(function (res) {
         $scope.message = 'epimage-plugin-tallennettu';
         $scope.model.files = [];

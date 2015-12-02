@@ -62,6 +62,21 @@ public class LiitetiedostoController {
         SUPPORTED_TYPES = Collections.unmodifiableSet(tmp);
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    public void reScaleImg(
+            @PathVariable("opsId")
+            @P("opsId") Long opsId,
+            @PathVariable("id") UUID id,
+            @RequestParam("width") Integer width,
+            @RequestParam("height") Integer height,
+            @RequestParam("file") Part file
+            ){
+
+        //TODO implement image rescaling
+
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     public ResponseEntity<String> upload(
@@ -89,7 +104,6 @@ public class LiitetiedostoController {
             UUID id = null;
             if( width != null && height != null){
                 ByteArrayOutputStream os = scaleImage(file, tyyppi, width, height);
-                //TODO check max size
                 id = liitteet.add(opsId, tyyppi, nimi, os.size(), new PushbackInputStream( new ByteArrayInputStream( os.toByteArray() )));
             }else{
                 id = liitteet.add(opsId, tyyppi, nimi, koko, pis);

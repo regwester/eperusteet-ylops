@@ -348,6 +348,7 @@
   "epimage-plugin-lisaa-uusi": "Lataa uusi kuva",
   "epimage-plugin-valitse": "Valitse tiedosto...",
   "epimage-plugin-tallennettu": "Kuva tallennettu.",
+  "epimage-plugin-scale-invalid": "Leveys tai korkeus on viallinen.",
   "paivitys-onnistui": "Päivitys onnistui",
 
   "muokkaa-hierarkiaa": "Muokkaa hierarkiaa",
