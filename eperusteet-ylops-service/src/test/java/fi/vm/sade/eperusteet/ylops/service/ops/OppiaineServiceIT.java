@@ -42,6 +42,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -115,52 +116,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         this.vlkViiteRef = Reference.of(vlkViitteet.save(viite));
     }
 
-    private OppiaineDto createOppiaine(String nimi) {
-        OppiaineDto oppiaineDto = new OppiaineDto();
-        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
-        oppiaineDto.setNimi(lt(nimi));
-        oppiaineDto.setKoodiUri("koodikoodi");
-        oppiaineDto.setTunniste(UUID.randomUUID());
-        oppiaineDto.setKoosteinen(false);
-        return oppiaineDto;
-    }
-
-    private OpetuksenTavoiteDto createTavoite() {
-        OpetuksenTavoiteDto tavoite = new OpetuksenTavoiteDto();
-        tavoite.setTunniste(UUID.randomUUID());
-        return tavoite;
-    }
-
-    private TekstiosaDto createTekstiosa(String nimi, String otsikko) {
-        TekstiosaDto result = new TekstiosaDto();
-        result.setTeksti(Optional.of(new LokalisoituTekstiDto(Collections.singletonMap("fi", nimi))));
-        result.setOtsikko(Optional.of(new LokalisoituTekstiDto(Collections.singletonMap("fi", otsikko))));
-        return result;
-    }
-
-    private OpetussuunnitelmaLuontiDto createOps() {
-        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
-        ops.setNimi(lt(uniikkiString()));
-        ops.setKuvaus(lt(uniikkiString()));
-        ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
-        ops.setTila(Tila.LUONNOS);
-        ops.setTyyppi(Tyyppi.OPS);
-        KoodistoDto kunta = new KoodistoDto();
-        kunta.setKoodiUri("kunta_837");
-        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
-        OrganisaatioDto kouluDto = new OrganisaatioDto();
-        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
-        kouluDto.setOid("1.2.15252345624572462");
-        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
-        return ops;
-    }
-
-    private OppiaineDto createOppiaine() {
-        OppiaineDto result = new OppiaineDto();
-        result.setTunniste(UUID.randomUUID());
-        return result;
-    }
-
     @Test
     public void testMuokattavaksiKopioiminen() {
         OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
@@ -188,7 +143,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         opsVlkDto.setVuosiluokkakokonaisuus(vlk);
         ops.setVuosiluokkakokonaisuudet(Collections.singleton(opsVlkDto));
 
-        OppiaineDto valinnainen = createOppiaine("Valinnainen");
+        OppiaineDto valinnainen = TestUtils.createOppiaine("Valinnainen");
         valinnainen.setTyyppi(OppiaineTyyppi.MUU_VALINNAINEN);
         OppiaineenVuosiluokkakokonaisuusDto ovk = new OppiaineenVuosiluokkakokonaisuusDto();
         ovk.setVuosiluokkakokonaisuus(vlkViiteRef);
@@ -209,9 +164,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
                     .get();
 
         List<TekstiosaDto> tavoitteet = new ArrayList<>();
-        tavoitteet.add(createTekstiosa("hello", "world"));
+        tavoitteet.add(TestUtils.createTekstiosa("hello", "world"));
         oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
-        tavoitteet.add(createTekstiosa("foo", "bar"));
+        tavoitteet.add(TestUtils.createTekstiosa("foo", "bar"));
         OpsOppiaineDto get = oppiaineService.get(opsId, valinnainen.getId());
         oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
 

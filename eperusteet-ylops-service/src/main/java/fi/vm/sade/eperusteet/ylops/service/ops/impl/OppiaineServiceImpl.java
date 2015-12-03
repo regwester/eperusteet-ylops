@@ -264,7 +264,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Opetussuunnitelma pohja = ops.getPohja();
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        if (pohja == null || pohja.getPohja() == null) {
+        if (pohja == null) {
             throw new BusinessRuleViolationException("Ei voi palauttaa jos pohjaa ei ole");
         }
         Oppiaine opsOppiaine = getOppiaine(opsId, id);
