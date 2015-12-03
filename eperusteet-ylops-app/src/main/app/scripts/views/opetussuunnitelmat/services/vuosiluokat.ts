@@ -123,7 +123,6 @@ ylopsApp
     }
 
     function generateOppiaineItem(oppiaine, vlk, depth) {
-      console.log(oppiaine);
       return {
         depth: depth || 1,
         label: oppiaine.nimi,
@@ -191,7 +190,6 @@ ylopsApp
         url: $state.href('root.opetussuunnitelmat.yksi.opetus.valinnaiset', {vlkId: vlk.vuosiluokkakokonaisuus.id})
       });
     });
-    console.log(arr);
     return arr;
   }
 
