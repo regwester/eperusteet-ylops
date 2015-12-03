@@ -48,6 +48,19 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
             '  <div><button class="btn btn-default" ng-model-rejected="model.rejected" ngf-accept="\'.jpg,.jpeg,.png\'" ngf-select ng-model="model.files"><span kaanna="\'epimage-plugin-valitse\'"></span></button>' +
             '    <button ng-disabled="!model.files || model.files.length !== 1" class="btn btn-primary" ng-click="saveNew()" kaanna="lisaa"></button>' +
             '    <img ng-show="showPreview" ngf-thumbnail="model.files[0]" class="epimage-thumb">' +
+            '    <div ng-show="showPreview">' +
+            '     <input ng-change="widthChange(model.files[0])" style="max-width: 70px; float: left;" ng-model="model.files[0].width" class="form-control ng-pristine ng-valid ng-isolate-scope ng-touched"/> ' +
+            '     <span style="float: left; margin-top: 10px;">X</span>' +
+            '     <input ng-change="heightChange(model.files[0])" style="max-width: 70px; float: left;" ng-model="model.files[0].height" class="form-control ng-pristine ng-valid ng-isolate-scope ng-touched"/>' +
+            '     <p class="error-message" ng-show="scaleError">{{ scaleError | kaanna }}</p>' +
+            '    </div>' +
+            '    <div ng-show="!showPreview && false">' +
+            '     <input ng-change="widthChange(model.chosen)" style="max-width: 70px; float: left;" ng-model="model.chosen.width" class="form-control ng-pristine ng-valid ng-isolate-scope ng-touched"/> ' +
+            '     <span style="float: left; margin-top: 10px;">X</span>' +
+            '     <input ng-change="heightChange(model.chosen)" style="max-width: 70px; float: left;" ng-model="model.chosen.height" class="form-control ng-pristine ng-valid ng-isolate-scope ng-touched"/>' +
+            '     <button class="btn btn-primary" ng-click="rescaleImg()">update</button>' +
+            '     <p class="error-message" ng-show="scaleError">{{ scaleError | kaanna }}</p>' +
+            '    </div>' +
             '  </div>' +
             '  <p class="success-message" ng-show="message">{{message|kaanna}}</p>' +
             '  <p class="error-message" ng-show="model.rejected.length > 0">{{\'epimage-plugin-hylatty\'|kaanna}}</p>' +
@@ -84,7 +97,7 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
             }
           }
         ]
-      },
+      }
     ],
     onShow: function () {
       var selection = editor.getSelection();

@@ -191,11 +191,13 @@ ylopsApp
     });
   });
 
-  var successCb = function (res) {
+  var successCb = (res) => {
     Notifikaatiot.onnistui('tallennettu-ok');
     if ($scope.luonnissa) {
       $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
-    } else {
+      return $q.reject();
+    }
+    else {
       return fetch(true);
     }
   };

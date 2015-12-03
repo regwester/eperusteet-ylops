@@ -129,6 +129,27 @@ $sivunavi-level-padding: 20px;
   margin-bottom: 0;
   border: 1px solid #eee;
 
+  .paikallinen:not(.active)  {
+    background-image: url('../../images/ikoni_paikallinen.svg');
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    //display: inline-block;
+    float: right;
+  }
+  .paikallinen.active {
+    background-image: url('../../images/ikoni_paikallinen_white-01.svg');
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    //display: inline-block;
+    float: right;
+  }
+
+ .valinnaisuus {
+   background-color: #fff0d8;
+ }
+
   .list-group-item:not(.active) {
     border: none;
   }
