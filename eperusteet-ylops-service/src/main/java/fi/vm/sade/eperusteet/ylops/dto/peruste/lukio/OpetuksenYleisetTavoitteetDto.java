@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -34,6 +35,9 @@ public class OpetuksenYleisetTavoitteetDto implements Serializable, PerusteenOsa
     private Long id;
     private LokalisoituTekstiDto otsikko;
     private LokalisoituTekstiDto kuvaus;
+    private Date muokattu;
+    private String muokkaaja;
+
 
     @Override @JsonIgnore // uuidTunniste
     public UUID getTunniste() {

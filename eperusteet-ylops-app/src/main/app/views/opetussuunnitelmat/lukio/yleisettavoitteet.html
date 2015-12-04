@@ -15,3 +15,13 @@
   -->
 
 <h2 ng-bind="yleisetTavoitteet.perusteen.otsikko | kaanna"></h2>
+
+
+<div class="perusteen-teksti">
+ <div ng-bind-html="yleisetTavoitteet.perusteen.kuvaus|kaanna"></div>
+<!--
+ <div class="tag-perusteen-otsikko">
+    &ldquo;{{yleisetTavoitteet.perusteen.otsikko|kaanna|unsafe}}&rdquo;
+ </div>
+-->
+</div>

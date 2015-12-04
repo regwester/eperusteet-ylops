@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -34,4 +35,6 @@ public class AihekokonaisuusDto implements Serializable, PerusteenOsa {
     private LokalisoituTekstiDto yleiskuvaus;
     private Long jnro;
     private AihekokonaisuusDto parent;
+    private Date muokattu;
+    private String muokkaaja;
 }

@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -34,4 +35,7 @@ public class AihekokonaisuudetBaseDto {
     private Long id;
     private LokalisoituTekstiDto otsikko;
     private LokalisoituTekstiDto yleiskuvaus;
+    private Date muokattu;
+    private String muokkaaja;
+
 }

@@ -97,6 +97,16 @@ ylopsApp
                             LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI) {
         $scope.aihekokonaisuudet = {};
         LukioOpetussuunnitelmaService.getAihekokonaisuudet().then(ak => $scope.aihekokonaisuudet = ak);
+
+        $scope.sortableOptions = {
+            handle: '> .handle',
+            placeholder: 'placeholder-vklsort',
+            connectWith: '.container-items',
+            cursor: 'move',
+            cursorAt: {top : 2, left: 2},
+            tolerance: 'pointer',
+        };
+
     })
     .controller('OpetuksenYleisetTavoitteetController', function($scope, $log,
                      LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI) {
