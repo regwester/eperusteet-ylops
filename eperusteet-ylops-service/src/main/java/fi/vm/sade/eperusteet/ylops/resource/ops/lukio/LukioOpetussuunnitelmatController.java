@@ -17,9 +17,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops.lukio;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.AihekokonaisuudetPerusteOpsDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOpetussuunnitelmaRakenneOpsDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetPerusteOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -52,5 +50,12 @@ public class LukioOpetussuunnitelmatController {
     @RequestMapping(value = "/opetuksenYleisetTavoitteet", method = RequestMethod.GET)
     public OpetuksenYleisetTavoitteetPerusteOpsDto getOpetuksenYleisetTavoitteet(@PathVariable("opsId") Long opsId) {
         return lukioOpetussuunnitelmaService.getOpetuksenYleisetTavoitteet(opsId);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/oppiaine", method = RequestMethod.POST)
+    public long saveOppiaine(@PathVariable("opsId") Long opsId,
+                             @RequestBody LukioOppiaineSaveDto oppiaine) {
+        return lukioOpetussuunnitelmaService.saveOppiaine(opsId, oppiaine);
     }
 }

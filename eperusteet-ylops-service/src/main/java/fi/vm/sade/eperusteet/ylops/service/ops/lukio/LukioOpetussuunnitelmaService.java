@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOpetussuunnitelmaRakenneOpsDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.AihekokonaisuudetPerusteOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetPerusteOpsDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -36,4 +37,7 @@ public interface LukioOpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetuksenYleisetTavoitteetPerusteOpsDto getOpetuksenYleisetTavoitteet(long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long saveOppiaine(long opsId, LukioOppiaineSaveDto oppiaine);
 }

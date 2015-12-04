@@ -34,7 +34,11 @@ public enum OppiaineTyyppi {
      *
      * Muu valinnainen aine
      */
-    MUU_VALINNAINEN("muu_valinnainen");
+    MUU_VALINNAINEN("muu_valinnainen"),
+    /**
+     * Lukion oppiaine
+     */
+    LUKIO("lukio");
 
     private final String tyyppi;
 

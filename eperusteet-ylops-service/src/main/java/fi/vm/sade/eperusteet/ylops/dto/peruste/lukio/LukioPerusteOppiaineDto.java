@@ -38,6 +38,7 @@ public class LukioPerusteOppiaineDto implements PerusteenOsa {
     private Integer jarjestys;
     private Boolean abstrakti;
     private LokalisoituTekstiDto nimi;
+    private LokalisoituTekstiDto kuvaus;
     private LokalisoituTekstiDto pakollinenKurssiKuvaus;
     private LokalisoituTekstiDto syventavaKurssiKuvaus;
     private LokalisoituTekstiDto soveltavaKurssiKuvaus;

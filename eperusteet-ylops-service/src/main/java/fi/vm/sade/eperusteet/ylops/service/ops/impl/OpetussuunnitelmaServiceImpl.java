@@ -22,10 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
@@ -509,6 +506,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                                   Oppiaine parent, Map<UUID, Lukiokurssi> kurssit) {
         for (LukioPerusteOppiaineDto oppiaine : from) {
             Oppiaine oa = new Oppiaine(oppiaine.getTunniste());
+            oa.setTyyppi(OppiaineTyyppi.LUKIO);
             oa.setNimi(LokalisoituTeksti.of(oppiaine.getNimi().getTekstit()));
             oa.setOppiaine(parent);
             oa.setAbstrakti(false);
