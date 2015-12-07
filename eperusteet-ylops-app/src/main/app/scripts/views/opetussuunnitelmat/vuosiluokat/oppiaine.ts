@@ -205,10 +205,6 @@ ylopsApp
       });
       vlk.$sisaltoalueetShort = allShort;
     });
-
-    if (!$scope.oppiaineenVlk.yleistavoitteet) {
-      VuosiluokkakokonaisuusMapper.createEmptyText($scope.oppiaineenVlk, 'yleistavoitteet');
-    }
   }
   updateVuosiluokat();
 
