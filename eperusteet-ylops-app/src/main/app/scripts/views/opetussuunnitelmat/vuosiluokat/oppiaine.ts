@@ -304,6 +304,26 @@ ylopsApp
     });
   };
 
+  $scope.palautaVanhaan = () => {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-oppiaineen-palautus',
+      primaryBtn: 'palauta-oppiaine',
+      successCb: function () {
+         OppiaineCRUD.palautaYlempaan({
+           opsId: $stateParams.id,
+           oppiaineId: $stateParams.oppiaineId
+         }, {}, function(res) {
+           Notifikaatiot.onnistui('palaaminen-vanhaan-onnistui');
+            $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
+              vlkId: $stateParams.vlkId,
+              oppiaineId: res.id,
+              oppiaineTyyppi: res.tyyppi
+            }, { reload: true });
+         }, Notifikaatiot.serverCb);
+      }
+    })();
+  };
+
   $scope.kopioiMuokattavaksi = function () {
     Varmistusdialogi.dialogi({
       otsikko: 'varmista-kopiointi',

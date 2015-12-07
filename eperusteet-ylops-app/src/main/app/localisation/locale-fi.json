@@ -364,6 +364,9 @@
   "synkronoi-perusteeseen": "Synkronoi opetussuunnitelmiin",
   "ops-pohja": "Pohjan sisältö",
 
+  "palauta-ylempaan": "Palauta ylempi oppiaine",
+  "palauta-ylempi-oppiaine": "Poistaa nykyisen sisällön ja palauttaa tilalle ylemmässä opetussuunnitelmassa sijaitsevan oppiaineen.",
+
   "virhe": "Virhe",
   "virhe-sivua-ei-loytynyt": "Sivua ei löytynyt",
   "virhe-muu": "Tuntematon virhe",

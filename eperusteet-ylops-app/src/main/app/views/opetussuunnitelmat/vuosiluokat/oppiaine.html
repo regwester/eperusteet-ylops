@@ -4,7 +4,8 @@
   </span>
   <button ng-if="oppiaine.oma" class="btn btn-default" icon-role="edit" ng-disabled="lukkotiedot.lukittu" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="oppiaine.oma" class="btn btn-default" icon-role="remove" ng-disabled="lukkotiedot.lukittu" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
-  <button ng-if="!oppiaine.oma && !oppiaine.$parent" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'" icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+  <button ng-if="!oppiaine.oma && !oppiaine.$parent" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'"
+          icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
 </div>
 <div ng-if="isEditable() && oppiaine.oma" class="action-buttons-inline">
   <button ng-if="$onKieliTaiUskonto" ng-hide="options.editing" class="btn btn-default" ng-click="startEditing()" icon-role="edit" kaanna="'muuta-nimea'"
@@ -12,7 +13,9 @@
   <button ng-if="valitseOppimaara" class="btn btn-default" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="$onKieliTaiUskonto" class="btn btn-default" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"
-          oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+          oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
+  <button class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'" ng-if="oppiaine.oppimaarat === null && !oppiaine.$parent"
+          icon-role="ep-text-clone" tooltip="{{ 'palauta-ylempi-oppiaine' | kaanna }}" ng-click="palautaVanhaan()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
 </div>
 
 <h2 ng-hide="options.editing && $onKieliTaiUskonto" ng-bind="oppiaine.nimi | kaanna"></h2>
