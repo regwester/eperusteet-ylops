@@ -110,7 +110,7 @@ ylopsApp
         failureCb = failureCb || angular.noop;
         $modal.open({
           templateUrl: 'views/common/modals/koodistoModal.html',
-          controller: 'KoodistoModalCtrl',
+          controller: 'KoodistoModalController',
           resolve: resolve
         }).result.then(successCb, failureCb);
       };
@@ -125,7 +125,7 @@ ylopsApp
       haeYlarelaatiot: haeYlarelaatiot
     };
   })
-  .controller('KoodistoModalCtrl', function($scope, $modalInstance, $timeout, Koodisto, tyyppi, ylarelaatioTyyppi,
+  .controller('KoodistoModalController', function($scope, $modalInstance, $timeout, Koodisto, tyyppi, ylarelaatioTyyppi,
                                             TutkinnonOsanKoodiUniqueResource, Notifikaatiot, tarkista) {
     $scope.koodistoVaihtoehdot = Koodisto.vaihtoehdot;
     $scope.tyyppi = tyyppi;
