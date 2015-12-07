@@ -20,18 +20,15 @@
 ylopsApp
   .service('Koodisto', function($http, $modal, SERVICE_LOC, $resource, Kaanna, Notifikaatiot, Utils) {
     var taydennykset = [];
-    var koodistoVaihtoehdot = ['tutkinnonosat', 'tutkintonimikkeet', 'koulutus', 'osaamisala'];
+    var koodistoVaihtoehdot = ['oppiaineetyleissivistava2','lukiokurssit'];
     var nykyinenKoodisto = _.first(koodistoVaihtoehdot);
-    var lisaFiltteri = function() {
-      return true;
-    };
 
     function hae(koodisto, cb) {
       if (!_.isEmpty(taydennykset) && koodisto === nykyinenKoodisto) {
         cb();
         return;
       }
-      $http.get(SERVICE_LOC + '/koodisto/' + koodisto).then(function(re) {
+      $http.get(SERVICE_LOC + '/ulkopuoliset/koodisto/' + koodisto).then(function(re) {
         taydennykset = koodistoMapping(re.data);
         nykyinenKoodisto = koodisto;
         taydennykset = _.sortBy(taydennykset, Utils.nameSort);
@@ -40,7 +37,7 @@ ylopsApp
     }
 
     function haeAlarelaatiot(koodi, cb) {
-      var resource = $resource(SERVICE_LOC + '/koodisto/relaatio/sisaltyy-alakoodit/:koodi');
+      var resource = $resource(SERVICE_LOC + '/ulkopuoliset/koodisto/relaatio/sisaltyy-alakoodit/:koodi');
       resource.query({koodi: koodi}, function(vastaus) {
         var relaatiot = koodistoMapping(vastaus);
         cb(relaatiot);
@@ -52,7 +49,7 @@ ylopsApp
         cb();
         return;
       }
-      var resource = $resource(SERVICE_LOC + '/koodisto/relaatio/sisaltyy-ylakoodit/:koodi');
+      var resource = $resource(SERVICE_LOC + '/ulkopuoliset/koodisto/relaatio/sisaltyy-ylakoodit/:koodi');
       resource.query({koodi: koodi}, function(re) {
         taydennykset = suodataTyypinMukaan(re, tyyppi);
         taydennykset = koodistoMapping(taydennykset);
@@ -99,19 +96,14 @@ ylopsApp
       });
     }
 
-    function modaali(successCb, resolve, failureCb, lisaf) {
-      if (filtteri) {
-        lisaFiltteri = lisaf;
-      }
+    function modaali(successCb, resolve, failureCb) {
       return function() {
-        resolve = _.merge({
-          tarkista: _.constant(false)
-        }, resolve || {});
         failureCb = failureCb || angular.noop;
         $modal.open({
           templateUrl: 'views/common/modals/koodistoModal.html',
           controller: 'KoodistoModalController',
-          resolve: resolve
+          size: 'lg',
+          resolve: resolve || {}
         }).result.then(successCb, failureCb);
       };
     }
@@ -125,8 +117,8 @@ ylopsApp
       haeYlarelaatiot: haeYlarelaatiot
     };
   })
-  .controller('KoodistoModalController', function($scope, $modalInstance, $timeout, Koodisto, tyyppi, ylarelaatioTyyppi,
-                                            TutkinnonOsanKoodiUniqueResource, Notifikaatiot, tarkista) {
+  .controller('KoodistoModalController', function($scope, $modalInstance, $timeout, Koodisto,
+                                                  tyyppi, ylarelaatioTyyppi) {
     $scope.koodistoVaihtoehdot = Koodisto.vaihtoehdot;
     $scope.tyyppi = tyyppi;
     $scope.ylarelaatioTyyppi = ylarelaatioTyyppi;
@@ -165,18 +157,7 @@ ylopsApp
     }
 
     $scope.ok = function(koodi) {
-      if (tarkista) {
-        TutkinnonOsanKoodiUniqueResource.get({tutkinnonosakoodi: koodi.koodiUri},
-          function (res) {
-            if (res.vastaus) {
-              $modalInstance.close(koodi);
-            } else {
-              Notifikaatiot.varoitus('tutkinnon-osan-koodi-kaytossa');
-            }
-          });
-      } else {
-        $modalInstance.close(koodi);
-      }
+      $modalInstance.close(koodi);
     };
     $scope.peruuta = function() {
       $modalInstance.dismiss();

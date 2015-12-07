@@ -116,10 +116,9 @@ ylopsApp
     })
 
 
-    .service('LukioControllerHelpers', function($rootScope, Koodisto, MuokkausUtils, Kieli, $log) {
+    .service('LukioControllerHelpers', function($rootScope, Koodisto, MuokkausUtils, Kieli) {
         var openKoodisto = (obj:any, koodisto:string, and?: (arvoKoodistoArvo) => void) => () => {
-            $log.info('sesam open');
-            return Koodisto.modaali(function (koodisto: KoodistoArvo) {
+            Koodisto.modaali((koodisto: KoodistoArvo) => {
                 MuokkausUtils.nestedSet(obj, 'koodiUri', ',', koodisto.koodiUri);
                 MuokkausUtils.nestedSet(obj, 'koodiArvo', ',', koodisto.koodiArvo);
                 MuokkausUtils.nestedSet(obj, 'nimi', ',', koodisto.nimi);
@@ -133,12 +132,11 @@ ylopsApp
                 },
                 ylarelaatioTyyppi: function () {
                     return '';
-                },
-                tarkista: _.constant(true)
-            });
+                }
+            })();
         };
         return {
-            openOppiaineKoodisto: (obj:Lukio.Oppiaine) => openKoodisto(obj, 'oppiaineet'),
+            openOppiaineKoodisto: (obj:Lukio.Oppiaine) => openKoodisto(obj, 'oppiaineetyleissivistava2'),
             openKurssiKoodisto: (obj:Lukio.LukiokurssiOps) => openKoodisto(obj, 'lukionkurssit',
                     koodi => {
                         obj.lokalisoituKoodi = {};
