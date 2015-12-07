@@ -14,7 +14,7 @@
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="$onKieliTaiUskonto" class="btn btn-default" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
-  <button class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'"
+  <button class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'" ng-if="oppiaine.oppimaarat === null && !oppiaine.$parent"
           icon-role="ep-text-clone" tooltip="{{ 'palauta-ylempi-oppiaine' | kaanna }}" ng-click="palautaVanhaan()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
 </div>
 

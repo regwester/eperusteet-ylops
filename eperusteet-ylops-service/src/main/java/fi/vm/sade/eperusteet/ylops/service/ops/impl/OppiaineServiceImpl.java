@@ -21,13 +21,13 @@ import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.*;
@@ -38,16 +38,15 @@ import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
@@ -495,6 +494,41 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oavl = asetaOppiaineenVuosiluokanSisalto(oavl, tavoitteetDto);
         oavl = vuosiluokat.save(oavl);
         return mapper.map(oavl, OppiaineenVuosiluokkaDto.class);
+    }
+
+    @Override
+    @Transactional
+    public OpsOppiaineDto palautaYlempi(Long opsId, Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+
+        Opetussuunnitelma pohja = ops.getPohja();
+        if (pohja == null) {
+            throw new BusinessRuleViolationException("Ei voi palauttaa jos pohjaa ei ole");
+        }
+
+        Oppiaine oppiaine = oppiaineet.findOne(id);
+        assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
+
+        final UUID tunniste = oppiaine.getTunniste();
+        List<OpsOppiaine> tmpOppiaineet = pohja.getOppiaineet().stream()
+                .filter(a -> (a.getOppiaine().getTunniste().compareTo(tunniste) == 0))
+                .collect(Collectors.toList());
+
+        if( tmpOppiaineet.size() != 1){
+            throw new BusinessRuleViolationException("Oppiainetta ei löytynyt.");
+        }
+
+        Oppiaine opp = tmpOppiaineet.get(0).getOppiaine();
+        OpsOppiaine opsOppiaine = new OpsOppiaine(opp, false);
+
+        Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
+                .filter(oa -> !oa.getOppiaine().getId().equals(id))
+                .collect(Collectors.toSet());
+
+        opsOppiaineet.add( opsOppiaine );
+        ops.setOppiaineet( opsOppiaineet );
+        return mapper.map( opsOppiaine, OpsOppiaineDto.class );
     }
 
     private Oppiaine getOppiaine(Long opsId, Long oppiaineId) {
