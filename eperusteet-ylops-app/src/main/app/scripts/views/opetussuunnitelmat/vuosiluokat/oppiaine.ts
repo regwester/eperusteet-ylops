@@ -44,9 +44,10 @@ ylopsApp
 
   const onOma = $scope.oppiaine.oma;
   const hasVuosiluokkakokonaisuudet = !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet);
-  $scope.isVuosiluokkaistettava = (hasVuosiluokkakokonaisuudet && onOma) || (!!perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
+  const hasTavoitteet = perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, (vlk) => {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus && !_.isEmpty(vlk.tavoitteet);
-  }));
+  });
+  $scope.isVuosiluokkaistettava = hasVuosiluokkakokonaisuudet && onOma && hasTavoitteet;
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
     $scope.oppiaineenVlk = value;
