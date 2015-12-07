@@ -32,6 +32,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -65,6 +66,8 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     @Autowired
     OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
+    private Long opsId;
+
     @Before
     public void setUp() {
         OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
@@ -90,7 +93,23 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
         kouluDto.setOid("1.2.246.562.10.00000000001");
         ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
-        opetussuunnitelmaService.addOpetussuunnitelma(ops);
+        OpetussuunnitelmaDto createdOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
+        this.opsId = createdOps.getId();
+    }
+
+    @Test
+    public void testiHierarkia() {
+//        OpetussuunnitelmaKevytDto pohja = opetussuunnitelmaRepository.findOne(opsId);
+//        OpetussuunnitelmaLuontiDto ylaopsLuonti = TestUtils.createOps();
+//        ylaopsLuonti.setPohja(pohja);
+//        OpetussuunnitelmaDto ylaops = opetussuunnitelmaService.addOpetussuunnitelma(ylaopsLuonti);
+//        TekstiKappaleViiteDto.Matala tkv = TestUtils.createTekstiKappaleViite();
+//        ylaops
+
+//        ylaopsLuonti.setVuosiluokkakokonaisuudet(vuosiluokkakokonaisuudet);
+
+//        OpetussuunnitelmaLuontiDto aliops = TestUtils.createOps();
+//        aliops.setPohja(pohja);
     }
 
     @Test

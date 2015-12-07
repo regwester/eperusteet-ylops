@@ -15,50 +15,31 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.*;
+
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
-import java.util.ArrayList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -115,27 +96,81 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         this.vlkViiteRef = Reference.of(vlkViitteet.save(viite));
     }
 
-    private OppiaineDto createOppiaine(String nimi) {
-        OppiaineDto oppiaineDto = new OppiaineDto();
-        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
-        oppiaineDto.setNimi(lt(nimi));
-        oppiaineDto.setKoodiUri("koodikoodi");
-        oppiaineDto.setTunniste(UUID.randomUUID());
-        oppiaineDto.setKoosteinen(false);
-        return oppiaineDto;
+
+    @Test
+    public void testPalautaYlempi() {
+        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+
+        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
+
+        OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
+
+        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
+        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 2"));
+        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 3"));
+
+        OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
+        OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
+
+        OppiaineDto oppiaine = oppiaineService.getAll(ylaOps.getId()).get(0);
+        OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId());
+        assertNotEquals("Oppiaineet ovat samat", opsOppiaine.getOppiaine().getId(), oppiaine.getId());
+
+        OpsOppiaineDto palautettuOpsOppiaine = oppiaineService.palautaYlempi(alaOps.getId(), opsOppiaine.getOppiaine().getId());
+        assertEquals("Oppiaineet eivät ole samat", palautettuOpsOppiaine.getOppiaine().getId(), oppiaine.getId());
+
+        opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId());
+        assertNotEquals("Oppiaineet ovat samat", opsOppiaine.getOppiaine().getId(), oppiaine.getId());
+
+        oppiaineService.delete(ylaOps.getId(), oppiaine.getId());
+        try {
+            oppiaineService.palautaYlempi(alaOps.getId(), opsOppiaine.getOppiaine().getId());
+            fail("Palauttamisen pitäisi epäonnistua");
+        }catch (Exception e){
+            assertEquals(e.getClass(), BusinessRuleViolationException.class);
+        }
+
     }
 
-    private OpetuksenTavoiteDto createTavoite() {
-        OpetuksenTavoiteDto tavoite = new OpetuksenTavoiteDto();
-        tavoite.setTunniste(UUID.randomUUID());
-        return tavoite;
+    private OpetussuunnitelmaLuontiDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps) {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.OPS);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.246.562.10.00000000001");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+
+        ops.setPohja(Reference.of(pohjaOps.getId()));
+        return ops;
     }
 
-    private TekstiosaDto createTekstiosa(String nimi, String otsikko) {
-        TekstiosaDto result = new TekstiosaDto();
-        result.setTeksti(Optional.of(new LokalisoituTekstiDto(Collections.singletonMap("fi", nimi))));
-        result.setOtsikko(Optional.of(new LokalisoituTekstiDto(Collections.singletonMap("fi", otsikko))));
-        return result;
+    @Test
+    public void testMuokattavaksiKopioiminen() {
+        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+
+
+        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
+
+        OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
+        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
+        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 2"));
+        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 3"));
+
+
+        OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
+        OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
+
+        OppiaineDto oppiaine = oppiaineService.getAll(ylaOps.getId()).get(0);
+        OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId());
+        assertNotEquals("Oppiaineet ovat samat", opsOppiaine.getOppiaine().getId(), oppiaine.getId());
     }
 
     @Test
@@ -149,7 +184,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         opsVlkDto.setVuosiluokkakokonaisuus(vlk);
         ops.setVuosiluokkakokonaisuudet(Collections.singleton(opsVlkDto));
 
-        OppiaineDto valinnainen = createOppiaine("Valinnainen");
+        OppiaineDto valinnainen = TestUtils.createOppiaine("Valinnainen");
         valinnainen.setTyyppi(OppiaineTyyppi.MUU_VALINNAINEN);
         OppiaineenVuosiluokkakokonaisuusDto ovk = new OppiaineenVuosiluokkakokonaisuusDto();
         ovk.setVuosiluokkakokonaisuus(vlkViiteRef);
@@ -170,9 +205,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
                     .get();
 
         List<TekstiosaDto> tavoitteet = new ArrayList<>();
-        tavoitteet.add(createTekstiosa("hello", "world"));
+        tavoitteet.add(TestUtils.createTekstiosa("hello", "world"));
         oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
-        tavoitteet.add(createTekstiosa("foo", "bar"));
+        tavoitteet.add(TestUtils.createTekstiosa("foo", "bar"));
         OpsOppiaineDto get = oppiaineService.get(opsId, valinnainen.getId());
         oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
 

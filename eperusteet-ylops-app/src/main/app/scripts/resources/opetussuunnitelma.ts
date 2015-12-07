@@ -94,7 +94,8 @@ ylopsApp
       saveValinnainen: {method: 'POST', url: YlopsResources.OPPIAINE + '/valinnainen'},
       addKielitarjonta: {method: 'POST', url: YlopsResources.OPPIAINE + '/kielitarjonta'},
       getParent: {method: 'GET', url: YlopsResources.OPPIAINE + '/parent'},
-      kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.OPPIAINE + '/muokattavakopio'}
+      kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.OPPIAINE + '/muokattavakopio'},
+      palautaYlempaan: {method: 'POST', url: YlopsResources.OPPIAINE + '/palautaYlempi'}
     });
   })
 
