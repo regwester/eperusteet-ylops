@@ -55,6 +55,17 @@ ylopsApp
     return classes;
   };
 
+  $scope.addIcon = function (item) {
+    var classes = [];
+    if(item.tyyppi && item.tyyppi !== 'yhteinen') {
+     classes.push('paikallinen');
+     }
+    if (item.active) {
+      classes.push('active');
+    }
+    return classes;
+  };
+
   var doRefresh = function (items) {
     var levels = {};
     if (items && items.length && !items[0].root) {

@@ -180,7 +180,7 @@ ylopsApp
   };
 
   $scope.callbacks = {
-    edit: () => $q((resolve) => resolve()), // FIXME: Tämän pitäisi ladata sisällöt uudestaan
+    edit: () => $.when(), // FIXME: Tämän pitäisi ladata sisällöt uudestaan
     // edit: refetch,
     cancel: refetch,
     save: () => $q((resolve) => {

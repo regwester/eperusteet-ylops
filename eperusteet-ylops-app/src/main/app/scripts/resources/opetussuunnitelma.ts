@@ -132,5 +132,7 @@ ylopsApp
   .factory('OpsinKuvat', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/kuvat', {
       id: '@id'
+    },{
+      reScaleImg: {method: 'POST', isArray: false, url: YlopsResources.OPS + '/kuvat/:id'}
     });
   });

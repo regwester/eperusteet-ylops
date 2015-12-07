@@ -123,6 +123,7 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
           setEditMode(false);
           $rootScope.$broadcast('disableEditing');
           $rootScope.$broadcast('notifyCKEditor');
+          resolve();
         });
       }),
       registerCallback: function(callback) {
