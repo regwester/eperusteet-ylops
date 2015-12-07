@@ -32,6 +32,11 @@ ylopsApp
     get: { method: 'GET', isArray: true }
   });
 })
+.factory('KommentitByVuosiluokka', function(SERVICE_LOC, $resource) {
+  return $resource(SERVICE_LOC + '/kommentit/opetussuunnitelmat/:opsId/opetus/vuosiluokat/:vlkId/oppiaine/:oppiaineId/vuosiluokka/:id', {}, {
+    get: { method: 'GET', isArray: true }
+  });
+})
 .factory('KommentitByTekstikappaleViite', function(SERVICE_LOC, $resource) {
   return $resource(SERVICE_LOC + '/kommentit/opetussuunnitelmat/:opsId/tekstikappaleviitteet/:id', {}, {
     get: { method: 'GET', isArray: true }
@@ -47,7 +52,7 @@ ylopsApp
   this.perusteProjektiId = null;
 })
 .service('Kommentit', function($stateParams, $location, $timeout, $rootScope, Notifikaatiot, KommenttiSivuCache, KommentitCRUD) {
-  var nykyinen: any = {};
+  var kommenttipuu: any = {};
   var nykyinenParams: any = {};
   var stored: any = {};
 
@@ -86,14 +91,14 @@ ylopsApp
     var url = $location.url();
     var lataaja = function(cb) {
       Resource.get(params, function(res) {
-        nykyinen = rakennaKommenttiPuu(res);
-        cb(nykyinen);
+        kommenttipuu = rakennaKommenttiPuu(res);
+        cb(kommenttipuu);
       }, Notifikaatiot.serverCb);
     };
     stored = {url: url, lataaja: lataaja};
     $timeout(function() {
       $rootScope.$broadcast('update:kommentit', url, lataaja);
-    }, 100);
+    });
   }
 
   function lisaaKommentti(parent, viesti, success) {
@@ -104,7 +109,6 @@ ylopsApp
       sisalto: viesti,
       opetussuunnitelmaId: nykyinenParams.opsId
     }, _.clone(nykyinenParams));
-
     delete payload.id;
     KommentitCRUD.save(payload, function(res) {
       res.muokattu = null;

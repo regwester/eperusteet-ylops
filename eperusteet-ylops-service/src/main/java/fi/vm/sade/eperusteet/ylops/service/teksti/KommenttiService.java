@@ -30,7 +30,10 @@ public interface KommenttiService {
     public List<KommenttiDto> getAllByTekstiKappaleViite(Long opsId, Long tekstiKappaleViiteId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<KommenttiDto> getAllByOppiaine(Long opsId, Long vlkId, Long oppiaineId);
+    public List<KommenttiDto> getAllByOppiaine(Long opsId, Long vlkId, Long oppiaineId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    public List<KommenttiDto> getAllByVuosiluokka(Long opsId, Long vlkId, Long oppiaineId, Long vlId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     public List<KommenttiDto> getAllByOpetussuunnitelma(Long opsId);
