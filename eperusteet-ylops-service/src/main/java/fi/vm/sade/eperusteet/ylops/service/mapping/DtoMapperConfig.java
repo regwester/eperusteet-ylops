@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineListausDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
@@ -82,6 +83,11 @@ public class DtoMapperConfig {
                 .exclude("kurssiTyyppiKuvaukset") // does not handle Optional correctly
             .byDefault()
             .register();
+
+        factory.classMap(LukioOppiaineSaveDto.class, Oppiaine.class)
+                .exclude("kurssiTyyppiKuvaukset") // does not handle Optional correctly
+                .byDefault()
+                .register();
 
         return new DtoMapperImpl(factory.getMapperFacade());
     }

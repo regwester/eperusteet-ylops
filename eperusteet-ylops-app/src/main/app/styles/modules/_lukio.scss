@@ -668,3 +668,65 @@ a.clickable {
     }
   }
 }
+
+@mixin strong-label {
+  color: #0c566e;
+  font-size: 120%;
+  font-weight: 700;
+}
+
+.lukionakyma {
+
+  .header {
+    @include strong-label();
+
+    margin-top: 10px;
+    padding-bottom: 10px;
+    float: left;
+    margin-right: 10px;
+  }
+  .editable-header {
+    @include strong-label();
+    .cke_editable {
+      min-height: inherit;
+    }
+  }
+
+  .inputwrapper {
+    clear: both;
+    display: block;
+
+    input[type=radio] {
+      margin-right: 5px;
+      float: left;
+    }
+  }
+
+  .action-buttons {
+    &.pull-right {
+      margin-top: -40px;
+    }
+    &.osa-action-buttons {
+      float: right;
+      margin-top: 18px;
+      margin-right: 0px;
+    }
+  }
+
+
+  .dropdown-menu {
+    top: auto;
+  }
+
+  .fixed-group {
+    clear: left;
+    max-width: 300px;
+
+    .form-control.limit {
+      float: left;
+      height: 33px;
+      max-width: 100px;
+      margin-right: 10px;
+    }
+  }
+}

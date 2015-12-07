@@ -6,6 +6,7 @@ interface Cached<T> extends Clearable{
     clear: (id?:number) => Cached<T>
     get: (id:number) => IPromise<T>
     related: <E>(resolve:(from:T) => {[key:number]: E}) => Joined<E,T>
+    onUpdate: (then: (value:T) => void) => Cached<T>
 }
 interface Joined<E,T> extends Clearable {
     clear: () => Joined<E,T>
@@ -97,9 +98,11 @@ const joined = <E,T>($q:IQService, parent:Cached<E>, resolve:(from:E) => {[key:n
 const cached = <T>($q:IQService, resolve:(id:number, d:IDeferred<T>) => void) => {
     var _q = $q;
     var _resolve = resolve;
+    var _initiallyGot:{ [id: number]: boolean} = {};
     var _cache:{ [id: number]: T} = {};
     var _promiseFor:{ [id:number]: IPromise<T> } = {};
     var _related:Joined<T,any>[] = [];
+    var _onUpdate: ((value:T) => void)[] = [];
 
     var self = {
         clear: (id?:number) => {
@@ -123,7 +126,12 @@ const cached = <T>($q:IQService, resolve:(id:number, d:IDeferred<T>) => void) =>
             _promiseFor[id] = d.promise;
             d.promise.then((value:T) => {
                 _cache[id] = value;
+                var hadValueBefore = _initiallyGot[id];
+                _initiallyGot[id] = true;
                 delete _promiseFor[id];
+                if (hadValueBefore) {
+                    _.each(_onUpdate, t => t(value));
+                }
             });
             _resolve(id, d);
             return d.promise;
@@ -133,6 +141,11 @@ const cached = <T>($q:IQService, resolve:(id:number, d:IDeferred<T>) => void) =>
             var j = joined<T,E>(_q, self, resolve);
             _related.push(j);
             return j;
+        },
+
+        onUpdate: (then: (value:T) => void) => {
+            _onUpdate.push(then);
+            return self;
         }
     };
     return self;

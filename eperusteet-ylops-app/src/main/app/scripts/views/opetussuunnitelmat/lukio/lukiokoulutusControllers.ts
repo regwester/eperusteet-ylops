@@ -15,14 +15,15 @@
  * European Union Public Licence for more details.
  */
 
+import NavigaatioItem = Sivunavi.NavigaatioItem;
 'use strict';
 
 // states in states/lukioStates.ts
 
 ylopsApp
     .service('LukioNavigaatioProvider', function($state, $q:IQService,
-                    LukioOpetussuunnitelmaService, Kaanna) {
-        var produceNavigation = function():IPromise<sn.NavigaatioItem[]> {
+                    LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna) {
+        var buildNavigation = function():IPromise<sn.NavigaatioItem[]> {
             var d = $q.defer<sn.NavigaatioItem[]>(),
                 aihekok : Lukio.AihekokonaisuudetPerusteenOsa = null,
                 rakenne : Lukio.LukioOpetussuunnitelmaRakenneOps = null;
@@ -73,6 +74,13 @@ ylopsApp
             return d.promise;
         };
 
+        var produceNavigation = function(doUpateItems: (items: NavigaatioItem[]) => IPromise<NavigaatioItem[]>):IPromise<sn.NavigaatioItem[]> {
+            var doBuild = () => buildNavigation().then(doUpateItems);
+            LukioOpetussuunnitelmaService.onAihekokonaisuudetUpdate(doBuild);
+            LukioOpetussuunnitelmaService.onRaknneUpdate(doBuild);
+            return doBuild();
+        };
+
         return {
             produceNavigation: produceNavigation
         }
@@ -81,9 +89,13 @@ ylopsApp
     .controller('LukioOpetusController', function ($scope, LukioNavigaatioProvider, MurupolkuData, $state) {
         $scope.navi = [];
         $scope.shouldShowNavigaatio = () => true;
-        LukioNavigaatioProvider.produceNavigation().then((items) => {
+        LukioNavigaatioProvider.produceNavigation((newItems: NavigaatioItem[]) => {
+            $scope.navi.length = 0; // empty
             // Can not be replaced (otherwise the navigation won't show)
-            _.each(items, (i: sn.NavigaatioItem) => $scope.navi.push(i));
+            _.each(newItems, (i: sn.NavigaatioItem) => $scope.navi.push(i));
+            $scope.$broadcast('navigaatio:update');
+            return newItems;
+        }).then((items) => {
             // Navigation won't show if sub page accessed directly unless called
             $scope.$broadcast('navigaatio:show');
             // One problem remains still: active navigation group gets collapsed (by random 1 out of 3 times)

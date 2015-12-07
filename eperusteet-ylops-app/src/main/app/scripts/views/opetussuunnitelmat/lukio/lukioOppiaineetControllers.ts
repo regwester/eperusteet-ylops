@@ -116,7 +116,7 @@ ylopsApp
     })
 
 
-    .service('LukioControllerHelpers', function($rootScope, Koodisto, MuokkausUtils, Kieli) {
+    .service('LukioControllerHelpers', function($rootScope, Koodisto, MuokkausUtils, Kieli, Kaanna, $log) {
         var openKoodisto = (obj:any, koodisto:string, and?: (arvoKoodistoArvo) => void) => () => {
             Koodisto.modaali((koodisto: KoodistoArvo) => {
                 MuokkausUtils.nestedSet(obj, 'koodiUri', ',', koodisto.koodiUri);
@@ -135,13 +135,43 @@ ylopsApp
                 }
             })();
         };
+        var kielella = (val) => {
+            var loc = {};
+            loc[Kieli.getSisaltokieli()] = val;
+            return loc;
+        };
+        var osat = (idt:string[], locPrefix:string) => (obj) => {
+          var os = _(idt).map((id) => {return {id: id, obj: obj[id]};}).value(),
+              byId = _(os).indexBy(o => o.id).value();
+          return {
+              osat: os,
+              isAddAvailable: () => _.any(os, o => !o.obj),
+              addOsa: (id) => {
+                  var newOsa = {
+                      otsikko: kielella(Kaanna.kaanna(locPrefix+id)),
+                      teksti: kielella('')
+                  };
+                  obj[id] = newOsa;
+                  byId[id].obj = newOsa;
+                  $rootScope.$broadcast('notifyCKEditor');
+                  $rootScope.$broadcast('enableEditing');
+              },
+              removeOsa: (id) => {
+                  obj[id] = null;
+                  byId[id].obj = null;
+                  $rootScope.$broadcast('notifyCKEditor');
+              }
+          };
+        };
         return {
             openOppiaineKoodisto: (obj:Lukio.Oppiaine) => openKoodisto(obj, 'oppiaineetyleissivistava2'),
             openKurssiKoodisto: (obj:Lukio.LukiokurssiOps) => openKoodisto(obj, 'lukionkurssit',
                     koodi => {
                         obj.lokalisoituKoodi = {};
                         obj.lokalisoituKoodi[Kieli.getSisaltokieli()] = koodi.koodiArvo;
-                    })
+                    }),
+            muokattavatOppiaineOsat: osat(['tehtava', 'tavoitteet', 'arviointi'], 'oppiaine-osa-'),
+            muokattavatKurssiOsat: osat(['tavoitteet', 'keskeinenSisalto', 'tavoitteetJaKeskeinenSisalto'], 'kurssi-osa-')
         };
     })
     .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams, $state,
@@ -150,7 +180,10 @@ ylopsApp
         // TODO:
         $scope.oppiaine = null;
         $scope.editMode = false;
-        LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => $scope.oppiaine = oa);
+        LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
+            $scope.oppiaine = oa;
+            $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat(oa);
+        });
 
         Editointikontrollit.registerCallback({
             validate: function() {
@@ -182,6 +215,7 @@ ylopsApp
             kurssiTyyppiKuvaukset: {}
         };
         $scope.editMode = true;
+        $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat($scope.oppiaine);
         Editointikontrollit.registerCallback({
             validate: function() {
                 return true;
@@ -192,9 +226,9 @@ ylopsApp
                 $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet');
             },
             save: function(kommentti) {
-                LukioOpetussuunnitelmaService.saveOppiaine($scope.oppiaine).then(function(id) {
+                LukioOpetussuunnitelmaService.saveOppiaine($scope.oppiaine).then(function(ref) {
                     $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
-                        oppiaineId: id
+                        oppiaineId: ref.id
                     });
                 });
             }

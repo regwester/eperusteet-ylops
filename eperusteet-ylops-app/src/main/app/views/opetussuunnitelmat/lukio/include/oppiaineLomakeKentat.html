@@ -18,9 +18,9 @@
 <label for="nimi-input" class="header" kaanna="'oppaiaine-nimi-header'" vaaditaan></label>
 <input id="nimi-input" class="form-control" ng-model="oppiaine.nimi" slocalized />
 
-<label for="koodi-input" class="header" kaanna="kurssi-koodi-header" vaaditaan></label>
+<label for="koodi-input" class="header" kaanna="'oppiaine-koodi-header'" vaaditaan></label>
 <div class="fixed-group">
-  <input id="koodi-input" class="form-control" type="text" ng-model="kurssi.koodiArvo" ng-disabled="true"/>
+  <input id="koodi-input" class="form-control limit" type="text" ng-model="oppiaine.koodiArvo" ng-disabled="true"/>
   <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" kaanna="hae-koodistosta"></button></div>
 </div>
 
@@ -32,16 +32,16 @@
     {{'useita-oppimaaria'|kaanna}}</label>
 </div>
 
-<div ng-repeat="osa in muokattavatOsat" ng-show="osa.obj">
+<div ng-repeat="osa in muokattavatOsat.osat" ng-show="osa.obj">
   <div class="action-buttons osa-action-buttons">
-    <button class="btn floating" ng-click="removeOsa(osa.id)">
+    <button class="btn floating" ng-click="muokattavatOsat.removeOsa(osa.id)">
       <span icon-role="remove" class="ng-scope"></span>
     </button>
   </div>
-  <label for="{{osa.id}}" class="header">
-    <h3 ckeditor slocalized ng-model="osa.obj.otsikko"></h3>
+  <label for="{{osa.id}}" class="editable-header">
+    <h3 ckeditor slocalized ng-model="osa.obj.otsikko" editing-enabled="true" ></h3>
   </label>
   <div>
-    <div id="{{osa.id}}" ckeditor slocalized ng-model="osa.obj.teksti"></div>
+    <div id="{{osa.id}}" ckeditor slocalized ng-model="osa.obj.teksti" editing-enabled="true"></div>
   </div>
 </div>

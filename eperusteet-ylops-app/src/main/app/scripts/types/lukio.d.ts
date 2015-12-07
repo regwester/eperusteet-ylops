@@ -1,5 +1,9 @@
 
 declare module Lukio {
+    export interface IdHolder {
+        id: number
+    }
+
     export enum Tila {
         luonnos,
         valmis,

@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
@@ -37,10 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -78,7 +76,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 .collect(toMap(ooa -> ooa.getOppiaine().getId(), OpsOppiaine::isOma))::get,
             rakenne.getOppiaineet(),
             orEmpty(ops.getLukiokurssit().stream()
-                .sorted(comparing(OppiaineLukiokurssi::getJarjestys))
+                .sorted(comparing(OppiaineLukiokurssi::getJarjestys)
+                    .thenComparing((OppiaineLukiokurssi oaLk) -> oaLk.getKurssi().getNimi().firstByKieliOrder().orElse("")))
                 .collect(groupingBy(k -> k.getOppiaine().getId()))::get));
         rakenne.setPerusteen(perusteDto.getLukiokoulutus().getRakenne());
         return rakenne;
@@ -86,8 +85,9 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     private void map(Stream<Oppiaine> from, Function<Long,Boolean> isOma, Collection<LukioOppiaineListausDto> to,
                      Function<Long, List<OppiaineLukiokurssi>> lukiokurssiByOppiaineId) {
-        from.sorted(comparing(oa -> ofNullable(oa.getJarjestys()).orElse(0)))
-            .forEach(oa -> {
+        from.sorted(comparing((Oppiaine oa) -> ofNullable(oa.getJarjestys()).orElse(0))
+                .thenComparing(comparing((Oppiaine oa)-> oa.getNimi().firstByKieliOrder().orElse("")))
+            ).forEach(oa -> {
                 LukioOppiaineListausDto dto = mapper.map(oa, new LukioOppiaineListausDto());
                 dto.setOma(isOma.apply(oa.getId()));
                 dto.setKurssiTyyppiKuvaukset(LokalisoituTekstiDto.ofOptionalMap(oa.getKurssiTyyppiKuvaukset()));

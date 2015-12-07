@@ -432,6 +432,10 @@
   "lukiooppiaineet-kurssit-tab-header": "Kurssit",
   "poistetaanko-kurssi": "Haluatko varmasti poistaa kurssin?",
   "hae-koodistosta": "Hae koodistosta",
-  "haetaan-koodistosta": "Haetaan koodistosta..."
-
+  "haetaan-koodistosta": "Haetaan koodistosta...",
+  "oppiaine-koodi-header": "Koodi",
+  "muokkaus-lisaa-osio": "Lisää osio",
+  "oppiaine-osa-tehtava": "Oppiaineen tehtävä",
+  "oppiaine-osa-tavoitteet": "Opetuksen tavoitteet",
+  "oppiaine-osa-arviointi": "Arviointi"
 }

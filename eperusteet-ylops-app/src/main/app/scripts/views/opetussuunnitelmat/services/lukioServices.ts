@@ -20,9 +20,11 @@ import LukioOppiaine = Lukio.LukioOppiaine;
 interface LukioOpetussuunnitelmaServiceI {
     getAihekokonaisuudet(id?: number): IPromise<Lukio.AihekokonaisuudetPerusteenOsa>
     getOpetuksenYleisetTavoitteet(id?: number) : IPromise<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>
+    onAihekokonaisuudetUpdate(then: () => void ) : void
+    onRaknneUpdate(then: () => void ) : void
     getRakenne(id?: number): IPromise<Lukio.LukioOpetussuunnitelmaRakenneOps>
     getOppiaine(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine>
-    saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise</*id of saved oppiaine*/number>
+    saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<Lukio.IdHolder>
     getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
 }
 
@@ -58,7 +60,7 @@ ylopsApp
         var getOppiaine = (id: number, opsId?: number) => oppiaineCache.get(opsId || $stateParams.id, id);
         var saveOppiaine = (oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number) =>
             OpetusuunnitelmaLukio.saveOppiaine({opsId: opsId || $stateParams.id}, oppiaine)
-                .$promise.then(() => oppiaineCache.clear(), Notifikaatiot.serverCb);
+                .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
 
         var kurssiCache = oppiaineCache.related((from: Lukio.LukioOppiaine) : {[key:number]: Lukio.LukiokurssiOps} =>
             _(from.kurssit).indexBy(_.property('id')).value());
@@ -68,6 +70,8 @@ ylopsApp
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
+            onAihekokonaisuudetUpdate: (then) => aiheKokCache.onUpdate(then),
+            onRaknneUpdate: (then) => rakenneCache.onUpdate(then),
             getRakenne: getRakenne,
             getOppiaine: getOppiaine,
             getKurssi: getKurssi,
