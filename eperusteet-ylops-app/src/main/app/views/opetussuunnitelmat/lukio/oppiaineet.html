@@ -80,7 +80,7 @@
                 </div>
                 <div ui-sortable="liittamattomatKurssitConfig" ng-model="liittamattomatKurssit" class="recursivetreeLiittamattomat">
                     <generic-tree tree-provider="liittamattomatTreeProvider"
-                                  ui-sortable-config="sortableConfig"></generic-tree>
+                                  ui-sortable-config="sortableLiittamattomatConfig"></generic-tree>
                 </div>
                 <pagination ng-show="liittamattomatPagination.multiPage"
                             ng-model="liittamattomatPagination.currentPage"
@@ -102,7 +102,7 @@
                 </div>
                 <div ui-sortable="liitetytKurssitConfig" ng-model="liitetytKurssit" class="recursivetreeLiittamattomat">
                     <generic-tree tree-provider="liitetytTreeProvider"
-                                  ui-sortable-config="sortableConfig"></generic-tree>
+                                  ui-sortable-config="sortableLiitetytConfig"></generic-tree>
                 </div>
                 <pagination ng-show="liitetytPagination.multiPage"
                             ng-model="liitetytPagination.currentPage"

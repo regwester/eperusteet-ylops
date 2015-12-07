@@ -9,7 +9,7 @@ ylopsApp
     .controller('LukioOppiaineetController', function($scope, $q:IQService, $stateParams, Kaanna, $log,
                                                       LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
                                                       LukioTreeUtils: LukioTreeUtilsI, Kommentit,
-                                                      Editointikontrollit, $state) {
+                                                      Editointikontrollit, $state, $timeout) {
         $scope.editMode = false;
         var state:LukioKurssiTreeState = {
             isEditMode: () => $scope.editMode,
@@ -20,6 +20,8 @@ ylopsApp
             handle: '.treehandle',
             cursorAt: { top : 5, left: 5 }
         };
+        $scope.sortableLiittamattomatConfig = <SortableConfig> _.cloneDeep($scope.sortableConfig);
+        $scope.sortableLiitetytConfig = <SortableConfig> _.cloneDeep($scope.sortableConfig);
         $scope.toggleCollapse = LukioTreeUtils.collapseToggler(() => $scope.treeRoot, state);
         $scope.liittamattomatRoot = <LukioKurssiTreeNode>{
             dtype: LukioKurssiTreeNodeType.root,
@@ -38,6 +40,7 @@ ylopsApp
                 var d = $q.defer<LukioKurssiTreeNode>();
                 LukioOpetussuunnitelmaService.getRakenne().then(rakenne => {
                     $scope.treeRoot = LukioTreeUtils.treeRootFromRakenne(rakenne);
+                    $log.info('resolved root', $scope.treeRoot);
                     $scope.liitetytRoot.lapset.length = 0; // empty the Array (but maintain object reference)
                     _.each(_($scope.treeRoot).flattenTree(_.property('lapset'))
                             .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi)
@@ -50,36 +53,39 @@ ylopsApp
                 return d.promise;
             },
             children: node => $q.when(node.lapset || []),
-            useUiSortable: state.isEditMode,
+            useUiSortable: () => !state.isEditMode(),
             hidden: LukioTreeUtils.defaultHidden,
             template: node => LukioTreeUtils.templates(state).nodeTemplate(node),
             extension: LukioTreeUtils.extensions((n, scope) => {
             }),
-            acceptDrop: LukioTreeUtils.acceptMove
+            acceptDrop: LukioTreeUtils.acceptMove,
+            sortableClass: _.constant('is-draggable-into')
         });
 
         $scope.liittamattomatPagination = <PaginationDetails>{showPerPage: 5, currentPage: 1};
         $scope.liittamattomatTreeProvider = $q.when(<GenericTreeConfig<LukioKurssiTreeNode>>{
             root: () => $q.when($scope.liittamattomatRoot),
             children: node => $q.when(node.lapset || []),
-            useUiSortable: state.isEditMode,
+            useUiSortable: () => !state.isEditMode(),
             hidden: LukioTreeUtils.defaultHidden,
             template: node => LukioTreeUtils.templates(state).nodeTemplateKurssilista(node),
             extension: LukioTreeUtils.extensions((n, scope) => {
             }),
-            acceptDrop: LukioTreeUtils.acceptMove
+            acceptDrop: LukioTreeUtils.acceptMove,
+            sortableClass: _.constant('is-draggable-into')
         });
 
         $scope.liitetytPagination = <PaginationDetails>{showPerPage: 5, currentPage: 1};
         $scope.liitetytTreeProvider = $q.when(<GenericTreeConfig<LukioKurssiTreeNode>>{
             root: () => $q.when($scope.liitetytRoot),
             children: node => $q.when(node.lapset || []),
-            useUiSortable: state.isEditMode,
             hidden: LukioTreeUtils.defaultHidden,
+            useUiSortable: () => !state.isEditMode(),
             template: node => LukioTreeUtils.templates(state).nodeTemplateKurssilista(node),
             extension: LukioTreeUtils.extensions((n, scope) => {
             }),
-            acceptDrop: LukioTreeUtils.acceptMove
+            acceptDrop: LukioTreeUtils.acceptMove,
+            sortableClass: _.constant('is-draggable-into')
         });
 
         $scope.addOppiaine = function() {
