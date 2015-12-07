@@ -106,20 +106,26 @@ declare module Lukio {
     }
 
     export interface Oppiaine {
-        id: number;
-        tunniste?: string;
         koodiUri?: string;
         koodiArvo?: string;
         koosteinen: boolean;
-        abstrakti?: boolean;
         nimi: l.Lokalisoitu;
-        jarjestys?: number;
+        kuvaus?: l.Lokalisoitu;
         tehtava?: l.TekstiOsa;
         tavoitteet?: l.TekstiOsa;
         arviointi?: l.TekstiOsa;
     }
 
+    export interface LukioOppiaineTallennus extends Oppiaine {
+        laajuus?: string;
+        kurssiTyyppiKuvaukset: { [key:string/*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu; };
+    }
+
     export interface LukioOppiainePeruste extends Oppiaine {
+        id: number;
+        tunniste?: string;
+        jarjestys?: number;
+        abstrakti?: boolean;
         pakollinenKurssiKuvaus?: l.Lokalisoitu;
         syventavaKurssiKuvaus?: l.Lokalisoitu;
         soveltavaKurssiKuvaus?: l.Lokalisoitu;
@@ -133,9 +139,13 @@ declare module Lukio {
     }
 
     export interface LukioOppiaine extends Oppiaine {
+        id: number;
+        tunniste?: string;
         perusteen?: LukioOppiainePeruste;
         tila: Tila;
         oma: boolean;
+        abstrakti?: boolean;
+        jarjestys?: number;
         tyyppi: OppiaineTyyppi;
         laajuus: string;
         kurssiTyyppiKuvaukset: { [key:string/*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu; };

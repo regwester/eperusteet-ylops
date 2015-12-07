@@ -185,6 +185,12 @@ $aikaleima-vari: #888;
   }
 }
 
+.oppiaine-form {
+  .full-width {
+    width: 100%;
+  }
+}
+
 @mixin lukio-tree-node() {
   .treehandle {
     cursor: move;
@@ -626,6 +632,15 @@ a.pointer {
     margin-bottom: -20px;
   }
 }
+.oppiaine-view {
+  h2 {
+    max-width: 80%;
+  }
+  .muokattuViimeksi {
+    margin-bottom: -20px;
+  }
+}
+
 .kurssi-form {
   h3.cke_editable {
     min-height: 20px;

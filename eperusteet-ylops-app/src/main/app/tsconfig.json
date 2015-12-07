@@ -69,6 +69,7 @@
     "scripts/common/services/pagination.ts",
     "scripts/common/services/oikeudet.ts",
     "scripts/common/services/kieli.ts",
+    "scripts/common/directives/koodisto.ts",
     "scripts/common/directives/generictree.ts",
     "scripts/common/directives/datepicker.ts",
     "scripts/common/directives/kommenttiviesti.ts",

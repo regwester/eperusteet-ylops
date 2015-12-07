@@ -15,13 +15,27 @@
   -->
 
 
+<div class="oppiaine-view" ng-show="!editMode">
+    <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
+    <div class="action-buttons">
 
-<h3 ng-bind="oppiaine.nimi | kaanna"></h3>
-<div class="action-buttons">
+    </div>
 
+    <code>
+        {{oppiaine}}
+    </code>
 </div>
+<div class="lisaa-oppiaine oppiaine-form" ng-show="editMode">
+    <h2 kaanna="'lisaa-oppiaine-title'"></h2>
 
-TOOD
-<code>
-    {{oppiaine}}
-</code>
+    <div class="non-collapsibles">
+        <form name="oppiaineForm" role="form">
+            <div class="action-buttons">
+                <div class="floater" ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineOsavalitsin.html'">
+                </div>
+            </div>
+
+            <div ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineLomakeKentat.html'"></div>
+        </form>
+    </div>
+</div>

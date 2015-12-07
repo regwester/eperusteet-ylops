@@ -1,16 +1,19 @@
 
-interface Cached<T> {
+interface Clearable {
+    clear: () => void
+}
+interface Cached<T> extends Clearable{
     clear: (id?:number) => Cached<T>
     get: (id:number) => IPromise<T>
     related: <E>(resolve:(from:T) => {[key:number]: E}) => Joined<E,T>
 }
-interface Joined<E,T> {
+interface Joined<E,T> extends Clearable {
     clear: () => Joined<E,T>
     doClear: () => Joined<E,T>
     get: (parentId:number, id:number) => IPromise<T>
     related: <Target>(resolve:(from:T) => {[key:number]: Target}) => SecondJoined<E,T,Target>
 }
-interface SecondJoined<F,E,T> {
+interface SecondJoined<F,E,T> extends Clearable {
     clear: () => SecondJoined<F,E,T>
     doClear: () => SecondJoined<F,E,T>
     get: (rootId:number, parentId:number, id:number) => IPromise<T>

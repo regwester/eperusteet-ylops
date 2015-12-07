@@ -14,23 +14,15 @@
   ~  European Union Public Licence for more details.
   -->
 
-<div class="kurssi-view" ng-show="!editMode">
-    <h2 ng-bind="kurssi.nimi | kaanna"></h2>
-
-    <code>
-        {{kurssi}}
-    </code>
-</div>
-<div class="lisaa-kurssi oppiaine-form" ng-show="editMode">
-    <h2 kaanna="'lisaa-kurssi-title'"></h2>
-
-    <div class="non-collapsibles">
-        <form name="kurssiForm" role="form">
-            <div class="action-buttons">
-                <div class="floater" ng-include="'views/opetusuunnitelmat/lukio/include/kurssiOsavalitsin'">
-                </div>
-            </div>
-            <div ng-include="'views/opetusuunnitelmat/lukio/include/kurssiLomakeKentat.html'"></div>
-        </form>
-    </div>
+<div class="dropdown">
+  <button editointi-kontrolli class="btn btn-default btn-sm dropdown-toggle"
+          ng-show="isAddAvailable()"
+          icon-role="add">{{'muokkaus-lisaa-osio' | kaanna}}
+  </button>
+  <ul class="pull-right dropdown-menu">
+    <li ng-repeat="field in muokattavatOsat" ng-show="!field.obj">
+      <a class="action-link" ng-click="addOsa(field.id)" kaanna="'oppiaine-osa-'+field.id">
+      </a>
+    </li>
+  </ul>
 </div>

@@ -22,6 +22,7 @@ interface LukioOpetussuunnitelmaServiceI {
     getOpetuksenYleisetTavoitteet(id?: number) : IPromise<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>
     getRakenne(id?: number): IPromise<Lukio.LukioOpetussuunnitelmaRakenneOps>
     getOppiaine(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine>
+    saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise</*id of saved oppiaine*/number>
     getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
 }
 
@@ -55,6 +56,10 @@ ylopsApp
             _(from.oppiaineet).flattenTree((oa: Lukio.LukioOppiaine) => oa.oppimaarat || [])
                 .indexBy(_.property('id')).value());
         var getOppiaine = (id: number, opsId?: number) => oppiaineCache.get(opsId || $stateParams.id, id);
+        var saveOppiaine = (oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number) =>
+            OpetusuunnitelmaLukio.saveOppiaine({opsId: opsId || $stateParams.id}, oppiaine)
+                .$promise.then(() => oppiaineCache.clear(), Notifikaatiot.serverCb);
+
         var kurssiCache = oppiaineCache.related((from: Lukio.LukioOppiaine) : {[key:number]: Lukio.LukiokurssiOps} =>
             _(from.kurssit).indexBy(_.property('id')).value());
         var getKurssi = (oppiaineId: number, kurssiId: number, opsId?: number) =>
@@ -65,6 +70,7 @@ ylopsApp
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
             getRakenne: getRakenne,
             getOppiaine: getOppiaine,
-            getKurssi: getKurssi
+            getKurssi: getKurssi,
+            saveOppiaine: saveOppiaine
         }
     });

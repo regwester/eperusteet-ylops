@@ -1,0 +1,47 @@
+
+<!--
+  ~  Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
+  ~
+  ~  This program is free software: Licensed under the EUPL, Version 1.1 or - as
+  ~  soon as they will be approved by the European Commission - subsequent versions
+  ~  of the EUPL (the "Licence");
+  ~
+  ~  You may not use this work except in compliance with the Licence.
+  ~  You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  European Union Public Licence for more details.
+  -->
+
+<label for="nimi-input" class="header" kaanna="'oppaiaine-nimi-header'" vaaditaan></label>
+<input id="nimi-input" class="form-control" ng-model="oppiaine.nimi" slocalized />
+
+<label for="koodi-input" class="header" kaanna="kurssi-koodi-header" vaaditaan></label>
+<div class="fixed-group">
+  <input id="koodi-input" class="form-control" type="text" ng-model="kurssi.koodiArvo" ng-disabled="true"/>
+  <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" kaanna="hae-koodistosta"></button></div>
+</div>
+
+<div ng-show="!oppiaine.oppiaineId">
+  <label class="header" kaanna="'oppimaarat'"></label>
+  <label class="inputwrapper"><input class="form-control" type="radio" ng-model="editableModel.koosteinen" ng-value="false">
+    {{'yksi-oppimaara'|kaanna}}</label>
+  <label class="inputwrapper"><input class="form-control" ng-click="editableModel.abstrakti = false" type="radio" ng-model="editableModel.koosteinen" ng-value="true">
+    {{'useita-oppimaaria'|kaanna}}</label>
+</div>
+
+<div ng-repeat="osa in muokattavatOsat" ng-show="osa.obj">
+  <div class="action-buttons osa-action-buttons">
+    <button class="btn floating" ng-click="removeOsa(osa.id)">
+      <span icon-role="remove" class="ng-scope"></span>
+    </button>
+  </div>
+  <label for="{{osa.id}}" class="header">
+    <h3 ckeditor slocalized ng-model="osa.obj.otsikko"></h3>
+  </label>
+  <div>
+    <div id="{{osa.id}}" ckeditor slocalized ng-model="osa.obj.teksti"></div>
+  </div>
+</div>

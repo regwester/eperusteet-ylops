@@ -1,8 +1,15 @@
 
+interface KoodistoArvo {
+    koodiArvo: string
+    koodiUri: string
+    nimi: l.Lokalisoitu
+}
+
 ylopsApp
     .controller('LukioOppiaineetController', function($scope, $q:IQService, $stateParams, Kaanna, $log,
                                                       LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
-                                                      LukioTreeUtils: LukioTreeUtilsI, Kommentit) {
+                                                      LukioTreeUtils: LukioTreeUtilsI, Kommentit,
+                                                      Editointikontrollit, $state) {
         $scope.editMode = false;
         var state:LukioKurssiTreeState = {
             isEditMode: () => $scope.editMode,
@@ -20,7 +27,7 @@ ylopsApp
         };
         $scope.liitetytRoot = <LukioKurssiTreeNode>{
             dtype: LukioKurssiTreeNodeType.root,
-            lapset: [] // should be none by default
+            lapset: []
         };
         var updatePagination = () => {
             LukioTreeUtils.updatePagination($scope.liittamattomatRoot.lapset, $scope.liittamattomatPagination);
@@ -31,7 +38,7 @@ ylopsApp
                 var d = $q.defer<LukioKurssiTreeNode>();
                 LukioOpetussuunnitelmaService.getRakenne().then(rakenne => {
                     $scope.treeRoot = LukioTreeUtils.treeRootFromRakenne(rakenne);
-                    $scope.liitetytRoot.lapset.length =0;
+                    $scope.liitetytRoot.lapset.length = 0; // empty the Array (but maintain object reference)
                     _.each(_($scope.treeRoot).flattenTree(_.property('lapset'))
                             .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi)
                             .uniq((n:LukioKurssiTreeNode) => n.id).value(),
@@ -75,20 +82,124 @@ ylopsApp
             acceptDrop: LukioTreeUtils.acceptMove
         });
 
+        $scope.addOppiaine = function() {
+            $state.go('root.opetussuunnitelmat.lukio.opetus.uusioppiaine');
+        };
+
+        Editointikontrollit.registerCallback({
+            validate: function() {
+                return true;
+            },
+            edit: function() {
+            },
+            cancel: function() {
+                $scope.editMode = false;
+                $scope.$broadcast('genericTree:refresh'); // templates get updated
+            },
+            save: function(kommentti) {
+            }
+        });
+
         $scope.toEditMode = () => {
             $scope.editMode = true;
             $scope.$broadcast('genericTree:refresh'); // templates get updated
-            //TODO:editointikontrollit
+            Editointikontrollit.startEditing();
         };
 
-        // TODO:kommentit
+        // TODO:kommentit (ei nyt rakenteelle omaa käsitettä)
     })
-    .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams,
-                        LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
+
+
+    .service('LukioControllerHelpers', function($rootScope, Koodisto, MuokkausUtils, Kieli, $log) {
+        var openKoodisto = (obj:any, koodisto:string, and?: (arvoKoodistoArvo) => void) => () => {
+            $log.info('sesam open');
+            return Koodisto.modaali(function (koodisto: KoodistoArvo) {
+                MuokkausUtils.nestedSet(obj, 'koodiUri', ',', koodisto.koodiUri);
+                MuokkausUtils.nestedSet(obj, 'koodiArvo', ',', koodisto.koodiArvo);
+                MuokkausUtils.nestedSet(obj, 'nimi', ',', koodisto.nimi);
+                if (and) {
+                    and(koodisto);
+                }
+                $rootScope.$broadcast('notifyCKEditor');
+            }, {
+                tyyppi: function () {
+                    return koodisto;
+                },
+                ylarelaatioTyyppi: function () {
+                    return '';
+                },
+                tarkista: _.constant(true)
+            });
+        };
+        return {
+            openOppiaineKoodisto: (obj:Lukio.Oppiaine) => openKoodisto(obj, 'oppiaineet'),
+            openKurssiKoodisto: (obj:Lukio.LukiokurssiOps) => openKoodisto(obj, 'lukionkurssit',
+                    koodi => {
+                        obj.lokalisoituKoodi = {};
+                        obj.lokalisoituKoodi[Kieli.getSisaltokieli()] = koodi.koodiArvo;
+                    })
+        };
+    })
+    .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams, $state,
+                        LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log,
+                        Editointikontrollit, LukioControllerHelpers) {
         // TODO:
         $scope.oppiaine = null;
+        $scope.editMode = false;
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => $scope.oppiaine = oa);
+
+        Editointikontrollit.registerCallback({
+            validate: function() {
+                return true;
+            },
+            edit: function() {
+            },
+            cancel: function() {
+                $scope.editMode = false;
+            },
+            save: function(kommentti) {
+
+            }
+        });
+        $scope.openKoodisto = LukioControllerHelpers.openOppiaineKoodisto($scope.oppiaine);
+
+        $scope.toEditMode = () => {
+            $scope.editMode = true;
+            Editointikontrollit.startEditing();
+        };
     })
+    .controller('LuoLukioOppiaineController', function($scope, $q:IQService, $stateParams, $state,
+                       LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log,
+                       Editointikontrollit, LukioControllerHelpers) {
+        $scope.oppiaine = <Lukio.LukioOppiaineTallennus>{
+            nimi: {},
+            kuvaus: {},
+            koosteinen: false,
+            kurssiTyyppiKuvaukset: {}
+        };
+        $scope.editMode = true;
+        Editointikontrollit.registerCallback({
+            validate: function() {
+                return true;
+            },
+            edit: function() {
+            },
+            cancel: function() {
+                $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet');
+            },
+            save: function(kommentti) {
+                LukioOpetussuunnitelmaService.saveOppiaine($scope.oppiaine).then(function(id) {
+                    $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                        oppiaineId: id
+                    });
+                });
+            }
+        });
+        $scope.openKoodisto = LukioControllerHelpers.openOppiaineKoodisto($scope.oppiaine);
+        Editointikontrollit.startEditing();
+    })
+
+
     .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams,
                         LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
         // TODO:
