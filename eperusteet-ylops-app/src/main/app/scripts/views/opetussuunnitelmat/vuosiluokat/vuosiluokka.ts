@@ -54,7 +54,7 @@ ylopsApp
   });
 
   if ($state.is('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka')) {
-    $timeout(() => $state.go('.tavoitteet', {}, {location: 'replace'}));
+    $timeout(() => $state.go('.tavoitteet', {}, {location: 'replace'})); // Hack: ilman timeoutia saattaa sisältö jäädä latautumatta.
   }
 })
 
