@@ -9,12 +9,8 @@ ylopsApp
     .controller('LukioOppiaineetController', function($scope, $q:IQService, $stateParams, Kaanna, $log,
                                                       LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
                                                       LukioTreeUtils: LukioTreeUtilsI, Kommentit,
-                                                      Editointikontrollit, $state, $timeout) {
+                                                      Editointikontrollit, $state) {
         $scope.editMode = false;
-        var state:LukioKurssiTreeState = {
-            isEditMode: () => $scope.editMode,
-            defaultCollapse: false
-        };
         $scope.sortableConfig = <SortableConfig> {
             placeholder: 'placeholder',
             handle: '.treehandle',
@@ -22,43 +18,57 @@ ylopsApp
         };
         $scope.sortableLiittamattomatConfig = <SortableConfig> _.cloneDeep($scope.sortableConfig);
         $scope.sortableLiitetytConfig = <SortableConfig> _.cloneDeep($scope.sortableConfig);
-        $scope.toggleCollapse = LukioTreeUtils.collapseToggler(() => $scope.treeRoot, state);
-        $scope.liittamattomatRoot = <LukioKurssiTreeNode>{
-            dtype: LukioKurssiTreeNodeType.root,
-            lapset: [] // should be none by default
-        };
-        $scope.liitetytRoot = <LukioKurssiTreeNode>{
+        $scope.treeRoot =  <LukioKurssiTreeNode>{
             dtype: LukioKurssiTreeNodeType.root,
             lapset: []
         };
+        $scope.liittamattomatRoot = <LukioKurssiTreeNode>_.cloneDeep($scope.treeRoot);
+        $scope.liitetytRoot = <LukioKurssiTreeNode>_.cloneDeep($scope.treeRoot);
         var updatePagination = () => {
             LukioTreeUtils.updatePagination($scope.liittamattomatRoot.lapset, $scope.liittamattomatPagination);
             LukioTreeUtils.updatePagination($scope.liitetytRoot.lapset, $scope.liitetytPagination);
         };
+        var state:LukioKurssiTreeState = {
+            isEditMode: () => $scope.editMode,
+            defaultCollapse: false,
+            root: () => $scope.treeRoot,
+            liitetytKurssit: () => $scope.liitetytRoot.lapset,
+            liittamattomatKurssit: () => $scope.liittamattomatRoot.lapset,
+            updatePagination: () => updatePagination()
+        };
+        $scope.toggleCollapse = LukioTreeUtils.collapseToggler(() => $scope.treeRoot, state);
+        var resolveRakenne = (d: IDeferred<LukioKurssiTreeNode>) => LukioOpetussuunnitelmaService.getRakenne().then(rakenne => {
+            $scope.treeRoot.lapset.length = 0; // empty the Array (but maintain object reference)
+            _.each(LukioTreeUtils.treeRootLapsetFromRakenne(rakenne), (lapsi:LukioKurssiTreeNode) => {
+                $scope.treeRoot.lapset.push(lapsi);
+            });
+            $scope.liitetytRoot.lapset.length = 0; // empty the Array (but maintain object reference)
+            _.each(_($scope.treeRoot).flattenTree(n => n.lapset)
+                    .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi)
+                    .uniq((n:LukioKurssiTreeNode) => n.id).value(),
+                (k: LukioKurssiTreeNode) => {
+                    k = _.cloneDeep(k);
+                    k.$$nodeParent = null;
+                    $scope.liitetytRoot.lapset.push(k);
+                }
+            );
+            updatePagination();
+            d.resolve($scope.treeRoot);
+            return rakenne;
+        });
         $scope.treeProvider = $q.when(<GenericTreeConfig<LukioKurssiTreeNode>>{
             root: () => {
                 var d = $q.defer<LukioKurssiTreeNode>();
-                LukioOpetussuunnitelmaService.getRakenne().then(rakenne => {
-                    $scope.treeRoot = LukioTreeUtils.treeRootFromRakenne(rakenne);
-                    $log.info('resolved root', $scope.treeRoot);
-                    $scope.liitetytRoot.lapset.length = 0; // empty the Array (but maintain object reference)
-                    _.each(_($scope.treeRoot).flattenTree(_.property('lapset'))
-                            .filter((n:LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi)
-                            .uniq((n:LukioKurssiTreeNode) => n.id).value(),
-                        (k: LukioKurssiTreeNode) => {$scope.liitetytRoot.lapset.push(k);}
-                    );
-                    updatePagination();
-                    d.resolve($scope.treeRoot);
-                });
+                resolveRakenne(d);
                 return d.promise;
             },
             children: node => $q.when(node.lapset || []),
             useUiSortable: () => !state.isEditMode(),
             hidden: LukioTreeUtils.defaultHidden,
             template: node => LukioTreeUtils.templates(state).nodeTemplate(node),
-            extension: LukioTreeUtils.extensions((n, scope) => {
+            extension: LukioTreeUtils.extensions(state, (n, scope) => {
             }),
-            acceptDrop: LukioTreeUtils.acceptMove,
+            acceptDrop: LukioTreeUtils.acceptDropWrapper(state),
             sortableClass: _.constant('is-draggable-into')
         });
 
@@ -69,9 +79,9 @@ ylopsApp
             useUiSortable: () => !state.isEditMode(),
             hidden: LukioTreeUtils.defaultHidden,
             template: node => LukioTreeUtils.templates(state).nodeTemplateKurssilista(node),
-            extension: LukioTreeUtils.extensions((n, scope) => {
+            extension: LukioTreeUtils.extensions(state, (n, scope) => {
             }),
-            acceptDrop: LukioTreeUtils.acceptMove,
+            acceptDrop: LukioTreeUtils.acceptDropWrapper(state),
             sortableClass: _.constant('is-draggable-into')
         });
 
@@ -82,9 +92,9 @@ ylopsApp
             hidden: LukioTreeUtils.defaultHidden,
             useUiSortable: () => !state.isEditMode(),
             template: node => LukioTreeUtils.templates(state).nodeTemplateKurssilista(node),
-            extension: LukioTreeUtils.extensions((n, scope) => {
+            extension: LukioTreeUtils.extensions(state, (n, scope) => {
             }),
-            acceptDrop: LukioTreeUtils.acceptMove,
+            acceptDrop: LukioTreeUtils.acceptDropWrapper(state),
             sortableClass: _.constant('is-draggable-into')
         });
 
@@ -100,7 +110,9 @@ ylopsApp
             },
             cancel: function() {
                 $scope.editMode = false;
-                $scope.$broadcast('genericTree:refresh'); // templates get updated
+                resolveRakenne($q.defer()).then(() => {
+                    $scope.$broadcast('genericTree:refresh'); // templates get updated
+                });
             },
             save: function(kommentti) {
             }
