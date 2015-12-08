@@ -358,7 +358,7 @@ $aikaleima-vari: #888;
   margin-right: 135px;
 }
 
-@mixin opetussisaltopuu() {
+@mixin sisaltopuu() {
   clear: both;
   margin-top: 40px;
 
@@ -423,11 +423,11 @@ $aikaleima-vari: #888;
 }
 
 .opetussisaltopuu{
-  @include opetussisaltopuu();
+  @include sisaltopuu();
 }
 
 .oppiaine-sisaltopuu{
-  @include opetussisaltopuu();
+  @include sisaltopuu();
   margin-top: 5px;
   clear: unset;
 }
@@ -770,3 +770,23 @@ a.clickable {
     }
   }
 }
+
+.lukio-oppiaine-tyypit{
+  width: 100%;
+  margin-top: 0px;
+  padding-top: 0px;
+
+  .main-column{
+    width: 100%;
+  }
+
+  .opetussisaltopuu{
+    margin-top: 0px;
+  }
+
+  .legendContainer{
+    right: 0px;
+  }
+}
+
+

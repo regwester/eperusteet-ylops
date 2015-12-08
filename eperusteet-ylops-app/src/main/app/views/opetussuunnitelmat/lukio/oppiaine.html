@@ -24,7 +24,7 @@
     <!--<pre>{{oppiaine | json}}</pre>-->
     <!--<pre>{{oppiaine.kurssit | json}}</pre>-->
 
-    <h4 kaanna="kurssit"></h4>
+    <h4 kaanna="oppiaine-kurssit"></h4>
 
     <div ng-repeat="kurssi in oppiaine.kurssit">
         <div class="oppiaine-sisaltopuu lukio-oppiaineet-puu">
@@ -38,11 +38,11 @@
         </div>
     </div>
 
-    <div class="lukio-oppiaineet-puu lukio-oppiaine-tab" style="width: 100% !important; margin-top: 0px; padding-top: 0px;">
-        <div class="main-column tree" style="width: 100% !important;">
+    <div class="lukio-oppiaineet-puu lukio-oppiaine-tab lukio-oppiaine-tyypit">
+        <div class="main-column tree">
             <div class="tree-con">
-                <div class="opetussisaltopuu tree" style="margin-top: 0px;">
-                    <div class="legendContainer" style="right: 0px;">
+                <div class="opetussisaltopuu tree">
+                    <div class="legendContainer">
                         <div class="legends">
                             <a class="left legend">{{ 'nayta-kurssityyppi-kuvaukset' | kaanna}}<span class="glyphicon glyphicon-chevron-right"></span></a>
                             <div class="left legend">
@@ -59,13 +59,11 @@
     </div>
 
     <div style="clear: both;"/>
-    <!--<pre>{{oppiaine | json}}</pre>-->
-    <!--<pre>{{oppiaine.perusteen.tehtava | json}}</pre>-->
 
     <div class="oppiaine-sisalto">
         <span>
             <h3>
-                <span kaanna="oppiaineen-tehtava"></span>
+                <span kaanna="oppiaine-osa-tehtava"></span>
                 <div class="action-buttons-inline">
                     <button class="btn btn-default btn-icon-only" icon-role="edit"></button>
                 </div>
