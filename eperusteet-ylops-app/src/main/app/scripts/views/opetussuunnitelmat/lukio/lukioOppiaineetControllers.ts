@@ -52,6 +52,7 @@ ylopsApp
                     $scope.liitetytRoot.lapset.push(k);
                 }
             );
+            $scope.liittamattomatRoot.lapset.length = 0; // empty the Array (but maintain object reference)
             updatePagination();
             d.resolve($scope.treeRoot);
             return rakenne;
