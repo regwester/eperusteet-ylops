@@ -89,7 +89,6 @@ ylopsApp
     .controller('LukioOpetusController', function ($scope, LukioNavigaatioProvider, MurupolkuData, $state, $log) {
         $scope.navi = [];
         LukioNavigaatioProvider.produceNavigation((newItems: NavigaatioItem[]) => {
-            $log.info('navia näytetään');
             $scope.navi.length = 0; // empty
             // Can not be replaced (otherwise the navigation won't show)
             _.each(newItems, (i: sn.NavigaatioItem) => $scope.navi.push(i));

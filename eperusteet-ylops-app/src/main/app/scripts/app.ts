@@ -164,6 +164,9 @@ ylopsApp
         };
       },
       flattenTree: function (obj, extractChildren) {
+        if (!obj) {
+          return [];
+        }
         if (!_.isArray(obj) && obj) {
           obj = [obj];
         }

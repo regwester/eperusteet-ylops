@@ -69,7 +69,7 @@ ylopsApp
   $scope.$on('navigaatio:setNavi', (navi:NavigaatioItem[]) => {
     $scope.navi = navi;
     $scope.collapsed = false;
-    $scope.isActive =!_.isEmpty($scope.navi);
+    $scope.isActive = !_.isEmpty($scope.navi);
     updateActive();
   });
   $scope.$on('navigaatio:hide', function() { $scope.isActive = false; });

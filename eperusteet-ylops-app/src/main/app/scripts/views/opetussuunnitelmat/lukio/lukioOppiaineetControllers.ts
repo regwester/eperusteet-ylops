@@ -98,6 +98,9 @@ ylopsApp
             acceptDrop: LukioTreeUtils.acceptDropWrapper(state),
             sortableClass: _.constant('is-draggable-into')
         });
+        $scope.haku = LukioTreeUtils.luoHaku(state);
+        $scope.liitetytHaku = LukioTreeUtils.luoHaku(state, $scope.liitetytRoot);
+        $scope.liittamattomatHaku = LukioTreeUtils.luoHaku(state, $scope.liittamattomatRoot);
 
         $scope.addOppiaine = function() {
             $state.go('root.opetussuunnitelmat.lukio.opetus.uusioppiaine');

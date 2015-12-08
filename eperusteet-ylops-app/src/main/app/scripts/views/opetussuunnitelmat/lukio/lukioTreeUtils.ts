@@ -16,6 +16,12 @@ interface LukioTreeUtilsI {
     acceptDropWrapper: (state: LukioKurssiTreeState) =>
         (node: LukioKurssiTreeNode, to: LukioKurssiTreeNode, event, ui)  => boolean
     updatePagination: (arr:PaginationNode[], pagination:PaginationDetails) => void
+    hideBySearch: (state:LukioKurssiTreeState, search:string, root?: LukioKurssiTreeNode) => void
+    luoHaku: (state:LukioKurssiTreeState, root?: LukioKurssiTreeNode) => Rajaus
+}
+interface Rajaus {
+    haku: string
+    hae(): void
 }
 interface Provider<T> {
     (): T
@@ -60,7 +66,7 @@ interface PaginationDetails {
 }
 
 ylopsApp
-    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli) {
+    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli, $timeout) {
         var templatesByState = (state:LukioKurssiTreeState) => {
             var templateAround = (tmpl:string) => (!state.isEditMode() ? ' <a class="container-link' : '<span class="span-container')+
                     ' tree-list-item" '+(!state.isEditMode() ? ' ng-href="{{createHref()}}"': '')+
@@ -318,6 +324,31 @@ ylopsApp
             }
             return textMatch([nimi, koodiArvo, lokalisoituKoodi], search);
         };
+        var hideBySearch = (state:LukioKurssiTreeState, search:string, root?: LukioKurssiTreeNode) => {
+            _.each(_(root || state.root()).flattenTree(n => n.lapset)
+                    .filter(n => n.dtype != LukioKurssiTreeNodeType.root).value(),
+                (n:LukioKurssiTreeNode) => {
+                    n.$$hide = !matchesSearch(n, search);
+                    if (!n.$$hide) {
+                        // Ensure also parents shown:
+                        _.each(_.flattenTree(n, node => node.$$nodeParent), (node:LukioKurssiTreeNode) => {
+                            node.$$hide = false;
+                        });
+                    }
+                });
+            state.updatePagination();
+        };
+        var luoHaku = (state:LukioKurssiTreeState, root?: LukioKurssiTreeNode) => {
+            var haku = <Rajaus>{
+                haku: '',
+                hae: () => {}
+            };
+            haku.hae = () => $timeout(() => {
+                hideBySearch(state, haku.haku, root);
+            });
+            return haku;
+        };
+
         return <LukioTreeUtilsI>{
             templates: templatesByState,
             treeRootLapsetFromRakenne : treeRootLapsetFromRakenne ,
@@ -326,6 +357,8 @@ ylopsApp
             extensions: extensions,
             acceptDropWrapper: moveWrapper,
             matchesSearch: matchesSearch,
-            updatePagination: updatePagination
+            hideBySearch: hideBySearch,
+            updatePagination: updatePagination,
+            luoHaku: luoHaku
         };
     });

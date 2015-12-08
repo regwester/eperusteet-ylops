@@ -20,9 +20,8 @@
     <div class="main-column tree">
         <div class="tree-con">
             <div class="left search-field-container">
-                <rajaus size="small" classes="puun-rajaus" model="treehelpers.haku"
-                        callback="treeHaku()"
-                        placeholder="{{ 'lukio-etsi-oppiaineista-ja-kursseista' || kaanna }}"></rajaus>
+                <rajaus size="small" classes="puun-rajaus" model="haku.haku"
+                        callback="haku.hae()" placeholder="{{ 'lukio-etsi-oppiaineista-ja-kursseista' || kaanna }}"></rajaus>
             </div>
             <div class="action-buttons right" ng-show="!editMode">
                 <button icon-role="add" class="floater btn"
@@ -73,8 +72,8 @@
                                 ng-click="addKurssi()" kaanna="'lisaa-kurssi'"></button>
                     </div>
                     <div class="search-field-container">
-                        <rajaus size="small" classes="puun-rajaus" model="treehelpers.liittamattomienHaku"
-                                callback="treeLiittamattomienHaku()"
+                        <rajaus size="small" classes="puun-rajaus" model="liittamattomatHaku.haku"
+                                callback="liittamattomatHaku.hae()"
                                 placeholder="{{ 'lukio-etsi-liittamattomista-kursseista' || kaanna }}"></rajaus>
                     </div>
                 </div>
@@ -95,8 +94,8 @@
 
                 <div class="tree-con">
                     <div class="search-field-container">
-                        <rajaus size="small" classes="puun-rajaus" model="treehelpers.liitettyjenHaku"
-                                callback="treeLiitettyjenHaku()"
+                        <rajaus size="small" classes="puun-rajaus" model="liitetytHaku.haku"
+                                callback="liitetytHaku.hae()"
                                 placeholder="{{ 'lukio-etsi-liitetyista-kursseista' || kaanna }}"></rajaus>
                     </div>
                 </div>
