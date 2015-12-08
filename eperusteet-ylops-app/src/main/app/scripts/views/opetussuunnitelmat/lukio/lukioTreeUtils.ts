@@ -58,7 +58,7 @@ ylopsApp
         var templatesByState = (state:LukioKurssiTreeState) => {
             var templateAround = (tmpl:string) => (!state.isEditMode() ? ' <a class="container-link' : '<span class="span-container')+
                     ' tree-list-item" '+(!state.isEditMode() ? ' ng-href="{{createHref()}}"': '')+
-                    ' ng-show="!node.$$hide" ng-class="{ \'opetussialtopuu-solmu-paataso\': (node.$$depth === 0), \'bubble\': dtypeString() != \'kurssi\',' +
+                    ' ng-show="!node.$$hide" ng-class="{ \'opetussisaltopuu-solmu-paataso\': (node.$$depth === 0), \'bubble\': dtypeString() != \'kurssi\',' +
                     '           \'bubble-osa\': dtypeString() == \'kurssi\',' +
                     '           \'empty-item\': !node.lapset.length }">'+tmpl +
                     (!state.isEditMode() ? ' </a>' : '</span>');

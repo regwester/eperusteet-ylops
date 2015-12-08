@@ -21,11 +21,76 @@
 
     </div>
 
-    <code>
-        {{oppiaine}}
-    </code>
+    <!--<pre>{{oppiaine | json}}</pre>-->
+    <!--<pre>{{oppiaine.kurssit | json}}</pre>-->
+
+    <h4 kaanna="kurssit"></h4>
+
+    <div ng-repeat="kurssi in oppiaine.kurssit">
+        <div class="oppiaine-sisaltopuu lukio-oppiaineet-puu">
+            <a class="container-link tree-list-item ng-scope bubble-osa empty-item">
+                <span class="span-container puu-node kurssi-node">
+                    <span class="colorbox kurssi-tyyppi {{kurssi.perusteen.tyyppi | lowercase}}"></span>
+                    <span class="aikaleima ng-binding">{{kurssi.muokattu | aikaleima: 'short' }}</span>
+                    <span class="kurssikoodi">{{kurssi.koodiUri}} {{kurssi.nimi | kaanna}}</span>
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <div class="lukio-oppiaineet-puu lukio-oppiaine-tab" style="width: 100% !important; margin-top: 0px; padding-top: 0px;">
+        <div class="main-column tree" style="width: 100% !important;">
+            <div class="tree-con">
+                <div class="opetussisaltopuu tree" style="margin-top: 0px;">
+                    <div class="legendContainer" style="right: 0px;">
+                        <div class="legends">
+                            <a class="left legend">{{ 'nayta-kurssityyppi-kuvaukset' | kaanna}}<span class="glyphicon glyphicon-chevron-right"></span></a>
+                            <div class="left legend">
+                                <div class="left legend" ng-repeat="tyyppi in ['valtakunnallinen', 'paikallinen','pakollinen', 'syventava', 'soveltava']">
+                                    <span class="colorbox kurssi-tyyppi {{tyyppi}}"></span>
+                                    <span class="legend-name" ng-bind="'kurssi-tyyppi-selite-'+tyyppi | kaanna"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="clear: both;"/>
+    <!--<pre>{{oppiaine | json}}</pre>-->
+    <!--<pre>{{oppiaine.perusteen.tehtava | json}}</pre>-->
+
+    <div class="oppiaine-sisalto">
+        <span>
+            <h3>
+                <span kaanna="oppiaineen-tehtava"></span>
+                <div class="action-buttons-inline">
+                    <button class="btn btn-default btn-icon-only" icon-role="edit"></button>
+                </div>
+            </h3>
+        </span>
+        <div style="clear: both;"/>
+
+        <div class="tekstiosa perusteen-teksti">
+            <a class="toggle-perusteen-teksti">
+                <span kaanna="nayta-perusteen-teksti"></span>
+            </a>
+            <span ng-bind-html="oppiaine.perusteen.tehtava.teksti | kaanna"></span>
+        </div>
+
+        <div class="oppiaine-paikallinen">
+            <span>
+                <strong>{{ 'paikallinen-tarkennus' | kaanna}}</strong>
+                <span ng-bind-html="oppiaine.tehtava.teksti | kaanna"></span>
+            </span>
+        </div>
+
+    </div>
 </div>
-<div class="lisaa-oppiaine oppiaine-form oppiaine-view" ng-show="editMode">
+
+<div class="lisaa-oppiaine oppiaine-form" ng-show="editMode">
     <h2 kaanna="'lisaa-oppiaine-title'"></h2>
 
     <div class="non-collapsibles">

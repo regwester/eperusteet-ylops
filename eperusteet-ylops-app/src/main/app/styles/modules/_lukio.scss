@@ -117,7 +117,6 @@ $aikaleima-vari: #888;
   .legends {
     position: relative;
     float: left;
-    margin-right: 5px;
     /*top: 7px;
     right: -180px;*/
 
@@ -359,7 +358,7 @@ $aikaleima-vari: #888;
   margin-right: 135px;
 }
 
-.opetussialtopuu {
+@mixin opetussisaltopuu() {
   clear: both;
   margin-top: 40px;
 
@@ -421,6 +420,16 @@ $aikaleima-vari: #888;
     width: 100%;
     background: #eee;
   }
+}
+
+.opetussisaltopuu{
+  @include opetussisaltopuu();
+}
+
+.oppiaine-sisaltopuu{
+  @include opetussisaltopuu();
+  margin-top: 5px;
+  clear: unset;
 }
 
 .recursivetreeLiittamattomat {
@@ -727,6 +736,37 @@ a.clickable {
       height: 33px;
       max-width: 100px;
       margin-right: 10px;
+    }
+  }
+}
+
+.btn-icon-only{
+  padding-left: 10px;
+}
+
+.oppiaine-sisalto{
+  margin-top: 30px;
+
+  .tekstiosa{
+    margin: 25px 0px 0px 0px;
+  }
+
+  .oppiaine-paikallinen{
+    padding: 15px;
+  }
+}
+
+.kurssi-node{
+
+  .kurssikoodi{
+    text-decoration: none;
+    color: black;
+    display: inline-block;
+    padding-top: 5px;
+
+    &:hover{
+      text-decoration: none;
+      color: black;
     }
   }
 }
