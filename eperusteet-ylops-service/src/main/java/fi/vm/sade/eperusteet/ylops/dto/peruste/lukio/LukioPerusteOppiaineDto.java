@@ -53,7 +53,7 @@ public class LukioPerusteOppiaineDto implements PerusteenOsa {
         return Stream.concat(oppimaarat.stream(), kurssit.stream());
     }
 
-    public Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kurssitTyyppiKuvaukset() {
+    public Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> getKurssiTyyppiKuvaukset() {
         Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> map = new HashMap<>();
         map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_PAKOLLINEN, Optional.ofNullable(pakollinenKurssiKuvaus));
         map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_SYVENTAVA, Optional.ofNullable(syventavaKurssiKuvaus));

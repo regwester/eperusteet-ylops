@@ -121,7 +121,7 @@ $aikaleima-vari: #888;
     right: -180px;*/
 
     .legend {
-      margin-left: 10px;
+      //margin-left: 10px;
       margin-right: 20px;
 
       &:last-child {
@@ -786,6 +786,24 @@ a.clickable {
 
   .legendContainer{
     right: 0px;
+    height: unset;
+  }
+}
+
+.perusteen-teksti{
+  .is-open{
+    background-image: url(../images/ikoni_auki.png);
+  }
+}
+.peruste-teksti{
+  background-image: url(../images/ikoni_avaa.png);
+  background-repeat: no-repeat;
+  height: 26px;
+  display: block;
+  padding-top: 5px;
+
+  span{
+    padding-left: 20px;
   }
 }
 

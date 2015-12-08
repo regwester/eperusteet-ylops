@@ -16,15 +16,23 @@
 
 
 <div class="oppiaine-view" ng-show="!editMode">
-    <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
-    <div class="action-buttons">
 
+    <div class="action-buttons-inline">
+        <span kaanna="yhdistetty-pohjaan"></span>
+        <button class="btn btn-default" kaanna="'katkaise-yhteys'"></button>
     </div>
+    <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
 
+    <hr class="mujuviiva"/>
     <!--<pre>{{oppiaine | json}}</pre>-->
     <!--<pre>{{oppiaine.kurssit | json}}</pre>-->
 
+    <div class="action-buttons-inline">
+        <button class="btn btn-default" kaanna="'tuo-perusteesta'"></button>
+        <button class="btn btn-default" kaanna="'lisaa-kurssi'"></button>
+    </div>
     <h4 kaanna="oppiaine-kurssit"></h4>
+    <br/>
 
     <div ng-repeat="kurssi in oppiaine.kurssit">
         <div class="oppiaine-sisaltopuu lukio-oppiaineet-puu">
@@ -38,54 +46,61 @@
         </div>
     </div>
 
+    <!--<pre>{{oppiaine | json}}</pre>-->
+    <!--<pre>{{oppiaine.perusteen.kurssiTyyppiKuvaukset | json}}</pre>-->
+
     <div class="lukio-oppiaineet-puu lukio-oppiaine-tab lukio-oppiaine-tyypit">
-        <div class="main-column tree">
+        <div class="main-column tree" style="margin-bottom: 20px;">
             <div class="tree-con">
                 <div class="opetussisaltopuu tree">
                     <div class="legendContainer">
-                        <div class="legends">
+                        <div class="legends" style="width: 100%;">
                             <a class="left legend">{{ 'nayta-kurssityyppi-kuvaukset' | kaanna}}<span class="glyphicon glyphicon-chevron-right"></span></a>
-                            <div class="left legend">
+                            <div class="left legend" style="float: right;">
                                 <div class="left legend" ng-repeat="tyyppi in ['valtakunnallinen', 'paikallinen','pakollinen', 'syventava', 'soveltava']">
                                     <span class="colorbox kurssi-tyyppi {{tyyppi}}"></span>
                                     <span class="legend-name" ng-bind="'kurssi-tyyppi-selite-'+tyyppi | kaanna"></span>
                                 </div>
                             </div>
                         </div>
+
+
+                        <div>
+                            <br/>
+                            <h2 kaanna="valtakunnalliset-kurssityypit"></h2>
+
+                            <div ng-controller="LukioOppiaineSisaltoController" onload="perusteenTeksti = oppiaine.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_PAKOLLINEN; oppiaineenTeksti = oppiaine.kurssiTyyppiKuvaukset.PAIKALLINEN_PAKOLLINEN; title='pakollinen-kurssi';"
+                                 ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineSisalto.html'"></div>
+
+                            <div ng-controller="LukioOppiaineSisaltoController" onload="perusteenTeksti = oppiaine.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_SYVENTAVA; oppiaineenTeksti = oppiaine.kurssiTyyppiKuvaukset.PAIKALLINEN_SYVENTAVA; title='syventava-kurssi';"
+                                 ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineSisalto.html'"></div>
+
+                            <div ng-controller="LukioOppiaineSisaltoController" onload="perusteenTeksti = oppiaine.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_SOVELTAVA; oppiaineenTeksti = oppiaine.kurssiTyyppiKuvaukset.PAIKALLINEN_SOVELTAVA; title='soveltava-kurssi';"
+                                 ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineSisalto.html'"></div>
+
+
+                            <h2 kaanna="paikalliset-kurssityypit"></h2>
+
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div style="clear: both;"/>
 
-    <div class="oppiaine-sisalto">
-        <span>
-            <h3>
-                <span kaanna="oppiaine-osa-tehtava"></span>
-                <div class="action-buttons-inline">
-                    <button class="btn btn-default btn-icon-only" icon-role="edit"></button>
-                </div>
-            </h3>
-        </span>
-        <div style="clear: both;"/>
+    <!--ng-controller="LukioOppiaineSisaltoController"-->
+    <!--<pre>{{ oppiaine | json}}</pre>-->
+    <div ng-controller="LukioOppiaineSisaltoController" onload="perusteenTeksti = oppiaine.perusteen.tehtava.teksti; oppiaineenTeksti = oppiaine.tehtava.teksti; title='oppiaine-osa-tehtava';"
+         ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineSisalto.html'"></div>
 
-        <div class="tekstiosa perusteen-teksti">
-            <a class="toggle-perusteen-teksti">
-                <span kaanna="nayta-perusteen-teksti"></span>
-            </a>
-            <span ng-bind-html="oppiaine.perusteen.tehtava.teksti | kaanna"></span>
-        </div>
+    <div ng-controller="LukioOppiaineSisaltoController" onload="perusteenTeksti = oppiaine.perusteen.tavoitteet.teksti; oppiaineenTeksti = oppiaine.tavoitteet.teksti; title='oppiaine-osa-tavoitteet';"
+         ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineSisalto.html'"></div>
 
-        <div class="oppiaine-paikallinen">
-            <span>
-                <strong>{{ 'paikallinen-tarkennus' | kaanna}}</strong>
-                <span ng-bind-html="oppiaine.tehtava.teksti | kaanna"></span>
-            </span>
-        </div>
+    <div ng-controller="LukioOppiaineSisaltoController" onload="perusteenTeksti = oppiaine.perusteen.arviointi.teksti; oppiaineenTeksti = oppiaine.arvioinnit.teksti; title='oppiaine-osa-arviointi';"
+         ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineSisalto.html'"></div>
 
-    </div>
 </div>
 
 <div class="lisaa-oppiaine oppiaine-form" ng-show="editMode">

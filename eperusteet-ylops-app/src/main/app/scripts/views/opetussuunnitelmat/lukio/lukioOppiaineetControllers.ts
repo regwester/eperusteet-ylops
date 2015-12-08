@@ -255,9 +255,18 @@ ylopsApp
 
 
     .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams,
-                        LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
+                                                  LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
         // TODO:
         $scope.kurssi = null;
         LukioOpetussuunnitelmaService.getKurssi($stateParams.oppiaineId, $stateParams.kurssiId)
             .then(kurssi => $scope.kurssi = kurssi);
+    })
+
+    .controller('LukioOppiaineSisaltoController', function($scope, $q:IQService, $stateParams,
+                                                  LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
+        $scope.textHidden = true;
+
+        $scope.toggleTextVisible = function(){
+            $scope.textHidden = !$scope.textHidden;
+        }
     });

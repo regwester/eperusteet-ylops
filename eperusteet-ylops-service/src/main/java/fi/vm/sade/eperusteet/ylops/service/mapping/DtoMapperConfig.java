@@ -25,6 +25,8 @@ import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokurssiPerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.time.Instant;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
@@ -88,6 +90,12 @@ public class DtoMapperConfig {
                 .exclude("kurssiTyyppiKuvaukset") // does not handle Optional correctly
                 .byDefault()
                 .register();
+
+        factory.classMap(LukioPerusteOppiaineDto.class, LukioPerusteOppiaineDto.class)
+                .exclude("kurssiTyyppiKuvaukset") // does not handle Optional correctly
+                .byDefault()
+                .register();
+
 
         return new DtoMapperImpl(factory.getMapperFacade());
     }

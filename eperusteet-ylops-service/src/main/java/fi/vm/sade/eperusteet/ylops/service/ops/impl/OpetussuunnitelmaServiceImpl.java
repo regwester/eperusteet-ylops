@@ -513,7 +513,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oa.setKoosteinen(oppiaine.isKoosteinen());
             oa.setKoodiArvo(oppiaine.getKoodiArvo());
             oa.setKoodiUri(oppiaine.getKoodiUri());
-            for (Map.Entry<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kv : oppiaine.kurssitTyyppiKuvaukset().entrySet()) {
+            for (Map.Entry<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kv : oppiaine.getKurssiTyyppiKuvaukset().entrySet()) {
                 kv.getKey().oppiaineKuvausSetter().set(oa, kv.getValue().map(LokalisoituTekstiDto::getTekstit)
                         .map(LokalisoituTeksti::of).orElse(null));
             }
