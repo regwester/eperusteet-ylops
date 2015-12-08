@@ -23,12 +23,11 @@ ylopsApp
     templateUrl: 'views/common/directives/kommentit.html',
     scope: {},
     controller: function($scope) {
-      $scope.nayta = false;
+      $scope.kommentitLadattu = false;
       $scope.editointi = false;
       $scope.editoitava = '';
       $scope.editoi = false;
       $scope.sisalto = false;
-      $scope.onLataaja = false;
       $scope.urlit = {};
       $scope.nimikirjaimet = function(nimi) {
         return _.reduce(nimi.split(' '), function(memo, osa) {
@@ -43,22 +42,21 @@ ylopsApp
       function lataaKommentit(url) {
         var lataaja = $scope.urlit[url];
         if (lataaja) {
-          lataaja(function(kommentit) {
-            $scope.sisalto = kommentit;
-            $scope.nayta = true;
+          lataaja(function(kommenttipuu) {
+            $scope.sisalto = kommenttipuu;
+            $scope.kommentitLadattu = true;
           });
         }
       }
 
       $scope.$on('$stateChangeStart', function() {
-        $scope.nayta = false;
-        $scope.onLataaja = false;
+        $scope.kommentitLadattu = false;
       });
 
       function lataajaCb(url, lataaja) {
         if (!$scope.urlit[url]) {
-          $scope.onLataaja = true;
           $scope.urlit[url] = lataaja;
+          lataaKommentit(url);
         }
       }
 
@@ -68,10 +66,14 @@ ylopsApp
       }
 
       $scope.$on('update:kommentit', function(event, url, lataaja) {
-        lataajaCb(url, lataaja);
+        if (_.isEmpty(url) || _.isEmpty(lataaja)) {
+          // Pakotetaan kommenttien näyttö lataamatta niitä uudelleen.
+          $scope.kommentitLadattu = true;
+        } else {
+          lataajaCb(url, lataaja);
+        }
       });
 
-      $scope.naytaKommentit = function() { lataaKommentit($location.url()); };
       $scope.muokkaaKommenttia = function(kommentti, uusikommentti, cb) {
         Kommentit.muokkaaKommenttia(kommentti, uusikommentti, cb);
       };
@@ -101,9 +103,6 @@ ylopsApp
       });
       $scope.$on('disableEditing', function() {
         $scope.editointi = false;
-      });
-      $timeout(function () {
-        $scope.naytaKommentit();
       });
     }
   };

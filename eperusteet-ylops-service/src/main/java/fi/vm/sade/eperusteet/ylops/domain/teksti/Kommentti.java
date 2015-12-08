@@ -67,4 +67,8 @@ public class Kommentti extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     private Long vlkId;
+
+    @Getter
+    @Setter
+    private Long vlId;
 }

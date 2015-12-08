@@ -1,4 +1,4 @@
-<div ng-hide="editointi || !onLataaja" class="kommentit">
+<div ng-hide="editointi" class="kommentit">
 <!-- kommentit.html -->
 
     <hr>
@@ -6,10 +6,10 @@
         <div class="kommentti-alue">
             <div>
                 <h2><span kaanna="'keskustelu'"></span><span ng-if="sisalto">&nbsp;({{ sisalto.$yhteensa }} {{ 'kommenttia' | kaanna }})</span>
-                <small-spinner ng-hide="nayta"></small-spinner>
+                <small-spinner ng-hide="kommentitLadattu"></small-spinner>
                 </h2>
             </div>
-            <div ng-show="nayta && sisalto">
+            <div ng-show="kommentitLadattu && sisalto">
             <a href="" ng-model="editoi" ng-hide="editoi" ng-click="editoi = true" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'kommentointi' }">
                 <h3 icon-role="add" kaanna="lisaa-kommentti"></h3>
             </a>

@@ -41,4 +41,5 @@ public class KommenttiDto {
     private Long tekstiKappaleViiteId;
     private Long oppiaineId;
     private Long vlkId;
+    private Long vlId;
 }
