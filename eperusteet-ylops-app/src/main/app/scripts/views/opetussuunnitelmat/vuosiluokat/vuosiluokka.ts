@@ -170,9 +170,8 @@ ylopsApp
   };
 
   $scope.muokkaaKuvausta = (muokattava) => {
-    Editointikontrollit.startEditing().then(() => {
-      muokattava.isEditing = true;
-    });
+    muokattava.isEditing = true;
+    Editointikontrollit.startEditing();
   };
 
   $scope.naytaKuvaus = function(sisaltoalue, id, tavoiteTunniste) {
