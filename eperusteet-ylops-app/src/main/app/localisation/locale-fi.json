@@ -441,5 +441,6 @@
   "pakollinen-kurssi": "Pakollinen kurssi",
   "syventava-kurssi": "Syventävä kurssi",
   "soveltava-kurssi": "Soveltava kurssi",
-  "paikalliset-kurssityypit": "Paikalliset kurssityypit"
+  "paikalliset-kurssityypit": "Paikalliset kurssityypit",
+  "varmista-katkaise-yhteys": "Haluatko varmasti katkaista yhteyden ylemmän tason opetussuunnitelmaan?"
 }

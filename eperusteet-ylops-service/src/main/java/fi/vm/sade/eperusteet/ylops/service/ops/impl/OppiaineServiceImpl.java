@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.codepoetics.protonpack.StreamUtils;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
@@ -314,6 +315,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                                             .collect(Collectors.toSet());
 
         oppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
+        Oppiaine newOppiaine = oppiaine;
+        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            // Remap Lukiokurssit to new oppiaine, (does not affecter their ownership)
+            ops.getLukiokurssit().stream().filter(oaLk
+                    -> oaLk.getOppiaine().getId().equals(id))
+                .forEach(oaLk -> {
+                    oaLk.setOppiaine(newOppiaine);
+                });
+        }
 
         OpsOppiaine kopio = new OpsOppiaine(oppiaine, true);
         opsOppiaineet.add(kopio);

@@ -112,7 +112,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Getter
     @Setter
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Tekstiosa arvioinnit;
+    private Tekstiosa arviointi;
 
     @Getter
     @Setter
@@ -374,7 +374,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
             to.setKoodiArvo(other.getKoodiArvo());
             to.setKoodiUri(other.getKoodiUri());
             to.setTavoitteet(Tekstiosa.copyOf(other.getTavoitteet()));
-            to.setArvioinnit(Tekstiosa.copyOf(other.getArvioinnit()));
+            to.setArviointi(Tekstiosa.copyOf(other.getArviointi()));
             for (LukiokurssiTyyppi tyyppi : LukiokurssiTyyppi.values()) {
                 tyyppi.oppiaineKuvausCopier().copy(other, to);
             }

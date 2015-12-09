@@ -192,14 +192,17 @@ ylopsApp
             muokattavatKurssiOsat: osat(['tavoitteet', 'keskeinenSisalto', 'tavoitteetJaKeskeinenSisalto'], 'kurssi-osa-')
         };
     })
-    .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams, $state,
+    .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams, $state, $timeout,
                         LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log,
-                        Editointikontrollit, LukioControllerHelpers, Varmistusdialogi, OppiaineCRUD, Notifikaatiot) {
+                        Editointikontrollit, LukioControllerHelpers, Varmistusdialogi, Notifikaatiot) {
         // TODO:
         $scope.oppiaine = null;
         $scope.editMode = false;
         $scope.kurssiKuvauksetVisible = false;
         $scope.rootOps = true;
+        $scope.connected = () => $scope.oppiaine && !$scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa;
+        $scope.isReconnectable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa;
+        $scope.isEditable = () => $scope.oppiaine && $scope.oppiaine.oma;
 
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
@@ -207,7 +210,7 @@ ylopsApp
         });
         LukioOpetussuunnitelmaService.getRakenne().then(r => $scope.rootOps = r.root);
 
-        $scope.openKurssi = function(kurssi){
+        $scope.openKurssi = (kurssi) => {
             $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
                 id: $stateParams.id,
                 oppiaineId: $stateParams.oppiaineId,
@@ -215,31 +218,28 @@ ylopsApp
             });
         };
 
-        $scope.kuvauksetIsEmpty = function( kuvaukset ){
+        $scope.kuvauksetIsEmpty = (kuvaukset) => {
             var kuvauksetWithKeys = _.find( kuvaukset, (key) => {return key !== null;});
             return _.isUndefined( kuvauksetWithKeys );
         };
 
-        $scope.connectOppiaine = function(){
+        $scope.connectOppiaine = () => {
             console.log("TODO");
         };
 
-        $scope.disconnectOppiaine = function(){
+        $scope.disconnectOppiaine = () => {
             Varmistusdialogi.dialogi({
                 otsikko: 'varmista-katkaise-yhteys',
                 primaryBtn: 'katkaise-yhteys',
-                successCb: function () {
-                    OppiaineCRUD.kloonaaMuokattavaksi({
-                        opsId: $stateParams.id,
-                        oppiaineId: $stateParams.oppiaineId
-                    }, {}, function(res) {
+                // TODO: lukitus!
+                successCb: () => LukioOpetussuunnitelmaService.kloonaaOppiaineMuokattavaksi($stateParams.oppiaineId)
+                    .then(res => {
                         Notifikaatiot.onnistui('yhteyden-katkaisu-luonti-onnistui');
-                        $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                        $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
                             id: $stateParams.id,
                             oppiaineId: res.id
-                        }, { reload: true, notify: false });
-                    }, Notifikaatiot.serverCb);
-                }
+                        }, { reload: true, notify: true }));
+                    })
             })();
         };
 

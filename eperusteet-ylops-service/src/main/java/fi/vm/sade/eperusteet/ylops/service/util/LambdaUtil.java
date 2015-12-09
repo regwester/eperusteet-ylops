@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -46,6 +47,10 @@ public class LambdaUtil {
     @FunctionalInterface
     public interface ConstructedCopier<T> {
         T copy(T from);
+    }
+
+    public static<K,F,T> Function<K, T> map(Map<K,F> from, Function<F,T> map) {
+        return k -> Optional.ofNullable(from.get(k)).map(map).orElse(null);
     }
 
     @FunctionalInterface

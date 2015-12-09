@@ -15,6 +15,7 @@
  */
 
 import LukioOppiaine = Lukio.LukioOppiaine;
+import Oppiaine = Lukio.Oppiaine;
 'use strict';
 
 interface LukioOpetussuunnitelmaServiceI {
@@ -26,11 +27,12 @@ interface LukioOpetussuunnitelmaServiceI {
     getOppiaine(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine>
     saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<Lukio.IdHolder>
     getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
+    kloonaaOppiaineMuokattavaksi(oppiaineId:number, opsId?:number): IPromise<Lukio.IdHolder>
 }
 
 ylopsApp
     .service('LukioOpetussuunnitelmaService', function(OpetusuunnitelmaLukio, $q:IQService,
-                                                       Notifikaatiot, $stateParams) {
+                                                       Notifikaatiot, $stateParams, OppiaineCRUD) {
         var doGetAihekokonaisuudet =
             (id: number, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) =>
                 OpetusuunnitelmaLukio.aihekokonaisuudet({opsId: id})
@@ -67,6 +69,11 @@ ylopsApp
         var getKurssi = (oppiaineId: number, kurssiId: number, opsId?: number) =>
             kurssiCache.get(opsId || $stateParams.id, oppiaineId, kurssiId);
 
+        var kloonaaOppiaineMuokattavaksi = (oppiaineId:number, opsId?:number) => OppiaineCRUD.kloonaaMuokattavaksi({
+                opsId: opsId || $stateParams.id,
+                oppiaineId: oppiaineId
+            }, {}).$promise.then(res => { oppiaineCache.clear(); return res;}, Notifikaatiot.serverCb);
+
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
@@ -75,6 +82,7 @@ ylopsApp
             getRakenne: getRakenne,
             getOppiaine: getOppiaine,
             getKurssi: getKurssi,
-            saveOppiaine: saveOppiaine
+            saveOppiaine: saveOppiaine,
+            kloonaaOppiaineMuokattavaksi: kloonaaOppiaineMuokattavaksi
         }
     });

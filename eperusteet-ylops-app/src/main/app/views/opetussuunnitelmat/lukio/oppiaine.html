@@ -17,13 +17,13 @@
 
 <div class="oppiaine-view" ng-show="!editMode">
 
-  <div class="action-buttons-inline" ng-if="false">
-    <div ng-if="oppiaine.oma && !rootOps">
+  <div class="action-buttons-inline">
+    <div ng-if="isReconnectable()">
       <span kaanna="ei-yhdistetty-pohjaan" style="color: red; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'palauta-yhteys'"
               ng-click="connectOppiaine()"></button>
     </div>
-    <div ng-if="!oppiaine.oma && !rootOps">
+    <div ng-if="connected()">
       <span kaanna="yhdistetty-pohjaan" style="color: limegreen; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'katkaise-yhteys'"
               ng-click="disconnectOppiaine()"></button>
@@ -122,13 +122,13 @@
   <!--ng-controller="LukioOppiaineSisaltoController"-->
   <!--<pre>{{ oppiaine | json}}</pre>-->
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tehtava.teksti" editable="true"
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tehtava.teksti" editable="isEditable()"
                       oppiaineen-teksti="oppiaine.tehtava.teksti" title="'oppiaine-osa-tehtava'"></lukio-oppiaine-osa>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tavoitteet.teksti" editable="true"
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tavoitteet.teksti" editable="isEditable()"
                       oppiaineen-teksti="oppiaine.tavoitteet.teksti" title="'oppiaine-osa-tavoitteet'"></lukio-oppiaine-osa>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.arviointi.teksti" editable="true"
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.arviointi.teksti" editable="isEditable()"
                       oppiaineen-teksti="oppiaine.arviointi.teksti" title="'oppiaine-osa-arviointi'"></lukio-oppiaine-osa>
 
 

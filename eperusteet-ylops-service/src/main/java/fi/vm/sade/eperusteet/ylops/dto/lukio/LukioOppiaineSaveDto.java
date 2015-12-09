@@ -42,6 +42,6 @@ public class LukioOppiaineSaveDto implements Serializable {
     private String koodiArvo;
     private TekstiosaDto tehtava;
     private TekstiosaDto tavoitteet;
-    private TekstiosaDto arvioinnit;
+    private TekstiosaDto arviointi;
     private Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kurssiTyyppiKuvaukset = new HashMap<>();
 }

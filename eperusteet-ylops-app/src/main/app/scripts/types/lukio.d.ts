@@ -148,6 +148,7 @@ declare module Lukio {
         perusteen?: LukioOppiainePeruste;
         tila: Tila;
         oma: boolean;
+        maariteltyPohjassa: boolean;
         abstrakti?: boolean;
         jarjestys?: number;
         tyyppi: OppiaineTyyppi;
@@ -159,6 +160,7 @@ declare module Lukio {
 
     export interface LukioOpetussuunnitelmaRakenneOps {
         perusteId: number;
+        root: boolean;
         perusteen: LukioOpetussuunnitelmaRakennePeruste;
         oppiaineet: LukioOppiaine[];
     }

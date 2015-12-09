@@ -44,6 +44,7 @@ public class LukioOppiaineListausDto implements Serializable,
     private UUID tunniste;
     private Tila tila;
     private boolean oma;
+    private boolean maariteltyPohjassa;
     private Integer jarjestys;
     private OppiaineTyyppi tyyppi;
     private String laajuus;
@@ -52,7 +53,7 @@ public class LukioOppiaineListausDto implements Serializable,
     private Boolean abstrakti;
     private TekstiosaDto tehtava;
     private TekstiosaDto tavoitteet;
-    private TekstiosaDto arvioinnit;
+    private TekstiosaDto arviointi;
     private Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kurssiTyyppiKuvaukset = new HashMap<>();
     private List<LukioOppiaineListausDto> oppimaarat = new ArrayList<>();
     private String koodiUri;
