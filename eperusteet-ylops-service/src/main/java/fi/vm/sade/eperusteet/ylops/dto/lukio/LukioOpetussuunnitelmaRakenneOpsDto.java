@@ -38,6 +38,8 @@ import java.util.stream.Stream;
 public class LukioOpetussuunnitelmaRakenneOpsDto implements Serializable,
         PerusteeseenViittaava<LukioOpetussuunnitelmaRakenneDto>{
     @Setter
+    private boolean root;
+    @Setter
     private Date muokattu;
     @Setter
     private Long opsId;

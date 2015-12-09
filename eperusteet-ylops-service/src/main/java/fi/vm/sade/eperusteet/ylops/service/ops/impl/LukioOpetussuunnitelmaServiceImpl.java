@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
@@ -71,6 +72,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         LukioOpetussuunnitelmaRakenneOpsDto rakenne = new LukioOpetussuunnitelmaRakenneOpsDto();
         rakenne.setMuokattu(ops.getMuokattu());
         rakenne.setOpsId(ops.getId());
+        rakenne.setRoot(ops.getPohja() == null || ops.getPohja().getTyyppi() == Tyyppi.POHJA);
         map(ops.getOppiaineet().stream().map(OpsOppiaine::getOppiaine),
             ops.getOppiaineet().stream()
                 .collect(toMap(ooa -> ooa.getOppiaine().getId(), OpsOppiaine::isOma))::get,

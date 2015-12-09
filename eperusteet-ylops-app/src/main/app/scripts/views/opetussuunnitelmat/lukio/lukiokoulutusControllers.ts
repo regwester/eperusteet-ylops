@@ -113,7 +113,6 @@ ylopsApp
             cursorAt: {top : 2, left: 2},
             tolerance: 'pointer',
         };
-
     })
     .controller('OpetuksenYleisetTavoitteetController', function($scope, $log,
                      LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI) {

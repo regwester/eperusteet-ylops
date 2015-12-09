@@ -125,6 +125,7 @@ ylopsApp
         $scope.toEditMode = () => {
             $scope.editMode = true;
             $scope.$broadcast('genericTree:refresh'); // templates get updated
+
             Editointikontrollit.startEditing();
         };
 
