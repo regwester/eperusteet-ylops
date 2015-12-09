@@ -17,13 +17,13 @@
 
 <div class="oppiaine-view" ng-show="!editMode">
 
-  <div class="action-buttons-inline">
-    <div ng-if="oppiaine.oma">
+  <div class="action-buttons-inline" ng-if="false">
+    <div ng-if="oppiaine.oma && !rootOps">
       <span kaanna="ei-yhdistetty-pohjaan" style="color: red; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'palauta-yhteys'"
               ng-click="connectOppiaine()"></button>
     </div>
-    <div ng-if="!oppiaine.oma">
+    <div ng-if="!oppiaine.oma && !rootOps">
       <span kaanna="yhdistetty-pohjaan" style="color: limegreen; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'katkaise-yhteys'"
               ng-click="disconnectOppiaine()"></button>
@@ -54,17 +54,14 @@
     </div>
   </div>
 
-  <!--<pre>{{oppiaine | json}}</pre>-->
-  <!--<pre>{{oppiaine.perusteen.kurssiTyyppiKuvaukset | json}}</pre>-->
-
-  <div class="lukio-oppiaineet-puu lukio-oppiaine-tab lukio-oppiaine-tyypit">
+  <div class="lukio-oppiaineet-puu lukio-oppiaine-tab lukio-oppiaine-tyypit" ng-if="!(kuvauksetIsEmpty(oppiaine.kurssiTyyppiKuvaukset) && kuvauksetIsEmpty(oppiaine.perusteen.kurssiTyyppiKuvaukset))">
     <div class="main-column tree" style="margin-bottom: 20px;">
       <div class="tree-con">
         <div class="opetussisaltopuu tree">
           <div class="legendContainer">
             <div class="legends" style="width: 100%;">
               <a ng-click="kurssiKuvauksetVisible=!kurssiKuvauksetVisible" class="left legend">
-                {{ kurssiKuvauksetVisible?'':'nayta-kurssityyppi-kuvaukset' | kaanna}}
+                {{ kurssiKuvauksetVisible?'piilota-kurssityyppi-kuvaukset':'nayta-kurssityyppi-kuvaukset' | kaanna}}
                 <span ng-class="{'glyphicon-chevron-right': !kurssiKuvauksetVisible, 'glyphicon-chevron-down': kurssiKuvauksetVisible}"
                       class="glyphicon"></span></a>
 
@@ -81,8 +78,8 @@
             <div ng-if="kurssiKuvauksetVisible">
               <br/>
 
-              <pre>{{oppiaine.kurssiTyyppiKuvaukset | json}}</pre>
-              {{kuvauksetIsEmpty(oppiaine.kurssiTyyppiKuvaukset)}}
+              <!--<pre>{{oppiaine.kurssiTyyppiKuvaukset | json}}</pre>-->
+              <!--{{kuvauksetIsEmpty(oppiaine.kurssiTyyppiKuvaukset)}}-->
 
               <h2 kaanna="valtakunnalliset-kurssityypit" ng-if="!kuvauksetIsEmpty(oppiaine.kurssiTyyppiKuvaukset)"></h2>
 

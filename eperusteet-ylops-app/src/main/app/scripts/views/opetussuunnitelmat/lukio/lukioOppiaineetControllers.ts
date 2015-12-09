@@ -199,11 +199,13 @@ ylopsApp
         $scope.oppiaine = null;
         $scope.editMode = false;
         $scope.kurssiKuvauksetVisible = false;
+        $scope.rootOps = true;
 
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
             $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat(oa);
         });
+        LukioOpetussuunnitelmaService.getRakenne().then(r => $scope.rootOps = r.root);
 
         $scope.openKurssi = function(kurssi){
             $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
@@ -214,9 +216,7 @@ ylopsApp
         };
 
         $scope.kuvauksetIsEmpty = function( kuvaukset ){
-            console.log(">>>", kuvaukset);
             var kuvauksetWithKeys = _.find( kuvaukset, (key) => {return key !== null;});
-            console.log(kuvauksetWithKeys);
             return _.isUndefined( kuvauksetWithKeys );
         };
 
