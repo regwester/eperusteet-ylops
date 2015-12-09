@@ -92,7 +92,7 @@ ylopsApp
       if (obj.tekstiKappale) {
         var result = {
           id: obj.id,
-          label: obj.tekstiKappale.nimi,
+          label: obj.tekstiKappale.nimi || '[otsikko]',
           valmis: obj.tekstiKappale.valmis,
           depth: depth - 1,
           url: depth > 1 || isPohja ? $state.href(state, { tekstikappaleId: obj.id }) : undefined
@@ -197,30 +197,28 @@ ylopsApp
     opsId: $stateParams.id,
   };
 
-  // FIXME: Ota kunnon editointikontrollit käyttöön
   Editointikontrollit.registerCallback({
-    edit: function() {
-    },
-    asyncValidate: function(cb) {
-      TekstikappaleOps.saveRakenne($scope.model, function () {
-        Lukko.unlock(commonParams, cb);
+    edit: () => $q.when(),
+    save: () => $q((resolve, reject) => {
+      TekstikappaleOps.saveRakenne($scope.model, () => {
+        Lukko.unlock(commonParams);
+        $scope.$$isRakenneMuokkaus = false;
+        $rootScope.$broadcast('genericTree:refresh');
+        resolve();
       });
-    },
-    save: function() {
-      Lukko.unlock(commonParams);
-      $scope.$$isRakenneMuokkaus = false;
-      $rootScope.$broadcast('genericTree:refresh');
-    },
-    cancel: function() {
+    }),
+    cancel: () => $q((resolve) => {
+      resolve();
       Lukko.unlock(commonParams, $state.reload);
-    }
+    })
   });
 
-  $scope.muokkaaRakennetta = function() {
-    Lukko.lock(commonParams, function() {
-      Editointikontrollit.startEditing();
-      $scope.$$isRakenneMuokkaus = true;
-      $rootScope.$broadcast('genericTree:refresh');
+  $scope.muokkaaRakennetta = () => {
+    Lukko.lock(commonParams, () => {
+      Editointikontrollit.startEditing().then(() => {
+        $scope.$$isRakenneMuokkaus = true;
+        $rootScope.$broadcast('genericTree:refresh');
+      });
     });
   };
 

@@ -27,11 +27,12 @@
   "ei-tekstikappaleita": "Ei tekstikappaleita",
   "ei-valinnaisia-aineita": "Valinnaisia aineita ei ole luotu.",
   "esikatselu": "Esikatselu",
+  "esikatseltavissa": "Esikatseltavissa",
+  "ei-esikatseltavissa": "Ei esikatseltavissa",
   "kasitteet": "Käsitteet",
   "ei-termeja": "Käsitteitä ei ole määritelty",
   "opetussuunnitelman-termisto": "Opetussuunnitelman termistö",
   "etusivu": "Etusivu",
-  "esikatselu": "Esikatselu",
   "fi": "suomi",
   "hallinta": "Hallinta",
   "haluatko-jatkaa": "Haluatko jatkaa?",
@@ -47,7 +48,6 @@
   "kaikki-vuosiluokkaistettu": "Kaikki tavoitteet vuosiluokkaistettu",
   "kaikkia-ei-vuosiluokkaistettu": "Kaikkia tavoitteita ei ole vuosiluokkaistettu",
   "kappaleen-otsikko": "Otsikko",
-  "kasitteet": "Käsitteet",
   "kayta-pohjaa": "Käytä pohjana:",
   "kayta-pohjaa-info": "Mikäli koulukohtainen opetussuunnitelma laaditaan osana kunnan opetussuunnitelmaa valitse valikosta oman kuntasi pohja.",
   "kelvoton-pvm": "Kelvoton päivämäärä",
@@ -348,6 +348,7 @@
   "epimage-plugin-lisaa-uusi": "Lataa uusi kuva",
   "epimage-plugin-valitse": "Valitse tiedosto...",
   "epimage-plugin-tallennettu": "Kuva tallennettu.",
+  "epimage-plugin-scale-invalid": "Leveys tai korkeus on viallinen.",
   "paivitys-onnistui": "Päivitys onnistui",
 
   "muokkaa-hierarkiaa": "Muokkaa hierarkiaa",
@@ -362,6 +363,12 @@
   "nayta-pohjana": "Näytä pohjana",
   "synkronoi-perusteeseen": "Synkronoi opetussuunnitelmiin",
   "ops-pohja": "Pohjan sisältö",
+
+  "palauta-ylempaan": "Palauta ylempi oppiaine",
+  "palauta-oppiaine": "Palauta oppiaine",
+  "varmista-oppiaineen-palautus": "Haluatko varmasti palauttaa ylemmän oppiaineen?",
+  "palaaminen-vanhaan-onnistui": "Oppiaineen palauttaminen onnistui",
+  "palauta-ylempi-oppiaine": "Poistaa nykyisen sisällön ja palauttaa tilalle ylemmässä opetussuunnitelmassa sijaitsevan oppiaineen.",
 
   "virhe": "Virhe",
   "virhe-sivua-ei-loytynyt": "Sivua ei löytynyt",
@@ -438,4 +445,6 @@
   "oppiaine-osa-tehtava": "Oppiaineen tehtävä",
   "oppiaine-osa-tavoitteet": "Opetuksen tavoitteet",
   "oppiaine-osa-arviointi": "Arviointi"
+  "virhe-piilota-lisatiedot": "Piilota virheen tekniset tiedot",
+  "opetus-eri-vuosiluokilla": "Opetus eri vuosiluokilla"
 }

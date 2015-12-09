@@ -43,7 +43,7 @@ angular.module('ylopsApp')
         ohje: '@?',
         extra: '='
       },
-      link: function (scope, element, attrs) {
+      link: function (scope: any, element, attrs) {
 
         var MAXWIDTH = 400;
         var originalSuunta = scope.suunta;

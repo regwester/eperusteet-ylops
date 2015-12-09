@@ -83,7 +83,6 @@ ylopsApp
         var data = {toState: toState, toParams: toParams};
         Varmistusdialogi.dialogi({
           successCb: function(data) {
-            Editointikontrollit.cancelEditing(true);
             $state.go(data.toState, data.toParams);
           }, data: data, otsikko: 'vahvista-liikkuminen', teksti: 'tallentamattomia-muutoksia',
           lisaTeksti: 'haluatko-jatkaa',

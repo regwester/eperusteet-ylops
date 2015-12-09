@@ -1,7 +1,7 @@
 <div class="ops-edit-container">
   <h2 ng-hide="luonnissa">
     <div class="action-buttons-inline">
-      <button ng-if="isEditable()" ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'"
+      <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'"
               oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }" icon-role="edit" ng-click="edit()"></button>
     </div>
     <span kaanna="'opsn-tiedot'"></span>
@@ -117,6 +117,14 @@
       </div>
     </div>
 
+    <div class="row" ng-show="!(model.tila==='julkaistu')">
+      <div class="col-sm-3 formfield-label">
+        <label><span kaanna="'esikatselu'"></span></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <span kaanna="model.esikatseltavissa ? 'esikatseltavissa' : 'ei-esikatseltavissa' "></span>
+      </div>
+    </div>
 
   </div>
 
@@ -151,7 +159,8 @@
         </div>
         <div class="col-sm-9 formfield-data">
           <label ng-repeat="vlk in editableModel.vuosiluokkakokonaisuudet | orderBy:nimiOrder" class="julkaisukieli">
-            <input type="checkbox" ng-model="vlk.valittu" ng-click="toggle(vlk)">
+            <input type="checkbox" ng-model="vlk.valittu" ng-click="toggle(vlk)"
+                   ng-disabled="(model.tila==='valmis' || model.tila==='julkaistu')">
             <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span>
           </label>
           <ohje teksti="luonti-vuosiluokka-valinta-info"></ohje>
@@ -240,7 +249,8 @@
         </div>
         <div class="col-sm-9 formfield-data">
           <label ng-repeat="kielikoodi in kielivalinnat" class="julkaisukieli">
-            <input type="checkbox" ng-model="julkaisukielet[kielikoodi]">
+            <input type="checkbox" ng-model="julkaisukielet[kielikoodi]"
+                   ng-disabled="(model.tila==='valmis' || model.tila==='julkaistu')">
             <span ng-bind="kielikoodi | kaanna"></span>
           </label>
         </div>
@@ -260,6 +270,15 @@
             </span>
           </span>
           <p class="alert alert-error" ng-show="opsForm.paatospaivamaara.$error.dateformatvalidator" kaanna="'kelvoton-pvm'"></p>
+        </div>
+      </div>
+
+      <div class="row" ng-show="!(model.tila==='julkaistu' || luonnissa)">
+        <div class="col-sm-3 formfield-label">
+          <label><span kaanna="'esikatselu'"></span></label>
+        </div>
+        <div class="col-sm-9 formfield-data">
+          <input type="checkbox" ng-model="editableModel.esikatseltavissa">
         </div>
       </div>
 

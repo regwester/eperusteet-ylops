@@ -17,21 +17,16 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
+import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.security.access.method.P;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
@@ -78,7 +73,10 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                   Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteet);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
+    OpsOppiaineDto palautaAlkuperaiseen(@P("opsId") Long opsId, Long id);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
     OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
@@ -97,4 +95,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OppiaineenVuosiluokkaDto updateValinnaisenVuosiluokanSisalto(@P("opsId") Long opsId, Long id,
                                                                  Long oppiaineenVuosiluokkaId,
                                                                  List<TekstiosaDto> tavoitteetDto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
+    OpsOppiaineDto palautaYlempi(@P("opsId") Long opsId, Long id);
 }

@@ -55,7 +55,7 @@ ylopsApp
             '</div>'
             );
     $templateCache.put('pohjaSisaltoNodeTemplate', '' +
-            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'search-halo\': node.$$showHalo, \'tekstisisalto-solmu-paataso\': (node.$$depth === 0) }">' +
+            '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'search-halo\': node.$$showHalo, \'tekstisisalto-solmu-paataso\': (node.$$depth === 1) }">' +
             '    <span class="tekstisisalto-chevron action-link" ng-show="node.$$hasChildren" href="" ng-click="node.$$hidden = !node.$$hidden">' +
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
@@ -124,30 +124,24 @@ ylopsApp
     OpetussuunnitelmaCRUD.syncPeruste({ id: $scope.model.id }, _.bind(Notifikaatiot.onnistui, {}, 'paivitys-onnistui'), Notifikaatiot.serverCb);
   };
 
-  // FIXME: Ota kunnon editointikontrollit käyttöön
-  var callbacks = {
-      edit: function() {
-      },
-      asyncValidate: function(cb) {
-          TekstikappaleOps.saveRakenne($scope.model, function () {
-              Lukko.unlock(commonParams, cb);
-          });
-      },
-      save: function() {
-          Lukko.unlock(commonParams);
-          $scope.$$isRakenneMuokkaus = false;
-          $rootScope.$broadcast('genericTree:refresh');
-      },
-      cancel: function() {
+  Editointikontrollit.registerCallback({
+    edit: () => $q((resolve) => resolve()),
+    save: () => $q((resolve, reject) => {
+      TekstikappaleOps.saveRakenne($scope.model, () => {
         Lukko.unlock(commonParams);
         $scope.$$isRakenneMuokkaus = false;
-        $state.reload();
-      }
-  };
+        $rootScope.$broadcast('genericTree:refresh');
+        resolve();
+      });
+    }),
+    cancel: () => $q((resolve) => {
+      resolve();
+      Lukko.unlock(commonParams, $state.reload);
+    })
+  });
 
   $scope.muokkaaRakennetta = function() {
     Lukko.lock(commonParams, function() {
-      Editointikontrollit.registerCallback(callbacks);
       Editointikontrollit.startEditing();
       $scope.$$isRakenneMuokkaus = true;
       $rootScope.$broadcast('genericTree:refresh');
@@ -179,7 +173,13 @@ ylopsApp
         return !$scope.$$isRakenneMuokkaus;
       },
       acceptDrop: _.constant(true),
-      sortableClass: _.constant('is-draggable-into'),
+      sortableClass: (node) => {
+        var result = 'is-draggable-into';
+        if ($scope.$$isRakenneMuokkaus && _.isEmpty(node.lapset)) {
+          result += ' recursivetree-empty';
+        }
+        return result;
+      },
       extension: function(node, scope) {
         scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
 

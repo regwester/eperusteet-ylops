@@ -105,7 +105,8 @@ ylopsApp
       saveValinnainen: {method: 'POST', url: YlopsResources.OPPIAINE + '/valinnainen'},
       addKielitarjonta: {method: 'POST', url: YlopsResources.OPPIAINE + '/kielitarjonta'},
       getParent: {method: 'GET', url: YlopsResources.OPPIAINE + '/parent'},
-      kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.OPPIAINE + '/muokattavakopio'}
+      kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.OPPIAINE + '/muokattavakopio'},
+      palautaYlempaan: {method: 'POST', url: YlopsResources.OPPIAINE + '/palautaYlempi'}
     });
   })
 
@@ -142,5 +143,7 @@ ylopsApp
   .factory('OpsinKuvat', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/kuvat', {
       id: '@id'
+    },{
+      reScaleImg: {method: 'POST', isArray: false, url: YlopsResources.OPS + '/kuvat/:id'}
     });
   });

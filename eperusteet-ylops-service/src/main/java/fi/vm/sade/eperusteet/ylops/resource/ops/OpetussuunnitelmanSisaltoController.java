@@ -108,6 +108,18 @@ public class OpetussuunnitelmanSisaltoController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/tekstit/{viiteId}/kaikki", method = RequestMethod.GET)
+    public ResponseEntity<TekstiKappaleViiteDto.Puu> getTekstiKappaleViiteSyva(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("viiteId") final Long viiteId) {
+        TekstiKappaleViiteDto.Puu dto = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, viiteId, TekstiKappaleViiteDto.Puu.class);
+        if (dto == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+
     @RequestMapping(value = "/tekstit/{viiteId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeTekstiKappaleViite(

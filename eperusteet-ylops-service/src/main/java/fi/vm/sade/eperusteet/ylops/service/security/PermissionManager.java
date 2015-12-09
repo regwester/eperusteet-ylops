@@ -151,12 +151,6 @@ public class PermissionManager {
             case POHJA:
             case OPETUSSUUNNITELMA:
                 if (targetId != null) {
-                    if (tyyppiJaTila.getSecond() != Tila.LUONNOS &&
-                        (perm == Permission.LUONTI || perm == Permission.POISTO || perm == Permission.MUOKKAUS)) {
-                        // OPSin tai pohjan muokkaus (tilanvaihtoa lukuunottamatta) sallitaan vain luonnos-tilassa
-                        return false;
-                    }
-
                     List<String> opsOrganisaatiot = opetussuunnitelmaRepository.findOrganisaatiot((Long) targetId);
                     if (opsOrganisaatiot.isEmpty()) {
                         throw new NotExistsException(MSG_OPS_EI_OLEMASSA);
@@ -232,11 +226,6 @@ public class PermissionManager {
             .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
             .filter(pair -> !CollectionUtil.intersect(pair.getSecond(), organisaatiot).isEmpty())
             .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
-            // Salli OPS:n sisällön muokkaus (tilanvaihtoa lukuunottamatta) vain luonnos-tilassa
-            .filter(permission -> ops.getTila() == Tila.LUONNOS ||
-                                  (permission == Permission.TILANVAIHTO &&
-                                   !ops.getTila().mahdollisetSiirtymat(isPohja).isEmpty()) ||
-                                  fromRolePermission(RolePermission.READ).contains(permission))
             .collect(Collectors.toSet());
 
         permissionMap.put(TargetType.OPETUSSUUNNITELMA, permissions);

@@ -62,15 +62,16 @@ ylopsApp
   this.getOppiaine = function () {
     return oppiaine;
   };
-  this.saveVlk = function (model) {
+  this.saveVlk = (model) => $q((resolve) => {
     OppiaineenVlk.save({
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id
     }, model, function () {
       Notifikaatiot.onnistui('tallennettu-ok');
       $rootScope.$broadcast('oppiaine:reload');
+      resolve();
     }, Notifikaatiot.serverCb);
-  };
+  });
   this.fetchVlk = function (vlkId, cb) {
     return OppiaineenVlk.get({
       opsId: opetussuunnitelma.id,

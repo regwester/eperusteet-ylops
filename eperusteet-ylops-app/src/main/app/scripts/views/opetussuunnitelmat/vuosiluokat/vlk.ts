@@ -79,8 +79,8 @@ ylopsApp
   this.createEmptyText = createEmptyText;
 })
 
-.controller('VuosiluokkakokonaisuusSortController', function($rootScope, $state, $scope, Editointikontrollit,
-      vlk, opsModel, vlkId, OpetussuunnitelmaCRUD, Notifikaatiot, $timeout, $stateParams) {
+.controller('VuosiluokkakokonaisuusSortController', function($q, $rootScope, $scope, $state, $stateParams, $timeout,
+    Editointikontrollit, Notifikaatiot, OpetussuunnitelmaCRUD, opsModel, vlk, vlkId) {
   $rootScope.$broadcast('navigaatio:hide');
   $scope.oppiaineet = _(opsModel.oppiaineet)
     .map('oppiaine')
@@ -119,50 +119,46 @@ ylopsApp
   };
 
   Editointikontrollit.registerCallback({
-    edit: function() {
-      console.log('starting edit');
-    },
-    validate: _.constant(true),
-    save: function() {
+    edit: () => $q.when(),
+    save: () => $q((resolve) => {
+      resolve();
       var jrnoMap = _($scope.oppiaineet)
-        .filter(function(oa) {
-          return oa.$$vklid >= 0;
-        })
-        .map(function(oa) {
-          return [oa, oa.oppimaarat || []];
-        })
+        .filter((oa) => oa.$$vklid >= 0)
+        .map((oa) => [oa, oa.oppimaarat || []])
         .flatten(true)
-        .map(function(oa, idx) {
-          return {
+        .map((oa, idx) => ({
             id: opsModel.id,
             lisaIdt: [oa.vuosiluokkakokonaisuudet[oa.$$vklid].id],
             jnro: idx
-          };
-        })
+        }))
         .value();
 
       OpetussuunnitelmaCRUD.jarjestaOppiaineet({
         opsId: opsModel.id
-      }, jrnoMap, function() {
+      }, jrnoMap, () => {
+        resolve();
         Notifikaatiot.onnistui('tallennettu-ok');
-        $state.go('^.vuosiluokkakokonaisuus', $stateParams, { reload: true });
+        $timeout(() => {
+          $state.go('^.vuosiluokkakokonaisuus', $stateParams, { reload: true });
+        });
       });
-    },
-    cancel: function() {
-      $state.go('^.vuosiluokkakokonaisuus', $stateParams);
-    },
+    }),
+    cancel: () => $q((resolve) => {
+      resolve();
+      $timeout(() => {
+        $state.go('^.vuosiluokkakokonaisuus', $stateParams);
+      });
+    }),
     notify: _.noop
   });
 
-  $timeout(function() {
-    Editointikontrollit.startEditing();
-  });
+  $timeout(Editointikontrollit.startEditing);
 })
 
-.controller('VuosiluokkakokonaisuusController', function ($scope, Editointikontrollit,
-  MurupolkuData, vlk, $state, $stateParams, Notifikaatiot, VuosiluokatService, Utils, Kaanna, $rootScope,
-  baseLaajaalaiset, $timeout, $anchorScroll, $location, VuosiluokkakokonaisuusMapper, VuosiluokkakokonaisuusCRUD,
-  OpsService, Varmistusdialogi) {
+.controller('VuosiluokkakokonaisuusController', function(
+      $anchorScroll, $location, $q, $rootScope, $scope, $state, $stateParams, $timeout,
+      Editointikontrollit, Kaanna, MurupolkuData, Notifikaatiot, OpsService, Utils, Varmistusdialogi,
+      VuosiluokatService, VuosiluokkakokonaisuusCRUD, VuosiluokkakokonaisuusMapper, baseLaajaalaiset, vlk) {
 
   $scope.sortOppiaineet = function() {
     $state.go('^.vuosiluokkakokonaisuussort', $stateParams);
@@ -193,13 +189,14 @@ ylopsApp
     return laajaalaisetOrder.indexOf(tunniste);
   };
 
-  function fetch() {
-    VuosiluokatService.getVuosiluokkakokonaisuus($stateParams.id, $stateParams.vlkId, function (res) {
+  const fetch = () => $q((resolve) => {
+    VuosiluokatService.getVuosiluokkakokonaisuus($stateParams.id, $stateParams.vlkId, (res) => {
       $scope.vlk = res;
       initTexts();
       VuosiluokkakokonaisuusMapper.init($scope, laajaalaisetosaamiset);
+      resolve();
     }, Notifikaatiot.serverCb);
-  }
+  });
 
   function initTexts() {
     _.each(editoitavat, function (key) {
@@ -212,7 +209,7 @@ ylopsApp
 
   MurupolkuData.set('vlkNimi', vlk.nimi);
 
-  $scope.hasSiirtymat = function () {
+  $scope.hasSiirtymat = () => {
     return $scope.perusteVlk && ($scope.perusteVlk.siirtymaEdellisesta || $scope.perusteVlk.siirtymaSeuraavaan);
   };
 
@@ -249,30 +246,27 @@ ylopsApp
   };
 
   $scope.callbacks = {
-    edit: function () {
-      fetch();
-    },
-    save: function () {
-      $rootScope.$broadcast('notifyCKEditor');
+    edit: fetch,
+    cancel: fetch,
+    save: () => $q((resolve) => {
       commitLaajaalaiset();
-      _.each($scope.temp, function (value, key) {
+      _.each($scope.temp, (value, key) => {
         if (value !== null) {
           $scope.vlk[key] = value;
         }
       });
-      $scope.vlk.$save({opsId: $stateParams.id}, function (res) {
+      $scope.vlk.$save({opsId: $stateParams.id}, (res) => {
         $scope.vlk = res;
         initTexts();
+        Notifikaatiot.onnistui('tallennettu-ok');
+        resolve();
       }, Notifikaatiot.serverCb);
-    },
-    cancel: function () {
-      fetch();
-    },
-    notify: function (mode) {
-      $scope.options.editing = mode;
+    }),
+    notify: (mode) => {
+      $scope.options.editing = mode
       $scope.callbacks.notifier(mode);
     },
-    notifier: angular.noop
+    notifier: _.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 

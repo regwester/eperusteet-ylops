@@ -70,6 +70,12 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     private LockManager lockMgr;
 
     @Override
+    public <T> T getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId, Class<T> t) {
+        TekstiKappaleViite viite = findViite(opsId, viiteId);
+        return mapper.map(viite, t);
+    }
+
+    @Override
     public TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         return mapper.map(viite, TekstiKappaleViiteDto.Matala.class);

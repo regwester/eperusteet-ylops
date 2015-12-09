@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-.controller('PohjaTiedotController', function ($scope, $stateParams, $state,
+.controller('PohjaTiedotController', function ($scope, $stateParams, $state, $q,
   OpetussuunnitelmaCRUD, Notifikaatiot, Utils, OpsService, $rootScope,
   Editointikontrollit, $timeout, Kieli, Varmistusdialogi, EperusteetPerusopetus, EperusteetLukiokoulutus, perusteet) {
 
@@ -44,23 +44,26 @@ ylopsApp
       $scope.perustelista = perusteet;
     }
 
-    function fetch(notify?) {
-      OpsService.refetchPohja(function (res) {
+    const fetch = (notify?) => $q((resolve, reject) => {
+      OpsService.refetchPohja((res) => {
         $scope.model = res;
         if (notify) {
           $rootScope.$broadcast('rakenne:updated');
         }
-      });
-    }
+        resolve();
+      }, reject);
+    });
 
-    var successCb = function (res) {
+    const successCb = (res) => $q((resolve, reject) => {
       Notifikaatiot.onnistui('tallennettu-ok');
       if ($scope.luonnissa) {
+        reject();
         $state.go('root.pohjat.yksi', {pohjaId: res.id}, {reload: true});
-      } else {
-        fetch(true);
       }
-    };
+      else {
+        fetch(true).then(resolve).catch(reject);
+      }
+    });
 
     function mapJulkaisukielet() {
       $scope.julkaisukielet = _.zipObject($scope.kielivalinnat, _.map($scope.kielivalinnat, function (kieli) {
@@ -71,22 +74,21 @@ ylopsApp
     $scope.$watch('model.julkaisukielet', mapJulkaisukielet);
 
     var callbacks = {
-      edit: function () {
-        fetch();
-      },
+      edit: fetch,
       validate: function () {
         return $scope.hasRequiredFields();
       },
-      save: function () {
-        $scope.model.julkaisukielet = _($scope.julkaisukielet).keys().filter(function (koodi) {
-          return $scope.julkaisukielet[koodi];
-        }).value();
-        OpetussuunnitelmaCRUD.save({}, $scope.model, successCb, Notifikaatiot.serverCb);
-      },
-      cancel: function () {
-        fetch();
-      },
-      notify: function (mode) {
+      save: () => $q((resolve, reject) => {
+        $scope.model.julkaisukielet = _($scope.julkaisukielet)
+          .keys()
+          .filter((koodi) => $scope.julkaisukielet[koodi])
+          .value();
+        OpetussuunnitelmaCRUD.save({}, $scope.model, (res) => {
+          successCb(res).then(resolve);
+        }, Notifikaatiot.serverCb);
+      }),
+      cancel: fetch,
+      notify: (mode) => {
         $scope.editMode = mode;
         if (mode) {
           $scope.haePerusteet();
@@ -115,8 +117,7 @@ ylopsApp
         return;
       }
 
-        console.log($scope.model);
-
+      // FIXME ?
       if( $scope.model.koulutustyyppi === 'koulutustyyppi_2' ) {
           EperusteetLukiokoulutus.query({}, function (perusteet) {
               $scope.perustelista = perusteet;

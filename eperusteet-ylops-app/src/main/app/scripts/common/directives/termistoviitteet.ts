@@ -33,12 +33,12 @@ ylopsApp
       scope: {
         model: '=termistoViitteet'
       },
-      link: function (scope, element) {
+      link: function (scope: any, element) {
         scope.popovers = [];
 
         function destroy() {
           element.find(TERMI_MATCHER).each(function () {
-            var jqEl = angular.element(this);
+            var jqEl: any = angular.element(this);
             if (jqEl.popover) {
               jqEl.popover('destroy');
             }
@@ -48,8 +48,8 @@ ylopsApp
 
         function setup() {
           element.find(TERMI_MATCHER).each(function () {
-            var jqEl = angular.element(this);
-            var viiteId = jqEl.attr('data-viite');
+            var jqEl: any = angular.element(this);
+            var viiteId: any = jqEl.attr('data-viite');
 
             KasitteetService.getWithAvain($stateParams.id, viiteId).then(function(res) {
               var popover = jqEl.popover({
