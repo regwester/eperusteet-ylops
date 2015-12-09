@@ -192,14 +192,46 @@ ylopsApp
     })
     .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams, $state,
                         LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log,
-                        Editointikontrollit, LukioControllerHelpers) {
+                        Editointikontrollit, LukioControllerHelpers, Varmistusdialogi, OppiaineCRUD, Notifikaatiot) {
         // TODO:
         $scope.oppiaine = null;
         $scope.editMode = false;
+        $scope.kurssiKuvauksetVisible = false;
+
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
             $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat(oa);
         });
+
+        $scope.openKurssi = function(kurssi){
+            $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                id: $stateParams.id,
+                oppiaineId: $stateParams.oppiaineId,
+                kurssiId: kurssi.id
+            });
+        };
+
+        $scope.connectOppiaine = function(){
+            console.log("TODO");
+        };
+
+        $scope.disconnectOppiaine = function(){
+            Varmistusdialogi.dialogi({
+                otsikko: 'varmista-katkaise-yhteys',
+                primaryBtn: 'katkaise-yhteys',
+                successCb: function () {
+                    OppiaineCRUD.kloonaaMuokattavaksi({
+                        opsId: $stateParams.id,
+                        oppiaineId: $stateParams.oppiaineId
+                    }, {}, function(res) {
+                        Notifikaatiot.onnistui('yhteyden-katkaisu-luonti-onnistui');
+                        $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                            oppiaineId: res.id
+                        }, { reload: true });
+                    }, Notifikaatiot.serverCb);
+                }
+            })();
+        };
 
         Editointikontrollit.registerCallback({
             validate: function() {

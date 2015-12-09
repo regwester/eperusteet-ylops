@@ -18,8 +18,16 @@
 <div class="oppiaine-view" ng-show="!editMode">
 
     <div class="action-buttons-inline">
-        <span kaanna="yhdistetty-pohjaan"></span>
-        <button class="btn btn-default" kaanna="'katkaise-yhteys'"></button>
+        <div ng-if="!oppiaine.isOma">
+            <span kaanna="ei-yhdistetty-pohjaan"></span>
+            <button class="btn btn-default" kaanna="'palauta-yhteys'"
+                    ng-click="connectOppiaine()"></button>
+        </div>
+        <div ng-if="oppiaine.isOma">
+            <span kaanna="yhdistetty-pohjaan"></span>
+            <button class="btn btn-default" kaanna="'katkaise-yhteys'"
+                    ng-click="disconnectOppiaine()"></button>
+        </div>
     </div>
     <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
 
@@ -36,7 +44,7 @@
 
     <div ng-repeat="kurssi in oppiaine.kurssit">
         <div class="oppiaine-sisaltopuu lukio-oppiaineet-puu">
-            <a class="container-link tree-list-item ng-scope bubble-osa empty-item">
+            <a ng-click="openKurssi(kurssi)" class="container-link tree-list-item ng-scope bubble-osa empty-item">
                 <span class="span-container puu-node kurssi-node">
                     <span class="colorbox kurssi-tyyppi {{kurssi.perusteen.tyyppi | lowercase}}"></span>
                     <span class="aikaleima ng-binding">{{kurssi.muokattu | aikaleima: 'short' }}</span>
@@ -55,7 +63,9 @@
                 <div class="opetussisaltopuu tree">
                     <div class="legendContainer">
                         <div class="legends" style="width: 100%;">
-                            <a class="left legend">{{ 'nayta-kurssityyppi-kuvaukset' | kaanna}}<span class="glyphicon glyphicon-chevron-right"></span></a>
+                            <a ng-click="kurssiKuvauksetVisible=!kurssiKuvauksetVisible" class="left legend">
+                                {{ 'nayta-kurssityyppi-kuvaukset' | kaanna}}
+                                <span ng-class="{'glyphicon-chevron-right': !kurssiKuvauksetVisible, 'glyphicon-chevron-down': kurssiKuvauksetVisible}" class="glyphicon"></span></a>
                             <div class="left legend" style="float: right;">
                                 <div class="left legend" ng-repeat="tyyppi in ['valtakunnallinen', 'paikallinen','pakollinen', 'syventava', 'soveltava']">
                                     <span class="colorbox kurssi-tyyppi {{tyyppi}}"></span>
@@ -63,9 +73,9 @@
                                 </div>
                             </div>
                         </div>
+                        <br/>
 
-
-                        <div>
+                        <div ng-if="kurssiKuvauksetVisible">
                             <br/>
                             <h2 kaanna="valtakunnalliset-kurssityypit"></h2>
 

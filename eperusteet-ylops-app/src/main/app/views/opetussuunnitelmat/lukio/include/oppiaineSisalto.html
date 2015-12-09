@@ -16,7 +16,7 @@
 
 <!--<pre>{{ oppiaineen | json }}</pre>-->
 <!--<pre>{{ perusteen | json }}</pre>-->
-<div class="oppiaine-sisalto">
+<div class="oppiaine-sisalto" ng-if="oppiaineenTeksti || perusteenTeksti">
     <span>
         <h3>
             <span>{{ title | kaanna}}</span>
@@ -27,7 +27,7 @@
     </span>
     <!--<div style="clear: both;"/>-->
 
-    <div class="tekstiosa perusteen-teksti">
+    <div class="tekstiosa perusteen-teksti" ng-if="perusteenTeksti">
         <a ng-class="{'toggle-perusteen-teksti peruste-teksti': true,'is-open': !textHidden}" ng-click="toggleTextVisible()">
             <span kaanna="nayta-perusteen-teksti"></span>
         </a>
