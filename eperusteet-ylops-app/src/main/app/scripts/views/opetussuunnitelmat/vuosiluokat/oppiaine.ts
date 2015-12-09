@@ -42,8 +42,9 @@ ylopsApp
     }
   }
 
-  var onOma = $scope.oppiaine.oma && !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet.length);
-  $scope.isVuosiluokkaistettava = onOma || (!!perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
+  const onOma = $scope.oppiaine.oma;
+  const hasVuosiluokkakokonaisuudet = !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet);
+  $scope.isVuosiluokkaistettava = (hasVuosiluokkakokonaisuudet && onOma) || (!!perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, function(vlk) {
     return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus && !_.isEmpty(vlk.tavoitteet);
   }));
 
@@ -63,12 +64,12 @@ ylopsApp
     return String(text).replace(/<[^>]+>/gm, '');
   };
   this.getCode = function (text) {
-    var match = text.match(/(^|[^A-Za-z])([A-Za-z]\d{1,2})($|[^0-9])/);
+    const match = text.match(/(^|[^A-Za-z])([A-Za-z]\d{1,2})($|[^0-9])/);
     return match ? match[2] : null;
   };
 })
 
-.controller('OppiaineController', function ($scope, $state, $stateParams, Editointikontrollit, Varmistusdialogi,
+.controller('OppiaineController', function ($scope, $state, $stateParams, $q, Editointikontrollit, Varmistusdialogi,
   VuosiluokatService, Kaanna, OppiaineService, TextUtils, Utils, Kielitarjonta, OppiaineCRUD, OpsService, Notifikaatiot,
   VuosiluokkakokonaisuusMapper, Lukko, Kommentit, KommentitByOppiaine, opsModel) {
 
@@ -84,11 +85,11 @@ ylopsApp
   $scope.alueOrder = Utils.sort;
   $scope.startEditing = function() { Editointikontrollit.startEditing(); };
 
-  var commonParams = $scope.oppiaineenVlk ? {
+  const commonParams = $scope.oppiaineenVlk ? {
     opsId: $stateParams.id,
     vlkId: $scope.oppiaineenVlk.id,
     oppiaineId: $stateParams.oppiaineId
-    } : null;
+  } : null;
 
   if (commonParams) {
     Lukko.isLocked($scope, commonParams);
@@ -215,12 +216,13 @@ ylopsApp
     updateVuosiluokat();
   });
 
-  function refetch() {
-    OppiaineService.fetchVlk($scope.oppiaineenVlk.id, function (res) {
+  const refetch = () => $q((resolve) =>{
+    resolve();
+    OppiaineService.fetchVlk($scope.oppiaineenVlk.id, (res) => {
       $scope.oppiaineenVlk = res;
       updateVuosiluokat();
     });
-  }
+  });
 
   $scope.options = {
     editing: false,
@@ -230,22 +232,18 @@ ylopsApp
   };
 
   $scope.callbacks = {
-    edit: function () {
-      refetch();
-    },
-    save: function () {
-      $scope.oppiaine.$save({ opsId: $stateParams.id });
-      OppiaineService.saveVlk($scope.oppiaineenVlk);
-    },
-    cancel: function () {
-      //refetch();
-      $state.reload();
-    },
-    notify: function (mode) {
+    edit: refetch,
+    cancel: refetch,
+    save: () => $q((resolve) => {
+      $scope.oppiaine.$save({ opsId: $stateParams.id }, () => {
+        OppiaineService.saveVlk($scope.oppiaineenVlk).then(resolve);
+      });
+    }),
+    notify: (mode) => {
       $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
-    notifier: angular.noop
+    notifier: _.noop
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 
@@ -304,6 +302,26 @@ ylopsApp
         }
       })();
     });
+  };
+
+  $scope.palautaVanhaan = () => {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-oppiaineen-palautus',
+      primaryBtn: 'palauta-oppiaine',
+      successCb: function () {
+         OppiaineCRUD.palautaYlempaan({
+           opsId: $stateParams.id,
+           oppiaineId: $stateParams.oppiaineId
+         }, {}, function(res) {
+           Notifikaatiot.onnistui('palaaminen-vanhaan-onnistui');
+            $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
+              vlkId: $stateParams.vlkId,
+              oppiaineId: res.id,
+              oppiaineTyyppi: res.tyyppi
+            }, { reload: true });
+         }, Notifikaatiot.serverCb);
+      }
+    })();
   };
 
   $scope.kopioiMuokattavaksi = function () {

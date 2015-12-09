@@ -301,6 +301,41 @@ $aikaleima-vari: #888;
   }
 }
 
+.colorbox-title{
+  @extend .colorbox;
+  @extend .kurssi-tyyppi;
+
+  //background-color: transparent;
+  //overflow: visible;
+  //@include paikallinen-symboli($paikallinen-vari, 12pt, 20px, -3px);
+
+  float: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 4px;
+}
+
+@mixin paikallinen-ikoni( $tyyppi, $vari ){
+  &.#{$tyyppi}{
+    position: unset;
+    @include paikallinen-symboli($vari, 17pt, 20px, -3px);
+  }
+
+  &.#{$tyyppi}:after{
+    position: unset;
+  }
+}
+
+.ikoni{
+  position: unset;
+  background-color: transparent;
+  overflow: visible;
+
+  @include paikallinen-ikoni( 'syventava', $syventava-vari );
+  @include paikallinen-ikoni( 'soveltaval', $soveltava-vari );
+  @include paikallinen-ikoni( 'pakollinen', $pakollinen-vari );
+}
+
 @mixin bubble-fix() {
   .bubble-osa {
     padding: 0 0 0 0;

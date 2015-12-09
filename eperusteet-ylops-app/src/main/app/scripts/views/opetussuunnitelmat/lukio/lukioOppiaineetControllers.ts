@@ -157,7 +157,8 @@ ylopsApp
             return loc;
         };
         var osat = (idt:string[], locPrefix:string) => (obj) => {
-          var os = _(idt).map((id) => {return {id: id, obj: obj[id]};}).value(),
+            console.log("obj = ", obj);
+          var os = _(idt).map((id) => {return {id: id, obj: obj?obj[id]:null};}).value(),
               byId = _(os).indexBy(o => o.id).value();
           return {
               osat: os,
@@ -211,6 +212,13 @@ ylopsApp
             });
         };
 
+        $scope.kuvauksetIsEmpty = function( kuvaukset ){
+            console.log(">>>", kuvaukset);
+            var kuvauksetWithKeys = _.find( kuvaukset, (key) => {return key !== null;});
+            console.log(kuvauksetWithKeys);
+            return _.isUndefined( kuvauksetWithKeys );
+        };
+
         $scope.connectOppiaine = function(){
             console.log("TODO");
         };
@@ -226,8 +234,9 @@ ylopsApp
                     }, {}, function(res) {
                         Notifikaatiot.onnistui('yhteyden-katkaisu-luonti-onnistui');
                         $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                            id: $stateParams.id,
                             oppiaineId: res.id
-                        }, { reload: true });
+                        }, { reload: true, notify: false });
                     }, Notifikaatiot.serverCb);
                 }
             })();
@@ -297,8 +306,27 @@ ylopsApp
     .controller('LukioOppiaineSisaltoController', function($scope, $q:IQService, $stateParams,
                                                   LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
         $scope.textHidden = true;
-
         $scope.toggleTextVisible = function(){
             $scope.textHidden = !$scope.textHidden;
         }
-    });
+    })
+
+
+.directive('lukioOppiaineOsa', function () {
+    return {
+        scope: {
+            model: '=lukioOppiaineOsa',
+            oppiaine: '=oppiaine',
+            perusteenTeksti: '=perusteenTeksti',
+            oppiaineenTeksti: '=oppiaineenTeksti',
+            title: '=title',
+            colorbox: '=colorbox',
+            ikoni: '=ikoni',
+            editable: '=editable'
+        },
+        templateUrl: 'views/opetussuunnitelmat/directives/oppiaineSisalto.html',
+        controller: 'LukioOppiaineSisaltoController'
+    };
+});
+
+

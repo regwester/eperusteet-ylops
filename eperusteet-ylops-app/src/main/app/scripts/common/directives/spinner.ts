@@ -50,7 +50,7 @@ ylopsApp
       '<span class="glyphicon glyphicon-refresh spin"></span>' +
       '</div>',
       restrict: 'E',
-      link: function($scope) {
+      link: function($scope: any) {
         $scope.isSpinning = false;
 
         function spin(state) {

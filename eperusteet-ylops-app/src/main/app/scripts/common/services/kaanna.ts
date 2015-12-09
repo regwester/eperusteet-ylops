@@ -69,7 +69,7 @@ ylopsApp
       }
       return postfix;
     }
-    function getAttr(attr, scope) {
+    function getAttr(attr: any, scope: any) {
       if (!_.isString(attr) || _.size(attr) === 0) {
         return;
       }
@@ -77,7 +77,7 @@ ylopsApp
     }
     return {
       restrict: 'A',
-      link: function (scope, el, attrs) {
+      link: function (scope: any, el: any, attrs: any) {
         function kaannaValue(value) {
           return _.isObject(value) ? Kaanna.kaannaSisalto(value) : Kaanna.kaanna(value);
         }

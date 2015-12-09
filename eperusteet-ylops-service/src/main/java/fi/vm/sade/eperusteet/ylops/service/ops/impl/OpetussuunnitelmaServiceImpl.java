@@ -145,10 +145,44 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat,
                 OpetussuunnitelmaJulkinenDto.class);
 
-        /*dtot.forEach(dto -> {
-            fetchKuntaNimet(dto);
-            fetchOrganisaatioNimet(dto);
-        });*/
+        dtot.forEach(dto -> {
+            for (KoodistoDto koodistoDto : dto.getKunnat()) {
+                Map<String, String> tekstit = new HashMap<>();
+                KoodistoKoodiDto kunta = koodistoService.get("kunta", koodistoDto.getKoodiUri());
+                if (kunta != null) {
+                    for (KoodistoMetadataDto metadata : kunta.getMetadata()) {
+                        tekstit.put(metadata.getKieli(), metadata.getNimi());
+                    }
+                }
+                koodistoDto.setNimi(new LokalisoituTekstiDto(tekstit));
+            }
+
+            for (OrganisaatioDto organisaatioDto : dto.getOrganisaatiot()) {
+                Map<String, String> tekstit = new HashMap<>();
+                List<String> tyypit = new ArrayList<>();
+                JsonNode organisaatio = organisaatioService.getOrganisaatio(organisaatioDto.getOid());
+                if (organisaatio != null) {
+                    JsonNode nimiNode = organisaatio.get("nimi");
+                    if (nimiNode != null) {
+                        Iterator<Map.Entry<String, JsonNode>> it = nimiNode.fields();
+                        while (it.hasNext()) {
+                            Map.Entry<String, JsonNode> field = it.next();
+                            tekstit.put(field.getKey(), field.getValue().asText());
+                        }
+                    }
+
+                    JsonNode tyypitNode = Optional.ofNullable(organisaatio.get("tyypit"))
+                            .orElse(organisaatio.get("organisaatiotyypit"));
+                    if (tyypitNode != null) {
+                        tyypit = StreamSupport.stream(tyypitNode.spliterator(), false)
+                                .map(JsonNode::asText)
+                                .collect(Collectors.toList());
+                    }
+                }
+                organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
+                organisaatioDto.setTyypit(tyypit);
+            }
+        });
         return dtot;
     }
 
@@ -713,8 +747,26 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Opetussuunnitelman tyyppiä ei voi vaihtaa");
         }
 
-        if (ops.getPohja() != null && !Objects.equals(opetussuunnitelmaDto.getPohja().getId(),
-                ops.getPohja().getId())) {
+        // Ei sallita kieli ja vuoluokkakokonaisuuksien muutoksia kuin luonnostilassa
+        if (opetussuunnitelmaDto.getTila() != Tila.LUONNOS) {
+            if (!opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
+                    .map(vlk -> vlk.getVuosiluokkakokonaisuus().getId())
+                    .collect(Collectors.toSet())
+                    .equals(ops.getVuosiluokkakokonaisuudet().stream()
+                            .map(vlk -> vlk.getVuosiluokkakokonaisuus().getId())
+                            .collect(Collectors.toSet()))) {
+                throw new BusinessRuleViolationException("Opetussuunnitelman vuosiluokkakokonaisuuksia ei voi vaihtaa kuin luonnoksessa");
+            }
+
+            if (!opetussuunnitelmaDto.getJulkaisukielet().stream()
+                    .collect(Collectors.toSet())
+                    .equals(ops.getJulkaisukielet().stream()
+                            .collect(Collectors.toSet()))) {
+                throw new BusinessRuleViolationException("Opetussuunnitelman julkaisukieliä ei voi vaihtaa kuin luonnoksessa");
+            }
+        }
+
+        if (ops.getPohja() != null && !Objects.equals(opetussuunnitelmaDto.getPohja().getId(), ops.getPohja().getId())) {
             throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
         }
 
@@ -761,24 +813,25 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             .filter(OpsOppiaine::isOma)
             .map(OpsOppiaine::getOppiaine)
             .forEach(oa -> {
-                PerusteOppiaineDto poppiaine = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
-                Oppiaine.validoi(validointi, oa, julkaisukielet);
-                Set<UUID> PerusteenTavoitteet = new HashSet<>();
+                peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
+                    Oppiaine.validoi(validointi, oa, julkaisukielet);
+                    Set<UUID> PerusteenTavoitteet = new HashSet<>();
 
-                poppiaine.getVuosiluokkakokonaisuudet().stream()
-                .forEach(vlk -> vlk.getTavoitteet().stream()
-                    .forEach(tavoite -> PerusteenTavoitteet.add(tavoite.getTunniste())));
+                    poppiaine.getVuosiluokkakokonaisuudet().stream()
+                    .forEach(vlk -> vlk.getTavoitteet().stream()
+                        .forEach(tavoite -> PerusteenTavoitteet.add(tavoite.getTunniste())));
 
-                Set<UUID> OpsinTavoitteet = oa.getVuosiluokkakokonaisuudet().stream()
-                    .flatMap(vlk -> vlk.getVuosiluokat().stream())
-                    .map(Oppiaineenvuosiluokka::getTavoitteet)
-                    .flatMap(Collection::stream)
-                    .map(Opetuksentavoite::getTunniste)
-                    .collect(toSet());
+                    Set<UUID> OpsinTavoitteet = oa.getVuosiluokkakokonaisuudet().stream()
+                        .flatMap(vlk -> vlk.getVuosiluokat().stream())
+                            .map(ovlk -> ovlk.getTavoitteet())
+                            .flatMap(tavoitteet -> tavoitteet.stream())
+                                .map(tavoite -> tavoite.getTunniste())
+                                .collect(Collectors.toSet());
 
-                if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
-//                    validointi.lisaaVirhe(Validointi.luoVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi()));
-                }
+                    if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
+    //                    validointi.lisaaVirhe(Validointi.luoVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi()));
+                    }
+        		});
             });
 
         validointi.tuomitse();

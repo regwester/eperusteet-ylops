@@ -17,27 +17,22 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -136,4 +131,11 @@ public class OppiaineController {
                                                        @PathVariable("id") final Long id) {
         return new UnwrappedOpsOppiaineDto(oppiaineService.kopioiMuokattavaksi(opsId, id));
     }
+
+    @RequestMapping(value = "/{id}/palautaYlempi", method = RequestMethod.POST)
+    public UnwrappedOpsOppiaineDto palautaYlempi(@PathVariable("opsId") final Long opsId,
+                                                       @PathVariable("id") final Long id) {
+        return new UnwrappedOpsOppiaineDto(oppiaineService.palautaYlempi(opsId, id));
+    }
+
 }

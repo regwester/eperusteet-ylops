@@ -25,11 +25,6 @@
  * - cancel Called when canceling edit mode
  * optional callbacks:
  * - notify Called when edit mode changes with boolean parameter editMode
- * - validate Called before saving, returning true results in save
- * - asyncValidate Called before save/validate, parameter is a function that
- *                 should be called on successful validation (results in save)
- * - canCancel Called before cancel, must return a promise.
- *             If promise is resolved, canceling continues.
  */
 ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log, Utils, Notifikaatiot) {
     var scope = $rootScope.$new(true);
@@ -54,22 +49,23 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
       }
     }
 
-    function handleBadCode(maybe, resolve = _.noop, reject = _.noop) {
+    function handleBadCode(maybe, resolve = _.noop, reject = _.noop, xfinally = _.noop) {
       if (!scope.editingCallback) {
-        $log.warn('Use a promise');
+        $log.error('Editing object missing');
         return;
       }
 
       if (_.isObject(maybe) && _.isFunction(maybe.then)) {
-        maybe.then(resolve).catch(reject);
+        maybe.then(resolve).catch(reject).finally(xfinally);
       }
       else {
+        $log.error('You should be using a promise');
         resolve();
       }
     }
 
     return {
-      startEditing: function() {
+      startEditing: () => {
         var deferred = $q.defer();
         handleBadCode(scope.editingCallback.edit(), function() {
           setEditMode(true);
@@ -136,6 +132,7 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
         callback.edit = callback.edit || _.noop;
 
         if (!callback ||
+            !_.isFunction(callback.edit) ||
             !_.isFunction(callback.save) ||
             !_.isFunction(callback.cancel)) {
           console.error('callback-function invalid');
@@ -152,11 +149,11 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
         cbListener();
       },
       unregisterCallback: function() {
-        scope.editingCallback = null;
         setEditMode(false);
+        scope.editingCallback = null;
       },
-      editingEnabled: function() {
-        return !!scope.editingCallback;
+      editingEnabled: () => {
+          return !!scope.editingCallback;
       },
       registerCallbackListener: function(callbackListener) {
         cbListener = callbackListener;

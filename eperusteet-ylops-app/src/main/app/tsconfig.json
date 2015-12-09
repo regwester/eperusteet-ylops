@@ -4,6 +4,7 @@
     "sourceMap": true
   },
   "files": [
+    "typings/tsd.d.ts",
     "constants.ts",
     "scripts/types/lokalisointi.d.ts",
     "scripts/types/lukio.d.ts",
@@ -24,7 +25,6 @@
     "scripts/views/opetussuunnitelmat/pohja/tekstikappale.ts",
     "scripts/views/opetussuunnitelmat/pohja/pohja.ts",
     "scripts/views/opetussuunnitelmat/tiedot.ts",
-    "scripts/views/opetussuunnitelmat/esikatseluhelpers.ts",
     "scripts/views/opetussuunnitelmat/vuosiluokat/valinnaiset.ts",
     "scripts/views/opetussuunnitelmat/vuosiluokat/uusioppiaine.ts",
     "scripts/views/opetussuunnitelmat/vuosiluokat/oppiaine.ts",
@@ -35,7 +35,6 @@
     "scripts/views/opetussuunnitelmat/lukio/lukioOppiaineetControllers.ts",
     "scripts/views/opetussuunnitelmat/lukio/lukioTreeUtils.ts",
     "scripts/views/opetussuunnitelmat/lista.ts",
-    "scripts/views/opetussuunnitelmat/esikatselu.ts",
     "scripts/views/opetussuunnitelmat/kasite.ts",
     "scripts/views/opetussuunnitelmat/opetussuunnitelma.ts",
     "scripts/views/opetussuunnitelmat/tekstikappale.ts",

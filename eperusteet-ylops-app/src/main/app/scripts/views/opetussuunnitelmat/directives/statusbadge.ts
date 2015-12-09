@@ -36,7 +36,7 @@ ylopsApp
       model: '='
     },
     controller: 'StatusbadgeController',
-    link: function (scope, element) {
+    link: function (scope: any, element) {
       // To fit long status names into the badge, adjust letter spacing
       var el = element.find('.status-name');
 
@@ -95,6 +95,8 @@ ylopsApp
       if (!OpetussuunnitelmaOikeudetService.onkoOikeudet(isPohja ? 'pohja' : 'opetussuunnitelma', 'tilanvaihto')) {
         return;
       }
+      if ($scope.model.tila === 'julkaistu')
+        return;
 
       OpsinTilanvaihto.start({
         currentStatus: $scope.status,

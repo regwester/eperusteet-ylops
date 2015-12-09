@@ -164,13 +164,15 @@ ylopsApp
     }
   }
 
-  function fetch(notify?) {
-    OpsService.refetch(function (res) {
+  const fetch = (notify?) => $q((resolve, reject) => {
+    OpsService.refetch((res) => {
       $scope.model = res;
-      var vuosiluokkakokonaisuudet = _.chain(res.vuosiluokkakokonaisuudet).map(function(v) {
-        v.valittu = true;
-        return v;
-      }).concat( $scope.opsvuosiluokkakokonaisuudet ).value();
+      var vuosiluokkakokonaisuudet = _(res.vuosiluokkakokonaisuudet)
+        .each((v) => {
+          v.valittu = true;
+        })
+        .concat($scope.opsvuosiluokkakokonaisuudet )
+        .value();
 
       vuosiluokkakokonaisuudet = _.uniq(vuosiluokkakokonaisuudet,function(c){
         return c.vuosiluokkakokonaisuus._tunniste;
@@ -185,54 +187,65 @@ ylopsApp
         $rootScope.$broadcast('rakenne:updated');
       }
       $scope.loading = false;
+      resolve();
     });
-  }
+  });
 
-  var successCb = function (res) {
+  var successCb = (res) => {
     Notifikaatiot.onnistui('tallennettu-ok');
     if ($scope.luonnissa) {
       $state.go('root.opetussuunnitelmat.yksi.sisalto', {id: res.id}, {reload: true});
-    } else {
-      fetch(true);
+      return $q.reject();
+    }
+    else {
+      return fetch(true);
     }
   };
 
-  var callbacks = {
+  const callbacks = {
     edit: function () {
       $scope.loading = true;
-      fetch();
+      return fetch();
     },
-    asyncValidate: function( save ){
+    asyncValidate: function(save){
       var muokattuVuosiluokkakokonaisuuksia = _.some(_.pluck($scope.editableModel.vuosiluokkakokonaisuudet, 'muutettu'));
-      if( !$scope.luonnissa && muokattuVuosiluokkakokonaisuuksia ){
+      if (!$scope.luonnissa && muokattuVuosiluokkakokonaisuuksia) {
         Varmistusdialogi.dialogi({
           otsikko: 'vahvista-vuosiluokkakokonaisuudet-muokkaus-otsikko',
           teksti: 'vahvista-vuosiluokkakokonaisuudet-muokkaus-teksti'
         })(save);
-      }else{
+      } else {
         save();
       }
+      return $q.when();
     },
     validate: function () {
       return $scope.hasRequiredFields();
     },
-    save: function () {
-      $scope.editableModel.julkaisukielet = _($scope.julkaisukielet).keys().filter(function (koodi) {
-        return $scope.julkaisukielet[koodi];
-      }).value();
+    save: () => $q((resolve, reject) => {
+      $scope.editableModel.julkaisukielet = _($scope.julkaisukielet)
+        .keys()
+        .filter((koodi) => {
+          return $scope.julkaisukielet[koodi];
+        })
+        .value();
       $scope.editableModel.organisaatiot = $scope.editableModel.koulutoimijat.concat($scope.editableModel.koulut);
       delete $scope.editableModel.tekstit;
       delete $scope.editableModel.oppiaineet;
 
       $scope.editableModel.vuosiluokkakokonaisuudet = _.remove($scope.editableModel.vuosiluokkakokonaisuudet, {valittu: true});
       if ($scope.luonnissa) {
-        OpetussuunnitelmaCRUD.save({}, $scope.editableModel, successCb, Notifikaatiot.serverCb);
+        OpetussuunnitelmaCRUD.save({}, $scope.editableModel, (res) => {
+          successCb(res).then(resolve);
+        }, Notifikaatiot.serverCb);
       } else {
-        $scope.editableModel.$save({}, successCb, Notifikaatiot.serverCb);
+        $scope.editableModel.$save({}, (res) => {
+          successCb(res).then(resolve);
+        }, Notifikaatiot.serverCb);
       }
-    },
+    }),
     cancel: function () {
-      fetch();
+      return fetch();
     },
     notify: function (mode) {
       $scope.editMode = mode;

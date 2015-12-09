@@ -32,10 +32,18 @@ module.exports = function(grunt) {
   grunt.initConfig({
     yeoman: yeomanConfig,
     ts: {
-      options: {
-        module: '',
-        target: 'es5',
-        sourceMap: true
+      default: {
+        src: [
+          '<%= yeoman.app %>/*.ts',
+          '<%= yeoman.app %>/scripts/**/*.ts',
+          '<%= yeoman.app %>/eperusteet-esitys/**/*.ts',
+          '<%= yeoman.test %>/**/*.ts'
+        ],
+        options: {
+          module: 'amd',
+          target: 'es5',
+          sourceMap: true
+        }
       },
       tests: {
         files: [{
@@ -62,7 +70,7 @@ module.exports = function(grunt) {
     watch: {
       css: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.scss'],
-        tasks: ['sass', 'copy:fonts', 'autoprefixer'],
+        tasks: ['sass', 'copy:fonts', 'autoprefixer']
       },
       test: {
         files: ['<%= yeoman.app %>/**/*.{ts,html}', '<%= yeoman.test %>/**/*.ts','!<%= yeoman.app %>/bower_components/**'],
@@ -439,13 +447,13 @@ module.exports = function(grunt) {
         options: {
           limit: 300
         },
-        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}],
+        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}]
       },
       scss: {
         options: {
           limit: 500
         },
-        files: [{src: ['<%= yeoman.app %>/styles/**/*.scss']}],
+        files: [{src: ['<%= yeoman.app %>/styles/**/*.scss']}]
       }
     }
   });
@@ -457,6 +465,7 @@ module.exports = function(grunt) {
       }
 
       grunt.task.run([
+        'ts',
         'clean:server',
         'concurrent:server',
         'copy:fonts',
@@ -500,6 +509,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('default', [
+    'ts',
     'test',
     'build'
   ]);

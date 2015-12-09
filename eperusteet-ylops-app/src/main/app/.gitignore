@@ -1,2 +1,4 @@
 *.js
 *.map
+.tscache
+.baseDir.ts

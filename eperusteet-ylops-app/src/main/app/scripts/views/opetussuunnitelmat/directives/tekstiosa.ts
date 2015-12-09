@@ -29,7 +29,7 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
     controller: 'TekstiosaController',
-    link: function (scope, element, attrs) {
+    link: function (scope: any, element, attrs) {
       scope.editable = !!attrs.muokattava;
       scope.focusAndScroll = function () {
         $timeout(function () {
@@ -55,7 +55,7 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/directives/yksinkertainentekstiosa.html',
     controller: 'TekstiosaController',
-    link: function (scope, element) {
+    link: function (scope: any, element) {
       scope.focusAndScroll = function () {
         $timeout(function () {
           var el = element.find('[ckeditor]');
@@ -69,7 +69,7 @@ ylopsApp
   };
 })
 
-.controller('TekstiosaController', function ($state, $scope, Editointikontrollit, Kieli) {
+.controller('TekstiosaController', function ($state, $scope, $q, Editointikontrollit, Kieli) {
   $scope.editMode = false;
   $scope.collapsed = _.isUndefined($scope.startCollapsed) ? true : $scope.startCollapsed;
 
@@ -97,9 +97,9 @@ ylopsApp
   $scope.startEditing = function () {
     $scope.editMode = true;
     $scope.callbacks.notifier = notifyFn;
-    Editointikontrollit.startEditing();
     $scope.focusAndScroll();
     validoi();
+    Editointikontrollit.startEditing().then(() => $q.when());
   };
 
   $scope.remove = function () {

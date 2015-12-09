@@ -31,9 +31,8 @@ ylopsApp
 
     $scope.lukkotiedot = null;
     $scope.perusteteksti = {};
-    $scope.options = {tekstiCollapsed: true};
     $scope.valmisOptions = [{valmis: false}, {valmis: true}];
-    var TYYPIT = ['ohje', 'perusteteksti'];
+    const TYYPIT = ['ohje', 'perusteteksti'];
 
     $scope.opsId = $stateParams.id;
     $scope.options = {
@@ -62,7 +61,7 @@ ylopsApp
       OhjeCRUD.forTekstikappale({
         uuid: model.tekstiKappale.tunniste
       }, function(ohje) {
-        _.each(TYYPIT, function (tyyppi) {
+        _.each(TYYPIT, (tyyppi) => {
           var found = _.find(ohje, function (item) {
             return item.tyyppi === tyyppi;
           });
@@ -181,34 +180,31 @@ ylopsApp
     };
 
     var callbacks = {
-      edit: function () {
-      },
-      asyncValidate: function (cb) {
-        Lukko.lock(commonParams, cb);
-      },
-      save: function() {
-        return $q((resolve, reject) => {
-          var params = {opsId: $stateParams.id};
-          (() => {
-            return $q((resolve, reject) => {
-              if ($stateParams.tekstikappaleId === 'uusi') {
-                OpetussuunnitelmanTekstit.save(params, $scope.model, resolve, reject);
-              } else {
-                // Pelkkää tekstikappaletta muokattaessa lapset-kenttä tulee jättää pois
-                _.omit($scope.model, 'lapset').$save(params, resolve, reject);
-              }
-            });
-          })()
-          .then((res) => successCb(res)
-              .then(() => {
-                $scope.editMode = false;
-                resolve();
-              })
-              .catch(Notifikaatiot.serverCb))
-          .catch(Notifikaatiot.serverCb);
-        });
-      },
-      cancel: function () {
+      edit: () => $q((resolve) => {
+        Lukko.lock(commonParams, resolve);
+      }),
+      save: () => $q((resolve, reject) => {
+        const params = {opsId: $stateParams.id};
+        (() => {
+          return $q((resolve, reject) => {
+            if ($stateParams.tekstikappaleId === 'uusi') {
+              OpetussuunnitelmanTekstit.save(params, $scope.model, resolve, reject);
+            } else {
+              // Pelkkää tekstikappaletta muokattaessa lapset-kenttä tulee jättää pois
+              _.omit($scope.model, 'lapset').$save(params, resolve, reject);
+            }
+          });
+        })()
+        .then((res) => successCb(res)
+            .then(() => {
+              $scope.editMode = false;
+              resolve();
+            })
+            .catch(Notifikaatiot.serverCb))
+        .catch(Notifikaatiot.serverCb);
+      }),
+      cancel: () => $q((resolve) => {
+        resolve();
         if ($stateParams.tekstikappaleId === 'uusi') {
           $state.go('root.opetussuunnitelmat.yksi.sisalto');
         }
@@ -218,7 +214,7 @@ ylopsApp
             $state.reload();
           });
         }
-      },
+      }),
       notify: _.noop
     };
 

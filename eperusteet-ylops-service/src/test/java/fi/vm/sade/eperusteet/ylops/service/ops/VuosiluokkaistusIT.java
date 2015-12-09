@@ -117,43 +117,44 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
 
     @Test
     public void testVuosiluokkaistus() {
-        OpetussuunnitelmaDto opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
-        PerusteDto peruste = opsit.getPeruste(opsId);
-
-        opsDto.getOppiaineet().stream()
-            .flatMap(o -> Stream.of(o.getOppiaine()))
-            .forEach(oa -> {
-                PerusteOppiaineDto po = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
-                oa.getVuosiluokkakokonaisuudet().forEach(vk -> {
-                    PerusteOppiaineenVuosiluokkakokonaisuusDto pvk =
-                        po.getVuosiluokkakokonaisuus(UUID.fromString(vk.getVuosiluokkakokonaisuus().toString())).get();
-                    Map<Vuosiluokka, Set<UUID>> tavoitteet = new HashMap<>();
-                    pvk.getVuosiluokkaKokonaisuus().getVuosiluokat().forEach(
-                        l -> tavoitteet.put(l, pvk.getTavoitteet().stream()
-                                                  .map(PerusteOpetuksentavoiteDto::getTunniste).collect(Collectors.toSet())));
-                    oppiaineet.updateVuosiluokkienTavoitteet(opsId, oa.getId(), vk.getId(), tavoitteet);
-                });
-            });
-
-        opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
-        opsDto.getOppiaineet().stream()
-            .flatMap(o -> Stream.of(o.getOppiaine()))
-            .forEach(oa -> {
-                PerusteOppiaineDto po = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
-                oa.getVuosiluokkakokonaisuudet().forEach(vk -> {
-                    PerusteOppiaineenVuosiluokkakokonaisuusDto pvk =
-                        po.getVuosiluokkakokonaisuus(UUID.fromString(vk.getVuosiluokkakokonaisuus().toString())).get();
-                    Map<Vuosiluokka, Set<UUID>> tavoitteet = new HashMap<>();
-                    pvk.getVuosiluokkaKokonaisuus().getVuosiluokat().forEach(
-                        l -> tavoitteet.put(l, pvk.getTavoitteet().stream()
-                                                  .map(PerusteOpetuksentavoiteDto::getTunniste).collect(Collectors.toSet())));
-                    Assert.assertEquals(tavoitteet.values().stream().filter(s -> !s.isEmpty()).count(), vk.getVuosiluokat().size());
-                    vk.getVuosiluokat().forEach(l -> {
-                        Assert.assertEquals(pvk.getTavoitteet().size(), l.getTavoitteet().size());
-                        Assert.assertEquals(pvk.getSisaltoalueet().size(), l.getSisaltoalueet().size());
+        for (int i = 0; i < 3; i++) {
+            OpetussuunnitelmaDto opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
+            PerusteDto peruste = opsit.getPeruste(opsId);
+            opsDto.getOppiaineet().stream()
+                .flatMap(o -> Stream.of(o.getOppiaine()))
+                .forEach(oa -> {
+                    PerusteOppiaineDto po = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
+                    oa.getVuosiluokkakokonaisuudet().forEach(vk -> {
+                        PerusteOppiaineenVuosiluokkakokonaisuusDto pvk =
+                            po.getVuosiluokkakokonaisuus(UUID.fromString(vk.getVuosiluokkakokonaisuus().toString())).get();
+                        Map<Vuosiluokka, Set<UUID>> tavoitteet = new HashMap<>();
+                        pvk.getVuosiluokkaKokonaisuus().getVuosiluokat().forEach(
+                            l -> tavoitteet.put(l, pvk.getTavoitteet().stream()
+                                                      .map(PerusteOpetuksentavoiteDto::getTunniste).collect(Collectors.toSet())));
+                        oppiaineet.updateVuosiluokkienTavoitteet(opsId, oa.getId(), vk.getId(), tavoitteet);
                     });
                 });
-            });
+
+            opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
+            opsDto.getOppiaineet().stream()
+                .flatMap(o -> Stream.of(o.getOppiaine()))
+                .forEach(oa -> {
+                    PerusteOppiaineDto po = peruste.getPerusopetus().getOppiaine(oa.getTunniste()).get();
+                    oa.getVuosiluokkakokonaisuudet().forEach(vk -> {
+                        PerusteOppiaineenVuosiluokkakokonaisuusDto pvk =
+                            po.getVuosiluokkakokonaisuus(UUID.fromString(vk.getVuosiluokkakokonaisuus().toString())).get();
+                        Map<Vuosiluokka, Set<UUID>> tavoitteet = new HashMap<>();
+                        pvk.getVuosiluokkaKokonaisuus().getVuosiluokat().forEach(
+                            l -> tavoitteet.put(l, pvk.getTavoitteet().stream()
+                                                      .map(PerusteOpetuksentavoiteDto::getTunniste).collect(Collectors.toSet())));
+                        Assert.assertEquals(tavoitteet.values().stream().filter(s -> !s.isEmpty()).count(), vk.getVuosiluokat().size());
+                        vk.getVuosiluokat().forEach(l -> {
+                            Assert.assertEquals(pvk.getTavoitteet().size(), l.getTavoitteet().size());
+                            Assert.assertEquals(pvk.getSisaltoalueet().size(), l.getSisaltoalueet().size());
+                        });
+                    });
+                });
+        }
 
     }
 

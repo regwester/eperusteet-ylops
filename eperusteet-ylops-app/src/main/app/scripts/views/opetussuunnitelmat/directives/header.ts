@@ -38,6 +38,17 @@ ylopsApp
     // {state: 'root.opetussuunnitelmat.yksi.tiedot', label: 'opsn-tiedot', role: 'info'}
   ];
 
+  var koulutusTyypit = {
+    "koulutustyyppi_15": "esiopetus",
+    "koulutustyyppi_16": "perusopetus",
+    "koulutustyyppi_6": "lisaopetus",
+    "koulutustyyppi_2": "lukiokoulutus"
+  };
+
+  $scope.createUrl = function(model){
+    return 'https://eperusteet.opintopolku.fi/#/' + $stateParams.lang + '/ops/' + koulutusTyypit[model.koulutustyyppi] + "/" + model.id;
+  };
+
   function mapUrls(arr) {
     return _.map(arr, function (item) {
       return _.extend({
