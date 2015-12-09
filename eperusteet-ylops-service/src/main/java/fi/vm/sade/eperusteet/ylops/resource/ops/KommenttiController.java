@@ -119,6 +119,20 @@ public class KommenttiController {
         return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }
 
+    @RequestMapping(value = {
+        "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}",
+        "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}/tavoitteet",
+        "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}/sisaltoalueet"
+        }, method = GET)
+    public ResponseEntity<List<KommenttiDto>> getAllByVuosiluokka(
+        @PathVariable("opsId") final long opsId,
+        @PathVariable("vlkId") final long vlkId,
+        @PathVariable("oppiaineId") final long oppiaineId,
+        @PathVariable("vlId") final long vlId) {
+        List<KommenttiDto> t = service.getAllByVuosiluokka(opsId, vlkId, oppiaineId, vlId);
+        return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/ylin/{id}", method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByYlin(@PathVariable("id") final long id) {
         List<KommenttiDto> t = service.getAllByYlin(id);

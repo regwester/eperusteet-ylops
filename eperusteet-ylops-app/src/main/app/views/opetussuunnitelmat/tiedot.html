@@ -288,7 +288,7 @@
           <div class="luontinapit">
             <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
             <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-opetussuunnitelma'" ng-click="uusi.create()"
-                  ng-disabled="!hasRequiredFields()"></button>
+                  ng-disabled="!hasRequiredFields() || savingDisabled"></button>
           </div>
         </div>
       </div>

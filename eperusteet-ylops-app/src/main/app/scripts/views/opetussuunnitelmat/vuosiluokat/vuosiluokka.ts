@@ -20,7 +20,7 @@
 
 ylopsApp
 .controller('VuosiluokkaBaseController', function ($scope, $stateParams, MurupolkuData, $state, Kaanna,
-  VuosiluokatService, baseLaajaalaiset) {
+  VuosiluokatService, baseLaajaalaiset, Kommentit, KommentitByVuosiluokka, $timeout) {
 
   $scope.vuosiluokka = _.find($scope.oppiaineenVlk.vuosiluokat, function (vuosiluokka) {
     return '' + vuosiluokka.id === $stateParams.vlId;
@@ -45,8 +45,16 @@ ylopsApp
     return _.endsWith($state.current.name, 'vuosiluokka.' + name);
   };
 
+  Kommentit.haeKommentit(KommentitByVuosiluokka, {
+    opsId: $stateParams.id,
+    vlkId: $stateParams.vlkId,
+    oppiaineId: $stateParams.oppiaineId,
+    vlId: $stateParams.vlId,
+    id: $stateParams.vlId
+  });
+
   if ($state.is('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka')) {
-    $state.go('.tavoitteet', {}, {location: 'replace'});
+    $timeout(() => $state.go('.tavoitteet', {}, {location: 'replace'})); // Hack: ilman timeoutia saattaa sisältö jäädä latautumatta.
   }
 })
 
@@ -138,7 +146,9 @@ ylopsApp
 })
 
 .controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils, $q,
-  $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $stateParams, $rootScope, VuosiluokkaMapper, OpsService, $timeout) {
+  $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $rootScope, VuosiluokkaMapper, OpsService, $timeout) {
+
+  $rootScope.$broadcast('update:kommentit'); // Hack: pakotetaan kommenttien näyttö lataamatta niitä uudelleen.
   $scope.tunnisteet = [];
   $scope.collapsed = {};
   $scope.nimiOrder = Utils.sort;
@@ -160,9 +170,8 @@ ylopsApp
   };
 
   $scope.muokkaaKuvausta = (muokattava) => {
-    Editointikontrollit.startEditing().then(() => {
-      muokattava.isEditing = true;
-    });
+    muokattava.isEditing = true;
+    Editointikontrollit.startEditing();
   };
 
   $scope.naytaKuvaus = function(sisaltoalue, id, tavoiteTunniste) {
@@ -256,9 +265,10 @@ ylopsApp
   Editointikontrollit.registerCallback($scope.callbacks);
 }) // end of VuosiluokkaTavoitteetController
 
-.controller('VuosiluokkaSisaltoalueetController', function ($q, $scope, Editointikontrollit,
+.controller('VuosiluokkaSisaltoalueetController', function ($q, $scope, $rootScope, Editointikontrollit,
   $timeout, $location, $anchorScroll, OppiaineService, VuosiluokkaMapper, OpsService) {
 
+  $rootScope.$broadcast('update:kommentit'); // Hack: pakotetaan kommenttien näyttö lataamatta niitä uudelleen.
   $scope.tunnisteet = [];
   $scope.muokattavat = {};
   $scope.sisaltoInfo = {};

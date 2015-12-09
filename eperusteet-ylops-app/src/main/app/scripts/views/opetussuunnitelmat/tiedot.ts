@@ -209,7 +209,7 @@ ylopsApp
     },
     asyncValidate: function(save){
       var muokattuVuosiluokkakokonaisuuksia = _.some(_.pluck($scope.editableModel.vuosiluokkakokonaisuudet, 'muutettu'));
-      if (!$scope.luonnissa && muokattuVuosiluokkakokonaisuuksia) {
+      if (!$scope.luonnissa && muokattuVuosiluokkakokonaisuuksia) {
         Varmistusdialogi.dialogi({
           otsikko: 'vahvista-vuosiluokkakokonaisuudet-muokkaus-otsikko',
           teksti: 'vahvista-vuosiluokkakokonaisuudet-muokkaus-teksti'
@@ -237,11 +237,17 @@ ylopsApp
       if ($scope.luonnissa) {
         OpetussuunnitelmaCRUD.save({}, $scope.editableModel, (res) => {
           successCb(res).then(resolve);
-        }, Notifikaatiot.serverCb);
+        }, (err) => {
+          $scope.savingDisabled = false;
+          Notifikaatiot.serverCb(err);
+        });
       } else {
         $scope.editableModel.$save({}, (res) => {
           successCb(res).then(resolve);
-        }, Notifikaatiot.serverCb);
+        }, (err) => {
+          $scope.savingDisabled = false;
+          Notifikaatiot.serverCb(err);
+        });
       }
     }),
     cancel: function () {
@@ -269,6 +275,7 @@ ylopsApp
       });
     },
     create: function () {
+      $scope.savingDisabled = true;
       callbacks.save();
     }
   };

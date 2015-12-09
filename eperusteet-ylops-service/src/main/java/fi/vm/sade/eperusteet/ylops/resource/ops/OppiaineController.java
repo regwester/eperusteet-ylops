@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
@@ -40,7 +41,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet")
-@ApiIgnore
+@Api(value = "Opetussuunnitelmat")
 public class OppiaineController {
 
     @Autowired

@@ -22,7 +22,6 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.KommenttiRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.TargetType;
@@ -67,6 +66,13 @@ public class KommenttiServiceImpl implements KommenttiService {
     @Transactional(readOnly = true)
     public List<KommenttiDto> getAllByOppiaine(Long opsId, Long vlkId, Long oppiaineId) {
         List<Kommentti> kommentit = repository.findByOppiaine(opsId, vlkId, oppiaineId);
+        return mapper.mapAsList(kommentit, KommenttiDto.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<KommenttiDto> getAllByVuosiluokka(Long opsId, Long vlkId, Long oppiaineId, Long vlId) {
+        List<Kommentti> kommentit = repository.findByVuosiluokka(opsId, vlkId, oppiaineId, vlId);
         return mapper.mapAsList(kommentit, KommenttiDto.class);
     }
 

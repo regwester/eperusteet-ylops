@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.mangofactory.swagger.annotations.ApiIgnore;
+import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
@@ -38,6 +39,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat")
 @ApiIgnore
+@Api(value = "Opetussuunnitelmat")
 public class OppiaineenVuosiluokkaController {
     @Autowired
     private OppiaineService oppiaineService;
