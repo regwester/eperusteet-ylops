@@ -28,6 +28,10 @@
       <button class="btn btn-default" kaanna="'katkaise-yhteys'"
               ng-click="disconnectOppiaine()"></button>
     </div>
+    <div ng-if="isDeletable()">
+      <button class="btn btn-default" icon-role="remove" kaanna="'poista'"
+              ng-click="deletOppiaine()"></button>
+    </div>
   </div>
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
 
@@ -54,7 +58,7 @@
     </div>
   </div>
 
-  <div class="lukio-oppiaineet-puu lukio-oppiaine-tab lukio-oppiaine-tyypit" ng-if="!(kuvauksetIsEmpty(oppiaine.kurssiTyyppiKuvaukset) && kuvauksetIsEmpty(oppiaine.perusteen.kurssiTyyppiKuvaukset))">
+  <div class="lukio-oppiaineet-puu lukio-oppiaine-tab lukio-oppiaine-tyypit" ng-if="!kuvauksetIsEmpty(valtakunnallisetKurssiTyypit) || !kuvauksetIsEmpty(paikallisetKurssiTyypit)">
     <div class="main-column tree" style="margin-bottom: 20px;">
       <div class="tree-con">
         <div class="opetussisaltopuu tree">
@@ -81,35 +85,22 @@
               <!--<pre>{{oppiaine.kurssiTyyppiKuvaukset | json}}</pre>-->
               <!--{{kuvauksetIsEmpty(oppiaine.kurssiTyyppiKuvaukset)}}-->
 
-              <h2 kaanna="valtakunnalliset-kurssityypit" ng-if="!kuvauksetIsEmpty(oppiaine.kurssiTyyppiKuvaukset)"></h2>
+              <div ng-if="!kuvauksetIsEmpty(valtakunnallisetKurssiTyypit)">
+                <h2 kaanna="valtakunnalliset-kurssityypit"></h2>
+                <lukio-oppiaine-osa ng-repeat="t in valtakunnallisetKurssiTyypit"
+                                    oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
+                                    colorbox="t.tyyppi" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
+                                    title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
+              </div>
+              <br/><br/>
 
-              <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_PAKOLLINEN"
-                                  colorbox="'pakollinen'" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset.PAIKALLINEN_PAKOLLINEN"
-                                  title="'pakollinen-kurssi'"></lukio-oppiaine-osa>
-
-              <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_SYVENTAVA"
-                                  colorbox="'syventava'" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset.PAIKALLINEN_SYVENTAVA"
-                                  title="'syventava-kurssi'"></lukio-oppiaine-osa>
-
-              <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_SOVELTAVA"
-                                  colorbox="'soveltava'" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset.PAIKALLINEN_SOVELTAVA"
-                                  title="'soveltava-kurssi'"></lukio-oppiaine-osa>
-
-              <div ng-if="!kuvauksetIsEmpty(oppiaine.perusteen.kurssiTyyppiKuvaukset)">
+              <div ng-if="!kuvauksetIsEmpty(paikallisetKurssiTyypit)">
                 <h2 kaanna="paikalliset-kurssityypit"></h2>
 
-                <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_PAKOLLINEN"
-                                    colorbox="'pakollinen'" ikoni="true" oppiaineen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset.PAIKALLINEN_PAKOLLINEN"
-                                    title="'pakollinen-kurssi'"></lukio-oppiaine-osa>
-
-                <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_SYVENTAVA"
-                                    colorbox="'syventava'" ikoni="true" oppiaineen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset.PAIKALLINEN_SYVENTAVA"
-                                    title="'syventava-kurssi'"></lukio-oppiaine-osa>
-
-                <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset.VALTAKUNNALLINEN_SOVELTAVA"
-                                    colorbox="'soveltava'" ikoni="true" oppiaineen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset.PAIKALLINEN_SOVELTAVA"
-                                    title="'soveltava-kurssi'"></lukio-oppiaine-osa>
-
+                <lukio-oppiaine-osa ng-repeat="t in paikallisetKurssiTyypit"
+                                    oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
+                                    colorbox="t.tyyppi" ikoni="true" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
+                                    title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
               </div>
             </div>
           </div>
@@ -130,8 +121,6 @@
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.arviointi.teksti" editable="isEditable()"
                       oppiaineen-teksti="oppiaine.arviointi.teksti" title="'oppiaine-osa-arviointi'"></lukio-oppiaine-osa>
-
-
 </div>
 
 <div class="lisaa-oppiaine oppiaine-form" ng-show="editMode">

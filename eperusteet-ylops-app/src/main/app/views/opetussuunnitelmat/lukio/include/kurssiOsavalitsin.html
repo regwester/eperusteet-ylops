@@ -21,7 +21,7 @@
   </button>
   <ul class="dropdown-menu" role="menu">
     <li ng-repeat="field in muokattavatOsat.osat" ng-show="!field.obj">
-      <a class="action-link" ng-click="muokattavatOsat.addOsa(field.id)" kaanna="'kurssi-osa-'+field.id">
+      <a class="action-link" ng-click="muokattavatOsat.addOsa(field.id)" kaanna="field.label">
       </a>
     </li>
   </ul>

@@ -57,7 +57,7 @@ public class LukioPerusteOppiaineDto implements PerusteenOsa {
         Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> map = new HashMap<>();
         map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_PAKOLLINEN, Optional.ofNullable(pakollinenKurssiKuvaus));
         map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_SYVENTAVA, Optional.ofNullable(syventavaKurssiKuvaus));
-        map.put(LukiokurssiTyyppi.PAIKALLINEN_SOVELTAVA, Optional.ofNullable(soveltavaKurssiKuvaus));
+        map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_SOVELTAVA, Optional.ofNullable(soveltavaKurssiKuvaus));
         return map;
     }
 }

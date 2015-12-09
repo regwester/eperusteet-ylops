@@ -32,6 +32,52 @@
     {{'useita-oppimaaria'|kaanna}}</label>
 </div>
 
+<h3 kaanna="'lukio-kurssi-tyyppi-kuvaukset-header'"></h3>
+
+<div dropdown class="action-buttons pull-right dropup">
+  <button editointi-kontrolli class="btn btn-default btn-sm dropdown-toggle"
+          ng-show="kurssiTyyppiKuvaukset.isAddAvailable()" dropdown-toggle
+          icon-role="add">{{'muokkaus-lisaa-kurssi-tyyppi-kuvaus' | kaanna}}
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li ng-repeat="field in kurssiTyyppiKuvaukset.osat" ng-show="!field.obj">
+      <a class="action-link" ng-click="kurssiTyyppiKuvaukset.addOsa(field.id)" kaanna="field.label">
+      </a>
+    </li>
+  </ul>
+</div>
+<div style="clear:right;"></div>
+<div ng-show="kurssiTyyppiKuvaukset.isEmpty()" kaanna="'oppiaine-ei-kurssi-tyyppi-kuvauksia'"></div>
+<div ng-repeat="osa in kurssiTyyppiKuvaukset.osat" ng-show="osa.obj">
+  <div class="action-buttons osa-action-buttons">
+    <button class="btn floating" ng-click="kurssiTyyppiKuvaukset.removeOsa(osa.id)">
+      <span icon-role="remove" class="ng-scope"></span>
+    </button>
+  </div>
+  <label for="kurssi-tyyppi-kuvaus-{{osa.id}}" class="editable-header">
+    <h3 kaanna="osa.label"></h3>
+  </label>
+  <div>
+    <div id="kurssi-tyyppi-kuvaus-{{osa.id}}" ckeditor slocalized ng-model="osa.obj" editing-enabled="true"></div>
+  </div>
+</div>
+
+<h3 kaanna="'lukio-kurssi-osat-header'"></h3>
+
+<div dropdown class="action-buttons pull-right dropup">
+  <button editointi-kontrolli class="btn btn-default btn-sm dropdown-toggle"
+          ng-show="muokattavatOsat.isAddAvailable()" dropdown-toggle
+          icon-role="add">{{'muokkaus-lisaa-osio' | kaanna}}
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li ng-repeat="field in muokattavatOsat.osat" ng-show="!field.obj">
+      <a class="action-link" ng-click="muokattavatOsat.addOsa(field.id)" kaanna="field.label">
+      </a>
+    </li>
+  </ul>
+</div>
+<div style="clear:right;"></div>
+<div ng-show="muokattavatOsat.isEmpty()" kaanna="'oppiaine-ei-osia'"></div>
 <div ng-repeat="osa in muokattavatOsat.osat" ng-show="osa.obj">
   <div class="action-buttons osa-action-buttons">
     <button class="btn floating" ng-click="muokattavatOsat.removeOsa(osa.id)">

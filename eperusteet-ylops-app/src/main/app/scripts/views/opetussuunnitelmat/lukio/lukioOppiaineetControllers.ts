@@ -157,30 +157,73 @@ ylopsApp
             loc[Kieli.getSisaltokieli()] = val;
             return loc;
         };
-        var osat = (idt:string[], locPrefix:string) => (obj) => {
-            console.log("obj = ", obj);
-          var os = _(idt).map((id) => {return {id: id, obj: obj?obj[id]:null};}).value(),
-              byId = _(os).indexBy(o => o.id).value();
-          return {
-              osat: os,
-              isAddAvailable: () => _.any(os, o => !o.obj),
-              addOsa: (id) => {
-                  var newOsa = {
-                      otsikko: kielella(Kaanna.kaanna(locPrefix+id)),
-                      teksti: kielella('')
-                  };
-                  obj[id] = newOsa;
-                  byId[id].obj = newOsa;
-                  $rootScope.$broadcast('notifyCKEditor');
-                  $rootScope.$broadcast('enableEditing');
-              },
-              removeOsa: (id) => {
-                  obj[id] = null;
-                  byId[id].obj = null;
-                  $rootScope.$broadcast('notifyCKEditor');
-              }
-          };
+        var prefixFunc = (func:string | ((id:string)=>string)) => {
+            if (!(func instanceof Function)) {
+                var orig = func;
+                return (id) => orig + id;
+            }
+            return <(id:string)=>string>func;
         };
+        var tekstit = (idt:string[], label:string | ((id:string)=>string), container?: (any) => any) => (obj) => {
+            var labelFunc = prefixFunc(label);
+            if (container) {
+                obj = container(obj);
+            }
+            var os = _(idt).map((id) => {return {id: id, label: labelFunc(id), obj: obj?obj[id]:null};}).value(),
+                byId = _(os).indexBy(o => o.id).value();
+            return {
+                osat: os,
+                isAddAvailable: () => _.any(os, o => !o.obj),
+                isEmpty: () => !_.any(os, o => o.obj),
+                addOsa: (id) => {
+                    var newOsa = kielella('');
+                    obj[id] = newOsa;
+                    byId[id].obj = newOsa;
+                    $rootScope.$broadcast('notifyCKEditor');
+                    $rootScope.$broadcast('enableEditing');
+                },
+                removeOsa: (id) => {
+                    obj[id] = null;
+                    byId[id].obj = null;
+                    $rootScope.$broadcast('notifyCKEditor');
+                }
+            };
+        };
+        var osat = (idt:string[], label:string | ((id:string)=>string), container?: (any) => any) => (obj) => {
+            var labelFunc = prefixFunc(label);
+            if (container) {
+                obj = container(obj);
+            }
+            var os = _(idt).map((id) => {
+                    return {id: id, obj: obj ? obj[id] : null, label: labelFunc(id)};
+                }).value(),
+                byId = _(os).indexBy(o => o.id).value();
+            return {
+                osat: os,
+                isAddAvailable: () => _.any(os, o => !o.obj),
+                isEmpty: () => !_.any(os, o => o.obj),
+                addOsa: (id) => {
+                    var newOsa = {
+                        otsikko: kielella(Kaanna.kaanna(labelFunc(id))),
+                        teksti: kielella('')
+                    };
+                    obj[id] = newOsa;
+                    byId[id].obj = newOsa;
+                    $rootScope.$broadcast('notifyCKEditor');
+                    $rootScope.$broadcast('enableEditing');
+                },
+                removeOsa: (id) => {
+                    obj[id] = null;
+                    byId[id].obj = null;
+                    $rootScope.$broadcast('notifyCKEditor');
+                }
+            };
+        };
+        var valtakunnallisetKurssiTyypit = ['VALTAKUNNALLINEN_PAKOLLINEN',
+            'VALTAKUNNALLINEN_SYVENTAVA', 'VALTAKUNNALLINEN_SOVELTAVA'];
+        var paikallisetKurssiTyypit = ['PAIKALLINEN_PAKOLLINEN',
+            'PAIKALLINEN_SYVENTAVA', 'PAIKALLINEN_SOVELTAVA'];
+        var kaikkiKurssiTyypit = _.union(valtakunnallisetKurssiTyypit, paikallisetKurssiTyypit);
         return {
             openOppiaineKoodisto: (obj:Lukio.Oppiaine) => openKoodisto(obj, 'oppiaineetyleissivistava2'),
             openKurssiKoodisto: (obj:Lukio.LukiokurssiOps) => openKoodisto(obj, 'lukionkurssit',
@@ -188,6 +231,12 @@ ylopsApp
                         obj.lokalisoituKoodi = {};
                         obj.lokalisoituKoodi[Kieli.getSisaltokieli()] = koodi.koodiArvo;
                     }),
+            kielella: kielella,
+            valtakunnallisetKurssiTyypit: () => _.clone(valtakunnallisetKurssiTyypit),
+            paikallisetKurssiTyypit: () => _.clone(paikallisetKurssiTyypit),
+            kaikkiKurssiTyypit: () => _.clone(kaikkiKurssiTyypit),
+            kurssiTyyppikUvausTekstit: tekstit(kaikkiKurssiTyypit, id => 'lukio-kurssi-tyyppi-otsikko-' + id.toLowerCase(),
+                obj => obj.kurssiTyyppiKuvaukset),
             muokattavatOppiaineOsat: osat(['tehtava', 'tavoitteet', 'arviointi'], 'oppiaine-osa-'),
             muokattavatKurssiOsat: osat(['tavoitteet', 'keskeinenSisalto', 'tavoitteetJaKeskeinenSisalto'], 'kurssi-osa-')
         };
@@ -203,6 +252,7 @@ ylopsApp
         $scope.connected = () => $scope.oppiaine && !$scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa;
         $scope.isReconnectable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa;
         $scope.isEditable = () => $scope.oppiaine && $scope.oppiaine.oma;
+        $scope.isDeletable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.oppiaine.maariteltyPohjassa;
 
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
@@ -217,12 +267,22 @@ ylopsApp
                 kurssiId: kurssi.id
             });
         };
-
-        $scope.kuvauksetIsEmpty = (kuvaukset) => {
-            var kuvauksetWithKeys = _.find( kuvaukset, (key) => {return key !== null;});
-            return _.isUndefined( kuvauksetWithKeys );
+        $scope.valtakunnallisetKurssiTyypit = _.map(LukioControllerHelpers.valtakunnallisetKurssiTyypit(),
+            tyyppi => ({
+                key: tyyppi,
+                tyyppi: tyyppi.split('_')[1].toLowerCase()
+            }));
+        $scope.paikallisetKurssiTyypit = _.map(LukioControllerHelpers.paikallisetKurssiTyypit(),
+            tyyppi => ({
+                key: tyyppi,
+                tyyppi: tyyppi.split('_')[1].toLowerCase()
+            }));
+        $scope.kuvauksetIsEmpty = (tyypit:any[]) => {
+            return !_.any(tyypit, t => {
+                return t && $scope.oppiaine && ($scope.oppiaine.kurssiTyyppiKuvaukset[t.key]
+                    || ($scope.oppiaine.perusteen && $scope.oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]));
+                });
         };
-
         $scope.connectOppiaine = () => {
             console.log("TODO");
         };
@@ -274,6 +334,9 @@ ylopsApp
         };
         $scope.editMode = true;
         $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat($scope.oppiaine);
+        $scope.kurssiTyyppiKuvaukset = LukioControllerHelpers.kurssiTyyppikUvausTekstit($scope.oppiaine);
+        $scope.removeKurssiTyyppiKuvaus = (tyyppi)=> { delete $scope.oppiaine.kurssiTyyppiKuvaukset[tyyppi];};
+        $scope.addKurssiTyyppiKuvaus = (tyyppi)=> { $scope.oppiaine.kurssiTyyppiKuvaukset[tyyppi] = LukioControllerHelpers.kielella(''); };
         Editointikontrollit.registerCallback({
             validate: function() {
                 return true;
