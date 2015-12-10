@@ -24,6 +24,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * User: tommiratamaa
@@ -32,13 +33,13 @@ import java.util.List;
  */
 @Repository
 public interface LukioOppiaineJarjestysRepository extends JpaWithVersioningRepository<LukioOppiaineJarjestys, LukioOppiaineId> {
-
-    @Query(value = "delete from LukioOppiaineJarjestys j where j.oppiaine.id = ?1")
-    void deleteByOppiaineId(long oppiaineId);
-
     @Query(value = "select j from LukioOppiaineJarjestys j where j.opetussuunnitelma.id = ?1 " +
             " order by j.jarjestys, j.oppiaine.id")
     List<LukioOppiaineJarjestys> findByOpetussuunnitelmaId(long opsId);
+
+    @Query(value = "select j from LukioOppiaineJarjestys j where j.oppiaine.id in ?1 " +
+            " order by j.jarjestys, j.oppiaine.id")
+    List<LukioOppiaineJarjestys> findByOppiaineIds(Set<Long> oppiaineIds);
 
     @Query(value = "select new fi.vm.sade.eperusteet.ylops.dto.lukio.OppiaineJarjestysDto(oa.id, j.jarjestys)" +
             " from LukioOppiaineJarjestys j inner join j.oppiaine oa where j.opetussuunnitelma.id = ?1" +

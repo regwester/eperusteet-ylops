@@ -50,6 +50,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author mikkom
@@ -389,7 +390,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             ops.removeOppiaine(oppiaine);
         }
 
-        oppiaine.maarineen().forEach(oa -> lukioOppiaineJarjestysRepository.deleteByOppiaineId(oa.getId()));
+        lukioOppiaineJarjestysRepository.delete(
+            lukioOppiaineJarjestysRepository.findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
         oppiaineet.delete(oppiaine);
     }
 
