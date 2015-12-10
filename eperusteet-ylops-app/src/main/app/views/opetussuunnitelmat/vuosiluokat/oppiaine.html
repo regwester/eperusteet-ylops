@@ -26,7 +26,7 @@
 <div ng-show="$onKieliTaiUskonto" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 <div ng-hide="$onKieliTaiUskonto" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
 
-<div class="tekstiosa-wrapper" ng-hide="oppiaine.tyyppi !== 'yhteinen' || (isVuosiluokkaistettava && !oppiaine.koosteinen && oppiaineenVlk)"
+<div class="tekstiosa-wrapper" ng-hide="oppiaine.tyyppi !== 'yhteinen' || oppiaine.koosteinen || (isVuosiluokkaistettava && oppiaineenVlk)"
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
 
 <div class="tekstiosa-wrapper" ng-show="isVuosiluokkaistettava && !oppiaine.koosteinen && oppiaineenVlk">
