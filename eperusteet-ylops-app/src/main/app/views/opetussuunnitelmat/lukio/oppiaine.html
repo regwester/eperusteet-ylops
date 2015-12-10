@@ -82,12 +82,9 @@
             <div ng-if="kurssiKuvauksetVisible">
               <br/>
 
-              <!--<pre>{{oppiaine.kurssiTyyppiKuvaukset | json}}</pre>-->
-              <!--{{kuvauksetIsEmpty(oppiaine.kurssiTyyppiKuvaukset)}}-->
-
               <div ng-if="!kuvauksetIsEmpty(valtakunnallisetKurssiTyypit)">
                 <h2 kaanna="valtakunnalliset-kurssityypit"></h2>
-                <lukio-oppiaine-osa ng-repeat="t in valtakunnallisetKurssiTyypit"
+                <lukio-oppiaine-osa ng-repeat="t in valtakunnallisetKurssiTyypit" editable="isEditable()"
                                     oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
                                     colorbox="t.tyyppi" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
                                     title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
@@ -97,7 +94,7 @@
               <div ng-if="!kuvauksetIsEmpty(paikallisetKurssiTyypit)">
                 <h2 kaanna="paikalliset-kurssityypit"></h2>
 
-                <lukio-oppiaine-osa ng-repeat="t in paikallisetKurssiTyypit"
+                <lukio-oppiaine-osa ng-repeat="t in paikallisetKurssiTyypit" editable="isEditable()"
                                     oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
                                     colorbox="t.tyyppi" ikoni="true" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
                                     title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
@@ -108,10 +105,6 @@
       </div>
     </div>
   </div>
-
-
-  <!--ng-controller="LukioOppiaineSisaltoController"-->
-  <!--<pre>{{ oppiaine | json}}</pre>-->
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tehtava.teksti" editable="isEditable()"
                       oppiaineen-teksti="oppiaine.tehtava.teksti" title="'oppiaine-osa-tehtava'"></lukio-oppiaine-osa>

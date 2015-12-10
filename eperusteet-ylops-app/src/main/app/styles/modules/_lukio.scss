@@ -332,7 +332,7 @@ $aikaleima-vari: #888;
   overflow: visible;
 
   @include paikallinen-ikoni( 'syventava', $syventava-vari );
-  @include paikallinen-ikoni( 'soveltaval', $soveltava-vari );
+  @include paikallinen-ikoni( 'soveltava', $soveltava-vari );
   @include paikallinen-ikoni( 'pakollinen', $pakollinen-vari );
 }
 

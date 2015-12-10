@@ -453,5 +453,8 @@
   "lukio-kurssi-tyyppi-kuvaukset-header": "Kurssityyppien kuvaukset",
   "lukio-kurssi-osat-header": "Osiot",
   "oppiaine-ei-osia": "Ei osia.",
-  "oppiaine-ei-kurssi-tyyppi-kuvauksia": "Ei kurssityyppien kuvauksia."
+  "oppiaine-ei-kurssi-tyyppi-kuvauksia": "Ei kurssityyppien kuvauksia.",
+  "yhteyden-palautus-onnistui": "Yhteyden palauttaminen onnistui.",
+  "varmista-palauta-yhteys": "Haluatko varmasti palauttaa yhteyden?",
+  "yhteyden-katkaisu-onnistui": "Yhteyden katkaiseminen onnistui"
 }

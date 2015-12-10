@@ -243,7 +243,7 @@ ylopsApp
     })
     .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams, $state, $timeout,
                         LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log,
-                        Editointikontrollit, LukioControllerHelpers, Varmistusdialogi, Notifikaatiot) {
+                        Editointikontrollit, LukioControllerHelpers, Varmistusdialogi, Notifikaatiot, Lukko) {
         // TODO:
         $scope.oppiaine = null;
         $scope.editMode = false;
@@ -283,8 +283,36 @@ ylopsApp
                     || ($scope.oppiaine.perusteen && $scope.oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]));
                 });
         };
+
+        var palautaYlempi = () => {
+            LukioOpetussuunnitelmaService.palautaYlempaan($stateParams.oppiaineId)
+                .then(res => {
+                    Notifikaatiot.onnistui('yhteyden-palautus-onnistui');
+                    $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                        id: $stateParams.id,
+                        oppiaineId: res.id
+                    }, { reload: true, notify: true }));
+                });
+        };
+
         $scope.connectOppiaine = () => {
-            console.log("TODO");
+            Varmistusdialogi.dialogi({
+                otsikko: 'varmista-palauta-yhteys',
+                primaryBtn: 'palauta-yhteys',
+                // TODO: lukitus!
+                successCb: () => palautaYlempi()
+            })();
+        };
+
+        var cloneOppiaine = () => {
+            LukioOpetussuunnitelmaService.kloonaaOppiaineMuokattavaksi($stateParams.oppiaineId)
+                .then(res => {
+                    Notifikaatiot.onnistui('yhteyden-katkaisu-onnistui');
+                    $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                        id: $stateParams.id,
+                        oppiaineId: res.id
+                    }, { reload: true, notify: true }));
+                });
         };
 
         $scope.disconnectOppiaine = () => {
@@ -292,14 +320,11 @@ ylopsApp
                 otsikko: 'varmista-katkaise-yhteys',
                 primaryBtn: 'katkaise-yhteys',
                 // TODO: lukitus!
-                successCb: () => LukioOpetussuunnitelmaService.kloonaaOppiaineMuokattavaksi($stateParams.oppiaineId)
-                    .then(res => {
-                        Notifikaatiot.onnistui('yhteyden-katkaisu-luonti-onnistui');
-                        $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
-                            id: $stateParams.id,
-                            oppiaineId: res.id
-                        }, { reload: true, notify: true }));
-                    })
+                successCb: () => cloneOppiaine()
+                //successCb: () => Lukko.lock({
+                //    opsId: $stateParams.id,
+                //    oppiaineId: $stateParams.id
+                //}, cloneOppiaine )
             })();
         };
 

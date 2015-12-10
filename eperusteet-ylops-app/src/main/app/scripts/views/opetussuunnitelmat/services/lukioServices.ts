@@ -28,6 +28,7 @@ interface LukioOpetussuunnitelmaServiceI {
     saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<Lukio.IdHolder>
     getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
     kloonaaOppiaineMuokattavaksi(oppiaineId:number, opsId?:number): IPromise<Lukio.IdHolder>
+    palautaYlempaan(oppiaineId:number, opsId?:number): IPromise<Lukio.IdHolder>
 }
 
 ylopsApp
@@ -74,6 +75,11 @@ ylopsApp
                 oppiaineId: oppiaineId
             }, {}).$promise.then(res => { oppiaineCache.clear(); return res;}, Notifikaatiot.serverCb);
 
+        var palautaYlempaan = (oppiaineId:number, opsId?:number) => OppiaineCRUD.palautaYlempaan({
+            opsId: opsId || $stateParams.id,
+            oppiaineId: oppiaineId
+        }, {}).$promise.then(res => { oppiaineCache.clear(); return res;}, Notifikaatiot.serverCb);
+
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
@@ -83,6 +89,7 @@ ylopsApp
             getOppiaine: getOppiaine,
             getKurssi: getKurssi,
             saveOppiaine: saveOppiaine,
-            kloonaaOppiaineMuokattavaksi: kloonaaOppiaineMuokattavaksi
+            kloonaaOppiaineMuokattavaksi: kloonaaOppiaineMuokattavaksi,
+            palautaYlempaan: palautaYlempaan
         }
     });
