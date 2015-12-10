@@ -18,17 +18,29 @@ package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.IdHolder;
 import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: tommiratamaa
- * Date: 7.12.2015
- * Time: 20.34
+ * Date: 9.10.15
+ * Time: 10.00
  */
 @Getter
-public class LongIdResultDto implements IdHolder {
-    private final Long id;
+@Setter
+public class LukiokurssiOppaineMuokkausDto implements Serializable, IdHolder {
+    @NotNull
+    private Long id;
+    private List<KurssinOppiaineDto> oppiaineet = new ArrayList<>();
 
-    public LongIdResultDto(Long id) {
+    public LukiokurssiOppaineMuokkausDto() {
+    }
+
+    public LukiokurssiOppaineMuokkausDto(Long id) {
         this.id = id;
     }
 }

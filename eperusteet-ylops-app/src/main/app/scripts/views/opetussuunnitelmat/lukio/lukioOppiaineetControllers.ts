@@ -9,7 +9,7 @@ ylopsApp
     .controller('LukioOppiaineetController', function($scope, $q:IQService, $stateParams, Kaanna, $log,
                                                       LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
                                                       LukioTreeUtils: LukioTreeUtilsI, Kommentit,
-                                                      Editointikontrollit, $state) {
+                                                      Editointikontrollit, $state, Notifikaatiot) {
         $scope.editMode = false;
         $scope.sortableConfig = <SortableConfig> {
             placeholder: 'placeholder',
@@ -107,7 +107,12 @@ ylopsApp
         };
 
         Editointikontrollit.registerCallback({
+            doNotShowMandatoryMessage: true,
             validate: function() {
+                if (!_.isEmpty(state.liittamattomatKurssit())) {
+                    Notifikaatiot.varoitus('lukio-puun-muokkaus-ei-saa-olla-liittamattomia-kursseja');
+                    return false;
+                }
                 return true;
             },
             edit: function() {
@@ -119,6 +124,18 @@ ylopsApp
                 });
             },
             save: function(kommentti) {
+                if (!_.isEmpty(state.liittamattomatKurssit())) {
+                    Notifikaatiot.varoitus('lukio-puun-muokkaus-ei-saa-olla-liittamattomia-kursseja');
+                } else {
+                    LukioOpetussuunnitelmaService.updateOppiaineKurssiStructure($scope.treeRoot,
+                            kommentti).then(() => {
+                        Notifikaatiot.onnistui('lukio-puun-muokkaus-onnistui');
+                        $scope.editMode = false;
+                        resolveRakenne($q.defer()).then(() => {
+                            $scope.$broadcast('genericTree:refresh'); // templates get updated
+                        });
+                    });
+                }
             }
         });
 
@@ -253,6 +270,7 @@ ylopsApp
         $scope.isReconnectable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa;
         $scope.isEditable = () => $scope.oppiaine && $scope.oppiaine.oma;
         $scope.isDeletable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.oppiaine.maariteltyPohjassa;
+        $scope.canAddOppimaara = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma;
 
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
@@ -309,6 +327,7 @@ ylopsApp
         };
 
         var cloneOppiaine = () => {
+            //TODO: Lukitus
             LukioOpetussuunnitelmaService.kloonaaOppiaineMuokattavaksi($stateParams.oppiaineId)
                 .then(res => {
                     Notifikaatiot.onnistui('yhteyden-katkaisu-onnistui');
@@ -330,6 +349,13 @@ ylopsApp
                 //    oppiaineId: $stateParams.id
                 //}, cloneOppiaine )
             })();
+        };
+
+        $scope.addOppimaara = () => {
+            $state.go('root.opetussuunnitelmat.lukio.opetus.uusioppiaine', {
+                id: $stateParams.id,
+                parentOppiaineId: $stateParams.oppiaineId
+            }, { reload: true, notify: true });
         };
 
         Editointikontrollit.registerCallback({
@@ -359,6 +385,7 @@ ylopsApp
             nimi: {},
             kuvaus: {},
             koosteinen: false,
+            oppiaineId: $stateParams.parentOppiaineId ? $stateParams.parentOppiaineId : null,
             kurssiTyyppiKuvaukset: {}
         };
         $scope.editMode = true;
@@ -383,10 +410,10 @@ ylopsApp
                 });
             }
         });
+        $scope.isMaara = () => $scope.oppiaine && $scope.oppiaine.oppiaineId != null;
         $scope.openKoodisto = LukioControllerHelpers.openOppiaineKoodisto($scope.oppiaine);
         Editointikontrollit.startEditing();
     })
-
 
     .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams, $state, LukioControllerHelpers,
                                                   LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
@@ -403,9 +430,9 @@ ylopsApp
             .then(kurssi => $scope.kurssi = kurssi);
 
         $scope.getTyyppiSelite = () => {
-            if($scope.kurssi){
-                var tyyppi = ($scope.kurssi.perusteen)?$scope.kurssi.perusteen.tyyppi:$scope.kurssi.tyyppi;
-                tyyppi = tyyppi.contains('_')?tyyppi.split('_')[1].toLowerCase():tyyppi.toLowerCase();
+            if ($scope.kurssi) {
+                var tyyppi = $scope.kurssi.tyyppi;
+                tyyppi = (tyyppi.indexOf('_') !== -1 ? tyyppi.split('_')[1]: tyyppi).toLowerCase();
                 return 'kurssi-tyyppi-selite-'+tyyppi;
             }
             return '';
@@ -446,14 +473,14 @@ ylopsApp
     return {
         scope: {
             model: '=lukioOppiaineOsa',
-            oppiaine: '=oppiaine',
-            perusteenTeksti: '=perusteenTeksti',
-            oppiaineenTeksti: '=oppiaineenTeksti',
-            title: '=title',
-            colorbox: '=colorbox',
-            ikoni: '=ikoni',
-            editable: '=editable',
-            editing: '=editing'
+            oppiaine: '=?oppiaine',
+            perusteenTeksti: '=?perusteenTeksti',
+            oppiaineenTeksti: '=?oppiaineenTeksti',
+            title: '=?title',
+            colorbox: '=?colorbox',
+            ikoni: '=?ikoni',
+            editable: '=?editable',
+            editing: '=?editing'
         },
         templateUrl: 'views/opetussuunnitelmat/directives/oppiaineSisalto.html',
         controller: 'LukioOppiaineSisaltoController'

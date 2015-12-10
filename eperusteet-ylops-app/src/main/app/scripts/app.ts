@@ -175,6 +175,21 @@ ylopsApp
         return _.union(obj, _(obj).map(function (o) {
           return _.flattenTree(extractChildren(o), extractChildren);
         }).flatten().value());
+      },
+      reducedIndexOf: function (obj, extractor, combinator) {
+        if (!_.isArray(obj)) {
+          obj = [obj];
+        }
+        var results = {};
+        _.each(obj, function(o) {
+          var index = extractor(o);
+          if (results[index]) {
+            results[index] = combinator(results[index], o);
+          } else {
+            results[index] = o;
+          }
+        });
+        return results;
       }
     });
   });

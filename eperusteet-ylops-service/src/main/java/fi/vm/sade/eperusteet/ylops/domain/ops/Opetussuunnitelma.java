@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuudet;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OpetuksenYleisetTavoitteet;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
@@ -155,6 +156,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<OppiaineLukiokurssi> lukiokurssit = new HashSet<>(0);
+
+    @Getter
+    @Audited
+    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private Set<LukioOppiaineJarjestys> oppiaineJarjestykset = new HashSet<>();
 
     @Getter
     @Setter

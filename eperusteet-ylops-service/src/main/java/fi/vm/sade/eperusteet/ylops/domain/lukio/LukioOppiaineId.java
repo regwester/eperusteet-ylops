@@ -14,21 +14,34 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.lukio;
+package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
-import fi.vm.sade.eperusteet.ylops.dto.IdHolder;
 import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 /**
  * User: tommiratamaa
- * Date: 7.12.2015
- * Time: 20.34
+ * Date: 10.12.2015
+ * Time: 13.08
  */
 @Getter
-public class LongIdResultDto implements IdHolder {
-    private final Long id;
+@Setter
+@Embeddable
+public class LukioOppiaineId implements Serializable {
+    @Column(name = "oppiaine_id")
+    private Long oppiaineId;
+    @Column(name = "opetussuunnielma_id")
+    private Long opetusuunnitelmaId;
 
-    public LongIdResultDto(Long id) {
-        this.id = id;
+    protected LukioOppiaineId() {
+    }
+
+    public LukioOppiaineId(Long opetusuunnitelmaId, Long oppiaineId) {
+        this.opetusuunnitelmaId = opetusuunnitelmaId;
+        this.oppiaineId = oppiaineId;
     }
 }

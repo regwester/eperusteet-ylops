@@ -47,6 +47,8 @@ interface LukioKurssiTreeNode extends PaginationNode {
     lokalisoituKoodi?: l.Lokalisoitu
     kurssit?: Lukio.LukiokurssiOps[]
     oppimaarat?: Lukio.LukioOppiaine[]
+    jarjestys?: number
+    oppiaineId?: number
 }
 interface LukioTreeTemplatesI {
     treeHandle: () => string
@@ -214,7 +216,8 @@ ylopsApp
                             && !node.koosteinen) ||
                 (node.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
-                    && to.koosteinen && !node.koosteinen) ||
+                    && to.koosteinen && !node.koosteinen
+                    && to.id == node.$$nodeParent.id) ||
                 (node.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.dtype === LukioKurssiTreeNodeType.root ) ||
                 (node.dtype === LukioKurssiTreeNodeType.kurssi

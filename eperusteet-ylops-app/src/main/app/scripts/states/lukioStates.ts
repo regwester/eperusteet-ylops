@@ -65,17 +65,17 @@ ylopsApp
             controller: 'LukioOppiaineetController'
         })
         .state('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
-            url: '/oppiaineet/:oppiaineId',
+            url: '/oppiaineet/aine/:oppiaineId',
             templateUrl: 'views/opetussuunnitelmat/lukio/oppiaine.html',
             controller: 'LukioOppiaineController'
         })
         .state('root.opetussuunnitelmat.lukio.opetus.kurssi', {
-            url: '/oppiaineet/:oppiaineId/kurssi/:kurssiId',
+            url: '/oppiaineet/aine/:oppiaineId/kurssi/:kurssiId',
             templateUrl: 'views/opetussuunnitelmat/lukio/kurssi.html',
             controller: 'LukioKurssiController'
         })
         .state('root.opetussuunnitelmat.lukio.opetus.uusioppiaine', {
-            url: '/oppiaine/uusi',
+            url: '/oppiaineet/uusi/:parentOppiaineId',
             templateUrl: 'views/opetussuunnitelmat/lukio/oppiaine.html',
             controller: 'LuoLukioOppiaineController'
         })

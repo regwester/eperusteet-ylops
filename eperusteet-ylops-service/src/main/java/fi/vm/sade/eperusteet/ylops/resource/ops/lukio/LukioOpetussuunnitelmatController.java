@@ -20,7 +20,10 @@ import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * User: tommiratamaa
@@ -38,6 +41,13 @@ public class LukioOpetussuunnitelmatController {
     @RequestMapping(value = "/rakenne", method = RequestMethod.GET)
     public LukioOpetussuunnitelmaRakenneOpsDto getRakenne(@PathVariable("opsId") Long opsId) {
         return lukioOpetussuunnitelmaService.getRakenne(opsId);
+    }
+
+    @RequestMapping(value = "/rakenne", method = POST)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateStructure(@PathVariable("opsId") final Long opsId,
+                                @RequestBody OppaineKurssiTreeStructureDto structureDto) {
+        lukioOpetussuunnitelmaService.updateTreeStructure(opsId, structureDto);
     }
 
     @ResponseBody

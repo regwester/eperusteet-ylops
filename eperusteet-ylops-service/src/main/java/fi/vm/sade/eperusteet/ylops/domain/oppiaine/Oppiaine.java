@@ -96,11 +96,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
 
     @Getter
     @Setter
-    @Column(name = "jarjestys")
-    private Integer jarjestys;
-
-    @Getter
-    @Setter
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa tehtava;
 

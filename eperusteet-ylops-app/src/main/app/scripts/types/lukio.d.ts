@@ -122,6 +122,7 @@ declare module Lukio {
 
     export interface LukioOppiaineTallennus extends Oppiaine {
         laajuus?: string;
+        oppiaineId?: number;
         kurssiTyyppiKuvaukset: { [key:string/*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu; };
     }
 

@@ -18,19 +18,23 @@
 <div class="oppiaine-view" ng-show="!editMode">
 
   <div class="action-buttons-inline">
-    <div ng-if="isReconnectable()">
+    <div class="action-button" ng-if="isReconnectable()">
       <span kaanna="ei-yhdistetty-pohjaan" style="color: red; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'palauta-yhteys'"
               ng-click="connectOppiaine()"></button>
     </div>
-    <div ng-if="connected()">
+    <div class="action-button" ng-if="connected()">
       <span kaanna="yhdistetty-pohjaan" style="color: limegreen; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'katkaise-yhteys'"
               ng-click="disconnectOppiaine()"></button>
     </div>
-    <div ng-if="isDeletable()">
+    <div class="action-button" ng-if="isDeletable()">
       <button class="btn btn-default" icon-role="remove" kaanna="'poista'"
               ng-click="deleteOppiaine()"></button>
+    </div>
+    <div class="action-button" ng-if="canAddOppimaara()">
+      <button class="btn btn-default" icon-role="add" kaanna="'lisaa-oppimaara'"
+              ng-click="addOppimaara()"></button>
     </div>
   </div>
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
@@ -58,7 +62,7 @@
     </div>
   </div>
 
-  <div class="lukio-oppiaineet-puu lukio-oppiaine-tab lukio-oppiaine-tyypit" ng-if="!kuvauksetIsEmpty(valtakunnallisetKurssiTyypit) || !kuvauksetIsEmpty(paikallisetKurssiTyypit)">
+  <div class="lukio-oppiaineet-puu lukio-oppiaine-tab lukio-oppiaine-tyypit" ng-if="oppiaine && !kuvauksetIsEmpty(valtakunnallisetKurssiTyypit) || !kuvauksetIsEmpty(paikallisetKurssiTyypit)">
     <div class="main-column tree" style="margin-bottom: 20px;">
       <div class="tree-con">
         <div class="opetussisaltopuu tree">
@@ -117,7 +121,8 @@
 </div>
 
 <div class="lisaa-oppiaine oppiaine-form" ng-show="editMode">
-  <h2 kaanna="'lisaa-oppiaine-title'"></h2>
+  <h2 kaanna="'lisaa-oppimaara-title'" ng-show="isMaara()"></h2>
+  <h2 kaanna="'lisaa-oppiaine-title'" ng-show="!isMaara()"></h2>
 
   <div class="non-collapsibles">
     <form name="oppiaineForm" role="form">

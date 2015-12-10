@@ -14,21 +14,23 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.lukio;
+package fi.vm.sade.eperusteet.ylops.service.util;
 
-import fi.vm.sade.eperusteet.ylops.dto.IdHolder;
 import lombok.Getter;
 
 /**
  * User: tommiratamaa
- * Date: 7.12.2015
- * Time: 20.34
+ * Date: 10.12.2015
+ * Time: 13.38
  */
-@Getter
-public class LongIdResultDto implements IdHolder {
-    private final Long id;
+public class Jarjestetty<T> {
+    @Getter
+    private final T obj;
+    @Getter
+    private final Integer jarjestys;
 
-    public LongIdResultDto(Long id) {
-        this.id = id;
+    public Jarjestetty(T obj, Integer jarjestys) {
+        this.obj = obj;
+        this.jarjestys = jarjestys;
     }
 }

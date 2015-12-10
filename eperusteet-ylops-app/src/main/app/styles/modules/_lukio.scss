@@ -736,7 +736,6 @@ a.clickable {
 
     margin-top: 10px;
     padding-bottom: 10px;
-    float: left;
     margin-right: 10px;
   }
   .editable-header {
@@ -747,7 +746,7 @@ a.clickable {
   }
 
   .inputwrapper {
-    clear: both;
+    clear: right;
     display: block;
 
     input[type=radio] {
@@ -755,7 +754,12 @@ a.clickable {
       float: left;
     }
   }
-
+  .action-buttons-inline {
+    .action-button {
+      float:left;
+      padding-left: 10px;
+    }
+  }
   .action-buttons {
     &.pull-right {
       margin-top: -40px;
@@ -773,7 +777,6 @@ a.clickable {
   }
 
   .fixed-group {
-    clear: left;
     max-width: 300px;
 
     .form-control.limit {

@@ -16,19 +16,27 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
-import fi.vm.sade.eperusteet.ylops.dto.IdHolder;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
 
 /**
  * User: tommiratamaa
- * Date: 7.12.2015
- * Time: 20.34
+ * Date: 29.9.15
+ * Time: 18.08
  */
 @Getter
-public class LongIdResultDto implements IdHolder {
-    private final Long id;
+@Setter
+public class KurssinOppiaineDto implements Serializable {
+    private Long oppiaineId;
+    private Integer jarjestys;
 
-    public LongIdResultDto(Long id) {
-        this.id = id;
+    public KurssinOppiaineDto() {
+    }
+
+    public KurssinOppiaineDto(Long oppiaineId, Integer jarjestys) {
+        this.oppiaineId = oppiaineId;
+        this.jarjestys = jarjestys;
     }
 }

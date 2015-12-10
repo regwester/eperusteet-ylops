@@ -101,6 +101,7 @@
   "lisaa-muu-uskonto": "Lisää uskonto",
   "lisaa-opetussuunnitelma": "Luo uusi opetussuunnitelma",
   "lisaa-oppiaine": "Lisää oppiaine",
+  "lisaa-oppimaara-title": "Lisää oppimäärä",
   "lisaa-oppimaara-kieli": "Lisää kielitarjontaa",
   "lisaa-oppimaara-uskonto": "Lisää uskonto",
   "lisaa-opsin-nimi": "Lisää opetussuunnitelman nimi",
@@ -457,10 +458,13 @@
   "yhteyden-palautus-onnistui": "Yhteyden palauttaminen onnistui.",
   "varmista-palauta-yhteys": "Haluatko varmasti palauttaa yhteyden?",
   "yhteyden-katkaisu-onnistui": "Yhteyden katkaiseminen onnistui",
+  "lukio-puun-muokkaus-ei-saa-olla-liittamattomia-kursseja": "Liitä liittämättömät kurssit ennen tallennusta.",
+  "lukio-puun-muokkaus-onnistui": "Lukio-oppiaineiden ja kurssien rakenteen muokkaus onnistui.",
   "takaisin-oppimaaraan": "Takaisin oppimäärään",
   "takaisin-oppiaineeseen": "Takaisin oppiaineeseen",
   "kurssi-kuvaus": "Kurssin kuvaus",
   "muokattu": "Muokattu",
   "kurssikoodi": "Kurssikoodi",
-  "kurssityyppi": "Kurssityyppi"
+  "kurssityyppi": "Kurssityyppi",
+  "lisaa-oppimaara": "Lisää oppimäärä"
 }

@@ -35,6 +35,7 @@ import java.util.Optional;
 @Getter
 @Setter
 public class LukioOppiaineSaveDto implements Serializable {
+    private Long oppiaineId;
     private LokalisoituTekstiDto nimi;
     private String laajuus;
     private boolean koosteinen;

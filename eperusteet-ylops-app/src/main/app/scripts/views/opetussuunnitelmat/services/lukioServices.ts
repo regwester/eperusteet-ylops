@@ -28,11 +28,12 @@ interface LukioOpetussuunnitelmaServiceI {
     saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<Lukio.IdHolder>
     getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
     kloonaaOppiaineMuokattavaksi(oppiaineId:number, opsId?:number): IPromise<Lukio.IdHolder>
-    palautaYlempaan(oppiaineId:number, opsId?:number): IPromise<Lukio.IdHolder>
+    palautaYlempaan(oppiaineId:number, opsId?:number): IPromise<Lukio.IdHolder>,
+    updateOppiaineKurssiStructure(treeRoot:LukioKurssiTreeNode, kommentti?: string, opsId?: number): IPromise<void>
 }
 
 ylopsApp
-    .service('LukioOpetussuunnitelmaService', function(OpetusuunnitelmaLukio, $q:IQService,
+    .service('LukioOpetussuunnitelmaService', function(OpetusuunnitelmaLukio, $q:IQService, $log,
                                                        Notifikaatiot, $stateParams, OppiaineCRUD) {
         var doGetAihekokonaisuudet =
             (id: number, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) =>
@@ -80,6 +81,49 @@ ylopsApp
             oppiaineId: oppiaineId
         }, {}).$promise.then(res => { oppiaineCache.clear(); return res;}, Notifikaatiot.serverCb);
 
+        var updateOppiaineKurssiStructure = (treeRoot:LukioKurssiTreeNode,
+                                             kommentti?: string, opsId?: number) => {
+            var chain = _(treeRoot).flattenTree((node:LukioKurssiTreeNode) => {
+                    var kurssiJarjestys = 1,
+                        oppiaineJarjestys = 1;
+                    return _(node.lapset).map((n:LukioKurssiTreeNode):LukioKurssiTreeNode => {
+                        if (n.dtype == LukioKurssiTreeNodeType.kurssi) {
+                            return {
+                                id: n.id,
+                                dtype: LukioKurssiTreeNodeType.kurssi,
+                                oppiaineet: [{
+                                    oppiaineId: node.id,
+                                    jarjestys: kurssiJarjestys++
+                                }]
+                            };
+                        } else {
+                            return {
+                                id: n.id,
+                                dtype: LukioKurssiTreeNodeType.oppiaine,
+                                jarjestys: oppiaineJarjestys++,
+                                lapset: n.lapset
+                            };
+                        }
+                    }).value();
+                }),
+                update = {
+                    oppiaineet: chain.filter(n => n && n.dtype == LukioKurssiTreeNodeType.oppiaine).value(),
+                    kurssit: chain.filter(n => n.dtype == LukioKurssiTreeNodeType.kurssi)
+                        .reducedIndexOf(n => n.id, (a, b) => {
+                            var c = _.clone(a);
+                            c.oppiaineet = _.union(a.oppiaineet, b.oppiaineet);
+                            return c;
+                        }).values().value(),
+                    kommentti: kommentti
+                };
+            return OpetusuunnitelmaLukio.updateStructure({
+                    opsId: opsId || $stateParams.id}, update)
+                .$promise.then((res) => {
+                    rakenneCache.clear();
+                    return res;
+                }, Notifikaatiot.serverCb);
+        };
+
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
@@ -90,6 +134,7 @@ ylopsApp
             getKurssi: getKurssi,
             saveOppiaine: saveOppiaine,
             kloonaaOppiaineMuokattavaksi: kloonaaOppiaineMuokattavaksi,
-            palautaYlempaan: palautaYlempaan
+            palautaYlempaan: palautaYlempaan,
+            updateOppiaineKurssiStructure: updateOppiaineKurssiStructure
         }
     });

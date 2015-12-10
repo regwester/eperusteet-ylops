@@ -14,21 +14,17 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.lukio;
+package fi.vm.sade.eperusteet.ylops.repository.ops;
 
-import fi.vm.sade.eperusteet.ylops.dto.IdHolder;
-import lombok.Getter;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
+import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * User: tommiratamaa
- * Date: 7.12.2015
- * Time: 20.34
+ * Date: 10.12.2015
+ * Time: 15.35
  */
-@Getter
-public class LongIdResultDto implements IdHolder {
-    private final Long id;
-
-    public LongIdResultDto(Long id) {
-        this.id = id;
-    }
+@Repository
+public interface OppiaineLukiokurssiRepository extends JpaWithVersioningRepository<OppiaineLukiokurssi, Long> {
 }

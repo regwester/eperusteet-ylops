@@ -14,21 +14,13 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.lukio;
-
-import fi.vm.sade.eperusteet.ylops.dto.IdHolder;
-import lombok.Getter;
+package fi.vm.sade.eperusteet.ylops.dto;
 
 /**
  * User: tommiratamaa
- * Date: 7.12.2015
- * Time: 20.34
+ * Date: 10.12.2015
+ * Time: 10.52
  */
-@Getter
-public class LongIdResultDto implements IdHolder {
-    private final Long id;
-
-    public LongIdResultDto(Long id) {
-        this.id = id;
-    }
+public interface IdHolder {
+    Long getId();
 }

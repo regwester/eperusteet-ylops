@@ -105,7 +105,9 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
             handleBadCode(scope.editingCallback.save(kommentti), afterSave);
           }
           else {
-            Notifikaatiot.varoitus(err || 'mandatory-odottamaton-virhe');
+            if (!scope.editingCallback.doNotShowMandatoryMessage) {
+              Notifikaatiot.varoitus(err || 'mandatory-odottamaton-virhe');
+            }
           }
         }
 

@@ -80,6 +80,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private VuosiluokkakokonaisuusRepository kokonaisuudet;
 
     @Autowired
+    private LukioOppiaineJarjestysRepository lukioOppiaineJarjestysRepository;
+
+    @Autowired
     private OppiaineenvuosiluokkakokonaisuusRepository oppiaineenKokonaisuudet;
 
     @Autowired
@@ -386,6 +389,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             ops.removeOppiaine(oppiaine);
         }
 
+        oppiaine.maarineen().forEach(oa -> lukioOppiaineJarjestysRepository.deleteByOppiaineId(oa.getId()));
         oppiaineet.delete(oppiaine);
     }
 
