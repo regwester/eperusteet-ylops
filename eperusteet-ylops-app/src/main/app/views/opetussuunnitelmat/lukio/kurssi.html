@@ -15,22 +15,53 @@
   -->
 
 <div class="kurssi-view" ng-show="!editMode">
-    <h2 ng-bind="kurssi.nimi | kaanna"></h2>
+  <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
+  <hr class="mujuviiva"/>
 
-    <code>
-        Kurssinäkymä vielä tekemättö
-    </code>
+  <a class="kurssi-return-btn" ng-click="goBack()">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <strong kaanna="'takaisin-oppimaaraan'"></strong>
+  </a>
+
+  <h3>
+    {{ kurssi.nimi | kaanna}}
+    <span style="padding-left: 20px; font-size: 12px;">
+      <strong>{{ 'muokattu' | kaanna}}:</strong>
+      {{kurssi.muokattu | aikaleima: 'short'}}
+    </span>
+  </h3>
+
+
+  <table>
+    <tr>
+      <td style="padding-right: 20px;">{{ 'kurssikoodi' | kaanna}}:</td>
+      <td>{{kurssi.lokalisoituKoodi | kaanna}}</td>
+    </tr>
+    <tr>
+      <td>{{ 'kurssityyppi' | kaanna}}:</td>
+      <td>
+        <span style="padding-right: 20px;" kaanna>kurssi-tyyppi-selite-{{kurssi.perusteen.tyyppi | lowercase}}</span>
+        <span class="small-colorbox {{kurssi.perusteen.tyyppi | lowercase}}"></span>
+      </td>
+    </tr>
+  </table>
+
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false"
+                      oppiaineen-teksti="kurssi.kuvaus" title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
+
+
+  <!--<pre>{{ kurssi | json}}</pre>-->
 </div>
 <div class="lisaa-kurssi oppiaine-form" ng-show="editMode">
-    <h2 kaanna="'lisaa-kurssi-title'"></h2>
+  <h2 kaanna="'lisaa-kurssi-title'"></h2>
 
-    <div class="non-collapsibles">
-        <form name="kurssiForm" role="form">
-            <div class="action-buttons">
-                <div class="floater" ng-include="'views/opetusuunnitelmat/lukio/include/kurssiOsavalitsin'">
-                </div>
-            </div>
-            <div ng-include="'views/opetusuunnitelmat/lukio/include/kurssiLomakeKentat.html'"></div>
-        </form>
-    </div>
+  <div class="non-collapsibles">
+    <form name="kurssiForm" role="form">
+      <div class="action-buttons">
+        <div class="floater" ng-include="'views/opetusuunnitelmat/lukio/include/kurssiOsavalitsin'">
+        </div>
+      </div>
+      <div ng-include="'views/opetusuunnitelmat/lukio/include/kurssiLomakeKentat.html'"></div>
+    </form>
+  </div>
 </div>

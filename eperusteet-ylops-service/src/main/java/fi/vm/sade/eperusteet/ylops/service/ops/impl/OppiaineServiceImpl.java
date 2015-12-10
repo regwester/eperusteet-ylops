@@ -260,49 +260,17 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OpsOppiaineDto palautaAlkuperaiseen(@P("opsId") Long opsId, Long id) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        Opetussuunnitelma pohja = ops.getPohja();
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        if (pohja == null) {
-            throw new BusinessRuleViolationException("Ei voi palauttaa jos pohjaa ei ole");
-        }
-        Oppiaine opsOppiaine = getOppiaine(opsId, id);
-
-        if (!opsOppiaine.getOppimaarat().isEmpty()) {
-            throw new BusinessRuleViolationException("Oppiaineella ei saa olla oppimääriä");
-        }
-
-        if (!oppiaineet.isOma(opsId, opsOppiaine.getId())) {
-            throw new BusinessRuleViolationException("Oppiaineen täytyy olla oma");
-        }
-
-        OpsOppiaine pohjaOppiaine = ops.getOppiaineet().stream()
-                .filter(oa -> oa.getOppiaine().getTunniste().equals(opsOppiaine.getTunniste()))
-                .findAny()
-                .get();
-
-        Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
-                                            .filter(oa -> !oa.getOppiaine().getId().equals(id))
-                                            .collect(Collectors.toSet());
-
-        OpsOppiaine palautettu = new OpsOppiaine(pohjaOppiaine.getOppiaine(), false);
-        opsOppiaineet.add(palautettu);
-        ops.setOppiaineet(opsOppiaineet);
-        return mapper.map(palautettu, OpsOppiaineDto.class);
-    }
-
-    @Override
     public OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        opetussuunnitelmaRepository.lock(ops);
+
         Boolean isOma = oppiaineet.isOma(opsId, id);
         if (isOma == null) {
             throw new BusinessRuleViolationException("Kopioitavaa oppiainetta ei ole olemassa");
         } else if (isOma) {
             throw new BusinessRuleViolationException("Oppiaine on jo muokattavissa");
         }
-
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
         Oppiaine oppiaine = getOppiaine(opsId, id);
 
@@ -311,8 +279,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
-                                            .filter(oa -> !oa.getOppiaine().getId().equals(id))
-                                            .collect(Collectors.toSet());
+                .filter(oa -> !oa.getOppiaine().getId().equals(id))
+                .collect(Collectors.toSet());
 
         oppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
         Oppiaine newOppiaine = oppiaine;
@@ -320,9 +288,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             // Remap Lukiokurssit to new oppiaine, (does not affecter their ownership)
             ops.getLukiokurssit().stream().filter(oaLk
                     -> oaLk.getOppiaine().getId().equals(id))
-                .forEach(oaLk -> {
-                    oaLk.setOppiaine(newOppiaine);
-                });
+                    .forEach(oaLk -> {
+                        oaLk.setOppiaine(newOppiaine);
+                    });
         }
 
         OpsOppiaine kopio = new OpsOppiaine(oppiaine, true);
@@ -511,6 +479,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public OpsOppiaineDto palautaYlempi(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        opetussuunnitelmaRepository.lock(ops);
 
         Opetussuunnitelma pohja = ops.getPohja();
         if (pohja == null) {
@@ -530,15 +499,24 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         Oppiaine opp = tmpOppiaineet.get(0).getOppiaine();
-        OpsOppiaine opsOppiaine = new OpsOppiaine(opp, false);
+        OpsOppiaine oldOppiaine = new OpsOppiaine(opp, false);
 
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
                 .filter(oa -> !oa.getOppiaine().getId().equals(id))
                 .collect(Collectors.toSet());
 
-        opsOppiaineet.add( opsOppiaine );
+        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            // Remap Lukiokurssit to new oppiaine, (does not affecter their ownership)
+            ops.getLukiokurssit().stream().filter(oaLk
+                    -> oaLk.getOppiaine().getId().equals(id))
+                    .forEach(oaLk -> {
+                        oaLk.setOppiaine(oldOppiaine.getOppiaine());
+                    });
+        }
+
+        opsOppiaineet.add( oldOppiaine );
         ops.setOppiaineet( opsOppiaineet );
-        return mapper.map( opsOppiaine, OpsOppiaineDto.class );
+        return mapper.map( oldOppiaine, OpsOppiaineDto.class );
     }
 
     private Oppiaine getOppiaine(Long opsId, Long oppiaineId) {

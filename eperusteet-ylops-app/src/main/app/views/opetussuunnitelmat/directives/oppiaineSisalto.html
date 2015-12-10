@@ -25,7 +25,7 @@
       </span>
 
       <div class="action-buttons-inline" ng-if="editable">
-        <button class="btn btn-default btn-icon-only" icon-role="edit"></button>
+        <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
       </div>
     </h3>
   </span>
@@ -34,13 +34,14 @@
     <a ng-class="{'toggle-perusteen-teksti peruste-teksti': true,'is-open': !textHidden}" ng-click="toggleTextVisible()">
       <span kaanna="nayta-perusteen-teksti"></span>
     </a>
-    <span ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna"></span>
+    <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna"></span>
   </div>
 
-  <div class="oppiaine-paikallinen" ng-if="oppiaineenTeksti">
-    <span>
+  <div class="oppiaine-paikallinen">
+    <span ng-if="!editing && oppiaineenTeksti">
       <strong>{{ 'paikallinen-tarkennus' | kaanna}}</strong>
       <span ng-bind-html="oppiaineenTeksti | kaanna"></span>
     </span>
+    <div ng-if="editing" ckeditor ng-model="oppiaineenTeksti" slocalized></div>
   </div>
 </div>

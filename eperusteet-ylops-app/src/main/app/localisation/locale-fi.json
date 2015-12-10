@@ -456,5 +456,10 @@
   "oppiaine-ei-kurssi-tyyppi-kuvauksia": "Ei kurssityyppien kuvauksia.",
   "yhteyden-palautus-onnistui": "Yhteyden palauttaminen onnistui.",
   "varmista-palauta-yhteys": "Haluatko varmasti palauttaa yhteyden?",
-  "yhteyden-katkaisu-onnistui": "Yhteyden katkaiseminen onnistui"
+  "yhteyden-katkaisu-onnistui": "Yhteyden katkaiseminen onnistui",
+  "takaisin-oppimaaraan": "Takaisin oppimäärään",
+  "kurssi-kuvaus": "Kurssin kuvaus",
+  "muokattu": "Muokattu",
+  "kurssikoodi": "Kurssikoodi",
+  "kurssityyppi": "Kurssityyppi"
 }

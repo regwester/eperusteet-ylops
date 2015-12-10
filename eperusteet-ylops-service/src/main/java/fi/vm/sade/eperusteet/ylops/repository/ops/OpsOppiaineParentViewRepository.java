@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * User: tommiratamaa
@@ -33,4 +34,7 @@ import java.util.List;
 public interface OpsOppiaineParentViewRepository extends JpaRepository<OpsOppiaineParentView, OpsOppiaineId> {
     @Query(value = "select v from OpsOppiaineParentView v where v.opsOppiaine.opetussuunnitelmaId = ?1")
     List<OpsOppiaineParentView> findByOpetusuunnitelmaId(long opsId);
+
+    @Query(value = "select v from OpsOppiaineParentView v where v.opsOppiaine.opetussuunnitelmaId = ?1 and v.tunniste = ?2")
+    OpsOppiaineParentView findByTunnisteAndOpetusuunnitelmaId(long opsId, UUID tunniste);
 }

@@ -284,6 +284,10 @@ ylopsApp
                 });
         };
 
+        $scope.deleteOppiaine = () => {
+            //TODO
+        };
+
         var palautaYlempi = () => {
             LukioOpetussuunnitelmaService.palautaYlempaan($stateParams.oppiaineId)
                 .then(res => {
@@ -384,20 +388,39 @@ ylopsApp
     })
 
 
-    .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams,
+    .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams, $state,
                                                   LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
         // TODO:
         $scope.kurssi = null;
+        $scope.oppiaine = null;
+
+        LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
+            $scope.oppiaine = oa;
+        });
+
         LukioOpetussuunnitelmaService.getKurssi($stateParams.oppiaineId, $stateParams.kurssiId)
             .then(kurssi => $scope.kurssi = kurssi);
+
+        $scope.goBack = () => {
+            $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                oppiaineId: $stateParams.oppiaineId
+            });
+        };
     })
 
     .controller('LukioOppiaineSisaltoController', function($scope, $q:IQService, $stateParams,
                                                   LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
         $scope.textHidden = true;
-        $scope.toggleTextVisible = function(){
+        $scope.editing = false;
+
+        $scope.toggleTextVisible = () => {
             $scope.textHidden = !$scope.textHidden;
-        }
+        };
+
+        $scope.edit = () => {
+            console.log("edit");
+            $scope.editing = true;
+        };
     })
 
 
