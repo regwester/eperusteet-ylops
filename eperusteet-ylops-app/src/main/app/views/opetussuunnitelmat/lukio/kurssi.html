@@ -20,7 +20,7 @@
 
   <a class="kurssi-return-btn" ng-click="goBack()">
     <span class="glyphicon glyphicon-chevron-left"></span>
-    <strong kaanna="'takaisin-oppimaaraan'"></strong>
+    <strong kaanna="oppiaine.koosteinen?'takaisin-oppimaaraan':'takaisin-oppiaineeseen'"></strong>
   </a>
 
   <h3>
@@ -29,28 +29,39 @@
       <strong>{{ 'muokattu' | kaanna}}:</strong>
       {{kurssi.muokattu | aikaleima: 'short'}}
     </span>
+    <div class="action-buttons-inline" ng-if="!editing">
+      <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
+    </div>
   </h3>
-
 
   <table>
     <tr>
       <td style="padding-right: 20px;">{{ 'kurssikoodi' | kaanna}}:</td>
-      <td>{{kurssi.lokalisoituKoodi | kaanna}}</td>
+      <td ng-if="!editing">{{kurssi.lokalisoituKoodi | kaanna}}</td>
+      <!--<td ng-if="editing"><input type="text"/><button ng-click="openKoodisto()">test</button></td>-->
+
+      <td ng-if="editing" style="width: 100%;">
+        <div class="fixed-group">
+          <input id="koodi-input" class="form-control limit" type="text" ng-model="kurssi.koodiUri" ng-disabled="true"/>
+          <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" kaanna="hae-koodistosta"></button></div>
+        </div>
+      </td>
     </tr>
-    <tr>
+    <tr style="margin-top: 10px;">
       <td>{{ 'kurssityyppi' | kaanna}}:</td>
       <td>
-        <span style="padding-right: 20px;" kaanna>kurssi-tyyppi-selite-{{kurssi.perusteen.tyyppi | lowercase}}</span>
+        <span style="padding-right: 20px;" kaanna>{{getTyyppiSelite()}}</span>
         <span class="small-colorbox {{kurssi.perusteen.tyyppi | lowercase}}"></span>
       </td>
     </tr>
   </table>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false"
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false" editing="editing"
                       oppiaineen-teksti="kurssi.kuvaus" title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
 
 
   <!--<pre>{{ kurssi | json}}</pre>-->
+  <!--<pre>{{ oppiaine.koosteinen | json}}</pre>-->
 </div>
 <div class="lisaa-kurssi oppiaine-form" ng-show="editMode">
   <h2 kaanna="'lisaa-kurssi-title'"></h2>

@@ -388,11 +388,12 @@ ylopsApp
     })
 
 
-    .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams, $state,
+    .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams, $state, LukioControllerHelpers,
                                                   LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
         // TODO:
         $scope.kurssi = null;
         $scope.oppiaine = null;
+        $scope.editing = false;
 
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
@@ -400,6 +401,23 @@ ylopsApp
 
         LukioOpetussuunnitelmaService.getKurssi($stateParams.oppiaineId, $stateParams.kurssiId)
             .then(kurssi => $scope.kurssi = kurssi);
+
+        $scope.getTyyppiSelite = () => {
+            if($scope.kurssi){
+                var tyyppi = ($scope.kurssi.perusteen)?$scope.kurssi.perusteen.tyyppi:$scope.kurssi.tyyppi;
+                tyyppi = tyyppi.contains('_')?tyyppi.split('_')[1].toLowerCase():tyyppi.toLowerCase();
+                return 'kurssi-tyyppi-selite-'+tyyppi;
+            }
+            return '';
+        };
+
+        $scope.edit = () => {
+            $scope.editing = true;
+            //TODO
+            //Editointikontrollit.startEditing();
+        };
+
+        $scope.openKoodisto = LukioControllerHelpers.openKurssiKoodisto( $scope.kurssi );
 
         $scope.goBack = () => {
             $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
@@ -434,7 +452,8 @@ ylopsApp
             title: '=title',
             colorbox: '=colorbox',
             ikoni: '=ikoni',
-            editable: '=editable'
+            editable: '=editable',
+            editing: '=editing'
         },
         templateUrl: 'views/opetussuunnitelmat/directives/oppiaineSisalto.html',
         controller: 'LukioOppiaineSisaltoController'
