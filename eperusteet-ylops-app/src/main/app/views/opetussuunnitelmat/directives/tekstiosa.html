@@ -31,5 +31,5 @@
   </h4>
   <div ng-if="editMode" ckeditor ng-model="muokattava.teksti" slocalized></div>
   <termistoteksti teksti="muokattava.teksti" class="tekstiosan-teksti" ng-if="!editMode"></termistoteksti>
-  <p class="empty-notice" ng-show="!editMode && !muokattava.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
+  <p class="empty-notice" ng-if="!editMode && !muokattava.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>
 </div>
