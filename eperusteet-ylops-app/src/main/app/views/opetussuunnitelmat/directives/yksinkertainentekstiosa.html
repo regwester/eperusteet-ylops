@@ -10,6 +10,6 @@
         kaanna="virhe" tooltip="{{ virhe + '-kuvaus' | kaanna }}"></span>
   </span>
 </h3>
-<div ng-if="editMode" ckeditor ng-model="model.teksti" slocalized></div>
-<termistoteksti teksti="model.teksti" class="tekstiosan-teksti" ng-if="!editMode"></termistoteksti>
+<div ng-show="editMode" ckeditor ng-model="model.teksti" slocalized></div>
+<termistoteksti teksti="model.teksti" class="tekstiosan-teksti" ng-hide="editMode"></termistoteksti>
 <p class="empty-notice" ng-show="!editMode && !model.teksti" kaanna="'ei-paikallista-sisaltoa'"></p>

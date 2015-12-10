@@ -27,6 +27,8 @@ ylopsApp
 
   $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.oppiaineenVlk = OppiaineService.getOpVlk();
+  const perusteenVlk = perusteOppiaine && _.find(perusteOppiaine.vuosiluokkakokonaisuudet,
+    (vlk) => $scope.oppiaineenVlk._vuosiluokkakokonaisuus === vlk._vuosiluokkakokonaisuus);
 
   if (perusteOppiaine) {
     if (perusteOppiaine.eiPerustetta) {
@@ -42,12 +44,11 @@ ylopsApp
     }
   }
 
-  const onOma = $scope.oppiaine.oma;
-  const hasVuosiluokkakokonaisuudet = !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet);
-  const hasTavoitteet = perusteOppiaine && _.any(perusteOppiaine.vuosiluokkakokonaisuudet, (vlk) => {
-    return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus && !_.isEmpty(vlk.tavoitteet);
-  });
-  $scope.isVuosiluokkaistettava = hasVuosiluokkakokonaisuudet && onOma && hasTavoitteet;
+  const
+    onOma = $scope.oppiaine.oma,
+    hasVuosiluokkakokonaisuudet = !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet),
+    hasVlkTavoitteet = perusteenVlk && !_.isEmpty(perusteenVlk.tavoitteet);
+  $scope.isVuosiluokkaistettava = hasVuosiluokkakokonaisuudet && onOma && hasVlkTavoitteet;
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
     $scope.oppiaineenVlk = value;
