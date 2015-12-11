@@ -40,6 +40,7 @@ public class LukioOppiaineListausDto implements Serializable,
         PerusteeseenViittaava<LukioPerusteOppiaineDto> {
     private LukioPerusteOppiaineDto perusteen;
     private Long id;
+    private Long oppiaineId;
     private Date muokattu;
     private UUID tunniste;
     private Tila tila;
@@ -56,12 +57,13 @@ public class LukioOppiaineListausDto implements Serializable,
     private TekstiosaDto arviointi;
     private Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kurssiTyyppiKuvaukset = new HashMap<>();
     private List<LukioOppiaineListausDto> oppimaarat = new ArrayList<>();
+    private List<LukioOppiaineListausDto> pohjanTarjonta = new ArrayList<>();
     private String koodiUri;
     private String koodiArvo;
     private List<LukiokurssiOpsDto> kurssit = new ArrayList<>();
 
     @Override
     public Stream<? extends PerusteeseenViittaava<?>> viittaukset() {
-        return Stream.concat(oppimaarat.stream(), kurssit.stream());
+        return Stream.concat(Stream.concat(oppimaarat.stream(), kurssit.stream()), pohjanTarjonta.stream());
     }
 }

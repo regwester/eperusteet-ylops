@@ -422,4 +422,8 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
             k -> Optional.ofNullable(k.oppiaineKuvausGetter().apply(this))
         ));
     }
+
+    public boolean isAbstraktiBool() {
+        return abstrakti != null && abstrakti;
+    }
 }

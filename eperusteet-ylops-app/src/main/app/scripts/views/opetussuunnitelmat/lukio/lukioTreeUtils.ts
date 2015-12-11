@@ -68,7 +68,7 @@ interface PaginationDetails {
 }
 
 ylopsApp
-    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli, $timeout) {
+    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli, $timeout, Notifikaatiot) {
         var templatesByState = (state:LukioKurssiTreeState) => {
             var templateAround = (tmpl:string) => (!state.isEditMode() ? ' <a class="container-link' : '<span class="span-container')+
                     ' tree-list-item" '+(!state.isEditMode() ? ' ng-href="{{createHref()}}"': '')+
@@ -204,11 +204,11 @@ ylopsApp
             //Tarkistetaan, että onko kurssi jo kyseisen oppiaineen/oppimäärän kurssi, mikäli ei
             // siirretä oppiaineen/oppimäärän sisällä. Jos on jo, siirtoa ei sallita.
             if (node.dtype === LukioKurssiTreeNodeType.kurssi
-                        && to.dtype === LukioKurssiTreeNodeType.oppiaine
-                        && !to.koosteinen && (!node.$$nodeParent
-                            || node.$$nodeParent.id !== to.id)
-                        && _.any(to.lapset, kurssi => kurssi.dtype == LukioKurssiTreeNodeType.kurssi
-                                        && kurssi.id === node.id)) {
+                    && to.dtype === LukioKurssiTreeNodeType.oppiaine
+                    && !to.koosteinen && (!node.$$nodeParent
+                    || node.$$nodeParent.id !== to.id)
+                    && _.any(to.lapset, kurssi => kurssi.dtype == LukioKurssiTreeNodeType.kurssi
+                    && kurssi.id === node.id)) {
                 return false;
             }
             return (node.dtype === LukioKurssiTreeNodeType.oppiaine

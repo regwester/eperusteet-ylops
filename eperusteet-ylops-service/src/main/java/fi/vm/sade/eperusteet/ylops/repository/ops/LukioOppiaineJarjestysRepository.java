@@ -41,6 +41,10 @@ public interface LukioOppiaineJarjestysRepository extends JpaWithVersioningRepos
             " order by j.jarjestys, j.oppiaine.id")
     List<LukioOppiaineJarjestys> findByOppiaineIds(Set<Long> oppiaineIds);
 
+    @Query(value = "select j from LukioOppiaineJarjestys j where j.opetussuunnitelma.id = ?1" +
+            " and j.oppiaine.id in ?2 order by j.jarjestys, j.oppiaine.id")
+    List<LukioOppiaineJarjestys> findByOppiaineIds(long opsId, Set<Long> oppiaineIds);
+
     @Query(value = "select new fi.vm.sade.eperusteet.ylops.dto.lukio.OppiaineJarjestysDto(oa.id, j.jarjestys)" +
             " from LukioOppiaineJarjestys j inner join j.oppiaine oa where j.opetussuunnitelma.id = ?1" +
             " order by j.jarjestys, oa.id")

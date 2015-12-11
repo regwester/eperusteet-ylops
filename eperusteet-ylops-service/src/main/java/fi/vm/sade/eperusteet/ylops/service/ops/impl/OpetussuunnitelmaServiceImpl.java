@@ -555,7 +555,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oa.setTyyppi(OppiaineTyyppi.LUKIO);
             oa.setNimi(LokalisoituTeksti.of(oppiaine.getNimi().getTekstit()));
             oa.setOppiaine(parent);
-            oa.setAbstrakti(false);
+            oa.setAbstrakti(oppiaine.getAbstrakti());
             oa.setKoosteinen(oppiaine.isKoosteinen());
             oa.setKoodiArvo(oppiaine.getKoodiArvo());
             oa.setKoodiUri(oppiaine.getKoodiUri());

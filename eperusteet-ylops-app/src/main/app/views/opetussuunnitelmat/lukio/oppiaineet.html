@@ -27,9 +27,6 @@
                 <button icon-role="add" class="floater btn"
                         oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'opetussuunnitelma', permission: 'korjaus' }]"
                         ng-click="addOppiaine()" kaanna="'lisaa-oppiaine'"></button>
-                <button class="floater btn"
-                        oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'opetussuunnitelma', permission: 'korjaus' }]"
-                        ng-click="importOppiaineFromPeruste()" kaanna="'tuo-oppiaine-perusteesta'"></button>
                 <button icon-role="edit" class="floater btn"
                         oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'opetussuunnitelma', permission: 'korjaus' }]"
                         ng-click="toEditMode()" kaanna="'lukio-kurssipuu-muokkaa-rakennetta'"></button>
@@ -113,6 +110,5 @@
     </div>
     <div style="clear: both;">
         <br />
-        <kommentit></kommentit>
     </div>
 </div>

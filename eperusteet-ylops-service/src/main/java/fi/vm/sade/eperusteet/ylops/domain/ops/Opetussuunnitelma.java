@@ -38,7 +38,12 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  *
@@ -273,5 +278,18 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             pohjin = pohjin.getPohja();
         }
         return pohjin;
+    }
+
+    public Function<Long, List<OppiaineLukiokurssi>> lukiokurssitByOppiaine() {
+        return orEmpty(this.getLukiokurssit().stream()
+            .sorted(comparing(OppiaineLukiokurssi::getJarjestys)
+                .thenComparing((OppiaineLukiokurssi oaLk) -> oaLk.getKurssi().getNimi().firstByKieliOrder().orElse("")))
+            .collect(groupingBy(k -> k.getOppiaine().getId()))::get);
+    }
+
+    @Transient // ei pitäisi käyttää pääosin (raskas, tässä vain erikoistapaukseen)
+    public Oppiaine findOppiaine(Long id) {
+        return oppiaineet.stream().flatMap(opsOa -> opsOa.getOppiaine().maarineen())
+                .filter(oa -> oa.getId().equals(id)).findFirst().orElse(null);
     }
 }

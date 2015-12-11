@@ -775,6 +775,9 @@ a.clickable {
   .dropdown-menu {
     top: auto;
   }
+  .dropdown-container {
+    position: relative;
+  }
 
   .fixed-group {
     max-width: 300px;

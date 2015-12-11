@@ -147,6 +147,7 @@ declare module Lukio {
         id: number;
         tunniste?: string;
         perusteen?: LukioOppiainePeruste;
+        oppiaineId?: number;
         tila: Tila;
         oma: boolean;
         maariteltyPohjassa: boolean;
@@ -157,6 +158,7 @@ declare module Lukio {
         kurssiTyyppiKuvaukset: { [key:string/*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu; };
         oppimaarat?: LukioOppiaine[];
         kurssit: LukiokurssiOps[];
+        pohjanTarjonta?: LukioOppiaine[];
     }
 
     export interface LukioOpetussuunnitelmaRakenneOps {

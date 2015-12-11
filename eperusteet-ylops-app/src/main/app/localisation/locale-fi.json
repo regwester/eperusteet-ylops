@@ -101,6 +101,7 @@
   "lisaa-muu-uskonto": "Lisää uskonto",
   "lisaa-opetussuunnitelma": "Luo uusi opetussuunnitelma",
   "lisaa-oppiaine": "Lisää oppiaine",
+  "lisaa-oppimaara-tarjonnasta": "Lisää kieli",
   "lisaa-oppimaara-title": "Lisää oppimäärä",
   "lisaa-oppimaara-kieli": "Lisää kielitarjontaa",
   "lisaa-oppimaara-uskonto": "Lisää uskonto",
@@ -466,5 +467,11 @@
   "muokattu": "Muokattu",
   "kurssikoodi": "Kurssikoodi",
   "kurssityyppi": "Kurssityyppi",
-  "lisaa-oppimaara": "Lisää oppimäärä"
+  "lisaa-oppimaara": "Lisää oppimäärä",
+  "kieli-koodi": "Kielikoodi",
+  "kurssi-on-jo-kyseisen-oppimaaran-alla": "Kurssi on jo liitetty kyseiseen oppimäärään/oppiaineeseen.",
+  "kurssin-voi-liittaa-vain-oppiaineeseen-tai-oppimaaraan": "Kurssin voi liittää ainoastaan oppimäärään tai oppiaineeseen.",
+  "kurssin-voi-liittaa-vain-ei-koosteiseen-oppiaineeseen": "Kurssin voi liittää ainoastaan yhden oppimäärän oppiaineeseen tai oppimäärään.",
+  "oppimaaraa-ei-voi-siirtaa-oppiaineeksi": "Oppimäärää ei voi siirtää oppiaineeksi.",
+  "oppimaaraa-ei-voi-siirtaa-toisen-oppimaaran-alle": "Oppimäärää ei voi siirtää toiseen oppiaineeseen."
 }

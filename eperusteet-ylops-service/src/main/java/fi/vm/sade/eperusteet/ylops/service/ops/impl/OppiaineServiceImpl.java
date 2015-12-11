@@ -16,9 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.codepoetics.protonpack.StreamUtils;
+import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
@@ -50,6 +52,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -286,8 +289,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .filter(oa -> !oa.getOppiaine().getId().equals(id))
                 .collect(Collectors.toSet());
 
-        oppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
-        Oppiaine newOppiaine = oppiaine;
+        Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
         if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
             // Remap Lukiokurssit to new oppiaine, (does not affecter their ownership)
             ops.getLukiokurssit().stream().filter(oaLk
@@ -297,9 +299,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     });
         }
 
-        OpsOppiaine kopio = new OpsOppiaine(oppiaine, true);
+        OpsOppiaine kopio = new OpsOppiaine(newOppiaine, true);
         opsOppiaineet.add(kopio);
         ops.setOppiaineet(opsOppiaineet);
+        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, newOppiaine);
+        }
 
         return mapper.map(kopio, OpsOppiaineDto.class);
     }
@@ -522,7 +527,27 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         opsOppiaineet.add( oldOppiaine );
         ops.setOppiaineet( opsOppiaineet );
+        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, opp);
+        }
+
         return mapper.map( oldOppiaine, OpsOppiaineDto.class );
+    }
+
+    private void updateLukioJarjestyksetOnOpsOppaineRefChange(Opetussuunnitelma ops,
+                                                              Oppiaine oppiaine, Oppiaine newOppiaine) {
+        Map<UUID, LukioOppiaineJarjestys> jarjestykset = lukioOppiaineJarjestysRepository
+                .findByOppiaineIds(ops.getId(), oppiaine.maarineen().map(Oppiaine::getId).collect(toSet()))
+                .stream().collect(toMap(j -> j.getOppiaine().getTunniste(), j->j));
+        ops.getOppiaineJarjestykset().removeAll(jarjestykset.values());
+        opetussuunnitelmaRepository.flush();
+        Map<UUID, Oppiaine> uudetOppiaineJaMaaraByTunniste = newOppiaine.maarineen()
+                .collect(toMap(Oppiaine::getTunniste, oa -> oa));
+        for (Map.Entry<UUID, LukioOppiaineJarjestys> oldJarjestys : jarjestykset.entrySet()) {
+            ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops,
+                    uudetOppiaineJaMaaraByTunniste.get(oldJarjestys.getKey()),
+                    oldJarjestys.getValue().getJarjestys()));
+        }
     }
 
     private Oppiaine getOppiaine(Long opsId, Long oppiaineId) {
