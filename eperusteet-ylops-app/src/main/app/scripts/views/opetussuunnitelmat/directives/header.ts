@@ -46,7 +46,7 @@ ylopsApp
   };
 
   $scope.createUrl = function(model){
-    return 'https://eperusteet.opintopolku.fi/#/' + $stateParams.lang + '/ops/' + model.id + koulutusTyypit[model.koulutustyyppi] + "/";
+    return 'https://eperusteet.opintopolku.fi/#/' + $stateParams.lang + '/ops/' + model.id + "/" + koulutusTyypit[model.koulutustyyppi];
   };
 
   function mapUrls(arr) {
