@@ -14,7 +14,7 @@
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="$onKieliTaiUskonto" class="btn btn-default" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
-  <button class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'" ng-if="oppiaine.oppimaarat === null && !oppiaine.$parent"
+  <button class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'" ng-if="oppiaine.oppimaarat === null && oppiaine.tyyppi === 'yhteinen'"
           icon-role="ep-text-clone" tooltip="{{ 'palauta-ylempi-oppiaine' | kaanna }}" ng-click="palautaVanhaan()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
 </div>
 
@@ -25,6 +25,8 @@
 
 <div ng-show="$onKieliTaiUskonto" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 <div ng-hide="$onKieliTaiUskonto" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
+
+<div perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 
 <div class="tekstiosa-wrapper" ng-hide="oppiaine.tyyppi !== 'yhteinen' || oppiaine.koosteinen || (isVuosiluokkaistettava && oppiaineenVlk)"
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
@@ -57,8 +59,6 @@
   </table>
 </div>
 
-<div ng-if="oppiaine.tyyppi === 'yhteinen'" perusteen-tekstiosa="perusteOpVlk.tehtava" start-collapsed="false"></div>
-<div ng-if="oppiaine.tyyppi !== 'yhteinen'" perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 <div ng-if="perusteOpVlk.tyotavat" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
 <div ng-if="perusteOpVlk.ohjaus" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
 <div ng-if="perusteOpVlk.arviointi" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>

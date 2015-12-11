@@ -27,7 +27,7 @@ ylopsApp
 
   $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.oppiaineenVlk = OppiaineService.getOpVlk();
-  const perusteenVlk = perusteOppiaine && _.find(perusteOppiaine.vuosiluokkakokonaisuudet,
+  $scope.perusteenVlk = perusteOppiaine && _.find(perusteOppiaine.vuosiluokkakokonaisuudet,
     (vlk) => $scope.oppiaineenVlk._vuosiluokkakokonaisuus === vlk._vuosiluokkakokonaisuus);
 
   if (perusteOppiaine) {
@@ -47,7 +47,7 @@ ylopsApp
   const
     onOma = $scope.oppiaine.oma,
     hasVuosiluokkakokonaisuudet = !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet),
-    hasVlkTavoitteet = perusteenVlk && !_.isEmpty(perusteenVlk.tavoitteet);
+    hasVlkTavoitteet = !perusteOppiaine || $scope.perusteenVlk && !_.isEmpty($scope.perusteenVlk.tavoitteet);
   $scope.isVuosiluokkaistettava = hasVuosiluokkakokonaisuudet && onOma && hasVlkTavoitteet;
 
   $scope.$on('oppiainevlk:updated', function (event, value) {
@@ -58,7 +58,6 @@ ylopsApp
   $scope.$on('oppiaine:reload', function () {
     OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId);
   });
-
 })
 
 .service('TextUtils', function () {
