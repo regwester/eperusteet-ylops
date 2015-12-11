@@ -16,6 +16,8 @@
 
 'use strict';
 
+/// <reference path="../angular.d.ts" />
+
 /* jshint ignore:start */
 
 var ylopsApp = angular.module('ylopsApp', [
@@ -38,7 +40,7 @@ var ylopsApp = angular.module('ylopsApp', [
 
 ylopsApp
   .run(function ($rootScope, VirheService, $window, Editointikontrollit, Kaanna,
-    Varmistusdialogi, $state, paginationConfig) {
+          Varmistusdialogi, $state, paginationConfig, $log) {
 
     paginationConfig.firstText = '';
     paginationConfig.previousText = '';
@@ -69,6 +71,12 @@ ylopsApp
         state: _.clone(fromState),
         params: _.clone(fromParams)
       };
+      if (fromState.name.indexOf('root.opetussuunnitelmat.') !== -1
+          && fromState.name.indexOf('root.opetussuunnitelmat.') !== -1
+          &&  fromParams.id && !toParams.id) {
+        // Redirect within opetusuunnitelmat (probably out or to yksi-scope)
+        toParams.id = fromParams.id;
+      }
 
       if (Editointikontrollit.getEditMode()) {
         event.preventDefault();
@@ -153,6 +161,36 @@ ylopsApp
         return function(given) {
           return field ? given[field] === expected : given === expected;
         };
+      },
+      flattenTree: function (obj, extractChildren) {
+        if (!obj) {
+          return [];
+        }
+        if (!_.isArray(obj) && obj) {
+          obj = [obj];
+        }
+        if (_.isEmpty(obj)) {
+          return [];
+        }
+        return _.union(obj, _(obj).map(function (o) {
+          return _.flattenTree(extractChildren(o), extractChildren);
+        }).flatten().value());
+      },
+      reducedIndexOf: function (obj, extractor, combinator) {
+        if (!_.isArray(obj)) {
+          obj = [obj];
+        }
+        var results = {};
+        _.each(obj, function(o) {
+          var index = extractor(o);
+          if (results[index]) {
+            results[index] = combinator(results[index], o);
+          } else {
+            results[index] = o;
+          }
+        });
+        return results;
       }
     });
   });
+

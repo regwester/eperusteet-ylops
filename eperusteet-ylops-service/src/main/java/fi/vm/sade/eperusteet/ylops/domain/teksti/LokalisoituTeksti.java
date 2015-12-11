@@ -21,12 +21,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.io.Serializable;
 import java.text.Normalizer;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -172,4 +167,13 @@ public class LokalisoituTeksti implements Serializable {
         }
     }
 
+    public Optional<String> firstByKieliOrder() {
+        Map<Kieli, String> map = getTeksti();
+        for (Kieli k : Kieli.values()) {
+            if (map.containsKey(k) && map.get(k).trim().length() > 0) {
+                return Optional.of(map.get(k));
+            }
+        }
+        return Optional.empty();
+    }
 }

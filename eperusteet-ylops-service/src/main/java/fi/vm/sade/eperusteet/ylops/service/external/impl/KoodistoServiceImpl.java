@@ -70,7 +70,7 @@ public class KoodistoServiceImpl implements KoodistoService {
     public List<KoodistoKoodiDto> getAll(String koodisto) {
         String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/";
         KoodistoKoodiDto[] koodistot = client.getForObject(url, KoodistoKoodiDto[].class);
-        List<KoodistoKoodiDto> koodistoLista = null;
+        List<KoodistoKoodiDto> koodistoLista;
         if ("kunta".equals(koodisto)) {
             koodistoLista
                 = Arrays.stream(koodistot)
@@ -79,8 +79,10 @@ public class KoodistoServiceImpl implements KoodistoService {
                 // Ja "puuttuva" kunta
                 .filter(kunta -> !"999".equals(kunta.getKoodiArvo()))
                 .collect(Collectors.toList());
+        } else {
+            koodistoLista = koodistot == null ? null : Arrays.asList(koodistot);
         }
-        return koodistot == null ? null : koodistoLista;
+        return koodistoLista;
     }
 
     @Override

@@ -59,6 +59,16 @@ ylopsApp
     };
   })
   .directive('kaanna', function(Kaanna, $compile, IconMapping) {
+    function resolvePostfix(attrs) {
+      var postfix = attrs.kaannaPostfix || '';
+      if (postfix) {
+        postfix = ' ' + postfix;
+      }
+      if (!postfix && attrs.vaaditaan !== undefined) {
+        postfix = ' *';
+      }
+      return postfix;
+    }
     function getAttr(attr: any, scope: any) {
       if (!_.isString(attr) || _.size(attr) === 0) {
         return;
@@ -71,26 +81,27 @@ ylopsApp
         function kaannaValue(value) {
           return _.isObject(value) ? Kaanna.kaannaSisalto(value) : Kaanna.kaanna(value);
         }
-        var original: any = getAttr(attrs.kaanna, scope) || el.text();
+        var original = getAttr(attrs.kaanna, scope) || el.text();
+        var postfix = resolvePostfix(attrs);
         if (_.isObject(original)) {
-          el.text(Kaanna.kaannaSisalto(original));
+          el.text(Kaanna.kaannaSisalto(original)+postfix);
           if (attrs.iconRole) {
             IconMapping.addIcon(attrs.iconRole, el);
           }
           scope.$watch(function () {
-            return getAttr(attrs.kaanna, scope);
+            return getAttr(attrs.kaanna, scope)+postfix;
           }, function (value) {
-            el.text(kaannaValue(value));
+            el.text(kaannaValue(value)+postfix);
           });
           scope.$on('changed:sisaltokieli', function () {
-            el.text(kaannaValue(getAttr(attrs.kaanna, scope)));
+            el.text(kaannaValue(getAttr(attrs.kaanna, scope))+postfix);
           });
         } else {
           var textEl = angular.element('<span>').attr('translate', original);
           if (attrs.kaannaValues) {
             textEl.attr('translate-values', attrs.kaannaValues);
           }
-          el.html('').append(textEl);
+          el.html('').append(textEl).append(postfix);
           if (attrs.iconRole) {
             var iconEl = angular.element('<span>').attr('icon-role', attrs.iconRole);
             el.removeAttr('icon-role');

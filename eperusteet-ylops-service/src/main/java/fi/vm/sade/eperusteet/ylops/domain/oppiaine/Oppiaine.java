@@ -17,11 +17,14 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,8 +37,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier.nothing;
+import static java.util.stream.Collectors.toMap;
 
 /**
  *
@@ -44,7 +51,7 @@ import java.util.stream.Stream;
 @Entity
 @Audited
 @Table(name = "oppiaine")
-public class Oppiaine extends AbstractAuditedReferenceableEntity {
+public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copyable<Oppiaine> {
 
     @Getter
     @NotNull
@@ -89,11 +96,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
-    @Column(name = "jarjestys")
-    private Integer jarjestys;
-
-    @Getter
-    @Setter
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa tehtava;
 
@@ -105,7 +107,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Tekstiosa arvioinnit;
+    private Tekstiosa arviointi;
 
     @Getter
     @Setter
@@ -163,7 +165,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     private Set<Oppiaineenvuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
 
     @Getter
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     /**
      * oppiaine johon oppimäärä kuuluu tai null jos kyseessä itse oppiaine.
      */
@@ -181,7 +183,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
 
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @BatchSize(size = 5)
-    private Set<Oppiaine> oppimaarat;
+    private Set<Oppiaine> oppimaarat = new HashSet<>(0);
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable
@@ -191,11 +193,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     @NotNull
     @Getter
     private Tila tila = Tila.LUONNOS;
-
-    @Getter
-    @Audited
-    @OneToMany(mappedBy = "oppiaine", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OppiaineLukiokurssi> lukiokurssit = new HashSet<>(0);
 
     public Oppiaine(UUID tunniste) {
         this.tunniste = tunniste;
@@ -351,36 +348,54 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
     }
 
     public static Oppiaine copyOf(Oppiaine other, boolean copyOppimaarat) {
-        Oppiaine o = new Oppiaine(other.getTunniste());
-        o.setNimi(other.getNimi());
-        o.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
-        o.setKoodi(other.getKoodi());
-        o.setKoosteinen(other.isKoosteinen());
-        o.setKoodiArvo(other.getKoodiArvo());
-        o.setKoodiUri(other.getKoodiUri());
-
-        Map<Long, Opetuksenkohdealue> kohdealueet = other.getKohdealueet().stream()
-            .collect(Collectors.toMap(ka -> ka.getId(), ka -> new Opetuksenkohdealue(ka.getNimi())));
-        o.setKohdealueet(new HashSet<>(kohdealueet.values()));
-
-        other.getVuosiluokkakokonaisuudet().forEach((vk -> {
-            Oppiaineenvuosiluokkakokonaisuus ovk = Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet);
-            o.addVuosiluokkaKokonaisuus(ovk);
-        }));
-
-        boolean isKielijoukko = other.koodiArvo != null
-                && ("TK".equalsIgnoreCase(other.koodiArvo)
-                || "VK".equalsIgnoreCase(other.koodiArvo)
-                || "KT".equalsIgnoreCase(other.koodiArvo)
-                || "AI".equalsIgnoreCase(other.koodiArvo));
-
-        if (other.isKoosteinen() && copyOppimaarat && other.getOppiaine() == null) {
-            other.getOppimaarat().forEach((om -> {
-                o.addOppimaara(Oppiaine.copyOf(om));
-            }));
+        Copier<Oppiaine> copier = basicCopier().and(perusopetusCopier());
+        if (copyOppimaarat) {
+            copier = copier.and(oppimaaraCopier(om -> copyOf(om, true)));
         }
+        return copier.copied(other, new Oppiaine(other.getTunniste()));
+    }
 
-        return o;
+    @Override
+    public Oppiaine copyInto(Oppiaine to) {
+        return basicCopier().copied(this, to);
+    }
+
+    public static Copier<Oppiaine> basicCopier() {
+        return (other, to) -> {
+            to.setNimi(other.getNimi());
+            to.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
+            to.setKoodi(other.getKoodi());
+            to.setKoosteinen(other.isKoosteinen());
+            to.setKoodiArvo(other.getKoodiArvo());
+            to.setKoodiUri(other.getKoodiUri());
+            to.setTavoitteet(Tekstiosa.copyOf(other.getTavoitteet()));
+            to.setArviointi(Tekstiosa.copyOf(other.getArviointi()));
+            for (LukiokurssiTyyppi tyyppi : LukiokurssiTyyppi.values()) {
+                tyyppi.oppiaineKuvausCopier().copy(other, to);
+            }
+        };
+    }
+
+    public static Copier<Oppiaine> perusopetusCopier() {
+        return (other, o) -> {
+            Map<Long, Opetuksenkohdealue> kohdealueet = other.getKohdealueet().stream()
+                    .collect(Collectors.toMap(ka -> ka.getId(), ka -> new Opetuksenkohdealue(ka.getNimi())));
+            o.setKohdealueet(new HashSet<>(kohdealueet.values()));
+            other.getVuosiluokkakokonaisuudet().forEach((vk -> {
+                Oppiaineenvuosiluokkakokonaisuus ovk = Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet);
+                o.addVuosiluokkaKokonaisuus(ovk);
+            }));
+        };
+    }
+
+    public static Copier<Oppiaine> oppimaaraCopier(ConstructedCopier<Oppiaine> with) {
+        return (other, o) -> {
+            if (other.isKoosteinen() && other.getOppiaine() == null) {
+                other.getOppimaarat().forEach((om -> {
+                    o.addOppimaara(with.copy(om));
+                }));
+            }
+        };
     }
 
     static public void validoi(Validointi validointi, Oppiaine oa, Set<Kieli> kielet) {
@@ -399,5 +414,16 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity {
 
     public Stream<Oppiaine> maarineen() {
         return Stream.concat(Stream.of(this), oppimaarat.stream());
+    }
+
+    @Transient
+    public Map<LukiokurssiTyyppi, Optional<LokalisoituTeksti>> getKurssiTyyppiKuvaukset() {
+        return Stream.of(LukiokurssiTyyppi.values()).collect(toMap(k -> k,
+            k -> Optional.ofNullable(k.oppiaineKuvausGetter().apply(this))
+        ));
+    }
+
+    public boolean isAbstraktiBool() {
+        return abstrakti != null && abstrakti;
     }
 }

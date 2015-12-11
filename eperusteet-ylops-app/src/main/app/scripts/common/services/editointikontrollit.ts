@@ -105,7 +105,9 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
             handleBadCode(scope.editingCallback.save(kommentti), afterSave);
           }
           else {
-            Notifikaatiot.varoitus(err || 'mandatory-odottamaton-virhe');
+            if (!scope.editingCallback.doNotShowMandatoryMessage) {
+              Notifikaatiot.varoitus(err || 'mandatory-odottamaton-virhe');
+            }
           }
         }
 
@@ -118,14 +120,15 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
           }
         }
       },
-      cancelEditing: (tilanvaihto) => $q((resolve) => {
-        handleBadCode(scope.editingCallback.cancel(), () => {
-          setEditMode(false);
-          $rootScope.$broadcast('disableEditing');
-          $rootScope.$broadcast('notifyCKEditor');
-          resolve();
-        });
-      }),
+      cancelEditing: function(tilanvaihto) {
+        if( !_.isEmpty(scope.editingCallback)) {
+          handleBadCode(scope.editingCallback.cancel(), () => {
+            setEditMode(false);
+            $rootScope.$broadcast('disableEditing');
+            $rootScope.$broadcast('notifyCKEditor');
+          });
+        }
+      },
       registerCallback: function(callback) {
         callback.validate = callback.validate || _.constant(true);
         callback.edit = callback.edit || _.noop;

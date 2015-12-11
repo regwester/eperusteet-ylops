@@ -15,34 +15,35 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuudet;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OpetuksenYleisetTavoitteet;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  *
@@ -157,8 +158,15 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     @Getter
     @Audited
-    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY)
-    private Set<Kurssi> kurssit = new HashSet<>(0);
+    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private Set<OppiaineLukiokurssi> lukiokurssit = new HashSet<>(0);
+
+    @Getter
+    @Audited
+    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private Set<LukioOppiaineJarjestys> oppiaineJarjestykset = new HashSet<>();
 
     @Getter
     @Setter
@@ -270,5 +278,18 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             pohjin = pohjin.getPohja();
         }
         return pohjin;
+    }
+
+    public Function<Long, List<OppiaineLukiokurssi>> lukiokurssitByOppiaine() {
+        return orEmpty(this.getLukiokurssit().stream()
+            .sorted(comparing(OppiaineLukiokurssi::getJarjestys)
+                .thenComparing((OppiaineLukiokurssi oaLk) -> oaLk.getKurssi().getNimi().firstByKieliOrder().orElse("")))
+            .collect(groupingBy(k -> k.getOppiaine().getId()))::get);
+    }
+
+    @Transient // ei pitäisi käyttää pääosin (raskas, tässä vain erikoistapaukseen)
+    public Oppiaine findOppiaine(Long id) {
+        return oppiaineet.stream().flatMap(opsOa -> opsOa.getOppiaine().maarineen())
+                .filter(oa -> oa.getId().equals(id)).findFirst().orElse(null);
     }
 }
