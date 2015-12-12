@@ -447,7 +447,7 @@ module.exports = function(grunt) {
         options: {
           limit: 300
         },
-        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}]
+        files: [{src: ['<%= yeoman.app %>/scripts/**/*.ts']}]
       },
       scss: {
         options: {
