@@ -17,11 +17,11 @@
 package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 
 import com.wordnik.swagger.annotations.ApiOperation;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  *
- * @author isaul
+ * @author iSaul
  */
 @RestController
 @RequestMapping("/dokumentit")
@@ -52,14 +52,17 @@ public class DokumenttiController {
             @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        final DokumenttiDto createDtoFor = service.createDtoFor(opsId, Kieli.of(kieli));
+        final DokumenttiDto dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
 
-        //if (createDtoFor.getTila() != DokumenttiTila.EPAONNISTUI) {
-            service.setStarted(createDtoFor);
-            service.generateWithDto(createDtoFor);
+        // Jos dto luonti ei epäonnistunut aletaan rakentamaan dokumenttia
+        if (dtoForDokumentti.getTila() != DokumenttiTila.EPAONNISTUI) {
+            // Vaihdetaan dokumentin tila luonniksi
+            service.setStarted(dtoForDokumentti);
+            // Generoidaan dokumentin data sisältö
+            service.generateWithDto(dtoForDokumentti);
             status = HttpStatus.ACCEPTED;
-        //}
-        return new ResponseEntity<>(createDtoFor, status);
+        }
+        return new ResponseEntity<>(dtoForDokumentti, status);
     }
 
     @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")

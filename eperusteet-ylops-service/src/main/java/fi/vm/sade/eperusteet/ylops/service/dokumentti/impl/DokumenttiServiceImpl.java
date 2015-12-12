@@ -16,32 +16,82 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.Date;
 
 /**
  *
- * @author isaul
+ * @author iSaul
  */
 @Service
 public class DokumenttiServiceImpl implements DokumenttiService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DokumenttiServiceImpl.class);
+
+    @Autowired
+    private DokumenttiRepository dokumenttiRepository;
+
+    @Autowired
+    private DtoMapper mapper;
+
+    @Autowired
+    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
     @Override
     public void setStarted(@P("dto") DokumenttiDto dto) {
+        // Asetetaan dokumentint tilaksi luonti
+        Dokumentti doc = dokumenttiRepository.findById(dto.getId());
+        doc.setTila(DokumenttiTila.LUODAAN);
+        dokumenttiRepository.save(doc);
+    }
+
+    @Override
+    @Transactional
+    public void generateWithDto(@P("dto") DokumenttiDto dto) throws IOException {
 
     }
 
     @Override
-    public void generateWithDto(@P("dto") DokumenttiDto dto) {
-
-    }
-
-    @Override
+    @Transactional
+    @PreAuthorize("isAuthenticated()")
     public DokumenttiDto createDtoFor(@P("id") long id, Kieli kieli) {
-        return null;
+        String name = SecurityUtil.getAuthenticatedPrincipal().getName();
+        Dokumentti dokumentti = new Dokumentti();
+        dokumentti.setTila(DokumenttiTila.EI_OLE);
+        dokumentti.setKieli(kieli);
+        dokumentti.setAloitusaika(new Date());
+        dokumentti.setLuoja(name);
+        dokumentti.setOpsId(id);
+        //dokumentti.setSuoritustapakoodi(suoritustapakoodi);
+
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
+        if (ops != null) {
+            Dokumentti saved = dokumenttiRepository.save(dokumentti);
+            return mapper.map(saved, DokumenttiDto.class);
+        } else {
+            dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
+            // TODO: localize
+            //dokumentti.setVirhekoodi(DokumenttiVirhe.PERUSTETTA_EI_LOYTYNYT);
+            return mapper.map(dokumentti, DokumenttiDto.class);
+        }
     }
 
     @Override

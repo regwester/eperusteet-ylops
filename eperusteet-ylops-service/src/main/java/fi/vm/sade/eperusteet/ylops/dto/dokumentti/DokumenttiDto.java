@@ -14,9 +14,10 @@
  * European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto;
+package fi.vm.sade.eperusteet.ylops.dto.dokumentti;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,7 @@ import java.util.Date;
 
 /**
  *
- * @author isaul
+ * @author iSaul
  */
 @Getter
 @Setter
@@ -37,7 +38,7 @@ public class DokumenttiDto {
     private Kieli kieli;
     private Date aloitusaika;
     private Date valmistumisaika;
-    //private DokumenttiTila tila = DokumenttiTila.EI_OLE;
+    private DokumenttiTila tila = DokumenttiTila.EI_OLE;
     //private DokumenttiVirhe virhekoodi = DokumenttiVirhe.EI_VIRHETTA;
     //private Suoritustapakoodi suoritustapakoodi;
 }
