@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +54,11 @@ public class DokumenttiController {
 
         final DokumenttiDto createDtoFor = service.createDtoFor(opsId, Kieli.of(kieli));
 
-        if (createDtoFor.getTila() != DokumenttiTila.EPAONNISTUI) {
+        //if (createDtoFor.getTila() != DokumenttiTila.EPAONNISTUI) {
             service.setStarted(createDtoFor);
             service.generateWithDto(createDtoFor);
             status = HttpStatus.ACCEPTED;
-        }
+        //}
         return new ResponseEntity<>(createDtoFor, status);
     }
 

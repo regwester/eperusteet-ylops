@@ -16,12 +16,36 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import org.springframework.security.access.method.P;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author isaul
  */
+@Service
 public class DokumenttiServiceImpl implements DokumenttiService {
 
+    @Override
+    public void setStarted(@P("dto") DokumenttiDto dto) {
+
+    }
+
+    @Override
+    public void generateWithDto(@P("dto") DokumenttiDto dto) {
+
+    }
+
+    @Override
+    public DokumenttiDto createDtoFor(@P("id") long id, Kieli kieli) {
+        return null;
+    }
+
+    @Override
+    public byte[] get(Long id) {
+        return new byte[0];
+    }
 }

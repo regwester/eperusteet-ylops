@@ -16,10 +16,29 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.DokumenttiDto;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 /**
  *
  * @author isaul
  */
 public interface DokumenttiService {
+
+    @PreAuthorize("isAuthenticated()")
+    public void setStarted(@P("dto") DokumenttiDto dto);
+
+    @PreAuthorize("isAuthenticated()")
+    @Async(value = "docTaskExecutor")
+    public void generateWithDto(@P("dto") DokumenttiDto dto);
+
+    @PreAuthorize("isAuthenticated()")
+    public DokumenttiDto createDtoFor(@P("id") final long id, Kieli kieli);
+
+    @PreAuthorize("isAuthenticated()")
+    public byte[] get(Long id);
 
 }
