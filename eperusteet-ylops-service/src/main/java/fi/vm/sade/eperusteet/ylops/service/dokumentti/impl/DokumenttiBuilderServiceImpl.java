@@ -20,6 +20,7 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.lowagie.text.DocumentException;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,6 @@ import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.*;
-import java.net.URL;
-import java.net.URLClassLoader;
-
 /**
  *
  * @author iSaul
@@ -40,6 +38,9 @@ import java.net.URLClassLoader;
 public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiBuilderServiceImpl.class);
+
+    @Autowired
+    private LocalizedMessagesService messages;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -105,7 +106,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addTocPage(ITextRenderer renderer, Handlebars hb) throws IOException, DocumentException {
-        Template template = hb.compile("docgen/ops-template");
+        Template template = hb.compile("docgen/ops-toc-page");
 
         renderer.setDocumentFromString(template.apply("Handlebars toc"));
         renderer.layout();
