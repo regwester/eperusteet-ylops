@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import com.lowagie.text.DocumentException;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -23,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
@@ -55,19 +57,8 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
-    @Override
-    public void setStarted(@P("dto") DokumenttiDto dto) {
-        // Asetetaan dokumentint tilaksi luonti
-        Dokumentti doc = dokumenttiRepository.findById(dto.getId());
-        doc.setTila(DokumenttiTila.LUODAAN);
-        dokumenttiRepository.save(doc);
-    }
-
-    @Override
-    @Transactional
-    public void generateWithDto(@P("dto") DokumenttiDto dto) throws IOException {
-
-    }
+    @Autowired
+    private DokumenttiBuilderService builder;
 
     @Override
     @Transactional
@@ -95,7 +86,49 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    public void setStarted(@P("dto") DokumenttiDto dto) {
+        // Asetetaan dokumentint tilaksi luonti
+        Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
+        dokumentti.setTila(DokumenttiTila.LUODAAN);
+        dokumenttiRepository.save(dokumentti);
+    }
+
+    @Override
+    @Transactional
+    public void generateWithDto(@P("dto") DokumenttiDto dto) {
+        Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
+
+        try {
+            // Luodaan pdf
+            byte[] data = builder.generatePdf();
+
+            dokumentti.setData(data);
+            dokumentti.setTila(DokumenttiTila.VALMIS);
+            dokumentti.setValmistumisaika(new Date());
+
+            // Tallennetaan valmis dokumentti
+            dokumenttiRepository.save(dokumentti);
+        } catch (IOException | DocumentException ex) {
+            LOG.error(ex.getMessage());
+            dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
+            dokumenttiRepository.save(dokumentti);
+        }
+    }
+    @Override
+    public DokumenttiDto getDto(@P("id") long id) {
+        Dokumentti dokumentti = dokumenttiRepository.findById(id);
+        DokumenttiDto dokumenttiDto = mapper.map(dokumentti, DokumenttiDto.class);
+        return dokumenttiDto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public byte[] get(Long id) {
-        return new byte[0];
+        Dokumentti dokumentti = dokumenttiRepository.findById(id);
+        if (dokumentti != null) {
+            return dokumentti.getData();
+        } else {
+            return null;
+        }
     }
 }

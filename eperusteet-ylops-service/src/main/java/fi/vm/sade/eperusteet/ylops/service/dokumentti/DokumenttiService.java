@@ -22,8 +22,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import java.io.IOException;
-
 /**
  *
  * @author iSaul
@@ -31,16 +29,19 @@ import java.io.IOException;
 public interface DokumenttiService {
 
     @PreAuthorize("isAuthenticated()")
-    public void setStarted(@P("dto") DokumenttiDto dto);
+    DokumenttiDto createDtoFor(@P("id") final long id, Kieli kieli);
+
+    @PreAuthorize("isAuthenticated()")
+    void setStarted(@P("dto") DokumenttiDto dto);
 
     @PreAuthorize("isAuthenticated()")
     @Async(value = "docTaskExecutor")
-    public void generateWithDto(@P("dto") DokumenttiDto dto) throws IOException;
+    void generateWithDto(@P("dto") DokumenttiDto dto);
 
     @PreAuthorize("isAuthenticated()")
-    public DokumenttiDto createDtoFor(@P("id") final long id, Kieli kieli);
+    DokumenttiDto getDto(@P("id") final long id);
 
     @PreAuthorize("isAuthenticated()")
-    public byte[] get(Long id);
+    byte[] get(Long id);
 
 }

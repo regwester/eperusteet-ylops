@@ -25,10 +25,17 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 
 /**
  *
@@ -54,21 +61,29 @@ public class DokumenttiController {
 
         final DokumenttiDto dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
 
-        // Jos dto luonti ei epäonnistunut aletaan rakentamaan dokumenttia
+        // Jos dto luonti luonti onnistui aletaan rakentamaan dokumenttia
         if (dtoForDokumentti.getTila() != DokumenttiTila.EPAONNISTUI) {
             // Vaihdetaan dokumentin tila luonniksi
             service.setStarted(dtoForDokumentti);
+
             // Generoidaan dokumentin data sisältö
+            // Asynkroninen metodi
             service.generateWithDto(dtoForDokumentti);
+
             status = HttpStatus.ACCEPTED;
         }
-        return new ResponseEntity<>(dtoForDokumentti, status);
+
+        // Uusi objekti dokumentissa, jossa päivitetyt tiedot
+        final DokumenttiDto dtoDokumentti = service.getDto(dtoForDokumentti.getId());
+
+        return new ResponseEntity<>(dtoDokumentti, status);
     }
 
     @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")
     @ResponseBody
     @CacheControl(age = CacheControl.ONE_YEAR, nonpublic = false)
-    public ResponseEntity<Object> get(@PathVariable("dokumenttiId") final Long dokumenttiId) {
+    public ResponseEntity<Object>get(@PathVariable("dokumenttiId") final Long dokumenttiId)
+            throws IOException {
         byte[] pdfdata = service.get(dokumenttiId);
 
         if (pdfdata == null || pdfdata.length == 0) {
@@ -78,6 +93,8 @@ public class DokumenttiController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-disposition", "attachment; filename=\"" + dokumenttiId + ".pdf\"");
-        return new ResponseEntity<Object>(pdfdata, headers, HttpStatus.OK);
+        LOG.info(headers.toString());
+
+        return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
 }

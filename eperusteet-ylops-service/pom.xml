@@ -28,6 +28,7 @@
         <swagger.version>1.0.2</swagger.version>
         <schema.file>${project.basedir}/target/schema.ddl</schema.file>
         <hibernate.export.type>CREATE</hibernate.export.type>
+        <handlebars.version>4.0.1</handlebars.version>
     </properties>
 
     <repositories>
@@ -57,7 +58,7 @@
         <dependency>
             <groupId>com.github.jknack</groupId>
             <artifactId>handlebars</artifactId>
-            <version>4.0.1</version>
+            <version>${handlebars.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
