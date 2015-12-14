@@ -1,0 +1,114 @@
+<!--
+  ~  Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
+  ~
+  ~  This program is free software: Licensed under the EUPL, Version 1.1 or - as
+  ~  soon as they will be approved by the European Commission - subsequent versions
+  ~  of the EUPL (the "Licence");
+  ~
+  ~  You may not use this work except in compliance with the Licence.
+  ~  You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  European Union Public Licence for more details.
+  -->
+
+<h2 kaanna="'lukio-oppiaineet-oppimaarat-title'"></h2>
+
+<div class="lukio-oppiaineet-puu lukio-oppiaine-tab">
+    <div class="main-column tree">
+        <div class="tree-con">
+            <div class="left search-field-container">
+                <rajaus size="small" classes="puun-rajaus" model="haku.haku"
+                        callback="haku.hae()" placeholder="{{ 'lukio-etsi-oppiaineista-ja-kursseista' || kaanna }}"></rajaus>
+            </div>
+            <div class="action-buttons right" ng-show="!editMode">
+                <button icon-role="add" class="floater btn"
+                        oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'opetussuunnitelma', permission: 'korjaus' }]"
+                        ng-click="addOppiaine()" kaanna="'lisaa-oppiaine'"></button>
+                <button icon-role="edit" class="floater btn"
+                        oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'opetussuunnitelma', permission: 'korjaus' }]"
+                        ng-click="toEditMode()" kaanna="'lukio-kurssipuu-muokkaa-rakennetta'"></button>
+            </div>
+        </div>
+        <div class="tree-con">
+            <div class="opetussisaltopuu tree" ng-class="{'tree-edit-mode': editMode}">
+                <div class="legendContainer">
+                    <div class="legends">
+                        <div class="left legend" ng-repeat="tyyppi in ['valtakunnallinen', 'paikallinen','pakollinen', 'syventava', 'soveltava']">
+                            <span class="colorbox kurssi-tyyppi {{tyyppi}}"></span>
+                            <span class="legend-name" ng-bind="'kurssi-tyyppi-selite-'+tyyppi | kaanna"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="lukiotree-ylapainikkeet" ng-show="!editMode">
+                    <span class="rakenne-nimi ng-binding"> </span>
+                    <div class="pull-right">
+                        <a class="group-toggler action-link" ng-click="toggleCollapse()">
+                            <span class="avaa-sulje" icon-role="ep-open-close">{{ 'avaa-sulje-kaikki' | kaanna }}</span>
+                        </a>
+                    </div>
+                </div>
+                <generic-tree tree-provider="treeProvider"
+                              ui-sortable-config="sortableConfig"></generic-tree>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="liittamattomat-column" ng-class="{'tree-edit-mode': editMode}">
+        <div class="kelluva" ui-scrollfix="+160">
+            <div ng-show="editMode" class="liittamattomat-container">
+                <h4 kaanna="lukio-liitamattomat-kurssit"></h4>
+
+                <div class="tree-con">
+                    <div class="action-buttons" ng-show="!editMode">
+                        <button icon-role="add" class="floater btn"
+                                oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'peruste', permission: 'korjaus' }]"
+                                ng-click="addKurssi()" kaanna="'lisaa-kurssi'"></button>
+                    </div>
+                    <div class="search-field-container">
+                        <rajaus size="small" classes="puun-rajaus" model="liittamattomatHaku.haku"
+                                callback="liittamattomatHaku.hae()"
+                                placeholder="{{ 'lukio-etsi-liittamattomista-kursseista' || kaanna }}"></rajaus>
+                    </div>
+                </div>
+                <div ui-sortable="liittamattomatKurssitConfig" ng-model="liittamattomatKurssit" class="recursivetreeLiittamattomat">
+                    <generic-tree tree-provider="liittamattomatTreeProvider"
+                                  ui-sortable-config="sortableLiittamattomatConfig"></generic-tree>
+                </div>
+                <pagination ng-show="liittamattomatPagination.multiPage"
+                            ng-model="liittamattomatPagination.currentPage"
+                            ng-change="liittamattomatPagination.changePage(liittamattomatPagination.currentPage)"
+                            total-items="liittamattomatPagination.total"
+                            items-per-page="liittamattomatPagination.showPerPage"></pagination>
+
+                <div ng-show="!editMode" kaanna="lukio-liitetyt-kurssit-ohje"></div>
+            </div>
+            <div ng-show="editMode" class="liitetyt-container">
+                <h4 kaanna="lukio-liitetyt-kurssit"></h4>
+
+                <div class="tree-con">
+                    <div class="search-field-container">
+                        <rajaus size="small" classes="puun-rajaus" model="liitetytHaku.haku"
+                                callback="liitetytHaku.hae()"
+                                placeholder="{{ 'lukio-etsi-liitetyista-kursseista' || kaanna }}"></rajaus>
+                    </div>
+                </div>
+                <div ui-sortable="liitetytKurssitConfig" ng-model="liitetytKurssit" class="recursivetreeLiittamattomat">
+                    <generic-tree tree-provider="liitetytTreeProvider"
+                                  ui-sortable-config="sortableLiitetytConfig"></generic-tree>
+                </div>
+                <pagination ng-show="liitetytPagination.multiPage"
+                            ng-model="liitetytPagination.currentPage"
+                            ng-change="liitetytPagination.changePage(liitetytPagination.currentPage)"
+                            total-items="liitetytPagination.total"
+                            items-per-page="liitetytPagination.showPerPage"></pagination>
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;">
+        <br />
+    </div>
+</div>

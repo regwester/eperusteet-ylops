@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.repository.ops;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
@@ -36,34 +37,34 @@ import org.springframework.stereotype.Repository;
 public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository<Opetussuunnitelma, Long> {
 
     @Query(value = "SELECT org from Opetussuunnitelma o join o.organisaatiot org where o.id = ?1")
-    public List<String> findOrganisaatiot(long id);
+    List<String> findOrganisaatiot(long id);
 
     @Query(value = "SELECT NEW fi.vm.sade.eperusteet.ylops.service.util.Pair(o.tyyppi, o.tila) from Opetussuunnitelma o where o.id = ?1")
-    public Pair<Tyyppi,Tila> findTyyppiAndTila(long id);
+    Pair<Tyyppi,Tila> findTyyppiAndTila(long id);
 
     @Query(value = "SELECT NEW java.lang.Boolean(o.esikatseltavissa) from Opetussuunnitelma o where o.id = ?1")
-    public Boolean isEsikatseltavissa(long id);
+    Boolean isEsikatseltavissa(long id);
 
-    public Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
-    public Opetussuunnitelma findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
-    public Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
-    public List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
-    public List<Opetussuunnitelma> findAllByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
+    Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
+    Opetussuunnitelma findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
+    Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
+    List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
+    List<Opetussuunnitelma> findAllByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
 
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE (o.tila = 'JULKAISTU') AND o.tyyppi = :tyyppi")
-    public List<Opetussuunnitelma> findAllByTyyppiAndTilaIsJulkaistu(@Param("tyyppi") Tyyppi tyyppi);
+    List<Opetussuunnitelma> findAllByTyyppiAndTilaIsJulkaistu(@Param("tyyppi") Tyyppi tyyppi);
 
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE o.pohja.id = ?1")
-    public Set<Opetussuunnitelma> findAllByPohjaId(long id);
+    Set<Opetussuunnitelma> findAllByPohjaId(long id);
 
     @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
                    "WHERE org IN (:organisaatiot) AND o.tyyppi = :tyyppi")
-    public List<Opetussuunnitelma> findAllByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
-                                                   @Param("organisaatiot") Collection<String> organisaatiot);
+    List<Opetussuunnitelma> findAllByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
+                                            @Param("organisaatiot") Collection<String> organisaatiot);
 
     @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
                    "WHERE o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.POHJA AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.VALMIS OR org IN (:organisaatiot))")
-    public List<Opetussuunnitelma> findPohja(@Param("organisaatiot") Collection<String> organisaatiot);
+    List<Opetussuunnitelma> findPohja(@Param("organisaatiot") Collection<String> organisaatiot);
 
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE o.tekstit.id in ?1")
     Set<Opetussuunnitelma> findByTekstiRoot(Iterable<Long> ids);

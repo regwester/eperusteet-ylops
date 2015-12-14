@@ -1,0 +1,78 @@
+<!--
+  ~  Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
+  ~
+  ~  This program is free software: Licensed under the EUPL, Version 1.1 or - as
+  ~  soon as they will be approved by the European Commission - subsequent versions
+  ~  of the EUPL (the "Licence");
+  ~
+  ~  You may not use this work except in compliance with the Licence.
+  ~  You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  European Union Public Licence for more details.
+  -->
+
+<div class="kurssi-view" ng-show="!editMode">
+  <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
+  <hr class="mujuviiva"/>
+
+  <a class="kurssi-return-btn" ng-click="goBack()">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <strong kaanna="oppiaine.koosteinen?'takaisin-oppimaaraan':'takaisin-oppiaineeseen'"></strong>
+  </a>
+
+  <h3>
+    {{ kurssi.nimi | kaanna}}
+    <span style="padding-left: 20px; font-size: 12px;">
+      <strong>{{ 'muokattu' | kaanna}}:</strong>
+      {{kurssi.muokattu | aikaleima: 'short'}}
+    </span>
+    <div class="action-buttons-inline" ng-if="!editing">
+      <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
+    </div>
+  </h3>
+
+  <table>
+    <tr>
+      <td style="padding-right: 20px;">{{ 'kurssikoodi' | kaanna}}:</td>
+      <td ng-if="!editing">{{kurssi.lokalisoituKoodi | kaanna}}</td>
+      <!--<td ng-if="editing"><input type="text"/><button ng-click="openKoodisto()">test</button></td>-->
+
+      <td ng-if="editing" style="width: 100%;">
+        <div class="fixed-group">
+          <input id="koodi-input" class="form-control limit" type="text" ng-model="kurssi.koodiArvo" ng-disabled="true"/>
+          <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" kaanna="hae-koodistosta"></button></div>
+        </div>
+      </td>
+    </tr>
+    <tr style="margin-top: 10px;">
+      <td>{{ 'kurssityyppi' | kaanna}}:</td>
+      <td>
+        <span style="padding-right: 20px;" kaanna>{{getTyyppiSelite()}}</span>
+        <span class="small-colorbox {{kurssi.perusteen.tyyppi | lowercase}}"></span>
+      </td>
+    </tr>
+  </table>
+
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false" editing="editing"
+                      oppiaineen-teksti="kurssi.kuvaus" title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
+
+
+  <!--<pre>{{ kurssi | json}}</pre>-->
+  <!--<pre>{{ oppiaine.koosteinen | json}}</pre>-->
+</div>
+<div class="lisaa-kurssi oppiaine-form" ng-show="editMode">
+  <h2 kaanna="'lisaa-kurssi-title'"></h2>
+
+  <div class="non-collapsibles">
+    <form name="kurssiForm" role="form">
+      <div class="action-buttons">
+        <div class="floater" ng-include="'views/opetusuunnitelmat/lukio/include/kurssiOsavalitsin'">
+        </div>
+      </div>
+      <div ng-include="'views/opetusuunnitelmat/lukio/include/kurssiLomakeKentat.html'"></div>
+    </form>
+  </div>
+</div>

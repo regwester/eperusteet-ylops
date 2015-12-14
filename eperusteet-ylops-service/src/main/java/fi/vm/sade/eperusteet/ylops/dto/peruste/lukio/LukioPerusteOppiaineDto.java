@@ -15,13 +15,13 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -29,7 +29,7 @@ import java.util.stream.Stream;
  */
 @Getter
 @Setter
-public class LukioPerusteOppiaineDto {
+public class LukioPerusteOppiaineDto implements PerusteenOsa {
     private Long id;
     private UUID tunniste;
     private String koodiUri;
@@ -38,12 +38,26 @@ public class LukioPerusteOppiaineDto {
     private Integer jarjestys;
     private Boolean abstrakti;
     private LokalisoituTekstiDto nimi;
+    private LokalisoituTekstiDto kuvaus;
     private LokalisoituTekstiDto pakollinenKurssiKuvaus;
     private LokalisoituTekstiDto syventavaKurssiKuvaus;
     private LokalisoituTekstiDto soveltavaKurssiKuvaus;
     private PerusteTekstiOsaDto tehtava;
     private PerusteTekstiOsaDto tavoitteet;
     private PerusteTekstiOsaDto arviointi;
-    private Set<LukioPerusteOppiaineDto> oppimaarat;
-    private Set<LukiokurssiDto> kurssit;
+    private Set<LukioPerusteOppiaineDto> oppimaarat = new HashSet<>();
+    private Set<LukiokurssiPerusteDto> kurssit = new HashSet<>();
+
+    @Override
+    public Stream<? extends PerusteenOsa> osat() {
+        return Stream.concat(oppimaarat.stream(), kurssit.stream());
+    }
+
+    public Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> getKurssiTyyppiKuvaukset() {
+        Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> map = new HashMap<>();
+        map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_PAKOLLINEN, Optional.ofNullable(pakollinenKurssiKuvaus));
+        map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_SYVENTAVA, Optional.ofNullable(syventavaKurssiKuvaus));
+        map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_SOVELTAVA, Optional.ofNullable(soveltavaKurssiKuvaus));
+        return map;
+    }
 }

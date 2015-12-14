@@ -19,6 +19,9 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -28,11 +31,16 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import static java.util.stream.Collectors.toSet;
 
 @Entity
 @Audited
 @Table(name = "aihekokonaisuudet", schema = "public")
-public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity {
+public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity
+        implements Copyable<Aihekokonaisuudet> {
 
     @Column(name = "tunniste", nullable = false, unique = true, updatable = false)
     @Getter
@@ -46,6 +54,17 @@ public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity {
         this.opetussuunnitelma = opetussuunnitelma;
         this.uuidTunniste = uuidTunniste;
     }
+
+    public Aihekokonaisuudet(Opetussuunnitelma opetussuunnitelma, UUID uuidTunniste, Aihekokonaisuudet parent) {
+        this(opetussuunnitelma, uuidTunniste);
+        this.parent = parent;
+    }
+
+    @Getter
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private Aihekokonaisuudet parent;
 
     @Getter
     @Setter
@@ -73,4 +92,22 @@ public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity {
     @OneToMany(mappedBy = "aihekokonaisuudet", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @OrderBy("jnro")
     private Set<Aihekokonaisuus> aihekokonaisuudet = new HashSet<>(0);
+
+    public Aihekokonaisuudet copy(Opetussuunnitelma to, Aihekokonaisuudet parent) {
+        Aihekokonaisuudet newAk = new Aihekokonaisuudet(to, this.uuidTunniste, parent);
+        return copier().and(aihekokonaisuudetCopier(a -> a.copy(newAk, a))).copied(this, newAk);
+    }
+
+    public static Copier<Aihekokonaisuudet> aihekokonaisuudetCopier(ConstructedCopier<Aihekokonaisuus> copier) {
+        return (from, to) -> {
+            to.aihekokonaisuudet.clear();
+            to.aihekokonaisuudet.addAll(from.aihekokonaisuudet.stream().map(copier::copy).collect(toSet()));
+        };
+    }
+
+    public Aihekokonaisuudet copyInto(Aihekokonaisuudet to) {
+        to.otsikko = this.otsikko;
+        to.yleiskuvaus = this.yleiskuvaus;
+        return to;
+    }
 }

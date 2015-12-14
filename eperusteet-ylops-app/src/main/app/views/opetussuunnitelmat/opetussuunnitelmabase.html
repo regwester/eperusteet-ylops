@@ -7,6 +7,9 @@
       <li ui-sref-active="active">
         <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" kaanna="'yhteiset-osuudet'"></a>
       </li>
+      <li ng-show="model.koulutustyyppi === 'koulutustyyppi_2'" ui-sref-active="active">
+        <a ui-sref="root.opetussuunnitelmat.lukio.opetus" kaanna="'lukio-opetus'"></a>
+      </li>
       <li ng-show="model.koulutustyyppi === 'koulutustyyppi_16'" ui-sref-active="active">
         <a ui-sref="root.opetussuunnitelmat.yksi.opetus" kaanna="'vuosiluokat-ja-oppiaineet'"></a>
       </li>

@@ -19,6 +19,7 @@
 ylopsApp
   .service('YlopsResources', function (SERVICE_LOC) {
     this.OPS = SERVICE_LOC + '/opetussuunnitelmat/:opsId';
+    this.LUKIO_OPS = SERVICE_LOC + '/opetussuunnitelmat/lukio/:opsId';
     this.OPPIAINE = this.OPS + '/oppiaineet/:oppiaineId';
     this.VLK = this.OPS + '/vuosiluokkakokonaisuudet/:vlkId';
     this.OPVLK = this.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId';
@@ -84,6 +85,18 @@ ylopsApp
 
   .factory('OppiaineenVuosiluokkaLukko', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/oppiaineet/:oppiaineId/vuosiluokkakokonaisuudet/:vlkId/vuosiluokat/:vlId/lukko');
+  })
+
+  .factory('OpetusuunnitelmaLukio', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.LUKIO_OPS, {
+    }, {
+      aihekokonaisuudet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/aihekokonaisuudet', isArray: false},
+      rakenne: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/rakenne', isArray: false},
+      opetuksenYleisetTavoitteet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/opetuksenYleisetTavoitteet', isArray: false},
+      saveOppiaine: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},
+      updateOppiaine: {method: 'PUT', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},
+      updateStructure: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/rakenne', isArray:false}
+    });
   })
 
   .factory('OppiaineCRUD', function ($resource, YlopsResources) {

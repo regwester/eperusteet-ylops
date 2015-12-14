@@ -22,8 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
@@ -37,6 +36,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -49,7 +49,6 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
@@ -65,6 +64,9 @@ import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
+import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import org.apache.commons.lang.StringUtils;
@@ -81,7 +83,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import static java.util.stream.Collectors.toMap;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.*;
 
 /**
  *
@@ -112,9 +116,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private OppiaineService oppiaineService;
 
     @Autowired
-    private OppiaineRepository oppiaineRepository;
-
-    @Autowired
     private KoodistoService koodistoService;
 
     @Autowired
@@ -143,8 +144,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(Tyyppi tyyppi) {
         final List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsJulkaistu(tyyppi);
 
-        final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaJulkinenDto.class);
-
+        final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat,
+                OpetussuunnitelmaJulkinenDto.class);
 
         dtot.forEach(dto -> {
             for (KoodistoDto koodistoDto : dto.getKunnat()) {
@@ -198,7 +199,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return dto;
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
@@ -209,7 +209,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         } else {
             opetussuunnitelmat = repository.findAllByTyyppi(tyyppi, organisaatiot);
         }
-        final List<OpetussuunnitelmaInfoDto> dtot = mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class);
+        final List<OpetussuunnitelmaInfoDto> dtot = mapper.mapAsList(opetussuunnitelmat,
+                OpetussuunnitelmaInfoDto.class);
         dtot.forEach(dto -> {
             fetchKuntaNimet(dto);
             fetchOrganisaatioNimet(dto);
@@ -217,17 +218,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return dtot;
     }
 
-
-
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
         List<Opetussuunnitelma> opsit = repository.findAllByTyyppi(Tyyppi.OPS);
-        List<OpetussuunnitelmaStatistiikkaDto> opsDtot = mapper.mapAsList(opsit, OpetussuunnitelmaStatistiikkaDto.class);
-        return opsDtot;
+        return mapper.mapAsList(opsit,OpetussuunnitelmaStatistiikkaDto.class);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PerusteDto getPeruste(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -271,10 +270,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus().getLaajaalaisetosaamiset();
+        return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus()
+                .getLaajaalaisetosaamiset();
     }
 
     @Override
@@ -331,7 +332,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     }
                 }
 
-                JsonNode tyypitNode = Optional.ofNullable(organisaatio.get("tyypit"))
+                JsonNode tyypitNode = ofNullable(organisaatio.get("tyypit"))
                     .orElse(organisaatio.get("organisaatiotyypit"));
                 if (tyypitNode != null) {
                     tyypit = StreamSupport.stream(tyypitNode.spliterator(), false)
@@ -349,15 +350,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
 
-        Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD, RolePermission.ADMIN));
+        Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD,
+                RolePermission.ADMIN));
         if (CollectionUtil.intersect(userOids, ops.getOrganisaatiot()).isEmpty()) {
-            throw new BusinessRuleViolationException("Käyttäjällä ei ole luontioikeutta opetussuunnitelman organisaatioissa");
+            throw new BusinessRuleViolationException("Käyttäjällä ei ole luontioikeutta " +
+                    "opetussuunnitelman organisaatioissa");
         }
 
         Opetussuunnitelma pohja = ops.getPohja();
 
         if (pohja == null) {
-            pohja = repository.findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi.POHJA, Tila.VALMIS, opetussuunnitelmaDto.getKoulutustyyppi());
+            pohja = repository.findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi.POHJA,
+                    Tila.VALMIS, opetussuunnitelmaDto.getKoulutustyyppi());
         }
 
         if (pohja != null) {
@@ -390,21 +394,73 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
         boolean onPohjastaTehtyPohja = ylinpohja.getId().equals(pohja.getId());
 
-
-        ops.setOppiaineet(
-                pohja.getOppiaineet().stream()
-                        .map(ooa -> teeKopio
-                                ? new OpsOppiaine(Oppiaine.copyOf(ooa.getOppiaine(), !onPohjastaTehtyPohja), true)
-                                : new OpsOppiaine(ooa.getOppiaine(), false))
-                        .collect(Collectors.toSet()));
+        Copier<Oppiaine> oppiaineCopier = teeKopio ? Oppiaine.basicCopier() : Copier.nothing();
+        Map<Long,Oppiaine> newOppiaineByOld = new HashMap<>();
+        if (pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            luoLukiokoulutusPohjasta(pohja, ops);
+            oppiaineCopier = oppiaineCopier.and(getLukiokurssitOppiaineCopier(pohja, ops, teeKopio))
+                    .and((fromOa, toOa) -> {
+                        newOppiaineByOld.put(fromOa.getId(), toOa);
+                    });
+        } else if (teeKopio) {
+            oppiaineCopier = oppiaineCopier.and(Oppiaine.perusopetusCopier());
+        }
+        final Copier<Oppiaine> oppiainePerusCopier = oppiaineCopier;
+        if (teeKopio && !onPohjastaTehtyPohja) {
+            oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(
+                    oppiainePerusCopier.construct(oa -> new Oppiaine(oa.getTunniste()))));
+        }
+        ConstructedCopier<OpsOppiaine> opsOppiaineCopier = OpsOppiaine.copier(
+                oppiaineCopier.construct(existing -> teeKopio ? new Oppiaine(existing.getTunniste()) : existing), teeKopio);
+        ops.setOppiaineet(pohja.getOppiaineet().stream().map(opsOppiaineCopier::copy).collect(toSet()));
+        ops.getOppiaineJarjestykset().addAll(pohja.getOppiaineJarjestykset().stream().map(old
+                -> newOppiaineByOld.get(old.getId().getOppiaineId()) != null ?
+                    new LukioOppiaineJarjestys(ops, newOppiaineByOld.get(old.getId().getOppiaineId()), old.getJarjestys())
+                    : null).filter(o -> o != null).collect(toSet()));
         Set<OpsVuosiluokkakokonaisuus> ovlkoot = pohja.getVuosiluokkakokonaisuudet().stream()
-            .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
-                .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste().equals(ovlk.getVuosiluokkakokonaisuus().getTunniste())))
-            .map(ovlk -> teeKopio
-                    ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
-                    : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
-            .collect(Collectors.toSet());
+                .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
+                        .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste()
+                                .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste())))
+                .map(ovlk -> teeKopio
+                        ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
+                        : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
+                .collect(toSet());
         ops.setVuosiluokkakokonaisuudet(ovlkoot);
+    }
+
+    private Copier<Oppiaine> getLukiokurssitOppiaineCopier(Opetussuunnitelma pohja, Opetussuunnitelma ops, boolean teeKopio) {
+        Map<UUID, Lukiokurssi> existingKurssit = teeKopio ? new HashMap<>()
+                : pohja.getLukiokurssit().stream().map(OppiaineLukiokurssi::getKurssi)
+                .filter(k-> k.getTunniste() != null)
+                .collect(toMap(Kurssi::getTunniste, k -> k, (a, b) -> a));
+        Map<Long, List<OppiaineLukiokurssi>> lukiokurssitByPohjaOppiaineId
+                = pohja.getLukiokurssit().stream().collect(groupingBy(oak -> oak.getOppiaine().getId()));
+        return (from, to) ->
+                ops.getLukiokurssit().addAll(ofNullable(lukiokurssitByPohjaOppiaineId.get(from.getId()))
+                    .map(list -> list.stream().map(oaKurssi -> {
+                                Lukiokurssi kurssi = oaKurssi.getKurssi().getTunniste() == null
+                                        ? null : existingKurssit.get(oaKurssi.getKurssi().getTunniste());
+                                if (kurssi == null) {
+                                    kurssi = teeKopio ? oaKurssi.getKurssi().copy() : oaKurssi.getKurssi();
+                                    if (oaKurssi.getKurssi().getTunniste() != null) {
+                                        existingKurssit.put(oaKurssi.getKurssi().getTunniste(), kurssi);
+                                    }
+                                }
+                                return new OppiaineLukiokurssi(
+                                        ops, to, kurssi, oaKurssi.getJarjestys(), teeKopio
+                                );
+                            }).collect(toList())
+                    ).orElse(emptyList()));
+    }
+
+    private void luoLukiokoulutusPohjasta(Opetussuunnitelma from, Opetussuunnitelma to) {
+        if (from.getAihekokonaisuudet() != null) {
+            to.setAihekokonaisuudet(from.getAihekokonaisuudet().copy(to, from.getAihekokonaisuudet()));
+        }
+        if (from.getOpetuksenYleisetTavoitteet() != null) {
+            to.setOpetuksenYleisetTavoitteet(from.getOpetuksenYleisetTavoitteet().copy(to,
+                    from.getOpetuksenYleisetTavoitteet()));
+        }
     }
 
     private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent, boolean teeKopio) {
@@ -485,64 +541,57 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void importLukioRakenne(LukioOpetussuunnitelmaRakenneDto from, Opetussuunnitelma to) {
-        importOppiaineet(to, from.getOppiaineet(),
-                oa -> to.getOppiaineetReal().add(new OpsOppiaine(oa, false)),
-                to.getOppiaineetReal().stream().map(OpsOppiaine::getOppiaine).flatMap(Oppiaine::maarineen)
-                    .collect(toMap(Oppiaine::getTunniste, oa -> oa)),
-                null, to.getOppiaineetReal().stream().flatMap(o -> o.getOppiaine().maarineen()
-                            .flatMap(o2 -> o2.getLukiokurssit().stream()))
-                        .map(OppiaineLukiokurssi::getKurssi).collect(toMap(Kurssi::getTunniste, k -> k)) );
+        importOppiaineet(to, from.getOppiaineet(), oa -> {
+                to.getOppiaineetReal().add(new OpsOppiaine(oa.getObj(), false));
+                to.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(to, oa.getObj(), oa.getJarjestys()));
+            }, null, new HashMap<>());
     }
 
     private void importOppiaineet(Opetussuunnitelma ops,
-                                  Collection<LukioPerusteOppiaineDto> from, Consumer<Oppiaine> to,
-                                  Map<UUID, Oppiaine> oppiaineet, Oppiaine parent,
-                                  Map<UUID, Lukiokurssi> kurssit) {
+                                  Collection<LukioPerusteOppiaineDto> from, Consumer<Jarjestetty<Oppiaine>> to,
+                                  Oppiaine parent, Map<UUID, Lukiokurssi> kurssit) {
         for (LukioPerusteOppiaineDto oppiaine : from) {
-            if (oppiaine.getAbstrakti() !=null && oppiaine.getAbstrakti()) {
-                continue;
+            Oppiaine oa = new Oppiaine(oppiaine.getTunniste());
+            oa.setTyyppi(OppiaineTyyppi.LUKIO);
+            oa.setNimi(LokalisoituTeksti.of(oppiaine.getNimi().getTekstit()));
+            oa.setOppiaine(parent);
+            oa.setAbstrakti(oppiaine.getAbstrakti());
+            oa.setKoosteinen(oppiaine.isKoosteinen());
+            oa.setKoodiArvo(oppiaine.getKoodiArvo());
+            oa.setKoodiUri(oppiaine.getKoodiUri());
+            for (Map.Entry<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kv : oppiaine.getKurssiTyyppiKuvaukset().entrySet()) {
+                kv.getKey().oppiaineKuvausSetter().set(oa, kv.getValue().map(LokalisoituTekstiDto::getTekstit)
+                        .map(LokalisoituTeksti::of).orElse(null));
             }
-            Oppiaine oa = oppiaineet.get(oppiaine.getTunniste());
-            if (oa == null) {
-                oa = new Oppiaine(oppiaine.getTunniste());
-                oa.setNimi(LokalisoituTeksti.of(oppiaine.getNimi().getTekstit()));
-                oa.setOppiaine(parent);
-                oa.setAbstrakti(false);
-                oa.setKoosteinen(oppiaine.isKoosteinen());
-                oa.setKoodiArvo(oppiaine.getKoodiArvo());
-                oa.setKoodiUri(oppiaine.getKoodiUri());
-                to.accept(oa);
-                oppiaineet.put(oa.getTunniste(), oa);
-            }
-            final Oppiaine targetOppiaine = oa;
-            importOppiaineet(ops, oppiaine.getOppimaarat(), child -> targetOppiaine.getOppimaaratReal().add(child),
-                    oppiaineet, oa, kurssit);
+            to.accept(new Jarjestetty<>(oa, oppiaine.getJarjestys()));
+            importOppiaineet(ops, oppiaine.getOppimaarat(), child -> {
+                oa.getOppimaaratReal().add(child.getObj());
+                ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops, child.getObj(), child.getJarjestys()));
+            }, oa, kurssit);
             importKurssit(ops, oppiaine.getKurssit(), oa, kurssit);
         }
     }
 
-    private void importKurssit(Opetussuunnitelma ops, Set<LukiokurssiDto> from, Oppiaine to,
+    private void importKurssit(Opetussuunnitelma ops, Set<LukiokurssiPerusteDto> from, Oppiaine to,
                                Map<UUID, Lukiokurssi> luodut) {
-        to.getLukiokurssit().removeIf(ok -> !ok.getKurssi().getTyyppi().isPaikallinen());
-        for (LukiokurssiDto kurssiDto : from) {
-            Lukiokurssi kurssi = kurssiByTunniste(ops, to, kurssiDto, luodut);
-            OppiaineLukiokurssi liitos = new OppiaineLukiokurssi(to, kurssi, kurssiDto.getJarjestys());
-            to.getLukiokurssit().add(liitos);
+        for (LukiokurssiPerusteDto kurssiDto : from) {
+            ops.getLukiokurssit().add(new OppiaineLukiokurssi(ops, to, kurssiByTunniste(kurssiDto, luodut),
+                    kurssiDto.getJarjestys(), true));
         }
     }
 
-    private Lukiokurssi kurssiByTunniste(Opetussuunnitelma ops, Oppiaine to, LukiokurssiDto kurssiDto,
-                                         Map<UUID, Lukiokurssi> luodut) {
+    private Lukiokurssi kurssiByTunniste(LukiokurssiPerusteDto kurssiDto, Map<UUID, Lukiokurssi> luodut) {
         Lukiokurssi kurssi = luodut.get(kurssiDto.getTunniste());
         if (kurssi != null) {
             return kurssi;
         }
-        kurssi = new Lukiokurssi(ops, kurssiDto.getTunniste());
+        kurssi = new Lukiokurssi(kurssiDto.getTunniste());
         kurssi.setNimi(LokalisoituTeksti.of(kurssiDto.getNimi().getTekstit()));
         kurssi.setTyyppi(LukiokurssiTyyppi.ofPerusteTyyppi(kurssiDto.getTyyppi()));
         kurssi.setKoodiArvo(kurssiDto.getKoodiArvo());
         kurssi.setKoodiUri(kurssiDto.getKoodiUri());
-        kurssi.setOpetussuunnitelma(ops);
+        kurssi.setLokalisoituKoodi(kurssiDto.getLokalisoituKoodi() == null ? null
+                : LokalisoituTeksti.of(kurssiDto.getLokalisoituKoodi().getTekstit()));
         luodut.put(kurssi.getTunniste(), kurssi);
         return kurssi;
     }
@@ -558,10 +607,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (byTunniste.containsKey(aihekokonaisuusDto.getTunniste())) {
                 continue;
             }
-            Aihekokonaisuus aihekokonaisuus = new Aihekokonaisuus(to.getAihekokonaisuudet(),
-                    aihekokonaisuusDto.getTunniste());
+            Aihekokonaisuus aihekokonaisuus = new Aihekokonaisuus(to.getAihekokonaisuudet(), aihekokonaisuusDto.getTunniste());
             aihekokonaisuus.setOtsikko(LokalisoituTeksti.of(aihekokonaisuusDto.getOtsikko().getTekstit()));
-            maxJnro = Math.max(maxJnro+1, Optional.ofNullable(aihekokonaisuus.getJnro()).orElse(0L));
+            maxJnro = Math.max(maxJnro+1, ofNullable(aihekokonaisuus.getJnro()).orElse(0L));
             aihekokonaisuus.setJnro(maxJnro);
             to.getAihekokonaisuudet().getAihekokonaisuudet().add(aihekokonaisuus);
         }
@@ -580,11 +628,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("OPS ei ollut pohja");
         }
 
-        if (pohja.getKoulutustyyppi() != KoulutusTyyppi.LUKIOKOULUTUS) {
-            // Haluttaisiin säilyttää nämä ja mergetä.
-            pohja.setOppiaineet(null);
-        }
+        pohja.setOppiaineet(null);
         pohja.setVuosiluokkakokonaisuudet(null);
+        pohja.getLukiokurssit().clear();;
+        pohja.getOppiaineJarjestykset().clear();
 
         PerusteDto peruste = eperusteetService.getPerusteUpdateCache(pohja.getPerusteenDiaarinumero());
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
@@ -613,7 +660,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD));
         if (CollectionUtil.intersect(userOids, ops.getOrganisaatiot()).isEmpty()) {
-            throw new BusinessRuleViolationException("Käyttäjällä ei ole luontioikeutta opetussuunnitelman pohjan organisaatioissa");
+            throw new BusinessRuleViolationException("Käyttäjällä ei ole luontioikeutta " +
+                    "opetussuunnitelman pohjan organisaatioissa");
         }
 
         final String diaarinumero = ops.getPerusteenDiaarinumero();
@@ -637,7 +685,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
         ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
-        ops.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi() : KoulutusTyyppi.PERUSOPETUS);
+        ops.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi()
+                : KoulutusTyyppi.PERUSOPETUS);
         return mapper.map(lisaaPerusteenSisalto(ops, peruste), OpetussuunnitelmaDto.class);
     }
 
@@ -655,7 +704,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         TekstiKappaleViiteDto.Matala ohjeistus = new TekstiKappaleViiteDto.Matala(ohjeistusTeksti);
         addTekstiKappale(ops.getId(), ohjeistus);
 
-        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Opetuksen toteuttamisen lähtökohdat"));
+        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI,
+                "Opetuksen toteuttamisen lähtökohdat"));
         teksti = new LokalisoituTekstiDto(null, null);
         TekstiKappaleDto opetuksenJarjestaminenTeksti
             = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
@@ -768,16 +818,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         ops.getVuosiluokkakokonaisuudet().stream()
-            .filter(vlk -> vlk.isOma())
-            .map(vlk -> vlk.getVuosiluokkakokonaisuus())
+            .filter(OpsVuosiluokkakokonaisuus::isOma)
+            .map(OpsVuosiluokkakokonaisuus::getVuosiluokkakokonaisuus)
             .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(validointi, vlk, julkaisukielet));
 
         //TODO:should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
         PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
 
         ops.getOppiaineet().stream()
-            .filter(oa -> oa.isOma())
-            .map(oa -> oa.getOppiaine())
+            .filter(OpsOppiaine::isOma)
+            .map(OpsOppiaine::getOppiaine)
             .forEach(oa -> {
                 peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
                     Oppiaine.validoi(validointi, oa, julkaisukielet);
@@ -797,7 +847,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
     //                    validointi.lisaaVirhe(Validointi.luoVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi()));
                     }
-		});
+        		});
             });
 
         validointi.tuomitse();
@@ -835,7 +885,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             tila = Tila.VALMIS;
         }
 
-        if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi() == Tyyppi.POHJA).contains(tila)) {
+        if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi()
+                == Tyyppi.POHJA).contains(tila)) {
             if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU)) {
                 validoiOpetussuunnitelma(ops);
             } else if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.VALMIS) {
@@ -844,7 +895,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
                 // Arkistoidaan vanhat valmiit pohjat
-                List<Opetussuunnitelma> pohjat = repository.findAllByTyyppiAndTilaAndKoulutustyyppi(Tyyppi.POHJA, Tila.VALMIS, ops.getKoulutustyyppi());
+                List<Opetussuunnitelma> pohjat = repository.findAllByTyyppiAndTilaAndKoulutustyyppi(
+                        Tyyppi.POHJA, Tila.VALMIS, ops.getKoulutustyyppi());
                 for (Opetussuunnitelma pohja : pohjat) {
                     pohja.setTila(Tila.POISTETTU);
                 }
@@ -877,6 +929,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public <T> T getTekstit(Long opsId, Class<T> t) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");

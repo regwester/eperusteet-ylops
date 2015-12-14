@@ -16,11 +16,14 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 /**
@@ -28,7 +31,17 @@ import java.util.stream.Stream;
  */
 @Getter
 @Setter
-public class LukioOpetussuunnitelmaRakenneDto implements Serializable {
+public class LukioOpetussuunnitelmaRakenneDto implements Serializable, PerusteenOsa {
     private Long perusteId;
-    private Set<LukioPerusteOppiaineDto> oppiaineet;
+    private Set<LukioPerusteOppiaineDto> oppiaineet = new HashSet<>();
+
+    @Override @JsonIgnore
+    public UUID getTunniste() {
+        return null;
+    }
+
+    @Override
+    public Stream<? extends PerusteenOsa> osat() {
+        return oppiaineet.stream();
+    }
 }

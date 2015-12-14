@@ -17,11 +17,15 @@ package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import java.io.Serializable;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,4 +63,7 @@ public class OpsOppiaine implements Serializable {
         //JPA
     }
 
+    public static ConstructedCopier<OpsOppiaine> copier(ConstructedCopier<Oppiaine> oppiaineCopier, boolean oma) {
+        return oa -> new OpsOppiaine(oppiaineCopier.copy(oa.getOppiaine()), oma);
+    }
 }
