@@ -15,7 +15,6 @@
   -->
 
 <!--<pre>{{ oppiaineen | json }}</pre>-->
-<!--<pre>{{ perusteen | json }}</pre>-->
 <div class="oppiaine-sisalto" ng-if="oppiaineenTeksti || perusteenTeksti">
   <span>
     <h3>
@@ -24,7 +23,7 @@
         <span ng-if="colorbox" class="{{colorbox}}" ng-class="{'ikoni': ikoni, 'colorbox-title': !ikoni}"></span>
       </span>
 
-      <div class="action-buttons-inline" ng-if="editable">
+      <div class="action-buttons-inline" ng-if="editable && !editing && false"><!--hide edit for now-->
         <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
       </div>
     </h3>
@@ -38,10 +37,10 @@
   </div>
 
   <div class="oppiaine-paikallinen">
-    <span ng-if="oppiaineenTeksti">
+    <span ng-if="oppiaineenTeksti && !editingField">
       <strong>{{ 'paikallinen-tarkennus' | kaanna}}</strong>
       <span ng-bind-html="oppiaineenTeksti | kaanna"></span>
     </span>
-    <div ng-if="editing" ckeditor ng-model="oppiaineenTeksti" slocalized></div>
+    <div ng-if="editingField" ckeditor ng-model="oppiaineenTeksti" slocalized></div>
   </div>
 </div>

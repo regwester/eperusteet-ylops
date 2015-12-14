@@ -253,7 +253,7 @@ ylopsApp
             valtakunnallisetKurssiTyypit: () => _.clone(valtakunnallisetKurssiTyypit),
             paikallisetKurssiTyypit: () => _.clone(paikallisetKurssiTyypit),
             kaikkiKurssiTyypit: () => _.clone(kaikkiKurssiTyypit),
-            kurssiTyyppikUvausTekstit: tekstit(kaikkiKurssiTyypit, id => 'lukio-kurssi-tyyppi-otsikko-' + id.toLowerCase(),
+            kurssiTyyppiKuvausTekstit: tekstit(kaikkiKurssiTyypit, id => 'lukio-kurssi-tyyppi-otsikko-' + id.toLowerCase(),
                 obj => obj.kurssiTyyppiKuvaukset),
             muokattavatOppiaineOsat: osat(['tehtava', 'tavoitteet', 'arviointi'], 'oppiaine-osa-'),
             muokattavatKurssiOsat: osat(['tavoitteet', 'keskeinenSisalto', 'tavoitteetJaKeskeinenSisalto'], 'kurssi-osa-')
@@ -277,7 +277,10 @@ ylopsApp
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
             $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat(oa);
+            $scope.openKoodisto = LukioControllerHelpers.openOppiaineKoodisto($scope.oppiaine);
+            $scope.kurssiTyyppiKuvaukset = LukioControllerHelpers.kurssiTyyppiKuvausTekstit($scope.oppiaine);
         });
+
         LukioOpetussuunnitelmaService.getRakenne().then(r => $scope.rootOps = r.root);
 
         $scope.openKurssi = (kurssi) => {
@@ -380,16 +383,23 @@ ylopsApp
             validate: function() {
                 return true;
             },
-            edit: function() {
-            },
-            cancel: function() {
+            edit: () => $q((resolve) => {
+                //TODO lock
+                $scope.editingOld = true;
+                resolve();
+            }),
+            cancel: () => $q((resolve) => {
                 $scope.editMode = false;
-            },
-            save: function(kommentti) {
-
-            }
+                resolve();
+            }),
+            save: () => $q((resolve) => {
+                resolve();
+                $scope.oppiaine.oppiaineId = $scope.oppiaine.id;
+                LukioOpetussuunnitelmaService.updateOppiaine($scope.oppiaine).then(function() {
+                    $state.reload();
+                });
+            })
         });
-        $scope.openKoodisto = LukioControllerHelpers.openOppiaineKoodisto($scope.oppiaine);
 
         $scope.toEditMode = () => {
             $scope.editMode = true;
@@ -408,7 +418,7 @@ ylopsApp
         };
         $scope.editMode = true;
         $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat($scope.oppiaine);
-        $scope.kurssiTyyppiKuvaukset = LukioControllerHelpers.kurssiTyyppikUvausTekstit($scope.oppiaine);
+        $scope.kurssiTyyppiKuvaukset = LukioControllerHelpers.kurssiTyyppiKuvausTekstit($scope.oppiaine);
         $scope.removeKurssiTyyppiKuvaus = (tyyppi)=> { delete $scope.oppiaine.kurssiTyyppiKuvaukset[tyyppi];};
         $scope.addKurssiTyyppiKuvaus = (tyyppi)=> { $scope.oppiaine.kurssiTyyppiKuvaukset[tyyppi] = LukioControllerHelpers.kielella(''); };
         Editointikontrollit.registerCallback({
@@ -420,7 +430,7 @@ ylopsApp
             cancel: function() {
                 $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet');
             },
-            save: function(kommentti) {
+            save: function() {
                 LukioOpetussuunnitelmaService.saveOppiaine($scope.oppiaine).then(function(ref) {
                     $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
                         oppiaineId: ref.id
@@ -481,7 +491,8 @@ ylopsApp
         };
 
         $scope.edit = () => {
-            console.log("edit");
+            //console.log("edit", $scope);
+            //$scope.$parent.toEditMode();
             $scope.editing = true;
         };
     })

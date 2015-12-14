@@ -65,7 +65,15 @@ public class LukioOpetussuunnitelmatController {
     @ResponseBody
     @RequestMapping(value = "/oppiaine", method = RequestMethod.POST)
     public LongIdResultDto saveOppiaine(@PathVariable("opsId") Long opsId,
-                             @RequestBody LukioOppiaineSaveDto oppiaine) {
+                                        @RequestBody LukioOppiaineSaveDto oppiaine) {
         return new LongIdResultDto(lukioOpetussuunnitelmaService.saveOppiaine(opsId, oppiaine));
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/oppiaine", method = RequestMethod.PUT)
+    public void updateOppiaine(@PathVariable("opsId") Long opsId,
+                               @RequestBody LukioOppiaineSaveDto oppiaine) {
+        lukioOpetussuunnitelmaService.updateOppiaine( opsId, oppiaine );
+    }
+
 }

@@ -94,6 +94,7 @@ ylopsApp
       rakenne: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/rakenne', isArray: false},
       opetuksenYleisetTavoitteet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/opetuksenYleisetTavoitteet', isArray: false},
       saveOppiaine: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},
+      updateOppiaine: {method: 'PUT', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},
       updateStructure: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/rakenne', isArray:false}
     });
   })

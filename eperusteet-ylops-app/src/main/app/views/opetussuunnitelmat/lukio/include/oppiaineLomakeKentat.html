@@ -24,7 +24,7 @@
   <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" kaanna="hae-koodistosta"></button></div>
 </div>
 
-<div ng-show="!isMaara()">
+<div ng-show="!isMaara() && !editingOld">
   <label class="header" kaanna="'oppimaarat'"></label>
   <label class="inputwrapper"><input class="form-control" type="radio" ng-model="oppiaine.koosteinen" ng-value="false">
     {{'yksi-oppimaara'|kaanna}}</label>
