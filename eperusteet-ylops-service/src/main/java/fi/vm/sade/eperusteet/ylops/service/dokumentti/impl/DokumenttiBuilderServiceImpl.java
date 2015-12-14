@@ -48,35 +48,31 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     public byte[] generatePdf() throws IOException, DocumentException {
         // Täällä tehdään kaikki taika
 
-        StringBuffer htmlDokumentti = new StringBuffer();
-        htmlDokumentti.append("<html style='color: red'>");
-        htmlDokumentti.append("moi");
-        htmlDokumentti.append("</html>");
-
-        LOG.info(applicationContext.getResource("/").getURL().toString());
-        //LOG.info(applicationContext.getResource("docgen/ops_template.hbs").getURL().toString());
-
-        Handlebars handlebars = new Handlebars();
-        Template template = handlebars.compile("docgen/ops-template");
-
         final File outputFile = File.createTempFile("FlyingSacuer.test", ".pdf");
         OutputStream os = new FileOutputStream(outputFile);
 
+        Handlebars hb = new Handlebars();
+        Template template = hb.compile("docgen/ops-template");
+
         ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocumentFromString(template.apply("Handlebars.java"));
+        renderer.setDocumentFromString(template.apply("Handlebars root"));
         renderer.layout();
         renderer.createPDF(os, false);
 
-        // kansilehti
-        addCoverPage();
 
-        // infosivu
-        addInfoPage();
+        // Kansilehti
+        addCoverPage(renderer, hb);
 
-        // pudotellaan tutkinnonosat paikalleen
+        // Infosivu
+        addInfoPage(renderer, hb);
+
+        // Sisällysluettelo
+        addTocPage(renderer, hb);
+
+        // Tutkinnonosat
         addTutkinnonosat();
 
-        // sisältöelementit (proosa)
+        // Sisältöelementit
         addSisaltoElement();
 
         // käsitteet
@@ -92,12 +88,28 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         return IOUtils.toByteArray(io);
     }
 
-    private void addCoverPage() {
+    private void addCoverPage(ITextRenderer renderer, Handlebars hb) throws IOException, DocumentException {
+        Template template = hb.compile("docgen/ops-template");
 
+        renderer.setDocumentFromString(template.apply("Handlebars cover"));
+        renderer.layout();
+        renderer.writeNextDocument();
     }
 
-    private void addInfoPage() {
+    private void addInfoPage(ITextRenderer renderer, Handlebars hb) throws IOException, DocumentException {
+        Template template = hb.compile("docgen/ops-template");
 
+        renderer.setDocumentFromString(template.apply("Handlebars info"));
+        renderer.layout();
+        renderer.writeNextDocument();
+    }
+
+    private void addTocPage(ITextRenderer renderer, Handlebars hb) throws IOException, DocumentException {
+        Template template = hb.compile("docgen/ops-template");
+
+        renderer.setDocumentFromString(template.apply("Handlebars toc"));
+        renderer.layout();
+        renderer.writeNextDocument();
     }
 
     private void addTutkinnonosat() {
