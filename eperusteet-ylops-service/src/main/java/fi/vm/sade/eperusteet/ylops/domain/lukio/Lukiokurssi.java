@@ -41,6 +41,7 @@ import java.util.UUID;
  * Time: 14.02
  */
 @Entity
+@Audited
 @Table(name = "lukiokurssi", schema = "public")
 public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
 
@@ -85,7 +86,8 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
     @OneToMany(mappedBy = "kurssi", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OppiaineLukiokurssi> oppiaineet = new HashSet<>(0);
 
-    protected Lukiokurssi() {
+    public Lukiokurssi() {
+        super(UUID.randomUUID());
     }
 
     public Lukiokurssi(UUID tunniste) {

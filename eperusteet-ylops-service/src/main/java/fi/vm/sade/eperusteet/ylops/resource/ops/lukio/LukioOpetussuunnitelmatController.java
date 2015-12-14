@@ -76,4 +76,25 @@ public class LukioOpetussuunnitelmatController {
         lukioOpetussuunnitelmaService.updateOppiaine( opsId, oppiaine );
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/oppiaine/{oppiaineId}/kielitarjonta", method = RequestMethod.POST)
+    public LongIdResultDto addOppimaara(@PathVariable("opsId") final Long opsId,
+            @PathVariable("oppiaineId") final Long oppiaineId,
+            @RequestBody LukioKopioiOppimaaraDto kt) {
+        return new LongIdResultDto(lukioOpetussuunnitelmaService.addOppimaara(opsId, oppiaineId, kt));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/kurssi", method = RequestMethod.POST)
+    public LongIdResultDto saveKurssi(@PathVariable("opsId") final Long opsId,
+                                        @RequestBody LukiokurssiSaveDto kurssi) {
+        return new LongIdResultDto(lukioOpetussuunnitelmaService.saveKurssi(opsId, kurssi));
+    }
+
+    @RequestMapping(value = "/kurssi/{kurssiId}", method = RequestMethod.POST)
+    public void updateKurssi(@PathVariable("opsId") final Long opsId,
+                                      @PathVariable("kurssiId") final Long kurssiId,
+                                      @RequestBody LukiokurssiUpdateDto kurssi) {
+        lukioOpetussuunnitelmaService.updateKurssi(opsId, kurssiId, kurssi);
+    }
 }

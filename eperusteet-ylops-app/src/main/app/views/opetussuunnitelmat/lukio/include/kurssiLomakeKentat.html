@@ -17,24 +17,27 @@
 
 <label for="tyyppi-input" class="header" kaanna="kurssi-tyyppi-header" vaaditaan></label>
 <div class="fixed-group">
-  <select id="tyyppi-input" class="form-control" ng-model="kurssi.tyyppi">
-    <option ng-repeat="t in kurssityypit" value="{{t.tyyppi}}">{{t.nimi | kaanna}}</option>
+  <select id="tyyppi-input" class="form-control" ng-model="kurssi.tyyppi" ng-show="isEditable()">
+    <option ng-repeat="t in kurssiTyypit" value="{{t.tyyppi}}" ng-selected="kurssi.tyyppi == t.tyyppi">{{t.nimi | kaanna}}</option>
   </select>
+  <span ng-bind="'lukio-kurssi-tyyppi-otsikko-'+kurssi.tyyppi.toLowerCase() | kaanna" ng-show="!isEditable()"></span>
 </div>
 
-<label for="koodi-input" class="header" kaanna="kurssi-koodi-header" vaaditaan></label>
-<div class="fixed-group">
-  <input id="koodi-input" class="form-control" type="text" ng-model="kurssi.koodiArvo" ng-disabled="true"/>
+<label for="koodi-input" class="header" kaanna="'kurssi-koodi-header'" vaaditaan></label>
+<div class="fixed-group" ng-show="isEditable()">
+  <input id="koodi-input" class="form-control limit" type="text" ng-model="kurssi.koodiArvo" ng-disabled="true"/>
   <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" kaanna="hae-koodistosta"></button></div>
+</div>
+<div class="fixed-group" ng-show="!isEditable()" ng-bind="kurssi.koodiArvo">
 </div>
 
 <label for="lokalisoitu-koodi-input" class="header" kaanna="'kurssi-lokalisoitu-koodi-header'" vaaditaan></label>
 <div class="fixed-group">
-  <input id="lokalisoitu-koodi-input" class="form-control" ng-model="kurssi.lokalisoituKoodi" slocalized required />
+  <input id="lokalisoitu-koodi-input" class="form-control" ng-model="kurssi.lokalisoituKoodi" slocalized />
 </div>
 
 <label for="nimi-input" class="header" kaanna="'kurssi-nimi-header'" vaaditaan></label>
-<input id="nimi-input" class="form-control" ng-model="kurssi.nimi" slocalized required />
+<input id="nimi-input" class="form-control" ng-model="kurssi.nimi" slocalized />
 
 <label for="kuvaus" class="header" kaanna="kurssi-kuvaus-header"></label>
 <div>

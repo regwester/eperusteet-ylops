@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine_;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -22,17 +23,19 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineListausDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiSaveDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiUpdateDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokurssiPerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.time.Instant;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.Instant;
 
 /**
  *
@@ -96,6 +99,14 @@ public class DtoMapperConfig {
                 .byDefault()
                 .register();
 
+        factory.classMap(LukiokurssiSaveDto.class, Lukiokurssi.class)
+                .exclude("tyyppi")
+                .byDefault()
+                .register();
+        factory.classMap(LukiokurssiUpdateDto.class, Lukiokurssi.class)
+                .exclude("tyyppi")
+                .byDefault()
+                .register();
 
         return new DtoMapperImpl(factory.getMapperFacade());
     }

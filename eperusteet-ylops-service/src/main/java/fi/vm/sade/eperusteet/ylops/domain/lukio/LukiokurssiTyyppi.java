@@ -38,6 +38,23 @@ public enum LukiokurssiTyyppi {
     PAIKALLINEN_SYVENTAVA(Oppiaine::getPaikallinenSyventavaKurssiKuvaus, Oppiaine::setPaikallinenSyventavaKurssiKuvaus, true),
     PAIKALLINEN_SOVELTAVA(Oppiaine::getPaikallinenSoveltavaKurssiKuvaus, Oppiaine::setPaikallinenSoveltavaKurssiKuvaus, true);
 
+    public enum Paikallinen {
+        PAIKALLINEN_PAKOLLINEN(LukiokurssiTyyppi.PAIKALLINEN_PAKOLLINEN),
+        PAIKALLINEN_SYVENTAVA(LukiokurssiTyyppi.PAIKALLINEN_SYVENTAVA),
+        PAIKALLINEN_SOVELTAVA(LukiokurssiTyyppi.PAIKALLINEN_SOVELTAVA);
+
+        private final LukiokurssiTyyppi tyyppi;
+
+        Paikallinen(LukiokurssiTyyppi tyyppi) {
+            this.tyyppi = tyyppi;
+        }
+
+        public LukiokurssiTyyppi toKurssiiTyyppi() {
+            return tyyppi;
+        }
+    }
+
+
     public static LukiokurssiTyyppi ofPerusteTyyppi(PerusteenLukiokurssiTyyppi tyyppi) {
         switch (tyyppi) {
             case PAKOLLINEN: return VALTAKUNNALLINEN_PAKOLLINEN;

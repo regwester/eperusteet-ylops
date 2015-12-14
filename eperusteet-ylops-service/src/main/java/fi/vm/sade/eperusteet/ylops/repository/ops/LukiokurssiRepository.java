@@ -16,25 +16,15 @@
 
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * User: tommiratamaa
- * Date: 10.12.2015
- * Time: 15.35
+ * Date: 14.12.2015
+ * Time: 20.44
  */
 @Repository
-public interface OppiaineLukiokurssiRepository extends JpaWithVersioningRepository<OppiaineLukiokurssi, Long> {
-    @Query(value = "select oalk from OppiaineLukiokurssi  oalk where oalk.opetussuunnitelma.id = ?1 " +
-            " and oalk.oppiaine.id = ?2 order by oalk.jarjestys")
-    List<OppiaineLukiokurssi> findByOpsAndOppiaine(long opsId, long id);
-
-    @Query(value = "select oalk from OppiaineLukiokurssi  oalk where oalk.opetussuunnitelma.id = ?1 " +
-            " and oalk.kurssi.id = ?2 order by oalk.jarjestys")
-    List<OppiaineLukiokurssi> findByOpsAndKurssi(long opsId, long id);
+public interface LukiokurssiRepository extends JpaWithVersioningRepository<Lukiokurssi, Long> {
 }

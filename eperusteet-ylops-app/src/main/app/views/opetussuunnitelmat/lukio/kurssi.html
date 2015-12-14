@@ -29,7 +29,17 @@
       <strong>{{ 'muokattu' | kaanna}}:</strong>
       {{kurssi.muokattu | aikaleima: 'short'}}
     </span>
-    <div class="action-buttons-inline" ng-if="!editing">
+    <div class="action-button" ng-if="isReconnectable()">
+      <span kaanna="ei-yhdistetty-pohjaan" style="color: red; padding-right: 20px;"></span>
+      <button class="btn btn-default" kaanna="'palauta-yhteys'"
+              ng-click="connectKurssi()"></button>
+    </div>
+    <div class="action-button" ng-if="connected()">
+      <span kaanna="yhdistetty-pohjaan" style="color: limegreen; padding-right: 20px;"></span>
+      <button class="btn btn-default" kaanna="'katkaise-yhteys'"
+              ng-click="disconnectKurssi()"></button>
+    </div>
+    <div class="action-buttons-inline" ng-if="!editMode && isEditAllowed()">
       <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
     </div>
   </h3>
@@ -39,40 +49,45 @@
       <td style="padding-right: 20px;">{{ 'kurssikoodi' | kaanna}}:</td>
       <td ng-if="!editing">{{kurssi.lokalisoituKoodi | kaanna}}</td>
       <!--<td ng-if="editing"><input type="text"/><button ng-click="openKoodisto()">test</button></td>-->
-
-      <td ng-if="editing" style="width: 100%;">
-        <div class="fixed-group">
-          <input id="koodi-input" class="form-control limit" type="text" ng-model="kurssi.koodiArvo" ng-disabled="true"/>
-          <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" kaanna="hae-koodistosta"></button></div>
-        </div>
-      </td>
     </tr>
     <tr style="margin-top: 10px;">
       <td>{{ 'kurssityyppi' | kaanna}}:</td>
       <td>
         <span style="padding-right: 20px;" kaanna>{{getTyyppiSelite()}}</span>
-        <span class="small-colorbox {{kurssi.perusteen.tyyppi | lowercase}}"></span>
+        <span class="small-colorbox-container"><span class="colorbox kurssi-tyyppi {{kurssi.tyyppi | lowercase}}"></span></span>
       </td>
     </tr>
   </table>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false" editing="editing"
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false" editing="false"
                       oppiaineen-teksti="kurssi.kuvaus" title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
+
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteet.teksti" editable="false" editing="false"
+                      oppiaineen-teksti="kurssi.tavoitteet.teksti" title="(kurssi.tavoitteet.otsikko | kaanna) || (kurssi.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
+
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.keskeinenSisalto.teksti" editable="false" editing="false"
+                      oppiaineen-teksti="kurssi.keskeinenSisalto.teksti" title="(kurssi.keskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.keskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
+
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteetJaKeskeinenSisalto.teksti" editable="false" editing="false"
+                      oppiaineen-teksti="kurssi.tavoitteetJaKeskeinenSisalto.teksti" title="(kurssi.tavoitteetJaKeskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.tavoitteetJaKeskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
 
 
   <!--<pre>{{ kurssi | json}}</pre>-->
   <!--<pre>{{ oppiaine.koosteinen | json}}</pre>-->
 </div>
 <div class="lisaa-kurssi oppiaine-form" ng-show="editMode">
-  <h2 kaanna="'lisaa-kurssi-title'"></h2>
+  <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
+  <hr class="mujuviiva"/>
+
+  <h4 kaanna="'lisaa-kurssi-title'"></h4>
 
   <div class="non-collapsibles">
     <form name="kurssiForm" role="form">
       <div class="action-buttons">
-        <div class="floater" ng-include="'views/opetusuunnitelmat/lukio/include/kurssiOsavalitsin'">
+        <div class="floater" ng-include="'views/opetussuunnitelmat/lukio/include/kurssiOsavalitsin.html'">
         </div>
       </div>
-      <div ng-include="'views/opetusuunnitelmat/lukio/include/kurssiLomakeKentat.html'"></div>
+      <div ng-include="'views/opetussuunnitelmat/lukio/include/kurssiLomakeKentat.html'"></div>
     </form>
   </div>
 </div>

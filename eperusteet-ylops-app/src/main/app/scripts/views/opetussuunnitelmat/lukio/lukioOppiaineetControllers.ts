@@ -152,14 +152,18 @@ ylopsApp
 
 
     .service('LukioControllerHelpers', function($rootScope, Koodisto, MuokkausUtils, Kieli, Kaanna, $log) {
-        var openKoodisto = (obj:any, koodisto:string, and?: (arvoKoodistoArvo) => void) => () => {
+        var mapKoodiArvo = (and?: (arvoKoodistoArvo) => void) => (obj:any, koodisto: KoodistoArvo) => {
+            $log.info('koodi', koodisto);
+            MuokkausUtils.nestedSet(obj, 'koodiUri', ',', koodisto.koodiUri);
+            MuokkausUtils.nestedSet(obj, 'koodiArvo', ',', koodisto.koodiArvo);
+            MuokkausUtils.nestedSet(obj, 'nimi', ',', koodisto.nimi);
+            if (and) {
+                and(koodisto);
+            }
+        };
+        var openKoodisto = (obj:any, koodisto:string, map: (o:any, arvoKoodistoArvo:KoodistoArvo) => void) => () => {
             Koodisto.modaali((koodisto: KoodistoArvo) => {
-                MuokkausUtils.nestedSet(obj, 'koodiUri', ',', koodisto.koodiUri);
-                MuokkausUtils.nestedSet(obj, 'koodiArvo', ',', koodisto.koodiArvo);
-                MuokkausUtils.nestedSet(obj, 'nimi', ',', koodisto.nimi);
-                if (and) {
-                    and(koodisto);
-                }
+                map(obj, _.cloneDeep(koodisto));
                 $rootScope.$broadcast('notifyCKEditor');
             }, {
                 tyyppi: function () {
@@ -243,13 +247,21 @@ ylopsApp
             'PAIKALLINEN_SYVENTAVA', 'PAIKALLINEN_SOVELTAVA'];
         var kaikkiKurssiTyypit = _.union(valtakunnallisetKurssiTyypit, paikallisetKurssiTyypit);
         return {
-            openOppiaineKoodisto: (obj:Lukio.Oppiaine) => openKoodisto(obj, 'oppiaineetyleissivistava2'),
-            openKurssiKoodisto: (obj:Lukio.LukiokurssiOps) => openKoodisto(obj, 'lukionkurssit',
-                    koodi => {
+            openOppiaineKoodisto: (obj:Lukio.Oppiaine) => openKoodisto(obj, 'oppiaineetyleissivistava2', mapKoodiArvo()),
+            openKurssiKoodisto: (obj:Lukio.LukiokurssiOps) => openKoodisto(obj, 'lukionkurssit', mapKoodiArvo(koodi => {
                         obj.lokalisoituKoodi = {};
                         obj.lokalisoituKoodi[Kieli.getSisaltokieli()] = koodi.koodiArvo;
-                    }),
+                    })),
             kielella: kielella,
+            openOppiaineKieliKoodisto: (obj:Lukio.Oppiaine, and?: (arvoKoodistoArvo:KoodistoArvo) => void) => openKoodisto(obj, 'lukiokielitarjonta',
+                        (o:any, koodisto: KoodistoArvo) => {
+                MuokkausUtils.nestedSet(o, 'kieliKoodiUri', ',', koodisto.koodiUri);
+                MuokkausUtils.nestedSet(obj, 'kieliKoodiArvo', ',', koodisto.koodiArvo);
+                MuokkausUtils.nestedSet(obj, 'kieli', ',', koodisto.nimi);
+                if (and) {
+                    and(koodisto);
+                }
+            }),
             valtakunnallisetKurssiTyypit: () => _.clone(valtakunnallisetKurssiTyypit),
             paikallisetKurssiTyypit: () => _.clone(paikallisetKurssiTyypit),
             kaikkiKurssiTyypit: () => _.clone(kaikkiKurssiTyypit),
@@ -259,20 +271,30 @@ ylopsApp
             muokattavatKurssiOsat: osat(['tavoitteet', 'keskeinenSisalto', 'tavoitteetJaKeskeinenSisalto'], 'kurssi-osa-')
         };
     })
-    .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams, $state, $timeout,
+    .controller('LukioOppiaineController', function($scope, $q:IQService, $stateParams, $state, $timeout, OpsService,
                         LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log, $modal,
                         Editointikontrollit, LukioControllerHelpers, Varmistusdialogi, Notifikaatiot, Lukko) {
         $scope.oppiaine = null;
         $scope.editMode = false;
         $scope.kurssiKuvauksetVisible = false;
         $scope.rootOps = true;
-        $scope.connected = () => $scope.oppiaine && !$scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa && !$scope.oppiaine.oppiaineId;
-        $scope.isReconnectable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa && !$scope.oppiaine.oppiaineId;
+        $scope.connected = () => $scope.oppiaine && !$scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa
+                && !$scope.oppiaine.oppiaineId;
+        $scope.isReconnectable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa
+                && !$scope.oppiaine.oppiaineId;
         $scope.isEditable = () => $scope.oppiaine && $scope.oppiaine.oma;
         $scope.isDeletable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.oppiaine.maariteltyPohjassa;
         $scope.canAddOppimaara = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma;
         $scope.canAddFromTarjonta = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma
                         && !_.isEmpty($scope.oppiaine.pohjanTarjonta);
+        $scope.tarjottavaTyyppi = () => {
+            if (!$scope.canAddFromTarjonta()) {
+                return null;
+            }
+            return OpsService.oppiaineIsKieli($scope.oppiaine) ? 'kieli' : (
+                $scope.oppiaine.koodiArvo == 'KT' ? 'uskonto' : 'tuntematon'
+            );
+        }
 
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
@@ -308,7 +330,27 @@ ylopsApp
         };
 
         $scope.deleteOppiaine = () => {
-            //TODO
+            var maara = $scope.oppiaine.oppiaineId != null;
+            Varmistusdialogi.dialogi({
+                otsikko: maara ? 'varmista-poista-oppimaara': 'varmista-poista-oppiaine',
+                primaryBtn: 'poista',
+                successCb: () => LukioOpetussuunnitelmaService.deleteOppiaine($stateParams.oppiaineId).then(
+                    () => {
+                        if (maara) {
+                            Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
+                            $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                                id: $stateParams.id,
+                                oppiaineId: $scope.oppiaine.oppiaineId
+                            }, { reload: true, notify: true }));
+                        } else {
+                            Notifikaatiot.onnistui('oppiaineen-poisto-onnistui');
+                            $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet', {
+                                id: $stateParams.id
+                            }));
+                        }
+                    }
+                )
+            })();
         };
 
         var palautaYlempi = () => {
@@ -372,10 +414,17 @@ ylopsApp
                     oppiaine: _.constant($scope.oppiaine),
                     valittu: _.constant(pohjanOppiaine)
                 }
-            }).result.then(function() {
-                //success
-            }, function() {
-                //failure
+            }).result.then((res) => {
+                $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                    id: $stateParams.id,
+                    oppiaineId: res.id
+                });
+            }, () => {});
+        };
+        $scope.lisaaKurssi = () => {
+            $state.go('root.opetussuunnitelmat.lukio.opetus.uusikurssi', {
+                id: $stateParams.id,
+                oppiaineId: $stateParams.oppiaineId
             });
         };
 
@@ -395,9 +444,7 @@ ylopsApp
             save: () => $q((resolve) => {
                 resolve();
                 $scope.oppiaine.oppiaineId = $scope.oppiaine.id;
-                LukioOpetussuunnitelmaService.updateOppiaine($scope.oppiaine).then(function() {
-                    $state.reload();
-                });
+                LukioOpetussuunnitelmaService.updateOppiaine($scope.oppiaine).then(() => $state.reload());
             })
         });
 
@@ -416,6 +463,7 @@ ylopsApp
             oppiaineId: $stateParams.parentOppiaineId ? $stateParams.parentOppiaineId : null,
             kurssiTyyppiKuvaukset: {}
         };
+        $scope.isEditable = () => true;
         $scope.editMode = true;
         $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat($scope.oppiaine);
         $scope.kurssiTyyppiKuvaukset = LukioControllerHelpers.kurssiTyyppiKuvausTekstit($scope.oppiaine);
@@ -423,7 +471,7 @@ ylopsApp
         $scope.addKurssiTyyppiKuvaus = (tyyppi)=> { $scope.oppiaine.kurssiTyyppiKuvaukset[tyyppi] = LukioControllerHelpers.kielella(''); };
         Editointikontrollit.registerCallback({
             validate: function() {
-                return true;
+                return Kaanna.kaanna($scope.oppiaine.nimi) != null;
             },
             edit: function() {
             },
@@ -444,18 +492,31 @@ ylopsApp
     })
 
     .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams, $state, LukioControllerHelpers,
-                                                  LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
-        // TODO:
+                                  LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log,
+                                  Editointikontrollit, $timeout) {
         $scope.kurssi = null;
         $scope.oppiaine = null;
-        $scope.editing = false;
+        $scope.editMode = false;
+        $scope.rootOps = true;
+        $scope.kurssiTyypit = _.map(LukioControllerHelpers.paikallisetKurssiTyypit(),
+            t => ({tyyppi: t, nimi: 'lukio-kurssi-tyyppi-otsikko-'+t.toLowerCase()}));
 
+        $scope.isPaikallinen = () => $scope.kurssi &&  _.any(LukioControllerHelpers.paikallisetKurssiTyypit(),
+            t => $scope.kurssi.tyyppi == t);
+        $scope.isEditable = () => $scope.isPaikallinen(); // parts such as tyyppi or koodi
+        $scope.connected = () => $scope.kurssi && !$scope.kurssi.oma && !$scope.rootOps;
+        $scope.isReconnectable = () => $scope.kurssi && $scope.kurssi.oma && !$scope.rootOps;
+        $scope.isEditAllowed = () => $scope.kurssi && $scope.kurssi.oma;
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
         });
-
+        LukioOpetussuunnitelmaService.getRakenne().then(r => $scope.rootOps = r.root);
         LukioOpetussuunnitelmaService.getKurssi($stateParams.oppiaineId, $stateParams.kurssiId)
-            .then(kurssi => $scope.kurssi = kurssi);
+            .then(kurssi => {
+                $scope.kurssi = kurssi;
+                $scope.openKoodisto = LukioControllerHelpers.openKurssiKoodisto( $scope.kurssi);
+                $scope.muokattavatOsat = LukioControllerHelpers.muokattavatKurssiOsat($scope.kurssi);
+            });
 
         $scope.getTyyppiSelite = () => {
             if ($scope.kurssi) {
@@ -466,19 +527,96 @@ ylopsApp
             return '';
         };
 
-        $scope.edit = () => {
-            $scope.editing = true;
-            //TODO
-            //Editointikontrollit.startEditing();
-        };
+        Editointikontrollit.registerCallback({
+            validate: function() {
+                return Kaanna.kaanna($scope.kurssi.nimi) != null
+                    && $scope.kurssi.koodiArvo != null
+                    && Kaanna.kaanna($scope.kurssi.lokalisoituKoodi) != null
+                    && $scope.kurssi.tyyppi != null;
+            },
+            edit: () => $q((resolve) => {
+                resolve();
+            }),
+            cancel: () => $q((resolve) => {
+                $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                    id: $stateParams.id,
+                    oppiaineId: $stateParams.oppiaineId,
+                    kurssiId: $stateParams.kurssiId
+                }, { reload: true, notify: true }));
+                resolve();
+            }),
+            save: () => $q((resolve) => {
+                LukioOpetussuunnitelmaService.updateKurssi($stateParams.kurssiId, $scope.kurssi).then(() => {
+                    $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                        id: $stateParams.id,
+                        oppiaineId: $stateParams.oppiaineId,
+                        kurssiId: $stateParams.kurssiId
+                    }, { reload: true, notify: true }));
+                    resolve();
+                });
+            })
+        });
 
-        $scope.openKoodisto = LukioControllerHelpers.openKurssiKoodisto( $scope.kurssi );
+        $scope.edit = () => {
+            $scope.editMode = true;
+            Editointikontrollit.startEditing();
+        };
 
         $scope.goBack = () => {
             $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
                 oppiaineId: $stateParams.oppiaineId
             });
         };
+    })
+
+    .controller('LuoLukioKurssiController', ($scope, $q:IQService, $stateParams, LukioControllerHelpers,
+                                             Editointikontrollit, $timeout, $state,
+                                             LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
+                                             Kaanna, $log) => {
+        $scope.kurssi = <Lukio.LuoLukiokurssi>{
+            oppiaineId: $stateParams.oppiaineId,
+            tyyppi: 'PAIKALLINEN_SYVENTAVA',
+            nimi: LukioControllerHelpers.kielella(''),
+        };
+        $scope.editMode = true;
+        $scope.oppiaine = null;
+        $scope.openKoodisto = LukioControllerHelpers.openKurssiKoodisto($scope.kurssi);
+        $scope.kurssiTyypit = _.map(LukioControllerHelpers.paikallisetKurssiTyypit(),
+            t => ({tyyppi: t, nimi: 'lukio-kurssi-tyyppi-otsikko-'+t.toLowerCase()}));
+        LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
+            $scope.oppiaine = oa;
+        });
+        $scope.muokattavatOsat = LukioControllerHelpers.muokattavatKurssiOsat($scope.kurssi);
+
+        Editointikontrollit.registerCallback({
+            validate: function() {
+                return Kaanna.kaanna($scope.kurssi.nimi) != null
+                    && $scope.kurssi.koodiArvo != null
+                    && Kaanna.kaanna($scope.kurssi.lokalisoituKoodi) != null
+                    && $scope.kurssi.tyyppi != null;
+            },
+            edit: () => $q((resolve) => {
+                resolve();
+            }),
+            cancel: () => $q((resolve) => {
+                $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                    id: $stateParams.id,
+                    oppiaineId: $stateParams.oppiaineId
+                }));
+                resolve();
+            }),
+            save: () => $q((resolve) => {
+                LukioOpetussuunnitelmaService.saveKurssi($scope.kurssi).then((res) => {
+                    $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                        id: $stateParams.id,
+                        oppiaineId: $stateParams.oppiaineId,
+                        kurssiId: res.id
+                    }));
+                    resolve();
+                });
+            })
+        });
+        Editointikontrollit.startEditing();
     })
 
     .controller('LukioOppiaineSisaltoController', function($scope, $q:IQService, $stateParams,
@@ -518,9 +656,9 @@ ylopsApp
 
 
 .controller('LukioKielitarjontaModalController', function($scope, $stateParams, $modalInstance, $q, OpsService,
-                                                      $log,  $state, opsId, oppiaine, valittu, OppiaineCRUD, Notifikaatiot) {
+                  $log,  $state, opsId, oppiaine, valittu, LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
+                  Notifikaatiot, LukioControllerHelpers, Kaanna) {
     function getType() {
-        $log.info('koodiArvo: ', oppiaine.koodiArvo);
         if (!_.isString(oppiaine.koodiArvo)) {
             $log.warn('Oppiaineen koodia ei ole määritelty');
             return '';
@@ -528,7 +666,6 @@ ylopsApp
         if (OpsService.oppiaineIsKieli(oppiaine)) {
             return 'kieli';
         } else if (oppiaine.koodiArvo === 'KT') {
-            $scope.$valittu = oppiaine;
             return 'uskonto';
         } else {
             $log.warn('Oppiaineen täytyy olla kieli tai uskonto');
@@ -538,30 +675,36 @@ ylopsApp
 
     $scope.$type = getType();
     $scope.oppiaine = oppiaine;
-    $scope.$valittu = valittu;
+    $scope.$valittu = _.cloneDeep(valittu);
+    $scope.$valittu.kieli = LukioControllerHelpers.kielella('');
+    $scope.$omaNimi = $scope.$type == 'uskonto' ? _.cloneDeep($scope.$valittu.nimi) : LukioControllerHelpers.kielella('');
     $scope.$concretet = _.reject(oppiaine.perusteen.oppimaarat, om => om.abstrakti);
-
-    $scope.valitse = function(valinta) {
-        $scope.$valittu = valinta || {};
-        if (!$scope.$valittu.abstrakti) {
-            $scope.$valittu.$concrete = valinta;
-        }
-        $scope.$onAbstrakti = $scope.$valittu.abstrakti;
-        $scope.$omaNimi = _.clone($scope.$valittu.nimi);
-    };
+    $scope.openKieliKoodisto = LukioControllerHelpers.openOppiaineKieliKoodisto($scope.$valittu,
+        koodi => {
+            var osat = Kaanna.kaanna($scope.$valittu.nimi).split(/\s*,\s*/),
+                kaannettyKieli = Kaanna.kaanna(koodi.nimi);
+            if (!Kaanna.kaanna($scope.$omaNimi)) {
+                if ($scope.$type == 'kieli' && kaannettyKieli && osat.length == 2) {
+                    $log.info($scope.$valittu.koodiArvo);
+                    $scope.$omaNimi = LukioControllerHelpers.kielella((
+                            $scope.$valittu.koodiArvo == 'KX' ?  '': kaannettyKieli) + ', ' + osat[1].trim());
+                } else {
+                    $scope.$omaNimi = _.cloneDeep($scope.$valittu.nimi);
+                }
+            }
+        });
 
     $scope.ok = function() {
-        var tunniste = $scope.$type === 'kieli' ? $scope.$valittu.$concrete.tunniste : $scope.$valittu.tunniste;
-        OppiaineCRUD.addKielitarjonta({
-            opsId: opsId,
-            oppiaineId: oppiaine.id
-        }, {
-            tunniste: tunniste,
-            omaNimi: $scope.$omaNimi
-        }, function(res) {
-            $modalInstance.close(res);
-            Notifikaatiot.onnistui('tallennettu-ok');
-        }, Notifikaatiot.serverCb);
+        LukioOpetussuunnitelmaService.addKielitarjonta(oppiaine.id, {
+                tunniste: $scope.$valittu.tunniste,
+                nimi: $scope.$omaNimi,
+                kieliKoodiArvo: $scope.$valittu.kieliKoodiArvo,
+                kieliKoodiUri: $scope.$valittu.kieliKoodiUri,
+                kieli: $scope.$valittu.kieli
+            }, opsId).then((res) => {
+                $modalInstance.close(res);
+                Notifikaatiot.onnistui('tallennettu-ok');
+            }, Notifikaatiot.serverCb);
     };
 
     $scope.peruuta = $modalInstance.dismiss;

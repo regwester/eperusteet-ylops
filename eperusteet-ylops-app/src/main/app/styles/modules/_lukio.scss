@@ -255,6 +255,7 @@ $aikaleima-vari: #888;
   margin-right: 10px;
   font-size: 1.0em;
   font-weight: normal;
+  position:relative;
 
   &.lengthy {
     padding-top: 7px;
@@ -298,6 +299,35 @@ $aikaleima-vari: #888;
   &.paikallinen_soveltava {
     background-color: $soveltava-vari;
     @include paikallinen-symboli(white, 15pt, 30px, 1px);
+  }
+}
+
+.small-colorbox-container {
+  position: relative;
+
+  .colorbox.kurssi-tyyppi {
+    height: 18px;
+    width: 18px;
+    @include borderradius(4px);
+
+    &.paikallinen_pakollinen{
+      background-color: transparent;
+      overflow: visible;
+      @include paikallinen-symboli($pakollinen-vari, 14pt, 18px, -5px);
+      &:after { position:absolute; left:-5px; }
+    }
+    &.paikallinen_syventava{
+      background-color: transparent;
+      overflow: visible;
+      @include paikallinen-symboli($syventava-vari, 14pt, 18px, -5px);
+      &:after { position:absolute; left:-5px; }
+    }
+    &.paikallinen_soveltava{
+      background-color: transparent;
+      overflow: visible;
+      @include paikallinen-symboli($soveltava-vari, 14pt, 18px, -5px);
+      &:after { position:absolute; left:-5px; }
+    }
   }
 }
 

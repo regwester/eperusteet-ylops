@@ -31,22 +31,27 @@
             <div class="col-xs-4"><h4 kaanna="'kieli-koodi'"></h4></div>
             <div class="col-xs-8">
                 <div class="fixed-group">
-                    <input id="koodi-input" class="form-control limit" type="text" ng-model="$valittu.koodiArvo" ng-disabled="true"/>
+                    <input id="kieli-koodi-input" class="form-control limit" type="text" ng-model="$valittu.kieliKoodiArvo" ng-disabled="true"/>
                     <div class="addon"><button role="link" class="btn btn-default" ng-click="openKieliKoodisto()" kaanna="hae-koodistosta"></button></div>
                 </div>
             </div>
         </div>
-        <div class="row" ng-show="($valittu.nimi && $type === 'kieli') || ($valittu.nimi === undefined && $type === 'uskonto')">
-            <div class="col-xs-4"><h4 kaanna="'nimi'"></h4></div>
+        <div class="row" ng-show="$type === 'kieli'">
+            <div class="col-xs-4"><h4 kaanna="'lukio-kielivalinta-kieli-nimi'"></h4></div>
+            <div class="col-xs-8">
+                <input id="kieli-input" class="form-control limit" type="text" slocalized ng-disabled="$valittu.kieliKoodiArvo != 'KX'" ng-model="$valittu.kieli"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4"><h4 kaanna="'oppiaine-nimi'"></h4></div>
             <div class="col-xs-8">
                 <input type="text" class="form-control" ng-model="$omaNimi" slocalized>
             </div>
         </div>
-
     </div>
 </div>
 
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="ok()" ng-disabled="($type === 'kieli' && !$valittu.$concrete) || !($omaNimi | kaanna)" kaanna="'ok'"></button>
+    <button class="btn btn-primary" ng-click="ok()" ng-disabled="($type === 'kieli' && $valittu.kieliKoodiArvo && ($valittu.kieli | kaanna)) && !($omaNimi | kaanna)" kaanna="'ok'"></button>
     <button class="btn btn-default" ng-click="peruuta()" kaanna="'peruuta'"></button>
 </div>

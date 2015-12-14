@@ -33,7 +33,7 @@
               ng-click="deleteOppiaine()"></button>
     </div>
     <div dropdown class="action-button dropdown-container" ng-if="canAddFromTarjonta()">
-      <button class="btn btn-default dropdown-toggle" icon-role="add" kaanna="'lisaa-oppimaara-tarjonnasta'"
+      <button class="btn btn-default dropdown-toggle" icon-role="add" kaanna="'lisaa-'+tarjottavaTyyppi()+'-tarjonnasta'"
               dropdown-toggle></button>
       <ul class="dropdown-menu relative-menu" role="menu">
         <li ng-repeat="valittava in oppiaine.pohjanTarjonta">
@@ -57,8 +57,7 @@
   <!--<pre>{{oppiaine.kurssit | json}}</pre>-->
 
   <div class="action-buttons-inline" ng-if="!editing">
-    <button class="btn btn-default" kaanna="'tuo-perusteesta'"></button>
-    <button class="btn btn-default" kaanna="'lisaa-kurssi'"></button>
+    <button class="btn btn-default" kaanna="'lisaa-kurssi'" ng-click="lisaaKurssi()"></button>
   </div>
   <h4 kaanna="oppiaine-kurssit"></h4>
   <br/>
@@ -67,9 +66,9 @@
     <div class="oppiaine-sisaltopuu lukio-oppiaineet-puu">
       <a ng-click="openKurssi(kurssi)" class="container-link tree-list-item ng-scope bubble-osa empty-item">
         <span class="span-container puu-node kurssi-node">
-          <span class="colorbox kurssi-tyyppi {{kurssi.perusteen.tyyppi | lowercase}}"></span>
+          <span class="colorbox kurssi-tyyppi {{kurssi.tyyppi | lowercase}}"></span>
           <span class="aikaleima ng-binding">{{kurssi.muokattu | aikaleima: 'short' }}</span>
-          <span class="kurssikoodi">{{kurssi.koodiUri}} {{kurssi.nimi | kaanna}}</span>
+          <span class="kurssikoodi">{{(kurssi.lokalisoituKoodi | kaanna) || kurssi.koodiArvo}} {{kurssi.nimi | kaanna}}</span>
         </span>
       </a>
     </div>
@@ -124,13 +123,13 @@
   </div>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tehtava.teksti" editable="isEditable()" editing="editing"
-                      oppiaineen-teksti="oppiaine.tehtava.teksti" title="'oppiaine-osa-tehtava'"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="oppiaine.tehtava.teksti" title="(oppiaine.tehtava.otsikko | kaanna) || (oppiaine.perusteen.tehtava.otsikko | kaanna)"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tavoitteet.teksti" editable="isEditable()" editing="editing"
-                      oppiaineen-teksti="oppiaine.tavoitteet.teksti" title="'oppiaine-osa-tavoitteet'"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="oppiaine.tavoitteet.teksti" title="(oppiaine.tavoitteet.otsikko | kaanna) || (oppiaine.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.arviointi.teksti" editable="isEditable()" editing="editing"
-                      oppiaineen-teksti="oppiaine.arviointi.teksti" title="'oppiaine-osa-arviointi'"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="oppiaine.arviointi.teksti" title="(oppiaine.arviointi.otsikko | kaanna) || (oppiaine.perusteen.arviointi.otsikko | kaanna)"></lukio-oppiaine-osa>
 </div>
 
 <!--<pre>{{ oppiaine | json}}</pre>-->

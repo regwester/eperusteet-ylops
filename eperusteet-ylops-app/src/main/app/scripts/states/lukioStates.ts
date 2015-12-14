@@ -74,6 +74,11 @@ ylopsApp
             templateUrl: 'views/opetussuunnitelmat/lukio/kurssi.html',
             controller: 'LukioKurssiController'
         })
+        .state('root.opetussuunnitelmat.lukio.opetus.uusikurssi', {
+            url: '/oppiaineet/aine/:oppiaineId/uusi/kurssi',
+            templateUrl: 'views/opetussuunnitelmat/lukio/kurssi.html',
+            controller: 'LuoLukioKurssiController'
+        })
         .state('root.opetussuunnitelmat.lukio.opetus.uusioppiaine', {
             url: '/oppiaineet/uusi/:parentOppiaineId',
             templateUrl: 'views/opetussuunnitelmat/lukio/oppiaine.html',

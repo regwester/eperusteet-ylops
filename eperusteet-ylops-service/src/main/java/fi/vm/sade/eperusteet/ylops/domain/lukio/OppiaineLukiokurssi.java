@@ -51,7 +51,7 @@ public class OppiaineLukiokurssi extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
-    @Column(nullable = false)
+    @Column
     private Integer jarjestys;
 
     @Getter
