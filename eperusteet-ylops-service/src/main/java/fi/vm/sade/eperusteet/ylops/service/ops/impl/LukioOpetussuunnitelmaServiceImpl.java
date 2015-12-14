@@ -74,6 +74,9 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     @Autowired
     private OpsOppiaineParentViewRepository oppiaineParentViewRepository;
 
+    @Autowired
+    private OppiaineRepository oppiaineRepository;
+
     @Override
     @Transactional(readOnly = true)
     public LukioOpetussuunnitelmaRakenneOpsDto getRakenne(long opsId) {
@@ -184,6 +187,29 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
             mapper.map(ops.getAihekokonaisuudet(),
                     OpetuksenYleisetTavoitteetOpsDto.class)
         );
+    }
+
+    @Override
+    @Transactional
+    public void updateOppiaine(long opsId, LukioOppiaineSaveDto dto) {
+        Oppiaine oppiaine = oppiaineRepository.findOne(dto.getOppiaineId());
+        if(oppiaine == null){
+            throw new BusinessRuleViolationException("Oppiainetta ei löydy");
+        }
+        oppiaineRepository.lock(oppiaine);
+        mapper.map(dto, oppiaine);
+
+        oppiaine.getKurssiTyyppiKuvaukset().forEach((lukiokurssiTyyppi, lokalisoituTeksti) -> {
+            lukiokurssiTyyppi.oppiaineKuvausSetter().set(oppiaine, null);
+        });
+
+        if (dto.getKurssiTyyppiKuvaukset() != null) {
+            for (Map.Entry<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kv : dto.getKurssiTyyppiKuvaukset().entrySet()) {
+                kv.getKey().oppiaineKuvausSetter().set(oppiaine, kv.getValue()
+                        .map(tekstiDto -> LokalisoituTeksti.of(tekstiDto.getTekstit())).orElse(null));
+            }
+        }
+
     }
 
     @Override

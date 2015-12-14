@@ -40,4 +40,8 @@ public interface LukioOpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void updateTreeStructure(Long opsId, OppaineKurssiTreeStructureDto structureDto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateOppiaine(long opsId, LukioOppiaineSaveDto oppiaine);
+
 }

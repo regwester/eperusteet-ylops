@@ -17,7 +17,7 @@
 
 <div class="oppiaine-view" ng-show="!editMode">
 
-  <div class="action-buttons-inline">
+  <div class="action-buttons-inline" ng-if="!editing">
     <div class="action-button" ng-if="isReconnectable()">
       <span kaanna="ei-yhdistetty-pohjaan" style="color: red; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'palauta-yhteys'"
@@ -46,6 +46,9 @@
       <button class="btn btn-default" icon-role="add" kaanna="'lisaa-oppimaara'"
               ng-click="addOppimaara()"></button>
     </div>
+    <div class="action-button" ng-if="isEditable()">
+      <button class="btn btn-default" icon-role="edit" ng-click="toEditMode()"></button>
+    </div>
   </div>
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
 
@@ -53,7 +56,7 @@
   <!--<pre>{{oppiaine | json}}</pre>-->
   <!--<pre>{{oppiaine.kurssit | json}}</pre>-->
 
-  <div class="action-buttons-inline">
+  <div class="action-buttons-inline" ng-if="!editing">
     <button class="btn btn-default" kaanna="'tuo-perusteesta'"></button>
     <button class="btn btn-default" kaanna="'lisaa-kurssi'"></button>
   </div>
@@ -98,7 +101,7 @@
 
               <div ng-if="!kuvauksetIsEmpty(valtakunnallisetKurssiTyypit)">
                 <h2 kaanna="valtakunnalliset-kurssityypit"></h2>
-                <lukio-oppiaine-osa ng-repeat="t in valtakunnallisetKurssiTyypit" editable="isEditable()"
+                <lukio-oppiaine-osa ng-repeat="t in valtakunnallisetKurssiTyypit" editable="isEditable()" editing="editing"
                                     oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
                                     colorbox="t.tyyppi" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
                                     title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
@@ -108,7 +111,7 @@
               <div ng-if="!kuvauksetIsEmpty(paikallisetKurssiTyypit)">
                 <h2 kaanna="paikalliset-kurssityypit"></h2>
 
-                <lukio-oppiaine-osa ng-repeat="t in paikallisetKurssiTyypit" editable="isEditable()"
+                <lukio-oppiaine-osa ng-repeat="t in paikallisetKurssiTyypit" editable="isEditable()" editing="editing"
                                     oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
                                     colorbox="t.tyyppi" ikoni="true" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
                                     title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
@@ -120,19 +123,24 @@
     </div>
   </div>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tehtava.teksti" editable="isEditable()"
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tehtava.teksti" editable="isEditable()" editing="editing"
                       oppiaineen-teksti="oppiaine.tehtava.teksti" title="'oppiaine-osa-tehtava'"></lukio-oppiaine-osa>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tavoitteet.teksti" editable="isEditable()"
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tavoitteet.teksti" editable="isEditable()" editing="editing"
                       oppiaineen-teksti="oppiaine.tavoitteet.teksti" title="'oppiaine-osa-tavoitteet'"></lukio-oppiaine-osa>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.arviointi.teksti" editable="isEditable()"
+  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.arviointi.teksti" editable="isEditable()" editing="editing"
                       oppiaineen-teksti="oppiaine.arviointi.teksti" title="'oppiaine-osa-arviointi'"></lukio-oppiaine-osa>
 </div>
 
+<!--<pre>{{ oppiaine | json}}</pre>-->
 <div class="lisaa-oppiaine oppiaine-form" ng-show="editMode">
-  <h2 kaanna="'lisaa-oppimaara-title'" ng-show="isMaara()"></h2>
-  <h2 kaanna="'lisaa-oppiaine-title'" ng-show="!isMaara()"></h2>
+  <h2 ng-show="isMaara()">
+    {{ editingOld?'muokkaa-oppimaara-title':'lisaa-oppimaara-title' | kaanna}}
+  </h2>
+  <h2 ng-show="!isMaara()">
+    {{ editingOld?'muokkaa-oppiaine-title':'lisaa-oppiaine-title' | kaanna}}
+  </h2>
 
   <div class="non-collapsibles">
     <form name="oppiaineForm" role="form">

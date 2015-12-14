@@ -473,5 +473,7 @@
   "kurssin-voi-liittaa-vain-oppiaineeseen-tai-oppimaaraan": "Kurssin voi liittää ainoastaan oppimäärään tai oppiaineeseen.",
   "kurssin-voi-liittaa-vain-ei-koosteiseen-oppiaineeseen": "Kurssin voi liittää ainoastaan yhden oppimäärän oppiaineeseen tai oppimäärään.",
   "oppimaaraa-ei-voi-siirtaa-oppiaineeksi": "Oppimäärää ei voi siirtää oppiaineeksi.",
-  "oppimaaraa-ei-voi-siirtaa-toisen-oppimaaran-alle": "Oppimäärää ei voi siirtää toiseen oppiaineeseen."
+  "oppimaaraa-ei-voi-siirtaa-toisen-oppimaaran-alle": "Oppimäärää ei voi siirtää toiseen oppiaineeseen.",
+  "muokkaa-oppimaara-title": "Muokkaa oppimäärää",
+  "muokkaa-oppiaine-title": "Muokkaa oppiainetta"
 }
