@@ -544,9 +544,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Map<UUID, Oppiaine> uudetOppiaineJaMaaraByTunniste = newOppiaine.maarineen()
                 .collect(toMap(Oppiaine::getTunniste, oa -> oa));
         for (Map.Entry<UUID, LukioOppiaineJarjestys> oldJarjestys : jarjestykset.entrySet()) {
-            ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops,
-                    uudetOppiaineJaMaaraByTunniste.get(oldJarjestys.getKey()),
-                    oldJarjestys.getValue().getJarjestys()));
+            Oppiaine uusiOppiaine = uudetOppiaineJaMaaraByTunniste.get(oldJarjestys.getKey());
+            if (uusiOppiaine != null) {
+                ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops,
+                        uusiOppiaine, oldJarjestys.getValue().getJarjestys()));
+            } // else: esim. tilanne, jossa luotu katkaisun jälkeen oma oppimäärä ja palautuksessa poistettu
         }
     }
 

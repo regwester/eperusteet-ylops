@@ -267,7 +267,7 @@ ylopsApp
         $scope.kurssiKuvauksetVisible = false;
         $scope.rootOps = true;
         $scope.connected = () => $scope.oppiaine && !$scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa && !$scope.oppiaine.oppiaineId;
-        $scope.isReconnectable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa;
+        $scope.isReconnectable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa && !$scope.oppiaine.oppiaineId;
         $scope.isEditable = () => $scope.oppiaine && $scope.oppiaine.oma;
         $scope.isDeletable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.oppiaine.maariteltyPohjassa;
         $scope.canAddOppimaara = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma;

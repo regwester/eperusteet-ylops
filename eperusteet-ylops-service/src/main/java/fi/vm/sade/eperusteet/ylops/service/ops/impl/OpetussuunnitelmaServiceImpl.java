@@ -406,7 +406,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oppiaineCopier = oppiaineCopier.and(Oppiaine.perusopetusCopier());
         }
         final Copier<Oppiaine> oppiainePerusCopier = oppiaineCopier;
-        if (!onPohjastaTehtyPohja) {
+        if (teeKopio && !onPohjastaTehtyPohja) {
             oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(
                     oppiainePerusCopier.construct(oa -> new Oppiaine(oa.getTunniste()))));
         }
