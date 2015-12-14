@@ -12,7 +12,7 @@
   <logger name="org.hibernate.tool.hbm2ddl" level="off"/>
   <logger name="org.springframework" level="warn"/>
   <logger name="fi.vm.sade" level="warn"/>
-  <logger name="fi.vm.sade.eperusteet-ylops" level="info"/>
+  <logger name="fi.vm.sade.eperusteet.ylops" level="info"/>
   <logger name="fi.vm.sade.eperusteet.ylops.PROFILING" level="trace"/>
 
   <root level="info">
