@@ -288,3 +288,9 @@ hr.mujuviiva {
   background: none repeat scroll 0% 0% #DDD;
 }
 
+.truncate {
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
