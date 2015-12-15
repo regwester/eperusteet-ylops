@@ -567,6 +567,23 @@ ylopsApp
                 oppiaineId: $stateParams.oppiaineId
             });
         };
+
+        $scope.connectKurssi = () => {
+            console.log("connect");
+        };
+
+        $scope.disconnectKurssi = () => {
+            LukioOpetussuunnitelmaService.disconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
+                $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                    id: $stateParams.id,
+                    oppiaineId: $stateParams.oppiaineId,
+                    kurssiId: r.id
+                }, { reload: true, notify: true }));
+
+            });
+        };
+
+
     })
 
     .controller('LuoLukioKurssiController', ($scope, $q:IQService, $stateParams, LukioControllerHelpers,

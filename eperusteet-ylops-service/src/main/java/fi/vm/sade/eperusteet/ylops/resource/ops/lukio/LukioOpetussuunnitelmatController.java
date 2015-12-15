@@ -97,4 +97,10 @@ public class LukioOpetussuunnitelmatController {
                                       @RequestBody LukiokurssiUpdateDto kurssi) {
         lukioOpetussuunnitelmaService.updateKurssi(opsId, kurssiId, kurssi);
     }
+
+    @RequestMapping(value = "/kurssi/{kurssiId}/disconnect", method = RequestMethod.POST)
+    public LongIdResultDto disconnectKurssi(@PathVariable("opsId") final Long opsId,
+                             @PathVariable("kurssiId") final Long kurssiId) {
+        return new LongIdResultDto(lukioOpetussuunnitelmaService.disconnectKurssi( kurssiId, opsId ));
+    }
 }
