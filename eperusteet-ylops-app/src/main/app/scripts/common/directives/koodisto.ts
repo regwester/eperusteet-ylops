@@ -186,7 +186,7 @@ ylopsApp
           return;
         }
       },
-      link: function($scope, el, attrs) {
+      link: function($scope: any, el, attrs) {
         attrs.$observe('ylarelaatiotyyppi', function() {
             $scope.ylarelaatioTyyppi = attrs.ylarelaatiotyyppi || '';
         });
