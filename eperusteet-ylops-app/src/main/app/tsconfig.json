@@ -32,6 +32,7 @@
     "scripts/views/opetussuunnitelmat/vuosiluokat/vuosiluokka.ts",
     "scripts/views/opetussuunnitelmat/vuosiluokat/vlk.ts",
     "scripts/views/opetussuunnitelmat/lukio/lukiokoulutusControllers.ts",
+    "scripts/views/opetussuunnitelmat/lukio/lukioAihekokonaisuudet.ts",
     "scripts/views/opetussuunnitelmat/lukio/lukioOppiaineetControllers.ts",
     "scripts/views/opetussuunnitelmat/lukio/lukioTreeUtils.ts",
     "scripts/views/opetussuunnitelmat/lista.ts",

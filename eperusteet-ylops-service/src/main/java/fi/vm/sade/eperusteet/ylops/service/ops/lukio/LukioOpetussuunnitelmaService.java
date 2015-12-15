@@ -58,4 +58,19 @@ public interface LukioOpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     long reconnectKurssi(Long kurssiId, Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long saveAihekokonaisuus(long opsId, AihekokonaisuusSaveDto kokonaisuus);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void reArrangeAihekokonaisuudet(long opsId, AihekokonaisuudetJarjestaDto jarjestys);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateAihekokonaisuusYleiskuvaus(long opsId, AihekokonaisuusSaveDto yleiskuvaus);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateAihekokonaisuus(long opsId, long id, AihekokonaisuusSaveDto kokonaisuus);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void deleteAihekokonaisuus(long opsId, long id);
 }

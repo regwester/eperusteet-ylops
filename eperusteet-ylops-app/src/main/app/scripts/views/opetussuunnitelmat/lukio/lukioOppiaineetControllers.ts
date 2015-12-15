@@ -596,8 +596,6 @@ ylopsApp
                 })
             })();
         };
-
-
     })
 
     .controller('LuoLukioKurssiController', ($scope, $q:IQService, $stateParams, LukioControllerHelpers,
@@ -678,7 +676,8 @@ ylopsApp
             colorbox: '=?colorbox',
             ikoni: '=?ikoni',
             editable: '=?editable',
-            editing: '=?editing'
+            editing: '=?editing',
+            pohjanTeksti: '=?pohjanTeksti'
         },
         templateUrl: 'views/opetussuunnitelmat/directives/oppiaineSisalto.html',
         controller: 'LukioOppiaineSisaltoController'

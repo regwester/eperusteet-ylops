@@ -26,6 +26,28 @@ declare module Lukio {
         yleiskuvaus?: l.Lokalisoitu;
     }
 
+    export interface AihekokonaisuudetPaivitaYleiskuvaus {
+        otsikko: l.Lokalisoitu;
+        yleiskuvaus: l.Lokalisoitu;
+    }
+
+    export interface LuoAihekokonaisuus {
+        otsikko: l.Lokalisoitu;
+        yleiskuvaus: l.Lokalisoitu;
+    }
+    export interface PaivitaAihekokonaisuus extends LuoAihekokonaisuus{
+    }
+
+    export interface JarjestaAihekokonaisuudet {
+        aihekokonaisuudet: IdHolder[]
+    }
+
+    export interface MuokkaaAihekokonaisuutta {
+        id: number;
+        otsikko: l.Lokalisoitu;
+        yleiskuvaus: l.Lokalisoitu;
+    }
+
     export interface Aihekokonaisuudet {
         uuidTunniste?: string;
         id? : number;
@@ -36,6 +58,7 @@ declare module Lukio {
 
     export interface OpsAihekokonaisuus extends Aihekokonaisuus {
         perusteen?: Aihekokonaisuus;
+        parent?: OpsAihekokonaisuus;
     }
 
     export interface OpsAihekokonaisuudet extends Aihekokonaisuudet {

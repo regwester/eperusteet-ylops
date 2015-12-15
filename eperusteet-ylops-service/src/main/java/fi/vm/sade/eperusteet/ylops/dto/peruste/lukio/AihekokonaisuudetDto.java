@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 public class AihekokonaisuudetDto extends AihekokonaisuudetBaseDto
         implements Serializable, PerusteenOsa {
     private AihekokonaisuudetDto parent;
-    private Set<AihekokonaisuusDto> aihekokonaisuudet;
+    private List<AihekokonaisuusDto> aihekokonaisuudet;
 
     @Override @JsonIgnore // uuidTunniste
     public UUID getTunniste() {

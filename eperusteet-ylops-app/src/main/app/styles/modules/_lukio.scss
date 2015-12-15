@@ -904,3 +904,33 @@ a.clickable {
     margin-right: 5px;
   }
 }
+
+.aihekokonaisuudet-structure {
+  .sortable {
+    margin: 3px;
+    padding: 5px;
+    border: 1px solid #ccc;
+
+    &:hover {
+      background: #eee;
+    }
+
+    .treehandle {
+      &:hover {
+        cursor: move;
+      }
+    }
+  }
+  .treehandle {
+    display: none;
+  }
+  .editing {
+    .treehandle{
+      display: inline-block;
+    }
+
+    .placeholder {
+      padding: 5px;
+    }
+  }
+}

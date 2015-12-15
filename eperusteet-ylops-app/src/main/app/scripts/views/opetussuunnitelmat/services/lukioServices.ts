@@ -20,10 +20,18 @@ import IdHolder = Lukio.IdHolder;
 'use strict';
 
 interface LukioOpetussuunnitelmaServiceI {
-    getAihekokonaisuudet(id?: number): IPromise<Lukio.AihekokonaisuudetPerusteenOsa>
-    getOpetuksenYleisetTavoitteet(id?: number) : IPromise<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>
+    getAihekokonaisuudet(opsId?: number): IPromise<Lukio.AihekokonaisuudetPerusteenOsa>
+    getAihekokonaisuus(id: number, opsId?: number): IPromise<Lukio.OpsAihekokonaisuus>
+    saveAihekokonaisuus(aihekok: Lukio.LuoAihekokonaisuus, opsId?:number): IPromise<IdHolder>
+    updateAihekokonaisuudetYleiskuvaus(yleiskuvaus: Lukio.AihekokonaisuudetPaivitaYleiskuvaus, opsId?:number): IPromise<void>
+    rearrangeAihekokonaisuudet(jarjestys: Lukio.JarjestaAihekokonaisuudet, opsId?:number): IPromise<void>
+    updateAihekokonaisuus(id: number, aihekok: Lukio.PaivitaAihekokonaisuus, opsId?:number): IPromise<void>
+    deleteAihekokonaisuus(aihekokId: number, opsId?:number): IPromise<void>
+
+    getOpetuksenYleisetTavoitteet(opsId?: number) : IPromise<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>
     onAihekokonaisuudetUpdate(then: () => void ) : void
     onRaknneUpdate(then: () => void ) : void
+
     getRakenne(id?: number): IPromise<Lukio.LukioOpetussuunnitelmaRakenneOps>
     getOppiaine(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine>
     saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<IdHolder>
@@ -34,6 +42,7 @@ interface LukioOpetussuunnitelmaServiceI {
     updateOppiaineKurssiStructure(treeRoot:LukioKurssiTreeNode, kommentti?: string, opsId?: number): IPromise<void>,
     addKielitarjonta(oppiaineId:number, tarjonta:Lukio.OppiaineKielitarjonta, opsId?: number): IPromise<Lukio.IdHolder>
     deleteOppiaine(oppiaineId:number, opsId?: number): IPromise<void>
+
     saveKurssi(kurssi:Lukio.LuoLukiokurssi, opsId?: number): IPromise<IdHolder>
     updateKurssi(kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number): IPromise<void>
     disconnectKurssi(kurssiId:number, opsId:number): IPromise<IdHolder>
@@ -44,21 +53,39 @@ ylopsApp
     .service('LukioOpetussuunnitelmaService', function(OpetusuunnitelmaLukio, $q:IQService, $log,
                                                        Notifikaatiot, $stateParams, OppiaineCRUD) {
         var doGetAihekokonaisuudet =
-            (id: number, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) =>
-                OpetusuunnitelmaLukio.aihekokonaisuudet({opsId: id})
+            (opsId: number, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) =>
+                OpetusuunnitelmaLukio.aihekokonaisuudet({opsId: opsId || $stateParams.id})
                     .$promise.then((aihekok: Lukio.AihekokonaisuudetPerusteenOsa) => d.resolve(aihekok),
                             Notifikaatiot.serverCb);
         var aiheKokCache = cached<Lukio.AihekokonaisuudetPerusteenOsa>($q, doGetAihekokonaisuudet);
-        var getAihekokonaisuudet = (id?: number) => aiheKokCache.get(id || $stateParams.id);
+        var getAihekokonaisuudet = (opsId?: number) => aiheKokCache.get(opsId || $stateParams.id);
+        var kokonaisuusCache = aiheKokCache.related((from: Lukio.AihekokonaisuudetPerusteenOsa) : {[key:number]: Lukio.OpsAihekokonaisuus} =>
+            _(from.paikallinen.aihekokonaisuudet).indexBy(_.property('id')).value());
+        var getAihekokonaisuus = (id: number, opsId?: number) => kokonaisuusCache.get(opsId || $stateParams.id, id);
+        var saveAihekokonaisuus = (aihekok: Lukio.LuoAihekokonaisuus, opsId?:number) =>
+            OpetusuunnitelmaLukio.saveAihekokonaisuus({opsId: opsId || $stateParams.id}, aihekok)
+                .$promise.then(r => { kokonaisuusCache.clear(); return r; }, Notifikaatiot.serverCb);
+        var rearrangeAihekokonaisuudet = (jarjestys: Lukio.JarjestaAihekokonaisuudet, opsId?:number) =>
+            OpetusuunnitelmaLukio.rearrangeAihekokonaisuudet({opsId: opsId || $stateParams.id}, jarjestys)
+                .$promise.then(r => { aiheKokCache.clear(); return r; }, Notifikaatiot.serverCb);
+        var updateAihekokonaisuudetYleiskuvaus = (yleiskuvaus: Lukio.AihekokonaisuudetPaivitaYleiskuvaus, opsId?:number) =>
+            OpetusuunnitelmaLukio.updateAihekokonaisuudetYleiskuvaus({opsId: opsId || $stateParams.id}, yleiskuvaus)
+                .$promise.then(r => { aiheKokCache.clear(); return r; }, Notifikaatiot.serverCb);
+        var updateAihekokonaisuus = (id: number, aihekok:Lukio.PaivitaAihekokonaisuus, opsId?:number) =>
+            OpetusuunnitelmaLukio.updateAihekokonaisuus({opsId: opsId || $stateParams.id, aihekokonaisuusId: id}, aihekok)
+                .$promise.then(r => { aiheKokCache.clear(); return r; }, Notifikaatiot.serverCb);
+        var deleteAihekokonaisuus = (aihekokId:number, opsId?:number) =>
+            OpetusuunnitelmaLukio.deleteAihekokonaisuus({opsId: opsId || $stateParams.id, aihekokonaisuusId: aihekokId})
+                .$promise.then(r => { aiheKokCache.clear(); return r; }, Notifikaatiot.serverCb);
 
         var doGetOpetuksenYleisetTavoitteet =
-            (id: number, d: IDeferred<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>) =>
-                OpetusuunnitelmaLukio.opetuksenYleisetTavoitteet({opsId: id})
+            (opsId: number, d: IDeferred<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>) =>
+                OpetusuunnitelmaLukio.opetuksenYleisetTavoitteet({opsId: opsId || $stateParams.id})
                     .$promise.then((yleisetTavoitteet: Lukio.OpetuksenYleisetTavoitteetPerusteenOsa) =>
                         d.resolve(yleisetTavoitteet), Notifikaatiot.serverCb);
         var yleisetTavoitteetCache = cached<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>($q,
             doGetOpetuksenYleisetTavoitteet);
-        var getOpetuksenYleisetTavoitteet = (id?: number) => yleisetTavoitteetCache.get(id || $stateParams.id);
+        var getOpetuksenYleisetTavoitteet = (opsId?: number) => yleisetTavoitteetCache.get(opsId || $stateParams.id);
 
         var doGetRakenne = (id: number, d: IDeferred<Lukio.LukioOpetussuunnitelmaRakenneOps>) =>
             OpetusuunnitelmaLukio.rakenne({opsId: id})
@@ -162,9 +189,18 @@ ylopsApp
 
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
+            getAihekokonaisuus: getAihekokonaisuus,
+            saveAihekokonaisuus: saveAihekokonaisuus,
+            rearrangeAihekokonaisuudet: rearrangeAihekokonaisuudet,
+            updateAihekokonaisuudetYleiskuvaus: updateAihekokonaisuudetYleiskuvaus,
+            updateAihekokonaisuus: updateAihekokonaisuus,
+            deleteAihekokonaisuus: deleteAihekokonaisuus,
+
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
+
             onAihekokonaisuudetUpdate: (then) => aiheKokCache.onUpdate(then),
             onRaknneUpdate: (then) => rakenneCache.onUpdate(then),
+
             getRakenne: getRakenne,
             getOppiaine: getOppiaine,
             getKurssi: getKurssi,
@@ -175,9 +211,10 @@ ylopsApp
             updateOppiaineKurssiStructure: updateOppiaineKurssiStructure,
             addKielitarjonta: addKielitarjonta,
             deleteOppiaine: deleteOppiaine,
+
             saveKurssi: saveKurssi,
             updateKurssi: updateKurssi,
-            disconnectKurssi: disconnectKurssi,
-            reconnectKurssi, reconnectKurssi
+            reconnectKurssi: reconnectKurssi,
+            disconnectKurssi: disconnectKurssi
         }
     });

@@ -57,6 +57,38 @@ public class LukioOpetussuunnitelmatController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/aihekokonaisuudet/kokonaisuus", method = RequestMethod.POST)
+    public LongIdResultDto saveAihekokonaisuus(@PathVariable("opsId") Long opsId,
+                                                @RequestBody AihekokonaisuusSaveDto kokonaisuus) {
+        return new LongIdResultDto(lukioOpetussuunnitelmaService.saveAihekokonaisuus(opsId, kokonaisuus));
+    }
+
+    @RequestMapping(value = "/aihekokonaisuudet/jarjesta", method = RequestMethod.POST)
+    public void reArrangeAihekokonaisuudet(@PathVariable("opsId") Long opsId,
+                                               @RequestBody AihekokonaisuudetJarjestaDto jarjestys) {
+        lukioOpetussuunnitelmaService.reArrangeAihekokonaisuudet(opsId, jarjestys);
+    }
+
+    @RequestMapping(value = "/aihekokonaisuudet/yleiskuvaus", method = RequestMethod.POST)
+    public void updateAihekokonaisuudetYleiskuvaus(@PathVariable("opsId") Long opsId,
+                                                   @RequestBody AihekokonaisuusSaveDto kokonaisuus) {
+        lukioOpetussuunnitelmaService.updateAihekokonaisuusYleiskuvaus(opsId, kokonaisuus);
+    }
+
+    @RequestMapping(value = "/aihekokonaisuudet/kokonaisuus/{aihekokonaisuusId}", method = RequestMethod.POST)
+    public void updateAihekokonaisuus(@PathVariable("opsId") Long opsId,
+                                      @PathVariable("aihekokonaisuusId") Long id,
+                                      @RequestBody AihekokonaisuusSaveDto kokonaisuus) {
+        lukioOpetussuunnitelmaService.updateAihekokonaisuus(opsId, id, kokonaisuus);
+    }
+
+    @RequestMapping(value = "/aihekokonaisuudet/kokonaisuus/{aihekokonaisuusId}", method = RequestMethod.DELETE)
+    public void deleteAihekokonaisuus(@PathVariable("opsId") Long opsId,
+                                      @PathVariable("aihekokonaisuusId") Long id) {
+        lukioOpetussuunnitelmaService.deleteAihekokonaisuus(opsId, id);
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/opetuksenYleisetTavoitteet", method = RequestMethod.GET)
     public OpetuksenYleisetTavoitteetPerusteOpsDto getOpetuksenYleisetTavoitteet(@PathVariable("opsId") Long opsId) {
         return lukioOpetussuunnitelmaService.getOpetuksenYleisetTavoitteet(opsId);

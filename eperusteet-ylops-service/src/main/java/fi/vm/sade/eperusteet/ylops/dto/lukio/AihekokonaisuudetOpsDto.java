@@ -23,6 +23,8 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuusOpsDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -38,7 +40,7 @@ public class AihekokonaisuudetOpsDto extends AihekokonaisuudetBaseDto
             implements PerusteeseenViittaava<AihekokonaisuudetDto> {
     @JsonIgnore
     private AihekokonaisuudetDto perusteen;
-    private Set<AihekokonaisuusOpsDto> aihekokonaisuudet;
+    private List<AihekokonaisuusOpsDto> aihekokonaisuudet = new ArrayList<>();
 
     @Override @JsonIgnore // already uuidTunniste
     public UUID getTunniste() {

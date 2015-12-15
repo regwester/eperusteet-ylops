@@ -29,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuusOpsDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.*;
@@ -85,6 +86,9 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Autowired
     private LukiokurssiRepository lukiokurssiRepository;
+
+    @Autowired
+    private AihekokonaisuusRepository aihekokonaisuusRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -190,8 +194,16 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         PerusteDto perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
         return new AihekokonaisuudetPerusteOpsDto(
             mapper.map(perusteDto.getLukiokoulutus().getAihekokonaisuudet(), AihekokonaisuudetDto.class),
-            mapper.map(ops.getAihekokonaisuudet(), AihekokonaisuudetOpsDto.class)
+            sorted(mapper.map(ops.getAihekokonaisuudet(), AihekokonaisuudetOpsDto.class))
         );
+    }
+
+    private AihekokonaisuudetOpsDto sorted(AihekokonaisuudetOpsDto aihekokonaisuudetOpsDto) {
+        Collections.sort(aihekokonaisuudetOpsDto.getAihekokonaisuudet(),
+                Comparator.comparing((AihekokonaisuusOpsDto ak) -> Optional.ofNullable(ak.getJnro())
+                        .orElse(Long.MAX_VALUE))
+                    .thenComparing(AihekokonaisuusOpsDto::getId));
+        return aihekokonaisuudetOpsDto;
     }
 
     @Override
@@ -354,8 +366,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         Lukiokurssi copy = kurssi.copy();
 
         kurssi.getOppiaineet().forEach(oppiaineLukiokurssi -> {
-            if( oppiaineLukiokurssi.getOpetussuunnitelma().getId().compareTo( opsId ) == 0 ){
-                oppiaineLukiokurssi.setKurssi( copy );
+            if (oppiaineLukiokurssi.getOpetussuunnitelma().getId().compareTo(opsId) == 0) {
+                oppiaineLukiokurssi.setKurssi(copy);
                 oppiaineLukiokurssi.setOma(true);
             }
         });
@@ -386,6 +398,64 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
         opetussuunnitelmaRepository.flush();
         return oaKurssi.getKurssi().getId();
+    }
+
+    @Override
+    @Transactional
+    public long saveAihekokonaisuus(long opsId, AihekokonaisuusSaveDto kokonaisuus) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetussuunnitelmaRepository.lock(ops);
+        Aihekokonaisuus uusi = mapper.map(kokonaisuus, new Aihekokonaisuus(ops.getAihekokonaisuudet()));
+        ops.getAihekokonaisuudet().getAihekokonaisuudet().add(uusi);
+        opetussuunnitelmaRepository.flush();
+        return uusi.getId();
+    }
+
+    @Override
+    @Transactional
+    public void reArrangeAihekokonaisuudet(long opsId, AihekokonaisuudetJarjestaDto jarjestys) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetussuunnitelmaRepository.lock(ops);
+        Map<Long, Aihekokonaisuus> byId = ops.getAihekokonaisuudet().getAihekokonaisuudet()
+                .stream().collect(toMap(Aihekokonaisuus::getId, ak -> ak));
+        Long jnro = 1L;
+        for (AihekokonaisuusJarjestysDto jarjestysDto : jarjestys.getAihekokonaisuudet()) {
+            byId.get(jarjestysDto.getId()).setJnro(jnro++);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateAihekokonaisuusYleiskuvaus(long opsId, AihekokonaisuusSaveDto yleiskuvaus) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetussuunnitelmaRepository.lock(ops);
+        mapper.map(yleiskuvaus, ops.getAihekokonaisuudet());
+    }
+
+    @Override
+    @Transactional
+    public void updateAihekokonaisuus(long opsId, long id, AihekokonaisuusSaveDto kokonaisuus) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetussuunnitelmaRepository.lock(ops);
+        mapper.map(kokonaisuus, ops.getAihekokonaisuudet().getAihekokonaisuudet()
+            .stream().filter(ak -> ak.getId().equals(id)).findFirst()
+            .orElseThrow(() -> new BusinessRuleViolationException("Aihekokonaisuutta ei löytynyt.")));
+    }
+
+    @Override
+    @Transactional
+    public void deleteAihekokonaisuus(long opsId, long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetussuunnitelmaRepository.lock(ops);
+        Aihekokonaisuus aihekokonaisuus = ops.getAihekokonaisuudet().getAihekokonaisuudet()
+                .stream().filter(ak -> ak.getId().equals(id)
+                        && ak.getParent() == null).findFirst()
+                .orElseThrow(() -> new BusinessRuleViolationException("Aihekokonaisuutta ei löytynyt."));
+        aihekokonaisuusRepository.findByParent(aihekokonaisuus.getId()).stream().forEach(ak
+                -> ak.setParent(null));
+        aihekokonaisuus.setAihekokonaisuudet(null);
+        ops.getAihekokonaisuudet().getAihekokonaisuudet().remove(aihekokonaisuus);
+        aihekokonaisuusRepository.delete(aihekokonaisuus);
     }
 
     @Override

@@ -14,27 +14,21 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
+package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.UUID;
+import javax.validation.constraints.NotNull;
 
 /**
  * User: tommiratamaa
- * Date: 19.11.2015
- * Time: 14.43
+ * Date: 15.12.2015
+ * Time: 16.16
  */
 @Getter
 @Setter
-public class AihekokonaisuudetBaseDto {
-    private UUID uuidTunniste;
+public class AihekokonaisuusJarjestysDto {
+    @NotNull
     private Long id;
-    private LokalisoituTekstiDto otsikko;
-    private LokalisoituTekstiDto yleiskuvaus;
-    private Date muokattu;
-    private String muokkaaja;
 }

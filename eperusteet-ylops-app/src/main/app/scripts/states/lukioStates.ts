@@ -54,6 +54,16 @@ ylopsApp
             templateUrl: 'views/opetussuunnitelmat/lukio/aihekokonaisuudet.html',
             controller: 'AihekokonaisuudetController'
         })
+        .state('root.opetussuunnitelmat.lukio.opetus.uusiaihekokonaisuus', {
+            url: '/aihekokonaisuudet/uusi',
+            templateUrl: 'views/opetussuunnitelmat/lukio/aihekokonaisuus.html',
+            controller: 'LuoAihekokonaisuusController'
+        })
+        .state('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuus', {
+            url: '/aihekokonaisuudet/kokonaisuus/:aihekokonaisuusId',
+            templateUrl: 'views/opetussuunnitelmat/lukio/aihekokonaisuus.html',
+            controller: 'AihekokonaisuusController'
+        })
         .state('root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet', {
             url: '/yleisetTavoitteet',
             templateUrl: 'views/opetussuunnitelmat/lukio/yleisettavoitteet.html',

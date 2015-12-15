@@ -36,6 +36,13 @@
     <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna"></span>
   </div>
 
+  <div class="oppiaine-paikallinen" ng-if="pohjanTeksti">
+    <span>
+      <strong>{{ 'pohjan-tarkennus' | kaanna}}</strong>
+      <span ng-bind-html="pohjanTeksti | kaanna"></span>
+    </span>
+  </div>
+
   <div class="oppiaine-paikallinen">
     <span ng-if="oppiaineenTeksti && !editingField">
       <strong>{{ 'paikallinen-tarkennus' | kaanna}}</strong>

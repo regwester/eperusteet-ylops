@@ -91,6 +91,12 @@ ylopsApp
     return $resource(YlopsResources.LUKIO_OPS, {
     }, {
       aihekokonaisuudet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/aihekokonaisuudet', isArray: false},
+      saveAihekokonaisuus: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/aihekokonaisuudet/kokonaisuus', isArray: false},
+      rearrangeAihekokonaisuudet: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/aihekokonaisuudet/jarjesta', isArray: false},
+      updateAihekokonaisuudetYleiskuvaus: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/aihekokonaisuudet/yleiskuvaus', isArray: false},
+      updateAihekokonaisuus: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/aihekokonaisuudet/kokonaisuus/:aihekokonaisuusId', isArray: false},
+      deleteAihekokonaisuus: {method: 'DELETE', url: YlopsResources.LUKIO_OPS + '/aihekokonaisuudet/kokonaisuus/:aihekokonaisuusId', isArray: false},
+
       rakenne: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/rakenne', isArray: false},
       opetuksenYleisetTavoitteet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/opetuksenYleisetTavoitteet', isArray: false},
       saveOppiaine: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},

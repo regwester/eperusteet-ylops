@@ -40,6 +40,11 @@ public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity
     protected Aihekokonaisuus() {
     }
 
+    public Aihekokonaisuus(Aihekokonaisuudet aihekokonaisuudet) {
+        this.aihekokonaisuudet = aihekokonaisuudet;
+        this.tunniste = UUID.randomUUID();
+    }
+
     public Aihekokonaisuus(Aihekokonaisuudet aihekokonaisuudet, UUID tunniste) {
         this.aihekokonaisuudet = aihekokonaisuudet;
         this.tunniste = tunniste;

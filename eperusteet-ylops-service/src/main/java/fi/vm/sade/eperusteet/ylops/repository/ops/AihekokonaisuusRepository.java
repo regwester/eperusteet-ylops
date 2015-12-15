@@ -14,27 +14,22 @@
  *  European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
+package fi.vm.sade.eperusteet.ylops.repository.ops;
 
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import lombok.Getter;
-import lombok.Setter;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuus;
+import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
 /**
  * User: tommiratamaa
- * Date: 19.11.2015
- * Time: 14.43
+ * Date: 15.12.2015
+ * Time: 17.47
  */
-@Getter
-@Setter
-public class AihekokonaisuudetBaseDto {
-    private UUID uuidTunniste;
-    private Long id;
-    private LokalisoituTekstiDto otsikko;
-    private LokalisoituTekstiDto yleiskuvaus;
-    private Date muokattu;
-    private String muokkaaja;
+@Repository
+public interface AihekokonaisuusRepository extends JpaWithVersioningRepository<Aihekokonaisuus, Long> {
+    @Query(value = "select ak from Aihekokonaisuus ak where ak.parent.id = ?1 order by ak.id")
+    List<Aihekokonaisuus> findByParent(long parentId);
 }

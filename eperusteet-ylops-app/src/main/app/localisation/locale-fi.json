@@ -375,6 +375,7 @@
   "lukio-aihekokonaisuudet": "Aihekokonaisuudet",
   "lukio-opetuksen-yleiset-tavoitteet": "Opetuksen yleiset tavoitteet",
   "aihekokonaisuudet-sisallon-rakenne": "Sisällön rakenne",
+  "pohjan-tarkennus": "Pohjan tarkennus:",
   "paikallinen-tarkennus": "Paikallinen tarkennus:",
   "lukio-oppiaineet-oppimaarat": "Oppiaineet ja oppimäärät",
   "lukio-oppiaineet-oppimaarat-title": "Oppiaineet ja oppimäärät",
@@ -484,5 +485,15 @@
   "oppiaineen-poisto-onnistui": "Oppiaineen poisto onnistui",
   "varmista-poista-oppimaara": "Haluatko varmasti poistaa oppimäärän?",
   "varmista-poista-oppiaine": "Haluatko varmasti poistaa oppiaineen?",
-  "kieli-jo-toteutettu-oppimaaralle": "Kieli on jo lisätty oppiaineelle valitulla oppimäärällä."
+  "kieli-jo-toteutettu-oppimaaralle": "Kieli on jo lisätty oppiaineelle valitulla oppimäärällä.",
+  "lukio-aihekokonaisuudet-muokkaa-rakennetta": "Muokkaa rakennetta",
+  "lisaa-aihekokonaisuus": "Lisää uusi",
+  "aihekokonaisuus-otsikko-header": "Otsikko",
+  "aihekokonaisuus-yleiskuvaus-header": "Yleiskuvaus",
+  "lisaa-aihekokonaisuus-header": "Lisää aihekokonaisuus",
+  "aihekokonaisuuksien-jarjestaminen-onnistui": "Aihekokonaisuuksien rakenteen muokkaus onnistui.",
+  "aihekokonaisuuden-tallentaminen-onnistui": "Aihekokonaisuus tallennettu onnistuneesti.",
+  "aihekokonaisuuksien-yleiskuvauksen-paivitys-onnistui": "Aihekokonaisuuksien päivitys onnistui.",
+  "varmista-poista-aihekokonaisuus": "Haluatko varmasti poistaa aihekokonaisuuden?",
+  "aihekokonaisuuden-poisto-onnistui": "Aihekokonaisuuden poisto onnistui."
 }
