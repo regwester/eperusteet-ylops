@@ -131,6 +131,7 @@ $sivunavi-level-padding: 20px;
 
   .paikallinen:not(.active)  {
     background-image: url('../../images/ikoni_paikallinen.png');
+    background-size: 11px 14px;
     background-repeat: no-repeat;
     width: 16px;
     height: 16px;
@@ -139,6 +140,7 @@ $sivunavi-level-padding: 20px;
   }
   .paikallinen.active {
     background-image: url('../../images/ikoni_paikallinen_white.png');
+    background-size: 11px 14px;
     background-repeat: no-repeat;
     width: 16px;
     height: 16px;
