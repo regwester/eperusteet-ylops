@@ -64,7 +64,7 @@ angular.module('eGenericTree', [])
                     return $scope.treeProvider.hidden(node);
                 };
             },
-            link: function (scope, element) {
+            link: function (scope: any, element) {
                 function setContext(node, children) {
                     node.$$hasChildren = !_.isEmpty(children);
                     _.each(children, function (cnode) {
@@ -141,7 +141,7 @@ angular.module('eGenericTree', [])
                         $log.error(err);
                     });
             },
-            link: function (scope, element) {
+            link: function (scope: any, element) {
                 function refresh(tree) {
                     if (tree) {
                         _.each(scope.children, function (child) {
