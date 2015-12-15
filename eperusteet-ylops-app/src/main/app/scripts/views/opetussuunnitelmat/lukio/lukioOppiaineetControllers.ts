@@ -493,7 +493,7 @@ ylopsApp
 
     .controller('LukioKurssiController', function($scope, $q:IQService, $stateParams, $state, LukioControllerHelpers,
                                   LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log,
-                                  Editointikontrollit, $timeout) {
+                                  Editointikontrollit, $timeout, Varmistusdialogi) {
         $scope.kurssi = null;
         $scope.oppiaine = null;
         $scope.editMode = false;
@@ -569,18 +569,32 @@ ylopsApp
         };
 
         $scope.connectKurssi = () => {
-            console.log("connect");
+            Varmistusdialogi.dialogi({
+                otsikko: 'varmista-palauta-kurssi',
+                primaryBtn: 'palauta-yhteys',
+                successCb: () => LukioOpetussuunnitelmaService.reconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
+                    $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                        id: $stateParams.id,
+                        oppiaineId: $stateParams.oppiaineId,
+                        kurssiId: r.id
+                    }, { reload: true, notify: true }));
+                })
+            })();
+
         };
 
         $scope.disconnectKurssi = () => {
-            LukioOpetussuunnitelmaService.disconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
-                $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
-                    id: $stateParams.id,
-                    oppiaineId: $stateParams.oppiaineId,
-                    kurssiId: r.id
-                }, { reload: true, notify: true }));
-
-            });
+            Varmistusdialogi.dialogi({
+                otsikko: 'varmista-katkaise-yhteys',
+                primaryBtn: 'katkaise-yhteys',
+                successCb: () => LukioOpetussuunnitelmaService.disconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
+                    $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                        id: $stateParams.id,
+                        oppiaineId: $stateParams.oppiaineId,
+                        kurssiId: r.id
+                    }, { reload: true, notify: true }));
+                })
+            })();
         };
 
 

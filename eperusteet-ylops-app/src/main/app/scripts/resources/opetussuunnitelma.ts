@@ -99,7 +99,8 @@ ylopsApp
       addKielitarjonta: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/oppiaine/:oppiaineId/kielitarjonta', isArray:false},
       saveKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi', isArray:false},
       updateKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId', isArray:false},
-      disconnectKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId/disconnect', isArray:false}
+      disconnectKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId/disconnect', isArray:false},
+      reconnectKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId/reconnect', isArray:false}
     });
   })
 

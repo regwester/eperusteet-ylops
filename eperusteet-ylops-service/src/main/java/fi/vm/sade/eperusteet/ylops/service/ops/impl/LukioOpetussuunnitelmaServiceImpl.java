@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity.idEquals;
@@ -361,6 +362,30 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
         opetussuunnitelmaRepository.flush();
         return copy.getId();
+    }
+
+    @Override
+    @Transactional
+    public long reconnectKurssi(Long kurssiId, Long opsId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetussuunnitelmaRepository.lock(ops);
+        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi( opsId, kurssiId).stream().findAny()
+                .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
+
+        final UUID tunniste = oaKurssi.getKurssi().getTunniste();
+        OppiaineLukiokurssi pohjanKurssi = ops.getPohja().getLukiokurssit().stream()
+                .filter(a -> (a.getKurssi().getTunniste().compareTo(tunniste) == 0))
+                .findAny().orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta ei löytynyt."));
+
+        oaKurssi.getKurssi().getOppiaineet().forEach(oppiaineLukiokurssi -> {
+            if( oppiaineLukiokurssi.getOpetussuunnitelma().getId().compareTo( opsId ) == 0 ){
+                oppiaineLukiokurssi.setKurssi( pohjanKurssi.getKurssi() );
+                oppiaineLukiokurssi.setOma(false);
+            }
+        });
+
+        opetussuunnitelmaRepository.flush();
+        return oaKurssi.getKurssi().getId();
     }
 
     @Override

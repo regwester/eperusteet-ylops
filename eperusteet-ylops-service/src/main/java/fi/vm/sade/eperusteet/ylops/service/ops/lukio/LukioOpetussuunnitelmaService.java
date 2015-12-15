@@ -55,4 +55,7 @@ public interface LukioOpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     long disconnectKurssi(Long kurssiId, Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long reconnectKurssi(Long kurssiId, Long opsId);
 }

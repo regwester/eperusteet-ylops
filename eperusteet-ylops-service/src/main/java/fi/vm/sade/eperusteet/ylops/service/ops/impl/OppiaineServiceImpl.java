@@ -499,15 +499,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
 
         final UUID tunniste = oppiaine.getTunniste();
-        List<OpsOppiaine> tmpOppiaineet = pohja.getOppiaineet().stream()
+        List<OpsOppiaine> pohjanOppiaineet = pohja.getOppiaineet().stream()
                 .filter(a -> (a.getOppiaine().getTunniste().compareTo(tunniste) == 0))
                 .collect(Collectors.toList());
 
-        if( tmpOppiaineet.size() != 1){
+        if( pohjanOppiaineet.size() != 1){
             throw new BusinessRuleViolationException("Oppiainetta ei löytynyt.");
         }
 
-        Oppiaine opp = tmpOppiaineet.get(0).getOppiaine();
+        Oppiaine opp = pohjanOppiaineet.get(0).getOppiaine();
         OpsOppiaine oldOppiaine = new OpsOppiaine(opp, false);
 
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()

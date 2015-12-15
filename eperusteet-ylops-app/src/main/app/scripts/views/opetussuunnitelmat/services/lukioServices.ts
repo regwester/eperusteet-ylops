@@ -36,7 +36,8 @@ interface LukioOpetussuunnitelmaServiceI {
     deleteOppiaine(oppiaineId:number, opsId?: number): IPromise<void>
     saveKurssi(kurssi:Lukio.LuoLukiokurssi, opsId?: number): IPromise<IdHolder>
     updateKurssi(kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number): IPromise<void>
-    disconnectKurssi(kurssiId:number, opsId:number): IPromise<void>
+    disconnectKurssi(kurssiId:number, opsId:number): IPromise<IdHolder>
+    reconnectKurssi(kurssiId:number, opsId:number): IPromise<IdHolder>
 }
 
 ylopsApp
@@ -151,10 +152,13 @@ ylopsApp
             OpetusuunnitelmaLukio.updateKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, kurssi)
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
 
-        var disconnectKurssi = (kurssiI:number, opsI:number) =>
-            OpetusuunnitelmaLukio.disconnectKurssi({kurssiId: kurssiI, opsId: opsI || $stateParams.id}, {})
+        var disconnectKurssi = (kurssiId:number, opsId:number) =>
+            OpetusuunnitelmaLukio.disconnectKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, {})
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
 
+        var reconnectKurssi = (kurssiId:number, opsId:number) =>
+            OpetusuunnitelmaLukio.reconnectKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, {})
+                .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
 
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
@@ -173,6 +177,7 @@ ylopsApp
             deleteOppiaine: deleteOppiaine,
             saveKurssi: saveKurssi,
             updateKurssi: updateKurssi,
-            disconnectKurssi: disconnectKurssi
+            disconnectKurssi: disconnectKurssi,
+            reconnectKurssi, reconnectKurssi
         }
     });
