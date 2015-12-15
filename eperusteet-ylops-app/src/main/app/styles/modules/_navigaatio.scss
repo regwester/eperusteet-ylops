@@ -130,7 +130,7 @@ $sivunavi-level-padding: 20px;
   border: 1px solid #eee;
 
   .paikallinen:not(.active)  {
-    background-image: url('../../images/ikoni_paikallinen.svg');
+    background-image: url('../../images/ikoni_paikallinen.png');
     background-repeat: no-repeat;
     width: 16px;
     height: 16px;
@@ -138,7 +138,7 @@ $sivunavi-level-padding: 20px;
     float: right;
   }
   .paikallinen.active {
-    background-image: url('../../images/ikoni_paikallinen_white-01.svg');
+    background-image: url('../../images/ikoni_paikallinen_white.png');
     background-repeat: no-repeat;
     width: 16px;
     height: 16px;

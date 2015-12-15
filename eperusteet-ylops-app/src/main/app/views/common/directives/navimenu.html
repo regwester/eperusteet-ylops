@@ -5,10 +5,10 @@
       <span ng-show="!item.$leaf" ng-click="toggle(items, item, $event)" class="glyphicon"
             ng-class="{'glyphicon-chevron-right': item.$collapsed, 'glyphicon-chevron-down': !item.$collapsed}"></span>
     </div>
-    <div class="linktext">
-      <span ng-bind="item.label | kaanna"></span>
-      <span ng-class="addIcon(item)"></span>
+    <span class="linktext">
+      <span class="truncate" ng-bind="item.label | kaanna"></span>
+      <span ng-class="addIcon(item)" class="pull-right"></span>
       <span class="pull-right" ng-if="item.valmis === true" valmius-ikoni="item"></span>
-    </div>
+    </span>
   </a>
 </div>
