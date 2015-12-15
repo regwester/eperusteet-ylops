@@ -24,7 +24,7 @@
     <div paikallinen-teksti="aihekokonaisuudet.paikallinen.yleiskuvaus"></div>
 </div>
 
-<h3 kaanna="aihekokonaisuudet-sisallon-rakenne"></h3>
+<h3 ng-bind="'aihekokonaisuudet-sisallon-rakenne' | kaanna" ></h3>
 <div class="container-items" ui-sortable="sortableOptions" ng-model="aihekokonaisuudet.paikallinen.aihekokonaisuude">
     <div class="vkl-sortable" ng-repeat="ak in aihekokonaisuudet.paikallinen.aihekokonaisuudet">
         <span class="handle" icon-role="drag"></span>

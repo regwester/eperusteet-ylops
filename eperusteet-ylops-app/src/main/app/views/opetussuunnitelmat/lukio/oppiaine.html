@@ -19,12 +19,12 @@
 
   <div class="action-buttons-inline" ng-if="!editing">
     <div class="action-button" ng-if="isReconnectable()">
-      <span kaanna="ei-yhdistetty-pohjaan" style="color: red; padding-right: 20px;"></span>
+      <span ng-bind="'ei-yhdistetty-pohjaan' | kaanna"  style="color: red; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'palauta-yhteys'"
               ng-click="connectOppiaine()"></button>
     </div>
     <div class="action-button" ng-if="connected()">
-      <span kaanna="yhdistetty-pohjaan" style="color: limegreen; padding-right: 20px;"></span>
+      <span ng-bind="'yhdistetty-pohjaan' | kaanna"  style="color: limegreen; padding-right: 20px;"></span>
       <button class="btn btn-default" kaanna="'katkaise-yhteys'"
               ng-click="disconnectOppiaine()"></button>
     </div>
@@ -59,7 +59,7 @@
   <div class="action-buttons-inline" ng-if="!editing">
     <button class="btn btn-default" kaanna="'lisaa-kurssi'" ng-click="lisaaKurssi()"></button>
   </div>
-  <h4 kaanna="oppiaine-kurssit"></h4>
+  <h4 ng-bind="'oppiaine-kurssit' | kaanna" ></h4>
   <br/>
 
   <div ng-repeat="kurssi in oppiaine.kurssit">
@@ -99,7 +99,7 @@
               <br/>
 
               <div ng-if="!kuvauksetIsEmpty(valtakunnallisetKurssiTyypit)">
-                <h2 kaanna="valtakunnalliset-kurssityypit"></h2>
+                <h2 ng-bind="'valtakunnalliset-kurssityypit' | kaanna" ></h2>
                 <lukio-oppiaine-osa ng-repeat="t in valtakunnallisetKurssiTyypit" editable="isEditable()" editing="editing"
                                     oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
                                     colorbox="t.tyyppi" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
@@ -108,7 +108,7 @@
               <br/><br/>
 
               <div ng-if="!kuvauksetIsEmpty(paikallisetKurssiTyypit)">
-                <h2 kaanna="paikalliset-kurssityypit"></h2>
+                <h2 ng-bind="'paikalliset-kurssityypit' | kaanna" ></h2>
 
                 <lukio-oppiaine-osa ng-repeat="t in paikallisetKurssiTyypit" editable="isEditable()" editing="editing"
                                     oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"

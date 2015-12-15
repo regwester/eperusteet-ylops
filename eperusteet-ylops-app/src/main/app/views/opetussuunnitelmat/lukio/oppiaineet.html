@@ -60,7 +60,7 @@
     <div class="liittamattomat-column" ng-class="{'tree-edit-mode': editMode}">
         <div class="kelluva" ui-scrollfix="+160">
             <div ng-show="editMode" class="liittamattomat-container">
-                <h4 kaanna="lukio-liitamattomat-kurssit"></h4>
+                <h4 ng-bind="'lukio-liitamattomat-kurssit' | kaanna" ></h4>
 
                 <div class="tree-con">
                     <div class="action-buttons" ng-show="!editMode">
@@ -84,10 +84,10 @@
                             total-items="liittamattomatPagination.total"
                             items-per-page="liittamattomatPagination.showPerPage"></pagination>
 
-                <div ng-show="!editMode" kaanna="lukio-liitetyt-kurssit-ohje"></div>
+                <div ng-show="!editMode" ng-bind="'lukio-liitetyt-kurssit-ohje' | kaanna" ></div>
             </div>
             <div ng-show="editMode" class="liitetyt-container">
-                <h4 kaanna="lukio-liitetyt-kurssit"></h4>
+                <h4 ng-bind="'lukio-liitetyt-kurssit' | kaanna" ></h4>
 
                 <div class="tree-con">
                     <div class="search-field-container">
