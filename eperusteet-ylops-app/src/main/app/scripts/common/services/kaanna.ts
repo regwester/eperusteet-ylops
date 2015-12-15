@@ -84,17 +84,17 @@ ylopsApp
         var original = getAttr(attrs.kaanna, scope) || el.text();
         var postfix = resolvePostfix(attrs);
         if (_.isObject(original)) {
-          el.text(Kaanna.kaannaSisalto(original)+postfix);
+          el.text(Kaanna.kaannaSisalto(original));
           if (attrs.iconRole) {
             IconMapping.addIcon(attrs.iconRole, el);
           }
           scope.$watch(function () {
-            return getAttr(attrs.kaanna, scope)+postfix;
+            return getAttr(attrs.kaanna, scope);
           }, function (value) {
-            el.text(kaannaValue(value)+postfix);
+            el.text(kaannaValue(value));
           });
           scope.$on('changed:sisaltokieli', function () {
-            el.text(kaannaValue(getAttr(attrs.kaanna, scope))+postfix);
+            el.text(kaannaValue(getAttr(attrs.kaanna, scope)));
           });
         } else {
           var textEl = angular.element('<span>').attr('translate', original);
