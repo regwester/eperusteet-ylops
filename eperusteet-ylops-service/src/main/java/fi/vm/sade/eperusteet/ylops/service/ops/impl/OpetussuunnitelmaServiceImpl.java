@@ -428,7 +428,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setVuosiluokkakokonaisuudet(ovlkoot);
     }
 
-    private Copier<Oppiaine> getLukiokurssitOppiaineCopier(Opetussuunnitelma pohja, Opetussuunnitelma ops, boolean teeKopio) {
+    @SuppressWarnings({"ServiceMethodEntity", "TransactionalAnnotations"})
+    public static Copier<Oppiaine> getLukiokurssitOppiaineCopier(Opetussuunnitelma pohja, Opetussuunnitelma ops, boolean teeKopio) {
         Map<UUID, Lukiokurssi> existingKurssit = teeKopio ? new HashMap<>()
                 : pohja.getLukiokurssit().stream().map(OppiaineLukiokurssi::getKurssi)
                 .filter(k-> k.getTunniste() != null)

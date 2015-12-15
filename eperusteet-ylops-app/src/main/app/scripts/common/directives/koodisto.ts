@@ -20,7 +20,7 @@
 ylopsApp
   .service('Koodisto', function($http, $modal, SERVICE_LOC, $resource, Kaanna, Notifikaatiot, Utils) {
     var taydennykset = [];
-    var koodistoVaihtoehdot = ['oppiaineetyleissivistava2','lukiokurssit'];
+    var koodistoVaihtoehdot = ['oppiaineetyleissivistava2','lukionkurssit'];
     var nykyinenKoodisto = _.first(koodistoVaihtoehdot);
 
     function hae(koodisto, cb) {

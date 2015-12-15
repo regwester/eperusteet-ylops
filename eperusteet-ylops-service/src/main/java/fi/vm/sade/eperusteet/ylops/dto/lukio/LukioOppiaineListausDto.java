@@ -60,6 +60,9 @@ public class LukioOppiaineListausDto implements Serializable,
     private List<LukioOppiaineListausDto> pohjanTarjonta = new ArrayList<>();
     private String koodiUri;
     private String koodiArvo;
+    private String kieliKoodiUri;
+    private String kieliKoodiArvo;
+    private LokalisoituTekstiDto kieli;
     private List<LukiokurssiOpsDto> kurssit = new ArrayList<>();
 
     @Override

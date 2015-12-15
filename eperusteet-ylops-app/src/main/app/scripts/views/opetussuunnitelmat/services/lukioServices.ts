@@ -16,6 +16,7 @@
 
 import LukioOppiaine = Lukio.LukioOppiaine;
 import Oppiaine = Lukio.Oppiaine;
+import IdHolder = Lukio.IdHolder;
 'use strict';
 
 interface LukioOpetussuunnitelmaServiceI {
@@ -25,12 +26,16 @@ interface LukioOpetussuunnitelmaServiceI {
     onRaknneUpdate(then: () => void ) : void
     getRakenne(id?: number): IPromise<Lukio.LukioOpetussuunnitelmaRakenneOps>
     getOppiaine(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine>
-    saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<Lukio.IdHolder>
-    updateOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): void
+    saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<IdHolder>
+    updateOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<void>
     getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
-    kloonaaOppiaineMuokattavaksi(oppiaineId:number, opsId?:number): IPromise<Lukio.IdHolder>
-    palautaYlempaan(oppiaineId:number, opsId?:number): IPromise<Lukio.IdHolder>,
-    updateOppiaineKurssiStructure(treeRoot:LukioKurssiTreeNode, kommentti?: string, opsId?: number): IPromise<void>
+    kloonaaOppiaineMuokattavaksi(oppiaineId:number, opsId?:number): IPromise<IdHolder>
+    palautaYlempaan(oppiaineId:number, opsId?:number): IPromise<IdHolder>,
+    updateOppiaineKurssiStructure(treeRoot:LukioKurssiTreeNode, kommentti?: string, opsId?: number): IPromise<void>,
+    addKielitarjonta(oppiaineId:number, tarjonta:Lukio.OppiaineKielitarjonta, opsId?: number): IPromise<Lukio.IdHolder>
+    deleteOppiaine(oppiaineId:number, opsId?: number): IPromise<void>
+    saveKurssi(kurssi:Lukio.LuoLukiokurssi, opsId?: number): IPromise<IdHolder>
+    updateKurssi(kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number): IPromise<void>
 }
 
 ylopsApp
@@ -129,6 +134,22 @@ ylopsApp
                 }, Notifikaatiot.serverCb);
         };
 
+        var addKielitarjonta = (oppiaineId:number, tarjonta:Lukio.OppiaineKielitarjonta, opsId?: number) =>
+            OpetusuunnitelmaLukio.addKielitarjonta({oppiaineId: oppiaineId, opsId: opsId || $stateParams.id}, tarjonta)
+                .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
+
+        var deleteOppiaine = (oppiaineId:number, opsId?: number) =>
+            OppiaineCRUD.delete({oppiaineId: oppiaineId, opsId: opsId || $stateParams.id})
+                .$promise.then(() => { oppiaineCache.clear(); }, Notifikaatiot.serverCb);
+
+        var saveKurssi = (kurssi:Lukio.LuoLukiokurssi, opsId?: number) =>
+            OpetusuunnitelmaLukio.saveKurssi({opsId: opsId || $stateParams.id}, kurssi)
+                .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
+
+        var updateKurssi = (kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number) =>
+            OpetusuunnitelmaLukio.updateKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, kurssi)
+                .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
+
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
@@ -141,6 +162,10 @@ ylopsApp
             updateOppiaine: updateOppiaine,
             kloonaaOppiaineMuokattavaksi: kloonaaOppiaineMuokattavaksi,
             palautaYlempaan: palautaYlempaan,
-            updateOppiaineKurssiStructure: updateOppiaineKurssiStructure
+            updateOppiaineKurssiStructure: updateOppiaineKurssiStructure,
+            addKielitarjonta: addKielitarjonta,
+            deleteOppiaine: deleteOppiaine,
+            saveKurssi: saveKurssi,
+            updateKurssi: updateKurssi
         }
     });

@@ -44,4 +44,12 @@ public interface LukioOpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void updateOppiaine(long opsId, LukioOppiaineSaveDto oppiaine);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long addOppimaara(long opsId, long oppiaineId, LukioKopioiOppimaaraDto kt);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long saveKurssi(long opsId, LukiokurssiSaveDto kurssi);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateKurssi(long opsId, long kurssiId, LukiokurssiUpdateDto kurssi);
 }

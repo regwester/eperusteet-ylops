@@ -103,10 +103,29 @@ declare module Lukio {
     export interface LukiokurssiOps extends Kurssi {
         oppiaineId: number;
         jarjestys?: number;
-        tyyppi: LukioKurssiTyyppiPeruste;
+        tyyppi: LukioKurssiTyyppi;
         tavoitteet?: l.TekstiOsa;
         keskeinenSisalto?: l.TekstiOsa;
         tavoitteetJaKeskeinenSisalto?: l.TekstiOsa;
+    }
+
+    export interface LukiokurssiPerusTiedot {
+        nimi: l.Lokalisoitu;
+        kuvaus?: l.Lokalisoitu;
+        koodiUri?: string;
+        koodiArvo?: string;
+        lokalisoituKoodi?: l.Lokalisoitu;
+        tyyppi: string /**paikallinen LukioKurssiTyyppi**/;
+        tavoitteet?: l.TekstiOsa;
+        keskeinenSisalto?: l.TekstiOsa;
+        tavoitteetJaKeskeinenSisalto?: l.TekstiOsa;
+    }
+
+    export interface LuoLukiokurssi extends LukiokurssiPerusTiedot {
+        oppiaineId: number
+    }
+
+    export interface UpdateLukiokurssi extends LukiokurssiPerusTiedot {
     }
 
     export interface Oppiaine {
@@ -118,6 +137,14 @@ declare module Lukio {
         tehtava?: l.TekstiOsa;
         tavoitteet?: l.TekstiOsa;
         arviointi?: l.TekstiOsa;
+    }
+
+    export interface OppiaineKielitarjonta {
+        tunniste: string
+        nimi: l.Lokalisoitu
+        kieliKoodiUri?: string
+        kieliKoodiArvo?: string
+        kieli: l.Lokalisoitu
     }
 
     export interface LukioOppiaineTallennus extends Oppiaine {

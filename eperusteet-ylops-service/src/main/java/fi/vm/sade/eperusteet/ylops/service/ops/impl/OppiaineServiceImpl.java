@@ -16,11 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.codepoetics.protonpack.StreamUtils;
-import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
@@ -85,6 +85,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Autowired
     private LukioOppiaineJarjestysRepository lukioOppiaineJarjestysRepository;
+
+    @Autowired
+    private OppiaineLukiokurssiRepository oppiaineLukiokurssiRepository;
 
     @Autowired
     private OppiaineenvuosiluokkakokonaisuusRepository oppiaineenKokonaisuudet;
@@ -377,6 +380,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public void delete(@P("opsId") Long opsId, Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Oppiaine oppiaine = getOppiaine(opsId, id);
         oppiaineet.lock(oppiaine);
 
@@ -388,15 +392,16 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(vuosiluokkakokonaisuus);
         });
 
+        lukioOppiaineJarjestysRepository.delete(
+                lukioOppiaineJarjestysRepository.findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
+        oppiaineLukiokurssiRepository.delete(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, id));
+
         if (oppiaine.getOppiaine() != null) {
             oppiaine.getOppiaine().removeOppimaara(oppiaine);
         } else {
-            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
             ops.removeOppiaine(oppiaine);
         }
 
-        lukioOppiaineJarjestysRepository.delete(
-            lukioOppiaineJarjestysRepository.findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
         oppiaineet.delete(oppiaine);
     }
 

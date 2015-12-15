@@ -86,6 +86,24 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Column(name = "koodi_uri")
     private String koodiUri;
 
+    @Getter
+    @Setter
+    @Column(name = "kieli_koodi_uri")
+    private String kieliKoodiUri;
+
+    @Getter
+    @Setter
+    @Column(name = "kieli_koodi_arvo")
+    private String kieliKoodiArvo;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @NotNull(groups = Strict.class)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
+    private LokalisoituTeksti kieli;
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @Getter
@@ -113,7 +131,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "valtakunnallinen_pakollinen_kuvaus_id", nullable = true)
     private LokalisoituTeksti valtakunnallinenPakollinenKuvaus;
 
@@ -121,7 +139,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "valtakunnallinen_syventava_kuvaus_id", nullable = true)
     private LokalisoituTeksti valtakunnallinenSyventavaKurssiKuvaus;
 
@@ -129,7 +147,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "valtakunnallinen_soveltava_kuvaus_id", nullable = true)
     private LokalisoituTeksti valtakunnallinenSoveltavaKurssiKuvaus;
 
@@ -137,7 +155,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "paikallinen_pakollinen_kuvaus_id", nullable = true)
     private LokalisoituTeksti paikallinenPakollinenKuvaus;
 
@@ -145,7 +163,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "paikallinen_syventava_kuvaus_id", nullable = true)
     private LokalisoituTeksti paikallinenSyventavaKurssiKuvaus;
 
@@ -153,7 +171,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "paikallinen_soveltava_kuvaus_id", nullable = true)
     private LokalisoituTeksti paikallinenSoveltavaKurssiKuvaus;
 

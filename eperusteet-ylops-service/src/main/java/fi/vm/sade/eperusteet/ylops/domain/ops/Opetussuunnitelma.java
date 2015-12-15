@@ -282,7 +282,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     public Function<Long, List<OppiaineLukiokurssi>> lukiokurssitByOppiaine() {
         return orEmpty(this.getLukiokurssit().stream()
-            .sorted(comparing(OppiaineLukiokurssi::getJarjestys)
+            .sorted(comparing((OppiaineLukiokurssi oaLk) -> Optional.ofNullable(oaLk.getJarjestys()).orElse(0))
                 .thenComparing((OppiaineLukiokurssi oaLk) -> oaLk.getKurssi().getNimi().firstByKieliOrder().orElse("")))
             .collect(groupingBy(k -> k.getOppiaine().getId()))::get);
     }

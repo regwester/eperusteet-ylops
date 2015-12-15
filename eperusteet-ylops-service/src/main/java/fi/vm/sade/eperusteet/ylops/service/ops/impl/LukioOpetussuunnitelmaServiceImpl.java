@@ -25,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
@@ -35,6 +36,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,7 @@ import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.map;
 import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.*;
@@ -77,6 +80,9 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     @Autowired
     private OppiaineRepository oppiaineRepository;
 
+    @Autowired
+    private LukiokurssiRepository lukiokurssiRepository;
+
     @Override
     @Transactional(readOnly = true)
     public LukioOpetussuunnitelmaRakenneOpsDto getRakenne(long opsId) {
@@ -101,7 +107,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 .collect(groupingBy(oa -> oa.getOppiaine().getTunniste()));
         map(ops.getOppiaineet().stream().map(OpsOppiaine::getOppiaine),
             LambdaUtil.map(parentRelateionsByOppiaineId, OpsOppiaineParentView::isOma),
-            LambdaUtil.map(parentRelateionsByOppiaineId, o -> o.getPohjanOppiaine() != null),
+            LambdaUtil.map(parentRelateionsByOppiaineId, OpsOppiaineParentView::getPohjanOppiaine),
             jarjestys(jarjestykset),
             orEmpty(pohjanTarjontaByOppiaineUUID::get),
             rakenne.getOppiaineet(),
@@ -112,7 +118,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     }
 
     private void map(Stream<Oppiaine> from, Function<Long,Boolean> isOma,
-                     Function<Long,Boolean> isMaariteltyPohjassa,
+                     Function<Long,Oppiaine> pohjanOppiaineById,
                      Function<Long,Integer> jarjestys,
                      Function<UUID,List<Oppiaine>> pohjanTarjonta,
                      Collection<LukioOppiaineListausDto> to,
@@ -122,14 +128,15 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 LukioOppiaineListausDto dto = mapper.map(oa, new LukioOppiaineListausDto());
                 dto.setOppiaineId(oa.getOppiaine() == null ? null : oa.getOppiaine().getId());
                 dto.setOma(isOma.apply(oa.getId()));
-                dto.setMaariteltyPohjassa(isMaariteltyPohjassa.apply(oa.getId()));
+                Oppiaine pohjanOppiaine = pohjanOppiaineById.apply(oa.getId());
+                dto.setMaariteltyPohjassa(pohjanOppiaine != null);
                 dto.setKurssiTyyppiKuvaukset(LokalisoituTekstiDto.ofOptionalMap(oa.getKurssiTyyppiKuvaukset()));
                 dto.setKurssit(lukiokurssiByOppiaineId.apply(oa.getId()).stream()
                         .map(this::mapKurssi).collect(toList()));
                 List<Oppiaine> pohjanTarjontaOppiaineet = pohjanTarjonta.apply(oa.getTunniste());
                 if (!pohjanTarjontaOppiaineet.isEmpty()) {
                     map(pohjanTarjontaOppiaineet.stream(),
-                        oma -> false, maariteltyPohjassa -> true,
+                        oma -> false, pohjan -> null,
                         new Function<Long, Integer>() { // Ovat jo järjestyksessä
                             private Integer max = 0;
                             @Override
@@ -143,9 +150,13 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                         id -> Collections.<OppiaineLukiokurssi>emptyList()
                     );
                 }
-                map(oa.getOppimaaratReal().stream(), childId -> dto.isOma(),
-                        childId -> dto.isMaariteltyPohjassa(), jarjestys, pohjanTarjonta,
-                        dto.getOppimaarat(), lukiokurssiByOppiaineId, pohjanTarjontaLukiokurssiByOppiaineId);
+                Set<Oppiaine> maarat = oa.getOppimaaratReal();
+                map(maarat.stream(), childId -> dto.isOma(),
+                    pohjanOppiaine != null && !maarat.isEmpty()
+                        ? pohjanOppiaine.getOppimaarat().stream().collect(toMap(Oppiaine::getId, cOa -> cOa))::get
+                        : childId -> null,
+                    jarjestys, pohjanTarjonta,
+                    dto.getOppimaarat(), lukiokurssiByOppiaineId, pohjanTarjontaLukiokurssiByOppiaineId);
                 to.add(dto);
             });
     }
@@ -156,7 +167,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     private Comparator<Oppiaine> compareOppiaineet(Function<Long, Integer> jarjestys) {
         return comparing((Oppiaine oa) -> ofNullable(jarjestys.apply(oa.getId())).orElse(Integer.MAX_VALUE))
-                .thenComparing(comparing((Oppiaine oa)-> oa.getNimi() == null ? "" : oa.getNimi().firstByKieliOrder().orElse("")));
+                .thenComparing(comparing((Oppiaine oa)-> oa.getNimi().firstByKieliOrder().orElse("")));
     }
 
     private LukiokurssiOpsDto mapKurssi(OppiaineLukiokurssi oaLk) {
@@ -193,10 +204,13 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     @Transactional
     public void updateOppiaine(long opsId, LukioOppiaineSaveDto dto) {
         Oppiaine oppiaine = oppiaineRepository.findOne(dto.getOppiaineId());
-        if(oppiaine == null){
+        if (oppiaine == null) {
             throw new BusinessRuleViolationException("Oppiainetta ei löydy");
         }
         oppiaineRepository.lock(oppiaine);
+        if (oppiaine.getOppiaine() != null) {
+            dto.setKoosteinen(false);
+        }
         mapper.map(dto, oppiaine);
 
         oppiaine.getKurssiTyyppiKuvaukset().forEach((lukiokurssiTyyppi, lokalisoituTeksti) -> {
@@ -209,7 +223,43 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                         .map(tekstiDto -> LokalisoituTeksti.of(tekstiDto.getTekstit())).orElse(null));
             }
         }
+    }
 
+    @Override
+    @Transactional
+    public long addOppimaara(long opsId, long oppiaineId, LukioKopioiOppimaaraDto kt) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Opetussuunnitelma opspohja = ops.getAlinPohja();
+        Oppiaine parent = oppiaineRepository.findOne(oppiaineId);
+        Oppiaine pohjaparent = oppiaineRepository.findOneByOpsIdAndTunniste(opspohja.getId(), parent.getTunniste());
+        assertExists(pohjaparent, "Oppimäärää ei ole määritelty ylätasolla.");
+
+        Copier<Oppiaine> copier = Oppiaine.basicCopier()
+                .and(OpetussuunnitelmaServiceImpl.getLukiokurssitOppiaineCopier(opspohja, ops,
+                    opspohja.getTyyppi() == Tyyppi.POHJA));
+        if (parent.getKoodiArvo().equalsIgnoreCase("KT") && kt.getTunniste() == null) {
+            // case uskonto
+            Oppiaine uusi = copier.copied(pohjaparent, new Oppiaine(pohjaparent.getTunniste()));
+            uusi.setNimi(LokalisoituTeksti.of(kt.getNimi().getTekstit()));
+            uusi.setKoosteinen(false);
+            uusi.setAbstrakti(false);
+            parent.addOppimaara(oppiaineRepository.save(uusi));
+            ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops, uusi, null));
+            return uusi.getId();
+        } else {
+            return pohjaparent.getOppimaarat().stream().filter(t -> t.getTunniste().equals(kt.getTunniste()))
+                    .findFirst().map(om -> {
+                Oppiaine uusi = copier.copied(om, new Oppiaine(pohjaparent.getTunniste()));
+                uusi.setNimi(LokalisoituTeksti.of(kt.getNimi().getTekstit()));
+                uusi.setKieli(LokalisoituTeksti.of(kt.getKieli().getTekstit()));
+                uusi.setKieliKoodiArvo(kt.getKieliKoodiArvo());
+                uusi.setKieliKoodiUri(kt.getKieliKoodiUri());
+                parent.addOppimaara(oppiaineRepository.save(uusi));
+                ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops, uusi, null));
+                return uusi.getId();
+            }).orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä kielitarjonnan oppiainetta ei ole"));
+        }
     }
 
     @Override
@@ -240,6 +290,38 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         opetussuunnitelmaRepository.flush();
         ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops, oppiaine, null));
         return oppiaine.getId();
+    }
+
+    @Override
+    @Transactional
+    public long saveKurssi(long opsId, LukiokurssiSaveDto kurssi) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetussuunnitelmaRepository.lock(ops);
+        LukioOppiaineJarjestys jarjestys = jarjestysRepository.findByOppiaineId(opsId, kurssi.getOppiaineId());
+        assertExists(jarjestys, "Oppiainetta ei löydy Opetussuunnitelmasta.");
+        Oppiaine oppiaine = jarjestys.getOppiaine();
+
+        Lukiokurssi lukiokurssi = mapper.map(kurssi, new Lukiokurssi());
+        lukiokurssi.setTyyppi(kurssi.getTyyppi().toKurssiiTyyppi());
+        ops.getLukiokurssit().add(new OppiaineLukiokurssi(ops, oppiaine, lukiokurssi, null, true));
+        opetussuunnitelmaRepository.flush();
+        return lukiokurssi.getId();
+    }
+
+    @Override
+    @Transactional
+    public void updateKurssi(long opsId, long kurssiId, LukiokurssiUpdateDto kurssi) {
+        OppiaineLukiokurssi oaLukiokurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi(opsId, kurssiId).stream().findAny()
+                .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
+        if (!oaLukiokurssi.isOma()) {
+            throw new BusinessRuleViolationException("Yritetiin muokata pohjaan yhdistettyä kurssia.");
+        }
+        Lukiokurssi lukiokurssi = oaLukiokurssi.getKurssi();
+        lukiokurssiRepository.lock(lukiokurssi);
+        mapper.map(kurssi, lukiokurssi);
+        if (lukiokurssi.getTyyppi().isPaikallinen() && kurssi.getTyyppi().isPaikallinen()) {
+            lukiokurssi.setTyyppi(kurssi.getTyyppi());
+        }
     }
 
     @Override

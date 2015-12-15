@@ -95,7 +95,10 @@ ylopsApp
       opetuksenYleisetTavoitteet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/opetuksenYleisetTavoitteet', isArray: false},
       saveOppiaine: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},
       updateOppiaine: {method: 'PUT', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},
-      updateStructure: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/rakenne', isArray:false}
+      updateStructure: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/rakenne', isArray:false},
+      addKielitarjonta: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/oppiaine/:oppiaineId/kielitarjonta', isArray:false},
+      saveKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi', isArray:false},
+      updateKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId', isArray:false}
     });
   })
 
