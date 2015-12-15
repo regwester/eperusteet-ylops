@@ -293,19 +293,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .collect(Collectors.toSet());
 
         Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
-        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
-            // Remap Lukiokurssit to new oppiaine, (does not affecter their ownership)
-            ops.getLukiokurssit().stream().filter(oaLk
-                    -> oaLk.getOppiaine().getId().equals(id))
-                    .forEach(oaLk -> {
-                        oaLk.setOppiaine(newOppiaine);
-                    });
-        }
-
         OpsOppiaine kopio = new OpsOppiaine(newOppiaine, true);
         opsOppiaineet.add(kopio);
         ops.setOppiaineet(opsOppiaineet);
         if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            remapLukiokurssit(ops, oppiaine, newOppiaine);
+
             updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, newOppiaine);
         }
 
@@ -521,34 +514,43 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .filter(oa -> !oa.getOppiaine().getId().equals(id))
                 .collect(Collectors.toSet());
 
-        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
-            // Remap Lukiokurssit to new oppiaine, (does not affecter their ownership)
-            ops.getLukiokurssit().stream().filter(oaLk
-                    -> oaLk.getOppiaine().getId().equals(id))
-                    .forEach(oaLk -> {
-                        oaLk.setOppiaine(oldOppiaine.getOppiaine());
-                    });
-        }
-
         opsOppiaineet.add( oldOppiaine );
         ops.setOppiaineet( opsOppiaineet );
         if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            remapLukiokurssit(ops, oppiaine, opp);
+
             updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, opp);
         }
 
         return mapper.map( oldOppiaine, OpsOppiaineDto.class );
     }
 
+    private void remapLukiokurssit(Opetussuunnitelma ops, Oppiaine oppiaine, Oppiaine newOppiaine) {
+        Map<OppiaineOpsTunniste, Oppiaine> oldByUuid = oppiaine.maarineen()
+                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa->oa));
+        Map<OppiaineOpsTunniste, Oppiaine> newByUuid = newOppiaine.maarineen()
+                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa->oa));
+        ops.getLukiokurssit().removeAll(
+            ops.getLukiokurssit().stream()
+                .filter(oaLk -> oldByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+                .filter(oaLk -> !newByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+                .collect(toSet())
+        );
+        ops.getLukiokurssit().stream()
+            .filter(oaLk -> oldByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+            .forEach(oaLk -> oaLk.setOppiaine(newByUuid.get(oaLk.getOppiaine().getOpsUniikkiTunniste())));
+    }
+
     private void updateLukioJarjestyksetOnOpsOppaineRefChange(Opetussuunnitelma ops,
                                                               Oppiaine oppiaine, Oppiaine newOppiaine) {
-        Map<UUID, LukioOppiaineJarjestys> jarjestykset = lukioOppiaineJarjestysRepository
+        Map<OppiaineOpsTunniste, LukioOppiaineJarjestys> jarjestykset = lukioOppiaineJarjestysRepository
                 .findByOppiaineIds(ops.getId(), oppiaine.maarineen().map(Oppiaine::getId).collect(toSet()))
-                .stream().collect(toMap(j -> j.getOppiaine().getTunniste(), j->j));
+                .stream().collect(toMap(j -> j.getOppiaine().getOpsUniikkiTunniste(), j->j));
         ops.getOppiaineJarjestykset().removeAll(jarjestykset.values());
         opetussuunnitelmaRepository.flush();
-        Map<UUID, Oppiaine> uudetOppiaineJaMaaraByTunniste = newOppiaine.maarineen()
-                .collect(toMap(Oppiaine::getTunniste, oa -> oa));
-        for (Map.Entry<UUID, LukioOppiaineJarjestys> oldJarjestys : jarjestykset.entrySet()) {
+        Map<OppiaineOpsTunniste, Oppiaine> uudetOppiaineJaMaaraByTunniste = newOppiaine.maarineen()
+                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa -> oa));
+        for (Map.Entry<OppiaineOpsTunniste, LukioOppiaineJarjestys> oldJarjestys : jarjestykset.entrySet()) {
             Oppiaine uusiOppiaine = uudetOppiaineJaMaaraByTunniste.get(oldJarjestys.getKey());
             if (uusiOppiaine != null) {
                 ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops,

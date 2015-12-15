@@ -483,5 +483,6 @@
   "muokkaa-oppiaine-title": "Muokkaa oppiainetta",
   "oppiaineen-poisto-onnistui": "Oppiaineen poisto onnistui",
   "varmista-poista-oppimaara": "Haluatko varmasti poistaa oppimäärän?",
-  "varmista-poista-oppiaine": "Haluatko varmasti poistaa oppiaineen?"
+  "varmista-poista-oppiaine": "Haluatko varmasti poistaa oppiaineen?",
+  "kieli-jo-toteutettu-oppimaaralle": "Kieli on jo lisätty oppiaineelle valitulla oppimäärällä."
 }

@@ -36,12 +36,10 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
@@ -396,9 +394,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         Copier<Oppiaine> oppiaineCopier = teeKopio ? Oppiaine.basicCopier() : Copier.nothing();
         Map<Long,Oppiaine> newOppiaineByOld = new HashMap<>();
+        Copier<Oppiaine> kurssiCopier = null;
         if (pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
             luoLukiokoulutusPohjasta(pohja, ops);
-            oppiaineCopier = oppiaineCopier.and(getLukiokurssitOppiaineCopier(pohja, ops, teeKopio))
+            kurssiCopier = getLukiokurssitOppiaineCopier(pohja, ops, teeKopio);
+            oppiaineCopier = oppiaineCopier.and(kurssiCopier)
                     .and((fromOa, toOa) -> {
                         newOppiaineByOld.put(fromOa.getId(), toOa);
                     });
@@ -409,14 +409,24 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (teeKopio && !onPohjastaTehtyPohja) {
             oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(
                     oppiainePerusCopier.construct(oa -> new Oppiaine(oa.getTunniste()))));
+        } else if (kurssiCopier != null) {
+            final Copier<Oppiaine> finalKurssiCopier = kurssiCopier;
+            oppiaineCopier = oppiaineCopier.and((from, to) -> {
+                if (from.isKoosteinen() && from.getOppiaine() == null) {
+                    from.getOppimaarat().stream().forEach(om ->
+                        finalKurssiCopier.copy(om, om)
+                    );
+                }
+            });
         }
         ConstructedCopier<OpsOppiaine> opsOppiaineCopier = OpsOppiaine.copier(
                 oppiaineCopier.construct(existing -> teeKopio ? new Oppiaine(existing.getTunniste()) : existing), teeKopio);
         ops.setOppiaineet(pohja.getOppiaineet().stream().map(opsOppiaineCopier::copy).collect(toSet()));
         ops.getOppiaineJarjestykset().addAll(pohja.getOppiaineJarjestykset().stream().map(old
-                -> newOppiaineByOld.get(old.getId().getOppiaineId()) != null ?
-                    new LukioOppiaineJarjestys(ops, newOppiaineByOld.get(old.getId().getOppiaineId()), old.getJarjestys())
-                    : null).filter(o -> o != null).collect(toSet()));
+                -> !teeKopio ? new LukioOppiaineJarjestys(ops, old.getOppiaine(), old.getJarjestys())
+                    : (newOppiaineByOld.get(old.getId().getOppiaineId()) != null ?
+                        new LukioOppiaineJarjestys(ops, newOppiaineByOld.get(old.getId().getOppiaineId()), old.getJarjestys())
+                        : null)).filter(o -> o != null).collect(toSet()));
         Set<OpsVuosiluokkakokonaisuus> ovlkoot = pohja.getVuosiluokkakokonaisuudet().stream()
                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
                         .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste()

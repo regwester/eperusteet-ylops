@@ -693,9 +693,22 @@ ylopsApp
                 }
             }
         });
+    $scope.kieliJoToteutettu = () => {
+        if ($scope.$type != 'kieli') {
+            return false;
+        }
+        return _.any(oppiaine.oppimaarat, om => {
+            return om.tunniste == $scope.$valittu.tunniste
+                && om.kieliKoodiArvo == $scope.$valittu.kieliKoodiArvo
+                && ($scope.$valittu.kieliKoodiArvo != 'KX'
+                || _.isEqual(_.omit(_.pick(om.kieli, _.identity), '_id'),
+                    _.omit(_.pick($scope.$valittu.kieli, _.identity), '_id')));
+        });
+    };
 
     $scope.ok = function() {
-        LukioOpetussuunnitelmaService.addKielitarjonta(oppiaine.id, {
+        if (!$scope.kieliJoToteutettu()) {
+            LukioOpetussuunnitelmaService.addKielitarjonta(oppiaine.id, {
                 tunniste: $scope.$valittu.tunniste,
                 nimi: $scope.$omaNimi,
                 kieliKoodiArvo: $scope.$valittu.kieliKoodiArvo,
@@ -705,6 +718,7 @@ ylopsApp
                 $modalInstance.close(res);
                 Notifikaatiot.onnistui('tallennettu-ok');
             }, Notifikaatiot.serverCb);
+        }
     };
 
     $scope.peruuta = $modalInstance.dismiss;

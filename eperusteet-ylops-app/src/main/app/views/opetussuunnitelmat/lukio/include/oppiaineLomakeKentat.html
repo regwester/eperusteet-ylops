@@ -18,7 +18,7 @@
 <label for="nimi-input" class="header" ng-bind="('oppaiaine-nimi-header' | kaanna) + ' *'" ></label>
 <input id="nimi-input" class="form-control" ng-model="oppiaine.nimi" slocalized />
 
-<label for="koodi-input" class="header" ng-bind="('oppiaine-koodi-header | kaanna) + ' *'" ></label>
+<label for="koodi-input" class="header" ng-bind="('oppiaine-koodi-header' | kaanna) + ' *'" ></label>
 <div class="fixed-group">
   <input id="koodi-input" class="form-control limit" type="text" ng-model="oppiaine.koodiArvo" ng-disabled="true"/>
   <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" ng-bind="'hae-koodistosta' | kaanna" ></button></div>

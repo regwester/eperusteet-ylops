@@ -48,10 +48,12 @@
                 <input type="text" class="form-control" ng-model="$omaNimi" slocalized>
             </div>
         </div>
+        <div class="row alert-danger" ng-show="kieliJoToteutettu()"
+            ng-bind="'kieli-jo-toteutettu-oppimaaralle' | kaanna"></div>
     </div>
 </div>
 
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="ok()" ng-disabled="($type === 'kieli' && $valittu.kieliKoodiArvo && ($valittu.kieli | kaanna)) && !($omaNimi | kaanna)" ng-bind="'ok' | kaanna"></button>
+    <button class="btn btn-primary" ng-click="ok()" ng-disabled="kieliJoToteutettu() || (($type === 'kieli' && $valittu.kieliKoodiArvo && ($valittu.kieli | kaanna)) && !($omaNimi | kaanna))" ng-bind="'ok' | kaanna"></button>
     <button class="btn btn-default" ng-click="peruuta()" ng-bind="'peruuta' | kaanna"></button>
 </div>
