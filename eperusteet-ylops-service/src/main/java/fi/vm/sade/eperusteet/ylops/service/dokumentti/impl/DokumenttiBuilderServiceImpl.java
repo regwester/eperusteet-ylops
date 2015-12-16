@@ -18,18 +18,25 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.Context;
+import com.github.jknack.handlebars.context.MapValueResolver;
 import com.lowagie.text.DocumentException;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author iSaul
@@ -49,20 +56,26 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     public byte[] generatePdf() throws IOException, DocumentException {
         // Täällä tehdään kaikki taika
 
-        final File outputFile = File.createTempFile("FlyingSacuer.test", ".pdf");
-        OutputStream os = new FileOutputStream(outputFile);
+
+        ByteArrayOutputStream pdfStream = new ByteArrayOutputStream();
+
+        //final File outputFile = File.createTempFile("FlyingSacuer.test", ".pdf");
+        //OutputStream os = new FileOutputStream(outputFile);
 
         Handlebars hb = new Handlebars();
-        Template template = hb.compile("docgen/ops-template");
-
         ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocumentFromString(template.apply("Handlebars root"));
-        renderer.layout();
-        renderer.createPDF(os, false);
+        Map<String, String> model = new HashMap<>();
 
+        Resource resource = applicationContext.getResource("classpath:" + "docgen/ops-style.css");
+        if (resource.exists()) {
+            String styles = FileUtils.readFileToString(resource.getFile(), "UTF-8");
+            model.put("styles", styles);
+        } else {
+            LOG.warn("Cannot found styles for pdf");
+        }
 
         // Kansilehti
-        addCoverPage(renderer, hb);
+        addCoverPage(renderer, hb, model, pdfStream);
 
         // Infosivu
         addInfoPage(renderer, hb);
@@ -81,20 +94,33 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Lopetetaan leipominen ja siivotaan jäljet
         renderer.finishPDF();
-        os.close();
+        //io.close();
 
-        LOG.info("Test pdf generated to " + outputFile);
+        //LOG.info("Test pdf generated to " + outputFile);
 
-        InputStream io = new FileInputStream(outputFile);
-        return IOUtils.toByteArray(io);
+        //InputStream io = new FileInputStream(outputFile);
+        //return IOUtils.toByteArray(io);
+
+        return pdfStream.toByteArray();
     }
 
-    private void addCoverPage(ITextRenderer renderer, Handlebars hb) throws IOException, DocumentException {
-        Template template = hb.compile("docgen/ops-template");
+    private void addCoverPage(ITextRenderer renderer, Handlebars hb, Map<String, String> model, OutputStream os)
+            throws IOException, DocumentException {
+        Template template = hb.compile("docgen/ops-cover-page");
 
-        renderer.setDocumentFromString(template.apply("Handlebars cover"));
+        Map<String, String> coverModel = new HashMap<>();
+        coverModel.put("otsikko", "Otsikko");
+        coverModel.put("aliotsikko", "Aliotsikko");
+
+        Context context = Context
+                .newBuilder(model)
+                .combine(coverModel)
+                .resolver(MapValueResolver.INSTANCE)
+                .build();
+
+        renderer.setDocumentFromString(template.apply(context));
         renderer.layout();
-        renderer.writeNextDocument();
+        renderer.createPDF(os, false);
     }
 
     private void addInfoPage(ITextRenderer renderer, Handlebars hb) throws IOException, DocumentException {

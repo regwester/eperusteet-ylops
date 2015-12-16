@@ -16,8 +16,14 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LokalisointiService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -25,4 +31,31 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class LokalisointiServiceImpl implements LokalisointiService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LokalisointiService.class);
+
+    @Value("${lokalisointi.service.url:https://virkailija.opintopolku.fi/lokalisointi/cxf/rest/v1/localisation?}")
+    private String lokalisointiServiceUrl;
+
+    @Value("${lokalisointi.service.category:eperusteet}")
+    private String category;
+
+
+    @Override
+    @Cacheable("lokalisoinnit")
+    public LokalisointiDto get(String key, String locale) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = lokalisointiServiceUrl + "category=" + category + "&locale=" + locale + "&key=" + key;
+        LOG.debug("get lokalisointi url: {}", url);
+        LokalisointiDto[] lokalisoidut = restTemplate.getForObject(url, LokalisointiDto[].class);
+
+        if (lokalisoidut.length > 1) {
+            LOG.warn("Got more than one object: {} from {}", lokalisoidut, url);
+        }
+        if (lokalisoidut.length > 0) {
+            return lokalisoidut[0];
+        }
+        return null;
+    }
+
 }

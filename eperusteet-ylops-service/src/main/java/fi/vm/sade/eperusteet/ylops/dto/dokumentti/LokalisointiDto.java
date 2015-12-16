@@ -14,17 +14,27 @@
  * European Union Public Licence for more details.
  */
 
-package fi.vm.sade.eperusteet.ylops.service.dokumentti;
+package fi.vm.sade.eperusteet.ylops.dto.dokumentti;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Date;
 
 /**
  *
  * @author iSaul
  */
-public interface LocalizedMessagesService {
-
-    @PreAuthorize("permitAll()")
-    String translate(String key, Kieli kieli);
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class LokalisointiDto {
+    String value;
+    String key;
+    Long   id;
+    String locale;
+    String description;
+    String category;
+    Date created;
 }
