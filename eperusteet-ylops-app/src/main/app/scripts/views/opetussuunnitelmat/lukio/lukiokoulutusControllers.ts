@@ -79,7 +79,7 @@ ylopsApp
         var produceNavigation = function(doUpateItems: (items: NavigaatioItem[]) => IPromise<NavigaatioItem[]>):IPromise<sn.NavigaatioItem[]> {
             var doBuild = () => buildNavigation().then(doUpateItems);
             LukioOpetussuunnitelmaService.onAihekokonaisuudetUpdate(doBuild);
-            LukioOpetussuunnitelmaService.onRaknneUpdate(doBuild);
+            LukioOpetussuunnitelmaService.onRakenneUpdate(doBuild);
             return doBuild();
         };
 

@@ -35,19 +35,26 @@ interface LukioOpetussuunnitelmaServiceI {
 
     getOpetuksenYleisetTavoitteet(opsId?: number) : IPromise<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>
     onAihekokonaisuudetUpdate(then: () => void ) : void
-    onRaknneUpdate(then: () => void ) : void
+    onRakenneUpdate(then: () => void ) : void
 
     getRakenne(id?: number): IPromise<Lukio.LukioOpetussuunnitelmaRakenneOps>
+    lukitseRakenne(opsId?:number): IPromise<void>
+    vapautaRakenne(opsId?:number): IPromise<void>
+    updateOppiaineKurssiStructure(treeRoot:LukioKurssiTreeNode, kommentti?: string, opsId?: number): IPromise<void>,
+
     getOppiaine(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine>
+    lukitseOppiaine(id:number, opsId?:number): IPromise<void>
+    vapautaOppiaine(id:number, opsId?:number): IPromise<void>
     saveOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<IdHolder>
     updateOppiaine(oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number): IPromise<void>
-    getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
     kloonaaOppiaineMuokattavaksi(oppiaineId:number, opsId?:number): IPromise<IdHolder>
     palautaYlempaan(oppiaineId:number, opsId?:number): IPromise<IdHolder>,
-    updateOppiaineKurssiStructure(treeRoot:LukioKurssiTreeNode, kommentti?: string, opsId?: number): IPromise<void>,
     addKielitarjonta(oppiaineId:number, tarjonta:Lukio.OppiaineKielitarjonta, opsId?: number): IPromise<Lukio.IdHolder>
     deleteOppiaine(oppiaineId:number, opsId?: number): IPromise<void>
 
+    getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
+    lukitseKurssi(opsId?:number): IPromise<void>
+    vapautaKurssi(opsId?:number): IPromise<void>
     saveKurssi(kurssi:Lukio.LuoLukiokurssi, opsId?: number): IPromise<IdHolder>
     updateKurssi(kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number): IPromise<void>
     disconnectKurssi(kurssiId:number, opsId:number): IPromise<IdHolder>
@@ -101,39 +108,16 @@ ylopsApp
             doGetOpetuksenYleisetTavoitteet);
         var getOpetuksenYleisetTavoitteet = (opsId?: number) => yleisetTavoitteetCache.get(opsId || $stateParams.id);
 
+
         var doGetRakenne = (id: number, d: IDeferred<Lukio.LukioOpetussuunnitelmaRakenneOps>) =>
             OpetusuunnitelmaLukio.rakenne({opsId: id})
                 .$promise.then((rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) => d.resolve(rakenne), Notifikaatiot.serverCb);
         var rakenneCache = cached<Lukio.LukioOpetussuunnitelmaRakenneOps>($q, doGetRakenne);
+        var lukitseRakenne = (opsId?:number) => Lukko.lockLukio({
+            opsId: opsId || $stateParams.id, id: opsId || $stateParams.id, lukittavaOsa: 'OPS'});
+        var vapautaRakenne = (opsId?:number) => Lukko.unlockLukio({
+            opsId: opsId || $stateParams.id, id: opsId || $stateParams.id, lukittavaOsa: 'OPS'});
         var getRakenne = (id?: number) => rakenneCache.get(id || $stateParams.id);
-
-        var oppiaineCache = rakenneCache.related((from: Lukio.LukioOpetussuunnitelmaRakenneOps) : {[key:number]: Lukio.LukioOppiaine} =>
-            _(from.oppiaineet).flattenTree((oa: Lukio.LukioOppiaine) => oa.oppimaarat || [])
-                .indexBy(_.property('id')).value());
-        var getOppiaine = (id: number, opsId?: number) => oppiaineCache.get(opsId || $stateParams.id, id);
-        var saveOppiaine = (oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number) =>
-            OpetusuunnitelmaLukio.saveOppiaine({opsId: opsId || $stateParams.id}, oppiaine)
-                .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
-
-        var updateOppiaine = (oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number) =>
-            OpetusuunnitelmaLukio.updateOppiaine({opsId: opsId || $stateParams.id}, oppiaine)
-                .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
-
-        var kurssiCache = oppiaineCache.related((from: Lukio.LukioOppiaine) : {[key:number]: Lukio.LukiokurssiOps} =>
-            _(from.kurssit).indexBy(_.property('id')).value());
-        var getKurssi = (oppiaineId: number, kurssiId: number, opsId?: number) =>
-            kurssiCache.get(opsId || $stateParams.id, oppiaineId, kurssiId);
-
-        var kloonaaOppiaineMuokattavaksi = (oppiaineId:number, opsId?:number) => OppiaineCRUD.kloonaaMuokattavaksi({
-                opsId: opsId || $stateParams.id,
-                oppiaineId: oppiaineId
-            }, {}).$promise.then(res => { oppiaineCache.clear(); return res;}, Notifikaatiot.serverCb);
-
-        var palautaYlempaan = (oppiaineId:number, opsId?:number) => OppiaineCRUD.palautaYlempaan({
-            opsId: opsId || $stateParams.id,
-            oppiaineId: oppiaineId
-        }, {}).$promise.then(res => { oppiaineCache.clear(); return res;}, Notifikaatiot.serverCb);
-
         var updateOppiaineKurssiStructure = (treeRoot:LukioKurssiTreeNode,
                                              kommentti?: string, opsId?: number) => {
             var chain = _(treeRoot).flattenTree((node:LukioKurssiTreeNode) => {
@@ -177,26 +161,52 @@ ylopsApp
                 }, Notifikaatiot.serverCb);
         };
 
+        var oppiaineCache = rakenneCache.related((from: Lukio.LukioOpetussuunnitelmaRakenneOps) : {[key:number]: Lukio.LukioOppiaine} =>
+            _(from.oppiaineet).flattenTree((oa: Lukio.LukioOppiaine) => oa.oppimaarat || [])
+                .indexBy(_.property('id')).value());
+        var getOppiaine = (id: number, opsId?: number) => oppiaineCache.get(opsId || $stateParams.id, id);
+        var lukitseOppiaine = (id:number, opsId?:number) => Lukko.lockLukio({
+            opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'OPPIAINE'});
+        var vapautaOppiaine = (id:number, opsId?:number) => Lukko.unlockLukio({
+            opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'OPPIAINE'});
+        var saveOppiaine = (oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number) =>
+            OpetusuunnitelmaLukio.saveOppiaine({opsId: opsId || $stateParams.id}, oppiaine)
+                .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
+        var kloonaaOppiaineMuokattavaksi = (oppiaineId:number, opsId?:number) => OppiaineCRUD.kloonaaMuokattavaksi({
+            opsId: opsId || $stateParams.id,
+            oppiaineId: oppiaineId
+        }, {}).$promise.then(res => { oppiaineCache.clear(); return res;}, Notifikaatiot.serverCb);
+        var palautaYlempaan = (oppiaineId:number, opsId?:number) => OppiaineCRUD.palautaYlempaan({
+            opsId: opsId || $stateParams.id,
+            oppiaineId: oppiaineId
+        }, {}).$promise.then(res => { oppiaineCache.clear(); return res;}, Notifikaatiot.serverCb);
+        var updateOppiaine = (oppiaine: Lukio.LukioOppiaineTallennus, opsId?: number) =>
+            OpetusuunnitelmaLukio.updateOppiaine({opsId: opsId || $stateParams.id}, oppiaine)
+                .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
         var addKielitarjonta = (oppiaineId:number, tarjonta:Lukio.OppiaineKielitarjonta, opsId?: number) =>
             OpetusuunnitelmaLukio.addKielitarjonta({oppiaineId: oppiaineId, opsId: opsId || $stateParams.id}, tarjonta)
                 .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
-
         var deleteOppiaine = (oppiaineId:number, opsId?: number) =>
             OppiaineCRUD.delete({oppiaineId: oppiaineId, opsId: opsId || $stateParams.id})
                 .$promise.then(() => { oppiaineCache.clear(); }, Notifikaatiot.serverCb);
 
+        var kurssiCache = oppiaineCache.related((from: Lukio.LukioOppiaine) : {[key:number]: Lukio.LukiokurssiOps} =>
+            _(from.kurssit).indexBy(_.property('id')).value());
+        var getKurssi = (oppiaineId: number, kurssiId: number, opsId?: number) =>
+            kurssiCache.get(opsId || $stateParams.id, oppiaineId, kurssiId);
+        var lukitseKurssi = (id:number, opsId?:number) => Lukko.lockLukio({
+            opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'LUKIOKURSSI'});
+        var vapautaKurssi = (id:number, opsId?:number) => Lukko.unlockLukio({
+            opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'LUKIOKURSSI'});
         var saveKurssi = (kurssi:Lukio.LuoLukiokurssi, opsId?: number) =>
             OpetusuunnitelmaLukio.saveKurssi({opsId: opsId || $stateParams.id}, kurssi)
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
-
         var updateKurssi = (kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number) =>
             OpetusuunnitelmaLukio.updateKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, kurssi)
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
-
         var disconnectKurssi = (kurssiId:number, opsId:number) =>
             OpetusuunnitelmaLukio.disconnectKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, {})
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
-
         var reconnectKurssi = (kurssiId:number, opsId:number) =>
             OpetusuunnitelmaLukio.reconnectKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, {})
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
@@ -216,21 +226,27 @@ ylopsApp
             deleteAihekokonaisuus: deleteAihekokonaisuus,
 
             getOpetuksenYleisetTavoitteet: getOpetuksenYleisetTavoitteet,
-
             onAihekokonaisuudetUpdate: (then) => aiheKokCache.onUpdate(then),
-            onRaknneUpdate: (then) => rakenneCache.onUpdate(then),
+            onRakenneUpdate: (then) => rakenneCache.onUpdate(then),
 
             getRakenne: getRakenne,
+            lukitseRakenne: lukitseRakenne,
+            vapautaRakenne: vapautaRakenne,
+            updateOppiaineKurssiStructure: updateOppiaineKurssiStructure,
+
             getOppiaine: getOppiaine,
-            getKurssi: getKurssi,
+            lukitseOppiaine: lukitseOppiaine,
+            vapautaOppiaine: vapautaOppiaine,
             saveOppiaine: saveOppiaine,
             updateOppiaine: updateOppiaine,
             kloonaaOppiaineMuokattavaksi: kloonaaOppiaineMuokattavaksi,
             palautaYlempaan: palautaYlempaan,
-            updateOppiaineKurssiStructure: updateOppiaineKurssiStructure,
             addKielitarjonta: addKielitarjonta,
             deleteOppiaine: deleteOppiaine,
 
+            getKurssi: getKurssi,
+            lukitseKurssi: lukitseKurssi,
+            vapautaKurssi: vapautaKurssi,
             saveKurssi: saveKurssi,
             updateKurssi: updateKurssi,
             reconnectKurssi: reconnectKurssi,

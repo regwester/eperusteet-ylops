@@ -27,10 +27,6 @@
       <button class="btn btn-default" kaanna="'katkaise-yhteys'"
               ng-click="disconnectOppiaine()"></button>
     </div>
-    <div class="action-button" ng-if="isDeletable()">
-      <button class="btn btn-default" icon-role="remove" kaanna="'poista'"
-              ng-click="deleteOppiaine()"></button>
-    </div>
     <div dropdown class="action-button dropdown-container" ng-if="canAddFromTarjonta()">
       <button class="btn btn-default dropdown-toggle" icon-role="add" kaanna="'lisaa-'+tarjottavaTyyppi()+'-tarjonnasta'"
               dropdown-toggle></button>
@@ -133,6 +129,12 @@
 
 <!--<pre>{{ oppiaine | json}}</pre>-->
 <div class="lisaa-oppiaine oppiaine-form" ng-show="editMode">
+  <div class="action-buttons" style="float:right">
+    <div class="action-button" ng-if="isDeletable()">
+      <button class="btn btn-default" icon-role="remove" kaanna="'poista'"
+              ng-click="deleteOppiaine()" ng-if="isDeletable()"></button>
+    </div>
+  </div>
   <h2 ng-show="isMaara()">
     {{ editingOld?'muokkaa-oppimaara-title':'lisaa-oppimaara-title' | kaanna}}
   </h2>
@@ -142,11 +144,6 @@
 
   <div class="non-collapsibles">
     <form name="oppiaineForm" role="form">
-      <div class="action-buttons">
-        <div class="floater" ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineOsavalitsin.html'">
-        </div>
-      </div>
-
       <div ng-include="'views/opetussuunnitelmat/lukio/include/oppiaineLomakeKentat.html'"></div>
     </form>
   </div>

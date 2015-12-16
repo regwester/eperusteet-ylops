@@ -116,28 +116,38 @@ ylopsApp
                 }
                 return true;
             },
-            edit: function() {
-            },
-            cancel: function() {
+            edit: () => $q((resolve) => {
+                LukioOpetussuunnitelmaService.lukitseRakenne()
+                    .then(() => resolve());
+            }),
+            cancel: () => $q((resolve) => {
                 $scope.editMode = false;
-                resolveRakenne($q.defer()).then(() => {
-                    $scope.$broadcast('genericTree:refresh'); // templates get updated
-                });
-            },
-            save: function(kommentti) {
+                LukioOpetussuunnitelmaService.vapautaRakenne()
+                    .then(() => {
+                        resolveRakenne($q.defer()).then(() => {
+                            $scope.$broadcast('genericTree:refresh'); // templates get updated
+                            resolve();
+                        });
+                    });
+            }),
+            save: (kommentti) => $q((resolve) => {
                 if (!_.isEmpty(state.liittamattomatKurssit())) {
                     Notifikaatiot.varoitus('lukio-puun-muokkaus-ei-saa-olla-liittamattomia-kursseja');
                 } else {
                     LukioOpetussuunnitelmaService.updateOppiaineKurssiStructure($scope.treeRoot,
                             kommentti).then(() => {
                         Notifikaatiot.onnistui('lukio-puun-muokkaus-onnistui');
-                        $scope.editMode = false;
-                        resolveRakenne($q.defer()).then(() => {
-                            $scope.$broadcast('genericTree:refresh'); // templates get updated
-                        });
+                        LukioOpetussuunnitelmaService.vapautaRakenne()
+                            .then(() => {
+                                $scope.editMode = false;
+                                resolveRakenne($q.defer()).then(() => {
+                                    $scope.$broadcast('genericTree:refresh'); // templates get updated
+                                    resolve();
+                                });
+                            });
                     });
                 }
-            }
+            })
         });
 
         $scope.toEditMode = () => {
@@ -354,14 +364,17 @@ ylopsApp
         };
 
         var palautaYlempi = () => {
-            LukioOpetussuunnitelmaService.palautaYlempaan($stateParams.oppiaineId)
-                .then(res => {
-                    Notifikaatiot.onnistui('yhteyden-palautus-onnistui');
-                    $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
-                        id: $stateParams.id,
-                        oppiaineId: res.id
-                    }, { reload: true, notify: true }));
-                });
+            LukioOpetussuunnitelmaService.lukitseOppiaine($stateParams.oppiaineId)
+                .then(() =>
+                    LukioOpetussuunnitelmaService.palautaYlempaan($stateParams.oppiaineId)
+                        .then(res => {
+                            Notifikaatiot.onnistui('yhteyden-palautus-onnistui');
+                            $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                                id: $stateParams.id,
+                                oppiaineId: res.id
+                            }, { reload: true, notify: true }));
+                        })
+            );
         };
 
         $scope.connectOppiaine = () => {
@@ -374,7 +387,6 @@ ylopsApp
         };
 
         var cloneOppiaine = () => {
-            //TODO: Lukitus
             LukioOpetussuunnitelmaService.kloonaaOppiaineMuokattavaksi($stateParams.oppiaineId)
                 .then(res => {
                     Notifikaatiot.onnistui('yhteyden-katkaisu-onnistui');
@@ -386,15 +398,11 @@ ylopsApp
         };
 
         $scope.disconnectOppiaine = () => {
+            // Lukitusta ei tarivta, koska luodaan käytännössä uusi oppiaine
             Varmistusdialogi.dialogi({
                 otsikko: 'varmista-katkaise-yhteys',
                 primaryBtn: 'katkaise-yhteys',
-                // TODO: lukitus!
                 successCb: () => cloneOppiaine()
-                //successCb: () => Lukko.lock({
-                //    opsId: $stateParams.id,
-                //    oppiaineId: $stateParams.id
-                //}, cloneOppiaine )
             })();
         };
 
@@ -433,18 +441,29 @@ ylopsApp
                 return true;
             },
             edit: () => $q((resolve) => {
-                //TODO lock
-                $scope.editingOld = true;
-                resolve();
+                LukioOpetussuunnitelmaService.lukitseOppiaine($stateParams.oppiaineId)
+                    .then(() => {
+                        $scope.editingOld = true;
+                        resolve();
+                    });
             }),
             cancel: () => $q((resolve) => {
-                $scope.editMode = false;
-                resolve();
+                LukioOpetussuunnitelmaService.vapautaOppiaine($stateParams.oppiaineId)
+                    .then(() => {
+                        $scope.editMode = false;
+                        resolve();
+                    });
             }),
             save: () => $q((resolve) => {
-                resolve();
                 $scope.oppiaine.oppiaineId = $scope.oppiaine.id;
-                LukioOpetussuunnitelmaService.updateOppiaine($scope.oppiaine).then(() => $state.reload());
+                LukioOpetussuunnitelmaService.updateOppiaine($scope.oppiaine).then(() => {
+                    LukioOpetussuunnitelmaService.vapautaOppiaine($scope.oppiaine.id)
+                        .then(() => {
+                            $scope.editMode = false;
+                            resolve();
+                            $timeout(() => $state.reload());
+                        });
+                });
             })
         });
 
@@ -473,18 +492,21 @@ ylopsApp
             validate: function() {
                 return Kaanna.kaanna($scope.oppiaine.nimi) != null;
             },
-            edit: function() {
-            },
-            cancel: function() {
+            edit: () => $q((resolve) => {
+                resolve();
+            }),
+            cancel: () => $q((resolve) => {
+                resolve();
                 $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet');
-            },
-            save: function() {
+            }),
+            save: () => $q((resolve) => {
                 LukioOpetussuunnitelmaService.saveOppiaine($scope.oppiaine).then(function(ref) {
+                    resolve();
                     $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
                         oppiaineId: ref.id
                     });
                 });
-            }
+            })
         });
         $scope.isMaara = () => $scope.oppiaine && $scope.oppiaine.oppiaineId != null;
         $scope.openKoodisto = LukioControllerHelpers.openOppiaineKoodisto($scope.oppiaine);
