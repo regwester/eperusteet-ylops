@@ -617,7 +617,7 @@ ylopsApp
         $scope.disconnectKurssi = () => {
             // Ei tarvitse lukita, koska luodaan uusi kurssi (paikallinen kopio)
             Varmistusdialogi.dialogi({
-                otsikko: 'varmista-katkaise-yhteys',
+                otsikko: 'varmista-katkaise-kurssi-yhteys',
                 primaryBtn: 'katkaise-yhteys',
                 successCb: () => LukioOpetussuunnitelmaService.disconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
                     $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
