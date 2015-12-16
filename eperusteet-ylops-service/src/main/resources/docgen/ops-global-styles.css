@@ -1,6 +1,16 @@
 /* Global styles */
 /* Fonts, margins, etc... */
 
+@font-face {
+    font-family: "Arimo Regular";
+    src: url(fonts/Arimo-Regular.ttf);
+    -fs-pdf-font-embed: embed;
+    -fs-pdf-font-encoding: Identity-H;
+}
+html {
+    font-family: "Arimo Regular", serif;
+}
+
 h1 {
     font-size: 18px;
 }

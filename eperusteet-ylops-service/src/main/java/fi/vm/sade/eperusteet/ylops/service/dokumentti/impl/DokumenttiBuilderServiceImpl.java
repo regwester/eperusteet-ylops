@@ -67,6 +67,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         Handlebars hb = new Handlebars();
         ITextRenderer renderer = new ITextRenderer();
         renderer.setPDFVersion('7');
+        renderer.setPDFXConformance(3);
         Map<String, String> model = new HashMap<>();
 
         model.put("globalStyles", getStyleShteet("docgen/ops-global-styles"));
