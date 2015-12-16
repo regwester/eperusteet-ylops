@@ -381,7 +381,6 @@ ylopsApp
             Varmistusdialogi.dialogi({
                 otsikko: 'varmista-palauta-yhteys',
                 primaryBtn: 'palauta-yhteys',
-                // TODO: lukitus!
                 successCb: () => palautaYlempi()
             })();
         };
@@ -557,24 +556,31 @@ ylopsApp
                     && $scope.kurssi.tyyppi != null;
             },
             edit: () => $q((resolve) => {
-                resolve();
+                LukioOpetussuunnitelmaService.lukitseKurssi($stateParams.kurssiId)
+                    .then(() => resolve());
             }),
             cancel: () => $q((resolve) => {
-                $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
-                    id: $stateParams.id,
-                    oppiaineId: $stateParams.oppiaineId,
-                    kurssiId: $stateParams.kurssiId
-                }, { reload: true, notify: true }));
-                resolve();
+                LukioOpetussuunnitelmaService.vapautaKurssi($stateParams.kurssiId)
+                    .then(() => {
+                        $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                            id: $stateParams.id,
+                            oppiaineId: $stateParams.oppiaineId,
+                            kurssiId: $stateParams.kurssiId
+                        }, { reload: true, notify: true }));
+                        resolve();
+                    });
             }),
             save: () => $q((resolve) => {
                 LukioOpetussuunnitelmaService.updateKurssi($stateParams.kurssiId, $scope.kurssi).then(() => {
-                    $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
-                        id: $stateParams.id,
-                        oppiaineId: $stateParams.oppiaineId,
-                        kurssiId: $stateParams.kurssiId
-                    }, { reload: true, notify: true }));
-                    resolve();
+                    LukioOpetussuunnitelmaService.vapautaKurssi($stateParams.kurssiId)
+                        .then(() => {
+                            $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                                id: $stateParams.id,
+                                oppiaineId: $stateParams.oppiaineId,
+                                kurssiId: $stateParams.kurssiId
+                            }, { reload: true, notify: true }));
+                            resolve();
+                        });
                 });
             })
         });
@@ -594,18 +600,22 @@ ylopsApp
             Varmistusdialogi.dialogi({
                 otsikko: 'varmista-palauta-kurssi',
                 primaryBtn: 'palauta-yhteys',
-                successCb: () => LukioOpetussuunnitelmaService.reconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
-                    $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
-                        id: $stateParams.id,
-                        oppiaineId: $stateParams.oppiaineId,
-                        kurssiId: r.id
-                    }, { reload: true, notify: true }));
-                })
+                successCb: () => LukioOpetussuunnitelmaService.lukitseKurssi($stateParams.kurssiId)
+                    .then(() => {
+                        LukioOpetussuunnitelmaService.reconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
+                            // ei tarvitse enää vapauttaa, koska jos yhteys taas katkaistaa, luodaanuusi kurssi
+                            $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                                id: $stateParams.id,
+                                oppiaineId: $stateParams.oppiaineId,
+                                kurssiId: r.id
+                            }, { reload: true, notify: true }));
+                        })
+                    })
             })();
-
         };
 
         $scope.disconnectKurssi = () => {
+            // Ei tarvitse lukita, koska luodaan uusi kurssi (paikallinen kopio)
             Varmistusdialogi.dialogi({
                 otsikko: 'varmista-katkaise-yhteys',
                 primaryBtn: 'katkaise-yhteys',
@@ -760,6 +770,7 @@ ylopsApp
 
     $scope.ok = function() {
         if (!$scope.kieliJoToteutettu()) {
+            // Lisätään uusi, ei tarvitse lukita:
             LukioOpetussuunnitelmaService.addKielitarjonta(oppiaine.id, {
                 tunniste: $scope.$valittu.tunniste,
                 nimi: $scope.$omaNimi,
