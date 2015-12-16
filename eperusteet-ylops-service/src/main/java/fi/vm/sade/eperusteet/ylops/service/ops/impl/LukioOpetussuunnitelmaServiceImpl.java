@@ -184,6 +184,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     private LukiokurssiOpsDto mapKurssi(OppiaineLukiokurssi oaLk) {
         LukiokurssiOpsDto kurssiDto = mapper.map(oaLk.getKurssi(), new LukiokurssiOpsDto());
         kurssiDto.setOma(oaLk.isOma());
+        kurssiDto.setPalautettava( lukiokurssiRepository.findParentKurssiIdIfExists(
+                oaLk.getOpetussuunnitelma().getId(), oaLk.getKurssi().getId()) != null);
         return kurssiDto;
     }
 

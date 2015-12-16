@@ -42,6 +42,7 @@ public class LukiokurssiOpsDto implements Serializable, PerusteeseenViittaava<Lu
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;
     private boolean oma;
+    private boolean palautettava;
     private String koodiUri;
     private String koodiArvo;
     private LukiokurssiTyyppi tyyppi;
