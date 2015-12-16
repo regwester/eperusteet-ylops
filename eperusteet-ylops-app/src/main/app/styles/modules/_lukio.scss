@@ -934,3 +934,15 @@ a.clickable {
     }
   }
 }
+
+.action-button{
+  .lukio-oppiaine-connect-btn{
+    color: limegreen;
+    padding-right: 20px;
+  }
+
+  .lukio-oppiaine-disconnect-btn{
+    color: red;
+    padding-right: 20px;
+  }
+}

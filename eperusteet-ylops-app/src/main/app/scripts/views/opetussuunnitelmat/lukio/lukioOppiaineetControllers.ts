@@ -505,7 +505,7 @@ ylopsApp
             t => $scope.kurssi.tyyppi == t);
         $scope.isEditable = () => $scope.isPaikallinen(); // parts such as tyyppi or koodi
         $scope.connected = () => $scope.kurssi && !$scope.kurssi.oma && !$scope.rootOps;
-        $scope.isReconnectable = () => $scope.kurssi && $scope.kurssi.oma && !$scope.rootOps;
+        $scope.isReconnectable = () => $scope.kurssi && $scope.kurssi.oma && !$scope.rootOps && $scope.kurssi.palautettava;
         $scope.isEditAllowed = () => $scope.kurssi && $scope.kurssi.oma;
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;

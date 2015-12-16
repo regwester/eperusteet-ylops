@@ -31,16 +31,16 @@
     </span>
     <div class="action-buttons-inline" ng-if="!editing">
       <div class="action-button" ng-if="isReconnectable()">
-        <span ng-bind="'ei-yhdistetty-pohjaan' | kaanna"  style="color: red; padding-right: 20px;"></span>
+        <span ng-bind="'ei-yhdistetty-pohjaan' | kaanna"  class="lukio-oppiaine-disconnect-btn"></span>
         <button class="btn btn-default" kaanna="'palauta-yhteys'"
                 ng-click="connectKurssi()"></button>
       </div>
       <div class="action-button" ng-if="connected()">
-        <span ng-bind="'yhdistetty-pohjaan' | kaanna"  style="color: limegreen; padding-right: 20px;"></span>
+        <span ng-bind="'yhdistetty-pohjaan' | kaanna"  class="lukio-oppiaine-connect-btn"></span>
         <button class="btn btn-default" kaanna="'katkaise-yhteys'"
                 ng-click="disconnectKurssi()"></button>
       </div>
-      <div class="action-buttons-inline" ng-if="!editMode && isEditAllowed()">
+      <div class="action-button" ng-if="!editMode && isEditAllowed()">
         <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
       </div>
     </div>
