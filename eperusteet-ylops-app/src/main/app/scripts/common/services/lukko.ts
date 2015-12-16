@@ -16,6 +16,18 @@
 
 'use strict';
 
+interface LukioLukkoParams {
+  opsId: number;
+  lukittavaOsa: string; /*
+   OPS,
+   OPPIAINE,
+   LUKIOKURSSI,
+   AIHEKOKONAISUUDET,
+   AIHEKOKONAISUUS
+  */
+  id: number;
+}
+
 ylopsApp
 .directive('lukko', function() {
   return {
@@ -36,7 +48,7 @@ ylopsApp
 
 // FIXME: Korjaa käyttämään promiseja
 .service('Lukko', function(OpetussuunnitelmanTekstitLukko, OpetussuunnitelmanTekstitRakenneLukko,
-                           OppiaineenVuosiluokkakokonaisuusLukko,
+                           OppiaineenVuosiluokkakokonaisuusLukko, $q, OpetusuunnitelmaLukioLukko,
                            Notifikaatiot, $state, Editointikontrollit, $modal, Kaanna, $rootScope) {
   var etag = null;
   $rootScope.$on('$stateChangeSuccess', function() {
@@ -114,6 +126,34 @@ ylopsApp
     doLock(resourceFromState(), params, cb, failCb);
   }
 
+  function lockLukio(params:LukioLukkoParams, cb, fallCb) {
+    var d = $q.defer();
+    doLock(OpetusuunnitelmaLukioLukko, params, function(r) {
+      d.resolve(r);
+      if (cb) {
+        cb(r);
+      }
+    }, function(fail) {
+      d.reject(fail);
+      if (fallCb) {
+        fallCb(r);
+      }
+    });
+    return d.promise;
+  }
+
+  function unlockLukio(params:LukioLukkoParams, cb) {
+    var d = $q.defer();
+    OpetusuunnitelmaLukioLukko.delete(params, function(r) {
+      d.resolve(r);
+      if (cb) {
+        cb(r);
+      }
+    }, Notifikaatiot.serverLukitus);
+    etag = null;
+    return d.promise;
+  }
+
   function unlock(params, cb) {
     var resource = resourceFromState();
     resource.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
@@ -141,6 +181,8 @@ ylopsApp
   this.isLocked = checkLock;
   this.lock = lock;
   this.unlock = unlock;
+  this.lockLukio = lockLukio;
+  this.unlockLukio = unlockLukio;
   this.lockRakenne = lockRakenne;
   this.unlockRakenne = unlockRakenne;
   this.lockTekstikappale = lockTekstikappale;

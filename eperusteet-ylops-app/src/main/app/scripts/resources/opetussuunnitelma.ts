@@ -109,6 +109,9 @@ ylopsApp
       reconnectKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId/reconnect', isArray:false}
     });
   })
+  .factory('OpetusuunnitelmaLukioLukko', function ($resource, YlopsResources) {
+    return $resource(YlopsResources.LUKIO_OPS + '/lukko');
+  })
 
   .factory('OppiaineCRUD', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPPIAINE, {
