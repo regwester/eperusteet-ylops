@@ -33,7 +33,7 @@ public enum LukittavaOsa {
 
     private Class<? extends JpaWithVersioningRepository<?,?>> repository;
 
-    LukittavaOsa(Class<? extends JpaWithVersioningRepository<?, ?>> repository) {
+    <T>LukittavaOsa(Class<? extends JpaWithVersioningRepository<T, ?>> repository) {
         this.repository = repository;
     }
 

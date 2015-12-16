@@ -17,8 +17,6 @@
 
 <div ng-show="!editMode">
     <div class="action-buttons right" style="margin-top: 0px;">
-        <button icon-role="remove" kaanna="'poista'" class="action-button floater btn" ng-click="deleteKokonaisuus()" ng-show="isDeletable()"
-                oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"></button>
         <button icon-role="edit" class="action-button floater btn" ng-click="toEditMode()"
                 oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"></button>
     </div>
@@ -34,6 +32,10 @@
                     title="(aihekokonaisuus.otsikko | kaanna) || (aihekokonaisuus.parent.otsikko | kaanna) || (aihekokonaisuus.perusteen.otsikko | kaanna)"></lukio-oppiaine-osa>
 </div>
 <div ng-show="editMode">
+    <div class="action-buttons right" style="margin-top: 0px;">
+        <button icon-role="remove" kaanna="'poista'" class="action-button floater btn" ng-click="deleteKokonaisuus()"
+                ng-show="isDeletable()" oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"></button>
+    </div>
     <h3 ng-bind="'lisaa-aihekokonaisuus-header' | kaanna" ng-show="!aihekokonaisuus.id"></h3>
     <form name="aihekokonaisuusForm" role="form">
         <label for="otsikko" class="header" ng-bind="('aihekokonaisuus-otsikko-header' | kaanna) + ' *'" ></label>

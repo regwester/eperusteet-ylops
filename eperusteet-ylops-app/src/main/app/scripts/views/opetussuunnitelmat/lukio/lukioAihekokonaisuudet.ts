@@ -37,11 +37,17 @@ ylopsApp
                     return true;
                 },
                 edit: () => $q((resolve) => {
-                    resolve();
+                    LukioOpetussuunnitelmaService
+                        .lukitseAihekokonaisuudet($scope.aihekokonaisuudet.paikallinen.id)
+                        .then(() => resolve());
                 }),
                 cancel: () => $q((resolve) => {
-                    $timeout(() => $state.reload());
-                    resolve();
+                    LukioOpetussuunnitelmaService
+                        .vapautaAihekokonaisuudet($scope.aihekokonaisuudet.paikallinen.id)
+                        .then(() => {
+                            resolve();
+                            $timeout(() => $state.reload());
+                        });
                 }),
                 save: () => $q((resolve) => {
                     $scope.editmode = false;
@@ -50,8 +56,12 @@ ylopsApp
                         aihekokonaisuudet: _.each($scope.sortableModel, i => _.pick(i, 'id'))
                     }).then(() => {
                         Notifikaatiot.onnistui('aihekokonaisuuksien-jarjestaminen-onnistui');
-                        $timeout(() => $state.reload());
-                        resolve();
+                        LukioOpetussuunnitelmaService
+                            .vapautaAihekokonaisuudet($scope.aihekokonaisuudet.paikallinen.id)
+                            .then(() => {
+                                resolve();
+                                $timeout(() => $state.reload());
+                            });
                     });
                 })
             });
@@ -67,11 +77,17 @@ ylopsApp
                     //return Kaanna.kaanna($scope.aihekokonaisuudet.paikallinen.otsikko);
                 },
                 edit: () => $q((resolve) => {
-                    resolve();
+                    LukioOpetussuunnitelmaService
+                        .lukitseAihekokonaisuudet($scope.aihekokonaisuudet.paikallinen.id)
+                        .then(() => resolve());
                 }),
                 cancel: () => $q((resolve) => {
-                    $timeout(() => $state.reload());
-                    resolve();
+                    LukioOpetussuunnitelmaService
+                        .vapautaAihekokonaisuudet($scope.aihekokonaisuudet.paikallinen.id)
+                        .then(() => {
+                            resolve();
+                            $timeout(() => $state.reload());
+                        });
                 }),
                 save: () => $q((resolve) => {
                     $scope.yleiskuvaEditMode = false;
@@ -80,8 +96,12 @@ ylopsApp
                         yleiskuvaus: $scope.aihekokonaisuudet.paikallinen.yleiskuvaus
                     }).then(() => {
                         Notifikaatiot.onnistui('aihekokonaisuuksien-yleiskuvauksen-paivitys-onnistui');
-                        $timeout(() => $state.reload());
-                        resolve();
+                        LukioOpetussuunnitelmaService
+                            .vapautaAihekokonaisuudet($scope.aihekokonaisuudet.paikallinen.id)
+                            .then(() => {
+                                resolve();
+                                $timeout(() => $state.reload());
+                            });
                     });
                 })
             });
@@ -111,18 +131,28 @@ ylopsApp
                 return Kaanna.kaanna($scope.aihekokonaisuus.otsikko);
             },
             edit: () => $q((resolve) => {
-                resolve();
+                LukioOpetussuunnitelmaService
+                    .lukitseAihekokonaisuus($scope.aihekokonaisuus.id)
+                    .then(() => resolve());
             }),
             cancel: () => $q((resolve) => {
-                $timeout(() => $state.reload());
-                resolve();
+                LukioOpetussuunnitelmaService
+                    .vapautaAihekokonaisuus($scope.aihekokonaisuus.id)
+                    .then(() => {
+                        $timeout(() => $state.reload());
+                        resolve();
+                    });
             }),
             save: () => $q((resolve) => {
                 LukioOpetussuunnitelmaService.updateAihekokonaisuus($stateParams.aihekokonaisuusId,
                             $scope.aihekokonaisuus).then(() => {
                     Notifikaatiot.onnistui('aihekokonaisuuden-tallentaminen-onnistui');
-                    $timeout(() => $state.reload());
-                    resolve();
+                    LukioOpetussuunnitelmaService
+                        .vapautaAihekokonaisuus($scope.aihekokonaisuus.id)
+                        .then(() => {
+                            $timeout(() => $state.reload());
+                            resolve();
+                        });
                 });
                 resolve();
             })
@@ -133,21 +163,18 @@ ylopsApp
             Editointikontrollit.startEditing();
         };
 
-        $scope.deleteKokonaisuus = () => {
-            Varmistusdialogi.dialogi({
+        $scope.deleteKokonaisuus = () =>Varmistusdialogi.dialogi({
                 otsikko: 'varmista-poista-aihekokonaisuus',
                 primaryBtn: 'poista',
-                // TODO: lukitus!
                 successCb: () =>
                     LukioOpetussuunnitelmaService.deleteAihekokonaisuus($stateParams.aihekokonaisuusId)
-                            .then(() => {
-                        Notifikaatiot.onnistui('aihekokonaisuuden-poisto-onnistui');
-                        $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet', {
-                            id: $stateParams.id
-                        }));
-                    })
+                        .then(() => {
+                            Notifikaatiot.onnistui('aihekokonaisuuden-poisto-onnistui');
+                            $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet', {
+                                id: $stateParams.id
+                            }));
+                        })
             })();
-        };
     })
 
     .controller('LuoAihekokonaisuusController', function ($scope, $state, $stateParams, Kaanna,

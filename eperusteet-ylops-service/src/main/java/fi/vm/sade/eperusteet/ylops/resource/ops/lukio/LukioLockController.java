@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Time: 14.19
  */
 @Controller
-@RequestMapping(value = "/opetussuunnitelmat/{opsId}/lukio/lukko")
+@RequestMapping(value = "/opetussuunnitelmat/lukio/{opsId}/lukko")
 public class LukioLockController extends AbstractLockController<LukioLockCtx> {
     @Autowired
     private LukioLockService lockService;

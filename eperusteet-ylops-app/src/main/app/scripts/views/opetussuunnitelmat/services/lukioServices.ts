@@ -21,10 +21,15 @@ import IdHolder = Lukio.IdHolder;
 
 interface LukioOpetussuunnitelmaServiceI {
     getAihekokonaisuudet(opsId?: number): IPromise<Lukio.AihekokonaisuudetPerusteenOsa>
-    getAihekokonaisuus(id: number, opsId?: number): IPromise<Lukio.OpsAihekokonaisuus>
-    saveAihekokonaisuus(aihekok: Lukio.LuoAihekokonaisuus, opsId?:number): IPromise<IdHolder>
+    lukitseAihekokonaisuudet(id:number, opsId?:number): IPromise<void>
+    vapautaAihekokonaisuudet(id:number, opsId?:number): IPromise<void>
     updateAihekokonaisuudetYleiskuvaus(yleiskuvaus: Lukio.AihekokonaisuudetPaivitaYleiskuvaus, opsId?:number): IPromise<void>
     rearrangeAihekokonaisuudet(jarjestys: Lukio.JarjestaAihekokonaisuudet, opsId?:number): IPromise<void>
+
+    getAihekokonaisuus(id: number, opsId?: number): IPromise<Lukio.OpsAihekokonaisuus>
+    lukitseAihekokonaisuus(id:number, opsId?:number): IPromise<void>
+    vapautaAihekokonaisuus(id:number, opsId?:number): IPromise<void>
+    saveAihekokonaisuus(aihekok: Lukio.LuoAihekokonaisuus, opsId?:number): IPromise<IdHolder>
     updateAihekokonaisuus(id: number, aihekok: Lukio.PaivitaAihekokonaisuus, opsId?:number): IPromise<void>
     deleteAihekokonaisuus(aihekokId: number, opsId?:number): IPromise<void>
 
@@ -50,7 +55,7 @@ interface LukioOpetussuunnitelmaServiceI {
 }
 
 ylopsApp
-    .service('LukioOpetussuunnitelmaService', function(OpetusuunnitelmaLukio, $q:IQService, $log,
+    .service('LukioOpetussuunnitelmaService', function(OpetusuunnitelmaLukio, $q:IQService, $log, Lukko,
                                                        Notifikaatiot, $stateParams, OppiaineCRUD) {
         var doGetAihekokonaisuudet =
             (opsId: number, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) =>
@@ -59,18 +64,27 @@ ylopsApp
                             Notifikaatiot.serverCb);
         var aiheKokCache = cached<Lukio.AihekokonaisuudetPerusteenOsa>($q, doGetAihekokonaisuudet);
         var getAihekokonaisuudet = (opsId?: number) => aiheKokCache.get(opsId || $stateParams.id);
-        var kokonaisuusCache = aiheKokCache.related((from: Lukio.AihekokonaisuudetPerusteenOsa) : {[key:number]: Lukio.OpsAihekokonaisuus} =>
-            _(from.paikallinen.aihekokonaisuudet).indexBy(_.property('id')).value());
-        var getAihekokonaisuus = (id: number, opsId?: number) => kokonaisuusCache.get(opsId || $stateParams.id, id);
-        var saveAihekokonaisuus = (aihekok: Lukio.LuoAihekokonaisuus, opsId?:number) =>
-            OpetusuunnitelmaLukio.saveAihekokonaisuus({opsId: opsId || $stateParams.id}, aihekok)
-                .$promise.then(r => { kokonaisuusCache.clear(); return r; }, Notifikaatiot.serverCb);
+        var lukitseAihekokonaisuudet = (id:number, opsId?:number) => Lukko.lockLukio({
+            opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'AIHEKOKONAISUUDET'});
+        var vapautaAihekokonaisuudet = (id:number, opsId?:number) => Lukko.unlockLukio({
+            opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'AIHEKOKONAISUUDET'});
         var rearrangeAihekokonaisuudet = (jarjestys: Lukio.JarjestaAihekokonaisuudet, opsId?:number) =>
             OpetusuunnitelmaLukio.rearrangeAihekokonaisuudet({opsId: opsId || $stateParams.id}, jarjestys)
                 .$promise.then(r => { aiheKokCache.clear(); return r; }, Notifikaatiot.serverCb);
         var updateAihekokonaisuudetYleiskuvaus = (yleiskuvaus: Lukio.AihekokonaisuudetPaivitaYleiskuvaus, opsId?:number) =>
             OpetusuunnitelmaLukio.updateAihekokonaisuudetYleiskuvaus({opsId: opsId || $stateParams.id}, yleiskuvaus)
                 .$promise.then(r => { aiheKokCache.clear(); return r; }, Notifikaatiot.serverCb);
+
+        var kokonaisuusCache = aiheKokCache.related((from: Lukio.AihekokonaisuudetPerusteenOsa) : {[key:number]: Lukio.OpsAihekokonaisuus} =>
+            _(from.paikallinen.aihekokonaisuudet).indexBy(_.property('id')).value());
+        var getAihekokonaisuus = (id: number, opsId?: number) => kokonaisuusCache.get(opsId || $stateParams.id, id);
+        var lukitseAihekokonaisuus = (id:number, opsId?:number) => Lukko.lockLukio({
+            opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'AIHEKOKONAISUUS'});
+        var vapautaAihekokonaisuus = (id:number, opsId?:number) => Lukko.unlockLukio({
+            opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'AIHEKOKONAISUUS'});
+        var saveAihekokonaisuus = (aihekok: Lukio.LuoAihekokonaisuus, opsId?:number) =>
+            OpetusuunnitelmaLukio.saveAihekokonaisuus({opsId: opsId || $stateParams.id}, aihekok)
+                .$promise.then(r => { kokonaisuusCache.clear(); return r; }, Notifikaatiot.serverCb);
         var updateAihekokonaisuus = (id: number, aihekok:Lukio.PaivitaAihekokonaisuus, opsId?:number) =>
             OpetusuunnitelmaLukio.updateAihekokonaisuus({opsId: opsId || $stateParams.id, aihekokonaisuusId: id}, aihekok)
                 .$promise.then(r => { aiheKokCache.clear(); return r; }, Notifikaatiot.serverCb);
@@ -189,10 +203,15 @@ ylopsApp
 
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
-            getAihekokonaisuus: getAihekokonaisuus,
-            saveAihekokonaisuus: saveAihekokonaisuus,
+            lukitseAihekokonaisuudet: lukitseAihekokonaisuudet,
+            vapautaAihekokonaisuudet: vapautaAihekokonaisuudet,
             rearrangeAihekokonaisuudet: rearrangeAihekokonaisuudet,
             updateAihekokonaisuudetYleiskuvaus: updateAihekokonaisuudetYleiskuvaus,
+
+            getAihekokonaisuus: getAihekokonaisuus,
+            lukitseAihekokonaisuus: lukitseAihekokonaisuus,
+            vapautaAihekokonaisuus: vapautaAihekokonaisuus,
+            saveAihekokonaisuus: saveAihekokonaisuus,
             updateAihekokonaisuus: updateAihekokonaisuus,
             deleteAihekokonaisuus: deleteAihekokonaisuus,
 
