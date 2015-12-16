@@ -97,10 +97,12 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional
     public void generateWithDto(@P("dto") DokumenttiDto dto) {
         Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
+        Kieli kieli = dokumentti.getKieli();
 
         try {
             // Luodaan pdf
-            byte[] data = builder.generatePdf();
+            byte[] data = builder.generatePdf(opetussuunnitelma, kieli);
 
             dokumentti.setData(data);
             dokumentti.setTila(DokumenttiTila.VALMIS);

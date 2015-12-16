@@ -21,10 +21,11 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.context.MapValueResolver;
 import com.lowagie.text.DocumentException;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +54,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private ApplicationContext applicationContext;
 
     @Override
-    public byte[] generatePdf() throws IOException, DocumentException {
+    public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli) throws IOException, DocumentException {
         // Täällä tehdään kaikki taika
 
 
+        // Säilytetään luonnin aikana pdf dataa muistissa
         ByteArrayOutputStream pdfStream = new ByteArrayOutputStream();
 
         //final File outputFile = File.createTempFile("FlyingSacuer.test", ".pdf");
@@ -64,24 +66,19 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         Handlebars hb = new Handlebars();
         ITextRenderer renderer = new ITextRenderer();
+        renderer.setPDFVersion('7');
         Map<String, String> model = new HashMap<>();
 
-        Resource resource = applicationContext.getResource("classpath:" + "docgen/ops-style.css");
-        if (resource.exists()) {
-            String styles = FileUtils.readFileToString(resource.getFile(), "UTF-8");
-            model.put("styles", styles);
-        } else {
-            LOG.warn("Cannot found styles for pdf");
-        }
+        model.put("globalStyles", getStyleShteet("docgen/ops-global-styles"));
 
         // Kansilehti
-        addCoverPage(renderer, hb, model, pdfStream);
+        addCoverPage(renderer, hb, ops, kieli, model, pdfStream);
 
         // Infosivu
-        addInfoPage(renderer, hb);
+        addInfoPage(renderer, hb, ops, kieli, model);
 
         // Sisällysluettelo
-        addTocPage(renderer, hb);
+        addTocPage(renderer, hb, ops, kieli);
 
         // Tutkinnonosat
         addTutkinnonosat();
@@ -104,13 +101,16 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         return pdfStream.toByteArray();
     }
 
-    private void addCoverPage(ITextRenderer renderer, Handlebars hb, Map<String, String> model, OutputStream os)
-            throws IOException, DocumentException {
+    private void addCoverPage(ITextRenderer renderer, Handlebars hb,
+                              Opetussuunnitelma ops, Kieli kieli,
+                              Map<String, String> model, OutputStream os) throws IOException, DocumentException {
+
         Template template = hb.compile("docgen/ops-cover-page");
 
+        // Malli kansilehteä varten
         Map<String, String> coverModel = new HashMap<>();
-        coverModel.put("otsikko", "Otsikko");
-        coverModel.put("aliotsikko", "Aliotsikko");
+        coverModel.put("nimi", ops.getNimi().getTeksti().get(kieli));
+        coverModel.put("tyyppi", messages.translate(ops.getTyyppi().toString(), kieli));
 
         Context context = Context
                 .newBuilder(model)
@@ -123,15 +123,30 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         renderer.createPDF(os, false);
     }
 
-    private void addInfoPage(ITextRenderer renderer, Handlebars hb) throws IOException, DocumentException {
-        Template template = hb.compile("docgen/ops-template");
+    private void addInfoPage(ITextRenderer renderer, Handlebars hb,
+                             Opetussuunnitelma ops, Kieli kieli,
+                             Map<String, String> model) throws IOException, DocumentException {
+        Template template = hb.compile("docgen/ops-info-page");
 
-        renderer.setDocumentFromString(template.apply("Handlebars info"));
+        // Malli infolehteä varten
+        Map<String, String> infoModel = new HashMap<>();
+        infoModel.put("infoStyles", getStyleShteet("docgen/ops-info-styles"));
+
+        Context context = Context
+                .newBuilder(model)
+                .combine(infoModel)
+                .resolver(MapValueResolver.INSTANCE)
+                .build();
+
+        //LOG.info(template.apply(context));
+
+        renderer.setDocumentFromString(template.apply(context));
         renderer.layout();
         renderer.writeNextDocument();
     }
 
-    private void addTocPage(ITextRenderer renderer, Handlebars hb) throws IOException, DocumentException {
+    private void addTocPage(ITextRenderer renderer, Handlebars hb,
+                            Opetussuunnitelma ops, Kieli kieli) throws IOException, DocumentException {
         Template template = hb.compile("docgen/ops-toc-page");
 
         renderer.setDocumentFromString(template.apply("Handlebars toc"));
@@ -149,5 +164,20 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private void addGlossary() {
 
+    }
+
+    private String getStyleShteet(String path) {
+        Resource resource = applicationContext.getResource("classpath:" + path + ".css");
+        String styles = "";
+        try {
+            if (resource.exists()) {
+                styles = FileUtils.readFileToString(resource.getFile(), "UTF-8");
+            } else {
+                LOG.warn("Cannot found styles for pdf");
+            }
+        } catch (IOException ex) {
+            LOG.error("Cannot read exsisting style sheet: " + ex.getMessage());
+        }
+        return styles;
     }
 }
