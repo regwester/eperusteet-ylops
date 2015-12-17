@@ -33,7 +33,4 @@ ylopsApp
 
     $scope.pohjat = OpsListaService.query(false);
     $scope.sorter = Utils.sort;
-  })
-  .controller('EtusivuController', function () {
-
   });
