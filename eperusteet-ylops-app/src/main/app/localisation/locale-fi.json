@@ -498,5 +498,9 @@
   "aihekokonaisuuden-poisto-onnistui": "Aihekokonaisuuden poisto onnistui.",
   "varmista-katkaise-kurssi-yhteys": "Haluatko varmasti katkaista yhteyden ylempään tasoon?",
   "varmista-palauta-kurssi": "Haluatko varmasti palauttaa yhteyden ylemmän tason kurssiin?",
-  "poista-kurssi": "Poista kurssi"
+  "poista-kurssi": "Poista kurssi",
+  "lukio-ei-oppiaineita": "Oppiaineet puuttuvat",
+  "lukio-ei-aihekokonaisuuksia": "Aihekokonaisuudet puuttuvat",
+  "lukio-oppiaineessa-ei-kursseja": "Oppiaineessa ei yhtään kurssia",
+  "lukio-oppiaineessa-ei-oppimaaria": "Oppiaineessa ei yhtään oppimäärää"
 }

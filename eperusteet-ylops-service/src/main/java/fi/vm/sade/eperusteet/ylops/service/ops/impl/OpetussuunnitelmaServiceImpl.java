@@ -22,7 +22,9 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
@@ -913,10 +915,45 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 }
             }
 
+            if( tila == Tila.VALMIS && ops.getTila() == Tila.LUONNOS && ops.getKoulutustyyppi().compareTo(KoulutusTyyppi.LUKIOKOULUTUS) == 0 ){
+                validoiLukioPohja(ops);
+            }
             ops.setTila(tila);
             ops = repository.save(ops);
         }
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private void validoiLukioPohja(Opetussuunnitelma ops) {
+        Validointi validointi = new Validointi();
+
+        if( ops.getOppiaineet().isEmpty() ){
+            validointi.lisaaVirhe(validointi.luoVirhe("lukio-ei-oppiaineita", ops.getNimi()));
+        }
+
+        if (ops.getAihekokonaisuudet() == null || ops.getAihekokonaisuudet().getAihekokonaisuudet().isEmpty()) {
+            validointi.lisaaVirhe(validointi.luoVirhe("lukio-ei-aihekokonaisuuksia", ops.getNimi()));
+        }
+
+        ops.getOppiaineet().forEach(opsOppiaine -> {
+            if (!opsOppiaine.getOppiaine().isKoosteinen() && !oppiaineHasKurssi( opsOppiaine.getOppiaine(), ops.getLukiokurssit())) {
+                validointi.lisaaVirhe(validointi.luoVirhe("lukio-oppiaineessa-ei-kursseja", opsOppiaine.getOppiaine().getNimi()));
+            }
+            if( opsOppiaine.getOppiaine().isKoosteinen() && opsOppiaine.getOppiaine().getOppimaarat().isEmpty()){
+                validointi.lisaaVirhe(validointi.luoVirhe("lukio-oppiaineessa-ei-oppimaaria", opsOppiaine.getOppiaine().getNimi()));
+            }
+        });
+
+        validointi.tuomitse();
+    }
+
+    private boolean oppiaineHasKurssi(Oppiaine oppiaine, Set<OppiaineLukiokurssi> lukiokurssit) {
+        for (OppiaineLukiokurssi oppiaineLukiokurssi : lukiokurssit) {
+            if( oppiaineLukiokurssi.getOppiaine().getTunniste().compareTo( oppiaine.getTunniste() ) == 0){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
