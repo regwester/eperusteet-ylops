@@ -634,10 +634,11 @@ ylopsApp
                 otsikko: 'varmista-poista-kurssi',
                 primaryBtn: 'poista-kurssi',
                 successCb: () => {
-                    console.log("remove");
-                    LukioOpetussuunnitelmaService.removeKurssi($stateParams.kurssiId, $stateParams.id).then(() => {
-                        $scope.goBack();
-                    });
+                    LukioOpetussuunnitelmaService.lukitseKurssi($stateParams.kurssiId).then(() =>
+                        LukioOpetussuunnitelmaService.removeKurssi($stateParams.kurssiId, $stateParams.id).then(() => {
+                            $scope.goBack();
+                        })
+                    );
                 }
             })();
         };
