@@ -14,7 +14,7 @@
   ~  European Union Public Licence for more details.
   -->
 
-<div class="kurssi-view" ng-show="!editMode">
+<div class="kurssi-view" ng-if="!editMode">
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
   <hr class="mujuviiva"/>
 
@@ -77,7 +77,7 @@
   <!--<pre>{{ kurssi | json}}</pre>-->
   <!--<pre>{{ oppiaine.koosteinen | json}}</pre>-->
 </div>
-<div class="lisaa-kurssi oppiaine-form" ng-show="editMode">
+<div class="lisaa-kurssi oppiaine-form" ng-if="editMode">
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
   <hr class="mujuviiva"/>
 

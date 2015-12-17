@@ -15,7 +15,7 @@
   -->
 
 
-<div class="oppiaine-view" ng-show="!editMode">
+<div class="oppiaine-view" ng-if="!editMode">
   <div class="action-buttons-inline" ng-if="!editing">
     <div class="action-button" ng-if="isReconnectable()">
       <span ng-bind="'ei-yhdistetty-pohjaan' | kaanna"  class="lukio-oppiaine-disconnect-btn"></span>
@@ -128,7 +128,7 @@
 </div>
 
 <!--<pre>{{ oppiaine | json}}</pre>-->
-<div class="lisaa-oppiaine oppiaine-form" ng-show="editMode">
+<div class="lisaa-oppiaine oppiaine-form" ng-if="editMode">
   <div class="action-buttons" style="float:right">
     <div class="action-button" ng-if="isDeletable()">
       <button class="btn btn-default" icon-role="remove" kaanna="'poista'"

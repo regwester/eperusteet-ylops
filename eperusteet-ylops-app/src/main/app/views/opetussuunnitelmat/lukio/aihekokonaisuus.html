@@ -31,7 +31,7 @@
                     oppiaineen-teksti="aihekokonaisuus.yleiskuvaus"
                     title="(aihekokonaisuus.otsikko | kaanna) || (aihekokonaisuus.parent.otsikko | kaanna) || (aihekokonaisuus.perusteen.otsikko | kaanna)"></lukio-oppiaine-osa>
 </div>
-<div ng-show="editMode">
+<div ng-if="editMode">
     <div class="action-buttons right" style="margin-top: 0px;">
         <button icon-role="remove" kaanna="'poista'" class="action-button floater btn" ng-click="deleteKokonaisuus()"
                 ng-show="isDeletable()" oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"></button>

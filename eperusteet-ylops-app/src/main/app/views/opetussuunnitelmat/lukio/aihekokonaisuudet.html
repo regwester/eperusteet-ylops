@@ -45,7 +45,7 @@
         </div>
     </div>
 </div>
-<div ng-show="yleiskuvaEditMode">
+<div ng-if="yleiskuvaEditMode">
     <h3 ng-bind="(aihekokonaisuudet.paikallinen.otsikko | kaanna) || (aihekokonaisuudet.perusteen.otsikko | kaanna)"></h3>
     <form name="aihekokonaisuusForm" role="form">
         <!--<label for="otsikko" class="header" ng-bind="('aihekokonaisuus-otsikko-header' | kaanna) + ' *'" ></label>-->
