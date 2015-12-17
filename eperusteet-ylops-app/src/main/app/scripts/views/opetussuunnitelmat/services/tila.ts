@@ -27,11 +27,12 @@ ylopsApp
     cb = cb || angular.noop;
     OpetussuunnitelmaCRUD.setTila({opsId: ops.id, tila: tila}, null, cb, function(res) {
       // Todella rumaa
+      // Samaa mieltä
       var virheet = _(res.data.data.virheet)
-        .filter(function(v) { return !_.isEmpty(v.nimi) && _.first(v.nimi).id; })
-        .groupBy(function(v) { return _.first(v.nimi).id; })
+        .filter((v) => { return !_.isEmpty(v.nimi) && _.first(v.nimi).id; })
+        .groupBy((v) => { return _.first(v.nimi).id; })
         .values()
-        .map(function(v) {
+        .map((v) => {
           var ongelmat = _.sortBy(_.unique(v, 'syy'), _.identity);
           return {
             nimi: _.first(_.first(ongelmat).nimi).teksti,
