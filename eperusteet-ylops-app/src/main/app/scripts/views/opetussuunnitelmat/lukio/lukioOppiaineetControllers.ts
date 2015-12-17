@@ -617,7 +617,7 @@ ylopsApp
         $scope.disconnectKurssi = () => {
             // Ei tarvitse lukita, koska luodaan uusi kurssi (paikallinen kopio)
             Varmistusdialogi.dialogi({
-                otsikko: 'varmista-katkaise-yhteys',
+                otsikko: 'varmista-katkaise-kurssi-yhteys',
                 primaryBtn: 'katkaise-yhteys',
                 successCb: () => LukioOpetussuunnitelmaService.disconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
                     $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
@@ -626,6 +626,20 @@ ylopsApp
                         kurssiId: r.id
                     }, { reload: true, notify: true }));
                 })
+            })();
+        };
+
+        $scope.delete = () => {
+            Varmistusdialogi.dialogi({
+                otsikko: 'varmista-poista-kurssi',
+                primaryBtn: 'poista-kurssi',
+                successCb: () => {
+                    LukioOpetussuunnitelmaService.lukitseKurssi($stateParams.kurssiId).then(() =>
+                        LukioOpetussuunnitelmaService.removeKurssi($stateParams.kurssiId, $stateParams.id).then(() => {
+                            $scope.goBack();
+                        })
+                    );
+                }
             })();
         };
     })

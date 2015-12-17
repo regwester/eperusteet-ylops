@@ -138,7 +138,13 @@ public class LukioOpetussuunnitelmatController {
 
     @RequestMapping(value = "/kurssi/{kurssiId}/reconnect", method = RequestMethod.POST)
     public LongIdResultDto reconnectKurssi(@PathVariable("opsId") final Long opsId,
-                                            @PathVariable("kurssiId") final Long kurssiId) {
+                                           @PathVariable("kurssiId") final Long kurssiId) {
         return new LongIdResultDto(lukioOpetussuunnitelmaService.reconnectKurssi( kurssiId, opsId ));
+    }
+
+    @RequestMapping(value = "/kurssi/{kurssiId}/remove", method = RequestMethod.DELETE)
+    public void removeKurssi(@PathVariable("opsId") final Long opsId,
+                                           @PathVariable("kurssiId") final Long kurssiId) {
+        lukioOpetussuunnitelmaService.removeKurssi( kurssiId, opsId );
     }
 }

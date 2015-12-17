@@ -495,5 +495,8 @@
   "aihekokonaisuuden-tallentaminen-onnistui": "Aihekokonaisuus tallennettu onnistuneesti.",
   "aihekokonaisuuksien-yleiskuvauksen-paivitys-onnistui": "Aihekokonaisuuksien päivitys onnistui.",
   "varmista-poista-aihekokonaisuus": "Haluatko varmasti poistaa aihekokonaisuuden?",
-  "aihekokonaisuuden-poisto-onnistui": "Aihekokonaisuuden poisto onnistui."
+  "aihekokonaisuuden-poisto-onnistui": "Aihekokonaisuuden poisto onnistui.",
+  "varmista-katkaise-kurssi-yhteys": "Haluatko varmasti katkaista yhteyden ylempään tasoon?",
+  "varmista-palauta-kurssi": "Haluatko varmasti palauttaa yhteyden ylemmän tason kurssiin?",
+  "poista-kurssi": "Poista kurssi"
 }

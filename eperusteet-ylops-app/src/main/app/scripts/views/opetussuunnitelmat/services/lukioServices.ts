@@ -59,6 +59,7 @@ interface LukioOpetussuunnitelmaServiceI {
     updateKurssi(kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number): IPromise<void>
     disconnectKurssi(kurssiId:number, opsId:number): IPromise<IdHolder>
     reconnectKurssi(kurssiId:number, opsId:number): IPromise<IdHolder>
+    removeKurssi(kurssiId:number, opsId:number): IPromise<void>
 }
 
 ylopsApp
@@ -211,6 +212,10 @@ ylopsApp
             OpetusuunnitelmaLukio.reconnectKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, {})
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
 
+        var removeKurssi = (kurssiId:number, opsId:number) =>
+            OpetusuunnitelmaLukio.removeKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, {})
+                .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
+
         return <LukioOpetussuunnitelmaServiceI>{
             getAihekokonaisuudet: getAihekokonaisuudet,
             lukitseAihekokonaisuudet: lukitseAihekokonaisuudet,
@@ -250,6 +255,7 @@ ylopsApp
             saveKurssi: saveKurssi,
             updateKurssi: updateKurssi,
             reconnectKurssi: reconnectKurssi,
-            disconnectKurssi: disconnectKurssi
+            disconnectKurssi: disconnectKurssi,
+            removeKurssi: removeKurssi
         }
     });
