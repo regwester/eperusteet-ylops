@@ -43,6 +43,9 @@
       <div class="action-button" ng-if="!editMode && isEditAllowed()">
         <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
       </div>
+      <div class="action-button" ng-if="!editMode && isEditAllowed()">
+        <button class="btn btn-default btn-icon-only" icon-role="remove" ng-click="delete()"></button>
+      </div>
     </div>
   </h3>
 

@@ -628,6 +628,19 @@ ylopsApp
                 })
             })();
         };
+
+        $scope.delete = () => {
+            Varmistusdialogi.dialogi({
+                otsikko: 'varmista-poista-kurssi',
+                primaryBtn: 'poista-kurssi',
+                successCb: () => {
+                    console.log("remove");
+                    LukioOpetussuunnitelmaService.removeKurssi($stateParams.kurssiId, $stateParams.id).then(() => {
+                        $scope.goBack();
+                    });
+                }
+            })();
+        };
     })
 
     .controller('LuoLukioKurssiController', ($scope, $q:IQService, $stateParams, LukioControllerHelpers,

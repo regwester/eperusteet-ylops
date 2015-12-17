@@ -462,6 +462,27 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Override
     @Transactional
+    public void removeKurssi(Long kurssiId, Long opsId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetussuunnitelmaRepository.lock(ops);
+        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi( opsId, kurssiId).stream().findAny()
+                .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
+
+        if( !oaKurssi.isOma() ){
+            throw new BusinessRuleViolationException("kurssia ei voi poistaa");
+        }
+
+        Iterator<OppiaineLukiokurssi> it = oaKurssi.getKurssi().getOppiaineet().iterator();
+        while(it.hasNext()){
+            it.next();
+            it.remove();
+        }
+
+        oppiaineLukiokurssiRepository.delete(oaKurssi);
+    }
+
+    @Override
+    @Transactional
     public void updateTreeStructure(Long opsId, OppaineKurssiTreeStructureDto structureDto) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         opetussuunnitelmaRepository.lock(ops);

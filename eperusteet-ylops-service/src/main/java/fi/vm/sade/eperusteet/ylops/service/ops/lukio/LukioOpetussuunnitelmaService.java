@@ -73,4 +73,7 @@ public interface LukioOpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void deleteAihekokonaisuus(long opsId, long id);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void removeKurssi(Long kurssiId, Long opsId);
 }
