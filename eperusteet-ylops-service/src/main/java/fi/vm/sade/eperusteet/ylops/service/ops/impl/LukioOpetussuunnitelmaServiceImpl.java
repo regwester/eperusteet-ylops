@@ -109,7 +109,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 jarjestyksetAlinPohja = jarjestysRepository.findJarjestysDtosByOpetussuunnitelmaId(alinPohja.getId()).stream()
                         .collect(toMap(OppiaineJarjestysDto::getId, o -> o));
         Map<UUID,List<Oppiaine>> pohjanTarjontaByOppiaineUUID = alinPohja.getOppiaineet().stream()
-                .flatMap(opsOppiaine -> opsOppiaine.getOppiaine().maarineen()).filter(Oppiaine::isAbstraktiBool)
+                .flatMap(opsOppiaine -> opsOppiaine.getOppiaine().maarineen()).filter(oa
+                        -> oa.isAbstraktiBool() && oa.getOppiaine() != null)
                 .sorted(compareOppiaineet(jarjestys(jarjestyksetAlinPohja)))
                 .collect(groupingBy(oa -> oa.getOppiaine().getTunniste()));
         map(ops.getOppiaineet().stream().map(OpsOppiaine::getOppiaine),
