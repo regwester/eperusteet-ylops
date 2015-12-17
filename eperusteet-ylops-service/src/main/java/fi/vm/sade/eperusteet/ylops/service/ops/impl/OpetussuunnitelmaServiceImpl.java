@@ -915,7 +915,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 }
             }
 
-            if( tila == Tila.VALMIS && ops.getTila() == Tila.LUONNOS && ops.getKoulutustyyppi().compareTo(KoulutusTyyppi.LUKIOKOULUTUS) == 0 ){
+            if (tila == Tila.VALMIS && ops.getTila() == Tila.LUONNOS
+                    && ops.getTyyppi() != Tyyppi.POHJA
+                    && ops.getKoulutustyyppi().compareTo(KoulutusTyyppi.LUKIOKOULUTUS) == 0) {
                 validoiLukioPohja(ops);
             }
             ops.setTila(tila);
