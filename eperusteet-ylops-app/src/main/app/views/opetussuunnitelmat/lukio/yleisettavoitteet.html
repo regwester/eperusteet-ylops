@@ -18,7 +18,7 @@
 
 
 <div class="perusteen-teksti">
- <div ng-bind-html="yleisetTavoitteet.perusteen.kuvaus|kaanna"></div>
+ <div ng-bind-html="yleisetTavoitteet.perusteen.kuvaus | kaanna | unsafe" termisto-viitteet="yleisetTavoitteet.perusteen.kuvaus"></div>
 <!--
  <div class="tag-perusteen-otsikko">
     &ldquo;{{yleisetTavoitteet.perusteen.otsikko|kaanna|unsafe}}&rdquo;

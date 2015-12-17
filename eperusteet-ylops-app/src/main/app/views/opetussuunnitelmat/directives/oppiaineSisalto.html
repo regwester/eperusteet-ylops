@@ -33,20 +33,20 @@
     <a ng-class="{'toggle-perusteen-teksti peruste-teksti': true,'is-open': !textHidden}" ng-click="toggleTextVisible()">
       <span kaanna="nayta-perusteen-teksti"></span>
     </a>
-    <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna"></span>
+    <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna | unsafe" termisto-viitteet="perusteenTeksti"></span>
   </div>
 
   <div class="oppiaine-paikallinen" ng-if="pohjanTeksti">
     <span>
       <strong>{{ 'pohjan-tarkennus' | kaanna}}</strong>
-      <span ng-bind-html="pohjanTeksti | kaanna"></span>
+      <span ng-bind-html="pohjanTeksti | kaanna | unsafe" termisto-viitteet="pohjanTeksti"></span>
     </span>
   </div>
 
   <div class="oppiaine-paikallinen">
     <span ng-if="oppiaineenTeksti && !editingField">
       <strong>{{ 'paikallinen-tarkennus' | kaanna}}</strong>
-      <span ng-bind-html="oppiaineenTeksti | kaanna"></span>
+      <span ng-bind-html="oppiaineenTeksti | kaanna | unsafe" termisto-viitteet="oppiaineenTeksti"></span>
     </span>
     <div ng-if="editingField" ckeditor ng-model="oppiaineenTeksti" slocalized></div>
   </div>

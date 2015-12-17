@@ -163,7 +163,6 @@ ylopsApp
 
     .service('LukioControllerHelpers', function($rootScope, Koodisto, MuokkausUtils, Kieli, Kaanna, $log) {
         var mapKoodiArvo = (and?: (arvoKoodistoArvo) => void) => (obj:any, koodisto: KoodistoArvo) => {
-            $log.info('koodi', koodisto);
             MuokkausUtils.nestedSet(obj, 'koodiUri', ',', koodisto.koodiUri);
             MuokkausUtils.nestedSet(obj, 'koodiArvo', ',', koodisto.koodiArvo);
             MuokkausUtils.nestedSet(obj, 'nimi', ',', koodisto.nimi);
@@ -304,7 +303,7 @@ ylopsApp
             return OpsService.oppiaineIsKieli($scope.oppiaine) ? 'kieli' : (
                 $scope.oppiaine.koodiArvo == 'KT' ? 'uskonto' : 'tuntematon'
             );
-        }
+        };
 
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
