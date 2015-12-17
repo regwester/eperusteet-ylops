@@ -51,9 +51,9 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>org.xhtmlrenderer</groupId>
-            <artifactId>flying-saucer-pdf</artifactId>
-            <version>9.0.8</version>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>
@@ -378,6 +378,7 @@
     </dependencies>
     <build>
         <plugins>
+            <!-- Maven rikkoo muuten ttf fontit -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>

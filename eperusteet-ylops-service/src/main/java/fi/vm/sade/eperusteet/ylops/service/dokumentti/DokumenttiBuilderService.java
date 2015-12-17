@@ -16,11 +16,14 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti;
 
-import com.lowagie.text.DocumentException;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import org.apache.fop.apps.FOPException;
+import org.xml.sax.SAXException;
 
+import javax.xml.transform.TransformerException;
 import java.io.IOException;
+
 
 /**
  *
@@ -28,5 +31,5 @@ import java.io.IOException;
  */
 public interface DokumenttiBuilderService {
 
-    byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli) throws IOException, DocumentException;
+    byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli) throws TransformerException, IOException, SAXException;
 }

@@ -16,7 +16,6 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
-import com.lowagie.text.DocumentException;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -28,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import org.apache.fop.apps.FOPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,9 @@ import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.xml.sax.SAXException;
 
+import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.util.Date;
 
@@ -110,7 +112,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
             // Tallennetaan valmis dokumentti
             dokumenttiRepository.save(dokumentti);
-        } catch (IOException | DocumentException ex) {
+        } catch (IOException | SAXException | TransformerException ex) {
             LOG.error(ex.getMessage());
             dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
             dokumenttiRepository.save(dokumentti);

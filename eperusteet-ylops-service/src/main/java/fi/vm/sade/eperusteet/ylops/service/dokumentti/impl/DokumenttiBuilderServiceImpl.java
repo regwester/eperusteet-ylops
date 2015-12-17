@@ -17,24 +17,26 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.Context;
-import com.github.jknack.handlebars.context.MapValueResolver;
-import com.lowagie.text.DocumentException;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import org.apache.commons.io.FileUtils;
+import org.apache.fop.apps.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xml.sax.SAXException;
 
+import javax.xml.transform.*;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,32 +56,26 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private ApplicationContext applicationContext;
 
     @Override
-    public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli) throws IOException, DocumentException {
+    public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
+            throws TransformerException, IOException, SAXException {
         // Täällä tehdään kaikki taika
 
-
         // Säilytetään luonnin aikana pdf dataa muistissa
-        ByteArrayOutputStream pdfStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream pdf = new ByteArrayOutputStream();
 
-        //final File outputFile = File.createTempFile("FlyingSacuer.test", ".pdf");
-        //OutputStream os = new FileOutputStream(outputFile);
-
-        Handlebars hb = new Handlebars();
-        ITextRenderer renderer = new ITextRenderer();
-        renderer.setPDFVersion('7');
-        renderer.setPDFXConformance(3);
+        /*Handlebars hb = new Handlebars();
         Map<String, String> model = new HashMap<>();
 
         model.put("globalStyles", getStyleShteet("docgen/ops-global-styles"));
 
         // Kansilehti
-        addCoverPage(renderer, hb, ops, kieli, model, pdfStream);
+        addCoverPage();
 
         // Infosivu
-        addInfoPage(renderer, hb, ops, kieli, model);
+        addInfoPage();
 
         // Sisällysluettelo
-        addTocPage(renderer, hb, ops, kieli);
+        addTocPage();
 
         // Tutkinnonosat
         addTutkinnonosat();
@@ -88,71 +84,121 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         addSisaltoElement();
 
         // käsitteet
-        addGlossary();
+        addGlossary();*/
+
+        Resource resource = applicationContext.getResource("classpath:docgen/test.xsl");
+        pdf.write(convertOps2PDF(ops, resource.getFile()));
 
         // Lopetetaan leipominen ja siivotaan jäljet
-        renderer.finishPDF();
-        //io.close();
 
-        //LOG.info("Test pdf generated to " + outputFile);
+        return pdf.toByteArray();
+    }
 
-        //InputStream io = new FileInputStream(outputFile);
-        //return IOUtils.toByteArray(io);
+    private byte[] convertOps2PDF(Opetussuunnitelma ops, File xslt)
+            throws IOException, TransformerException, SAXException {
+        // Streams
+        ByteArrayOutputStream xmlStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream foStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream pdfStream = new ByteArrayOutputStream();
+
+        // Muunnetaan ops objekti xml muotoon
+        convertOps2XML(ops, xmlStream);
+        LOG.info("Generted xml:");
+        printStream(xmlStream);
+
+        // Muunntetaan saatu xml malli fo:ksi
+        InputStream xmlInputStream = new ByteArrayInputStream(xmlStream.toByteArray());
+        convertXML2FO(xmlInputStream, xslt, foStream);
+        LOG.info("Generated fo:");
+        printStream(foStream);
+
+        // Muunnetaan saatu fo malli pdf:ksi
+        InputStream foInputStream = new ByteArrayInputStream(foStream.toByteArray());
+        convertFO2PDF(foInputStream, pdfStream);
 
         return pdfStream.toByteArray();
     }
 
-    private void addCoverPage(ITextRenderer renderer, Handlebars hb,
-                              Opetussuunnitelma ops, Kieli kieli,
-                              Map<String, String> model, OutputStream os) throws IOException, DocumentException {
+    private void convertOps2XML(Opetussuunnitelma ops, OutputStream xml)
+            throws IOException, TransformerException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        Transformer transformer = factory.newTransformer();
 
-        Template template = hb.compile("docgen/ops-cover-page");
+        String test = "<test><asd>asd</asd></test>";
 
-        // Malli kansilehteä varten
-        Map<String, String> coverModel = new HashMap<>();
-        coverModel.put("nimi", ops.getNimi().getTeksti().get(kieli));
-        coverModel.put("tyyppi", messages.translate(ops.getTyyppi().toString(), kieli));
+        InputStream inputStream = new ByteArrayInputStream(test.getBytes(StandardCharsets.UTF_8));
 
-        Context context = Context
-                .newBuilder(model)
-                .combine(coverModel)
-                .resolver(MapValueResolver.INSTANCE)
-                .build();
+        Source src = new StreamSource(inputStream);
+        Result res = new StreamResult(xml);
 
-        renderer.setDocumentFromString(template.apply(context));
-        renderer.layout();
-        renderer.createPDF(os, false);
+        transformer.transform(src, res);
     }
 
-    private void addInfoPage(ITextRenderer renderer, Handlebars hb,
-                             Opetussuunnitelma ops, Kieli kieli,
-                             Map<String, String> model) throws IOException, DocumentException {
-        Template template = hb.compile("docgen/ops-info-page");
+    public void convertXML2FO(InputStream xml, File xslt, OutputStream fo)
+            throws IOException, TransformerException {
+        try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer(new StreamSource(xslt));
 
-        // Malli infolehteä varten
-        Map<String, String> infoModel = new HashMap<>();
-        infoModel.put("infoStyles", getStyleShteet("docgen/ops-info-styles"));
+            Source src = new StreamSource(xml);
+            Result res = new StreamResult(fo);
 
-        Context context = Context
-                .newBuilder(model)
-                .combine(infoModel)
-                .resolver(MapValueResolver.INSTANCE)
-                .build();
-
-        //LOG.info(template.apply(context));
-
-        renderer.setDocumentFromString(template.apply(context));
-        renderer.layout();
-        renderer.writeNextDocument();
+            transformer.transform(src, res);
+        } finally {
+            fo.close();
+        }
     }
 
-    private void addTocPage(ITextRenderer renderer, Handlebars hb,
-                            Opetussuunnitelma ops, Kieli kieli) throws IOException, DocumentException {
-        Template template = hb.compile("docgen/ops-toc-page");
+    @SuppressWarnings("unchecked")
+    public void convertFO2PDF(InputStream fo, OutputStream pdf) throws IOException, SAXException {
 
-        renderer.setDocumentFromString(template.apply("Handlebars toc"));
-        renderer.layout();
-        renderer.writeNextDocument();
+        Resource resource = applicationContext.getResource("classpath:docgen/fop.xconf");
+        FopFactory fopFactory = FopFactory.newInstance(resource.getFile());
+
+        try {
+            FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
+            foUserAgent.getRendererOptions().put("pdf-a-mode", "PDF/A-1b");
+
+            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
+
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+
+            Source src = new StreamSource(fo);
+
+            Result res = new SAXResult(fop.getDefaultHandler());
+
+            transformer.transform(src, res);
+
+            FormattingResults foResults = fop.getResults();
+            java.util.List pageSequences = foResults.getPageSequences();
+            for (Object pageSequence : pageSequences) {
+                PageSequenceResults pageSequenceResults = (PageSequenceResults) pageSequence;
+                System.out.println("PageSequence "
+                        + (String.valueOf(pageSequenceResults.getID()).length() > 0
+                        ? pageSequenceResults.getID() : "<no id>")
+                        + " generated " + pageSequenceResults.getPageCount() + " pages.");
+            }
+            System.out.println("Generated " + foResults.getPageCount() + " pages in total.");
+
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            System.exit(-1);
+        } finally {
+            pdf.close();
+        }
+    }
+
+    private void addCoverPage() {
+
+    }
+
+    private void addInfoPage() {
+
+    }
+
+    private void addTocPage() {
+
     }
 
     private void addTutkinnonosat() {
@@ -165,6 +211,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private void addGlossary() {
 
+    }
+
+    private void printStream(ByteArrayOutputStream stream) {
+        LOG.info(new String(stream.toByteArray(), StandardCharsets.UTF_8));
     }
 
     private String getStyleShteet(String path) {
