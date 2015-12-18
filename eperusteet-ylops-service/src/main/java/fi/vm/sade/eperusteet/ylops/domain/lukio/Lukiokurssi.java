@@ -17,12 +17,14 @@
 package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -106,5 +108,17 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
         lukiokurssi.setKeskeinenSisalto(Tekstiosa.copyOf(this.keskeinenSisalto));
         lukiokurssi.setTavoitteetJaKeskeinenSisalto(Tekstiosa.copyOf(this.tavoitteetJaKeskeinenSisalto));
         return lukiokurssi;
+    }
+
+    public void validoiTavoitteetJaKeskeinenSisalto(Validointi validointi, Set<Kieli> julkaisukielet){
+        if( tavoitteetJaKeskeinenSisalto != null){
+            Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet, this.getNimi());
+            return;
+        }else if( keskeinenSisalto != null && tavoitteet != null){
+            Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet, this.getNimi());
+            Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet, this.getNimi());
+            return;
+        }
+        validointi.lisaaVirhe(validointi.luoVirhe("lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat", this.getNimi()));
     }
 }

@@ -501,6 +501,7 @@
   "poista-kurssi": "Poista kurssi",
   "lukio-ei-oppiaineita": "Oppiaineet puuttuvat",
   "lukio-ei-aihekokonaisuuksia": "Aihekokonaisuudet puuttuvat",
-  "lukio-oppiaineessa-ei-kursseja": "Oppiaineessa ei yhtään kurssia",
-  "lukio-oppiaineessa-ei-oppimaaria": "Oppiaineessa ei yhtään oppimäärää"
+  "lukio-oppiaineessa-ei-kursseja": "Oppiaineessa ei ole kursseja",
+  "lukio-oppiaineessa-ei-oppimaaria": "Oppiaineessa ei ole oppimääriä",
+  "lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat": "Kurssin tavoitteet tai keskeinen sisaltoalue puuttuu"
 }

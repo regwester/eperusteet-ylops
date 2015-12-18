@@ -946,6 +946,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
         });
 
+        ops.getLukiokurssit().forEach(oppiaineLukiokurssi -> {
+            if (oppiaineLukiokurssi.getKurssi().getTyyppi().isPaikallinen()) {
+                oppiaineLukiokurssi.getKurssi().validoiTavoitteetJaKeskeinenSisalto(validointi, ops.getJulkaisukielet());
+            }
+        });
+
         validointi.tuomitse();
     }
 
