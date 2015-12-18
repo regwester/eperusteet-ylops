@@ -57,9 +57,9 @@ CKEDITOR.dialog.add('termiDialog', function( editor ) {
             '<p class="empty-termit" ng-if="termit.length === 0" kaanna="\'ei-termeja\'"></p>' +
             '<div class="termi-plugin-add">' +
             '  <a ng-click="!adding && addNew()">{{\'termi-plugin-lisaa-uusi\'|kaanna}}</a>'+
-            '  <div ng-if="adding"><input class="form-control" ng-model="model.newTermi">' +
+            '  <div ng-if="adding"><input class="form-control" ng-model="model.newTermi.termi" slocalized>' +
             '    <button class="btn btn-default" ng-click="cancelNew()" kaanna="peruuta"></button>' +
-            '    <button ng-disabled="!model.newTermi" class="btn btn-primary" ng-click="saveNew()" kaanna="lisaa"></button>' +
+            '    <button ng-disabled="!model.newTermi.termi" class="btn btn-primary" ng-click="saveNew()" kaanna="lisaa"></button>' +
             '  </div>' +
             '  <p class="success-message" ng-show="message">{{message|kaanna}}</p>' +
             '</div></div>',
