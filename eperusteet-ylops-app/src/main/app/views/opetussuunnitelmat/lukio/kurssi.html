@@ -53,7 +53,6 @@
     <tr>
       <td style="padding-right: 20px;">{{ 'kurssikoodi' | kaanna}}:</td>
       <td ng-if="!editing">{{kurssi.lokalisoituKoodi | kaanna}}</td>
-      <!--<td ng-if="editing"><input type="text"/><button ng-click="openKoodisto()">test</button></td>-->
     </tr>
     <tr style="margin-top: 10px;">
       <td>{{ 'kurssityyppi' | kaanna}}:</td>
@@ -65,20 +64,17 @@
   </table>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.kuvaus" title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="kurssi.kuvaus" sisalto-title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteet.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.tavoitteet.teksti" title="(kurssi.tavoitteet.otsikko | kaanna) || (kurssi.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="kurssi.tavoitteet.teksti" sisalto-title="(kurssi.tavoitteet.otsikko | kaanna) || (kurssi.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.keskeinenSisalto.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.keskeinenSisalto.teksti" title="(kurssi.keskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.keskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="kurssi.keskeinenSisalto.teksti" sisalto-title="(kurssi.keskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.keskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteetJaKeskeinenSisalto.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.tavoitteetJaKeskeinenSisalto.teksti" title="(kurssi.tavoitteetJaKeskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.tavoitteetJaKeskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="kurssi.tavoitteetJaKeskeinenSisalto.teksti" sisalto-title="(kurssi.tavoitteetJaKeskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.tavoitteetJaKeskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
 
-
-  <!--<pre>{{ kurssi | json}}</pre>-->
-  <!--<pre>{{ oppiaine.koosteinen | json}}</pre>-->
 </div>
 <div class="lisaa-kurssi oppiaine-form" ng-if="editMode">
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>

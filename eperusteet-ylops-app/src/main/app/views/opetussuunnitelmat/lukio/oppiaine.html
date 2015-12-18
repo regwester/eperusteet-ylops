@@ -48,8 +48,6 @@
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
 
   <hr class="mujuviiva"/>
-  <!--<pre>{{oppiaine | json}}</pre>-->
-  <!--<pre>{{oppiaine.kurssit | json}}</pre>-->
 
   <div class="action-buttons-inline" ng-if="!editing">
     <button class="btn btn-default" kaanna="'lisaa-kurssi'" ng-click="lisaaKurssi()"></button>
@@ -98,7 +96,7 @@
                 <lukio-oppiaine-osa ng-repeat="t in valtakunnallisetKurssiTyypit" editable="isEditable()" editing="editing"
                                     oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
                                     colorbox="t.tyyppi" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
-                                    title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
+                                    sisalto-title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
               </div>
               <br/><br/>
 
@@ -108,7 +106,7 @@
                 <lukio-oppiaine-osa ng-repeat="t in paikallisetKurssiTyypit" editable="isEditable()" editing="editing"
                                     oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.kurssiTyyppiKuvaukset[t.key]"
                                     colorbox="t.tyyppi" ikoni="true" oppiaineen-teksti="oppiaine.kurssiTyyppiKuvaukset[t.key]"
-                                    title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
+                                    sisalto-title="t.tyyppi+'-kurssi'"></lukio-oppiaine-osa>
               </div>
             </div>
           </div>
@@ -118,13 +116,13 @@
   </div>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tehtava.teksti" editable="isEditable()" editing="editing"
-                      oppiaineen-teksti="oppiaine.tehtava.teksti" title="(oppiaine.tehtava.otsikko | kaanna) || (oppiaine.perusteen.tehtava.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="oppiaine.tehtava.teksti" sisalto-title="(oppiaine.tehtava.otsikko | kaanna) || (oppiaine.perusteen.tehtava.otsikko | kaanna)"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.tavoitteet.teksti" editable="isEditable()" editing="editing"
-                      oppiaineen-teksti="oppiaine.tavoitteet.teksti" title="(oppiaine.tavoitteet.otsikko | kaanna) || (oppiaine.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="oppiaine.tavoitteet.teksti" sisalto-title="(oppiaine.tavoitteet.otsikko | kaanna) || (oppiaine.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="oppiaine.perusteen.arviointi.teksti" editable="isEditable()" editing="editing"
-                      oppiaineen-teksti="oppiaine.arviointi.teksti" title="(oppiaine.arviointi.otsikko | kaanna) || (oppiaine.perusteen.arviointi.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="oppiaine.arviointi.teksti" sisalto-title="(oppiaine.arviointi.otsikko | kaanna) || (oppiaine.perusteen.arviointi.otsikko | kaanna)"></lukio-oppiaine-osa>
 </div>
 
 <!--<pre>{{ oppiaine | json}}</pre>-->

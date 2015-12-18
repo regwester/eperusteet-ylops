@@ -717,7 +717,7 @@ ylopsApp
             oppiaine: '=?oppiaine',
             perusteenTeksti: '=?perusteenTeksti',
             oppiaineenTeksti: '=?oppiaineenTeksti',
-            title: '=?title',
+            sisaltoTitle: '=?sisaltoTitle',
             colorbox: '=?colorbox',
             ikoni: '=?ikoni',
             editable: '=?editable',

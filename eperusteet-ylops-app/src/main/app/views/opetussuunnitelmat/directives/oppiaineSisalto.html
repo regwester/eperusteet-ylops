@@ -14,12 +14,11 @@
   ~  European Union Public Licence for more details.
   -->
 
-<!--<pre>{{ oppiaineen | json }}</pre>-->
 <div class="oppiaine-sisalto" ng-if="oppiaineenTeksti || perusteenTeksti">
   <span>
     <h3>
       <span>
-        &nbsp;{{ title | kaanna}}
+        &nbsp;{{ sisaltoTitle | kaanna}}
         <span ng-if="colorbox" class="{{colorbox}}" ng-class="{'ikoni': ikoni, 'colorbox-title': !ikoni}"></span>
       </span>
 
