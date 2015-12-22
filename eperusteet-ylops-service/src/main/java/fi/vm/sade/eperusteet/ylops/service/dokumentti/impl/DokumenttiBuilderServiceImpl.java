@@ -96,7 +96,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Testaukseen
         Element fakeChapter = doc.createElement("chapter");
-        fakeChapter.appendChild(doc.createElement("title"));
+        Element fakeTitle = doc.createElement("title");
+        fakeTitle.appendChild(doc.createTextNode("Luku otsikko"));
+
+        fakeChapter.appendChild(fakeTitle);
         rootElement.appendChild(fakeChapter);
 
         LOG.info("XML model  :");
