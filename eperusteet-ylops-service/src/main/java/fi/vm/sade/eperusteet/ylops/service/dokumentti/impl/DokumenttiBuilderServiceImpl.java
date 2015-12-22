@@ -73,7 +73,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         Document doc = docBuilder.newDocument();
         Element rootElement = doc.createElement("book");
-        //rootElement.setAttribute("xmlns", "http://docbook.org/ns/docbook");
         doc.appendChild(rootElement);
 
         // Kansilehti
@@ -101,9 +100,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             rootElement.appendChild(fakeChapter);
         }
 
-        //printDocument(doc, System.out);
+        LOG.info("XML model  :");
+        printDocument(doc, System.out);
 
-        Resource resource = applicationContext.getResource("classpath:docgen/test.xsl");
+        Resource resource = applicationContext.getResource("classpath:docgen/style.xsl");
         pdf.write(convertOps2PDF(doc, resource.getFile()));
 
         // Lopetetaan leipominen ja siivotaan jäljet
@@ -120,13 +120,13 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Muunnetaan ops objekti xml muotoon
         convertOps2XML(doc, xmlStream);
-        LOG.info("Generted xml:");
+        LOG.info("Generted XML  :");
         printStream(xmlStream);
 
         // Muunntetaan saatu xml malli fo:ksi
         InputStream xmlInputStream = new ByteArrayInputStream(xmlStream.toByteArray());
         convertXML2FO(xmlInputStream, xslt, foStream);
-        LOG.info("Generated fo:");
+        LOG.info("Generated XSL-FO:");
         printStream(foStream);
 
         // Muunnetaan saatu fo malli pdf:ksi
@@ -178,6 +178,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             TransformerFactory factory = TransformerFactory.newInstance();
             Transformer transformer = factory.newTransformer();
 
+            // XSLT version
+            transformer.setParameter("versionParam", "2.0");
+
             Source src = new StreamSource(fo);
             Result res = new SAXResult(fop.getDefaultHandler());
 
@@ -208,10 +211,19 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         info.appendChild(titleElement);
 
         String subtitleText = messages.translate("docgen.subtitle.ops", kieli);
-
         Element subtitle = doc.createElement("subtitle");
         subtitle.appendChild(doc.createTextNode(subtitleText));
         info.appendChild(subtitle);
+
+        String typeText = messages.translate(ops.getTyyppi().toString(), kieli);
+        Element type = doc.createElement("type");
+        type.appendChild(doc.createTextNode(typeText));
+        info.appendChild(type);
+
+        String educationTypeText = messages.translate(ops.getKoulutustyyppi().toString(), kieli);
+        Element educationType = doc.createElement("educationType");
+        educationType.appendChild(doc.createTextNode(educationTypeText));
+        info.appendChild(educationType);
     }
 
     private void addInfoPage(Document doc, Opetussuunnitelma ops, Kieli kieli) {
