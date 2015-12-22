@@ -72,7 +72,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
         Document doc = docBuilder.newDocument();
-        Element rootElement = doc.createElement("book");
+        Element rootElement = doc.createElement("doc");
         doc.appendChild(rootElement);
 
         // Kansilehti
@@ -94,11 +94,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         addGlossary();
 
 
-        if (rootElement.getChildNodes().getLength() <= 1) {
-            Element fakeChapter = doc.createElement("chapter");
-            fakeChapter.appendChild(doc.createElement("title"));
-            rootElement.appendChild(fakeChapter);
-        }
+        // Testaukseen
+        Element fakeChapter = doc.createElement("chapter");
+        fakeChapter.appendChild(doc.createElement("title"));
+        rootElement.appendChild(fakeChapter);
 
         LOG.info("XML model  :");
         printDocument(doc, System.out);
@@ -202,59 +201,58 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addCoverPage(Document doc, Element rootElement, Opetussuunnitelma ops, Kieli kieli) {
-        Element info = doc.createElement("info");
-        rootElement.appendChild(info);
+        Element meta = doc.createElement("meta");
+        rootElement.appendChild(meta);
 
         String nimi = getTextString(ops.getNimi(), kieli);
         Element titleElement = doc.createElement("title");
         titleElement.appendChild(doc.createTextNode(nimi));
-        info.appendChild(titleElement);
+        meta.appendChild(titleElement);
 
         String subtitleText = messages.translate("docgen.subtitle.ops", kieli);
         Element subtitle = doc.createElement("subtitle");
         subtitle.appendChild(doc.createTextNode(subtitleText));
-        info.appendChild(subtitle);
+        meta.appendChild(subtitle);
 
         String typeText = messages.translate(ops.getTyyppi().toString(), kieli);
         Element type = doc.createElement("type");
         type.appendChild(doc.createTextNode(typeText));
-        info.appendChild(type);
+        meta.appendChild(type);
 
         String educationTypeText = messages.translate(ops.getKoulutustyyppi().toString(), kieli);
         Element educationType = doc.createElement("educationType");
         educationType.appendChild(doc.createTextNode(educationTypeText));
-        info.appendChild(educationType);
+        meta.appendChild(educationType);
     }
 
     private void addInfoPage(Document doc, Opetussuunnitelma ops, Kieli kieli) {
         Element rootElement = doc.getDocumentElement();
-        Element info = doc.createElement("bookinfo");
+        Element info = doc.createElement("info");
         rootElement.appendChild(info);
 
 
         // Laitetaan alkuun kuvaus (tiivistelmä)
         String kuvaus = getTextString(ops.getKuvaus(), kieli);
-        Element abstractPara = doc.createElement("para");
+        kuvaus += "kuvas";
+        Element abstractPara = doc.createElement("description");
         addMarkupToElement(doc, abstractPara, kuvaus);
         info.appendChild(abstractPara);
 
         // Taulukossa loput tiedot
-        Element it = doc.createElement("informaltable");
-        it.setAttribute("frame", "none");
-        it.setAttribute("colsep", "0");
-        it.setAttribute("rowsep", "0");
-        info.appendChild(it);
-        Element tgroup = doc.createElement("tgroup");
-        tgroup.setAttribute("cols", "2");
-        it.appendChild(tgroup);
-        Element colspec1 = doc.createElement("colspec");
-        Element colspec2 = doc.createElement("colspec");
-        colspec1.setAttribute("colwidth", "1*");
-        colspec2.setAttribute("colwidth", "2*");
-        tgroup.appendChild(colspec1);
-        tgroup.appendChild(colspec2);
-        Element tbody = doc.createElement("tbody");
-        tgroup.appendChild(tbody);
+        Element infoTable = doc.createElement("infoTable");
+        info.appendChild(infoTable);
+
+        String nimi = getTextString(ops.getNimi(), kieli);
+        Element row1 = addTableRow(doc, infoTable);
+        addTableCell(doc, row1, messages.translate("docgen.info.perusteen-nimi", kieli));
+        addTableCell(doc, row1, nimi);
+
+        String dia = ops.getPerusteenDiaarinumero();
+        Element row2 = addTableRow(doc, infoTable);
+        addTableCell(doc, row2, messages.translate("docgen.info.maarayksen-diaarinumero", kieli));
+        addTableCell(doc, row2, dia);
+
+
 
         /*
         Element itrow = addTableRow(doc, tbody);
@@ -488,5 +486,18 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             }
         }
         return name;
+    }
+
+    private Element addTableRow(Document doc, Element rows) {
+        Element row = doc.createElement("tr");
+        rows.appendChild(row);
+        return row;
+    }
+
+    private Element addTableCell(Document doc, Element row, String text) {
+        Element entry = doc.createElement("td");
+        entry.appendChild(doc.createTextNode(text));
+        row.appendChild(entry);
+        return entry;
     }
 }

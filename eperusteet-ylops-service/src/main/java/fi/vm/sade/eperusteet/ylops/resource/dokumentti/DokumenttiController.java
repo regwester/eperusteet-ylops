@@ -87,7 +87,8 @@ public class DokumenttiController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-disposition", "attachment; filename=\"" + dokumenttiId + ".pdf\"");
+        headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
+        //headers.set("Content-disposition", "attachment; filename=\"" + dokumenttiId + ".pdf\"");
         LOG.info(headers.toString());
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);

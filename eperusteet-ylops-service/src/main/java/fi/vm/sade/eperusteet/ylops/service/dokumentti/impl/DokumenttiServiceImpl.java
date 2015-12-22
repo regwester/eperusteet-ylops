@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.util.Date;
@@ -113,7 +114,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
             // Tallennetaan valmis dokumentti
             dokumenttiRepository.save(dokumentti);
-        } catch (IOException | SAXException | TransformerException | JAXBException ex) {
+        } catch (IOException | SAXException | TransformerException | JAXBException | ParserConfigurationException ex) {
             LOG.error(ex.getMessage());
             dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
             dokumenttiRepository.save(dokumentti);

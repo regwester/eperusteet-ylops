@@ -13,6 +13,12 @@ the location of this file.
 <!-- NOTE: This is the version of the configuration -->
 <fop version="1.0">
 
+  <!-- Strict user configuration -->
+  <strict-configuration>false</strict-configuration>
+
+  <!-- Strict FO validation -->
+  <strict-validation>false</strict-validation>
+
   <!-- Base URL for resolving relative URLs -->
   <base>.</base>
   
