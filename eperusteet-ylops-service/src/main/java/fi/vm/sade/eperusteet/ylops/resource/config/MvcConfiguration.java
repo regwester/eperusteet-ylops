@@ -65,6 +65,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(byteArrayConverter());
         converters.add(converter());
         StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter(Charsets.UTF_8);
         stringHttpMessageConverter.setWriteAcceptCharset(false);

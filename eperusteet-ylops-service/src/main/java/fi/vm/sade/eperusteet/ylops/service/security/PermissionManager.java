@@ -226,6 +226,10 @@ public class PermissionManager {
             .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
             .filter(pair -> !CollectionUtil.intersect(pair.getSecond(), organisaatiot).isEmpty())
             .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
+            .filter(permission -> ops.getTila() == Tila.LUONNOS ||
+                (permission == Permission.TILANVAIHTO &&
+                !ops.getTila().mahdollisetSiirtymat(isPohja).isEmpty()) ||
+                fromRolePermission(RolePermission.READ).contains(permission))
             .collect(Collectors.toSet());
 
         permissionMap.put(TargetType.OPETUSSUUNNITELMA, permissions);
