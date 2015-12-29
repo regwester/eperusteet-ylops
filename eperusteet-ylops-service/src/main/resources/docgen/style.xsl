@@ -140,12 +140,12 @@
         <fo:table-row>
             <fo:table-cell>
                 <fo:block font-weight="bold">
-                    <xsl:value-of select="./td" />
+                    <xsl:value-of select="td[1]" />
                 </fo:block>
             </fo:table-cell>
             <fo:table-cell>
                 <fo:block>
-                    <xsl:value-of select="./td" />
+                    <xsl:value-of select="td[2]" />
                 </fo:block>
             </fo:table-cell>
         </fo:table-row>
@@ -197,7 +197,7 @@
                         <fo:table-row>
                             <fo:table-cell>
                                 <fo:block text-align="start" use-attribute-sets="test" color="#007ec5" margin-left="20mm" margin-top="5mm">
-                                    <xsl:value-of select="//title" />
+                                    <xsl:value-of select="title" />
                                 </fo:block>
                             </fo:table-cell>
                             <fo:table-cell>
