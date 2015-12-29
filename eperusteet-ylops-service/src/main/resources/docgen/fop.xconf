@@ -1,20 +1,7 @@
 <?xml version="1.0"?>
-<!-- $Id$ -->
-
-<!--
-This is an example configuration file for FOP.
-This file contains the same settings as the default values
-and will have no effect if used unchanged.
-
-Relative config url's will be resolved relative to
-the location of this file.
--->
-
-<!-- NOTE: This is the version of the configuration -->
 <fop version="1.0">
-
   <!-- Strict user configuration -->
-  <strict-configuration>false</strict-configuration>
+  <strict-configuration>true</strict-configuration>
 
   <!-- Strict FO validation -->
   <strict-validation>false</strict-validation>
@@ -28,7 +15,7 @@ the location of this file.
   <target-resolution>72</target-resolution>
   
   <!-- Default page-height and page-width, in case value is specified as auto -->
-  <default-page-settings height="11.00in" width="8.50in"/>
+  <default-page-settings height="297mm" width="210mm"/>
   
   <!-- Information for specific renderers -->
   <!-- Uses renderer mime type for renderers -->

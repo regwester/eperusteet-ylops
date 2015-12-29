@@ -19,10 +19,11 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.fop.apps.*;
-import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.*;
 import org.w3c.dom.Element;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -43,7 +46,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 /**
  *
@@ -72,40 +74,43 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
         Document doc = docBuilder.newDocument();
-        Element rootElement = doc.createElement("doc");
+        Element rootElement = doc.createElement("html");
         doc.appendChild(rootElement);
 
-        // Kansilehti
-        addCoverPage(doc, rootElement, ops, kieli);
+        Element headElement = doc.createElement("head");
 
-        // Infosivu
-        addInfoPage(doc, ops, kieli);
+        // Delete annoying <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        if (headElement.hasChildNodes())
+            headElement.removeChild(headElement.getFirstChild());
 
-        // Sisällysluettelo
-        addTocPage();
+        Element bodyElement = doc.createElement("body");
 
-        // Tutkinnonosat
-        addTutkinnonosat();
+        rootElement.appendChild(headElement);
+        rootElement.appendChild(bodyElement);
+
+        // Kansilehti & Infosivu
+        addMetaPages(doc, headElement, ops, kieli);
 
         // Sisältöelementit
-        addSisaltoElement();
+        addSisaltoElement(doc, bodyElement, ops, kieli);
 
         // käsitteet
         addGlossary();
 
 
         // Testaukseen
-        Element fakeChapter = doc.createElement("chapter");
+        /*Element fakeChapter = doc.createElement("chapter");
         Element fakeTitle = doc.createElement("title");
         fakeTitle.appendChild(doc.createTextNode("Luku otsikko"));
 
         fakeChapter.appendChild(fakeTitle);
-        rootElement.appendChild(fakeChapter);
+        rootElement.appendChild(fakeChapter);*/
 
         LOG.info("XML model  :");
-        printDocument(doc, System.out);
+        LOG.info(StringEscapeUtils.unescapeHtml4(getStringFromDoc(doc)));
 
-        Resource resource = applicationContext.getResource("classpath:docgen/style.xsl");
+
+        Resource resource = applicationContext.getResource("classpath:docgen/xhtml-to-xslfo.xsl");
         pdf.write(convertOps2PDF(doc, resource.getFile()));
 
         // Lopetetaan leipominen ja siivotaan jäljet
@@ -142,6 +147,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             throws IOException, TransformerException {
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer transformer = factory.newTransformer();
+
+        // To avoid <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 
         Source src = new DOMSource(doc);
         Result res = new StreamResult(xml);
@@ -187,197 +196,72 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             Result res = new SAXResult(fop.getDefaultHandler());
 
             transformer.transform(src, res);
-
-            FormattingResults foResults = fop.getResults();
-            java.util.List pageSequences = foResults.getPageSequences();
-            for (Object pageSequence : pageSequences) {
-                PageSequenceResults pageSequenceResults = (PageSequenceResults) pageSequence;
-                System.out.println("PageSequence "
-                        + (String.valueOf(pageSequenceResults.getID()).length() > 0
-                        ? pageSequenceResults.getID() : "<no id>")
-                        + " generated " + pageSequenceResults.getPageCount() + " pages.");
-            }
-            System.out.println("Generated " + foResults.getPageCount() + " pages in total.");
         } finally {
             pdf.close();
         }
     }
 
-    private void addCoverPage(Document doc, Element rootElement, Opetussuunnitelma ops, Kieli kieli) {
-        Element meta = doc.createElement("meta");
-        rootElement.appendChild(meta);
-
+    private void addMetaPages(Document doc, Element headElement, Opetussuunnitelma ops, Kieli kieli) {
+        Element title = doc.createElement("title");
         String nimi = getTextString(ops.getNimi(), kieli);
-        Element titleElement = doc.createElement("title");
-        titleElement.appendChild(doc.createTextNode(nimi));
-        meta.appendChild(titleElement);
+        title.appendChild(doc.createTextNode(nimi));
+        headElement.appendChild(title);
 
-        String subtitleText = messages.translate("docgen.subtitle.ops", kieli);
-        Element subtitle = doc.createElement("subtitle");
-        subtitle.appendChild(doc.createTextNode(subtitleText));
-        meta.appendChild(subtitle);
+        String tyyppi = messages.translate(ops.getTyyppi().toString(), kieli);
+        Element type = doc.createElement("meta");
+        type.setAttribute("name", "type");
+        type.setAttribute("content", tyyppi);
+        headElement.appendChild(type);
 
-        String typeText = messages.translate(ops.getTyyppi().toString(), kieli);
-        Element type = doc.createElement("type");
-        type.appendChild(doc.createTextNode(typeText));
-        meta.appendChild(type);
-
-        String educationTypeText = messages.translate(ops.getKoulutustyyppi().toString(), kieli);
-        Element educationType = doc.createElement("educationType");
-        educationType.appendChild(doc.createTextNode(educationTypeText));
-        meta.appendChild(educationType);
-    }
-
-    private void addInfoPage(Document doc, Opetussuunnitelma ops, Kieli kieli) {
-        Element rootElement = doc.getDocumentElement();
-        Element info = doc.createElement("info");
-        rootElement.appendChild(info);
-
-
-        // Laitetaan alkuun kuvaus (tiivistelmä)
         String kuvaus = getTextString(ops.getKuvaus(), kieli);
-        kuvaus += "kuvas";
-        Element abstractPara = doc.createElement("description");
-        addMarkupToElement(doc, abstractPara, kuvaus);
-        info.appendChild(abstractPara);
-
-        // Taulukossa loput tiedot
-        Element infoTable = doc.createElement("infoTable");
-        info.appendChild(infoTable);
-
-        String nimi = getTextString(ops.getNimi(), kieli);
-        Element row1 = addTableRow(doc, infoTable);
-        addTableCell(doc, row1, messages.translate("docgen.info.perusteen-nimi", kieli));
-        addTableCell(doc, row1, nimi);
-
-        String dia = ops.getPerusteenDiaarinumero();
-        Element row2 = addTableRow(doc, infoTable);
-        addTableCell(doc, row2, messages.translate("docgen.info.maarayksen-diaarinumero", kieli));
-        addTableCell(doc, row2, dia);
-
-
-
-        /*
-        Element itrow = addTableRow(doc, tbody);
-        addTableCell(doc, itrow, newBoldElement(doc, messages.translate("docgen.info.perusteen-nimi", kieli)));
-        addTableCell(doc, itrow, getTextString(peruste.getNimi(), kieli));
-
-        Element itrow2 = addTableRow(doc, tbody);
-        addTableCell(doc, itrow2, newBoldElement(doc, messages.translate("docgen.info.maarayksen-diaarinumero", kieli)));
-        if (peruste.getDiaarinumero() != null) {
-            addTableCell(doc, itrow2, peruste.getDiaarinumero().toString());
-        } else {
-            addTableCell(doc, itrow2, messages.translate("docgen.info.ei-asetettu", kieli));
-        }
-
-        Element itrow8 = addTableRow(doc, tbody);
-        addTableCell(doc, itrow8, newBoldElement(doc, messages.translate("docgen.info.korvaa-perusteet", kieli)));
-        if (peruste.getKorvattavatDiaarinumerot() != null && !peruste.getKorvattavatDiaarinumerot().isEmpty())
-        {
-            Set<String> numeroStringit = new HashSet<>();
-            for (Diaarinumero nro : peruste.getKorvattavatDiaarinumerot()) {
-                numeroStringit.add(nro.getDiaarinumero());
-            }
-            addTableCell(doc, itrow8, StringUtils.join(numeroStringit, ", "));
-        } else {
-            addTableCell(doc, itrow8, messages.translate("docgen.info.ei-asetettu", kieli));
-        }
-
-        Set<Koulutus> koulutukset = peruste.getKoulutukset();
-        Element koulutuslist = doc.createElement("simplelist");
-        for (Koulutus koulutus : koulutukset) {
-            String koulutusNimi = getTextString(koulutus.getNimi(), kieli);
-            if (StringUtils.isNotEmpty(koulutus.getKoulutuskoodiArvo())) {
-                koulutusNimi += " (" + koulutus.getKoulutuskoodiArvo() + ")";
-            }
-            Element member = doc.createElement("member");
-            member.appendChild(doc.createTextNode(koulutusNimi));
-            koulutuslist.appendChild(member);
-        }
-
-        Element itrow3 = addTableRow(doc, tbody);
-        addTableCell(doc, itrow3, newBoldElement(doc, messages.translate("docgen.info.koulutuskoodit", kieli)));
-        if (koulutuslist.hasChildNodes()) {
-            addTableCell(doc, itrow3, koulutuslist);
-        } else {
-            addTableCell(doc, itrow3, messages.translate("docgen.info.ei-asetettu", kieli));
-        }
-
-        Set<Koodi> osaamisalat = peruste.getOsaamisalat();
-        Element osaamisalalist = doc.createElement("simplelist");
-        for (Koodi osaamisala : osaamisalat) {
-            String osaamisalaNimi = getTextString(osaamisala.getNimi(), kieli);
-            if (StringUtils.isNotEmpty(osaamisala.getArvo())) {
-                osaamisalaNimi += " (" + osaamisala.getArvo() + ")";
-            }
-            Element member = doc.createElement("member");
-            member.appendChild(doc.createTextNode(osaamisalaNimi));
-            osaamisalalist.appendChild(member);
-        }
-
-        Element itrow4 = addTableRow(doc, tbody);
-        addTableCell(doc, itrow4, newBoldElement(doc, messages.translate("docgen.info.osaamisalat", kieli)));
-        if (osaamisalalist.hasChildNodes()) {
-            addTableCell(doc, itrow4, osaamisalalist);
-        } else {
-            addTableCell(doc, itrow4, messages.translate("docgen.info.ei-asetettu", kieli));
-        }
-
-        List<TutkintonimikeKoodi> nimikeKoodit = tutkintonimikeKoodiRepository.findByPerusteId(peruste.getId());
-        Element nimikelist = doc.createElement("simplelist");
-        for (TutkintonimikeKoodi tnkoodi : nimikeKoodit) {
-            KoodistoKoodiDto koodiDto = koodistoService.get("tutkintonimikkeet", tnkoodi.getTutkintonimikeUri());
-
-            for (KoodistoMetadataDto meta : koodiDto.getMetadata()) {
-                if (meta.getKieli().toLowerCase().equals(kieli.toString().toLowerCase())) {
-                    Element member = doc.createElement("member");
-                    member.appendChild(doc.createTextNode(meta.getNimi() + " (" + tnkoodi.getTutkintonimikeArvo() + ")"));
-                    nimikelist.appendChild(member);
-                } else {
-                    LOG.debug("{} was no match", meta.getKieli() );
-                }
-            }
-        }
-
-
-        Element itrow5 = addTableRow(doc, tbody);
-        addTableCell(doc, itrow5, newBoldElement(doc, messages.translate("docgen.info.tutkintonimikkeet", kieli)));
-        if (nimikelist.hasChildNodes()) {
-            addTableCell(doc, itrow5, nimikelist);
-        } else {
-            addTableCell(doc, itrow5, messages.translate("docgen.info.ei-asetettu", kieli));
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-
-        Element itrow6 = addTableRow(doc, tbody);
-        addTableCell(doc, itrow6, newBoldElement(doc, messages.translate("docgen.info.voimaantulo", kieli)));
-        if (peruste.getVoimassaoloAlkaa() != null) {
-            addTableCell(doc, itrow6, dateFormat.format(peruste.getVoimassaoloAlkaa()));
-        } else {
-            addTableCell(doc, itrow6, messages.translate("docgen.info.ei-asetettu", kieli));
-        }
-
-        Element itrow7 = addTableRow(doc, tbody);
-        addTableCell(doc, itrow7, newBoldElement(doc, messages.translate("docgen.info.voimassaolon-paattyminen", kieli)));
-        if (peruste.getVoimassaoloLoppuu() != null) {
-            addTableCell(doc, itrow7, dateFormat.format(peruste.getVoimassaoloLoppuu()));
-        } else {
-            addTableCell(doc, itrow7, messages.translate("docgen.info.ei-asetettu", kieli));
-        }
-        */
+        Element description = doc.createElement("meta");
+        description.setAttribute("name", "description");
+        description.setAttribute("content", kuvaus);
+        headElement.appendChild(description);
     }
 
-    private void addTocPage() {
+    private void addSisaltoElement(Document doc, Element rootElement, Opetussuunnitelma ops, Kieli kieli)
+            throws IOException, SAXException, ParserConfigurationException {
 
+        for (TekstiKappaleViite viite : ops.getTekstit().getLapset()) {
+            // Tedään luvut
+            Element header = doc.createElement("h1");
+            header.setAttribute("number", "1.");
+            header.appendChild(doc.createTextNode(getTextString(viite.getTekstiKappale().getNimi(), kieli)));
+            rootElement.appendChild(header);
+
+            addTekstiKappale(doc, rootElement, viite, kieli, 2);
+        }
     }
 
-    private void addTutkinnonosat() {
+    private void addTekstiKappale(Document doc, Element element, TekstiKappaleViite viite , Kieli kieli, int depth)
+            throws ParserConfigurationException, IOException, SAXException {
 
-    }
+        for (TekstiKappaleViite lapsi : viite.getLapset()) {
+            // Tedään luvut
+            String nimi = getTextString(lapsi.getTekstiKappale().getNimi(), kieli);
+            Element header = doc.createElement("h" + depth);
+            header.appendChild(doc.createTextNode(nimi));
+            element.appendChild(header);
 
-    private void addSisaltoElement() {
+            // Luodaan sisältö
+            String teskti = "<root>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</root>";
 
+            Node tempNode = DocumentBuilderFactory
+                    .newInstance()
+                    .newDocumentBuilder()
+                    .parse(new ByteArrayInputStream(teskti.getBytes()))
+                    .getDocumentElement();
+
+            LOG.info("sisalto: " + tempNode.toString());
+            LOG.info("teksti: " + teskti);
+
+            Node node = doc.importNode(tempNode, true);
+
+            element.appendChild(node);
+
+            addTekstiKappale(doc, element, lapsi, kieli, depth + 1);
+        }
     }
 
     private void addGlossary() {
@@ -385,20 +269,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void printStream(ByteArrayOutputStream stream) {
-        LOG.info(new String(stream.toByteArray(), StandardCharsets.UTF_8));
-    }
-
-    private void printDocument(Document doc, OutputStream out) throws IOException, TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer transformer = tf.newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-        transformer.transform(new DOMSource(doc),
-                new StreamResult(new OutputStreamWriter(out, "UTF-8")));
+        LOG.info(StringEscapeUtils.unescapeHtml4(new String(stream.toByteArray(), StandardCharsets.UTF_8)));
     }
 
     private String getTextString(LokalisoituTeksti teksti, Kieli kieli) {
@@ -409,98 +280,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addMarkupToElement(Document doc, Element element, String markup) {
-        org.jsoup.nodes.Document fragment = Jsoup.parseBodyFragment(markup);
-        jsoupIntoDOMNode(doc, element, fragment.body());
-    }
-
-    private void jsoupIntoDOMNode(Document rootDoc, Node parentNode, org.jsoup.nodes.Node jsoupNode) {
-        for (org.jsoup.nodes.Node child : jsoupNode.childNodes()) {
-            createDOM(child, parentNode, rootDoc, new HashMap<String, String>());
-        }
-    }
-
-    private void createDOM(org.jsoup.nodes.Node node, Node out, Document doc, Map<String, String> ns) {
-
-        if (node instanceof org.jsoup.nodes.Document) {
-
-            org.jsoup.nodes.Document d = ((org.jsoup.nodes.Document) node);
-            for (org.jsoup.nodes.Node n : d.childNodes()) {
-                createDOM(n, out, doc, ns);
-            }
-
-        } else if (node instanceof org.jsoup.nodes.Element) {
-
-            org.jsoup.nodes.Element e = ((org.jsoup.nodes.Element) node);
-            // create all new elements into xhtml namespace
-            org.w3c.dom.Element _e = doc.createElementNS("http://www.w3.org/1999/xhtml", e.tagName());
-            out.appendChild(_e);
-            org.jsoup.nodes.Attributes atts = e.attributes();
-
-            for (org.jsoup.nodes.Attribute a : atts) {
-                String attName = a.getKey();
-                //omit xhtml namespace
-                if (attName.equals("xmlns")) {
-                    continue;
-                }
-                String attPrefix = getNSPrefix(attName);
-                if (attPrefix != null) {
-                    if (attPrefix.equals("xmlns")) {
-                        ns.put(getLocalName(attName), a.getValue());
-                    } else if (!attPrefix.equals("xml")) {
-                        String namespace = ns.get(attPrefix);
-                        if (namespace == null) {
-                            //fix attribute names looking like qnames
-                            attName = attName.replace(':', '_');
-                        }
-                    }
-                }
-                _e.setAttribute(attName, a.getValue());
-            }
-
-            for (org.jsoup.nodes.Node n : e.childNodes()) {
-                createDOM(n, _e, doc, ns);
-            }
-
-        } else if (node instanceof org.jsoup.nodes.TextNode) {
-
-            org.jsoup.nodes.TextNode t = ((org.jsoup.nodes.TextNode) node);
-            if (!(out instanceof Document)) {
-                out.appendChild(doc.createTextNode(t.getWholeText()));
-            }
-        }
-    }
-
-    private String getNSPrefix(String name) {
-        if (name != null) {
-            int pos = name.indexOf(':');
-            if (pos > 0) {
-                return name.substring(0, pos);
-            }
-        }
-        return null;
-    }
-
-    private String getLocalName(String name) {
-        if (name != null) {
-            int pos = name.lastIndexOf(':');
-            if (pos > 0) {
-                return name.substring(pos + 1);
-            }
-        }
-        return name;
-    }
-
-    private Element addTableRow(Document doc, Element rows) {
-        Element row = doc.createElement("tr");
-        rows.appendChild(row);
-        return row;
-    }
-
-    private Element addTableCell(Document doc, Element row, String text) {
-        Element entry = doc.createElement("td");
-        entry.appendChild(doc.createTextNode(text));
-        row.appendChild(entry);
-        return entry;
+    private String getStringFromDoc(Document doc)    {
+        DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
+        LSSerializer lsSerializer = domImplementation.createLSSerializer();
+        return lsSerializer.writeToString(doc);
     }
 }
