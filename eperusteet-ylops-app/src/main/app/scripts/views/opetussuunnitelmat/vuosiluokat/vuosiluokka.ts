@@ -82,6 +82,7 @@ ylopsApp
         item.$arvioinninkohteet = perusteTavoite.arvioinninkohteet;
       }
     });
+
     scope.tavoiteMap = _.indexBy(scope.tavoitteet, 'tunniste');
 
     if (scope.onValinnaiselle) {
@@ -127,22 +128,15 @@ ylopsApp
     processTavoitteet(scope);
   };
 
-  this.mapSisaltoalueet = function (scope, tunnisteVar, muokattavaVar) {
-    scope[tunnisteVar] = _(scope.sisaltoalueet)
-      .sortBy(Utils.sort)
-      .map('tunniste')
+  this.mapSisaltoalueet = sisaltoalueet => _(sisaltoalueet)
+      .map(sa => [
+          sa.tunniste, {
+            piilotettu: sa.piilotettu,
+            teksti: sa.kuvaus || {}
+          }
+      ])
+      .zipObject()
       .value();
-
-    _.each(scope[tunnisteVar], function (tunniste) {
-      var paikallinen = _.find(scope.sisaltoalueet, function (alue) {
-        return alue.tunniste === tunniste;
-      });
-      if (!scope[muokattavaVar]) {
-        scope[muokattavaVar] = {};
-      }
-      scope[muokattavaVar][tunniste] = (paikallinen && _.isObject(paikallinen.kuvaus)) ? {teksti: paikallinen.kuvaus} : {teksti: {}};
-    });
-  };
 })
 
 .controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils, $q,
@@ -169,6 +163,11 @@ ylopsApp
     }
   };
 
+  $scope.sisaltoaluetunnisteet = _($scope.sisaltoAlueetMap) 
+    .values()
+    .indexBy('tunniste')
+    .value();
+
   $scope.muokkaaKuvausta = (muokattava) => {
     muokattava.isEditing = true;
     Editointikontrollit.startEditing();
@@ -189,8 +188,7 @@ ylopsApp
   };
 
   $scope.callbacks = {
-    edit: () => $.when(), // FIXME: Tämän pitäisi ladata sisällöt uudestaan
-    // edit: refetch,
+    edit: () => $q(resolve => resolve()),
     cancel: refetch,
     save: () => $q((resolve) => {
       if ($scope.onValinnaiselle) {
@@ -276,7 +274,8 @@ ylopsApp
 
   function mapModel() {
     $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
-    VuosiluokkaMapper.mapSisaltoalueet($scope, 'tunnisteet', 'muokattavat');
+    $scope.muokattavat = VuosiluokkaMapper.mapSisaltoalueet($scope.sisaltoalueet);
+    $scope.tunnisteet = _.keys($scope.muokattavat);
   }
 
   // FIXME mapOnce saattaa hajottaa jotain
@@ -292,24 +291,23 @@ ylopsApp
 
   $scope.options = {
     editing: false,
-    isEditable: function() {
-      return $scope.oppiaine.oma && OpsService.isEditable();
-    }
+    isEditable: () => $scope.oppiaine.oma && OpsService.isEditable()
   };
 
   $scope.callbacks = {
     edit: refetch,
     cancel: refetch,
     save: () => $q((resolve) => {
-      _.each($scope.vuosiluokka.sisaltoalueet, (alue) => {
+      _.each($scope.vuosiluokka.sisaltoalueet, alue => {
         alue.kuvaus = $scope.muokattavat[alue.tunniste].teksti;
+        alue.piilotettu = $scope.muokattavat[alue.tunniste].piilotettu;
       });
       OppiaineService.saveVuosiluokka($scope.vuosiluokka, (res) => {
         $scope.vuosiluokka = res;
         resolve();
       });
     }),
-    notify: function (mode) {
+    notify: (mode) => {
       $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
@@ -317,7 +315,7 @@ ylopsApp
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 
-  $timeout(function () {
+  $timeout(() => {
     if ($location.hash()) {
       $anchorScroll();
     }

@@ -143,6 +143,24 @@ ylopsApp
           return [];
         }
       },
+      print: (array) => {
+        _.each(array, (v, k) => {
+          if (k) {
+            console.log(k, v);
+          }
+          else {
+            console.log(v);
+          }
+        });
+        return array;
+      },
+      mapValue: (array, f = _.noop) => {
+        var obj = {};
+        _.each(array, (key) => {
+          obj[key] = f(key);
+        });
+        return obj;
+      },
       // TODO: Deprekoitunut, vaihda indexBy:hin
       zipBy: function(array, kfield, vfield) {
         if (_.isArray(array) && kfield) {

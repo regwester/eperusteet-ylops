@@ -440,17 +440,22 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden ja tavoitteiden kuvaukset,
         // noin muutoin sisältöön ei pidä kajoaman
-        dto.getSisaltoalueet().forEach(
-            sisaltoalueDto ->
-                oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
-                                     .ifPresent(sa -> sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class))));
+        for (KeskeinenSisaltoalueDto sisaltoalueDto : dto.getSisaltoalueet()) {
+            oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
+                    .ifPresent(sa -> {
+                        sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class));
+                        sa.setPiilotettu(sisaltoalueDto.getPiilotettu());
+                    });
+        }
+
         dto.getTavoitteet().forEach(
             tavoiteDto ->
                 oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
                                      .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
         dto.getTavoitteet().stream()
-                .forEach(opetuksenTavoiteDto -> { opetuksenTavoiteDto.getSisaltoalueet()
+                .forEach(opetuksenTavoiteDto -> {
+                    opetuksenTavoiteDto.getSisaltoalueet()
                         .forEach(opetuksenKeskeinensisaltoalueDto -> {
                             OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue
                                 = oppiaineenVuosiluokka.getTavoite(opetuksenTavoiteDto.getTunniste())

@@ -57,25 +57,33 @@ public class PerusteCache {
     @GeneratedValue(generator = "peruste_cache_id_seq")
     @SequenceGenerator(name = "peruste_cache_id_seq", sequenceName = "peruste_cache_id_seq")
     private Long id;
+    
     @Column(name = "peruste_id", nullable = false, updatable = false)
     private Long perusteId;
+
     @Column(name = "aikaleima", nullable = false, updatable = false)
     private Date aikaleima;
+
     @Column(name = "diaarinumero", nullable = false, updatable = false)
     private String diaarinumero;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "koulutustyyppi", nullable = false, updatable = false)
     private KoulutusTyyppi koulutustyyppi;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "voimassaolo_alkaa")
     private Date voimassaoloAlkaa;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "voimassaolo_loppuu")
     private Date voimassaoloLoppuu;
+
     @ValidHtml(whitelist = WhitelistType.MINIMAL)
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "nimi_id", nullable = false, updatable = false)
     private LokalisoituTeksti nimi;
+
     @Column(name = "peruste_json", nullable = false, updatable = false)
     private String perusteJson;
 

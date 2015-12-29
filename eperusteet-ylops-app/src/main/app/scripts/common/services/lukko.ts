@@ -136,7 +136,7 @@ ylopsApp
     }, function(fail) {
       d.reject(fail);
       if (fallCb) {
-        fallCb(r);
+        fallCb(fail);
       }
     });
     return d.promise;
