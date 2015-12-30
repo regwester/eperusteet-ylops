@@ -46,6 +46,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -97,18 +99,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // käsitteet
         addGlossary();
 
-
-        // Testaukseen
-        /*Element fakeChapter = doc.createElement("chapter");
-        Element fakeTitle = doc.createElement("title");
-        fakeTitle.appendChild(doc.createTextNode("Luku otsikko"));
-
-        fakeChapter.appendChild(fakeTitle);
-        rootElement.appendChild(fakeChapter);*/
-
-        LOG.info("XML model  :");
-        LOG.info(StringEscapeUtils.unescapeHtml4(getStringFromDoc(doc)));
-
+        //LOG.info("XML model  :");
+        //LOG.info(StringEscapeUtils.unescapeHtml4(getStringFromDoc(doc)));
 
         Resource resource = applicationContext.getResource("classpath:docgen/xhtml-to-xslfo.xsl");
         pdf.write(convertOps2PDF(doc, resource.getFile()));
@@ -127,14 +119,14 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Muunnetaan ops objekti xml muotoon
         convertOps2XML(doc, xmlStream);
-        LOG.info("Generted XML  :");
-        printStream(xmlStream);
+        //LOG.info("Generted XML  :");
+        //printStream(xmlStream);
 
         // Muunntetaan saatu xml malli fo:ksi
         InputStream xmlInputStream = new ByteArrayInputStream(xmlStream.toByteArray());
         convertXML2FO(xmlInputStream, xslt, foStream);
-        LOG.info("Generated XSL-FO:");
-        printStream(foStream);
+        //LOG.info("Generated XSL-FO:");
+        //printStream(foStream);
 
         // Muunnetaan saatu fo malli pdf:ksi
         InputStream foInputStream = new ByteArrayInputStream(foStream.toByteArray());
@@ -223,24 +215,32 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private void addSisaltoElement(Document doc, Element rootElement, Opetussuunnitelma ops, Kieli kieli)
             throws IOException, SAXException, ParserConfigurationException {
 
+        CharapterNumberGenerator generator = new CharapterNumberGenerator();
+        generator.increaseDepth();
+
         for (TekstiKappaleViite viite : ops.getTekstit().getLapset()) {
             // Tedään luvut
-            Element header = doc.createElement("h1");
-            header.setAttribute("number", "1.");
+            Element header = doc.createElement("h" + generator.getDepth());
+            header.setAttribute("number", generator.generateNumber());
             header.appendChild(doc.createTextNode(getTextString(viite.getTekstiKappale().getNimi(), kieli)));
             rootElement.appendChild(header);
 
-            addTekstiKappale(doc, rootElement, viite, kieli, 2);
+            addTekstiKappale(doc, rootElement, viite, kieli, generator);
+
+            generator.increaseNumber();
         }
     }
 
-    private void addTekstiKappale(Document doc, Element element, TekstiKappaleViite viite , Kieli kieli, int depth)
+    private void addTekstiKappale(Document doc, Element element, TekstiKappaleViite viite,
+                                  Kieli kieli, CharapterNumberGenerator generator)
             throws ParserConfigurationException, IOException, SAXException {
 
+        generator.increaseDepth();
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
             // Tedään luvut
             String nimi = getTextString(lapsi.getTekstiKappale().getNimi(), kieli);
-            Element header = doc.createElement("h" + depth);
+            Element header = doc.createElement("h" + generator.getDepth());
+            header.setAttribute("number", generator.generateNumber());
             header.appendChild(doc.createTextNode(nimi));
             element.appendChild(header);
 
@@ -253,14 +253,50 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     .parse(new ByteArrayInputStream(teskti.getBytes()))
                     .getDocumentElement();
 
-            LOG.info("sisalto: " + tempNode.toString());
-            LOG.info("teksti: " + teskti);
-
             Node node = doc.importNode(tempNode, true);
 
             element.appendChild(node);
 
-            addTekstiKappale(doc, element, lapsi, kieli, depth + 1);
+            addTekstiKappale(doc, element, lapsi, kieli, generator);
+
+            generator.increaseNumber();
+        }
+        generator.decreaseDepth();
+    }
+
+    // Pieni apuluokka dokumentin lukujen generointiin
+    private class CharapterNumberGenerator {
+        private List<Integer> numbers = new ArrayList<>();
+        private int startingValue = 1;
+
+        public int getDepth() {
+            return numbers.size();
+        }
+
+        public void increaseDepth() {
+            numbers.add(startingValue);
+        }
+
+        public void decreaseDepth() {
+            if (!numbers.isEmpty())
+                numbers.remove(numbers.size() - 1);
+        }
+
+        public void increaseNumber() {
+            if (!numbers.isEmpty()) {
+                int last = numbers.size() - 1;
+                numbers.set(last, numbers.get(last) + 1);
+            }
+        }
+
+        public String generateNumber() {
+            String numberString = new String();
+
+            for (Integer number : numbers) {
+                numberString += String.valueOf(number) + ".";
+            }
+
+            return numberString;
         }
     }
 

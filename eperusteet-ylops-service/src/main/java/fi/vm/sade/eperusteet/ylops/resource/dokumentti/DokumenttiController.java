@@ -54,10 +54,15 @@ public class DokumenttiController {
             @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        final DokumenttiDto dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
+        DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
 
-        // Jos dto luonti luonti onnistui aletaan rakentamaan dokumenttia
-        if (dtoForDokumentti.getTila() != DokumenttiTila.EPAONNISTUI) {
+        // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
+        if (dtoForDokumentti == null)
+            dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
+
+        // Aloitetaan luonti jos dokumentin tila ei ole epäonnistunut tai luonti on kesken
+        if (dtoForDokumentti.getTila() != DokumenttiTila.EPAONNISTUI
+                && dtoForDokumentti.getTila() != DokumenttiTila.LUODAAN) {
             // Vaihdetaan dokumentin tila luonniksi
             service.setStarted(dtoForDokumentti);
 
@@ -66,6 +71,11 @@ public class DokumenttiController {
             service.generateWithDto(dtoForDokumentti);
 
             status = HttpStatus.ACCEPTED;
+        }
+
+        // Asetetaan vastaukseen kieletty
+        if (dtoForDokumentti.getTila() == DokumenttiTila.LUODAAN) {
+            status = HttpStatus.FORBIDDEN;
         }
 
         // Uusi objekti dokumentissa, jossa päivitetyt tiedot

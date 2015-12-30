@@ -458,9 +458,9 @@
 
             <xsl:choose>
                 <xsl:when test="@number">
-                    <fo:table>
-                        <fo:table-column column-width="20mm"/>
-                        <fo:table-column />
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="20mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
@@ -502,9 +502,9 @@
 
             <xsl:choose>
                 <xsl:when test="@number">
-                    <fo:table>
-                        <fo:table-column column-width="20mm"/>
-                        <fo:table-column />
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="20mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
@@ -547,9 +547,9 @@
 
             <xsl:choose>
                 <xsl:when test="@number">
-                    <fo:table>
-                        <fo:table-column column-width="20mm"/>
-                        <fo:table-column />
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="20mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
@@ -591,9 +591,9 @@
 
             <xsl:choose>
                 <xsl:when test="@number">
-                    <fo:table>
-                        <fo:table-column column-width="20mm"/>
-                        <fo:table-column />
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="20mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
@@ -1130,25 +1130,6 @@
                       font-size="14pt" space-after="3pt" text-align="start"
                       text-indent="-1cm">
 
-                <!--<xsl:variable name="nh1">
-                    <xsl:number count="h1" level="any" format="1."/>
-                </xsl:variable>
-                <xsl:variable name="nh2">
-                    <xsl:number count="h1" level="any" format="1."/>
-                    <xsl:number count="h2" from="h1" level="any" format="1."/>
-                </xsl:variable>
-                <xsl:variable name="nh3">
-                    <xsl:number count="h1" level="any" format="1."/>
-                    <xsl:number count="h2" from="h1" level="any" format="1."/>
-                    <xsl:number count="h3" from="h2" level="any" format="1."/>
-                </xsl:variable>
-                <xsl:variable name="nh4">
-                    <xsl:number count="h1" level="any" format="1."/>
-                    <xsl:number count="h2" from="h1" level="any" format="1."/>
-                    <xsl:number count="h3" from="h2" level="any" format="1."/>
-                    <xsl:number count="h4" from="h3" level="any" format="1."/>
-                </xsl:variable>-->
-
                 <xsl:attribute name="start-indent">
                     <xsl:choose>
                         <xsl:when test="name() = 'h1'">
@@ -1188,25 +1169,8 @@
                         </xsl:choose>
                     </xsl:attribute>
 
-                    <!--<xsl:choose>
-                        <xsl:when test="name() = 'h1'">
-                            <xsl:value-of select="$nh1" />
-                        </xsl:when>
-                        <xsl:when test="name() = 'h2'">
-                            <xsl:value-of select="$nh2" />
-                        </xsl:when>
-                        <xsl:when test="name() = 'h3'">
-                            <xsl:value-of select="$nh3" />
-                        </xsl:when>
-                        <xsl:when test="name() = 'h4'">
-                            <xsl:value-of select="$nh4" />
-                        </xsl:when>
-                    </xsl:choose>
-                    <xsl:text> </xsl:text>-->
-
                     <xsl:if test="@number">
                         <xsl:value-of select="@number" />
-                        <!--<xsl:value-of select="substring(concat('________', @number), string-length(@number) + 1, 4)"/>-->
                         <xsl:text> </xsl:text>
                     </xsl:if>
                     <xsl:apply-templates select="*|text()" />
