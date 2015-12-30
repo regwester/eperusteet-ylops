@@ -668,36 +668,14 @@
         </fo:inline>
     </xsl:template>
 
-    <!--<xsl:template match="img">
+    <xsl:template match="img">
         <fo:block space-after="12pt">
-            <fo:external-graphic src="{@src}">
-                <xsl:if test="@width">
-                    <xsl:attribute name="width">
-                        <xsl:choose>
-                            <xsl:when test="contains(@width, 'px')">
-                                <xsl:value-of select="@width" />
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="concat(@width, 'px')" />
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:attribute>
-                </xsl:if>
-                <xsl:if test="@height">
-                    <xsl:attribute name="height">
-                        <xsl:choose>
-                            <xsl:when test="contains(@height, 'px')">
-                                <xsl:value-of select="@height" />
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="concat(@height, 'px')" />
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:attribute>
-                </xsl:if>
+            <fo:external-graphic src="{@src}" content-width="scale-to-fit" content-height="100%"
+                                 width="100%"
+                                 scaling="uniform">
             </fo:external-graphic>
         </fo:block>
-    </xsl:template>-->
+    </xsl:template>
 
     <xsl:template match="kbd">
         <fo:inline font-family="monospace" font-size="110%">

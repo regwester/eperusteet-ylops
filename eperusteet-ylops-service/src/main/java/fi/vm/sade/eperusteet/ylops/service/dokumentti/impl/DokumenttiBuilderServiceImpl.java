@@ -20,15 +20,17 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.fop.apps.*;
+import org.apache.xml.security.utils.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,11 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,10 +57,14 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -64,6 +75,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiBuilderServiceImpl.class);
 
+    private static final float COMPRESSION_LEVEL = 0.9f;
+
     @Autowired
     private LocalizedMessagesService messages;
 
@@ -72,6 +85,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     @Autowired
     private TermistoService termistoService;
+
+    @Autowired
+    private LiiteService liiteService;
+
 
     @Autowired
     private DtoMapper mapper;
@@ -243,6 +260,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
 
         buildFootnotes(doc, ops, kieli);
+        buildImages(doc, ops);
     }
 
     private void addTekstiKappale(Document doc, Element element, TekstiKappaleViite viite,
@@ -286,10 +304,75 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 Element element = (Element) list.item(i);
                 element.setAttribute("number", String.valueOf(i + 1));
                 element.setAttribute("text", getFootnoteByKey(ops.getId(), element.getAttribute("data-viite"), kieli));
-                LOG.info(element.toString());
             }
 
         } catch (XPathExpressionException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
+    }
+
+    private void buildImages(Document doc, Opetussuunnitelma ops) {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        try {
+            XPathExpression expression = xpath.compile("//img");
+            NodeList list = (NodeList) expression.evaluate(doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < list.getLength(); i++) {
+                Element element = (Element) list.item(i);
+                String id = element.getAttribute("data-uid");
+
+                UUID uuid = UUID.fromString(id);
+
+                // Ladataan kuvan data muistiin
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                liiteService.export(ops.getId(), uuid, byteArrayOutputStream);
+
+                // Tehdään muistissa olevasta datasta kuva
+                InputStream in = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                BufferedImage bufferedImage = ImageIO.read(in);
+                ColorModel model = bufferedImage.getColorModel();
+
+                int width = bufferedImage.getWidth();
+                int height = bufferedImage.getHeight();
+
+                // Muutetaan kaikkien kuvien väriavaruus RGB:ksi jotta PDF/A validointi menee läpi
+                // Asetetaan lisäksi läpinäkyvien kuvien taustaksi valkoinen väri
+                BufferedImage tempImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(),
+                        BufferedImage.TYPE_3BYTE_BGR);
+                tempImage.getGraphics().setColor(new Color(255, 255, 255, 0));
+                tempImage.getGraphics().fillRect (0, 0, width, height);
+                tempImage.getGraphics().drawImage(bufferedImage, 0, 0, null);
+                bufferedImage = tempImage;
+
+                // Image writer
+                ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
+                ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+                jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                jpgWriteParam.setCompressionQuality(COMPRESSION_LEVEL);
+
+                // Muunnetaan kuva base64 enkoodatuksi
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                //ImageIO.write(bufferedImage, "JPG", out); // ilman pakkaustason määrittämistä
+                MemoryCacheImageOutputStream imageStream = new MemoryCacheImageOutputStream(out);
+                jpgWriter.setOutput(imageStream);
+                IIOImage outputImage = new IIOImage(bufferedImage, null, null);
+                jpgWriter.write(null, outputImage, jpgWriteParam);
+                jpgWriter.dispose();
+                String base64 = Base64.encode(out.toByteArray());
+
+
+                // Debug
+                LiiteDto liiteDto = liiteService.get(ops.getId(), uuid);
+                LOG.info(liiteDto.getNimi() + ", " + id + ", (" + width + ", " + height + ")");
+
+                // Lisätään bas64 kuva img elementtiin
+                element.setAttribute("width", String.valueOf(width));
+                element.setAttribute("height", String.valueOf(height));
+                element.setAttribute("src", "data:image/jpg;base64," + base64);
+            }
+
+        } catch (XPathExpressionException | IOException e) {
             LOG.error(e.getLocalizedMessage());
         }
     }
@@ -303,6 +386,27 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         selitys = selitys.replaceAll("\\<.*?>","");
 
         return selitys;
+    }
+    private void addGlossary() {
+
+    }
+
+    private void printStream(ByteArrayOutputStream stream) {
+        LOG.info(StringEscapeUtils.unescapeHtml4(new String(stream.toByteArray(), StandardCharsets.UTF_8)));
+    }
+
+    private String getTextString(LokalisoituTeksti teksti, Kieli kieli) {
+        if (teksti == null || teksti.getTeksti() == null || teksti.getTeksti().get(kieli) == null) {
+            return "";
+        } else {
+            return teksti.getTeksti().get(kieli);
+        }
+    }
+
+    private String getStringFromDoc(Document doc)    {
+        DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
+        LSSerializer lsSerializer = domImplementation.createLSSerializer();
+        return lsSerializer.writeToString(doc);
     }
 
     // Pieni apuluokka dokumentin lukujen generointiin
@@ -339,27 +443,5 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             return numberString;
         }
-    }
-
-    private void addGlossary() {
-
-    }
-
-    private void printStream(ByteArrayOutputStream stream) {
-        LOG.info(StringEscapeUtils.unescapeHtml4(new String(stream.toByteArray(), StandardCharsets.UTF_8)));
-    }
-
-    private String getTextString(LokalisoituTeksti teksti, Kieli kieli) {
-        if (teksti == null || teksti.getTeksti() == null || teksti.getTeksti().get(kieli) == null) {
-            return "";
-        } else {
-            return teksti.getTeksti().get(kieli);
-        }
-    }
-
-    private String getStringFromDoc(Document doc)    {
-        DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
-        LSSerializer lsSerializer = domImplementation.createLSSerializer();
-        return lsSerializer.writeToString(doc);
     }
 }
