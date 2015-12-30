@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  *
@@ -42,6 +44,8 @@ import java.io.IOException;
 public class DokumenttiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiController.class);
+
+    private static final int MAX_TIME_IN_MINUTES = 2;
 
     @Autowired
     DokumenttiService service;
@@ -60,9 +64,9 @@ public class DokumenttiController {
         if (dtoForDokumentti == null)
             dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
 
-        // Aloitetaan luonti jos dokumentin tila ei ole epäonnistunut tai luonti on kesken
-        if (dtoForDokumentti.getTila() != DokumenttiTila.EPAONNISTUI
-                && dtoForDokumentti.getTila() != DokumenttiTila.LUODAAN) {
+
+        // Aloitetaan luonti jos luonti ei ole jo päällä tai maksimi luontiaika ylitetty
+        if (isWorkingTimePass(dtoForDokumentti) || dtoForDokumentti.getTila() != DokumenttiTila.LUODAAN) {
             // Vaihdetaan dokumentin tila luonniksi
             service.setStarted(dtoForDokumentti);
 
@@ -71,10 +75,7 @@ public class DokumenttiController {
             service.generateWithDto(dtoForDokumentti);
 
             status = HttpStatus.ACCEPTED;
-        }
-
-        // Asetetaan vastaukseen kieletty
-        if (dtoForDokumentti.getTila() == DokumenttiTila.LUODAAN) {
+        } else if (dtoForDokumentti.getTila() == DokumenttiTila.LUODAAN) {
             status = HttpStatus.FORBIDDEN;
         }
 
@@ -82,6 +83,11 @@ public class DokumenttiController {
         final DokumenttiDto dtoDokumentti = service.getDto(dtoForDokumentti.getId());
 
         return new ResponseEntity<>(dtoDokumentti, status);
+    }
+
+    private boolean isWorkingTimePass(DokumenttiDto dokumenttiDto) {
+        Date newDate = DateUtils.addMinutes(dokumenttiDto.getAloitusaika(), MAX_TIME_IN_MINUTES);
+        return newDate.before(new Date());
     }
 
     @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")

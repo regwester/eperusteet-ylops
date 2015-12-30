@@ -106,13 +106,6 @@
             <!-- Info page -->
             <fo:page-sequence master-reference="blank">
 
-                <fo:static-content flow-name="xsl-footnote-separator">
-                    <fo:block text-align-last="justify">
-                        <fo:leader leader-pattern="rule" leader-length.maximum="100%" leader-length.optimum="100%"
-                                   rule-thickness="1pt" color="#6E6C6C" />
-                    </fo:block>
-                </fo:static-content>
-
                 <fo:flow flow-name="xsl-region-body">
                     <xsl:call-template name="info" />
                 </fo:flow>
@@ -166,6 +159,12 @@
                     <fo:block text-align="start" color="#007ec5" margin-left="20mm"
                               margin-bottom="5mm" display-align="after">
                         <fo:retrieve-marker retrieve-class-name="chapter" />
+                    </fo:block>
+                </fo:static-content>
+                <fo:static-content flow-name="xsl-footnote-separator">
+                    <fo:block text-align-last="justify">
+                        <fo:leader leader-pattern="rule" leader-length.maximum="100%" leader-length.optimum="100%"
+                                   rule-thickness="1pt" color="#6E6C6C" />
                     </fo:block>
                 </fo:static-content>
 
@@ -791,6 +790,38 @@
         <fo:block font-size="12pt" line-height="1.25em"
                   space-after="12pt" text-align="justify">
             <xsl:apply-templates select="*|text()" />
+
+            <!-- Show endnotes bottom of the page -->
+            <xsl:if test="abbr">
+                <fo:footnote>
+                    <fo:inline baseline-shift="super"  font-size="10pt">
+                        <xsl:value-of select="abbr/@number" />
+                    </fo:inline>
+                    <fo:footnote-body>
+                        <fo:block font-size="8pt" line-height="10pt">
+
+                            <fo:table table-layout="fixed" width="100%">
+                                <fo:table-column column-width="10mm" />
+                                <fo:table-column column-width="proportional-column-width(1)" />
+                                <fo:table-body>
+                                    <fo:table-row>
+                                        <fo:table-cell>
+                                            <fo:block text-align="center">
+                                                <xsl:value-of select="abbr/@number" />
+                                            </fo:block>
+                                        </fo:table-cell>
+                                        <fo:table-cell>
+                                            <fo:block>
+                                                <xsl:value-of select="abbr/@text" />
+                                            </fo:block>
+                                        </fo:table-cell>
+                                    </fo:table-row>
+                                </fo:table-body>
+                            </fo:table>
+                        </fo:block>
+                    </fo:footnote-body>
+                </fo:footnote>
+            </xsl:if>
         </fo:block>
     </xsl:template>
 
@@ -1078,27 +1109,6 @@
 
     <!-- Info page -->
     <xsl:template name="info">
-
-        <fo:block>
-            <fo:footnote>
-                <fo:inline baseline-shift="super"  font-size="10pt">1</fo:inline>
-                <fo:footnote-body>
-                    <fo:block>
-                        <fo:inline font-size="10pt" baseline-shift="super">1</fo:inline>
-                        This is the first footnote
-                    </fo:block>
-                </fo:footnote-body>
-            </fo:footnote>
-            <fo:footnote>
-                <fo:inline baseline-shift="super"  font-size="10pt">2</fo:inline>
-                <fo:footnote-body>
-                    <fo:block>
-                        <fo:inline font-size="10pt" baseline-shift="super">2</fo:inline>
-                        lol footnote
-                    </fo:block>
-                </fo:footnote-body>
-            </fo:footnote>
-        </fo:block>
 
         <fo:block break-before='page' font-size="18pt" font-weight="bold" padding-bottom="12pt">
             <xsl:value-of select="/html/head/title" />: <xsl:apply-templates select="/html/head/meta[@name='type']/@content" />

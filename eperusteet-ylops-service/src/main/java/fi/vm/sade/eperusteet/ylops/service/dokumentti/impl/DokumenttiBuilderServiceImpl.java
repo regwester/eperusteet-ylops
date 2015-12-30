@@ -20,9 +20,14 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.fop.apps.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +49,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -63,6 +69,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private TermistoService termistoService;
+
+    @Autowired
+    private DtoMapper mapper;
 
     @Override
     public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
@@ -229,6 +241,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             generator.increaseNumber();
         }
+
+        buildFootnotes(doc, ops, kieli);
     }
 
     private void addTekstiKappale(Document doc, Element element, TekstiKappaleViite viite,
@@ -246,22 +260,49 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             // Luodaan sisältö
             String teskti = "<root>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</root>";
-
-            Node tempNode = DocumentBuilderFactory
+            Node node = DocumentBuilderFactory
                     .newInstance()
                     .newDocumentBuilder()
                     .parse(new ByteArrayInputStream(teskti.getBytes()))
                     .getDocumentElement();
+            element.appendChild(doc.importNode(node, true));
 
-            Node node = doc.importNode(tempNode, true);
-
-            element.appendChild(node);
-
+            // Rekursiivisesti
             addTekstiKappale(doc, element, lapsi, kieli, generator);
 
             generator.increaseNumber();
         }
         generator.decreaseDepth();
+    }
+
+    private void buildFootnotes(Document doc, Opetussuunnitelma ops, Kieli kieli) {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        try {
+            XPathExpression expression = xpath.compile("//abbr");
+            NodeList list = (NodeList) expression.evaluate(doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < list.getLength(); i++) {
+                Element element = (Element) list.item(i);
+                element.setAttribute("number", String.valueOf(i + 1));
+                element.setAttribute("text", getFootnoteByKey(ops.getId(), element.getAttribute("data-viite"), kieli));
+                LOG.info(element.toString());
+            }
+
+        } catch (XPathExpressionException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
+    }
+
+    private String getFootnoteByKey(Long opsId, String key, Kieli kieli) {
+        TermiDto termiDto = termistoService.getTermi(opsId, key);
+
+        LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
+        String selitys = getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli);
+        selitys = StringEscapeUtils.unescapeHtml4(selitys);
+        selitys = selitys.replaceAll("\\<.*?>","");
+
+        return selitys;
     }
 
     // Pieni apuluokka dokumentin lukujen generointiin
