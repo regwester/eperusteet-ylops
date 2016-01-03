@@ -82,7 +82,10 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional
     @PreAuthorize("isAuthenticated()")
     public DokumenttiDto createDtoFor(@P("id") long id, Kieli kieli) {
+        String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = new Dokumentti();
+        dokumentti.setAloitusaika(new Date());
+        dokumentti.setLuoja(name);
         dokumentti.setTila(DokumenttiTila.EI_OLE);
         dokumentti.setKieli(kieli);
         dokumentti.setOpsId(id);

@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
-import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
@@ -37,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -278,6 +278,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             // Luodaan sisältö
             String teskti = "<root>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</root>";
+            // TODO: selvitä mikä on paras taka escpaettaa
+            //teskti = HtmlUtils.htmlEscape(teskti);
+            teskti = StringEscapeUtils.unescapeHtml4(teskti);
+            //teskti = teskti.replaceAll("\\<.*?>", "");
+            //teskti = teskti.replaceAll("[^\\x20-\\x7e]", "");
+
             Node node = DocumentBuilderFactory
                     .newInstance()
                     .newDocumentBuilder()
@@ -363,8 +369,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
 
                 // Debug
-                LiiteDto liiteDto = liiteService.get(ops.getId(), uuid);
-                LOG.info(liiteDto.getNimi() + ", " + id + ", (" + width + ", " + height + ")");
+                //LiiteDto liiteDto = liiteService.get(ops.getId(), uuid);
+                //LOG.info(liiteDto.getNimi() + ", " + id + ", (" + width + ", " + height + ")");
 
                 // Lisätään bas64 kuva img elementtiin
                 element.setAttribute("width", String.valueOf(width));
@@ -380,10 +386,13 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private String getFootnoteByKey(Long opsId, String key, Kieli kieli) {
         TermiDto termiDto = termistoService.getTermi(opsId, key);
 
+        if (termiDto == null)
+            return "missing text";
         LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
         String selitys = getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli);
-        selitys = StringEscapeUtils.unescapeHtml4(selitys);
-        selitys = selitys.replaceAll("\\<.*?>","");
+        selitys = HtmlUtils.htmlEscape(selitys);
+        //selitys = StringEscapeUtils.unescapeHtml4(selitys);
+        selitys = selitys.replaceAll("\\<.*?>", "");
 
         return selitys;
     }

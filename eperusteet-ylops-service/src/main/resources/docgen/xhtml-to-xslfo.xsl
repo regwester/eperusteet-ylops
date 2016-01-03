@@ -1164,8 +1164,10 @@
                     <xsl:apply-templates select="*|text()" />
                 </fo:basic-link>
 
-                <fo:leader leader-pattern="dots" leader-pattern-width="5pt"
-                           leader-length.maximum="100%" leader-length.optimum="100%" />
+                <!--<fo:leader leader-pattern="dots" leader-pattern-width="5pt"
+                           leader-length.maximum="100%" leader-length.optimum="100%" />-->
+
+                <fo:leader leader-pattern="dots" leader-pattern-width="8pt" />
 
                 <fo:page-number-citation>
                     <xsl:attribute name="ref-id">
