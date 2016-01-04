@@ -36,6 +36,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,6 +74,12 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Getter
     @Setter
     private String laajuus;
+
+    @Getter
+    @Setter
+    @Column(name = "lukio_laajuus", nullable = true,
+            precision = 4, scale = 2, columnDefinition = "DECIMAL(4,2)")
+    private BigDecimal lukioLaajuus;
 
     @Getter
     @Setter
@@ -148,14 +155,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "valtakunnallinen_soveltava_kuvaus_id", nullable = true)
     private LokalisoituTeksti valtakunnallinenSoveltavaKurssiKuvaus;
-
-    @Getter
-    @Setter
-    @ValidHtml
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "paikallinen_pakollinen_kuvaus_id", nullable = true)
-    private LokalisoituTeksti paikallinenPakollinenKuvaus;
 
     @Getter
     @Setter
@@ -381,6 +380,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
             to.setNimi(other.getNimi());
             to.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
             to.setKoodi(other.getKoodi());
+            to.setLukioLaajuus(other.getLukioLaajuus());
             to.setKoosteinen(other.isKoosteinen());
             to.setKoodiArvo(other.getKoodiArvo());
             to.setKoodiUri(other.getKoodiUri());

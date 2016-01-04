@@ -94,7 +94,7 @@ public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity
         to.tunniste = this.tunniste;
         to.jnro = this.jnro;
         to.otsikko = this.otsikko;
-        to.yleiskuvaus = this.yleiskuvaus;
+        //to.yleiskuvaus = this.yleiskuvaus;
         return to;
     }
 }

@@ -1,3 +1,4 @@
+
 <!--
   ~  Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
   ~
@@ -13,13 +14,10 @@
   ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   ~  European Union Public Licence for more details.
   -->
-<h2 ng-bind="yleisetTavoitteet.perusteen.otsikko | kaanna"></h2>
 
-<div class="perusteen-teksti">
- <div ng-bind-html="yleisetTavoitteet.perusteen.kuvaus | kaanna | unsafe" termisto-viitteet="yleisetTavoitteet.perusteen.kuvaus"></div>
-<!--
- <div class="tag-perusteen-otsikko">
-    &ldquo;{{yleisetTavoitteet.perusteen.otsikko|kaanna|unsafe}}&rdquo;
- </div>
--->
+<div class="tekstiosa perusteen-teksti" ng-if="perusteenTeksti">
+    <a ng-class="{'toggle-perusteen-teksti peruste-teksti': true,'is-open': !textHidden}" ng-click="toggleTextVisible()">
+        <span kaanna="nayta-perusteen-teksti"></span>
+    </a>
+    <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna | unsafe" termisto-viitteet="perusteenTeksti"></span>
 </div>

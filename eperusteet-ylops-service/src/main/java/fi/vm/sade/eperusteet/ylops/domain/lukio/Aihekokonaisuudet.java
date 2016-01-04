@@ -107,7 +107,7 @@ public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity
 
     public Aihekokonaisuudet copyInto(Aihekokonaisuudet to) {
         to.otsikko = this.otsikko;
-        to.yleiskuvaus = this.yleiskuvaus;
+        //to.yleiskuvaus = this.yleiskuvaus;
         return to;
     }
 }

@@ -77,9 +77,11 @@ import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
@@ -423,7 +425,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
         ConstructedCopier<OpsOppiaine> opsOppiaineCopier = OpsOppiaine.copier(
                 oppiaineCopier.construct(existing -> teeKopio ? new Oppiaine(existing.getTunniste()) : existing), teeKopio);
-        ops.setOppiaineet(pohja.getOppiaineet().stream().map(opsOppiaineCopier::copy).collect(toSet()));
+        Stream<OpsOppiaine> oppiaineetToCopy = pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS
+                ? pohja.getOppiaineet().stream().filter(opsOa -> !opsOa.getOppiaine().isAbstraktiBool())
+                : pohja.getOppiaineet().stream();
+        ops.setOppiaineet(oppiaineetToCopy.map(opsOppiaineCopier::copy).collect(toSet()));
         ops.getOppiaineJarjestykset().addAll(pohja.getOppiaineJarjestykset().stream().map(old
                 -> !teeKopio ? new LukioOppiaineJarjestys(ops, old.getOppiaine(), old.getJarjestys())
                     : (newOppiaineByOld.get(old.getId().getOppiaineId()) != null ?
@@ -566,6 +571,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         for (LukioPerusteOppiaineDto oppiaine : from) {
             Oppiaine oa = new Oppiaine(oppiaine.getTunniste());
             oa.setTyyppi(OppiaineTyyppi.LUKIO);
+            oa.setLukioLaajuus(BigDecimal.ONE);
             oa.setNimi(LokalisoituTeksti.of(oppiaine.getNimi().getTekstit()));
             oa.setOppiaine(parent);
             oa.setAbstrakti(oppiaine.getAbstrakti());

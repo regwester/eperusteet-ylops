@@ -53,9 +53,10 @@
             <!--<input id="otsikko" class="form-control" slocalized ng-model="aihekokonaisuudet.paikallinen.otsikko"/>-->
         <!--</div>-->
 
-        <label for="yleiskuvaus" class="header" ng-bind="'aihekokonaisuus-yleiskuvaus-header' | kaanna" ></label>
+        <label for="yleiskuvaus" class="header" ng-bind="'aihekokonaisuudet-yleiskuvaus-header' | kaanna" ></label>
         <div>
-            <div id="yleiskuvaus" ckeditor slocalized ng-model="aihekokonaisuudet.paikallinen.yleiskuvaus"></div>
+            <div id="yleiskuvaus" ckeditor slocalized ng-model="aihekokonaisuudet.paikallinen.yleiskuvaus"
+                 editor-placeholder="{{'aihekokonaisuudet-yleiskuvaus-placeholder' | kaanna}}"></div>
         </div>
     </form>
 </div>

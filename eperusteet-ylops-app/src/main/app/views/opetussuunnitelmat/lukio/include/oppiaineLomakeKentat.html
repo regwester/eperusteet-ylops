@@ -16,7 +16,8 @@
   -->
 
 <label for="nimi-input" class="header" ng-bind="('oppaiaine-nimi-header' | kaanna) + ' *'" ></label>
-<input id="nimi-input" class="form-control" ng-model="oppiaine.nimi" slocalized />
+<input id="nimi-input" class="form-control" ng-model="oppiaine.nimi" slocalized
+       placeholder="{{'oppaiaine-nimi-placeholder' | kaanna}}"/>
 
 <label for="koodi-input" class="header" ng-bind="('oppiaine-koodi-header' | kaanna) + ' *'" ></label>
 <div class="fixed-group">
@@ -58,7 +59,8 @@
     <h3 ng-bind="osa.label | kaanna" ></h3>
   </label>
   <div>
-    <div id="kurssi-tyyppi-kuvaus-{{osa.id}}" ckeditor slocalized ng-model="osa.obj" editing-enabled="true"></div>
+    <div id="kurssi-tyyppi-kuvaus-{{osa.id}}" ckeditor slocalized ng-model="osa.obj" editing-enabled="true"
+         editor-placeholder="{{'lukio-kurssi-tyyppi-placeholder-'+osa.id.toLowerCase() | kaanna}}"></div>
   </div>
 </div>
 
@@ -85,9 +87,10 @@
     </button>
   </div>
   <label for="{{osa.id}}" class="editable-header">
-    <h3 ckeditor slocalized ng-model="osa.obj.otsikko" editing-enabled="true" ></h3>
+    <h3 ckeditor slocalized ng-model="osa.obj.otsikko" editing-enabled="true"></h3>
   </label>
   <div>
-    <div id="{{osa.id}}" ckeditor slocalized ng-model="osa.obj.teksti" editing-enabled="true"></div>
+    <div id="{{osa.id}}" ckeditor slocalized ng-model="osa.obj.teksti" editing-enabled="true"
+         editor-placeholder="{{'oppiaine-osa-'+osa.id+'-placeholder' | kaanna}}"></div>
   </div>
 </div>

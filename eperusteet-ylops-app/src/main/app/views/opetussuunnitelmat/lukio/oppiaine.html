@@ -16,7 +16,7 @@
 
 
 <div class="oppiaine-view" ng-if="!editMode">
-  <div class="action-buttons-inline" ng-if="!editing">
+  <div class="action-buttons-inline" ng-if="!editing" oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]">
     <div class="action-button" ng-if="isReconnectable()">
       <span ng-bind="'ei-yhdistetty-pohjaan' | kaanna"  class="lukio-oppiaine-disconnect-btn"></span>
       <button class="btn btn-default" kaanna="'palauta-yhteys'"
@@ -28,17 +28,21 @@
               ng-click="disconnectOppiaine()"></button>
     </div>
     <div dropdown class="action-button dropdown-container" ng-if="canAddFromTarjonta()">
-      <button class="btn btn-default dropdown-toggle" icon-role="add" kaanna="'lisaa-'+tarjottavaTyyppi()+'-tarjonnasta'"
+      <button class="btn btn-default dropdown-toggle" icon-role="add" kaanna="'lisaa-paikallinen-oppimaara-tai-tarjonnasta'"
               dropdown-toggle></button>
       <ul class="dropdown-menu relative-menu" role="menu">
         <li ng-repeat="valittava in oppiaine.pohjanTarjonta">
           <a class="action-link" ng-click="addTarjonnasta(valittava)" ng-bind="valittava.nimi | kaanna">
           </a>
         </li>
+        <li ng-if="canAddOppimaara()">
+          <a class="action-link" ng-click="addOppimaara()" ng-bind="'lisaa-muu-paikallinen-oppimaara' | kaanna">
+          </a>
+        </li>
       </ul>
     </div>
-    <div class="action-button" ng-if="canAddOppimaara()">
-      <button class="btn btn-default" icon-role="add" kaanna="'lisaa-oppimaara'"
+    <div class="action-button" ng-if="canAddOppimaara() && !canAddFromTarjonta()">
+      <button class="btn btn-default" icon-role="add" kaanna="'lisaa-paikallinen-oppimaara'"
               ng-click="addOppimaara()"></button>
     </div>
     <div class="action-button" ng-if="isEditable()">

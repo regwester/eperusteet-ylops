@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -44,6 +45,7 @@ public class LukioOppiaineListausDto implements Serializable,
     private Date muokattu;
     private UUID tunniste;
     private Tila tila;
+    private BigDecimal lukioLaajuus;
     private boolean oma;
     private boolean maariteltyPohjassa;
     private Integer jarjestys;

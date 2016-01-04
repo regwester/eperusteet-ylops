@@ -93,7 +93,6 @@ declare module Lukio {
         VALTAKUNNALLINEN_PAKOLLINEN,
         VALTAKUNNALLINEN_SYVENTAVA,
         VALTAKUNNALLINEN_SOVELTAVA,
-        PAIKALLINEN_PAKOLLINEN,
         PAIKALLINEN_SYVENTAVA,
         PAIKALLINEN_SOVELTAVA
     }
@@ -126,6 +125,7 @@ declare module Lukio {
     export interface LukiokurssiOps extends Kurssi {
         oppiaineId: number;
         jarjestys?: number;
+        palautettava: boolean;
         tyyppi: LukioKurssiTyyppi;
         tavoitteet?: l.TekstiOsa;
         keskeinenSisalto?: l.TekstiOsa;
@@ -216,5 +216,6 @@ declare module Lukio {
         root: boolean;
         perusteen: LukioOpetussuunnitelmaRakennePeruste;
         oppiaineet: LukioOppiaine[];
+        pohjanTarjonta: LukioOppiaine[];
     }
 }

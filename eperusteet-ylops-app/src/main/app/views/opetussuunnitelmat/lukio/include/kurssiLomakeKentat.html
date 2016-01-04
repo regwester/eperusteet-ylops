@@ -23,25 +23,23 @@
   <span ng-bind="'lukio-kurssi-tyyppi-otsikko-'+kurssi.tyyppi.toLowerCase() | kaanna" ng-show="!isEditable()"></span>
 </div>
 
-<label for="koodi-input" class="header" ng-bind="('kurssi-koodi-header' | kaanna) + ' *'" ></label>
-<div class="fixed-group" ng-show="isEditable()">
-  <input id="koodi-input" class="form-control limit" type="text" ng-model="kurssi.koodiArvo" ng-disabled="true"/>
-  <div class="addon"><button role="link" class="btn btn-default" ng-click="openKoodisto()" ng-bind="'hae-koodistosta' | kaanna" ></button></div>
-</div>
 <div class="fixed-group" ng-show="!isEditable()" ng-bind="kurssi.koodiArvo">
 </div>
 
 <label for="lokalisoitu-koodi-input" class="header" ng-bind="('kurssi-lokalisoitu-koodi-header' | kaanna) + ' *'" ></label>
 <div class="fixed-group">
-  <input id="lokalisoitu-koodi-input" class="form-control" ng-model="kurssi.lokalisoituKoodi" slocalized />
+  <input id="lokalisoitu-koodi-input" class="form-control" ng-model="kurssi.lokalisoituKoodi" slocalized
+      placeholder="{{'kurssi-lokalisoitu-koodi-placeholder' | kaanna}}"/>
 </div>
 
 <label for="nimi-input" class="header" ng-bind="('kurssi-nimi-header' | kaanna) + ' *'" ></label>
-<input id="nimi-input" class="form-control" ng-model="kurssi.nimi" slocalized />
+<input id="nimi-input" class="form-control" ng-model="kurssi.nimi" slocalized
+    placeholder="{{'kurssi-nimi-placeholder' | kaanna}}"/>
 
 <label for="kuvaus" class="header" ng-bind="'kurssi-kuvaus-header' | kaanna" ></label>
 <div>
-  <div id="kuvaus" ckeditor slocalized ng-model="kurssi.kuvaus"></div>
+  <div id="kuvaus" ckeditor slocalized ng-model="kurssi.kuvaus"
+       editor-placeholder="{{'kurssi-kuvaus-placeholder' | kaanna}}"></div>
 </div>
 
 <div ng-repeat="osa in muokattavatOsat.osat" ng-show="osa.obj">
@@ -54,6 +52,7 @@
     <h3 ckeditor slocalized ng-model="osa.obj.otsikko"></h3>
   </label>
   <div>
-    <div id="{{osa.id}}" ckeditor slocalized ng-model="osa.obj.teksti"></div>
+    <div id="{{osa.id}}" ckeditor slocalized ng-model="osa.obj.teksti"
+         editor-placeholder="{{'kurssi-osa-'+osa.id+'-placeholder' | kaanna}}"></div>
   </div>
 </div>

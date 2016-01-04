@@ -24,11 +24,26 @@
                         callback="haku.hae()" placeholder="{{ 'lukio-etsi-oppiaineista-ja-kursseista' || kaanna }}"></rajaus>
             </div>
             <div class="action-buttons right" ng-show="!editMode">
-                <button icon-role="add" class="floater btn"
-                        oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'opetussuunnitelma', permission: 'korjaus' }]"
-                        ng-click="addOppiaine()" kaanna="'lisaa-oppiaine'"></button>
+                <div dropdown class="action-button dropdown-container" ng-if="canAddFromTarjonta()"
+                         oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]">
+                    <button class="btn btn-default dropdown-toggle" icon-role="add" kaanna="'lisaa-paikallinen-oppimaara-tai-tarjonnasta'"
+                            dropdown-toggle></button>
+                    <ul class="dropdown-menu relative-menu" role="menu">
+                        <li ng-repeat="valittava in oppiaine.pohjanTarjonta">
+                            <a class="action-link" ng-click="addTarjonnasta(valittava)" ng-bind="valittava.nimi | kaanna">
+                            </a>
+                        </li>
+                        <li>
+                            <a class="action-link" ng-click="addOppiaine()" ng-bind="'lisaa-muu-paikallinen-oppiaine' | kaanna">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <button icon-role="add" class="floater btn" ng-if="!canAddFromTarjonta()"
+                        oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"
+                        ng-click="addOppiaine()" kaanna="'lisaa-paikallinen-oppiaine'"></button>
                 <button icon-role="edit" class="floater btn"
-                        oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'opetussuunnitelma', permission: 'korjaus' }]"
+                        oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"
                         ng-click="toEditMode()" kaanna="'lukio-kurssipuu-muokkaa-rakennetta'"></button>
             </div>
         </div>

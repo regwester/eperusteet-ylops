@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioKurssiParentDto;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
@@ -44,7 +45,30 @@ import java.util.UUID;
  */
 @Entity
 @Audited
-@Table(name = "lukiokurssi", schema = "public")
+@Table(name ="lukiokurssi", schema = "public")
+@SqlResultSetMappings({
+    @SqlResultSetMapping(
+            name = "lukioKurssiParentDto",
+            classes = {
+                    @ConstructorResult(
+                            targetClass = LukioKurssiParentDto.class,
+                            columns = {
+                                    @ColumnResult(name = "id", type = Long.class),
+                                    @ColumnResult(name = "parent_id", type = Long.class)
+                            }
+                    )
+            }
+    )
+})
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "parentViewByOps",
+                query = "select oa_lk.kurssi_id as id, findParentKurssi(?1, oa_lk.kurssi_id) as parent_id" +
+                        "   from oppiaine_lukiokurssi oa_lk" +
+                        " where oa_lk.opetussuunnitelma_id = ?1" +
+                        " group by oa_lk.kurssi_id order by oa_lk.kurssi_id",
+                resultSetMapping = "lukioKurssiParentDto"
+            )
+})
 public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
 
     @Getter
