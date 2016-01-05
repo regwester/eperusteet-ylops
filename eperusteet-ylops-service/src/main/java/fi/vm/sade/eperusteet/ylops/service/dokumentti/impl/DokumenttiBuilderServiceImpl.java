@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -127,9 +126,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // käsitteet
         addGlossary();
-
-        //LOG.info("XML model  :");
-        //LOG.info(StringEscapeUtils.unescapeHtml4(getStringFromDoc(doc)));
 
         Resource resource = applicationContext.getResource("classpath:docgen/xhtml-to-xslfo.xsl");
         pdf.write(convertOps2PDF(doc, resource.getFile()));
@@ -278,11 +274,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             // Luodaan sisältö
             String teskti = "<root>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</root>";
-            // TODO: selvitä mikä on paras taka escpaettaa
-            //teskti = HtmlUtils.htmlEscape(teskti);
             teskti = StringEscapeUtils.unescapeHtml4(teskti);
-            //teskti = teskti.replaceAll("\\<.*?>", "");
-            //teskti = teskti.replaceAll("[^\\x20-\\x7e]", "");
 
             Node node = DocumentBuilderFactory
                     .newInstance()
@@ -387,11 +379,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         TermiDto termiDto = termistoService.getTermi(opsId, key);
 
         if (termiDto == null)
-            return "missing text";
+            return "text missing";
         LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
         String selitys = getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli);
-        selitys = HtmlUtils.htmlEscape(selitys);
-        //selitys = StringEscapeUtils.unescapeHtml4(selitys);
+        selitys = StringEscapeUtils.unescapeHtml4(selitys);
         selitys = selitys.replaceAll("\\<.*?>", "");
 
         return selitys;
@@ -401,6 +392,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void printStream(ByteArrayOutputStream stream) {
+        // Escapettaminen auttaa lukemista konsolista
         LOG.info(StringEscapeUtils.unescapeHtml4(new String(stream.toByteArray(), StandardCharsets.UTF_8)));
     }
 

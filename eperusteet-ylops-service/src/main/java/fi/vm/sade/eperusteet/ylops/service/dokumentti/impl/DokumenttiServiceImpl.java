@@ -95,9 +95,6 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             Dokumentti saved = dokumenttiRepository.save(dokumentti);
             return mapper.map(saved, DokumenttiDto.class);
         } else {
-            dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
-            // TODO: localize
-            //dokumentti.setVirhekoodi(DokumenttiVirhe.PERUSTETTA_EI_LOYTYNYT);
             return mapper.map(dokumentti, DokumenttiDto.class);
         }
     }
@@ -154,5 +151,12 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DokumenttiDto query(Long id) {
+        Dokumentti findById = dokumenttiRepository.findById(id);
+        return mapper.map(findById, DokumenttiDto.class);
     }
 }

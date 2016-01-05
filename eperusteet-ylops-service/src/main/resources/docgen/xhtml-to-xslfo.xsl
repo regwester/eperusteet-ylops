@@ -618,7 +618,7 @@
 
     <xsl:template match="h5">
         <fo:block font-size="0.83em" line-height="19pt"
-                  keep-with-next="always" space-after="12pt"
+                  keep-with-next="always" space-after="10pt"
                   font-family="serif" color="#007EC5"
                   text-decoration="underline">
             <xsl:attribute name="id">
@@ -637,7 +637,7 @@
 
     <xsl:template match="h6">
         <fo:block font-size="0.67em" line-height="17pt"
-                  keep-with-next="always" space-after="12pt"
+                  keep-with-next="always" space-after="10pt"
                   font-family="serif" font-style="italic"
                   color="#007EC5"
                   text-decoration="underline">
@@ -705,7 +705,7 @@
             <xsl:attribute name="start-indent">
                 <xsl:variable name="ancestors">
                     <xsl:choose>
-                        <xsl:when test="count(ancestor::ol) or count(ancestor::ul)">
+                        <xsl:when test="count(ancestor::ol) or boolean(count(ancestor::ul))">
                             <xsl:value-of select="1 +
                                     (count(ancestor::ol) +
                                      count(ancestor::ul)) *
@@ -730,7 +730,7 @@
                     <xsl:variable name="value-attr">
                         <xsl:choose>
                             <xsl:when test="../@start">
-                                <xsl:number value="position() + ../@start - 1" />
+                                <xsl:number value="position() + number(../@start) - 1" />
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:number value="position()" />
@@ -766,41 +766,45 @@
 
     <xsl:template match="p">
         <fo:block font-size="12pt" line-height="1.25em"
-                  space-after="12pt" text-align="justify">
+                  space-after="12pt" text-align="justify"
+                  line-stacking-strategy="font-height">
             <xsl:apply-templates select="*|text()" />
-
-            <!-- Show endnotes bottom of the page -->
-            <xsl:if test="abbr">
-                <fo:footnote>
-                    <fo:inline baseline-shift="super"  font-size="10pt">
-                        <xsl:value-of select="abbr/@number" />
-                    </fo:inline>
-                    <fo:footnote-body>
-                        <fo:block font-size="8pt" line-height="10pt">
-
-                            <fo:table table-layout="fixed" width="100%">
-                                <fo:table-column column-width="10mm" />
-                                <fo:table-column column-width="proportional-column-width(1)" />
-                                <fo:table-body>
-                                    <fo:table-row>
-                                        <fo:table-cell>
-                                            <fo:block text-align="center">
-                                                <xsl:value-of select="abbr/@number" />
-                                            </fo:block>
-                                        </fo:table-cell>
-                                        <fo:table-cell>
-                                            <fo:block>
-                                                <xsl:value-of select="abbr/@text" />
-                                            </fo:block>
-                                        </fo:table-cell>
-                                    </fo:table-row>
-                                </fo:table-body>
-                            </fo:table>
-                        </fo:block>
-                    </fo:footnote-body>
-                </fo:footnote>
-            </xsl:if>
         </fo:block>
+    </xsl:template>
+
+    <xsl:template match="abbr">
+        <xsl:value-of select="." />
+
+        <!-- Show endnotes bottom of the page -->
+        <fo:footnote>
+            <fo:inline baseline-shift="super" font-size="8pt">
+                <xsl:value-of select="@number" />
+            </fo:inline>
+            <fo:footnote-body>
+                <fo:block font-size="8pt" line-height="10pt" start-indent="0" text-align="left">
+
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="10mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
+                        <fo:table-body>
+                            <fo:table-row>
+                                <fo:table-cell>
+                                    <fo:block text-align="center">
+                                        <xsl:value-of select="@number" />
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <xsl:value-of select="@text" />
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
+
+                </fo:block>
+            </fo:footnote-body>
+        </fo:footnote>
     </xsl:template>
 
     <xsl:template match="pre">
@@ -850,7 +854,7 @@
     </xsl:template>
 
     <xsl:template match="table">
-        <fo:table table-layout="fixed" inline-progression-dimension="100%">
+        <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt">
             <!--<xsl:choose>
                 <xsl:when test="@cols">
                     <xsl:call-template name="build-columns">
@@ -1032,7 +1036,7 @@
             <xsl:attribute name="start-indent">
                 <xsl:variable name="ancestors">
                     <xsl:choose>
-                        <xsl:when test="count(ancestor::ol) or count(ancestor::ul)">
+                        <xsl:when test="count(ancestor::ol) or boolean(count(ancestor::ul))">
                             <xsl:value-of select="1 +
                                     (count(ancestor::ol) +
                                      count(ancestor::ul)) *
@@ -1285,7 +1289,7 @@
     <xsl:template name="build-columns">
         <xsl:param name="cols" />
 
-        <xsl:if test="string-length(normalize-space($cols))">
+        <xsl:if test="boolean(string-length(normalize-space($cols)))">
             <xsl:variable name="next-col">
                 <xsl:value-of select="substring-before($cols, ' ')" />
             </xsl:variable>

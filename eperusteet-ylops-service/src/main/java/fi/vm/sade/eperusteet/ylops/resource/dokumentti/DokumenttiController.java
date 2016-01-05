@@ -17,6 +17,9 @@
 package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
@@ -29,8 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
@@ -53,6 +58,12 @@ public class DokumenttiController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation("luo dokumentti")
+    @ApiResponses(value = {
+            @ApiResponse(code = 202, message = "dokumentti luodaan"),
+            @ApiResponse(code = 401, message = "ei oikeutta luoda dokumenttia"),
+            @ApiResponse(code = 404, message = "opetussuunnitelma ei löydy"),
+            @ApiResponse(code = 403, message = "dokumentin luonti on jo käynnissä")
+    })
     public ResponseEntity<DokumenttiDto> create(
             @RequestParam("opsId") final long opsId,
             @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
@@ -64,9 +75,12 @@ public class DokumenttiController {
         if (dtoForDokumentti == null)
             dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
 
+        // Jos tila epäonnistunut, opsia ei löytynyt
+        if (dtoForDokumentti.getTila() == DokumenttiTila.EI_OLE)
+            return new ResponseEntity<>(dtoForDokumentti, HttpStatus.NOT_FOUND);
 
         // Aloitetaan luonti jos luonti ei ole jo päällä tai maksimi luontiaika ylitetty
-        if (isWorkingTimePass(dtoForDokumentti) || dtoForDokumentti.getTila() != DokumenttiTila.LUODAAN) {
+        if (isTimePass(dtoForDokumentti) || dtoForDokumentti.getTila() != DokumenttiTila.LUODAAN) {
             // Vaihdetaan dokumentin tila luonniksi
             service.setStarted(dtoForDokumentti);
 
@@ -85,15 +99,22 @@ public class DokumenttiController {
         return new ResponseEntity<>(dtoDokumentti, status);
     }
 
-    private boolean isWorkingTimePass(DokumenttiDto dokumenttiDto) {
+    private boolean isTimePass(DokumenttiDto dokumenttiDto) {
         Date newDate = DateUtils.addMinutes(dokumenttiDto.getAloitusaika(), MAX_TIME_IN_MINUTES);
         return newDate.before(new Date());
     }
 
     @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")
     @ResponseBody
+    @ApiOperation("luo dokumentti")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "dokumentti ladattu onnistuneesti"),
+            @ApiResponse(code = 401, message = "ei oikeutta luoda dokumenttia"),
+            @ApiResponse(code = 404, message = "dokumenttia ei löydy")
+    })
     @CacheControl(age = CacheControl.ONE_YEAR, nonpublic = false)
-    public ResponseEntity<Object>get(@PathVariable("dokumenttiId") final Long dokumenttiId)
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<Object> get(@PathVariable("dokumenttiId") final Long dokumenttiId)
             throws IOException {
         byte[] pdfdata = service.get(dokumenttiId);
 
@@ -108,5 +129,12 @@ public class DokumenttiController {
         LOG.info(headers.toString());
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<DokumenttiDto> query(@PathVariable("dokumenttiId") final Long dokumenttiId) {
+        DokumenttiDto dto = service.query(dokumenttiId);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }
