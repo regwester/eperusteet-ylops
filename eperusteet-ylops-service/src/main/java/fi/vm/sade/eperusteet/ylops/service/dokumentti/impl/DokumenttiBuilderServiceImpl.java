@@ -64,7 +64,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -110,11 +112,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         Document doc = docBuilder.newDocument();
         Element rootElement = doc.createElement("html");
+        rootElement.setAttribute("lang", kieli.toString());
         doc.appendChild(rootElement);
 
         Element headElement = doc.createElement("head");
 
-        // Delete annoying <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        // Poistetaan HEAD:in <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
         if (headElement.hasChildNodes())
             headElement.removeChild(headElement.getFirstChild());
 
@@ -229,17 +232,37 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         title.appendChild(doc.createTextNode(nimi));
         headElement.appendChild(title);
 
-        String tyyppi = messages.translate(ops.getTyyppi().toString(), kieli);
+        String tyyppi = messages.translate(ops.getKoulutustyyppi().toString(), kieli);
+        LOG.info(tyyppi);
         Element type = doc.createElement("meta");
         type.setAttribute("name", "type");
         type.setAttribute("content", tyyppi);
         headElement.appendChild(type);
 
         String kuvaus = getTextString(ops.getKuvaus(), kieli);
-        Element description = doc.createElement("meta");
-        description.setAttribute("name", "description");
-        description.setAttribute("content", kuvaus);
-        headElement.appendChild(description);
+        if (kuvaus != null && kuvaus.length() != 0) {
+            Element description = doc.createElement("meta");
+            description.setAttribute("name", "description");
+            description.setAttribute("content", kuvaus);
+            headElement.appendChild(description);
+        }
+
+        String diaarinumero = ops.getPerusteenDiaarinumero();
+        if (diaarinumero != null  && diaarinumero.length() != 0) {
+            Element diary = doc.createElement("meta");
+            diary.setAttribute("name", "diary");
+            diary.setAttribute("content", diaarinumero);
+            headElement.appendChild(diary);
+        }
+
+        Date paatospaivamaara = ops.getPaatospaivamaara();
+        if (paatospaivamaara != null) {
+            String paatospaivamaaraText = new SimpleDateFormat("d.m.yyyy").format(paatospaivamaara);
+            Element dateEl = doc.createElement("meta");
+            dateEl.setAttribute("name", "date");
+            dateEl.setAttribute("content", paatospaivamaaraText);
+            headElement.appendChild(dateEl);
+        }
     }
 
     private void addSisaltoElement(Document doc, Element rootElement, Opetussuunnitelma ops, Kieli kieli)
@@ -349,10 +372,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             XPathExpression expression = xpath.compile("//abbr");
             NodeList list = (NodeList) expression.evaluate(doc, XPathConstants.NODESET);
 
+            int noteNumber = 1;
             for (int i = 0; i < list.getLength(); i++) {
                 Element element = (Element) list.item(i);
-                element.setAttribute("number", String.valueOf(i + 1));
-                element.setAttribute("text", getFootnoteByKey(ops.getId(), element.getAttribute("data-viite"), kieli));
+                TermiDto termiDto = termistoService.getTermi(ops.getId(), element.getAttribute("data-viite"));
+                if (termiDto != null && termiDto.isAlaviite()) {
+                    element.setAttribute("number", String.valueOf(noteNumber));
+                    element.setAttribute("text", getFootnoteText(termiDto, kieli));
+                    noteNumber++;
+                }
             }
 
         } catch (XPathExpressionException e) {
@@ -426,15 +454,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private String getFootnoteByKey(Long opsId, String key, Kieli kieli) {
-        TermiDto termiDto = termistoService.getTermi(opsId, key);
-
-        if (termiDto == null)
-            return "text missing";
+    private String getFootnoteText(TermiDto termiDto, Kieli kieli) {
         LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
         String selitys = getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli);
         selitys = StringEscapeUtils.unescapeHtml4(selitys);
-        selitys = selitys.replaceAll("\\<.*?>", "");
+        selitys = selitys.replaceAll("<[^>]+>", "");
 
         return selitys;
     }
