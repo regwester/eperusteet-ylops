@@ -24,9 +24,11 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -68,11 +70,15 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         @Value("#{'${fi.vm.sade.eperusteet.ylops.organisaatio-service.peruskoulu-oppilaitostyypit}'.split(',')}")
         private List<String> oppilaitostyypit;
 
+        @Value("#{'${fi.vm.sade.eperusteet.ylops.organisaatio-service.lukio-oppilaitostyypit}'.split(',')}")
+        private List<String> lukioOppilaitostyypit;
+
         private static final Logger LOG = LoggerFactory.getLogger(Client.class);
 
         private final ObjectMapper mapper = new ObjectMapper();
 
         private String peruskouluHakuehto;
+        private String lukioHakuehto;
 
         @PostConstruct
         public void init() {
@@ -80,6 +86,10 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                 "&organisaatiotyyppi=Oppilaitos" +
                 oppilaitostyypit.stream()
                                 .reduce("", (acc, t) -> acc + "&oppilaitostyyppi=oppilaitostyyppi_" + t + "%23*");
+            lukioHakuehto =
+                    "&organisaatiotyyppi=Oppilaitos" +
+                            lukioOppilaitostyypit.stream()
+                                    .reduce("", (acc, t) -> acc + "&oppilaitostyyppi=oppilaitostyyppi_" + t + "%23*");
         }
 
         @Cacheable("organisaatiot")
@@ -108,20 +118,27 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         }
 
         private JsonNode getPeruskoulut(String hakuehto) {
-            CachingRestClient crc = restClientFactory.getWithoutCas(serviceUrl);
+            return getLaitoksetByEhtoAndTyypit(hakuehto + peruskouluHakuehto, oppilaitostyypit);
+        }
 
+        private JsonNode getLukiot(String hakuehto) {
+            return getLaitoksetByEhtoAndTyypit(hakuehto + lukioHakuehto, lukioOppilaitostyypit);
+        }
+
+        private JsonNode getLaitoksetByEhtoAndTyypit(String hakuehto, Collection<String> tyypit) {
+            CachingRestClient crc = restClientFactory.getWithoutCas(serviceUrl);
             try {
                 final String url =
-                    serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + hakuehto + STATUS_KRITEERI + peruskouluHakuehto;
+                        serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + hakuehto + STATUS_KRITEERI;
                 JsonNode tree = mapper.readTree(crc.getAsString(url));
                 JsonNode organisaatioTree = tree.get("organisaatiot");
                 return flattenTree(organisaatioTree, "children",
-                                   node -> node.get("oppilaitostyyppi") != null &&
-                                           oppilaitostyypit.stream()
-                                                           .map(t -> "oppilaitostyyppi_" + t + "#1")
-                                                           .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
+                        node -> node.get("oppilaitostyyppi") != null &&
+                                tyypit.stream()
+                                        .map(t -> "oppilaitostyyppi_" + t + "#1")
+                                        .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
             } catch (IOException ex) {
-                throw new BusinessRuleViolationException("Peruskoulujen tietojen hakeminen epäonnistui", ex);
+                throw new BusinessRuleViolationException("Lukioiden tietojen hakeminen epäonnistui", ex);
             }
         }
 
@@ -129,9 +146,18 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
             return getPeruskoulut(KUNTA_KRITEERI + kuntaId);
         }
 
+        public JsonNode getLukiotByKuntaId(String kuntaId) {
+            return getLukiot(KUNTA_KRITEERI + kuntaId);
+        }
+
         @Cacheable("organisaation-peruskoulut")
         public JsonNode getPeruskoulutByOid(String oid) {
             return getPeruskoulut(ORGANISAATIO_KRITEERI + oid);
+        }
+
+        @Cacheable("organisaation-lukiot")
+        public JsonNode getLukiotByOid(String oid) {
+            return getLukiot(ORGANISAATIO_KRITEERI + oid);
         }
     }
 
@@ -146,21 +172,40 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     }
 
     @Override
+    public JsonNode getLukiotByKuntaId(String kuntaId) {
+        return client.getLukiotByKuntaId(kuntaId);
+    }
+
+    @Override
     public JsonNode getPeruskoulutByOid(String oid) {
         return client.getPeruskoulutByOid(oid);
     }
 
     @Override
     public JsonNode getPeruskoulutoimijat(List<String> kuntaIdt) {
+        return getToimijatByKuntas(kuntaIdt, this::getPeruskoulutByKuntaId);
+    }
+
+    private JsonNode getToimijatByKuntas(List<String> kuntaIdt, Function<String,JsonNode> getByKuntaId) {
         Set<String> toimijaOidit =
             kuntaIdt.stream()
                     .flatMap(kuntaId ->
-                                 StreamSupport.stream(getPeruskoulutByKuntaId(kuntaId).spliterator(), false)
+                                 StreamSupport.stream(getByKuntaId.apply(kuntaId).spliterator(), false)
                                               .map(koulu -> koulu.get("parentOid").asText()))
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
         ArrayNode toimijat = JsonNodeFactory.instance.arrayNode();
         toimijaOidit.stream().map(this::getOrganisaatio).forEach(toimijat::add);
         return toimijat;
+    }
+
+    @Override
+    public JsonNode getLukioByOid(String oid) {
+        return client.getLukiotByOid(oid);
+    }
+
+    @Override
+    public JsonNode getLukiotoimijat(List<String> kuntaIdt) {
+        return getToimijatByKuntas(kuntaIdt, this::getLukiotByKuntaId);
     }
 }

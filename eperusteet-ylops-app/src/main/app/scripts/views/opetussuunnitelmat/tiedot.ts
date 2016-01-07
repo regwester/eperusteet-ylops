@@ -19,8 +19,8 @@
 
 ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function ($scope, Editointikontrollit, $stateParams, $state,
-  $timeout, $q, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
-  PeruskoulutoimijaHaku, kunnat, Kieli, OpetussuunnitelmaOikeudetService, Varmistusdialogi) {
+    $timeout, $q, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
+    PeruskoulutoimijaHaku, LukiotoimijaHaku, LukioHaku, kunnat, Kieli, OpetussuunnitelmaOikeudetService, Varmistusdialogi) {
 
   $scope.kielivalinnat = []; // Täytetään pohjan perusteella
   $scope.luonnissa = $stateParams.id === 'uusi';
@@ -69,6 +69,7 @@ ylopsApp
       _(model.vuosiluokkakokonaisuudet).filter({valittu: true}).size() > 0;
     return nimiOk && organisaatiotOk && julkaisukieletOk && vlkOk;
   };
+  var isLukio = () => $scope.editableModel.koulutustyyppi === 'koulutustyyppi_2';
 
   function mapKunnat(lista) {
     return _(lista).map(function (kunta) {
@@ -338,7 +339,7 @@ ylopsApp
       $scope.editableModel.koulut = [];
     } else if (koulutoimijat.length === 1) {
       var koulutoimija = koulutoimijat[0];
-      PeruskouluHaku.get({oid: koulutoimija.oid}, function (res) {
+      (isLukio() ? LukioHaku : PeruskouluHaku).get({oid: koulutoimija.oid}, function (res) {
         $scope.koululista = _(res).map(function (koulu) {
           return _.pick(koulu, ['oid', 'nimi', 'tyypit']);
         }).sortBy(Utils.sort).value();
@@ -374,7 +375,7 @@ ylopsApp
       $scope.editableModel.koulut = [];
     } else {
       var kuntaUrit = _.map(kunnat, 'koodiUri');
-      PeruskoulutoimijaHaku.get({ kuntaUri: kuntaUrit }, function(res) {
+      (isLukio() ? LukiotoimijaHaku : PeruskoulutoimijaHaku).get({ kuntaUri: kuntaUrit }, function(res) {
         $scope.koulutoimijalista =  _(res).map(function (koulutoimija) {
           return _.pick(koulutoimija, ['oid', 'nimi', 'tyypit']);
         }).sortBy(Utils.sort).value();
