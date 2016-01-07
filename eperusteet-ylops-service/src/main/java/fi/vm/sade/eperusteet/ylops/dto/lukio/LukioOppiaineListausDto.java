@@ -45,7 +45,6 @@ public class LukioOppiaineListausDto implements Serializable,
     private Date muokattu;
     private UUID tunniste;
     private Tila tila;
-    private BigDecimal lukioLaajuus;
     private boolean oma;
     private boolean maariteltyPohjassa;
     private Integer jarjestys;

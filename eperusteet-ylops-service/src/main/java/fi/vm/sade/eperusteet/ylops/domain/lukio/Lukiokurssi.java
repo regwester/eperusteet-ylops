@@ -34,6 +34,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -77,6 +78,12 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private LukiokurssiTyyppi tyyppi;
+
+    @Getter
+    @Setter
+    @Column(name = "laajuus", nullable = true,
+            precision = 4, scale = 2, columnDefinition = "DECIMAL(4,2)")
+    private BigDecimal laajuus = BigDecimal.ONE;
 
     @Getter
     @Setter
@@ -127,6 +134,7 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
     public Lukiokurssi copyInto(Lukiokurssi lukiokurssi) {
         super.copyInto(lukiokurssi);
         lukiokurssi.setTyyppi(this.tyyppi);
+        lukiokurssi.setLaajuus(this.laajuus);
         lukiokurssi.setLokalisoituKoodi(this.lokalisoituKoodi);
         lukiokurssi.setTavoitteet(Tekstiosa.copyOf(this.tavoitteet));
         lukiokurssi.setKeskeinenSisalto(Tekstiosa.copyOf(this.keskeinenSisalto));

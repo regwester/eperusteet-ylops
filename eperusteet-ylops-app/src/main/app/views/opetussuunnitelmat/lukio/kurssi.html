@@ -58,6 +58,10 @@
         <span class="small-colorbox-container"><span class="colorbox kurssi-tyyppi {{kurssi.tyyppi | lowercase}}"></span></span>
       </td>
     </tr>
+    <tr>
+      <td style="padding-right: 20px;"><span kaanna="'kurssi-laajuus-header'"></span></td>
+      <td><span ng-bind="(kurssi.laajuus | number) + ' ' + ('kurssi-laajuus-kurssia' | kaanna)"></span></td>
+    </tr>
   </table>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false" editing="false"

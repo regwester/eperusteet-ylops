@@ -213,13 +213,11 @@ ylopsApp
             }
             return (node.dtype === LukioKurssiTreeNodeType.oppiaine
                             && to.dtype === LukioKurssiTreeNodeType.root
-                            && !node.koosteinen) ||
+                            && node.koosteinen) ||
                 (node.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.koosteinen && !node.koosteinen
                     && to.id == node.$$nodeParent.id) ||
-                (node.dtype === LukioKurssiTreeNodeType.oppiaine
-                    && to.dtype === LukioKurssiTreeNodeType.root ) ||
                 (node.dtype === LukioKurssiTreeNodeType.kurssi
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
                     && !to.koosteinen);

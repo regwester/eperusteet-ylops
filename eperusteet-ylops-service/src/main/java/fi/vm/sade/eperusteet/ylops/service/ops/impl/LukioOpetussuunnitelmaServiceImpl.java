@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -355,7 +356,11 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         LukioOppiaineJarjestys jarjestys = jarjestysRepository.findByOppiaineId(opsId, kurssi.getOppiaineId());
         assertExists(jarjestys, "Oppiainetta ei löydy Opetussuunnitelmasta.");
         Oppiaine oppiaine = jarjestys.getOppiaine();
+        if (oppiaine.isKoosteinen()) {
+            throw new BusinessRuleViolationException("Ei voida lisätä kurssia koosteiseen oppiaineeseen.");
+        }
 
+        kurssi.setLaajuus(kurssi.getLaajuus().max(BigDecimal.valueOf(0.5)));
         Lukiokurssi lukiokurssi = mapper.map(kurssi, new Lukiokurssi());
         lukiokurssi.setTyyppi(kurssi.getTyyppi().toKurssiiTyyppi());
         resolvePaikallinenKurssityyppi(kurssi.getTyyppi(), lukiokurssi);
@@ -384,7 +389,14 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         }
         Lukiokurssi lukiokurssi = oaLukiokurssi.getKurssi();
         lukiokurssiRepository.lock(lukiokurssi);
+        if (!lukiokurssi.getTyyppi().isPaikallinen()) {
+            // Ei anneta muokata laajuutta, jos määritelty pohjassa/ylätasolla:
+            kurssi.setLaajuus(lukiokurssi.getLaajuus());
+            kurssi.setTyyppi(lukiokurssi.getTyyppi());
+        }
+        kurssi.setLaajuus(kurssi.getLaajuus().max(BigDecimal.valueOf(0.5)));
         mapper.map(kurssi, lukiokurssi);
+
         if (lukiokurssi.getTyyppi().isPaikallinen() && kurssi.getTyyppi().isPaikallinen()) {
             lukiokurssi.setTyyppi(kurssi.getTyyppi());
             resolvePaikallinenKurssityyppi(kurssi.getTyyppi().paikallinen().get(), lukiokurssi);
@@ -542,7 +554,6 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         Map<Long, Map<Long,OppiaineLukiokurssi>> oppiaineetByKurssiId = ops.getLukiokurssit().stream()
                 .collect(groupingBy(oaLk -> oaLk.getKurssi().getId(),
                     mapping(oaLk -> oaLk, toMap(oaLk -> oaLk.getOppiaine().getId(), oaLk -> oaLk))));
-        Set<OppiaineLukiokurssi> toBeRemoved = new HashSet<>();
         for (LukiokurssiOppaineMuokkausDto kurssiDto : structureDto.getKurssit()) {
             // Jos kurssitByOppiaineId olisi null, niin käyttöliittymältä on tullut laittomia kurssi id:itä,
             // sillä kurssin on aiemmin ollut pakko kuulua johonkin oppiaineeseen (liittämättömiä ei sallita):
@@ -555,8 +566,13 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 } else {
                     // oli jo oltava jossain (koska liittämättömiä ei voi olla):
                     OppiaineLukiokurssi onePrevious = kurssitByOppiaineId.values().iterator().next();
+                    // oppiaineen löydyttävä entuudestaan:
+                    Oppiaine oppiaine = byOppiaineId.get(oaDto.getOppiaineId()).getOppiaine();
+                    if (oppiaine.isKoosteinen()) {
+                        throw new BusinessRuleViolationException("Ei voida lisätä kurssia koosteiseen oppiaineeseen.");
+                    }
                     ops.getLukiokurssit().add(new OppiaineLukiokurssi(ops,
-                        byOppiaineId.get(oaDto.getOppiaineId()).getOppiaine(), // oppiaineen löydyttävä entuudestaan
+                        oppiaine,
                         onePrevious.getKurssi(),
                         oaDto.getJarjestys(),
                         onePrevious.isOma() // sama oma-tila kaikkialla OPS:ssa missä samaa kurssia käytetty

@@ -809,6 +809,16 @@ a.clickable {
       margin-right: 10px;
     }
   }
+
+  .numeric-container {
+    display: inline-block;
+    padding-right: 10px;
+
+    .form-control.numeric {
+      width: 80px;
+      display: inline-block;
+    }
+  }
 }
 
 .btn-icon-only{

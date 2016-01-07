@@ -53,13 +53,12 @@
 
   <hr class="mujuviiva"/>
 
-  <div class="action-buttons-inline" ng-if="!editing">
+  <div class="action-buttons-inline" ng-if="!editing && !oppiaine.koosteinen">
     <button class="btn btn-default" kaanna="'lisaa-kurssi'" ng-click="lisaaKurssi()"></button>
   </div>
-  <h4 ng-bind="'oppiaine-kurssit' | kaanna" ></h4>
+  <h4 ng-bind="'oppiaine-kurssit' | kaanna" ng-if="!oppiaine.koosteinen" ></h4>
   <br/>
-
-  <div ng-repeat="kurssi in oppiaine.kurssit">
+  <div ng-repeat="kurssi in oppiaine.kurssit" ng-if="!oppiaine.koosteinen">
     <div class="oppiaine-sisaltopuu lukio-oppiaineet-puu">
       <a ng-click="openKurssi(kurssi)" class="container-link tree-list-item ng-scope bubble-osa empty-item">
         <span class="span-container puu-node kurssi-node">

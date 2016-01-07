@@ -553,7 +553,8 @@ ylopsApp
             validate: function() {
                 return Kaanna.kaanna($scope.kurssi.nimi) != null
                     && Kaanna.kaanna($scope.kurssi.lokalisoituKoodi)
-                    && $scope.kurssi.tyyppi != null;
+                    && $scope.kurssi.tyyppi != null
+                    && $scope.kurssi.laajuus > 0;
             },
             edit: () => $q((resolve) => {
                 LukioOpetussuunnitelmaService.lukitseKurssi($stateParams.kurssiId)
@@ -652,6 +653,7 @@ ylopsApp
             oppiaineId: $stateParams.oppiaineId,
             tyyppi: 'PAIKALLINEN_SYVENTAVA',
             nimi: LukioControllerHelpers.kielella(''),
+            laajuus: 1
         };
         $scope.editMode = true;
         $scope.oppiaine = null;
@@ -667,7 +669,8 @@ ylopsApp
             validate: function() {
                 return Kaanna.kaanna($scope.kurssi.nimi) != null
                     && Kaanna.kaanna($scope.kurssi.lokalisoituKoodi)
-                    && $scope.kurssi.tyyppi != null;
+                    && $scope.kurssi.tyyppi != null
+                    && $scope.kurssi.laajuus > 0;
             },
             edit: () => $q((resolve) => {
                 resolve();

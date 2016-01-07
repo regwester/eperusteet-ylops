@@ -23,7 +23,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +36,6 @@ import java.util.Optional;
 @Setter
 public class LukioOppiaineSaveDto implements Serializable {
     private Long oppiaineId;
-    private BigDecimal lukioLaajuus;
     private LokalisoituTekstiDto nimi;
     private String laajuus;
     private boolean koosteinen;

@@ -405,6 +405,8 @@
   "lisaa-oppiaine-title": "Lisää oppiaine",
   "oppaiaine-nimi-header": "Nimi",
   "kurssi-koodi-header": "Koodi",
+  "kurssi-laajuus-header": "Laajuus",
+  "kurssi-laajuus-kurssia": "kurssia",
   "kurssi-lokalisoitu-koodi-header": "Lokalisoitu koodi",
   "yksi-oppimaara": "Yksi oppimäärä",
   "useita-oppimaaria": "Useita oppimääriä",

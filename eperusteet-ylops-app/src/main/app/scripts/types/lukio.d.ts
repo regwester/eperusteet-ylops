@@ -128,6 +128,7 @@ declare module Lukio {
         palautettava: boolean;
         tyyppi: LukioKurssiTyyppi;
         tavoitteet?: l.TekstiOsa;
+        laajuus: number,
         keskeinenSisalto?: l.TekstiOsa;
         tavoitteetJaKeskeinenSisalto?: l.TekstiOsa;
     }

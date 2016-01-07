@@ -571,7 +571,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         for (LukioPerusteOppiaineDto oppiaine : from) {
             Oppiaine oa = new Oppiaine(oppiaine.getTunniste());
             oa.setTyyppi(OppiaineTyyppi.LUKIO);
-            oa.setLukioLaajuus(BigDecimal.ONE);
             oa.setNimi(LokalisoituTeksti.of(oppiaine.getNimi().getTekstit()));
             oa.setOppiaine(parent);
             oa.setAbstrakti(oppiaine.getAbstrakti());
@@ -609,6 +608,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         kurssi.setTyyppi(LukiokurssiTyyppi.ofPerusteTyyppi(kurssiDto.getTyyppi()));
         kurssi.setKoodiArvo(kurssiDto.getKoodiArvo());
         kurssi.setKoodiUri(kurssiDto.getKoodiUri());
+        kurssi.setLaajuus(BigDecimal.ONE);
         kurssi.setLokalisoituKoodi(kurssiDto.getLokalisoituKoodi() == null ? null
                 : LokalisoituTeksti.of(kurssiDto.getLokalisoituKoodi().getTekstit()));
         luodut.put(kurssi.getTunniste(), kurssi);

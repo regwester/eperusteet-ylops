@@ -87,6 +87,7 @@
     "scripts/common/directives/kommentit.ts",
     "scripts/common/directives/rajaus.ts",
     "scripts/common/directives/navimenu.ts",
+    "scripts/common/directives/jqueryspinner.ts",
     "scripts/common/filters.ts",
     "scripts/constants.ts",
     "scripts/config.ts"

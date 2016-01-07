@@ -77,12 +77,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
 
     @Getter
     @Setter
-    @Column(name = "lukio_laajuus", nullable = true,
-            precision = 4, scale = 2, columnDefinition = "DECIMAL(4,2)")
-    private BigDecimal lukioLaajuus;
-
-    @Getter
-    @Setter
     @Column(name = "koodi_arvo")
     private String koodiArvo;
 
@@ -380,7 +374,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
             to.setNimi(other.getNimi());
             to.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
             to.setKoodi(other.getKoodi());
-            to.setLukioLaajuus(other.getLukioLaajuus());
             to.setKoosteinen(other.isKoosteinen());
             to.setKoodiArvo(other.getKoodiArvo());
             to.setKoodiUri(other.getKoodiUri());
