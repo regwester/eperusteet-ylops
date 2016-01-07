@@ -21,6 +21,7 @@
     "scripts/views/opetussuunnitelmat/services/vuosiluokat.ts",
     "scripts/views/opetussuunnitelmat/services/kielitarjonta.ts",
     "scripts/views/opetussuunnitelmat/services/lukioServices.ts",
+    "scripts/views/opetussuunnitelmat/services/pdf.ts",
     "scripts/views/opetussuunnitelmat/pohja/tiedot.ts",
     "scripts/views/opetussuunnitelmat/pohja/tekstikappale.ts",
     "scripts/views/opetussuunnitelmat/pohja/pohja.ts",

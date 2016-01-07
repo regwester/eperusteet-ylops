@@ -65,4 +65,7 @@ public class Termi implements Serializable {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private LokalisoituTeksti selitys;
 
+    @Getter
+    @Setter
+    private boolean alaviite;
 }
