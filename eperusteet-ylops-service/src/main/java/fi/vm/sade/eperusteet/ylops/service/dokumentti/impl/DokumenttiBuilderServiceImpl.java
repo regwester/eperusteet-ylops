@@ -233,7 +233,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         headElement.appendChild(title);
 
         String tyyppi = messages.translate(ops.getKoulutustyyppi().toString(), kieli);
-        LOG.info(tyyppi);
         Element type = doc.createElement("meta");
         type.setAttribute("name", "type");
         type.setAttribute("content", tyyppi);
