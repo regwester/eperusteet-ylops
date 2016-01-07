@@ -28,7 +28,7 @@ ylopsApp
   };
 })
 
-.controller('OpsHeaderController', function ($scope, $state, $stateParams) {
+.controller('OpsHeaderController', function ($scope, $state, $stateParams, PdfCreation) {
   var POHJALINKIT = [
     // {state: 'root.pohjat.yksi.tiedot', label: 'pohjan-tiedot', role: 'info'}
   ];
@@ -69,4 +69,9 @@ ylopsApp
   }
   $scope.$on('$stateChangeSuccess', update);
   update();
+
+  $scope.luoPdf = function () {
+    PdfCreation.setOpsId($scope.opsId);
+    PdfCreation.openModal();
+  };
 });

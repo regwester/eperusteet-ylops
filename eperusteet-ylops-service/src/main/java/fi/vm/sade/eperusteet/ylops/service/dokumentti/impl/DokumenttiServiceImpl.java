@@ -27,7 +27,6 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-import org.apache.fop.apps.FOPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -67,32 +67,46 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional
     @PreAuthorize("isAuthenticated()")
+    public DokumenttiDto getDto(@P("id") long opsId, Kieli kieli) {
+        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
+
+        // Jos löytyy
+        if (!dokumentit.isEmpty()) {
+            return mapper.map(dokumentit.get(0), DokumenttiDto.class);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("isAuthenticated()")
     public DokumenttiDto createDtoFor(@P("id") long id, Kieli kieli) {
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = new Dokumentti();
         dokumentti.setTila(DokumenttiTila.EI_OLE);
-        dokumentti.setKieli(kieli);
         dokumentti.setAloitusaika(new Date());
         dokumentti.setLuoja(name);
+        dokumentti.setKieli(kieli);
         dokumentti.setOpsId(id);
-        //dokumentti.setSuoritustapakoodi(suoritustapakoodi);
 
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         if (ops != null) {
             Dokumentti saved = dokumenttiRepository.save(dokumentti);
             return mapper.map(saved, DokumenttiDto.class);
         } else {
-            dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
-            // TODO: localize
-            //dokumentti.setVirhekoodi(DokumenttiVirhe.PERUSTETTA_EI_LOYTYNYT);
-            return mapper.map(dokumentti, DokumenttiDto.class);
+            return null;
         }
     }
 
     @Override
+    @Transactional
     public void setStarted(@P("dto") DokumenttiDto dto) {
-        // Asetetaan dokumentint tilaksi luonti
+        // Asetetaan dokumentti luonti tilaan
+        String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
+        dokumentti.setAloitusaika(new Date());
+        dokumentti.setLuoja(name);
         dokumentti.setTila(DokumenttiTila.LUODAAN);
         dokumenttiRepository.save(dokumentti);
     }
@@ -121,6 +135,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         }
     }
     @Override
+    @Transactional
     public DokumenttiDto getDto(@P("id") long id) {
         Dokumentti dokumentti = dokumenttiRepository.findById(id);
         DokumenttiDto dokumenttiDto = mapper.map(dokumentti, DokumenttiDto.class);
@@ -136,5 +151,12 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DokumenttiDto query(Long id) {
+        Dokumentti findById = dokumenttiRepository.findById(id);
+        return mapper.map(findById, DokumenttiDto.class);
     }
 }

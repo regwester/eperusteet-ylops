@@ -166,3 +166,11 @@ dl.termisto {
     border: 1px solid #92cce0;
   }
 }
+
+.checkbox {
+  label {
+    input[type="radio"], input[type="checkbox"] {
+      top: 3px;
+    }
+  }
+}

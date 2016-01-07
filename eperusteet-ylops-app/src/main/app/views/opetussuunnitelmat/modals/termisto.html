@@ -7,7 +7,7 @@
 
 <div class="modal-body termi-muokkaus">
   <h3 kaanna="'termi'"></h3>
-  <input class="form-control" slocalized ng-model="termimodel.termi" type="text" required="true"></input>
+  <input class="form-control" slocalized ng-model="termimodel.termi" type="text" required="true" />
 
   <h3 kaanna="'termin-selitys'"></h3>
   <div id="toolbar" style="display: none">
@@ -16,6 +16,19 @@
   </div>
   <div ckeditor ng-model="termimodel.selitys" slocalized editor-placeholder="termin-selitys-placeholder"></div>
   <div class="clearfix"></div>
+
+  <h3>
+    {{'alaviite' | kaanna}}
+    <ohje teksti="alaviite-ohje" class="ng-isolate-scope" />
+  </h3>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" ng-model="termimodel.alaviite">
+      <p>
+        Merkitse käsite alaviitteeksi.
+      </p>
+    </label>
+  </div>
 </div>
 
 <div class="modal-footer">

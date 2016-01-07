@@ -29,6 +29,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface DokumenttiService {
 
     @PreAuthorize("isAuthenticated()")
+    DokumenttiDto getDto(@P("id") final long opsId, Kieli kieli);
+
+    @PreAuthorize("isAuthenticated()")
     DokumenttiDto createDtoFor(@P("id") final long id, Kieli kieli);
 
     @PreAuthorize("isAuthenticated()")
@@ -44,4 +47,6 @@ public interface DokumenttiService {
     @PreAuthorize("isAuthenticated()")
     byte[] get(Long id);
 
+    @PreAuthorize("isAuthenticated()")
+    DokumenttiDto query(Long id);
 }

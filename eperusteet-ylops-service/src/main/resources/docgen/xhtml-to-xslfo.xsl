@@ -106,13 +106,6 @@
             <!-- Info page -->
             <fo:page-sequence master-reference="blank">
 
-                <fo:static-content flow-name="xsl-footnote-separator">
-                    <fo:block text-align-last="justify">
-                        <fo:leader leader-pattern="rule" leader-length.maximum="100%" leader-length.optimum="100%"
-                                   rule-thickness="1pt" color="#6E6C6C" />
-                    </fo:block>
-                </fo:static-content>
-
                 <fo:flow flow-name="xsl-region-body">
                     <xsl:call-template name="info" />
                 </fo:flow>
@@ -166,6 +159,12 @@
                     <fo:block text-align="start" color="#007ec5" margin-left="20mm"
                               margin-bottom="5mm" display-align="after">
                         <fo:retrieve-marker retrieve-class-name="chapter" />
+                    </fo:block>
+                </fo:static-content>
+                <fo:static-content flow-name="xsl-footnote-separator">
+                    <fo:block text-align-last="justify">
+                        <fo:leader leader-pattern="rule" leader-length.maximum="100%" leader-length.optimum="100%"
+                                   rule-thickness="1pt" color="#6E6C6C" />
                     </fo:block>
                 </fo:static-content>
 
@@ -414,12 +413,12 @@
                             <xsl:text>36pt</xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:text>12pt</xsl:text>
+                            <xsl:text>10pt</xsl:text>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:text>12pt</xsl:text>
+                    <xsl:text>10pt</xsl:text>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -433,8 +432,8 @@
         <fo:block break-before="page">
             <!--<fo:leader leader-pattern="rule" leader-length.maximum="100%" leader-length.optimum="100%" />-->
         </fo:block>
-        <fo:block font-size="22pt" line-height="1.25em" font-weight="bold"
-                  keep-with-next="always" space-after="32pt"
+        <fo:block font-size="20pt" line-height="1.25em" font-weight="bold"
+                  keep-with-next="always" space-after="16pt"
                   font-family="serif" color="#007EC5">
 
             <xsl:attribute name="id">
@@ -458,9 +457,9 @@
 
             <xsl:choose>
                 <xsl:when test="@number">
-                    <fo:table>
-                        <fo:table-column column-width="20mm"/>
-                        <fo:table-column />
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="20mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
@@ -485,7 +484,7 @@
     </xsl:template>
 
     <xsl:template match="h2">
-        <fo:block font-size="18pt" line-height="1.25em" font-weight="bold"
+        <fo:block font-size="16pt" line-height="1.25em" font-weight="bold"
                   keep-with-next="always" space-after="10pt"
                   font-family="serif" color="#007EC5">
 
@@ -502,9 +501,9 @@
 
             <xsl:choose>
                 <xsl:when test="@number">
-                    <fo:table>
-                        <fo:table-column column-width="20mm"/>
-                        <fo:table-column />
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="20mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
@@ -547,9 +546,9 @@
 
             <xsl:choose>
                 <xsl:when test="@number">
-                    <fo:table>
-                        <fo:table-column column-width="20mm"/>
-                        <fo:table-column />
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="20mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
@@ -574,7 +573,7 @@
     </xsl:template>
 
     <xsl:template match="h4">
-        <fo:block font-size="14pt" line-height="1.25em" font-weight="bold"
+        <fo:block font-size="12pt" line-height="1.25em" font-weight="bold"
                   keep-with-next="always" space-after="10pt"
                   font-family="serif" color="#007EC5">
 
@@ -591,9 +590,9 @@
 
             <xsl:choose>
                 <xsl:when test="@number">
-                    <fo:table>
-                        <fo:table-column column-width="20mm"/>
-                        <fo:table-column />
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="20mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
                         <fo:table-body>
                             <fo:table-row>
                                 <fo:table-cell>
@@ -618,8 +617,8 @@
     </xsl:template>
 
     <xsl:template match="h5">
-        <fo:block font-size="0.83em" line-height="19pt"
-                  keep-with-next="always" space-after="12pt"
+        <fo:block font-size="12pt" line-height="1.25em"
+                  keep-with-next="always" space-after="10pt"
                   font-family="serif" color="#007EC5"
                   text-decoration="underline">
             <xsl:attribute name="id">
@@ -637,8 +636,8 @@
     </xsl:template>
 
     <xsl:template match="h6">
-        <fo:block font-size="0.67em" line-height="17pt"
-                  keep-with-next="always" space-after="12pt"
+        <fo:block font-size="12pt" line-height="1.25em"
+                  keep-with-next="always" space-after="10pt"
                   font-family="serif" font-style="italic"
                   color="#007EC5"
                   text-decoration="underline">
@@ -669,36 +668,14 @@
         </fo:inline>
     </xsl:template>
 
-    <!--<xsl:template match="img">
+    <xsl:template match="img">
         <fo:block space-after="12pt">
-            <fo:external-graphic src="{@src}">
-                <xsl:if test="@width">
-                    <xsl:attribute name="width">
-                        <xsl:choose>
-                            <xsl:when test="contains(@width, 'px')">
-                                <xsl:value-of select="@width" />
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="concat(@width, 'px')" />
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:attribute>
-                </xsl:if>
-                <xsl:if test="@height">
-                    <xsl:attribute name="height">
-                        <xsl:choose>
-                            <xsl:when test="contains(@height, 'px')">
-                                <xsl:value-of select="@height" />
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:value-of select="concat(@height, 'px')" />
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:attribute>
-                </xsl:if>
+            <fo:external-graphic src="{@src}" content-width="scale-to-fit" content-height="100%"
+                                 width="100%"
+                                 scaling="uniform">
             </fo:external-graphic>
         </fo:block>
-    </xsl:template>-->
+    </xsl:template>
 
     <xsl:template match="kbd">
         <fo:inline font-family="monospace" font-size="110%">
@@ -721,14 +698,14 @@
                         <xsl:text>0pt</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:text>12pt</xsl:text>
+                        <xsl:text>10pt</xsl:text>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
             <xsl:attribute name="start-indent">
                 <xsl:variable name="ancestors">
                     <xsl:choose>
-                        <xsl:when test="count(ancestor::ol) or count(ancestor::ul)">
+                        <xsl:when test="count(ancestor::ol) or boolean(count(ancestor::ul))">
                             <xsl:value-of select="1 +
                                     (count(ancestor::ol) +
                                      count(ancestor::ul)) *
@@ -753,7 +730,7 @@
                     <xsl:variable name="value-attr">
                         <xsl:choose>
                             <xsl:when test="../@start">
-                                <xsl:number value="position() + ../@start - 1" />
+                                <xsl:number value="position() + number(../@start) - 1" />
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:number value="position()" />
@@ -788,10 +765,56 @@
     </xsl:template>
 
     <xsl:template match="p">
-        <fo:block font-size="12pt" line-height="1.25em"
-                  space-after="12pt" text-align="justify">
+        <fo:block font-size="10pt" line-height="1.25em"
+                  space-after="12pt" text-align="justify"
+                  line-stacking-strategy="font-height">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
+    </xsl:template>
+
+    <xsl:template match="peruste">
+        <fo:block color="#444444" font-style="italic">
+            <xsl:apply-templates select="*|text()" />
+        </fo:block>
+    </xsl:template>
+
+    <xsl:template match="abbr">
+        <xsl:if test="@footnote='1'">
+            <xsl:text>ON ALATUNNISTE</xsl:text>
+        </xsl:if>
+
+        <xsl:value-of select="." />
+
+        <!-- Show endnotes bottom of the page -->
+        <fo:footnote>
+            <fo:inline baseline-shift="4pt" font-size="8pt">
+                <xsl:value-of select="@number" />
+            </fo:inline>
+            <fo:footnote-body>
+                <fo:block font-size="8pt" line-height="10pt" start-indent="0" text-align="left" color="black">
+
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="10mm" />
+                        <fo:table-column column-width="proportional-column-width(1)" />
+                        <fo:table-body>
+                            <fo:table-row>
+                                <fo:table-cell>
+                                    <fo:block text-align="center">
+                                        <xsl:value-of select="@number" />
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <xsl:value-of select="@text" />
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
+
+                </fo:block>
+            </fo:footnote-body>
+        </fo:footnote>
     </xsl:template>
 
     <xsl:template match="pre">
@@ -841,7 +864,7 @@
     </xsl:template>
 
     <xsl:template match="table">
-        <fo:table table-layout="fixed" inline-progression-dimension="100%">
+        <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt">
             <!--<xsl:choose>
                 <xsl:when test="@cols">
                     <xsl:call-template name="build-columns">
@@ -1008,8 +1031,8 @@
     </xsl:template>
 
     <xsl:template match="ul">
-        <fo:list-block provisional-distance-between-starts="1cm"
-                       provisional-label-separation="0.5cm">
+        <fo:list-block provisional-distance-between-starts="0.5cm"
+                       provisional-label-separation="0.25cm">
             <xsl:attribute name="space-after">
                 <xsl:choose>
                     <xsl:when test="ancestor::ul or ancestor::ol">
@@ -1023,14 +1046,14 @@
             <xsl:attribute name="start-indent">
                 <xsl:variable name="ancestors">
                     <xsl:choose>
-                        <xsl:when test="count(ancestor::ol) or count(ancestor::ul)">
-                            <xsl:value-of select="1 +
+                        <xsl:when test="count(ancestor::ol) or boolean(count(ancestor::ul))">
+                            <xsl:value-of select="0.5 +
                                     (count(ancestor::ol) +
                                      count(ancestor::ul)) *
-                                    1.25" />
+                                    0.75" />
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:text>1</xsl:text>
+                            <xsl:text>0.5</xsl:text>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
@@ -1046,7 +1069,7 @@
                 <fo:block>&#x2022;</fo:block>
             </fo:list-item-label>
             <fo:list-item-body start-indent="body-start()">
-                <fo:block>
+                <fo:block font-size="10pt">
                     <xsl:apply-templates select="*|text()" />
                 </fo:block>
             </fo:list-item-body>
@@ -1063,13 +1086,13 @@
 
     <!-- Cover page -->
     <xsl:template name="cover">
-        <fo:block break-before='page' color="white"  font-weight="bold"
+        <fo:block break-before='page' color="white"  font-weight="bold" text-align="center"
                   margin-top="150mm" margin="40mm">
             <fo:block font-size="28pt" >
                 <xsl:value-of select="/html/head/title" />
             </fo:block>
 
-            <fo:block  font-size="18pt">
+            <fo:block  font-size="16pt">
                 <xsl:apply-templates select="/html/head/meta[@name='subtitle']/@content" />
             </fo:block>
         </fo:block>
@@ -1079,34 +1102,91 @@
     <!-- Info page -->
     <xsl:template name="info">
 
-        <fo:block>
-            <fo:footnote>
-                <fo:inline baseline-shift="super"  font-size="10pt">1</fo:inline>
-                <fo:footnote-body>
-                    <fo:block>
-                        <fo:inline font-size="10pt" baseline-shift="super">1</fo:inline>
-                        This is the first footnote
-                    </fo:block>
-                </fo:footnote-body>
-            </fo:footnote>
-            <fo:footnote>
-                <fo:inline baseline-shift="super"  font-size="10pt">2</fo:inline>
-                <fo:footnote-body>
-                    <fo:block>
-                        <fo:inline font-size="10pt" baseline-shift="super">2</fo:inline>
-                        lol footnote
-                    </fo:block>
-                </fo:footnote-body>
-            </fo:footnote>
-        </fo:block>
-
         <fo:block break-before='page' font-size="18pt" font-weight="bold" padding-bottom="12pt">
             <xsl:value-of select="/html/head/title" />: <xsl:apply-templates select="/html/head/meta[@name='type']/@content" />
         </fo:block>
 
-        <fo:block padding-bottom="12pt">
-            <xsl:apply-templates select="/html/head/meta[@name='description']/@content" />
-        </fo:block>
+        <fo:table table-layout="fixed" width="100%"
+                  border-collapse="separate" border-separation="4pt">
+            <fo:table-column column-width="proportional-column-width(1)" />
+            <fo:table-column column-width="proportional-column-width(2)" />
+            <fo:table-body>
+                <fo:table-row>
+                    <fo:table-cell>
+                        <fo:block font-weight="bold">
+                            <xsl:if test="//html/@lang = 'fi'">
+                                <xsl:text>Perusteen nimi</xsl:text>
+                            </xsl:if>
+                            <xsl:if test="//html/@lang = 'sv'">
+                                <xsl:text>Namn på grunderna</xsl:text>
+                            </xsl:if>
+                        </fo:block>
+                    </fo:table-cell>
+                    <fo:table-cell>
+                        <fo:block>
+                            <xsl:value-of select="/html/head/title" />
+                        </fo:block>
+                    </fo:table-cell>
+                </fo:table-row>
+                <xsl:if test="boolean(/html/head/meta[@name='diary'])">
+                    <fo:table-row>
+                        <fo:table-cell>
+                            <fo:block font-weight="bold">
+                                <xsl:if test="//html/@lang = 'fi'">
+                                    <xsl:text>Määräyksen diaarinumero</xsl:text>
+                                </xsl:if>
+                                <xsl:if test="//html/@lang = 'sv'">
+                                    <xsl:text>Föreskriftens diarienummer</xsl:text>
+                                </xsl:if>
+                            </fo:block>
+                        </fo:table-cell>
+                        <fo:table-cell>
+                            <fo:block>
+                                <xsl:apply-templates select="/html/head/meta[@name='diary']/@content" />
+                            </fo:block>
+                        </fo:table-cell>
+                    </fo:table-row>
+                </xsl:if>
+                <xsl:if test="boolean(/html/head/meta[@name='description'])">
+                    <fo:table-row>
+                        <fo:table-cell>
+                            <fo:block font-weight="bold">
+                                <xsl:if test="//html/@lang = 'fi'">
+                                    <xsl:text>Tiivistelmä</xsl:text>
+                                </xsl:if>
+                                <xsl:if test="//html/@lang = 'sv'">
+                                    <xsl:text>Sammandrag</xsl:text>
+                                </xsl:if>
+                            </fo:block>
+                        </fo:table-cell>
+                        <fo:table-cell>
+                            <fo:block>
+                                <xsl:apply-templates select="/html/head/meta[@name='description']/@content" />
+                            </fo:block>
+                        </fo:table-cell>
+                    </fo:table-row>
+                </xsl:if>
+                <xsl:if test="boolean(/html/head/meta[@name='date'])">
+                    <fo:table-row>
+                        <fo:table-cell>
+                            <fo:block font-weight="bold">
+                                <xsl:if test="//html/@lang = 'fi'">
+                                    <xsl:text>Voimaantulo</xsl:text>
+                                </xsl:if>
+                                <xsl:if test="//html/@lang = 'sv'">
+                                    <xsl:text>Träder i kraft</xsl:text>
+                                </xsl:if>
+                            </fo:block>
+                        </fo:table-cell>
+                        <fo:table-cell>
+                            <fo:block>
+                                <xsl:apply-templates select="/html/head/meta[@name='date']/@content" />
+                            </fo:block>
+                        </fo:table-cell>
+                    </fo:table-row>
+                </xsl:if>
+            </fo:table-body>
+        </fo:table>
     </xsl:template>
 
 
@@ -1117,8 +1197,13 @@
         </fo:block>-->
 
         <fo:block break-before='page' space-after="12pt" id="TableOfContents" color="#007EC5" font-weight="bold"
-                  line-height="21pt" font-size="18pt" text-align="start">
-            SISÄLTÖ
+                  line-height="21pt" font-size="16pt" text-align="start">
+            <xsl:if test="//html/@lang = 'fi'">
+                <xsl:text>SISÄLTÖ</xsl:text>
+            </xsl:if>
+            <xsl:if test="//html/@lang = 'sv'">
+                <xsl:text>Innehållsförteckning</xsl:text>
+            </xsl:if>
         </fo:block>
 
         <xsl:for-each select="
@@ -1126,28 +1211,9 @@
         /html/body//h2 |
         /html/body//h3 |
         /html/body//h4">
-            <fo:block text-align-last="justify" line-height="17pt"
-                      font-size="14pt" space-after="3pt" text-align="start"
+            <fo:block text-align-last="justify" line-height="15pt"
+                      font-size="12pt" space-after="3pt" text-align="start"
                       text-indent="-1cm">
-
-                <!--<xsl:variable name="nh1">
-                    <xsl:number count="h1" level="any" format="1."/>
-                </xsl:variable>
-                <xsl:variable name="nh2">
-                    <xsl:number count="h1" level="any" format="1."/>
-                    <xsl:number count="h2" from="h1" level="any" format="1."/>
-                </xsl:variable>
-                <xsl:variable name="nh3">
-                    <xsl:number count="h1" level="any" format="1."/>
-                    <xsl:number count="h2" from="h1" level="any" format="1."/>
-                    <xsl:number count="h3" from="h2" level="any" format="1."/>
-                </xsl:variable>
-                <xsl:variable name="nh4">
-                    <xsl:number count="h1" level="any" format="1."/>
-                    <xsl:number count="h2" from="h1" level="any" format="1."/>
-                    <xsl:number count="h3" from="h2" level="any" format="1."/>
-                    <xsl:number count="h4" from="h3" level="any" format="1."/>
-                </xsl:variable>-->
 
                 <xsl:attribute name="start-indent">
                     <xsl:choose>
@@ -1188,32 +1254,17 @@
                         </xsl:choose>
                     </xsl:attribute>
 
-                    <!--<xsl:choose>
-                        <xsl:when test="name() = 'h1'">
-                            <xsl:value-of select="$nh1" />
-                        </xsl:when>
-                        <xsl:when test="name() = 'h2'">
-                            <xsl:value-of select="$nh2" />
-                        </xsl:when>
-                        <xsl:when test="name() = 'h3'">
-                            <xsl:value-of select="$nh3" />
-                        </xsl:when>
-                        <xsl:when test="name() = 'h4'">
-                            <xsl:value-of select="$nh4" />
-                        </xsl:when>
-                    </xsl:choose>
-                    <xsl:text> </xsl:text>-->
-
                     <xsl:if test="@number">
                         <xsl:value-of select="@number" />
-                        <!--<xsl:value-of select="substring(concat('________', @number), string-length(@number) + 1, 4)"/>-->
                         <xsl:text> </xsl:text>
                     </xsl:if>
                     <xsl:apply-templates select="*|text()" />
                 </fo:basic-link>
 
-                <fo:leader leader-pattern="dots" leader-pattern-width="5pt"
-                           leader-length.maximum="100%" leader-length.optimum="100%" />
+                <!--<fo:leader leader-pattern="dots" leader-pattern-width="5pt"
+                           leader-length.maximum="100%" leader-length.optimum="100%" />-->
+
+                <fo:leader leader-pattern="dots" leader-pattern-width="8pt" />
 
                 <fo:page-number-citation>
                     <xsl:attribute name="ref-id">
@@ -1331,7 +1382,7 @@
     <xsl:template name="build-columns">
         <xsl:param name="cols" />
 
-        <xsl:if test="string-length(normalize-space($cols))">
+        <xsl:if test="boolean(string-length(normalize-space($cols)))">
             <xsl:variable name="next-col">
                 <xsl:value-of select="substring-before($cols, ' ')" />
             </xsl:variable>
