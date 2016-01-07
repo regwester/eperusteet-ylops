@@ -153,8 +153,9 @@ ylopsApp
 
         $scope.toEditMode = () => {
             $scope.editMode = true;
+            state.defaultCollapse = true;
+            LukioTreeUtils.updateCollapse(state);
             $scope.$broadcast('genericTree:refresh'); // templates get updated
-
             Editointikontrollit.startEditing();
         };
 
