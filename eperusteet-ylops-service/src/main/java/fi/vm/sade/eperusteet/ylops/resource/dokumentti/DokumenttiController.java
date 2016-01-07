@@ -128,10 +128,31 @@ public class DokumenttiController {
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.GET, params = "opsId")
+    @ResponseBody
+    public ResponseEntity<DokumenttiDto> getDokumentti(
+            @RequestParam("opsId") final Long opsId,
+            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
+        try {
+            Kieli k = Kieli.of(kieli);
+            DokumenttiDto dto = service.getDto(opsId, k);
+            if (dto == null)
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            else
+                return new ResponseEntity<>(dto, HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            LOG.warn(ex.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<DokumenttiDto> query(@PathVariable("dokumenttiId") final Long dokumenttiId) {
         DokumenttiDto dto = service.query(dokumenttiId);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        if (dto == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else
+            return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }

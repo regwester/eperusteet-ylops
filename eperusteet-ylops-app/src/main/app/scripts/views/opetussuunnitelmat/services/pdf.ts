@@ -16,22 +16,11 @@
 
 ylopsApp
   .factory('Dokumentti', function($resource, SERVICE_LOC) {
-    var baseUrl = SERVICE_LOC + '/dokumentit/:id';
 
-    return {
-      states: $resource(baseUrl, {}, {
-        query: { method: 'GET', params: {}, isArray: false }
-      }),
-      countries: $resource(baseUrl, {}, {
-        query: { method: 'GET', params: {}, isArray: false }
-      })
-    };
-
-    return $resource(baseUrl, {
-      id: '@id',
-      tila: {
-        method: 'GET', url: baseUrl+'/tila'
-      }
+    var baseUrl = SERVICE_LOC+'/dokumentit/:id';
+    return $resource(baseUrl, {}, {
+      query: {method: 'GET', params: {id: '@id'}, isArray: true },
+      tila: {method: 'GET', url: baseUrl+'/tila'}
     });
   })
   .service('Pdf', function(Dokumentti, SERVICE_LOC) {
@@ -50,11 +39,9 @@ ylopsApp
       success = success || angular.noop;
       failure = failure || angular.noop;
 
-      console.log(Dokumentti);
-
       Dokumentti.tila({
         id: tokenId
-      }, success);
+      }, success, failure);
     }
 
     function haeDokumentti(tokenId, success, failure) {
@@ -63,7 +50,7 @@ ylopsApp
 
       return Dokumentti.get({
         id: tokenId
-      }, success);
+      }, success, failure);
     }
 
     function haeLinkki(tokenId) {
@@ -75,12 +62,10 @@ ylopsApp
       success = success || angular.noop;
       failure = failure || angular.noop;
 
-      console.log("asdasd");
-
       return Dokumentti.get({
         opsId: opsId,
         kieli: kieli
-      }, success);
+      }, success, failure);
 
     }
     return {
@@ -92,7 +77,7 @@ ylopsApp
     };
   })
 
-  .factory('PdfCreation', function($modal) {
+  .factory('PdfCreation', function($modal, Kieli) {
     var service: any = {};
     var opsId = null;
 
@@ -111,7 +96,7 @@ ylopsApp
           kielet: function() {
             return {
               lista: _.sortBy(['fi', 'sv']),
-              valittu: 'fi'
+              valittu: Kieli.getSisaltokieli()
             };
           }
         }
@@ -140,7 +125,6 @@ ylopsApp
       _.each(kielet, function(kieli) {
 
         Pdf.haeUusin(opsId, kieli, function(res) {
-          console.log(res);
           if (kieli === $scope.kielet.valittu) {
             $scope.tila = res.tila;
           }
@@ -148,6 +132,8 @@ ylopsApp
             res.url = Pdf.haeLinkki(res.id);
             $scope.docs[kieli] = res;
           }
+        }, function () {
+          $scope.tila = 'ei_ole';
         });
       });
     }
@@ -161,7 +147,6 @@ ylopsApp
         $scope.tila = res.tila;
         switch (res.tila) {
           case 'luodaan':
-          case 'ei_ole':
             startPolling(res.id);
             break;
           case 'valmis':

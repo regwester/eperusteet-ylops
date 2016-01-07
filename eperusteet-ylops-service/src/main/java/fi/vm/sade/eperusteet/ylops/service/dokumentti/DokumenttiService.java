@@ -48,5 +48,5 @@ public interface DokumenttiService {
     byte[] get(Long id);
 
     @PreAuthorize("isAuthenticated()")
-    public DokumenttiDto query(Long id);
+    DokumenttiDto query(Long id);
 }
