@@ -175,11 +175,11 @@
     </xsl:template>
 
     <xsl:template match="body">
-
         <fo:flow flow-name="xsl-region-body">
-
-            <xsl:apply-templates select="*|text()" />
-
+            <!-- Set default font-size -->
+            <fo:block font-size="10pt" >
+                <xsl:apply-templates select="*|text()" />
+            </fo:block>
         </fo:flow>
     </xsl:template>
 
@@ -307,19 +307,6 @@
             <xsl:apply-templates select="*|text()" />
         </fo:inline>
     </xsl:template>
-
-    <!-- ============================================
-      For the <font> element, we handle the color,
-      face, and size attributes.  Color will work if
-      it's one of the twelve colors supported by XSL-FO
-      or it's a hex value like x0033ff.  (In other words,
-      if you tell FOP to set the color to PapayaWhip,
-      you're out of luck.)  The face attribute will
-      work if FOP supports it.  (There are ways to add
-      fonts to FOP, see the FOP documentation for more
-      info.)  Size is supported for values like
-      size="14pt", size="3", and size="+3".
-      =============================================== -->
 
     <xsl:template match="font">
         <xsl:variable name="color">
@@ -1069,7 +1056,7 @@
                 <fo:block>&#x2022;</fo:block>
             </fo:list-item-label>
             <fo:list-item-body start-indent="body-start()">
-                <fo:block font-size="10pt">
+                <fo:block>
                     <xsl:apply-templates select="*|text()" />
                 </fo:block>
             </fo:list-item-body>
