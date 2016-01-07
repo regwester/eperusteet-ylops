@@ -19,7 +19,6 @@ package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
-import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
@@ -35,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
@@ -76,8 +74,8 @@ public class DokumenttiController {
             dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
 
         // Jos tila epäonnistunut, opsia ei löytynyt
-        if (dtoForDokumentti.getTila() == DokumenttiTila.EI_OLE)
-            return new ResponseEntity<>(dtoForDokumentti, HttpStatus.NOT_FOUND);
+        if (dtoForDokumentti == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         // Aloitetaan luonti jos luonti ei ole jo päällä tai maksimi luontiaika ylitetty
         if (isTimePass(dtoForDokumentti) || dtoForDokumentti.getTila() != DokumenttiTila.LUODAAN) {
@@ -126,7 +124,6 @@ public class DokumenttiController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
         //headers.set("Content-disposition", "attachment; filename=\"" + dokumenttiId + ".pdf\"");
-        LOG.info(headers.toString());
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }

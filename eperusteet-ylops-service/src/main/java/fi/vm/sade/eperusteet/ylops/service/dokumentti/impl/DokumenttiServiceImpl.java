@@ -84,9 +84,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     public DokumenttiDto createDtoFor(@P("id") long id, Kieli kieli) {
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = new Dokumentti();
+        dokumentti.setTila(DokumenttiTila.EI_OLE);
         dokumentti.setAloitusaika(new Date());
         dokumentti.setLuoja(name);
-        dokumentti.setTila(DokumenttiTila.EI_OLE);
         dokumentti.setKieli(kieli);
         dokumentti.setOpsId(id);
 
@@ -95,7 +95,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             Dokumentti saved = dokumenttiRepository.save(dokumentti);
             return mapper.map(saved, DokumenttiDto.class);
         } else {
-            return mapper.map(dokumentti, DokumenttiDto.class);
+            return null;
         }
     }
 

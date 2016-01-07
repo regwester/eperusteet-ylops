@@ -16,15 +16,18 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -88,6 +91,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     @Autowired
     private LiiteService liiteService;
 
+    @Autowired
+    private OhjeService ohjeService;
 
     @Autowired
     private DtoMapper mapper;
@@ -250,6 +255,19 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             header.appendChild(doc.createTextNode(getTextString(viite.getTekstiKappale().getNimi(), kieli)));
             rootElement.appendChild(header);
 
+            // Perusteen teksti luvulle
+            addPerusteTeksti(doc, rootElement, viite, kieli);
+
+            // Luodaan pohjan sisältö kappaleelle
+            String teskti = "<root>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</root>";
+            teskti = StringEscapeUtils.unescapeHtml4(teskti);
+            Node node = DocumentBuilderFactory
+                    .newInstance()
+                    .newDocumentBuilder()
+                    .parse(new ByteArrayInputStream(teskti.getBytes()))
+                    .getDocumentElement();
+            rootElement.appendChild(doc.importNode(node, true));
+
             addTekstiKappale(doc, rootElement, viite, kieli, generator);
 
             generator.increaseNumber();
@@ -272,6 +290,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             header.appendChild(doc.createTextNode(nimi));
             element.appendChild(header);
 
+            // Perusteen teksti luvulle
+            addPerusteTeksti(doc, element, lapsi, kieli);
+
             // Luodaan sisältö
             String teskti = "<root>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</root>";
             teskti = StringEscapeUtils.unescapeHtml4(teskti);
@@ -289,6 +310,36 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             generator.increaseNumber();
         }
         generator.decreaseDepth();
+    }
+
+    private void addPerusteTeksti(Document doc, Element rootElement, TekstiKappaleViite viite, Kieli kieli)
+            throws ParserConfigurationException, IOException, SAXException {
+
+        // Perusteen teksti luvulle
+        List<OhjeDto> ohjeDto = ohjeService.getTekstiKappaleOhjeet(viite.getTekstiKappale().getTunniste());
+
+        for (OhjeDto ohje : ohjeDto) {
+
+            if (ohje.getTyyppi() == OhjeTyyppi.PERUSTETEKSTI) {
+                LokalisoituTekstiDto tekstiDto = ohje.getTeksti();
+                LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
+
+                // Luodaan sisältö
+                String teskti = "<root><peruste>" + getTextString(teksti, kieli) + "</peruste></root>";
+                teskti = StringEscapeUtils.unescapeHtml4(teskti);
+
+                Node node = DocumentBuilderFactory
+                        .newInstance()
+                        .newDocumentBuilder()
+                        .parse(new ByteArrayInputStream(teskti.getBytes()))
+                        .getDocumentElement();
+                rootElement.appendChild(doc.importNode(node, true));
+            }
+        }
+    }
+
+    private void addOpsPohjaTeksti() {
+
     }
 
     private void buildFootnotes(Document doc, Opetussuunnitelma ops, Kieli kieli) {

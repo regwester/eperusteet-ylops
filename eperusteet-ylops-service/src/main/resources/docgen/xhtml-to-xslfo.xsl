@@ -765,9 +765,15 @@
     </xsl:template>
 
     <xsl:template match="p">
-        <fo:block font-size="12pt" line-height="1.25em"
+        <fo:block font-size="10pt" line-height="1.25em"
                   space-after="12pt" text-align="justify"
                   line-stacking-strategy="font-height">
+            <xsl:apply-templates select="*|text()" />
+        </fo:block>
+    </xsl:template>
+
+    <xsl:template match="peruste">
+        <fo:block color="#444444" font-style="italic">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
@@ -777,11 +783,11 @@
 
         <!-- Show endnotes bottom of the page -->
         <fo:footnote>
-            <fo:inline baseline-shift="super" font-size="8pt">
+            <fo:inline baseline-shift="4pt" font-size="8pt">
                 <xsl:value-of select="@number" />
             </fo:inline>
             <fo:footnote-body>
-                <fo:block font-size="8pt" line-height="10pt" start-indent="0" text-align="left">
+                <fo:block font-size="8pt" line-height="10pt" start-indent="0" text-align="left" color="black">
 
                     <fo:table table-layout="fixed" width="100%">
                         <fo:table-column column-width="10mm" />
