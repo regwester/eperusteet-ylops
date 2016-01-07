@@ -306,6 +306,7 @@
   "ylikirjoittaessasi-voit-palauttaa": "Jatkaessasi voit ylikirjoittaa toisten muutokset. Ne säilyvät edelleen muutoshistoriassa ja voit palauttaa ne sieltä",
   "hae-otsikoista": "Hae otsikoista",
   "termi": "Käsite",
+  "dokumentti": "Dokumentti",
   "muokkaa-termia": "Muokkaa käsitettä",
   "loydetty-termien-maara": "Opetussuunnitelmassa käytettyjen termien määrä:",
   "termi-plugin-select-placeholder": "Valitse käsite...",
@@ -504,5 +505,12 @@
   "lukio-ei-aihekokonaisuuksia": "Aihekokonaisuudet puuttuvat",
   "lukio-oppiaineessa-ei-kursseja": "Oppiaineessa ei ole kursseja",
   "lukio-oppiaineessa-ei-oppimaaria": "Oppiaineessa ei ole oppimääriä",
-  "lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat": "Kurssin tavoitteet tai keskeinen sisaltoalue puuttuu"
+  "lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat": "Kurssin tavoitteet tai keskeinen sisaltoalue puuttuu",
+  "luo-pdf-dokumentti": "Luo PDF dokumentti",
+  "luo-pdf": "Luo PDF",
+  "luo-pdf-dokumentti-opetussuunnitelmasta": "Luo PDF-dokumentti opetussuunnitelmasta",
+  "valitse-kieli": "Valitse kieli",
+  "dokumentin-tila": "PDF-dokumentin tila",
+  "alaviite": "Alaviite",
+  "alaviite-ohje": "Jos käsite on merkattu alaviitteeksi, se näytetään myös generoiduissa dokumenteissa."
 }

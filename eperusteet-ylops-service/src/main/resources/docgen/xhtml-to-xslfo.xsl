@@ -1086,7 +1086,7 @@
 
     <!-- Cover page -->
     <xsl:template name="cover">
-        <fo:block break-before='page' color="white"  font-weight="bold"
+        <fo:block break-before='page' color="white"  font-weight="bold" text-align="center"
                   margin-top="150mm" margin="40mm">
             <fo:block font-size="28pt" >
                 <xsl:value-of select="/html/head/title" />
