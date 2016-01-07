@@ -132,8 +132,17 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Sisältöelementit
         addSisaltoElement(doc, bodyElement, ops, kieli);
 
-        // käsitteet
-        addGlossary();
+        // Alaviitteet
+        buildFootnotes(doc, ops, kieli);
+
+        // Kuvat
+        buildImages(doc, ops);
+
+        // Vuosiluokkakokonaisuudet
+        //addVuosiluokkakokonaisuudet(doc, ops, kieli);
+
+        // Oppiaineet
+        //addOppiaineet(doc, ops, kieli);
 
         Resource resource = applicationContext.getResource("classpath:docgen/xhtml-to-xslfo.xsl");
         pdf.write(convertOps2PDF(doc, resource.getFile()));
@@ -283,7 +292,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             // Luodaan pohjan sisältö kappaleelle
             String teskti = "<root>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</root>";
             teskti = teskti.replace("&shy;", "");
-            //// Unescpaettaa myös käyttäjädatan
+            // Unescpaettaa myös käyttäjädatan
             //teskti = StringEscapeUtils.unescapeHtml4(teskti);
 
             Node node = DocumentBuilderFactory
@@ -297,9 +306,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             generator.increaseNumber();
         }
-
-        buildFootnotes(doc, ops, kieli);
-        buildImages(doc, ops);
     }
 
     private void addTekstiKappale(Document doc, Element element, TekstiKappaleViite viite,
@@ -466,8 +472,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         return selitys;
     }
-    private void addGlossary() {
 
+    private void addVuosiluokkakokonaisuudet(Document doc, Opetussuunnitelma ops, Kieli kieli) {
+    }
+
+    private void addOppiaineet(Document doc, Opetussuunnitelma ops, Kieli kieli) {
     }
 
     private void printStream(ByteArrayOutputStream stream) {
