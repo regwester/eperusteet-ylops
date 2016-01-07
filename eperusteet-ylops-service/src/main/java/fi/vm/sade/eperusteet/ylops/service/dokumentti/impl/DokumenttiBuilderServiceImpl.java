@@ -282,7 +282,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             // Luodaan pohjan sisältö kappaleelle
             String teskti = "<root>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</root>";
-            teskti = StringEscapeUtils.unescapeHtml4(teskti);
+            teskti = teskti.replace("&shy;", "");
+            //// Unescpaettaa myös käyttäjädatan
+            //teskti = StringEscapeUtils.unescapeHtml4(teskti);
+
             Node node = DocumentBuilderFactory
                     .newInstance()
                     .newDocumentBuilder()
@@ -317,7 +320,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             // Luodaan sisältö
             String teskti = "<root>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</root>";
-            teskti = StringEscapeUtils.unescapeHtml4(teskti);
+            teskti = teskti.replace("&shy;", "");
+            // Unescpaettaa myös käyttäjädatan
+            //teskti = StringEscapeUtils.unescapeHtml4(teskti);
 
             Node node = DocumentBuilderFactory
                     .newInstance()
