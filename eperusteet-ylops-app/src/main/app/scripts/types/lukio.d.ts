@@ -163,6 +163,11 @@ declare module Lukio {
         arviointi?: l.TekstiOsa;
     }
 
+    export interface AbstraktiOppiaine {
+        tunniste: string
+        nimi: l.Lokalisoitu
+    }
+
     export interface OppiaineKielitarjonta {
         tunniste: string
         nimi: l.Lokalisoitu

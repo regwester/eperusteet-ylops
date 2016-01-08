@@ -50,6 +50,7 @@ interface LukioOpetussuunnitelmaServiceI {
     kloonaaOppiaineMuokattavaksi(oppiaineId:number, opsId?:number): IPromise<IdHolder>
     palautaYlempaan(oppiaineId:number, opsId?:number): IPromise<IdHolder>,
     addKielitarjonta(oppiaineId:number, tarjonta:Lukio.OppiaineKielitarjonta, opsId?: number): IPromise<Lukio.IdHolder>
+    addAbstraktiOppiaine(tarjonta:Lukio.AbstraktiOppiaine, opsId?: number): IPromise<Lukio.IdHolder>
     deleteOppiaine(oppiaineId:number, opsId?: number): IPromise<void>
 
     getKurssi(oppiaineId: number, kurssiId: number, opsId?: number): IPromise<Lukio.LukiokurssiOps>
@@ -187,6 +188,9 @@ ylopsApp
         var addKielitarjonta = (oppiaineId:number, tarjonta:Lukio.OppiaineKielitarjonta, opsId?: number) =>
             OpetusuunnitelmaLukio.addKielitarjonta({oppiaineId: oppiaineId, opsId: opsId || $stateParams.id}, tarjonta)
                 .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
+        var addAbstraktiOppiaine = (tarjonta:Lukio.AbstraktiOppiaine, opsId?: number) =>
+            OpetusuunnitelmaLukio.addAbstraktiOppiaine({opsId: opsId || $stateParams.id}, tarjonta)
+                .$promise.then(r => { oppiaineCache.clear(); return r; }, Notifikaatiot.serverCb);
         var deleteOppiaine = (oppiaineId:number, opsId?: number) =>
             OppiaineCRUD.delete({oppiaineId: oppiaineId, opsId: opsId || $stateParams.id})
                 .$promise.then(() => { oppiaineCache.clear(); }, Notifikaatiot.serverCb);
@@ -247,6 +251,7 @@ ylopsApp
             kloonaaOppiaineMuokattavaksi: kloonaaOppiaineMuokattavaksi,
             palautaYlempaan: palautaYlempaan,
             addKielitarjonta: addKielitarjonta,
+            addAbstraktiOppiaine: addAbstraktiOppiaine,
             deleteOppiaine: deleteOppiaine,
 
             getKurssi: getKurssi,

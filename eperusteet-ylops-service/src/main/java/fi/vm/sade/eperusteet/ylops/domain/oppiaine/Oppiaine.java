@@ -38,6 +38,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -401,9 +402,13 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     }
 
     public static Copier<Oppiaine> oppimaaraCopier(ConstructedCopier<Oppiaine> with) {
+        return oppimaaraCopier(any -> true, with);
+    }
+
+    public static Copier<Oppiaine> oppimaaraCopier(Predicate<Oppiaine> oppimaaraFilter, ConstructedCopier<Oppiaine> with) {
         return (other, o) -> {
             if (other.isKoosteinen() && other.getOppiaine() == null) {
-                other.getOppimaarat().forEach((om -> {
+                other.getOppimaarat().stream().filter(oppimaaraFilter).forEach((om -> {
                     o.addOppimaara(with.copy(om));
                 }));
             }

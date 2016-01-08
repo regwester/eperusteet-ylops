@@ -223,14 +223,14 @@ ylopsApp
             if (node.dtype === LukioKurssiTreeNodeType.kurssi
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
                     && !to.koosteinen && (!node.$$nodeParent
-                    || node.$$nodeParent.id !== to.id)
+                        || node.$$nodeParent.id !== to.id)
                     && _.any(to.lapset, kurssi => kurssi.dtype == LukioKurssiTreeNodeType.kurssi
                     && kurssi.id === node.id)) {
                 return false;
             }
             return (node.dtype === LukioKurssiTreeNodeType.oppiaine
                             && to.dtype === LukioKurssiTreeNodeType.root
-                            && node.koosteinen) ||
+                            && !node.oppiaineId) ||
                 (node.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.koosteinen && !node.koosteinen

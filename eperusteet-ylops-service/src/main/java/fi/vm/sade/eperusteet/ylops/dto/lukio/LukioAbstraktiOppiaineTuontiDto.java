@@ -26,17 +26,14 @@ import java.util.UUID;
 
 /**
  * User: tommiratamaa
- * Date: 14.12.2015
- * Time: 16.42
+ * Date: 8.1.2016
+ * Time: 8.45
  */
 @Getter
 @Setter
-public class LukioKopioiOppimaaraDto {
+public class LukioAbstraktiOppiaineTuontiDto implements Serializable  {
     @NotNull
     private LokalisoituTekstiDto nimi;
     @NotNull
     private UUID tunniste;
-    private String kieliKoodiUri;
-    private String kieliKoodiArvo;
-    private LokalisoituTekstiDto kieli;
 }

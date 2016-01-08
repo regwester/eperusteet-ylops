@@ -404,6 +404,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             kurssiCopier = getLukiokurssitOppiaineCopier(pohja, ops, teeKopio);
             oppiaineCopier = oppiaineCopier.and(kurssiCopier)
                     .and((fromOa, toOa) -> {
+                        toOa.setAbstrakti(fromOa.getAbstrakti());
                         newOppiaineByOld.put(fromOa.getId(), toOa);
                     });
         } else if (teeKopio) {
@@ -411,8 +412,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
         final Copier<Oppiaine> oppiainePerusCopier = oppiaineCopier;
         if (teeKopio && (!onPohjastaTehtyPohja || pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS)) {
-            oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(
-                    oppiainePerusCopier.construct(oa -> new Oppiaine(oa.getTunniste()))));
+            ConstructedCopier<Oppiaine> omConst = oppiainePerusCopier.construct(oa -> new Oppiaine(oa.getTunniste()));
+            if (onPohjastaTehtyPohja && pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+                oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(om -> !om.isAbstraktiBool(), omConst));
+            } else {
+                oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(omConst));
+            }
         } else if (kurssiCopier != null) {
             final Copier<Oppiaine> finalKurssiCopier = kurssiCopier;
             oppiaineCopier = oppiaineCopier.and((from, to) -> {
@@ -426,6 +431,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ConstructedCopier<OpsOppiaine> opsOppiaineCopier = OpsOppiaine.copier(
                 oppiaineCopier.construct(existing -> teeKopio ? new Oppiaine(existing.getTunniste()) : existing), teeKopio);
         Stream<OpsOppiaine> oppiaineetToCopy = pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS
+                    && pohja.getTyyppi() == Tyyppi.POHJA // ei kopioida pohjasta abstakteja ylätason oppiaineita, mutta OPS:sta kyllä
                 ? pohja.getOppiaineet().stream().filter(opsOa -> !opsOa.getOppiaine().isAbstraktiBool())
                 : pohja.getOppiaineet().stream();
         ops.setOppiaineet(oppiaineetToCopy.map(opsOppiaineCopier::copy).collect(toSet()));

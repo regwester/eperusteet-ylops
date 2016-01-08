@@ -117,6 +117,13 @@ public class LukioOpetussuunnitelmatController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/oppiaine/abstrakti", method = RequestMethod.POST)
+    public LongIdResultDto addAbstraktiOppiaine(@PathVariable("opsId") final Long opsId,
+                                        @RequestBody LukioAbstraktiOppiaineTuontiDto tuonti) {
+        return new LongIdResultDto(lukioOpetussuunnitelmaService.addAbstraktiOppiaine(opsId, tuonti));
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/kurssi", method = RequestMethod.POST)
     public LongIdResultDto saveKurssi(@PathVariable("opsId") final Long opsId,
                                         @RequestBody LukiokurssiSaveDto kurssi) {
@@ -145,6 +152,6 @@ public class LukioOpetussuunnitelmatController {
     @RequestMapping(value = "/kurssi/{kurssiId}/remove", method = RequestMethod.DELETE)
     public void removeKurssi(@PathVariable("opsId") final Long opsId,
                                            @PathVariable("kurssiId") final Long kurssiId) {
-        lukioOpetussuunnitelmaService.removeKurssi( kurssiId, opsId );
+        lukioOpetussuunnitelmaService.removeKurssi(opsId, kurssiId);
     }
 }

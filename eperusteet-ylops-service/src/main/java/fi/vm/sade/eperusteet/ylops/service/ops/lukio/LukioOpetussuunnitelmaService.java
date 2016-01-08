@@ -48,6 +48,9 @@ public interface LukioOpetussuunnitelmaService {
     long addOppimaara(long opsId, long oppiaineId, LukioKopioiOppimaaraDto kt);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long addAbstraktiOppiaine(long opsId, LukioAbstraktiOppiaineTuontiDto tuonti);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     long saveKurssi(long opsId, LukiokurssiSaveDto kurssi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
@@ -75,5 +78,5 @@ public interface LukioOpetussuunnitelmaService {
     void deleteAihekokonaisuus(long opsId, long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void removeKurssi(Long kurssiId, Long opsId);
+    void removeKurssi(long opsId, long kurssiId);
 }

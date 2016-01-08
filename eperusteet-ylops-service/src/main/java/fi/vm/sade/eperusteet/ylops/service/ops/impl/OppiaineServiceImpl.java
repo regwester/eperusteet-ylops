@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
@@ -297,6 +296,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         opsOppiaineet.add(kopio);
         ops.setOppiaineet(opsOppiaineet);
         if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            newOppiaine.setAbstrakti(oppiaine.getAbstrakti());
             remapLukiokurssit(ops, oppiaine, newOppiaine);
 
             updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, newOppiaine);
@@ -376,6 +376,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Oppiaine oppiaine = getOppiaine(opsId, id);
         oppiaineet.lock(oppiaine);
+
+        if (oppiaine.getOppiaine() == null) {
+            // Jos oppiaine käytössä alempien tasojen OPS:eissa, niin ei onnistu, ellei niitä ensin irroiteta:
+            oppiaineet.findOtherOpetussuunnitelmasContainingOpsOppiaine(oppiaine.getId(), ops.getId())
+                    .forEach(otherOps -> kopioiMuokattavaksi(otherOps.getId(), oppiaine.getId()));
+        }
 
         if (oppiaine.isKoosteinen()) {
             oppiaine.getOppimaarat().forEach(oppimaara -> delete(opsId, oppimaara.getId()));
@@ -557,7 +563,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa -> oa));
         for (Map.Entry<OppiaineOpsTunniste, LukioOppiaineJarjestys> oldJarjestys : jarjestykset.entrySet()) {
             Oppiaine uusiOppiaine = uudetOppiaineJaMaaraByTunniste.get(oldJarjestys.getKey());
-            if (uusiOppiaine != null) {
+            if (uusiOppiaine != null && !ops.getOppiaineJarjestykset().stream()
+                    .filter(j -> j.getOppiaine().getId().equals(uusiOppiaine.getId())).findAny().isPresent()) {
                 ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops,
                         uusiOppiaine, oldJarjestys.getValue().getJarjestys()));
             } // else: esim. tilanne, jossa luotu katkaisun jälkeen oma oppimäärä ja palautuksessa poistettu

@@ -8,7 +8,7 @@ interface KoodistoArvo {
 ylopsApp
     .controller('LukioOppiaineetController', function($scope, $q:IQService, $stateParams, Kaanna, $log,
                                                       LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
-                                                      LukioTreeUtils: LukioTreeUtilsI, Kommentit,
+                                                      LukioTreeUtils: LukioTreeUtilsI, Kommentit, $modal,
                                                       Editointikontrollit, $state, Notifikaatiot) {
         $scope.editMode = false;
         $scope.sortableConfig = <SortableConfig> {
@@ -150,6 +150,23 @@ ylopsApp
                 }
             })
         });
+
+        $scope.addTarjonnasta = (pohjanOppiaine) => {
+            $modal.open({
+                templateUrl: 'views/opetussuunnitelmat/modals/lukioAbstraktiOppiaineModaali.html',
+                controller: 'LukioTuoAbstraktiOppiaineController',
+                size: 'lg',
+                resolve: {
+                    opsId: _.constant($stateParams.id),
+                    valittu: _.constant(pohjanOppiaine)
+                }
+            }).result.then((res) => {
+                $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                    id: $stateParams.id,
+                    oppiaineId: res.id
+                });
+            }, () => {});
+        };
 
         $scope.toEditMode = () => {
             $scope.editMode = true;
@@ -293,7 +310,8 @@ ylopsApp
         $scope.isReconnectable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.rootOps && $scope.oppiaine.maariteltyPohjassa
                 && !$scope.oppiaine.oppiaineId;
         $scope.isEditable = () => $scope.oppiaine && $scope.oppiaine.oma;
-        $scope.isDeletable = () => $scope.oppiaine && $scope.oppiaine.oma && !$scope.oppiaine.maariteltyPohjassa;
+        $scope.isDeletable = () => $scope.oppiaine && $scope.oppiaine.oma && (!$scope.oppiaine.maariteltyPohjassa
+                || (!$scope.oppiaine.oppiaineId && $scope.oppiaine.abstrakti));
         $scope.canAddOppimaara = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma;
         $scope.canAddFromTarjonta = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma
                         && !_.isEmpty($scope.oppiaine.pohjanTarjonta);
@@ -816,6 +834,26 @@ ylopsApp
                 Notifikaatiot.onnistui('tallennettu-ok');
             }, Notifikaatiot.serverCb);
         }
+    };
+
+    $scope.peruuta = $modalInstance.dismiss;
+})
+.controller('LukioTuoAbstraktiOppiaineController', function($scope, $stateParams, $modalInstance, $q, OpsService,
+                            $log,  $state, opsId, valittu,
+                            LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
+                            Notifikaatiot, LukioControllerHelpers, Kaanna) {
+    $scope.$valittu = _.cloneDeep(valittu);
+    $scope.$valittu.kieli = LukioControllerHelpers.kielella('');
+    $scope.$omaNimi = _.cloneDeep($scope.$valittu.nimi);
+
+    $scope.ok = function() {
+        LukioOpetussuunnitelmaService.addAbstraktiOppiaine({
+            tunniste: $scope.$valittu.tunniste,
+            nimi: $scope.$omaNimi
+        }, opsId).then((res) => {
+            $modalInstance.close(res);
+            Notifikaatiot.onnistui('tallennettu-ok');
+        }, Notifikaatiot.serverCb);
     };
 
     $scope.peruuta = $modalInstance.dismiss;

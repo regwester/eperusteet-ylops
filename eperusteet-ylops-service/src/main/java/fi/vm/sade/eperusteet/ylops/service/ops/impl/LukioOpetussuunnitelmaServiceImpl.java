@@ -16,7 +16,6 @@
 
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
-import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi.Paikallinen;
@@ -28,14 +27,12 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuusOpsDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.*;
-import fi.vm.sade.eperusteet.ylops.resource.external.UlkopuolisetController;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -54,7 +51,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity.idEquals;
-import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.map;
 import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.Comparator.comparing;
@@ -320,6 +316,29 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Override
     @Transactional
+    public long addAbstraktiOppiaine(long opsId, LukioAbstraktiOppiaineTuontiDto tuonti) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        Opetussuunnitelma opspohja = ops.getAlinPohja();
+        Oppiaine pohjaparent = oppiaineRepository.findOneByOpsIdAndTunniste(opspohja.getId(), tuonti.getTunniste());
+        assertExists(pohjaparent, "Oppimäärää ei ole määritelty ylätasolla.");
+        if (ops.getOppiaineet().stream().filter(existing
+                -> existing.getOppiaine().getTunniste().equals(pohjaparent.getTunniste())).findAny().isPresent()) {
+            throw new BusinessRuleViolationException("Oppiaine on jo toteutettuna.");
+        }
+        Copier<Oppiaine> copier = Oppiaine.basicCopier()
+                .and(OpetussuunnitelmaServiceImpl.getLukiokurssitOppiaineCopier(opspohja, ops,
+                        opspohja.getTyyppi() == Tyyppi.POHJA));
+        Oppiaine uusi = copier.copied(pohjaparent, new Oppiaine(pohjaparent.getTunniste()));
+        uusi.setNimi(LokalisoituTeksti.of(tuonti.getNimi().getTekstit()));
+        uusi.setAbstrakti(true);
+        ops.addOppiaine(oppiaineRepository.save(uusi));
+        ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops, uusi, null));
+        return uusi.getId();
+    }
+
+    @Override
+    @Transactional
     public long saveOppiaine(long opsId, LukioOppiaineSaveDto dto) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         opetussuunnitelmaRepository.lock(ops);
@@ -508,7 +527,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Override
     @Transactional
-    public void removeKurssi(Long kurssiId, Long opsId) {
+    public void removeKurssi(long opsId, long kurssiId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         opetussuunnitelmaRepository.lock(ops);
         OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi( opsId, kurssiId).stream().findAny()

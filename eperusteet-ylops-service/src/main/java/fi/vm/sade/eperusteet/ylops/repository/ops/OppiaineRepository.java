@@ -17,6 +17,8 @@ package fi.vm.sade.eperusteet.ylops.repository.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import java.util.Set;
 import java.util.UUID;
@@ -46,4 +48,7 @@ public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine
 
     @Query(value = "SELECT oa.oma FROM Opetussuunnitelma o JOIN o.oppiaineet oa JOIN oa.oppiaine a LEFT JOIN a.oppimaarat m WHERE o.id = ?1 AND (a.id = ?2 OR m.id = ?2)")
     Boolean isOma(long opsId, long oppiaineId);
+
+    @Query(value = "select ops from Opetussuunnitelma ops inner join ops.oppiaineet oo inner join oo.oppiaine o on o.id = ?1 where not(ops.id = ?2)")
+    Set<Opetussuunnitelma> findOtherOpetussuunnitelmasContainingOpsOppiaine(long oppiaineId, long exceptOpsId);
 }
