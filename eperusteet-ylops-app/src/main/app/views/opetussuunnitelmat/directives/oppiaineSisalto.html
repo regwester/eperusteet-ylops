@@ -14,12 +14,11 @@
   ~  European Union Public Licence for more details.
   -->
 
-<!--<pre>{{ oppiaineen | json }}</pre>-->
 <div class="oppiaine-sisalto" ng-if="oppiaineenTeksti || perusteenTeksti">
   <span>
     <h3>
       <span>
-        {{ title | kaanna}}
+        &nbsp;{{ sisaltoTitle | kaanna}}
         <span ng-if="colorbox" class="{{colorbox}}" ng-class="{'ikoni': ikoni, 'colorbox-title': !ikoni}"></span>
       </span>
 
@@ -33,13 +32,20 @@
     <a ng-class="{'toggle-perusteen-teksti peruste-teksti': true,'is-open': !textHidden}" ng-click="toggleTextVisible()">
       <span kaanna="nayta-perusteen-teksti"></span>
     </a>
-    <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna"></span>
+    <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna | unsafe" termisto-viitteet="perusteenTeksti"></span>
+  </div>
+
+  <div class="oppiaine-paikallinen" ng-if="pohjanTeksti">
+    <span>
+      <strong>{{ 'pohjan-tarkennus' | kaanna}}</strong>
+      <span ng-bind-html="pohjanTeksti | kaanna | unsafe" termisto-viitteet="pohjanTeksti"></span>
+    </span>
   </div>
 
   <div class="oppiaine-paikallinen">
     <span ng-if="oppiaineenTeksti && !editingField">
       <strong>{{ 'paikallinen-tarkennus' | kaanna}}</strong>
-      <span ng-bind-html="oppiaineenTeksti | kaanna"></span>
+      <span ng-bind-html="oppiaineenTeksti | kaanna | unsafe" termisto-viitteet="oppiaineenTeksti"></span>
     </span>
     <div ng-if="editingField" ckeditor ng-model="oppiaineenTeksti" slocalized></div>
   </div>

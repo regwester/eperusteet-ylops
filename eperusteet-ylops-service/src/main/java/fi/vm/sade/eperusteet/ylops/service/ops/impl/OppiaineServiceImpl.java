@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
@@ -293,19 +292,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .collect(Collectors.toSet());
 
         Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
-        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
-            // Remap Lukiokurssit to new oppiaine, (does not affecter their ownership)
-            ops.getLukiokurssit().stream().filter(oaLk
-                    -> oaLk.getOppiaine().getId().equals(id))
-                    .forEach(oaLk -> {
-                        oaLk.setOppiaine(newOppiaine);
-                    });
-        }
-
         OpsOppiaine kopio = new OpsOppiaine(newOppiaine, true);
         opsOppiaineet.add(kopio);
         ops.setOppiaineet(opsOppiaineet);
         if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            newOppiaine.setAbstrakti(oppiaine.getAbstrakti());
+            remapLukiokurssit(ops, oppiaine, newOppiaine);
+
             updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, newOppiaine);
         }
 
@@ -384,6 +377,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine oppiaine = getOppiaine(opsId, id);
         oppiaineet.lock(oppiaine);
 
+        if (oppiaine.getOppiaine() == null) {
+            // Jos oppiaine käytössä alempien tasojen OPS:eissa, niin ei onnistu, ellei niitä ensin irroiteta:
+            oppiaineet.findOtherOpetussuunnitelmasContainingOpsOppiaine(oppiaine.getId(), ops.getId())
+                    .forEach(otherOps -> kopioiMuokattavaksi(otherOps.getId(), oppiaine.getId()));
+        }
+
         if (oppiaine.isKoosteinen()) {
             oppiaine.getOppimaarat().forEach(oppimaara -> delete(opsId, oppimaara.getId()));
         }
@@ -447,17 +446,22 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden ja tavoitteiden kuvaukset,
         // noin muutoin sisältöön ei pidä kajoaman
-        dto.getSisaltoalueet().forEach(
-            sisaltoalueDto ->
-                oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
-                                     .ifPresent(sa -> sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class))));
+        for (KeskeinenSisaltoalueDto sisaltoalueDto : dto.getSisaltoalueet()) {
+            oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste())
+                    .ifPresent(sa -> {
+                        sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class));
+                        sa.setPiilotettu(sisaltoalueDto.getPiilotettu());
+                    });
+        }
+
         dto.getTavoitteet().forEach(
             tavoiteDto ->
                 oppiaineenVuosiluokka.getTavoite(tavoiteDto.getTunniste())
                                      .ifPresent(t -> t.setTavoite(mapper.map(tavoiteDto.getTavoite(), LokalisoituTeksti.class))));
 
         dto.getTavoitteet().stream()
-                .forEach(opetuksenTavoiteDto -> { opetuksenTavoiteDto.getSisaltoalueet()
+                .forEach(opetuksenTavoiteDto -> {
+                    opetuksenTavoiteDto.getSisaltoalueet()
                         .forEach(opetuksenKeskeinensisaltoalueDto -> {
                             OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue
                                 = oppiaineenVuosiluokka.getTavoite(opetuksenTavoiteDto.getTunniste())
@@ -506,51 +510,61 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
 
         final UUID tunniste = oppiaine.getTunniste();
-        List<OpsOppiaine> tmpOppiaineet = pohja.getOppiaineet().stream()
+        List<OpsOppiaine> pohjanOppiaineet = pohja.getOppiaineet().stream()
                 .filter(a -> (a.getOppiaine().getTunniste().compareTo(tunniste) == 0))
                 .collect(Collectors.toList());
 
-        if( tmpOppiaineet.size() != 1){
+        if( pohjanOppiaineet.size() != 1){
             throw new BusinessRuleViolationException("Oppiainetta ei löytynyt.");
         }
 
-        Oppiaine opp = tmpOppiaineet.get(0).getOppiaine();
+        Oppiaine opp = pohjanOppiaineet.get(0).getOppiaine();
         OpsOppiaine oldOppiaine = new OpsOppiaine(opp, false);
 
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
                 .filter(oa -> !oa.getOppiaine().getId().equals(id))
                 .collect(Collectors.toSet());
 
-        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
-            // Remap Lukiokurssit to new oppiaine, (does not affecter their ownership)
-            ops.getLukiokurssit().stream().filter(oaLk
-                    -> oaLk.getOppiaine().getId().equals(id))
-                    .forEach(oaLk -> {
-                        oaLk.setOppiaine(oldOppiaine.getOppiaine());
-                    });
-        }
-
         opsOppiaineet.add( oldOppiaine );
         ops.setOppiaineet( opsOppiaineet );
         if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            remapLukiokurssit(ops, oppiaine, opp);
+
             updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, opp);
         }
 
         return mapper.map( oldOppiaine, OpsOppiaineDto.class );
     }
 
+    private void remapLukiokurssit(Opetussuunnitelma ops, Oppiaine oppiaine, Oppiaine newOppiaine) {
+        Map<OppiaineOpsTunniste, Oppiaine> oldByUuid = oppiaine.maarineen()
+                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa->oa));
+        Map<OppiaineOpsTunniste, Oppiaine> newByUuid = newOppiaine.maarineen()
+                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa->oa));
+        ops.getLukiokurssit().removeAll(
+            ops.getLukiokurssit().stream()
+                .filter(oaLk -> oldByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+                .filter(oaLk -> !newByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+                .collect(toSet())
+        );
+        ops.getLukiokurssit().stream()
+            .filter(oaLk -> oldByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+            .forEach(oaLk -> oaLk.setOppiaine(newByUuid.get(oaLk.getOppiaine().getOpsUniikkiTunniste())));
+    }
+
     private void updateLukioJarjestyksetOnOpsOppaineRefChange(Opetussuunnitelma ops,
                                                               Oppiaine oppiaine, Oppiaine newOppiaine) {
-        Map<UUID, LukioOppiaineJarjestys> jarjestykset = lukioOppiaineJarjestysRepository
+        Map<OppiaineOpsTunniste, LukioOppiaineJarjestys> jarjestykset = lukioOppiaineJarjestysRepository
                 .findByOppiaineIds(ops.getId(), oppiaine.maarineen().map(Oppiaine::getId).collect(toSet()))
-                .stream().collect(toMap(j -> j.getOppiaine().getTunniste(), j->j));
+                .stream().collect(toMap(j -> j.getOppiaine().getOpsUniikkiTunniste(), j->j));
         ops.getOppiaineJarjestykset().removeAll(jarjestykset.values());
         opetussuunnitelmaRepository.flush();
-        Map<UUID, Oppiaine> uudetOppiaineJaMaaraByTunniste = newOppiaine.maarineen()
-                .collect(toMap(Oppiaine::getTunniste, oa -> oa));
-        for (Map.Entry<UUID, LukioOppiaineJarjestys> oldJarjestys : jarjestykset.entrySet()) {
+        Map<OppiaineOpsTunniste, Oppiaine> uudetOppiaineJaMaaraByTunniste = newOppiaine.maarineen()
+                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa -> oa));
+        for (Map.Entry<OppiaineOpsTunniste, LukioOppiaineJarjestys> oldJarjestys : jarjestykset.entrySet()) {
             Oppiaine uusiOppiaine = uudetOppiaineJaMaaraByTunniste.get(oldJarjestys.getKey());
-            if (uusiOppiaine != null) {
+            if (uusiOppiaine != null && !ops.getOppiaineJarjestykset().stream()
+                    .filter(j -> j.getOppiaine().getId().equals(uusiOppiaine.getId())).findAny().isPresent()) {
                 ops.getOppiaineJarjestykset().add(new LukioOppiaineJarjestys(ops,
                         uusiOppiaine, oldJarjestys.getValue().getJarjestys()));
             } // else: esim. tilanne, jossa luotu katkaisun jälkeen oma oppimäärä ja palautuksessa poistettu

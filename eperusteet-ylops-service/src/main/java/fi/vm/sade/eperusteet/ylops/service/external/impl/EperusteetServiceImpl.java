@@ -49,6 +49,7 @@ import static fi.vm.sade.eperusteet.ylops.service.util.ExceptionUtil.wrapRuntime
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  *
@@ -119,7 +120,7 @@ public class EperusteetServiceImpl implements EperusteetService {
                     + " Trying from DB-cache.", e);
             return perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
                 .map(wrapRuntime(c -> c.getPerusteJson(jsonMapper),
-                        e1 -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e.getMessage(), e)))
+                        e1 -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e)))
                     .map(f -> mapper.map(f, PerusteInfoDto.class))
                     .collect(toList());
         }
@@ -153,7 +154,27 @@ public class EperusteetServiceImpl implements EperusteetService {
                 .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
                 .collect(Collectors.toList()));
         }
+        // Lisätään mukaan sellaiset perusteet, jotka löytyvät vain cachestä
+        // (jos esim. on syötetty cacheen käsin että voidaan testata eri ympäristöjen välillä tai
+        // jos jostain syystä peruste ei olisi enää saatavilla / poistettu näkyvistä eperusteiden puolella -> fallback)
+        addCacheOnlyPerusteet(tyypit, infot);
         return infot;
+    }
+
+    private void addCacheOnlyPerusteet(Set<KoulutusTyyppi> tyypit, List<PerusteInfoDto> infot) {
+        Set<String> foundDiaaris = infot.stream().map(PerusteInfoDto::getDiaarinumero).collect(toSet());
+        if (foundDiaaris.isEmpty()) {
+            infot.addAll(cacheToInfo(perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit)));
+        } else {
+            infot.addAll(cacheToInfo(perusteCacheRepository.findNewestEntrieByKoulutustyyppisExceptDiaarit(tyypit, foundDiaaris)));
+        }
+    }
+
+    private List<PerusteInfoDto> cacheToInfo(List<PerusteCache> caches) {
+        return caches.stream().map(wrapRuntime(c -> c.getPerusteJson(jsonMapper),
+                        e1 -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e1)))
+                .map(f -> mapper.map(f, PerusteInfoDto.class))
+                .collect(toList());
     }
 
     @Override
@@ -196,7 +217,7 @@ public class EperusteetServiceImpl implements EperusteetService {
                 throw e;
             }
             logger.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
-                    + " Trying from DB-cache.", e);
+                    + " Trying from DB-cache.");
             PerusteCache found = perusteCacheRepository.findNewestEntryForPeruste(id);
             if (found == null) {
                 logger.warn("No cache entry for Peruste id="+id);

@@ -32,25 +32,17 @@ module.exports = function(grunt) {
   grunt.initConfig({
     yeoman: yeomanConfig,
     ts: {
-      default: {
-        src: [
-          '<%= yeoman.app %>/*.ts',
-          '<%= yeoman.app %>/scripts/**/*.ts',
-          '<%= yeoman.app %>/eperusteet-esitys/**/*.ts',
-          '<%= yeoman.test %>/**/*.ts'
-        ],
-        options: {
-          module: 'amd',
-          target: 'es5',
-          sourceMap: true
-        }
-      },
       tests: {
         files: [{
           src: tsconfigTest.files.map(function(file) {
             return yeomanConfig.test + '/' + file;
           }),
-          dest: yeomanConfig.test + '/'
+          dest: yeomanConfig.test + '/',
+          options: {
+            module: 'amd',
+            target: 'es5',
+            sourceMap: true
+          }
         }]
       },
       sources: {
@@ -58,7 +50,12 @@ module.exports = function(grunt) {
           src: tsconfig.files.map(function(file) {
             return yeomanConfig.app + '/' + file;
           }),
-          dest: yeomanConfig.app
+          dest: yeomanConfig.app,
+          options: {
+            module: 'amd',
+            target: 'es5',
+            sourceMap: true
+          }
         }]
       }
     },
@@ -447,7 +444,7 @@ module.exports = function(grunt) {
         options: {
           limit: 300
         },
-        files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}]
+        files: [{src: ['<%= yeoman.app %>/scripts/**/*.ts']}]
       },
       scss: {
         options: {

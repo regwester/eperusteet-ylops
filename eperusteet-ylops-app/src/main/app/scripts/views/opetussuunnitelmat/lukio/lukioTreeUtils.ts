@@ -9,7 +9,8 @@ interface LukioKurssiTreeState {
 interface LukioTreeUtilsI {
     templates: (state:LukioKurssiTreeState) => LukioTreeTemplatesI
     treeRootLapsetFromRakenne : (rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) => LukioKurssiTreeNode[],
-    defaultHidden: (node: LukioKurssiTreeNode) => boolean
+    defaultHidden: (node: LukioKurssiTreeNode) => boolean,
+    updateCollapse: (state: LukioKurssiTreeState) => void,
     collapseToggler: (treeRootProvider: Provider<LukioKurssiTreeNode>, state: LukioKurssiTreeState) => (() => void),
     extensions: (state: LukioKurssiTreeState,
                  myExtensions?: ((node:LukioKurssiTreeNode, scope:any) => void)) => ((node:LukioKurssiTreeNode, scope:any) => void)
@@ -54,7 +55,7 @@ interface LukioTreeTemplatesI {
     treeHandle: () => string
     kurssiColorbox: () => string
     timestamp: () => string
-    collapse: () => string
+    collapse: (node: LukioKurssiTreeNode) => string
     name: (node: LukioKurssiTreeNode) => string
     nodeTemplate: (node: LukioKurssiTreeNode) => string
     nodeTemplateKurssilista: (n:LukioKurssiTreeNode) => string
@@ -68,7 +69,7 @@ interface PaginationDetails {
 }
 
 ylopsApp
-    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli, $timeout, Notifikaatiot) {
+    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli, $timeout, $rootScope) {
         var templatesByState = (state:LukioKurssiTreeState) => {
             var templateAround = (tmpl:string) => (!state.isEditMode() ? ' <a class="container-link' : '<span class="span-container')+
                     ' tree-list-item" '+(!state.isEditMode() ? ' ng-href="{{createHref()}}"': '')+
@@ -94,7 +95,8 @@ ylopsApp
                     }
                     return base;
                 },
-                collapse: () => !state.isEditMode() ? '<span ng-show="node.lapset.length" ng-click="toggle($event)"' +
+                collapse: (n:LukioKurssiTreeNode) =>
+                    (!state.isEditMode() || n.dtype == LukioKurssiTreeNodeType.oppiaine) ? '<span ng-show="node.lapset.length" ng-click="toggle($event)"' +
                     '           class="colorbox collapse-toggle" ng-class="{\'suljettu\': node.$$collapsed}">' +
                     '    <span ng-hide="node.$$collapsed" class="glyphicon glyphicon-chevron-down"></span>' +
                     '    <span ng-show="node.$$collapsed" class="glyphicon glyphicon-chevron-right"></span>' +
@@ -108,7 +110,7 @@ ylopsApp
                             templates.name(n) + '   </span>' + remove + '</span>');
                     } else {
                         return templateAround('<span class="span-container puu-node oppiaine-node">' + templates.treeHandle()
-                            + templates.collapse() + templates.timestamp() + '<span class="span-container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
+                            + templates.collapse(n) + templates.timestamp() + '<span class="span-container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
                             '<strong>' + templates.name(n) + '</strong></span></span>');
                     }
                 },
@@ -147,10 +149,21 @@ ylopsApp
         var treeRootLapsetFromRakenne = (rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) =>
             transformOppiaineToTreeNodes(rakenne.oppiaineet);
         var defaultHidden = (node: LukioKurssiTreeNode) => !node || node.$$hide || (node.$$nodeParent && node.$$nodeParent.$$collapsed);
+        var doSetCollapse = (root: LukioKurssiTreeNode, stateSetter: boolean|((n:LukioKurssiTreeNode)=> boolean)) => {
+            _.each(_(root).flattenTree(n => n.lapset).value(), ((n:LukioKurssiTreeNode) =>
+                {n.$$collapsed = stateSetter instanceof Function ? stateSetter(n) : stateSetter;}));
+        };
+        var updateCollapse = (state: LukioKurssiTreeState) => {
+            doSetCollapse(state.root(),
+                n => state.isEditMode() ?
+                    (state.defaultCollapse ?
+                        !(n.dtype == LukioKurssiTreeNodeType.oppiaine && n.koosteinen)
+                        : false)
+                    : state.defaultCollapse);
+        };
         var collapseToggler = (treeRootProvider: Provider<LukioKurssiTreeNode>, state: LukioKurssiTreeState) => () => {
             state.defaultCollapse = !state.defaultCollapse;
-            _.each(_(treeRootProvider()).flattenTree(n => n.lapset).value(), ((n:LukioKurssiTreeNode) =>
-                {n.$$collapsed = state.defaultCollapse;}));
+            updateCollapse(state);
         };
         var extensions = (state: LukioKurssiTreeState, myExtensions?: ((node:LukioKurssiTreeNode, scope:any) => void)) => {
             return (node:LukioKurssiTreeNode, scope:any) => {
@@ -176,6 +189,7 @@ ylopsApp
                     return null;
                 };
                 scope.removeKurssiFromOppiaine = (node:LukioKurssiTreeNode) => {
+                    $rootScope.$broadcast('genericTree:beforeChange');
                     _.remove(node.$$nodeParent.lapset, n => n.id === node.id);
                     var oppiaine = node.$$nodeParent;
                     _.remove(oppiaine.lapset, node);
@@ -188,6 +202,9 @@ ylopsApp
                         _.remove(state.liitetytKurssit(), n => n.id == node.id);
                     }
                     state.updatePagination();
+                    $timeout(() => {
+                        $rootScope.$broadcast('genericTree:afterChange');
+                    });
                 };
                 scope.dtypeString = () => {
                     return LukioKurssiTreeNodeType[node.dtype];
@@ -206,20 +223,18 @@ ylopsApp
             if (node.dtype === LukioKurssiTreeNodeType.kurssi
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
                     && !to.koosteinen && (!node.$$nodeParent
-                    || node.$$nodeParent.id !== to.id)
+                        || node.$$nodeParent.id !== to.id)
                     && _.any(to.lapset, kurssi => kurssi.dtype == LukioKurssiTreeNodeType.kurssi
                     && kurssi.id === node.id)) {
                 return false;
             }
             return (node.dtype === LukioKurssiTreeNodeType.oppiaine
                             && to.dtype === LukioKurssiTreeNodeType.root
-                            && !node.koosteinen) ||
+                            && !node.oppiaineId) ||
                 (node.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.koosteinen && !node.koosteinen
                     && to.id == node.$$nodeParent.id) ||
-                (node.dtype === LukioKurssiTreeNodeType.oppiaine
-                    && to.dtype === LukioKurssiTreeNodeType.root ) ||
                 (node.dtype === LukioKurssiTreeNodeType.kurssi
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
                     && !to.koosteinen);
@@ -357,6 +372,7 @@ ylopsApp
             treeRootLapsetFromRakenne : treeRootLapsetFromRakenne ,
             defaultHidden: defaultHidden,
             collapseToggler: collapseToggler,
+            updateCollapse: updateCollapse,
             extensions: extensions,
             acceptDropWrapper: moveWrapper,
             matchesSearch: matchesSearch,

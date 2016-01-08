@@ -56,7 +56,10 @@ ylopsApp.factory('Editointikontrollit', function($rootScope, $q, $timeout, $log,
       }
 
       if (_.isObject(maybe) && _.isFunction(maybe.then)) {
-        maybe.then(resolve).catch(reject).finally(xfinally);
+        var x = maybe.then(resolve);
+        if (x && x.catch) {
+            x.catch(reject).finally(xfinally);
+        }
       }
       else {
         $log.error('You should be using a promise');

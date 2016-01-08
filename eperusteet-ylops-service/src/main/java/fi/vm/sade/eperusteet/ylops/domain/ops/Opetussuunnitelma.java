@@ -39,6 +39,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
@@ -291,5 +292,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public Oppiaine findOppiaine(Long id) {
         return oppiaineet.stream().flatMap(opsOa -> opsOa.getOppiaine().maarineen())
                 .filter(oa -> oa.getId().equals(id)).findFirst().orElse(null);
+    }
+
+    @Transient
+    public Optional<Oppiaine> findYlatasonOppiaine(Predicate<Oppiaine> predicate, Predicate<OpsOppiaine> filter) {
+        return oppiaineet.stream().filter(filter).map(OpsOppiaine::getOppiaine)
+                .filter(predicate).findFirst();
     }
 }

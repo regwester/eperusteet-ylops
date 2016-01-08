@@ -3,6 +3,15 @@ html {
   -ms-overflow-style: scrollbar;
 }
 
+.checkbox-label {
+  input[type="checkbox"] {
+    margin-top: -8px;
+  }
+  label {
+    // margin-top: -5px;
+  }
+}
+
 a:hover {
   cursor: pointer;
 }
@@ -288,3 +297,10 @@ hr.mujuviiva {
   background: none repeat scroll 0% 0% #DDD;
 }
 
+.truncate {
+  display: inline-block;
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

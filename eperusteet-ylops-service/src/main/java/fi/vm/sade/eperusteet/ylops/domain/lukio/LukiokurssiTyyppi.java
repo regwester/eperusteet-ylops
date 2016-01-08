@@ -19,10 +19,10 @@ package fi.vm.sade.eperusteet.ylops.domain.lukio;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.PerusteenLukiokurssiTyyppi;
-import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Setter;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -34,23 +34,27 @@ public enum LukiokurssiTyyppi {
     VALTAKUNNALLINEN_PAKOLLINEN(Oppiaine::getValtakunnallinenPakollinenKuvaus, Oppiaine::setValtakunnallinenPakollinenKuvaus),
     VALTAKUNNALLINEN_SYVENTAVA(Oppiaine::getValtakunnallinenSyventavaKurssiKuvaus, Oppiaine::setValtakunnallinenSyventavaKurssiKuvaus),
     VALTAKUNNALLINEN_SOVELTAVA(Oppiaine::getValtakunnallinenSoveltavaKurssiKuvaus, Oppiaine::setValtakunnallinenSoveltavaKurssiKuvaus),
-    PAIKALLINEN_PAKOLLINEN(Oppiaine::getPaikallinenPakollinenKuvaus, Oppiaine::setPaikallinenPakollinenKuvaus, true),
     PAIKALLINEN_SYVENTAVA(Oppiaine::getPaikallinenSyventavaKurssiKuvaus, Oppiaine::setPaikallinenSyventavaKurssiKuvaus, true),
     PAIKALLINEN_SOVELTAVA(Oppiaine::getPaikallinenSoveltavaKurssiKuvaus, Oppiaine::setPaikallinenSoveltavaKurssiKuvaus, true);
 
     public enum Paikallinen {
-        PAIKALLINEN_PAKOLLINEN(LukiokurssiTyyppi.PAIKALLINEN_PAKOLLINEN),
-        PAIKALLINEN_SYVENTAVA(LukiokurssiTyyppi.PAIKALLINEN_SYVENTAVA),
-        PAIKALLINEN_SOVELTAVA(LukiokurssiTyyppi.PAIKALLINEN_SOVELTAVA);
+        PAIKALLINEN_SYVENTAVA(LukiokurssiTyyppi.PAIKALLINEN_SYVENTAVA, "lukionkurssit_psy"),
+        PAIKALLINEN_SOVELTAVA(LukiokurssiTyyppi.PAIKALLINEN_SOVELTAVA, "lukionkurssit_pso");
 
         private final LukiokurssiTyyppi tyyppi;
+        private final String koodi;
 
-        Paikallinen(LukiokurssiTyyppi tyyppi) {
+        Paikallinen(LukiokurssiTyyppi tyyppi, String koodi) {
             this.tyyppi = tyyppi;
+            this.koodi = koodi;
         }
 
         public LukiokurssiTyyppi toKurssiiTyyppi() {
             return tyyppi;
+        }
+
+        public String getKurssiKoodi() {
+            return koodi;
         }
     }
 
@@ -94,5 +98,9 @@ public enum LukiokurssiTyyppi {
 
     public Copier<Oppiaine> oppiaineKuvausCopier() {
         return Copier.of(this.oppiaineKuvausGetter, this.oppiaineKuvausSetter);
+    }
+
+    public Optional<Paikallinen> paikallinen() {
+        return isPaikallinen() ? Optional.of(Paikallinen.valueOf(name())) : Optional.empty();
     }
 }

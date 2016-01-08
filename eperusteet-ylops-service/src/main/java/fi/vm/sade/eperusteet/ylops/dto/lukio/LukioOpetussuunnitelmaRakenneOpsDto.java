@@ -46,6 +46,8 @@ public class LukioOpetussuunnitelmaRakenneOpsDto implements Serializable,
     private LukioOpetussuunnitelmaRakenneDto perusteen;
     @Setter
     private List<LukioOppiaineListausDto> oppiaineet = new ArrayList<>();
+    @Setter
+    private List<LukioOppiaineListausDto> pohjanTarjonta = new ArrayList<>();
 
     public void setPerusteen(LukioOpetussuunnitelmaRakenneDto perusteen) {
         this.perusteen = perusteen;

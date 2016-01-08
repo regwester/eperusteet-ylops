@@ -104,6 +104,13 @@ public class UlkopuolisetController {
         return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/organisaatiot/lukiotoimijat/{kuntaIdt}", method = GET)
+    @ResponseBody
+    public ResponseEntity<JsonNode> getLukiot(@PathVariable(value = "kuntaIdt") final List<String> kuntaIdt) {
+        JsonNode lukiot = organisaatioService.getLukiotoimijat(kuntaIdt);
+        return new ResponseEntity<>(lukiot, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/organisaatiot/peruskoulut/oid/{oid}", method = GET)
     @ResponseBody
     public ResponseEntity<JsonNode> getPeruskoulutByOid(@PathVariable(value = "oid") final String oid) {
@@ -111,11 +118,25 @@ public class UlkopuolisetController {
         return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/organisaatiot/lukiot/oid/{oid}", method = GET)
+    @ResponseBody
+    public ResponseEntity<JsonNode> getLukiotByOid(@PathVariable(value = "oid") final String oid) {
+        JsonNode lukiot = organisaatioService.getLukioByOid(oid);
+        return new ResponseEntity<>(lukiot, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/organisaatiot/peruskoulut/{kuntaId}", method = GET)
     @ResponseBody
     public ResponseEntity<JsonNode> getPeruskoulutByKuntaId(@PathVariable(value = "kuntaId") final String kuntaId) {
         JsonNode peruskoulut = organisaatioService.getPeruskoulutByKuntaId(kuntaId);
         return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/organisaatiot/lukiot/{kuntaId}", method = GET)
+    @ResponseBody
+    public ResponseEntity<JsonNode> getLukiotByKuntaId(@PathVariable(value = "kuntaId") final String kuntaId) {
+        JsonNode lukiot = organisaatioService.getLukiotByKuntaId(kuntaId);
+        return new ResponseEntity<>(lukiot, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/koodisto/{koodisto}", method = GET)

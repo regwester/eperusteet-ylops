@@ -14,20 +14,49 @@
   ~  European Union Public Licence for more details.
   -->
 
-<h2>{{(aihekokonaisuudet.paikallinen.otsikko || aihekokonaisuudet.perusteen.otsikko) | kaanna}}</h2>
-
-<div class="perusteen-teksti">
-    <div ng-bind-html="aihekokonaisuudet.perusteen.yleiskuvaus|kaanna"></div>
-</div>
-
-<div class="ops-teksti">
-    <div paikallinen-teksti="aihekokonaisuudet.paikallinen.yleiskuvaus"></div>
-</div>
-
-<h3 kaanna="aihekokonaisuudet-sisallon-rakenne"></h3>
-<div class="container-items" ui-sortable="sortableOptions" ng-model="aihekokonaisuudet.paikallinen.aihekokonaisuude">
-    <div class="vkl-sortable" ng-repeat="ak in aihekokonaisuudet.paikallinen.aihekokonaisuudet">
-        <span class="handle" icon-role="drag"></span>
-        <span ng-bind="ak.otsikko | kaanna"></span>
+<div ng-show="!yleiskuvaEditMode">
+    <div class="action-buttons right" style="margin-top: 0px;">
+        <button icon-role="edit" class="floater btn" ng-click="toYleiskuvausEditMode()"
+                oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"></button>
     </div>
+
+    <lukio-oppiaine-osa perusteen-teksti="aihekokonaisuudet.perusteen.yleiskuvaus"
+                        editable="false" editing="false"
+                        oppiaineen-teksti="aihekokonaisuudet.paikallinen.yleiskuvaus"
+                        sisalto-title="(aihekokonaisuudet.paikallinen.otsikko | kaanna) || (aihekokonaisuudet.perusteen.otsikko | kaanna)"></lukio-oppiaine-osa>
+
+    <div style="margin-top: 10px;" class="action-buttons right" ng-show="!editMode">
+        <button icon-role="add" class="floater btn"
+                oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"
+                ng-click="addAihekokonaisuus()" kaanna="'lisaa-aihekokonaisuus'"></button>
+        <button icon-role="edit" class="floater btn"
+                oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]"
+                ng-click="toEditMode()" kaanna="'lukio-aihekokonaisuudet-muokkaa-rakennetta'"></button>
+    </div>
+    <h3 ng-bind="'aihekokonaisuudet-sisallon-rakenne' | kaanna" ></h3>
+    <div class="aihekokonaisuudet-structure">
+        <div ng-class="{editing: editMode}" style="margin-top: 20px;">
+            <div class="container-items" ui-sortable="sortableOptions" ng-model="sortableModel">
+                <div class="sortable item" ng-repeat="ak in aihekokonaisuudet.paikallinen.aihekokonaisuudet">
+                    <span class="treehandle ui-sortable-handle" icon-role="drag"></span>
+                    <span ng-bind="ak.otsikko | kaanna"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-if="yleiskuvaEditMode">
+    <h3 ng-bind="(aihekokonaisuudet.paikallinen.otsikko | kaanna) || (aihekokonaisuudet.perusteen.otsikko | kaanna)"></h3>
+    <form name="aihekokonaisuusForm" role="form">
+        <!--<label for="otsikko" class="header" ng-bind="('aihekokonaisuus-otsikko-header' | kaanna) + ' *'" ></label>-->
+        <!--<div>-->
+            <!--<input id="otsikko" class="form-control" slocalized ng-model="aihekokonaisuudet.paikallinen.otsikko"/>-->
+        <!--</div>-->
+
+        <label for="yleiskuvaus" class="header" ng-bind="'aihekokonaisuudet-yleiskuvaus-header' | kaanna" ></label>
+        <div>
+            <div id="yleiskuvaus" ckeditor slocalized ng-model="aihekokonaisuudet.paikallinen.yleiskuvaus"
+                 editor-placeholder="{{'aihekokonaisuudet-yleiskuvaus-placeholder' | kaanna}}"></div>
+        </div>
+    </form>
 </div>

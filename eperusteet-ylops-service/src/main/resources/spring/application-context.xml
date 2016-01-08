@@ -121,4 +121,13 @@
         <constructor-arg ref="defaultThreadPool"/>
     </bean>
 
+    <bean id="docThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="2"/>
+        <property name="maxPoolSize"  value="4"/>
+        <property name="queueCapacity" value="100"/>
+    </bean>
+    <bean id="docTaskExecutor" class="org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor">
+        <constructor-arg ref="docThreadPool"/>
+    </bean>
+
 </beans>

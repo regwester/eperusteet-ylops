@@ -36,12 +36,12 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier.nothing;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -150,14 +150,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "valtakunnallinen_soveltava_kuvaus_id", nullable = true)
     private LokalisoituTeksti valtakunnallinenSoveltavaKurssiKuvaus;
-
-    @Getter
-    @Setter
-    @ValidHtml
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "paikallinen_pakollinen_kuvaus_id", nullable = true)
-    private LokalisoituTeksti paikallinenPakollinenKuvaus;
 
     @Getter
     @Setter
@@ -388,6 +380,9 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
             to.setKoodiUri(other.getKoodiUri());
             to.setTavoitteet(Tekstiosa.copyOf(other.getTavoitteet()));
             to.setArviointi(Tekstiosa.copyOf(other.getArviointi()));
+            to.setKieliKoodiArvo(other.getKieliKoodiArvo());
+            to.setKieliKoodiUri(other.getKieliKoodiUri());
+            to.setKieli(other.getKieli());
             for (LukiokurssiTyyppi tyyppi : LukiokurssiTyyppi.values()) {
                 tyyppi.oppiaineKuvausCopier().copy(other, to);
             }
@@ -407,9 +402,13 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     }
 
     public static Copier<Oppiaine> oppimaaraCopier(ConstructedCopier<Oppiaine> with) {
+        return oppimaaraCopier(any -> true, with);
+    }
+
+    public static Copier<Oppiaine> oppimaaraCopier(Predicate<Oppiaine> oppimaaraFilter, ConstructedCopier<Oppiaine> with) {
         return (other, o) -> {
             if (other.isKoosteinen() && other.getOppiaine() == null) {
-                other.getOppimaarat().forEach((om -> {
+                other.getOppimaarat().stream().filter(oppimaaraFilter).forEach((om -> {
                     o.addOppimaara(with.copy(om));
                 }));
             }
@@ -443,5 +442,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
 
     public boolean isAbstraktiBool() {
         return abstrakti != null && abstrakti;
+    }
+
+    @Transient
+    public OppiaineOpsTunniste getOpsUniikkiTunniste() {
+        return new OppiaineOpsTunniste(this.tunniste, this.kieliKoodiArvo, this.kieli);
     }
 }

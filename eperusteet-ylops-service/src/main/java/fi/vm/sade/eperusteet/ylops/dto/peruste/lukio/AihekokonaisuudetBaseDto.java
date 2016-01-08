@@ -37,5 +37,4 @@ public class AihekokonaisuudetBaseDto {
     private LokalisoituTekstiDto yleiskuvaus;
     private Date muokattu;
     private String muokkaaja;
-
 }

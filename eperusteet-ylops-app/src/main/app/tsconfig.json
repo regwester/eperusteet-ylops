@@ -21,6 +21,7 @@
     "scripts/views/opetussuunnitelmat/services/vuosiluokat.ts",
     "scripts/views/opetussuunnitelmat/services/kielitarjonta.ts",
     "scripts/views/opetussuunnitelmat/services/lukioServices.ts",
+    "scripts/views/opetussuunnitelmat/services/pdf.ts",
     "scripts/views/opetussuunnitelmat/pohja/tiedot.ts",
     "scripts/views/opetussuunnitelmat/pohja/tekstikappale.ts",
     "scripts/views/opetussuunnitelmat/pohja/pohja.ts",
@@ -32,6 +33,7 @@
     "scripts/views/opetussuunnitelmat/vuosiluokat/vuosiluokka.ts",
     "scripts/views/opetussuunnitelmat/vuosiluokat/vlk.ts",
     "scripts/views/opetussuunnitelmat/lukio/lukiokoulutusControllers.ts",
+    "scripts/views/opetussuunnitelmat/lukio/lukioAihekokonaisuudet.ts",
     "scripts/views/opetussuunnitelmat/lukio/lukioOppiaineetControllers.ts",
     "scripts/views/opetussuunnitelmat/lukio/lukioTreeUtils.ts",
     "scripts/views/opetussuunnitelmat/lista.ts",
@@ -86,6 +88,7 @@
     "scripts/common/directives/kommentit.ts",
     "scripts/common/directives/rajaus.ts",
     "scripts/common/directives/navimenu.ts",
+    "scripts/common/directives/jqueryspinner.ts",
     "scripts/common/filters.ts",
     "scripts/constants.ts",
     "scripts/config.ts"

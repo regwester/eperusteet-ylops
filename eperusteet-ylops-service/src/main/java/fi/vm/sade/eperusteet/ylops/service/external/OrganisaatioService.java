@@ -32,8 +32,17 @@ public interface OrganisaatioService {
     JsonNode getPeruskoulutByKuntaId(String kuntaId);
 
     @PreAuthorize("isAuthenticated()")
+    JsonNode getLukiotByKuntaId(String kuntaId);
+
+    @PreAuthorize("isAuthenticated()")
     JsonNode getPeruskoulutByOid(String oid);
 
     @PreAuthorize("isAuthenticated()")
     JsonNode getPeruskoulutoimijat(List<String> kuntaIdt);
+
+    @PreAuthorize("isAuthenticated()")
+    JsonNode getLukioByOid(String oid);
+
+    @PreAuthorize("isAuthenticated()")
+    JsonNode getLukiotoimijat(List<String> kuntaIdt);
 }

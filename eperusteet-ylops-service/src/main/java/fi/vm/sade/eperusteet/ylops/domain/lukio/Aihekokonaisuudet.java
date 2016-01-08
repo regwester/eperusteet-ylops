@@ -89,7 +89,7 @@ public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity
     private Opetussuunnitelma opetussuunnitelma;
 
     @Getter
-    @OneToMany(mappedBy = "aihekokonaisuudet", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "aihekokonaisuudet", cascade = {CascadeType.ALL})
     @OrderBy("jnro")
     private Set<Aihekokonaisuus> aihekokonaisuudet = new HashSet<>(0);
 
@@ -107,7 +107,7 @@ public class Aihekokonaisuudet extends AbstractAuditedReferenceableEntity
 
     public Aihekokonaisuudet copyInto(Aihekokonaisuudet to) {
         to.otsikko = this.otsikko;
-        to.yleiskuvaus = this.yleiskuvaus;
+        //to.yleiskuvaus = this.yleiskuvaus;
         return to;
     }
 }

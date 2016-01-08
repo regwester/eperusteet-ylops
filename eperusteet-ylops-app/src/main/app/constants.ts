@@ -1,15 +1,10 @@
-/// <reference path="angular.d.ts" />
-
-import IDeferred = angular.IDeferred;
-import IPromise = angular.IPromise;
-import IQService = angular.IQService;
-
-declare var angular: any;
-declare var _: any;
 declare var CKEDITOR: any;
 declare var XLSX: any;
-declare var $q: any;
-declare var $: any;
-declare var global: any;
+declare var _: any;
 declare var moment: any;
 declare var window: Window;
+
+// TODO: Vaihda typealiaksiin
+interface IPromise<T> extends angular.IPromise<T> {};
+interface IQService extends angular.IQService {};
+interface IDeferred<T> extends angular.IDeferred<T> {};

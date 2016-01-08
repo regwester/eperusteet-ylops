@@ -1,3 +1,4 @@
+
 <!--
   ~  Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
   ~
@@ -14,15 +15,9 @@
   ~  European Union Public Licence for more details.
   -->
 
-<!--<div dropdown class="action-buttons pull-right">-->
-  <!--<button editointi-kontrolli class="btn btn-default btn-sm dropdown-toggle"-->
-          <!--ng-show="muokattavatOsat.isAddAvailable()" dropdown-toggle-->
-          <!--icon-role="add">{{'muokkaus-lisaa-osio' | kaanna}}-->
-  <!--</button>-->
-  <!--<ul class="dropdown-menu" role="menu">-->
-    <!--<li ng-repeat="field in muokattavatOsat.osat" ng-show="!field.obj">-->
-      <!--<a class="action-link" ng-click="muokattavatOsat.addOsa(field.id)" kaanna="field.label">-->
-      <!--</a>-->
-    <!--</li>-->
-  <!--</ul>-->
-<!--</div>-->
+<div class="tekstiosa perusteen-teksti" ng-if="perusteenTeksti">
+    <a ng-class="{'toggle-perusteen-teksti peruste-teksti': true,'is-open': !textHidden}" ng-click="toggleTextVisible()">
+        <span kaanna="nayta-perusteen-teksti"></span>
+    </a>
+    <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna | unsafe" termisto-viitteet="perusteenTeksti"></span>
+</div>

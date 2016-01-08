@@ -14,7 +14,7 @@
   ~  European Union Public Licence for more details.
   -->
 
-<div class="kurssi-view" ng-show="!editMode">
+<div class="kurssi-view" ng-if="!editMode">
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
   <hr class="mujuviiva"/>
 
@@ -29,18 +29,20 @@
       <strong>{{ 'muokattu' | kaanna}}:</strong>
       {{kurssi.muokattu | aikaleima: 'short'}}
     </span>
-    <div class="action-button" ng-if="isReconnectable()">
-      <span kaanna="ei-yhdistetty-pohjaan" style="color: red; padding-right: 20px;"></span>
-      <button class="btn btn-default" kaanna="'palauta-yhteys'"
-              ng-click="connectKurssi()"></button>
-    </div>
-    <div class="action-button" ng-if="connected()">
-      <span kaanna="yhdistetty-pohjaan" style="color: limegreen; padding-right: 20px;"></span>
-      <button class="btn btn-default" kaanna="'katkaise-yhteys'"
-              ng-click="disconnectKurssi()"></button>
-    </div>
-    <div class="action-buttons-inline" ng-if="!editMode && isEditAllowed()">
-      <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
+    <div class="action-buttons-inline" ng-if="!editing" oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]">
+      <div class="action-button" ng-if="isReconnectable()">
+        <span ng-bind="'ei-yhdistetty-pohjaan' | kaanna"  class="lukio-oppiaine-disconnect-btn"></span>
+        <button class="btn btn-default" kaanna="'palauta-yhteys'"
+                ng-click="connectKurssi()"></button>
+      </div>
+      <div class="action-button" ng-if="connected()">
+        <span ng-bind="'yhdistetty-pohjaan' | kaanna"  class="lukio-oppiaine-connect-btn"></span>
+        <button class="btn btn-default" kaanna="'katkaise-yhteys'"
+                ng-click="disconnectKurssi()"></button>
+      </div>
+      <div class="action-button" ng-if="!editMode && isEditAllowed()">
+        <button class="btn btn-default btn-icon-only" icon-role="edit" ng-click="edit()"></button>
+      </div>
     </div>
   </h3>
 
@@ -48,7 +50,6 @@
     <tr>
       <td style="padding-right: 20px;">{{ 'kurssikoodi' | kaanna}}:</td>
       <td ng-if="!editing">{{kurssi.lokalisoituKoodi | kaanna}}</td>
-      <!--<td ng-if="editing"><input type="text"/><button ng-click="openKoodisto()">test</button></td>-->
     </tr>
     <tr style="margin-top: 10px;">
       <td>{{ 'kurssityyppi' | kaanna}}:</td>
@@ -57,25 +58,26 @@
         <span class="small-colorbox-container"><span class="colorbox kurssi-tyyppi {{kurssi.tyyppi | lowercase}}"></span></span>
       </td>
     </tr>
+    <tr>
+      <td style="padding-right: 20px;"><span kaanna="'kurssi-laajuus-header'"></span></td>
+      <td><span ng-bind="(kurssi.laajuus | number) + ' ' + ('kurssi-laajuus-kurssia' | kaanna)"></span></td>
+    </tr>
   </table>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.kuvaus" title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="kurssi.kuvaus" sisalto-title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteet.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.tavoitteet.teksti" title="(kurssi.tavoitteet.otsikko | kaanna) || (kurssi.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="kurssi.tavoitteet.teksti" sisalto-title="(kurssi.tavoitteet.otsikko | kaanna) || (kurssi.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.keskeinenSisalto.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.keskeinenSisalto.teksti" title="(kurssi.keskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.keskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="kurssi.keskeinenSisalto.teksti" sisalto-title="(kurssi.keskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.keskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
 
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteetJaKeskeinenSisalto.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.tavoitteetJaKeskeinenSisalto.teksti" title="(kurssi.tavoitteetJaKeskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.tavoitteetJaKeskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
+                      oppiaineen-teksti="kurssi.tavoitteetJaKeskeinenSisalto.teksti" sisalto-title="(kurssi.tavoitteetJaKeskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.tavoitteetJaKeskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
 
-
-  <!--<pre>{{ kurssi | json}}</pre>-->
-  <!--<pre>{{ oppiaine.koosteinen | json}}</pre>-->
 </div>
-<div class="lisaa-kurssi oppiaine-form" ng-show="editMode">
+<div class="lisaa-kurssi oppiaine-form" ng-if="editMode">
   <h3 ng-bind="oppiaine.nimi | kaanna"></h3>
   <hr class="mujuviiva"/>
 
@@ -83,8 +85,21 @@
 
   <div class="non-collapsibles">
     <form name="kurssiForm" role="form">
-      <div class="action-buttons">
-        <div class="floater" ng-include="'views/opetussuunnitelmat/lukio/include/kurssiOsavalitsin.html'">
+      <div class="action-buttons-inline">
+        <div class="action-button" ng-if="isEditAllowed()" oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]">
+          <button class="btn btn-default btn-icon-only" icon-role="remove" ng-click="delete()"></button>
+        </div>
+        <div dropdown class="action-button pull-right">
+          <button editointi-kontrolli class="btn btn-default btn-sm dropdown-toggle"
+                  ng-show="muokattavatOsat.isAddAvailable()" dropdown-toggle
+                  icon-role="add">{{'muokkaus-lisaa-osio' | kaanna}}
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="field in muokattavatOsat.osat" ng-show="!field.obj">
+              <a class="action-link" ng-click="muokattavatOsat.addOsa(field.id)" ng-bind="field.label | kaanna" >
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
       <div ng-include="'views/opetussuunnitelmat/lukio/include/kurssiLomakeKentat.html'"></div>

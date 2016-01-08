@@ -63,7 +63,7 @@ ylopsApp
     $scope.termit = [];
     $scope.model = {
       chosen: null,
-      newTermi: ''
+      newTermi: { termi: null }
     };
     var callback = angular.noop;
     var setDeferred = null;
@@ -120,7 +120,7 @@ ylopsApp
     $scope.addNew = function () {
       $scope.adding = !$scope.adding;
       if ($scope.adding) {
-        $scope.model.newTermi = null;
+        $scope.model.newTermi = { termi: null };
       }
     };
 
@@ -129,14 +129,13 @@ ylopsApp
     };
 
     $scope.saveNew = function () {
-      var termi = $scope.service.newTermi($scope.model.newTermi);
-      $scope.service.save(termi).then(function () {
+      $scope.service.save($stateParams.id, $scope.model.newTermi).then(function () {
         $scope.message = 'termi-plugin-tallennettu';
         $timeout(function () {
           $scope.closeMessage();
         }, 8000);
         $scope.adding = false;
-        setDeferred = _.clone(termi.avain);
+        setDeferred = _.clone($scope.model.newTermi.avain);
         $scope.init();
       });
     };
@@ -195,7 +194,7 @@ ylopsApp
           removePlugins: 'resize,elementspath,scayt,wsc,image',
           extraPlugins: 'divarea,sharedspace,epimage,termi',
           disallowedContent: 'br; tr td{width,height}',
-          extraAllowedContent: 'img[!data-uid,src]',
+          extraAllowedContent: 'img[!data-uid,src]; abbr[data-viite]',
           disableObjectResizing: true, // doesn't seem to work with inline editor
           language: 'fi',
           'entities_latin': false,

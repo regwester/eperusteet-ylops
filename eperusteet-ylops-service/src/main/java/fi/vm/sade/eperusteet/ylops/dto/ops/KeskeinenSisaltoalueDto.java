@@ -33,4 +33,5 @@ public class KeskeinenSisaltoalueDto implements ReferenceableDto {
     private UUID tunniste;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;
+    private Boolean piilotettu;
 }

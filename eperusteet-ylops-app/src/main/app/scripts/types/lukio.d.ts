@@ -26,6 +26,28 @@ declare module Lukio {
         yleiskuvaus?: l.Lokalisoitu;
     }
 
+    export interface AihekokonaisuudetPaivitaYleiskuvaus {
+        otsikko: l.Lokalisoitu;
+        yleiskuvaus: l.Lokalisoitu;
+    }
+
+    export interface LuoAihekokonaisuus {
+        otsikko: l.Lokalisoitu;
+        yleiskuvaus: l.Lokalisoitu;
+    }
+    export interface PaivitaAihekokonaisuus extends LuoAihekokonaisuus{
+    }
+
+    export interface JarjestaAihekokonaisuudet {
+        aihekokonaisuudet: IdHolder[]
+    }
+
+    export interface MuokkaaAihekokonaisuutta {
+        id: number;
+        otsikko: l.Lokalisoitu;
+        yleiskuvaus: l.Lokalisoitu;
+    }
+
     export interface Aihekokonaisuudet {
         uuidTunniste?: string;
         id? : number;
@@ -36,6 +58,7 @@ declare module Lukio {
 
     export interface OpsAihekokonaisuus extends Aihekokonaisuus {
         perusteen?: Aihekokonaisuus;
+        parent?: OpsAihekokonaisuus;
     }
 
     export interface OpsAihekokonaisuudet extends Aihekokonaisuudet {
@@ -70,7 +93,6 @@ declare module Lukio {
         VALTAKUNNALLINEN_PAKOLLINEN,
         VALTAKUNNALLINEN_SYVENTAVA,
         VALTAKUNNALLINEN_SOVELTAVA,
-        PAIKALLINEN_PAKOLLINEN,
         PAIKALLINEN_SYVENTAVA,
         PAIKALLINEN_SOVELTAVA
     }
@@ -103,8 +125,10 @@ declare module Lukio {
     export interface LukiokurssiOps extends Kurssi {
         oppiaineId: number;
         jarjestys?: number;
+        palautettava: boolean;
         tyyppi: LukioKurssiTyyppi;
         tavoitteet?: l.TekstiOsa;
+        laajuus: number,
         keskeinenSisalto?: l.TekstiOsa;
         tavoitteetJaKeskeinenSisalto?: l.TekstiOsa;
     }
@@ -137,6 +161,11 @@ declare module Lukio {
         tehtava?: l.TekstiOsa;
         tavoitteet?: l.TekstiOsa;
         arviointi?: l.TekstiOsa;
+    }
+
+    export interface AbstraktiOppiaine {
+        tunniste: string
+        nimi: l.Lokalisoitu
     }
 
     export interface OppiaineKielitarjonta {
@@ -193,5 +222,6 @@ declare module Lukio {
         root: boolean;
         perusteen: LukioOpetussuunnitelmaRakennePeruste;
         oppiaineet: LukioOppiaine[];
+        pohjanTarjonta: LukioOppiaine[];
     }
 }

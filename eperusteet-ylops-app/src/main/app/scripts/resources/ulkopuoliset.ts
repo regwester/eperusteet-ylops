@@ -65,6 +65,28 @@ ylopsApp
       }
     });
   })
+    .factory('LukioHaku', function(UlkopuolisetResources, $resource) {
+      return $resource(UlkopuolisetResources.ULKOPUOLISET + 'organisaatiot/lukiot/oid/:oid', {
+        oid: '@oid'
+      }, {
+        get: {
+          method: 'GET',
+          isArray: true,
+          cache: true
+        }
+      });
+    })
+    .factory('LukiotoimijaHaku', function(UlkopuolisetResources, $resource) {
+      return $resource(UlkopuolisetResources.ULKOPUOLISET + 'organisaatiot/lukiotoimijat/:kuntaUri', {
+        kuntaUri: '@kuntaUri'
+      }, {
+        get: {
+          method: 'GET',
+          isArray: true,
+          cache: true
+        }
+      });
+    })
   .factory('PeruskoulutoimijaHaku', function(UlkopuolisetResources, $resource) {
     return $resource(UlkopuolisetResources.ULKOPUOLISET + 'organisaatiot/peruskoulutoimijat/:kuntaUri', {
       kuntaUri: '@kuntaUri'

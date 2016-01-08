@@ -15,8 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.ohje;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 /**
  *
  * @author harrik

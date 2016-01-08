@@ -48,7 +48,9 @@ ylopsApp
                 if (aihekok.paikallinen) {
                     _.each(aihekok.paikallinen.aihekokonaisuudet, (ak :Lukio.OpsAihekokonaisuus) =>
                         items.push({
-                            url: $state.href('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet'),
+                            url: $state.href('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuus', {
+                                aihekokonaisuusId: ak.id
+                            }),
                             label: Kaanna.kaanna(ak.otsikko || (ak.perusteen ? ak.perusteen.otsikko : {})),
                             depth: 1
                         }));
@@ -77,7 +79,7 @@ ylopsApp
         var produceNavigation = function(doUpateItems: (items: NavigaatioItem[]) => IPromise<NavigaatioItem[]>):IPromise<sn.NavigaatioItem[]> {
             var doBuild = () => buildNavigation().then(doUpateItems);
             LukioOpetussuunnitelmaService.onAihekokonaisuudetUpdate(doBuild);
-            LukioOpetussuunnitelmaService.onRaknneUpdate(doBuild);
+            LukioOpetussuunnitelmaService.onRakenneUpdate(doBuild);
             return doBuild();
         };
 
@@ -98,21 +100,6 @@ ylopsApp
         if ($state.is('root.opetussuunnitelmat.lukio.opetus')) {
             $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet');
         }
-    })
-    // a opetus controller:
-    .controller('AihekokonaisuudetController', function($scope,
-                            LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI) {
-        $scope.aihekokonaisuudet = {};
-        LukioOpetussuunnitelmaService.getAihekokonaisuudet().then(ak => $scope.aihekokonaisuudet = ak);
-
-        $scope.sortableOptions = {
-            handle: '> .handle',
-            placeholder: 'placeholder-vklsort',
-            connectWith: '.container-items',
-            cursor: 'move',
-            cursorAt: {top : 2, left: 2},
-            tolerance: 'pointer',
-        };
     })
     .controller('OpetuksenYleisetTavoitteetController', function($scope, $log,
                      LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI) {

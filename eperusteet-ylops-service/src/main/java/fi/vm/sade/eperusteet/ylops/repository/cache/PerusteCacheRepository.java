@@ -45,6 +45,12 @@ public interface PerusteCacheRepository extends JpaRepository<PerusteCache, Long
             " order by fin.teksti, c.diaarinumero, c.aikaleima")
     List<PerusteCache> findNewestEntrieByKoulutustyyppis(Set<KoulutusTyyppi> tyypit);
 
+    @Query("select c from PerusteCache c left join c.nimi nimi left join nimi.teksti fin on fin.kieli = 'FI' " +
+            " where c.diaarinumero not in (?2) and c.koulutustyyppi in (?1) and " + NEWEST_BY_AIKALEIMA +
+            " order by fin.teksti, c.diaarinumero, c.aikaleima")
+    List<PerusteCache> findNewestEntrieByKoulutustyyppisExceptDiaarit(Set<KoulutusTyyppi> tyypit,
+                                                         Set<String> diaariNotIn);
+
     @Query("select c from PerusteCache c where c.diaarinumero = ?1 and " + NEWEST_BY_AIKALEIMA)
     PerusteCache findNewestEntryForPerusteByDiaarninumero(String diaarinumero);
 

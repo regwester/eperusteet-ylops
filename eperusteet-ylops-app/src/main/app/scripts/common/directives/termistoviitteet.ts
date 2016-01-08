@@ -23,7 +23,7 @@ ylopsApp
       restrict: 'E',
       scope: { teksti: '=' },
       transclude: true,
-      template: '<p termisto-viitteet="teksti" ng-bind-html="teksti | kaanna | unsafe"></p>'
+      template: '<div termisto-viitteet="teksti" ng-bind-html="teksti | kaanna | kuvalinkit | unsafe"></div>'
     };
   })
   .directive('termistoViitteet', function ($stateParams, Kaanna, KasitteetService, $document, $timeout) {

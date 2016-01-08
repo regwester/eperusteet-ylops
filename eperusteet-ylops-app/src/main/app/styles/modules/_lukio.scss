@@ -288,10 +288,6 @@ $aikaleima-vari: #888;
   &.valtakunnallinen_soveltava {
     background-color: $soveltava-vari;
   }
-  &.paikallinen_pakollinen {
-    background-color: $pakollinen-vari;
-    @include paikallinen-symboli(white, 15pt, 30px, 1px);
-  }
   &.paikallinen_syventava {
     background-color: $syventava-vari;
     @include paikallinen-symboli(white, 15pt, 30px, 1px);
@@ -310,12 +306,6 @@ $aikaleima-vari: #888;
     width: 18px;
     @include borderradius(4px);
 
-    &.paikallinen_pakollinen{
-      background-color: transparent;
-      overflow: visible;
-      @include paikallinen-symboli($pakollinen-vari, 14pt, 18px, -5px);
-      &:after { position:absolute; left:-5px; }
-    }
     &.paikallinen_syventava{
       background-color: transparent;
       overflow: visible;
@@ -819,6 +809,16 @@ a.clickable {
       margin-right: 10px;
     }
   }
+
+  .numeric-container {
+    display: inline-block;
+    padding-right: 10px;
+
+    .form-control.numeric {
+      width: 80px;
+      display: inline-block;
+    }
+  }
 }
 
 .btn-icon-only{
@@ -902,5 +902,47 @@ a.clickable {
     text-align: center;
     padding-top: 7px;
     margin-right: 5px;
+  }
+}
+
+.aihekokonaisuudet-structure {
+  .sortable {
+    margin: 3px;
+    padding: 5px;
+    border: 1px solid #ccc;
+
+    &:hover {
+      background: #eee;
+    }
+
+    .treehandle {
+      &:hover {
+        cursor: move;
+      }
+    }
+  }
+  .treehandle {
+    display: none;
+  }
+  .editing {
+    .treehandle{
+      display: inline-block;
+    }
+
+    .placeholder {
+      padding: 5px;
+    }
+  }
+}
+
+.action-button{
+  .lukio-oppiaine-connect-btn{
+    color: limegreen;
+    padding-right: 20px;
+  }
+
+  .lukio-oppiaine-disconnect-btn{
+    color: red;
+    padding-right: 20px;
   }
 }

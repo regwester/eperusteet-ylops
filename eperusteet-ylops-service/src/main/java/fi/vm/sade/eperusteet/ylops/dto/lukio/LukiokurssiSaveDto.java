@@ -24,6 +24,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * User: tommiratamaa
@@ -39,6 +40,8 @@ public class LukiokurssiSaveDto implements Serializable  {
     private LokalisoituTekstiDto nimi;
     @NotNull
     private LukiokurssiTyyppi.Paikallinen tyyppi;
+    @NotNull
+    private BigDecimal laajuus = BigDecimal.ONE;
     private LokalisoituTekstiDto kuvaus;
     private String koodiUri;
     private String koodiArvo;

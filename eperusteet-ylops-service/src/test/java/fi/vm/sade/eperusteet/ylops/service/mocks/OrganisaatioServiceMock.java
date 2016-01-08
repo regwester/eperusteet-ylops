@@ -38,12 +38,27 @@ public class OrganisaatioServiceMock implements OrganisaatioService {
     }
 
     @Override
+    public JsonNode getLukiotByKuntaId(String kuntaId) {
+        return null;
+    }
+
+    @Override
     public JsonNode getPeruskoulutByOid(String oid) {
         return null;
     }
 
     @Override
     public JsonNode getPeruskoulutoimijat(List<String> kuntaIdt) {
+        return null;
+    }
+
+    @Override
+    public JsonNode getLukioByOid(String oid) {
+        return null;
+    }
+
+    @Override
+    public JsonNode getLukiotoimijat(List<String> kuntaIdt) {
         return null;
     }
 }

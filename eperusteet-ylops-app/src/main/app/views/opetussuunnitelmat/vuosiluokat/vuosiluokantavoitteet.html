@@ -15,7 +15,7 @@
         <div class="lista">
           <h4 kaanna="'sisaltoalueet'"></h4>
           <ul>
-            <li ng-repeat="sisaltoalue in tavoiteMap[tunniste].$sisaltoalueet | orderBy:nimiOrder">
+            <li ng-if="!sisaltoaluetunnisteet[sisaltoalue.tunniste].piilotettu" ng-repeat="sisaltoalue in tavoiteMap[tunniste].$sisaltoalueet | orderBy:nimiOrder">
               <a ng-href="" ng-click="naytaKuvaus(sisaltoalue, tavoiteMap[tunniste].id, tunniste)">
                 <span kaanna="sisaltoalue.nimi"></span>
                 <span ng-hide="options.editing">

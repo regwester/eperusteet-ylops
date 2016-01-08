@@ -55,11 +55,18 @@ public class Keskeinensisaltoalue extends AbstractReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
+    // Piilottaa sisältöalueen ja tavoitteiden sisältöalueet käyttöliittymästä
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private Boolean piilotettu;
+
     public static Keskeinensisaltoalue copyOf(Keskeinensisaltoalue other) {
         Keskeinensisaltoalue ks = new Keskeinensisaltoalue();
         ks.setTunniste(other.getTunniste());
         ks.setNimi(other.getNimi());
         ks.setKuvaus(other.getKuvaus());
+        ks.setPiilotettu(other.getPiilotettu());
         return ks;
     }
 

@@ -31,7 +31,7 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class LukioKopioiOppimaaraDto implements Serializable {
+public class LukioKopioiOppimaaraDto {
     @NotNull
     private LokalisoituTekstiDto nimi;
     @NotNull

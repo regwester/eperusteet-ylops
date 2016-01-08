@@ -48,8 +48,35 @@ public interface LukioOpetussuunnitelmaService {
     long addOppimaara(long opsId, long oppiaineId, LukioKopioiOppimaaraDto kt);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long addAbstraktiOppiaine(long opsId, LukioAbstraktiOppiaineTuontiDto tuonti);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     long saveKurssi(long opsId, LukiokurssiSaveDto kurssi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void updateKurssi(long opsId, long kurssiId, LukiokurssiUpdateDto kurssi);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long disconnectKurssi(Long kurssiId, Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long reconnectKurssi(Long kurssiId, Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    long saveAihekokonaisuus(long opsId, AihekokonaisuusSaveDto kokonaisuus);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void reArrangeAihekokonaisuudet(long opsId, AihekokonaisuudetJarjestaDto jarjestys);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateAihekokonaisuusYleiskuvaus(long opsId, AihekokonaisuusSaveDto yleiskuvaus);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateAihekokonaisuus(long opsId, long id, AihekokonaisuusSaveDto kokonaisuus);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void deleteAihekokonaisuus(long opsId, long id);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void removeKurssi(long opsId, long kurssiId);
 }

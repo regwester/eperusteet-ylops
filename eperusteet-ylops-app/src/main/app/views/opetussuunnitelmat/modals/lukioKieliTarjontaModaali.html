@@ -28,30 +28,32 @@
             <h4 ng-bind="$valittu.nimi | kaanna"></h4>
         </div>
         <div class="row" ng-show="($valittu.nimi && $type === 'kieli')">
-            <div class="col-xs-4"><h4 kaanna="'kieli-koodi'"></h4></div>
+            <div class="col-xs-4"><h4 ng-bind="'kieli-koodi' | kaanna"></h4></div>
             <div class="col-xs-8">
                 <div class="fixed-group">
                     <input id="kieli-koodi-input" class="form-control limit" type="text" ng-model="$valittu.kieliKoodiArvo" ng-disabled="true"/>
-                    <div class="addon"><button role="link" class="btn btn-default" ng-click="openKieliKoodisto()" kaanna="hae-koodistosta"></button></div>
+                    <div class="addon"><button role="link" class="btn btn-default" ng-click="openKieliKoodisto()" ng-bind="'hae-koodistosta' | kaanna"></button></div>
                 </div>
             </div>
         </div>
         <div class="row" ng-show="$type === 'kieli'">
-            <div class="col-xs-4"><h4 kaanna="'lukio-kielivalinta-kieli-nimi'"></h4></div>
+            <div class="col-xs-4"><h4 ng-bind="'lukio-kielivalinta-kieli-nimi' | kaanna"></h4></div>
             <div class="col-xs-8">
                 <input id="kieli-input" class="form-control limit" type="text" slocalized ng-disabled="$valittu.kieliKoodiArvo != 'KX'" ng-model="$valittu.kieli"/>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-4"><h4 kaanna="'oppiaine-nimi'"></h4></div>
+            <div class="col-xs-4"><h4 ng-bind="'lisaa-tarjonnasta-oppiaine-nimi' | kaanna"></h4></div>
             <div class="col-xs-8">
                 <input type="text" class="form-control" ng-model="$omaNimi" slocalized>
             </div>
         </div>
+        <div class="row alert-danger" ng-show="kieliJoToteutettu()"
+            ng-bind="'kieli-jo-toteutettu-oppimaaralle' | kaanna"></div>
     </div>
 </div>
 
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="ok()" ng-disabled="($type === 'kieli' && $valittu.kieliKoodiArvo && ($valittu.kieli | kaanna)) && !($omaNimi | kaanna)" kaanna="'ok'"></button>
-    <button class="btn btn-default" ng-click="peruuta()" kaanna="'peruuta'"></button>
+    <button class="btn btn-primary" ng-click="ok()" ng-disabled="kieliJoToteutettu() || (($type === 'kieli' && $valittu.kieliKoodiArvo && ($valittu.kieli | kaanna)) && !($omaNimi | kaanna))" ng-bind="'ok' | kaanna"></button>
+    <button class="btn btn-default" ng-click="peruuta()" ng-bind="'peruuta' | kaanna"></button>
 </div>

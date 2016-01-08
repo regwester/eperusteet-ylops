@@ -2,12 +2,12 @@
   <div class="tavoite" ng-if="perusteOpVlk.sisaltoalueinfo">
   <div class="header">
       <div class="toggle-nimi">
-        <span class="toggle" collapse-toggler="sisaltoInfoCollapse"></span>
-        <span class="nimi" ng-click="sisaltoInfoCollapse = !sisaltoInfoCollapse"
+        <span ng-show="perusteOpVlk.sisaltoalueinfo.teksti" class="toggle" collapse-toggler="sisaltoInfoCollapse"></span>
+        <span class="nimi nimi-otsikko" ng-click="sisaltoInfoCollapse = !sisaltoInfoCollapse"
               ng-bind="perusteOpVlk.sisaltoalueinfo.otsikko | kaanna"></span>
       </div>
     </div>
-    <div class="peruste-body ikoni-peruste" collapse="sisaltoInfoCollapse">
+    <div class="peruste-body ikoni-peruste" collapse="sisaltoInfoCollapse || !perusteOpVlk.sisaltoalueinfo.teksti">
       <div class="peruste-wrapper">
         <h4 kaanna="'perusteen-teksti'"></h4>
         <termistoteksti teksti="perusteOpVlk.sisaltoalueinfo.teksti"></termistoteksti>
@@ -24,15 +24,20 @@
       </div>
     </div>
 
-    <div class="peruste-body ikoni-peruste" collapse="collapsed[tunniste]">
-      <div class="peruste-wrapper">
-        <h4 kaanna="'perusteen-teksti'"></h4>
-        <termistoteksti teksti="perusteSisaltoalueet[tunniste].kuvaus"></termistoteksti>
+    <div>
+      <div class="peruste-body ikoni-peruste" collapse="collapsed[tunniste]">
+        <div class="peruste-wrapper">
+          <h4 kaanna="'perusteen-teksti'"></h4>
+          <termistoteksti teksti="perusteSisaltoalueet[tunniste].kuvaus"></termistoteksti>
+        </div>
       </div>
-    </div>
-
-    <div class="ops-body">
-      <div ops-teksti="muokattavat[tunniste]" callbacks="callbacks" config="options"></div>
+      <div class="ops-body">
+        <div style="margin-bottom: 20px;" class="checkbox-label">
+          <input ng-disabled="!options.editing" type="checkbox" ng-model="muokattavat[tunniste].piilotettu"></input>
+          <label kaanna="'piilota-sisaltoalue'"></label>
+        </div>
+        <div ops-teksti="muokattavat[tunniste]" callbacks="callbacks" config="options"></div>
+      </div>
     </div>
   </div>
 
