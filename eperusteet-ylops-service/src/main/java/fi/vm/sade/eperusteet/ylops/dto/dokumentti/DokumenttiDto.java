@@ -39,6 +39,5 @@ public class DokumenttiDto {
     private Date aloitusaika;
     private Date valmistumisaika;
     private DokumenttiTila tila = DokumenttiTila.EI_OLE;
-    //private DokumenttiVirhe virhekoodi = DokumenttiVirhe.EI_VIRHETTA;
-    //private Suoritustapakoodi suoritustapakoodi;
+    private String virhekoodi = "";
 }

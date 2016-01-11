@@ -87,7 +87,7 @@ public class DokumenttiController {
             service.generateWithDto(dtoForDokumentti);
 
             status = HttpStatus.ACCEPTED;
-        } else if (dtoForDokumentti.getTila() == DokumenttiTila.LUODAAN) {
+        } else {
             status = HttpStatus.FORBIDDEN;
         }
 
