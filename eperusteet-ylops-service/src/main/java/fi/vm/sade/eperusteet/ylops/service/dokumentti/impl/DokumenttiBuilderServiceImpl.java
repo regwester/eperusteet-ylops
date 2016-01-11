@@ -168,8 +168,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Muunnetaan ops objekti xml muotoon
         convertOps2XML(doc, xmlStream);
-        LOG.info("Generted XML  :");
-        printStream(xmlStream);
+        //LOG.info("Generted XML  :");
+        //printStream(xmlStream);
 
         // Muunntetaan saatu xml malli fo:ksi
         InputStream xmlInputStream = new ByteArrayInputStream(xmlStream.toByteArray());
@@ -325,7 +325,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             addPerusteTeksti(doc, rootElement, viite, kieli);
 
             // Luodaan pohjan sisältö kappaleelle
-            String teskti = "<teksti>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</teksti>";
+            String teskti = "<p>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</p>";
             teskti = teskti.replace("&shy;", "");
             // Unescpaettaa myös käyttäjädatan
             //teskti = StringEscapeUtils.unescapeHtml4(teskti);
@@ -360,7 +360,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             addPerusteTeksti(doc, element, lapsi, kieli);
 
             // Luodaan sisältö
-            String teskti = "<teksti>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</teksti>";
+            String teskti = "<p>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</p>";
             teskti = teskti.replace("&shy;", "");
             // Unescpaettaa myös käyttäjädatan
             //teskti = StringEscapeUtils.unescapeHtml4(teskti);

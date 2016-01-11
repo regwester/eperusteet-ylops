@@ -541,5 +541,7 @@
   "dokumentin-tila": "PDF-dokumentin tila",
   "alaviite": "Alaviite",
   "alaviite-ohje": "Jos käsite on merkattu alaviitteeksi, se näytetään myös generoiduissa dokumenteissa.",
-  "lataa-ops-pdf-muodossa": "Lataa opetussuunnitelma PDF-muodossa"
+  "lataa-ops-pdf-muodossa": "Lataa opetussuunnitelma PDF-muodossa",
+  "dokumentti-luotu": "Dokumentti luotu",
+  "ei_ole": "Ei ole"
 }

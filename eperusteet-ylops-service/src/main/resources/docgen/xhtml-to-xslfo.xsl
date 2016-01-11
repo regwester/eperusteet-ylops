@@ -345,9 +345,7 @@
     <xsl:template match="body">
         <fo:flow flow-name="xsl-region-body">
             <!-- Set default font-size -->
-            <fo:block font-size="10pt" >
-                <xsl:apply-templates select="*|text()" />
-            </fo:block>
+            <xsl:apply-templates select="*|text()" />
         </fo:flow>
     </xsl:template>
 
@@ -911,7 +909,7 @@
                     </xsl:choose>
                 </fo:block>
             </fo:list-item-label>
-            <fo:list-item-body start-indent="body-start()">
+            <fo:list-item-body start-indent="body-start()"> 
                 <fo:block>
                     <xsl:apply-templates select="*|text()" />
                 </fo:block>
@@ -928,7 +926,7 @@
     </xsl:template>
 
     <xsl:template match="peruste">
-        <fo:block color="#444444" font-style="italic">
+        <fo:block color="#444444" font-style="italic" font-size="10pt">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
