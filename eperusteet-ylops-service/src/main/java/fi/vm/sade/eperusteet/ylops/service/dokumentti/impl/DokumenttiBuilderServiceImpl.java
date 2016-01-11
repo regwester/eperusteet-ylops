@@ -16,16 +16,24 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
+import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
+import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
@@ -41,8 +49,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.*;
 import org.w3c.dom.Element;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 import javax.imageio.IIOImage;
@@ -65,10 +71,8 @@ import java.awt.image.ColorModel;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
 /**
  *
@@ -95,6 +99,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     @Autowired
     private OhjeService ohjeService;
+
+    @Autowired
+    private KoodistoService koodistoService;
+
+    @Autowired
+    private OrganisaatioService organisaatioService;
 
     @Autowired
     private DtoMapper mapper;
@@ -132,17 +142,14 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Sisältöelementit
         addSisaltoElement(doc, bodyElement, ops, kieli);
 
+        // Vuosiluokkakokonaisuudet ja oppiaineet
+        addVuosiluokkakokonaisuudet(doc, ops, kieli);
+
         // Alaviitteet
         buildFootnotes(doc, ops, kieli);
 
         // Kuvat
         buildImages(doc, ops);
-
-        // Vuosiluokkakokonaisuudet
-        //addVuosiluokkakokonaisuudet(doc, ops, kieli);
-
-        // Oppiaineet
-        //addOppiaineet(doc, ops, kieli);
 
         Resource resource = applicationContext.getResource("classpath:docgen/xhtml-to-xslfo.xsl");
         pdf.write(convertOps2PDF(doc, resource.getFile()));
@@ -161,8 +168,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Muunnetaan ops objekti xml muotoon
         convertOps2XML(doc, xmlStream);
-        //LOG.info("Generted XML  :");
-        //printStream(xmlStream);
+        LOG.info("Generted XML  :");
+        printStream(xmlStream);
 
         // Muunntetaan saatu xml malli fo:ksi
         InputStream xmlInputStream = new ByteArrayInputStream(xmlStream.toByteArray());
@@ -263,6 +270,34 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             headElement.appendChild(diary);
         }
 
+        Set<KoodistoKoodi> koodistoKoodit = ops.getKunnat();
+        Element municipalities = doc.createElement("municipalities");
+        for (KoodistoKoodi koodistoKoodi : koodistoKoodit) {
+            Element kuntaEl = doc.createElement("municipality");
+            KoodistoKoodiDto koodistoKoodiDto = koodistoService.get("kunta", koodistoKoodi.getKoodiUri());
+            if (koodistoKoodiDto != null) {
+                for (KoodistoMetadataDto metadata : koodistoKoodiDto.getMetadata()) {
+                    if (metadata.getKieli().toLowerCase()
+                            .equals(kieli.toString().toLowerCase()))
+                        kuntaEl.setTextContent(metadata.getNimi());
+                }
+            }
+
+            municipalities.appendChild(kuntaEl);
+        }
+        headElement.appendChild(municipalities);
+
+        Set<String> organisaatiot = ops.getOrganisaatiot();
+        Element organizations = doc.createElement("organizations");
+        for (String org : organisaatiot) {
+            JsonNode orgNode = organisaatioService.getOrganisaatio(org);
+            JsonNode nimiNode = orgNode.get("nimi");
+            Element orgEl = doc.createElement("organization");
+            orgEl.setTextContent(nimiNode.get(kieli.toString()).asText());
+            organizations.appendChild(orgEl);
+        }
+        headElement.appendChild(organizations);
+
         Date paatospaivamaara = ops.getPaatospaivamaara();
         if (paatospaivamaara != null) {
             String paatospaivamaaraText = new SimpleDateFormat("d.m.yyyy").format(paatospaivamaara);
@@ -290,7 +325,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             addPerusteTeksti(doc, rootElement, viite, kieli);
 
             // Luodaan pohjan sisältö kappaleelle
-            String teskti = "<root>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</root>";
+            String teskti = "<teksti>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</teksti>";
             teskti = teskti.replace("&shy;", "");
             // Unescpaettaa myös käyttäjädatan
             //teskti = StringEscapeUtils.unescapeHtml4(teskti);
@@ -325,7 +360,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             addPerusteTeksti(doc, element, lapsi, kieli);
 
             // Luodaan sisältö
-            String teskti = "<root>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</root>";
+            String teskti = "<teksti>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</teksti>";
             teskti = teskti.replace("&shy;", "");
             // Unescpaettaa myös käyttäjädatan
             //teskti = StringEscapeUtils.unescapeHtml4(teskti);
@@ -358,7 +393,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
 
                 // Luodaan sisältö
-                String teskti = "<root><peruste>" + getTextString(teksti, kieli) + "</peruste></root>";
+                String teskti = "<peruste>" + getTextString(teksti, kieli) + "</peruste>";
                 teskti = StringEscapeUtils.unescapeHtml4(teskti);
 
                 Node node = DocumentBuilderFactory
@@ -369,10 +404,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 rootElement.appendChild(doc.importNode(node, true));
             }
         }
-    }
-
-    private void addOpsPohjaTeksti() {
-
     }
 
     private void buildFootnotes(Document doc, Opetussuunnitelma ops, Kieli kieli) {
@@ -398,6 +429,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
+    private String getFootnoteText(TermiDto termiDto, Kieli kieli) {
+        LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
+        String selitys = getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli);
+        selitys = StringEscapeUtils.unescapeHtml4(selitys);
+        selitys = selitys.replaceAll("<[^>]+>", "");
+
+        return selitys;
+    }
+
     private void buildImages(Document doc, Opetussuunnitelma ops) {
         XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
@@ -418,7 +458,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 // Tehdään muistissa olevasta datasta kuva
                 InputStream in = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 BufferedImage bufferedImage = ImageIO.read(in);
-                ColorModel model = bufferedImage.getColorModel();
 
                 int width = bufferedImage.getWidth();
                 int height = bufferedImage.getHeight();
@@ -464,19 +503,17 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private String getFootnoteText(TermiDto termiDto, Kieli kieli) {
-        LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
-        String selitys = getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli);
-        selitys = StringEscapeUtils.unescapeHtml4(selitys);
-        selitys = selitys.replaceAll("<[^>]+>", "");
-
-        return selitys;
-    }
-
     private void addVuosiluokkakokonaisuudet(Document doc, Opetussuunnitelma ops, Kieli kieli) {
-    }
+        Set<OpsVuosiluokkakokonaisuus> vlkset = ops.getVuosiluokkakokonaisuudet();
 
-    private void addOppiaineet(Document doc, Opetussuunnitelma ops, Kieli kieli) {
+        for (OpsVuosiluokkakokonaisuus vlk : vlkset) {
+            Vuosiluokkakokonaisuus v = vlk.getVuosiluokkakokonaisuus();
+            LOG.info(getTextString(v.getNimi(), kieli));
+            if (v.getLaajaalainenOsaaminen() != null)
+                LOG.info(getTextString(v.getLaajaalainenOsaaminen().getOtsikko(), kieli));
+
+        }
+
     }
 
     private void printStream(ByteArrayOutputStream stream) {
@@ -490,12 +527,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         } else {
             return teksti.getTeksti().get(kieli);
         }
-    }
-
-    private String getStringFromDoc(Document doc)    {
-        DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
-        LSSerializer lsSerializer = domImplementation.createLSSerializer();
-        return lsSerializer.writeToString(doc);
     }
 
     // Pieni apuluokka dokumentin lukujen generointiin
@@ -524,7 +555,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
 
         public String generateNumber() {
-            String numberString = new String();
+            String numberString = "";
 
             for (Integer number : numbers) {
                 numberString += String.valueOf(number) + ".";
