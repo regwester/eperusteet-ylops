@@ -8,6 +8,7 @@ var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
 
 module.exports = function(grunt) {
+  grunt.loadNpmTasks('grunt-dev-prod-switch');
   grunt.loadNpmTasks('grunt-connect-proxy');
   grunt.loadNpmTasks('grunt-angular-templates');
   require('load-grunt-tasks')(grunt);
@@ -30,6 +31,20 @@ module.exports = function(grunt) {
   }
 
   grunt.initConfig({
+    dev_prod_switch: {
+      options: {
+        environment: 'dev',
+        env_char: '#',
+        env_block_dev: 'env:dev',
+        env_block_prod: 'env:prod'
+      },
+      all: {
+        files: {
+          'eperusteet-ylops-app/src/main/app/scripts/views/opetussuunnitelmat/directives/header.js':
+            'eperusteet-ylops-app/src/main/app/scripts/views/opetussuunnitelmat/directives/header.js'
+        }
+      }
+    },
     yeoman: yeomanConfig,
     ts: {
       tests: {
