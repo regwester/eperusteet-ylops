@@ -25,7 +25,8 @@
 
                         <fo:simple-page-master master-name="cover"
                                                page-width="210mm" page-height="297mm">
-                            <fo:region-body background-image="cover.svg" />
+                            <fo:region-body margin="30mm" />
+                            <!--<fo:region-body background-image="cover.svg" />-->
                         </fo:simple-page-master>
 
                         <fo:simple-page-master master-name="blank"
@@ -122,7 +123,6 @@
 
             <fo:page-sequence master-reference="standard" id="DocumentBody" initial-page-number="1">
 
-                <!-- Static content (e.g. header and footer) -->
                 <fo:static-content flow-name="rb-right">
                     <fo:block font-size="10pt" text-align="start">
                     </fo:block>
@@ -582,10 +582,7 @@
     </xsl:template>
 
     <xsl:template match="h1">
-        <fo:block break-before="page">
-            <!--<fo:leader leader-pattern="rule" leader-length.maximum="100%" leader-length.optimum="100%" />-->
-        </fo:block>
-        <fo:block font-size="20pt" line-height="1.25em" font-weight="bold"
+        <fo:block font-size="20pt" line-height="1.25em" font-weight="bold" break-before="page"
                   keep-with-next="always" space-after="16pt"
                   font-family="serif" color="#007EC5">
 
@@ -822,7 +819,7 @@
     </xsl:template>
 
     <xsl:template match="img">
-        <fo:block space-after="12pt">
+        <fo:block space-after="12pt" align="center">
             <fo:external-graphic src="{@src}" content-width="scale-to-fit" content-height="100%"
                                  width="100%"
                                  scaling="uniform">
@@ -927,6 +924,12 @@
 
     <xsl:template match="peruste">
         <fo:block color="#444444" font-style="italic" font-size="10pt">
+            <xsl:apply-templates select="*|text()" />
+        </fo:block>
+    </xsl:template>
+
+    <xsl:template match="div">
+        <fo:block font-size="10pt">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
@@ -1239,25 +1242,13 @@
 
     <!-- Cover page -->
     <xsl:template name="cover">
-        <fo:block break-before='page' color="white"  font-weight="bold" text-align="center"
-                  margin-top="150mm" margin="40mm">
-            <fo:block font-size="28pt" >
-                <xsl:value-of select="/html/head/title" />
-            </fo:block>
-
-            <fo:block  font-size="16pt">
-                <xsl:apply-templates select="/html/head/meta[@name='subtitle']/@content" />
-            </fo:block>
+        <fo:block margin-top="100mm" margin="40mm"
+                  font-weight="bold" font-size="28pt" text-align="center">
+            <xsl:value-of select="/html/head/title" />
         </fo:block>
-
     </xsl:template>
 
     <xsl:template name="toc">
-        <!--<fo:block>
-            <fo:leader leader-pattern="rule" space-after="18pt"
-                       leader-length.maximum="100%" leader-length.optimum="100%" />
-        </fo:block>-->
-
         <fo:block break-before='page' space-after="12pt" id="TableOfContents" color="#007EC5" font-weight="bold"
                   line-height="21pt" font-size="16pt" text-align="start">
             <xsl:if test="//html/@lang = 'fi'">
