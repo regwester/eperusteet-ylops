@@ -125,12 +125,14 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             dokumentti.setData(data);
             dokumentti.setTila(DokumenttiTila.VALMIS);
             dokumentti.setValmistumisaika(new Date());
+            dokumentti.setVirhekoodi("");
 
             // Tallennetaan valmis dokumentti
             dokumenttiRepository.save(dokumentti);
         } catch (IOException | SAXException | TransformerException | JAXBException | ParserConfigurationException ex) {
             LOG.error(ex.getMessage());
             dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
+            dokumentti.setVirhekoodi(ex.getLocalizedMessage());
             dokumenttiRepository.save(dokumentti);
         }
     }
@@ -138,8 +140,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional
     public DokumenttiDto getDto(@P("id") long id) {
         Dokumentti dokumentti = dokumenttiRepository.findById(id);
-        DokumenttiDto dokumenttiDto = mapper.map(dokumentti, DokumenttiDto.class);
-        return dokumenttiDto;
+        return mapper.map(dokumentti, DokumenttiDto.class);
     }
 
     @Override

@@ -65,7 +65,6 @@ public class Dokumentti {
     @Column(name = "dokumenttidata")
     private byte[] data;
 
-    /*@Enumerated(EnumType.STRING)
-    @NotNull
-    private DokumenttiVirhe virhekoodi = DokumenttiVirhe.EI_VIRHETTA;*/
+    @Column(name = "virhekoodi")
+    private String virhekoodi;
 }
