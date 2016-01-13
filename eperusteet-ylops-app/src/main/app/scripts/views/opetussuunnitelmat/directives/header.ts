@@ -54,8 +54,9 @@ ylopsApp
   const selectEsitkatseluURL = () => {
     let currentHost= $location.host();
     if (currentHost === 'localhost') return  'localhost:9010/#/';
-    else if (currentHost === 'testi-eperusteet.opintopolku.fi') return 'https://testi-eperusteet.opintopolku.fi/#/';
-    else if (currentHost === 'eperusteet.opintopolku.fi') return 'https://eperusteet.opintopolku.fi/#/';
+    else if (currentHost === 'itest-virkailija.oph.ware.fi') return 'https://testi-eperusteet.opintopolku.fi/#/';
+    else if (currentHost === 'testi.virkailija.opintopolku.fi') return 'https://testi-eperusteet.opintopolku.fi/#/';
+    else if (currentHost === 'virkailija.opintopolku.fi') return 'https://eperusteet.opintopolku.fi/#/';
     else return 'https://eperusteet.opintopolku.fi/#/';
   };
 
