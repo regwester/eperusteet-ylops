@@ -16,6 +16,9 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,22 +26,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * User: tommiratamaa
  * Date: 27.11.2015
- * Time: 13.05
+ * Time: 13.06
  */
 @Getter
-public class LukioOpetussuunnitelmaRakenneOpsDto implements Serializable {
-    @Setter
-    private boolean root;
-    @Setter
-    private Date muokattu;
-    @Setter
-    private Long opsId;
-    @Setter
-    private List<LukioOppiaineRakenneListausDto> oppiaineet = new ArrayList<>();
-    @Setter
-    private List<LukioOppiaineRakenneListausDto> pohjanTarjonta = new ArrayList<>();
+@Setter
+public class LukioOppiaineRakenneDto<Tyyppi, KurssiTyyppi extends LukiokurssiListausOpsDto>
+        extends LukioOppimaaraPerusTiedotDto
+        implements Serializable {
+    protected List<Tyyppi> oppimaarat = new ArrayList<>();
+    private LokalisoituTekstiDto kieli;
+    protected List<KurssiTyyppi> kurssit = new ArrayList<>();
 }
