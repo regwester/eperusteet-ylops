@@ -28,7 +28,7 @@ ylopsApp
   };
 })
 
-.controller('OpsHeaderController', function ($scope, $state, $stateParams, PdfCreation) {
+.controller('OpsHeaderController', function ($scope, $state, $location, $stateParams, PdfCreation) {
   var POHJALINKIT = [
     // {state: 'root.pohjat.yksi.tiedot', label: 'pohjan-tiedot', role: 'info'}
   ];
@@ -45,17 +45,25 @@ ylopsApp
     "koulutustyyppi_2": "lukiokoulutus"
   };
 
-  /* env:dev */
-  const baseUrl = 'https://testi-eperusteet.opintopolku.fi/#/';
-  /* env:dev:end */
-  
-  /* env:prod */
-  const baseUrl = 'https://eperusteet.opintopolku.fi/#/';
-  /* env:prod:end */
+  const baseUrls = {
+    'localhost:9010': 'localhost:9010/#/',
+    'testi-eperusteeet': 'https://testi-eperusteet.opintopolku.fi/#/',
+    'eperusteet': 'https://eperusteet.opintopolku.fi/#/'
+  };
+
+  const selectEsitkatseluURL = () => {
+    let currentHost= $location.host();
+    if (currentHost === 'localhost') return  'localhost:9010/#/';
+    else if (currentHost === 'testi-eperusteet.opintopolku.fi') return 'https://testi-eperusteet.opintopolku.fi/#/';
+    else if (currentHost === 'eperusteet.opintopolku.fi') return 'https://eperusteet.opintopolku.fi/#/';
+    else return 'https://eperusteet.opintopolku.fi/#/';
+  };
+
 
   $scope.createUrl = function(model){
-    return baseUrl + $stateParams.lang + '/ops/' + model.id + "/" + koulutusTyypit[model.koulutustyyppi];
+    return selectEsitkatseluURL() + '/#/' + $stateParams.lang + '/ops/' + model.id + "/" + koulutusTyypit[model.koulutustyyppi];
   };
+
 
   function mapUrls(arr) {
     return _.map(arr, function (item) {
