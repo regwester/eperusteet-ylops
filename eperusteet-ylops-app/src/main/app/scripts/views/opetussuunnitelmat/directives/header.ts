@@ -62,7 +62,7 @@ ylopsApp
 
 
   $scope.createUrl = function(model){
-    return selectEsitkatseluURL() + '/#/' + $stateParams.lang + '/ops/' + model.id + "/" + koulutusTyypit[model.koulutustyyppi];
+    return selectEsitkatseluURL() + $stateParams.lang + '/ops/' + model.id + "/" + koulutusTyypit[model.koulutustyyppi];
   };
 
 
