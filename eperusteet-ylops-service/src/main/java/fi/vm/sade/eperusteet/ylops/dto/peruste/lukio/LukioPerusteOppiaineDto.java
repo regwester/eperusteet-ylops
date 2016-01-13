@@ -60,4 +60,12 @@ public class LukioPerusteOppiaineDto implements PerusteenOsa {
         map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_SOVELTAVA, Optional.ofNullable(soveltavaKurssiKuvaus));
         return map;
     }
+
+    public Stream<LukioPerusteOppiaineDto> maarat() {
+        return oppimaarat.stream();
+    }
+
+    public Stream<LukioPerusteOppiaineDto> maarineen() {
+        return Stream.concat(Stream.of(this), maarat().flatMap(LukioPerusteOppiaineDto::maarineen));
+    }
 }

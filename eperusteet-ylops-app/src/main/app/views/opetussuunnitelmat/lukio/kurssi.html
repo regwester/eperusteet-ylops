@@ -24,10 +24,10 @@
   </a>
 
   <h3>
-    {{ kurssi.nimi | kaanna}}
+    <span ng-bind="kurssi.nimi | kaanna"></span>
     <span style="padding-left: 20px; font-size: 12px;">
-      <strong>{{ 'muokattu' | kaanna}}:</strong>
-      {{kurssi.muokattu | aikaleima: 'short'}}
+      <strong ng-bind="('muokattu' | kaanna) + ':'"></strong>
+      <span ng-bind="kurssi.muokattu | aikaleima: 'short'"></span>
     </span>
     <div class="action-buttons-inline" ng-if="!editing" oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]">
       <div class="action-button" ng-if="isReconnectable()">
@@ -48,13 +48,13 @@
 
   <table>
     <tr>
-      <td style="padding-right: 20px;">{{ 'kurssikoodi' | kaanna}}:</td>
-      <td ng-if="!editing">{{kurssi.lokalisoituKoodi | kaanna}}</td>
+      <td style="padding-right: 20px;" ng-bind="('kurssikoodi' | kaanna) + ':'"></td>
+      <td ng-if="!editing" ng-bind="kurssi.lokalisoituKoodi | kaanna"></td>
     </tr>
     <tr style="margin-top: 10px;">
-      <td>{{ 'kurssityyppi' | kaanna}}:</td>
+      <td ng-bind="('kurssityyppi' | kaanna)+':'"></td>
       <td>
-        <span style="padding-right: 20px;" kaanna>{{getTyyppiSelite()}}</span>
+        <span style="padding-right: 20px;" ng-bind="getTyyppiSelite() | kaanna"></span>
         <span class="small-colorbox-container"><span class="colorbox kurssi-tyyppi {{kurssi.tyyppi | lowercase}}"></span></span>
       </td>
     </tr>

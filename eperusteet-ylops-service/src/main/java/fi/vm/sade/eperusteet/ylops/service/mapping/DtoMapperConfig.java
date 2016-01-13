@@ -21,10 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine_;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineListausDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiSaveDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiUpdateDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
@@ -83,11 +80,15 @@ public class DtoMapperConfig {
             .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
             .register();
 
-        factory.classMap(Oppiaine.class, LukioOppiaineListausDto.class)
+        factory.classMap(Oppiaine.class, LukioOppiaineRakenneListausDto.class)
+                .exclude(Oppiaine_.oppimaarat.getName())
+                .byDefault()
+                .register();
+        factory.classMap(Oppiaine.class, LukioOppiaineTiedotDto.class)
                 .exclude(Oppiaine_.oppimaarat.getName())
                 .exclude("kurssiTyyppiKuvaukset") // does not handle Optional correctly
-            .byDefault()
-            .register();
+                .byDefault()
+                .register();
 
         factory.classMap(LukioOppiaineSaveDto.class, Oppiaine.class)
                 .exclude("kurssiTyyppiKuvaukset") // does not handle Optional correctly

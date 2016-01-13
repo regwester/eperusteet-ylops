@@ -43,6 +43,13 @@ public class LukioOpetussuunnitelmatController {
         return lukioOpetussuunnitelmaService.getRakenne(opsId);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/oppiaine/{oppiaineId}", method = RequestMethod.GET)
+    public LukioOppiaineTiedotDto getOppiaine(@PathVariable("opsId") Long opsId,
+                                                           @PathVariable("oppiaineId") Long oppiaineId) {
+        return lukioOpetussuunnitelmaService.getOppiaineTiedot(opsId, oppiaineId);
+    }
+
     @RequestMapping(value = "/rakenne", method = POST)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateStructure(@PathVariable("opsId") final Long opsId,

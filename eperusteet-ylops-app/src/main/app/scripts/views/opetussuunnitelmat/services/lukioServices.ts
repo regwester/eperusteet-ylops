@@ -67,7 +67,7 @@ ylopsApp
     .service('LukioOpetussuunnitelmaService', function(OpetusuunnitelmaLukio, $q:IQService, $log, Lukko,
                                                        Notifikaatiot, $stateParams, OppiaineCRUD) {
         var doGetAihekokonaisuudet =
-            (opsId: number, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) =>
+            (opsId: any, d: IDeferred<Lukio.AihekokonaisuudetPerusteenOsa>) =>
                 OpetusuunnitelmaLukio.aihekokonaisuudet({opsId: opsId || $stateParams.id})
                     .$promise.then((aihekok: Lukio.AihekokonaisuudetPerusteenOsa) => d.resolve(aihekok),
                             Notifikaatiot.serverCb);
@@ -102,14 +102,13 @@ ylopsApp
                 .$promise.then(r => { aiheKokCache.clear(); return r; }, Notifikaatiot.serverCb);
 
         var doGetOpetuksenYleisetTavoitteet =
-            (opsId: number, d: IDeferred<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>) =>
+            (opsId: any, d: IDeferred<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>) =>
                 OpetusuunnitelmaLukio.opetuksenYleisetTavoitteet({opsId: opsId || $stateParams.id})
                     .$promise.then((yleisetTavoitteet: Lukio.OpetuksenYleisetTavoitteetPerusteenOsa) =>
                         d.resolve(yleisetTavoitteet), Notifikaatiot.serverCb);
         var yleisetTavoitteetCache = cached<Lukio.OpetuksenYleisetTavoitteetPerusteenOsa>($q,
             doGetOpetuksenYleisetTavoitteet);
         var getOpetuksenYleisetTavoitteet = (opsId?: number) => yleisetTavoitteetCache.get(opsId || $stateParams.id);
-
 
         var doGetRakenne = (id: number, d: IDeferred<Lukio.LukioOpetussuunnitelmaRakenneOps>) =>
             OpetusuunnitelmaLukio.rakenne({opsId: id})
@@ -163,10 +162,23 @@ ylopsApp
                 }, Notifikaatiot.serverCb);
         };
 
-        var oppiaineCache = rakenneCache.related((from: Lukio.LukioOpetussuunnitelmaRakenneOps) : {[key:number]: Lukio.LukioOppiaine} =>
-            _(from.oppiaineet).flattenTree((oa: Lukio.LukioOppiaine) => oa.oppimaarat || [])
-                .indexBy(_.property('id')).value());
-        var getOppiaine = (id: number, opsId?: number) => oppiaineCache.get(opsId || $stateParams.id, id);
+        var combineWithOpsId = (opsId: number, id: number) => opsId ?  opsId + "/" + id : id;
+        var doGetOppiaine = (oppiaineWithOpsId: number|string, d: IDeferred<Lukio.LukioOppiaine>) => {
+            var prts = (""+oppiaineWithOpsId).split('/');
+            var opsId = $stateParams.id,
+                oppiaineId = null;
+            if (prts.length > 1) {
+                opsId = prts[0];
+                oppiaineId = prts[1];
+            } else {
+                oppiaineId = prts[0];
+            }
+            return OpetusuunnitelmaLukio.oppiaine({opsId: opsId, oppiaineId: oppiaineId})
+                .$promise.then((oa: Lukio.LukioOppiaine) => d.resolve(oa),
+                    Notifikaatiot.serverCb);
+        };
+        var oppiaineCache = cached<Lukio.LukioOppiaine>($q, doGetOppiaine).alsoClear(rakenneCache);
+        var getOppiaine = (id: number, opsId?: number) => oppiaineCache.get(combineWithOpsId(opsId, id));
         var lukitseOppiaine = (id:number, opsId?:number) => Lukko.lockLukio({
             opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'OPPIAINE'});
         var vapautaOppiaine = (id:number, opsId?:number) => Lukko.unlockLukio({
@@ -198,7 +210,7 @@ ylopsApp
         var kurssiCache = oppiaineCache.related((from: Lukio.LukioOppiaine) : {[key:number]: Lukio.LukiokurssiOps} =>
             _(from.kurssit).indexBy(_.property('id')).value());
         var getKurssi = (oppiaineId: number, kurssiId: number, opsId?: number) =>
-            kurssiCache.get(opsId || $stateParams.id, oppiaineId, kurssiId);
+            kurssiCache.get(combineWithOpsId(opsId, oppiaineId), kurssiId);
         var lukitseKurssi = (id:number, opsId?:number) => Lukko.lockLukio({
             opsId: opsId || $stateParams.id, id: id, lukittavaOsa: 'LUKIOKURSSI'});
         var vapautaKurssi = (id:number, opsId?:number) => Lukko.unlockLukio({

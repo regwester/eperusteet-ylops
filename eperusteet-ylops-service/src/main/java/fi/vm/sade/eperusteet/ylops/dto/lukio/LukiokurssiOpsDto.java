@@ -16,17 +16,11 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
-import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokurssiPerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.UUID;
 
 /**
  * User: tommiratamaa
@@ -35,20 +29,10 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class LukiokurssiOpsDto implements Serializable, PerusteeseenViittaava<LukiokurssiPerusteDto> {
+public class LukiokurssiOpsDto extends LukiokurssiListausOpsDto
+        implements PerusteeseenViittaava<LukiokurssiPerusteDto> {
     private LukiokurssiPerusteDto perusteen;
-    private Long id;
-    private Date muokattu;
-    private UUID tunniste;
-    private BigDecimal laajuus;
-    private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;
-    private boolean oma;
-    private boolean palautettava;
-    private String koodiUri;
-    private String koodiArvo;
-    private LukiokurssiTyyppi tyyppi;
-    private LokalisoituTekstiDto lokalisoituKoodi;
     private TekstiosaDto tavoitteet;
     private TekstiosaDto keskeinenSisalto;
     private TekstiosaDto tavoitteetJaKeskeinenSisalto;

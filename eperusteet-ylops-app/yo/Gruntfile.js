@@ -350,7 +350,7 @@ module.exports = function(grunt) {
       ],
       dist: [
         'sass',
-        'imagemin',
+        //'imagemin', //FIXME! (does not work with newest imagemin-version)
         'svgmin',
         'htmlmin'
       ]
