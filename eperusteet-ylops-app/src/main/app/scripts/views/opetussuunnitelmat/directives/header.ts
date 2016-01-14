@@ -45,21 +45,12 @@ ylopsApp
     "koulutustyyppi_2": "lukiokoulutus"
   };
 
-  const baseUrls = {
-    'localhost:9010': 'localhost:9010/#/',
-    'testi-eperusteeet': 'https://testi-eperusteet.opintopolku.fi/#/',
-    'eperusteet': 'https://eperusteet.opintopolku.fi/#/'
-  };
-
   const selectEsitkatseluURL = () => {
-    let currentHost= $location.host();
-    if (currentHost === 'localhost') return  'localhost:9010/#/';
-    else if (currentHost === 'itest-virkailija.oph.ware.fi') return 'https://testi-eperusteet.opintopolku.fi/#/';
-    else if (currentHost === 'testi.virkailija.opintopolku.fi') return 'https://testi-eperusteet.opintopolku.fi/#/';
-    else if (currentHost === 'virkailija.opintopolku.fi') return 'https://eperusteet.opintopolku.fi/#/';
+    let currentHost= $location.host() + "";
+    if (/localhost/.test(currentHost)) return  'localhost:9010/#/';
+    else if (/testi|itest/.test(currentHost)) return 'https://testi-eperusteet.opintopolku.fi/#/';
     else return 'https://eperusteet.opintopolku.fi/#/';
   };
-
 
   $scope.createUrl = function(model){
     return selectEsitkatseluURL() + $stateParams.lang + '/ops/' + model.id + "/" + koulutusTyypit[model.koulutustyyppi];
