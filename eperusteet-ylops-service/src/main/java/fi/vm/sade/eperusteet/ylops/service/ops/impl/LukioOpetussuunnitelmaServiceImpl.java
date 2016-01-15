@@ -575,19 +575,17 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     public void removeKurssi(long opsId, long kurssiId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         opetussuunnitelmaRepository.lock(ops);
-        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi( opsId, kurssiId).stream().findAny()
+        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi(opsId, kurssiId).stream().findAny()
                 .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
-
-        if( !oaKurssi.isOma() ){
+        
+        if (!oaKurssi.isOma()) {
             throw new BusinessRuleViolationException("kurssia ei voi poistaa");
         }
-
-        Iterator<OppiaineLukiokurssi> it = oaKurssi.getKurssi().getOppiaineet().iterator();
-        while(it.hasNext()){
-            it.next();
-            it.remove();
+        if (!oaKurssi.getKurssi().getTyyppi().isPaikallinen()) {
+            throw new BusinessRuleViolationException("Valtakunnallista kurssia ei voida poista..");
         }
 
+        oaKurssi.getKurssi().getOppiaineet().clear();
         oppiaineLukiokurssiRepository.delete(oaKurssi);
     }
 

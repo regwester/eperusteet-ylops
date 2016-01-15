@@ -86,7 +86,7 @@
   <div class="non-collapsibles">
     <form name="kurssiForm" role="form">
       <div class="action-buttons-inline">
-        <div class="action-button" ng-if="isEditAllowed()" oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]">
+        <div class="action-button" ng-if="isDeletable()" oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }]">
           <button class="btn btn-default btn-icon-only" icon-role="remove" ng-click="delete()"></button>
         </div>
         <div dropdown class="action-button pull-right">

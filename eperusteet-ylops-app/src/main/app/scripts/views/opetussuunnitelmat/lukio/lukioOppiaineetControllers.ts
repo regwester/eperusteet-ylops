@@ -551,10 +551,11 @@ ylopsApp
 
         $scope.isPaikallinen = () => $scope.kurssi &&  _.any(LukioControllerHelpers.paikallisetKurssiTyypit(),
             t => $scope.kurssi.tyyppi == t);
-        $scope.isEditable = () => $scope.isPaikallinen(); // parts such as tyyppi or koodi
+        $scope.isEditable = () => $scope.kurssi && $scope.kurssi.oma && $scope.isPaikallinen(); // parts such as tyyppi or koodi
         $scope.connected = () => $scope.kurssi && !$scope.kurssi.oma && !$scope.rootOps;
         $scope.isReconnectable = () => $scope.kurssi && $scope.kurssi.oma && !$scope.rootOps && $scope.kurssi.palautettava;
         $scope.isEditAllowed = () => $scope.kurssi && $scope.kurssi.oma;
+        $scope.isDeletable = () => $scope.kurssi && $scope.kurssi.oma && $scope.isPaikallinen();
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
         });
