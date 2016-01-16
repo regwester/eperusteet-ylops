@@ -12,20 +12,10 @@
             <fo:layout-master-set>
                 <xsl:choose>
                     <xsl:when test="$page-size='a4'">
-                        <!-- Margin test page -->
-                        <fo:simple-page-master master-name="test"
-                                               page-width="210mm" page-height="297mm">
-                            <fo:region-body margin="30mm"
-                                            background-color="yellow" />
-                            <fo:region-before extent="30mm" background-color="lightblue" />
-                            <fo:region-after extent="30mm" background-color="lightblue" />
-                            <fo:region-start extent="30mm" background-color="lightgreen" />
-                            <fo:region-end extent="30mm" background-color="lightgreen" />
-                        </fo:simple-page-master>
 
                         <fo:simple-page-master master-name="cover"
                                                page-width="210mm" page-height="297mm">
-                            <fo:region-body margin="30mm" />
+                            <fo:region-body margin="30mm" margin-top="80mm" />
                             <!--<fo:region-body background-image="cover.svg" />-->
                         </fo:simple-page-master>
 
@@ -77,9 +67,6 @@
                 <!-- Page layout using rules -->
                 <fo:page-sequence-master master-name="standard">
                     <fo:repeatable-page-master-alternatives>
-                        <fo:conditional-page-master-reference
-                                master-reference="blank"
-                                page-position="first" />
                         <fo:conditional-page-master-reference
                                 master-reference="left"
                                 odd-or-even="even" />
@@ -709,11 +696,32 @@
     </xsl:template>
 
     <xsl:template match="table">
+        <!--<fo:table-and-caption>
+            <fo:table-caption>
+                <fo:block font-weight="bold" font-size="12pt">
+                    <xsl:value-of select="caption" />
+                </fo:block>
+            </fo:table-caption>
+            <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt">
+                <fo:table-body>
+                    <xsl:apply-templates select="*" />
+                </fo:table-body>
+            </fo:table>
+        </fo:table-and-caption>-->
+
         <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt">
+            <fo:table-header>
+                <fo:table-cell>
+                    <fo:block font-weight="bold" font-size="12pt">
+                        <xsl:value-of select="caption" />
+                    </fo:block>
+                </fo:table-cell>
+            </fo:table-header>
             <fo:table-body>
                 <xsl:apply-templates select="*" />
             </fo:table-body>
         </fo:table>
+
     </xsl:template>
 
     <xsl:template match="td">
@@ -936,7 +944,7 @@
         </xsl:for-each>
     </xsl:template>
 
-    <xsl:template match="peruste">
+    <xsl:template match="cite">
         <fo:block color="#444444" font-style="italic" font-size="10pt">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
@@ -946,10 +954,7 @@
 
     <!-- Cover page -->
     <xsl:template name="cover">
-        <fo:block>
-        </fo:block>
-        <fo:block margin-top="80mm" margin="40mm"
-                  font-weight="bold" font-size="28pt" text-align="center">
+        <fo:block font-weight="bold" font-size="28pt" text-align="center">
             <xsl:value-of select="/html/head/title" />
         </fo:block>
     </xsl:template>
