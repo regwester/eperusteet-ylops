@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
@@ -34,13 +33,12 @@ import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakoko
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.util.CharapterNumberGenerator;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.CharapterNumberGenerator;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
@@ -48,6 +46,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
+import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.fop.apps.*;
 import org.apache.xml.security.utils.Base64;
@@ -55,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.*;
@@ -78,6 +78,7 @@ import javax.xml.xpath.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -341,9 +342,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             // Luodaan pohjan sisältö kappaleelle
             String teskti = "<p>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</p>";
-            teskti = teskti.replace("&shy;", "");
-            // Unescpaettaa myös käyttäjädatan
-            //teskti = StringEscapeUtils.unescapeHtml4(teskti);
 
             Node node = DocumentBuilderFactory
                     .newInstance()
@@ -664,9 +662,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         for (OpsOppiaine opsOppiaine : oppiaineetAsc) {
             Oppiaine oppiaine = opsOppiaine.getOppiaine();
 
-
-
-
             Set<Oppiaineenvuosiluokkakokonaisuus> oaVlkset = oppiaine.getVuosiluokkakokonaisuudet();
 
             Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk = oaVlkset.stream()
@@ -742,21 +737,53 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Tavoitteet
         List<PerusteOpetuksentavoiteDto> tavoitteet = perusteOaVlkDto.getTavoitteet();
-        for (PerusteOpetuksentavoiteDto perusteTavoiteDto : tavoitteet) {
+
+        if (tavoitteet != null) {
+            addHeader(doc, bodyElement, messages.translate("tavoitteet-ja-sisallot-vuosiluokittain", kieli));
+        }
+
+        /*for (PerusteOpetuksentavoiteDto perusteTavoiteDto : tavoitteet) {
 
             LokalisoituTekstiDto tavoiteDto = perusteTavoiteDto.getTavoite();
             LokalisoituTeksti tavoite = mapper.map(tavoiteDto, LokalisoituTeksti.class);
             addLokalisoituteksti(doc, bodyElement, tavoite, "cite", kieli);
-        }
+        }*/
 
         ArrayList<Oppiaineenvuosiluokka> vuosiluokat = oaVlkDto.getVuosiluokat().stream()
                 .sorted((el1, el2) -> el1.getVuosiluokka().toString().compareTo(el2.getVuosiluokka().toString()))
                 .collect(Collectors.toCollection(ArrayList::new));
 
+        // Oppiaine vuosiluokka
         for (Oppiaineenvuosiluokka oaVuosiluokka : vuosiluokat) {
+            // Vuosiluokka otsikko
+            try {
+                addHeader(doc, bodyElement, messages.translate(oaVuosiluokka.getVuosiluokka().toString(), kieli));
+            } catch (NoSuchMessageException ex) {
+                LOG.warn(ex.getLocalizedMessage());
+                addHeader(doc, bodyElement, oaVuosiluokka.getVuosiluokka().toString());
+            }
+
             for (Keskeinensisaltoalue ksa : oaVuosiluokka.getSisaltoalueet()) {
-                addLokalisoituteksti(doc, bodyElement, ksa.getNimi(), "cite", kieli);
-                addLokalisoituteksti(doc, bodyElement, ksa.getKuvaus(), "cite", kieli);
+                generator.increaseDepth();
+
+                addHeader(doc, bodyElement, getTextString(ksa.getNimi(), kieli));
+
+                // Peruste
+                Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
+                        .filter(pKsa -> pKsa.getTunniste().equals(ksa.getTunniste()))
+                        .findFirst();
+
+
+                if (optPerusteKsa.isPresent()) {
+                    PerusteKeskeinensisaltoalueDto perusteKsa = optPerusteKsa.get();
+                    LokalisoituTekstiDto tekstiDto = perusteKsa.getKuvaus();
+                    LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
+                    addLokalisoituteksti(doc, bodyElement, teksti, "cite", kieli);
+                }
+
+                // Ops
+                addLokalisoituteksti(doc, bodyElement, ksa.getKuvaus(), "div", kieli);
+                generator.decreaseDepth();
             }
         }
 
@@ -840,17 +867,18 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addLokalisoituteksti(Document doc, Element parent, LokalisoituTeksti teksti, String tagi, Kieli kieli) {
-        if (teksti == null)
+    private void addLokalisoituteksti(Document doc, Element parent, LokalisoituTeksti lokalisoituTeksti, String tagi, Kieli kieli) {
+        if (lokalisoituTeksti == null)
             return;
 
         try {
-            String teskti = "<" + tagi + ">" + teksti.getTeksti().get(kieli) + "</" + tagi + ">";
+            String teksti = lokalisoituTeksti.getTeksti().get(kieli);
+            teksti = "<" + tagi + ">" + teksti + "</" + tagi + ">";
 
             Node node = DocumentBuilderFactory
                     .newInstance()
                     .newDocumentBuilder()
-                    .parse(new ByteArrayInputStream(teskti.getBytes()))
+                    .parse(new ByteArrayInputStream(teksti.getBytes()))
                     .getDocumentElement();
             parent.appendChild(doc.importNode(node, true));
         } catch (ParserConfigurationException | IOException | SAXException ex) {
@@ -945,18 +973,27 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private String getTextString(LokalisoituTeksti teksti, Kieli kieli) {
-        if (teksti == null || teksti.getTeksti() == null || teksti.getTeksti().get(kieli) == null)
-            return "";
-        else
-            return teksti.getTeksti().get(kieli);
+    private String getTextString(LokalisoituTekstiDto lokalisoituTekstiDto, Kieli kieli) {
+        LokalisoituTeksti lokalisoituTeksti = mapper.map(lokalisoituTekstiDto, LokalisoituTeksti.class);
+        return getTextString(lokalisoituTeksti, kieli);
     }
 
-    private String getTextString(LokalisoituTekstiDto tekstiDto, Kieli kieli) {
-        LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
-        if (teksti == null || teksti.getTeksti() == null || teksti.getTeksti().get(kieli) == null)
+    private String getTextString(LokalisoituTeksti lokalisoituTeksti, Kieli kieli) {
+        if (lokalisoituTeksti == null || lokalisoituTeksti.getTeksti() == null
+                || lokalisoituTeksti.getTeksti().get(kieli) == null) {
             return "";
-        else
-            return teksti.getTeksti().get(kieli);
+        } else {
+            return unescapeHtml5(lokalisoituTeksti.getTeksti().get(kieli));
+        }
     }
+
+    private String unescapeHtml5(String string) {
+        return string
+                .replaceAll("&shy;", "")
+                .replaceAll("&ndash;", "–")
+                .replaceAll("&sect;", "§")
+                .replaceAll("&rdquo;", "\"")
+                .replaceAll("&minus;", "−");
+    }
+
 }

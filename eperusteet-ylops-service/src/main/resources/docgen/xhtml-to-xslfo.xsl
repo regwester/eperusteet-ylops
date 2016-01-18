@@ -478,8 +478,8 @@
     </xsl:template>
 
     <xsl:template match="h6">
-        <fo:block font-size="12pt" line-height="1.25em" font-style="italic"
-                  keep-with-next="always" space-after="10pt" color="#007EC5">
+        <fo:block font-size="10pt" line-height="1.25em" font-weight="bold"
+                  keep-with-next="always" space-after="10pt" color="#000000">
             <xsl:attribute name="id">
                 <xsl:choose>
                     <xsl:when test="@id">
@@ -637,7 +637,7 @@
 
 
     <xsl:template match="div">
-        <fo:block font-size="10pt">
+        <fo:block font-size="10pt" space-after="12pt">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
@@ -945,7 +945,7 @@
     </xsl:template>
 
     <xsl:template match="cite">
-        <fo:block color="#444444" font-style="italic" font-size="10pt">
+        <fo:block color="#444444" font-style="italic" font-size="10pt" space-after="12pt">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
