@@ -121,7 +121,7 @@ ylopsApp
 .run(function($templateCache) {
     $templateCache.put('sisaltoNodeEditingTemplate', '' +
             '<div style="background: {{ taustanVari }}" class="tekstisisalto-solmu" ng-class="{ \'new-halo\': node.$$newHalo }">' +
-            '    <span ng-show="node.$$depth !== 0" class="treehandle" icon-role="drag"></span>' +
+            '    <span ng-show="node.$$depth !== 0 || treeProvider.isLukio" class="treehandle" icon-role="drag"></span>' +
             '    <span ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '</div>'
             );
@@ -131,10 +131,10 @@ ylopsApp
             '       <span ng-show="node.$$hidden" icon-role="chevron-right"></span>' +
             '       <span ng-hide="node.$$hidden" icon-role="chevron-down"></span>' +
             '    </span>' +
-            '    <a ng-if="node.$$depth > 0" href="" ui-sref=".tekstikappale({ tekstikappaleId: node.id })"' +
+            '    <a ng-if="node.$$depth > 0 || treeProvider.isLukio" href="" ui-sref=".tekstikappale({ tekstikappaleId: node.id })"' +
             '          ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna">' +
             '    </a>' +
-            '    <span ng-if="node.$$depth === 0" ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
+            '    <span ng-if="node.$$depth === 0 && !treeProvider.isLukio" ng-bind="node.tekstiKappale.nimi || \'nimeton\' | kaanna"></span>' +
             '    <a ng-click="addLapsi(node)" style="margin-left: 10px" ng-show="node.$$depth === 0" href="" icon-role="add" tooltip="{{ \'lisaa-aliotsikko\' | kaanna }}"></a>' +
             '    <span class="pull-right">' +
             '        <span valmius-ikoni="node.tekstiKappale"></span>' +
@@ -232,8 +232,11 @@ ylopsApp
     placeholder: 'placeholder'
   };
 
+  $scope.isLukio = $scope.model.koulutustyyppi === 'koulutustyyppi_2';
+
   $scope.tekstitProvider = $q.when({
     root: _.constant($q.when($scope.model.tekstit)),
+    isLukio: $scope.isLukio,
     hidden: function(node) {
         if ($scope.$$isRakenneMuokkaus || !node.$$nodeParent) {
           return false;
@@ -252,11 +255,11 @@ ylopsApp
       return !$scope.$$isRakenneMuokkaus;
     },
     acceptDrop: function(node, target, parentScope) {
-      return target !== $scope.model.tekstit || parentScope === $scope;
+      return target !== $scope.model.tekstit || parentScope === $scope || $scope.isLukio;
     },
     sortableClass: function(node) {
       var result = '';
-      if (node !== $scope.model.tekstit) {
+      if (node !== $scope.model.tekstit || $scope.isLukio) {
         result += 'is-draggable-into';
         if ($scope.$$isRakenneMuokkaus && _.isEmpty(node.lapset)) {
           result += ' recursivetree-empty';
