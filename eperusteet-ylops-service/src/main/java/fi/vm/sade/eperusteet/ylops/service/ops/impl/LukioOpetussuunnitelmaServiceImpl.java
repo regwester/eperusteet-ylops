@@ -91,6 +91,9 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Autowired
     private AihekokonaisuusRepository aihekokonaisuusRepository;
+    
+    @Autowired
+    private OpetuksenYleisetTavoitteetRepository opetuksenYleisetTavoitteetRepository;
 
     @Autowired
     private KoodistoService koodistoService;
@@ -280,9 +283,17 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         return new OpetuksenYleisetTavoitteetPerusteOpsDto(
             mapper.map(perusteDto.getLukiokoulutus().getOpetuksenYleisetTavoitteet(),
                     OpetuksenYleisetTavoitteetDto.class),
-            mapper.map(ops.getAihekokonaisuudet(),
+            mapper.map(ops.getOpetuksenYleisetTavoitteet(),
                     OpetuksenYleisetTavoitteetOpsDto.class)
         );
+    }
+
+    @Override
+    @Transactional
+    public void updateOpetuksenYleisetTavoitteet(long opsId, OpetuksenYleisetTavoitteetUpdateDto tavoitteet) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetuksenYleisetTavoitteetRepository.lock(ops.getOpetuksenYleisetTavoitteet());
+        mapper.map(tavoitteet, ops.getOpetuksenYleisetTavoitteet());
     }
 
     @Override

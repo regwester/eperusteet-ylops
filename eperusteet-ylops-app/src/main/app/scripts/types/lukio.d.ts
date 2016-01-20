@@ -66,8 +66,14 @@ declare module Lukio {
     }
 
     export interface OpetuksenYleisetTavoitteet {
+        parent?: OpetuksenYleisetTavoitteet
         uuidTunniste?: string;
         id?: number;
+        otsikko?: l.Lokalisoitu;
+        kuvaus?: l.Lokalisoitu;
+    }
+
+    export interface OpetuksenYleisetTavoitteetUpdate {
         otsikko?: l.Lokalisoitu;
         kuvaus?: l.Lokalisoitu;
     }
