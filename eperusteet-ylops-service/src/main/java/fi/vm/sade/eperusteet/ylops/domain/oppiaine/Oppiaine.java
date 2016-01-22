@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
@@ -239,6 +240,12 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     public Set<Oppiaineenvuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
         return vuosiluokkakokonaisuudet == null ? Collections.emptySet()
             : Collections.unmodifiableSet(vuosiluokkakokonaisuudet);
+    }
+
+    public Optional<Oppiaineenvuosiluokkakokonaisuus> getVuosiluokkakokonaisuus(UUID tunniste) {
+        return vuosiluokkakokonaisuudet.stream()
+                .filter(v -> v.getVuosiluokkakokonaisuus().getId().equals(tunniste))
+                .findAny();
     }
 
     public void addVuosiluokkaKokonaisuus(Oppiaineenvuosiluokkakokonaisuus ovk) {

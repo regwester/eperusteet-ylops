@@ -51,7 +51,7 @@ public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
             return valueDto.getValue();
         }
 
-        LOG.warn("Fallback to messageSource for lokalisointi {} ({})", key, kieli.toString());
+        //LOG.warn("Fallback to messageSource for lokalisointi {} ({})", key, kieli.toString());
         // Jos kummastakaan ei löydy, heitetään NoSuchMessageException
         return messageSource.getMessage(key, null, Locale.forLanguageTag(kieli.toString()));
     }

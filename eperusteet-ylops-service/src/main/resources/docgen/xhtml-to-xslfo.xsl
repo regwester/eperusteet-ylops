@@ -12,28 +12,21 @@
             <fo:layout-master-set>
                 <xsl:choose>
                     <xsl:when test="$page-size='a4'">
-                        <!-- Margin test page -->
-                        <fo:simple-page-master master-name="test"
-                                               page-width="210mm" page-height="297mm">
-                            <fo:region-body margin="30mm"
-                                            background-color="yellow" />
-                            <fo:region-before extent="30mm" background-color="lightblue" />
-                            <fo:region-after extent="30mm" background-color="lightblue" />
-                            <fo:region-start extent="30mm" background-color="lightgreen" />
-                            <fo:region-end extent="30mm" background-color="lightgreen" />
-                        </fo:simple-page-master>
 
                         <fo:simple-page-master master-name="cover"
                                                page-width="210mm" page-height="297mm">
-                            <fo:region-body background-image="cover.svg" />
+                            <fo:region-body margin="30mm" margin-top="80mm" />
+                            <!--<fo:region-body background-image="cover.svg" />-->
                         </fo:simple-page-master>
 
+                        <!-- Just a blank A4 -->
                         <fo:simple-page-master master-name="blank"
                                                page-width="210mm" page-height="297mm"
                                                margin="30mm">
                             <fo:region-body />
                         </fo:simple-page-master>
 
+                        <!-- Left side page -->
                         <fo:simple-page-master master-name="left"
                                                page-width="210mm" page-height="297mm">
                             <fo:region-body margin-top="20mm"
@@ -51,6 +44,7 @@
                             <fo:region-end extent="30mm" />
                         </fo:simple-page-master>
 
+                        <!-- Right side page -->
                         <fo:simple-page-master master-name="right"
                                                page-width="210mm" page-height="297mm">
                             <fo:region-body margin-top="20mm"
@@ -68,21 +62,11 @@
                                            background-repeat="no-repeat" background-position-horizontal="right" />
                         </fo:simple-page-master>
                     </xsl:when>
-
-                    <!-- Custom Page layout -->
-                    <!--
-                    <xsl:otherwise>
-                        HERE
-                    </xsl:otherwise>
-                    -->
                 </xsl:choose>
 
-                <!-- Page layout usage rules -->
+                <!-- Page layout using rules -->
                 <fo:page-sequence-master master-name="standard">
                     <fo:repeatable-page-master-alternatives>
-                        <!--<fo:conditional-page-master-reference
-                                master-reference="blank"
-                                page-position="first" />-->
                         <fo:conditional-page-master-reference
                                 master-reference="left"
                                 odd-or-even="even" />
@@ -94,6 +78,7 @@
 
             </fo:layout-master-set>
 
+            <!-- Bookmarks -->
             <xsl:call-template name="generate-bookmarks" />
 
             <!-- Cover page -->
@@ -110,19 +95,16 @@
                 </fo:flow>
             </fo:page-sequence>
 
+            <!-- Table of contents pages -->
             <fo:page-sequence master-reference="blank">
-                <!-- force-page-count="no-force"
-                Usually odd page numbers are on the opposite side of even numbered pages,
-                so the parser adds a blank page to the first page sequence to keep the numbering system in order.
-                -->
                 <fo:flow flow-name="xsl-region-body">
                     <xsl:call-template name="toc" />
                 </fo:flow>
             </fo:page-sequence>
 
-            <fo:page-sequence master-reference="standard" id="DocumentBody" initial-page-number="1">
+            <!-- Document content pages -->
+            <fo:page-sequence master-reference="standard" initial-page-number="1">
 
-                <!-- Static content (e.g. header and footer) -->
                 <fo:static-content flow-name="rb-right">
                     <fo:block font-size="10pt" text-align="start">
                     </fo:block>
@@ -130,9 +112,6 @@
                 <fo:static-content flow-name="ra-right">
                     <fo:block text-align="end" font-size="10pt" color="#6C6D70">
                         <fo:page-number />
-                        <!--<xsl:text> / </xsl:text>
-                        <fo:page-number-citation-last
-                                ref-id="DocumentBody" />-->
                     </fo:block>
                 </fo:static-content>
                 <fo:static-content flow-name="rb-left">
@@ -142,9 +121,6 @@
                 <fo:static-content flow-name="ra-left">
                     <fo:block font-size="10pt" color="#6C6D70">
                         <fo:page-number />
-                        <!--<xsl:text> / </xsl:text>
-                        <fo:page-number-citation-last
-                                ref-id="DocumentBody" />-->
                     </fo:block>
                 </fo:static-content>
                 <fo:static-content flow-name="rs-left">
@@ -189,10 +165,10 @@
                     <fo:table-cell>
                         <fo:block font-weight="bold">
                             <xsl:if test="//html/@lang = 'fi'">
-                                <xsl:text>Opetussuunnitelman nimi</xsl:text>
+                                <xsl:text>Nimi</xsl:text>
                             </xsl:if>
                             <xsl:if test="//html/@lang = 'sv'">
-                                <xsl:text>Namn på undervisningsplana</xsl:text>
+                                <xsl:text>Namn</xsl:text>
                             </xsl:if>
                         </fo:block>
                     </fo:table-cell>
@@ -296,52 +272,6 @@
         </fo:table>
     </xsl:template>
 
-    <xsl:template match="municipalities">
-        <xsl:for-each select="municipality">
-            <fo:table-row>
-                <fo:table-cell>
-                    <fo:block font-weight="bold">
-                        <xsl:if test="//html/@lang = 'fi'">
-                            <xsl:text>Kunnat</xsl:text>
-                        </xsl:if>
-                        <xsl:if test="//html/@lang = 'sv'">
-                            <xsl:text>Kommuner</xsl:text>
-                        </xsl:if>
-                    </fo:block>
-                </fo:table-cell>
-                <fo:table-cell>
-                    <fo:block>
-                        <xsl:apply-templates select="." />
-                    </fo:block>
-                </fo:table-cell>
-            </fo:table-row>
-        </xsl:for-each>
-    </xsl:template>
-
-    <xsl:template match="organizations">
-        <xsl:for-each select="organization">
-            <fo:table-row>
-                <fo:table-cell>
-                    <fo:block font-weight="bold">
-                        <xsl:if test="position()=1">
-                            <xsl:if test="//html/@lang = 'fi'">
-                                <xsl:text>Organisaatiot</xsl:text>
-                            </xsl:if>
-                            <xsl:if test="//html/@lang = 'sv'">
-                                <xsl:text>Organisationer</xsl:text>
-                            </xsl:if>
-                        </xsl:if>
-                    </fo:block>
-                </fo:table-cell>
-                <fo:table-cell>
-                    <fo:block>
-                        <xsl:apply-templates select="." />
-                    </fo:block>
-                </fo:table-cell>
-            </fo:table-row>
-        </xsl:for-each>
-    </xsl:template>
-
     <xsl:template match="body">
         <fo:flow flow-name="xsl-region-body">
             <!-- Set default font-size -->
@@ -349,245 +279,9 @@
         </fo:flow>
     </xsl:template>
 
-
-    <xsl:template match="a">
-        <xsl:choose>
-            <xsl:when test="@name">
-                <xsl:if test="not(name(following-sibling::*[1]) = 'h1')">
-                    <fo:block line-height="0pt" space-after="0pt"
-                              font-size="0pt" id="{@name}" />
-                </xsl:if>
-            </xsl:when>
-            <xsl:when test="@href">
-                <fo:basic-link color="blue">
-                    <xsl:choose>
-                        <xsl:when test="starts-with(@href, '#')">
-                            <xsl:attribute name="internal-destination">
-                                <xsl:value-of select="substring(@href, 2)" />
-                            </xsl:attribute>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:attribute name="external-destination">
-                                <xsl:value-of select="@href" />
-                            </xsl:attribute>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                    <xsl:apply-templates select="*|text()" />
-                </fo:basic-link>
-                <xsl:if test="starts-with(@href, '#')">
-                    <xsl:text> on page </xsl:text>
-                    <fo:page-number-citation ref-id="{substring(@href, 2)}" />
-                </xsl:if>
-            </xsl:when>
-        </xsl:choose>
-    </xsl:template>
-
-
-    <xsl:template match="address">
-        <fo:block font-style="italic" space-after="12pt">
-            <xsl:apply-templates select="*|text()" />
-        </fo:block>
-    </xsl:template>
-
-
-    <xsl:template match="b">
-        <fo:inline font-weight="bold">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-    <xsl:template match="big">
-        <fo:inline font-size="120%">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-    <xsl:template match="blockquote">
-        <fo:block start-indent="1.5cm" end-indent="1.5cm"
-                  space-after="12pt">
-            <xsl:apply-templates select="*|text()" />
-        </fo:block>
-    </xsl:template>
-
-    <xsl:template match="br">
-        <fo:block> </fo:block>
-    </xsl:template>
-
-    <xsl:template match="center">
-        <fo:block text-align="center">
-            <xsl:apply-templates select="*|text()" />
-        </fo:block>
-    </xsl:template>
-
-    <xsl:template match="cite">
-        <xsl:choose>
-            <xsl:when test="parent::i">
-                <fo:inline font-style="normal">
-                    <xsl:apply-templates select="*|text()" />
-                </fo:inline>
-            </xsl:when>
-            <xsl:otherwise>
-                <fo:inline font-style="italic">
-                    <xsl:apply-templates select="*|text()" />
-                </fo:inline>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-
-    <xsl:template match="code">
-        <fo:inline font-family="monospace">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-    <xsl:template match="dl">
-        <xsl:apply-templates select="*" />
-    </xsl:template>
-
-    <xsl:template match="dt">
-        <fo:block font-weight="bold" space-after="2pt"
-                  keep-with-next="always">
-            <xsl:apply-templates select="*|text()" />
-        </fo:block>
-    </xsl:template>
-
-    <xsl:template match="dd">
-        <fo:block start-indent="1cm">
-            <xsl:attribute name="space-after">
-                <xsl:choose>
-                    <xsl:when test="name(following::*[1]) = 'dd'">
-                        <xsl:text>3pt</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text>12pt</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:attribute>
-            <xsl:apply-templates select="*|text()" />
-        </fo:block>
-    </xsl:template>
-
-
-    <xsl:template match="em">
-        <fo:inline font-style="italic">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-    <xsl:template match="font">
-        <xsl:variable name="color">
-            <xsl:choose>
-                <xsl:when test="@color">
-                    <xsl:value-of select="@color" />
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text>black</xsl:text>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-        <xsl:variable name="face">
-            <xsl:choose>
-                <xsl:when test="@face">
-                    <xsl:value-of select="@face" />
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text>sans-serif</xsl:text>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-        <xsl:variable name="size">
-            <xsl:choose>
-                <xsl:when test="@size">
-                    <xsl:choose>
-                        <xsl:when test="contains(@size, 'pt')">
-                            <xsl:text>@size</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '+1'">
-                            <xsl:text>110%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '+2'">
-                            <xsl:text>120%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '+3'">
-                            <xsl:text>130%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '+4'">
-                            <xsl:text>140%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '+5'">
-                            <xsl:text>150%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '+6'">
-                            <xsl:text>175%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '+7'">
-                            <xsl:text>200%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '-1'">
-                            <xsl:text>90%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '-2'">
-                            <xsl:text>80%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '-3'">
-                            <xsl:text>70%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '-4'">
-                            <xsl:text>60%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '-5'">
-                            <xsl:text>50%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '-6'">
-                            <xsl:text>40%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '-7'">
-                            <xsl:text>30%</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '1'">
-                            <xsl:text>8pt</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '2'">
-                            <xsl:text>10pt</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '3'">
-                            <xsl:text>12pt</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '4'">
-                            <xsl:text>14pt</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '5'">
-                            <xsl:text>18pt</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '6'">
-                            <xsl:text>24pt</xsl:text>
-                        </xsl:when>
-                        <xsl:when test="@size = '7'">
-                            <xsl:text>36pt</xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>10pt</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text>10pt</xsl:text>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-        <fo:inline font-size="{$size}" font-family="{$face}"
-                   color="{$color}">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
     <xsl:template match="h1">
-        <fo:block break-before="page">
-            <!--<fo:leader leader-pattern="rule" leader-length.maximum="100%" leader-length.optimum="100%" />-->
-        </fo:block>
-        <fo:block font-size="20pt" line-height="1.25em" font-weight="bold"
-                  keep-with-next="always" space-after="16pt"
-                  font-family="serif" color="#007EC5">
+        <fo:block font-size="20pt" line-height="1.25em" font-weight="bold" break-before="page"
+                  keep-with-next="always" space-after="16pt" color="#007EC5">
 
             <xsl:attribute name="id">
                 <xsl:choose>
@@ -638,8 +332,7 @@
 
     <xsl:template match="h2">
         <fo:block font-size="16pt" line-height="1.25em" font-weight="bold"
-                  keep-with-next="always" space-after="10pt"
-                  font-family="serif" color="#007EC5">
+                  keep-with-next="always" space-after="10pt" color="#007EC5">
 
             <xsl:attribute name="id">
                 <xsl:choose>
@@ -683,8 +376,7 @@
 
     <xsl:template match="h3">
         <fo:block font-size="14pt" line-height="1.25em" font-weight="bold"
-                  keep-with-next="always" space-after="10pt"
-                  font-family="serif" color="#007EC5">
+                  keep-with-next="always" space-after="10pt" color="#007EC5">
 
             <xsl:attribute name="id">
                 <xsl:choose>
@@ -727,8 +419,7 @@
 
     <xsl:template match="h4">
         <fo:block font-size="12pt" line-height="1.25em" font-weight="bold"
-                  keep-with-next="always" space-after="10pt"
-                  font-family="serif" color="#007EC5">
+                  keep-with-next="always" space-after="10pt" color="#007EC5">
 
             <xsl:attribute name="id">
                 <xsl:choose>
@@ -770,10 +461,8 @@
     </xsl:template>
 
     <xsl:template match="h5">
-        <fo:block font-size="12pt" line-height="1.25em"
-                  keep-with-next="always" space-after="10pt"
-                  font-family="serif" color="#007EC5"
-                  text-decoration="underline">
+        <fo:block font-size="12pt" line-height="1.25em" font-weight="bold"
+                  keep-with-next="always" space-after="10pt" color="#007EC5">
             <xsl:attribute name="id">
                 <xsl:choose>
                     <xsl:when test="@id">
@@ -789,11 +478,8 @@
     </xsl:template>
 
     <xsl:template match="h6">
-        <fo:block font-size="12pt" line-height="1.25em"
-                  keep-with-next="always" space-after="10pt"
-                  font-family="serif" font-style="italic"
-                  color="#007EC5"
-                  text-decoration="underline">
+        <fo:block font-size="10pt" line-height="1.25em" font-weight="bold"
+                  keep-with-next="always" space-after="10pt" color="#000000">
             <xsl:attribute name="id">
                 <xsl:choose>
                     <xsl:when test="@id">
@@ -808,6 +494,50 @@
         </fo:block>
     </xsl:template>
 
+    <xsl:template match="a">
+        <xsl:choose>
+            <xsl:when test="@name">
+                <xsl:if test="not(name(following-sibling::*[1]) = 'h1')">
+                    <fo:block line-height="0pt" space-after="0pt"
+                              font-size="0pt" id="{@name}" />
+                </xsl:if>
+            </xsl:when>
+            <xsl:when test="@href">
+                <fo:basic-link color="blue">
+                    <xsl:choose>
+                        <xsl:when test="starts-with(@href, '#')">
+                            <xsl:attribute name="internal-destination">
+                                <xsl:value-of select="substring(@href, 2)" />
+                            </xsl:attribute>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:attribute name="external-destination">
+                                <xsl:value-of select="@href" />
+                            </xsl:attribute>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:apply-templates select="*|text()" />
+                </fo:basic-link>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="blockquote">
+        <fo:block start-indent="1.5cm" end-indent="1.5cm"
+                  space-after="12pt">
+            <xsl:apply-templates select="*|text()" />
+        </fo:block>
+    </xsl:template>
+
+    <xsl:template match="br">
+        <fo:block> </fo:block>
+    </xsl:template>
+
+    <xsl:template match="em">
+        <fo:inline font-style="italic">
+            <xsl:apply-templates select="*|text()" />
+        </fo:inline>
+    </xsl:template>
 
     <xsl:template match="hr">
         <fo:block>
@@ -815,30 +545,11 @@
         </fo:block>
     </xsl:template>
 
-    <xsl:template match="i">
-        <fo:inline font-style="italic">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
     <xsl:template match="img">
-        <fo:block space-after="12pt">
+        <fo:block space-after="12pt" text-align="center">
             <fo:external-graphic src="{@src}" content-width="scale-to-fit" content-height="100%"
-                                 width="100%"
-                                 scaling="uniform">
+                                 width="100%" scaling="uniform">
             </fo:external-graphic>
-        </fo:block>
-    </xsl:template>
-
-    <xsl:template match="kbd">
-        <fo:inline font-family="monospace" font-size="110%">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-    <xsl:template match="nobr">
-        <fo:block wrap-option="no-wrap">
-            <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
 
@@ -919,14 +630,14 @@
 
     <xsl:template match="p">
         <fo:block font-size="10pt" line-height="1.25em"
-                  space-after="12pt" text-align="justify"
-                  line-stacking-strategy="font-height">
+                  space-after="12pt" text-align="justify">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
 
-    <xsl:template match="peruste">
-        <fo:block color="#444444" font-style="italic" font-size="10pt">
+
+    <xsl:template match="div">
+        <fo:block font-size="10pt" space-after="12pt">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
@@ -978,61 +689,39 @@
         </fo:block>
     </xsl:template>
 
-    <xsl:template match="samp">
-        <fo:inline font-family="monospace" font-size="110%">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-    <xsl:template match="small">
-        <fo:inline font-size="80%">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-    <xsl:template match="strike">
-        <fo:inline text-decoration="line-through">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
     <xsl:template match="strong">
         <fo:inline font-weight="bold">
             <xsl:apply-templates select="*|text()" />
         </fo:inline>
     </xsl:template>
 
-
-    <xsl:template match="sub">
-        <fo:inline vertical-align="sub" font-size="75%">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-
-    <xsl:template match="sup">
-        <fo:inline vertical-align="super" font-size="75%">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
     <xsl:template match="table">
+        <!--<fo:table-and-caption>
+            <fo:table-caption>
+                <fo:block font-weight="bold" font-size="12pt">
+                    <xsl:value-of select="caption" />
+                </fo:block>
+            </fo:table-caption>
+            <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt">
+                <fo:table-body>
+                    <xsl:apply-templates select="*" />
+                </fo:table-body>
+            </fo:table>
+        </fo:table-and-caption>-->
+
         <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt">
-            <!--<xsl:choose>
-                <xsl:when test="@cols">
-                    <xsl:call-template name="build-columns">
-                        <xsl:with-param name="cols"
-                                        select="concat(@cols, ' ')" />
-                    </xsl:call-template>
-                </xsl:when>
-                <xsl:otherwise>
-                    <fo:table-column column-width="200pt" />
-                </xsl:otherwise>
-            </xsl:choose>-->
+            <fo:table-header>
+                <fo:table-cell>
+                    <fo:block font-weight="bold" font-size="12pt">
+                        <xsl:value-of select="caption" />
+                    </fo:block>
+                </fo:table-cell>
+            </fo:table-header>
             <fo:table-body>
                 <xsl:apply-templates select="*" />
             </fo:table-body>
         </fo:table>
+
     </xsl:template>
 
     <xsl:template match="td">
@@ -1127,10 +816,6 @@
         </fo:table-cell>
     </xsl:template>
 
-    <xsl:template match="tfoot">
-        <xsl:apply-templates select="tr" />
-    </xsl:template>
-
     <xsl:template match="th">
         <fo:table-cell
                 padding-start="3pt" padding-end="3pt"
@@ -1158,29 +843,10 @@
         <xsl:apply-templates select="tr" />
     </xsl:template>
 
-    <xsl:template match="title">
-        <fo:block space-after="18pt" line-height="27pt"
-                  font-size="24pt" font-weight="bold" text-align="center">
-            <xsl:apply-templates select="*|text()" />
-        </fo:block>
-    </xsl:template>
-
     <xsl:template match="tr">
         <fo:table-row>
             <xsl:apply-templates select="*|text()" />
         </fo:table-row>
-    </xsl:template>
-
-    <xsl:template match="tt">
-        <fo:inline font-family="monospace">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
-    </xsl:template>
-
-    <xsl:template match="u">
-        <fo:inline text-decoration="underline">
-            <xsl:apply-templates select="*|text()" />
-        </fo:inline>
     </xsl:template>
 
     <xsl:template match="ul">
@@ -1229,35 +895,71 @@
         </fo:list-item>
     </xsl:template>
 
-    <xsl:template match="var">
-        <fo:inline font-style="italic">
+    <!-- Custom tags -->
+
+
+    <xsl:template match="municipalities">
+        <xsl:for-each select="municipality">
+            <fo:table-row>
+                <fo:table-cell>
+                    <fo:block font-weight="bold">
+                        <xsl:if test="//html/@lang = 'fi'">
+                            <xsl:text>Kunnat</xsl:text>
+                        </xsl:if>
+                        <xsl:if test="//html/@lang = 'sv'">
+                            <xsl:text>Kommuner</xsl:text>
+                        </xsl:if>
+                    </fo:block>
+                </fo:table-cell>
+                <fo:table-cell>
+                    <fo:block>
+                        <xsl:apply-templates select="." />
+                    </fo:block>
+                </fo:table-cell>
+            </fo:table-row>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="organizations">
+        <xsl:for-each select="organization">
+            <fo:table-row>
+                <fo:table-cell>
+                    <fo:block font-weight="bold">
+                        <xsl:if test="position()=1">
+                            <xsl:if test="//html/@lang = 'fi'">
+                                <xsl:text>Organisaatiot</xsl:text>
+                            </xsl:if>
+                            <xsl:if test="//html/@lang = 'sv'">
+                                <xsl:text>Organisationer</xsl:text>
+                            </xsl:if>
+                        </xsl:if>
+                    </fo:block>
+                </fo:table-cell>
+                <fo:table-cell>
+                    <fo:block>
+                        <xsl:apply-templates select="." />
+                    </fo:block>
+                </fo:table-cell>
+            </fo:table-row>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="cite">
+        <fo:block color="#444444" font-style="italic" font-size="10pt" space-after="12pt">
             <xsl:apply-templates select="*|text()" />
-        </fo:inline>
+        </fo:block>
     </xsl:template>
 
     <!-- Named templates -->
 
     <!-- Cover page -->
     <xsl:template name="cover">
-        <fo:block break-before='page' color="white"  font-weight="bold" text-align="center"
-                  margin-top="150mm" margin="40mm">
-            <fo:block font-size="28pt" >
-                <xsl:value-of select="/html/head/title" />
-            </fo:block>
-
-            <fo:block  font-size="16pt">
-                <xsl:apply-templates select="/html/head/meta[@name='subtitle']/@content" />
-            </fo:block>
+        <fo:block font-weight="bold" font-size="28pt" text-align="center">
+            <xsl:value-of select="/html/head/title" />
         </fo:block>
-
     </xsl:template>
 
     <xsl:template name="toc">
-        <!--<fo:block>
-            <fo:leader leader-pattern="rule" space-after="18pt"
-                       leader-length.maximum="100%" leader-length.optimum="100%" />
-        </fo:block>-->
-
         <fo:block break-before='page' space-after="12pt" id="TableOfContents" color="#007EC5" font-weight="bold"
                   line-height="21pt" font-size="16pt" text-align="start">
             <xsl:if test="//html/@lang = 'fi'">
