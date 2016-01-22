@@ -542,5 +542,10 @@
   "dokumentin-tila": "PDF-dokumentin tila",
   "alaviite": "Alaviite",
   "alaviite-ohje": "Jos käsite on merkattu alaviitteeksi, se näytetään myös generoiduissa dokumenteissa.",
-  "lataa-ops-pdf-muodossa": "Lataa opetussuunnitelma PDF-muodossa"
+  "lataa-ops-pdf-muodossa": "Lataa opetussuunnitelma PDF-muodossa",
+  "dokumentti-luotu": "Dokumentti luotu",
+  "ei_ole": "Ei ole",
+  "opetuksen-yleisten-tavoitteiden-yleiskuvauksen-paivitys-onnistui": "Opetuksen yleisten tavoitteiden muokkaus onnistui",
+  "opetuksen-yleiset-tavoitteet-yleiskuvaus-header": "Yleiskuvaus",
+  "opetuksen-yleiset-tavoitteet-yleiskuvaus-placeholder": "Opetuksen yleisten tavoitteiden paikallinen tarkennus" 
 }

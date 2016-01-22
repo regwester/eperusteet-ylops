@@ -1,6 +1,7 @@
 interface LukioKurssiTreeState {
     isEditMode: () => boolean
-    defaultCollapse: boolean
+    defaultCollapse: boolean,
+    scope: angular.IScope,
     root(): LukioKurssiTreeNode
     liitetytKurssit(): LukioKurssiTreeNode[]
     liittamattomatKurssit(): LukioKurssiTreeNode[]
@@ -9,13 +10,14 @@ interface LukioKurssiTreeState {
 interface LukioTreeUtilsI {
     templates: (state:LukioKurssiTreeState) => LukioTreeTemplatesI
     treeRootLapsetFromRakenne : (rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) => LukioKurssiTreeNode[],
-    defaultHidden: (node: LukioKurssiTreeNode) => boolean,
+    defaultHidden(usePagination: boolean): (node: LukioKurssiTreeNode) => boolean,
+    defaultCollapsed: (node: LukioKurssiTreeNode) => boolean,
     updateCollapse: (state: LukioKurssiTreeState) => void,
     collapseToggler: (treeRootProvider: Provider<LukioKurssiTreeNode>, state: LukioKurssiTreeState) => (() => void),
     extensions: (state: LukioKurssiTreeState,
                  myExtensions?: ((node:LukioKurssiTreeNode, scope:any) => void)) => ((node:LukioKurssiTreeNode, scope:any) => void)
     acceptDropWrapper: (state: LukioKurssiTreeState) =>
-        (node: LukioKurssiTreeNode, to: LukioKurssiTreeNode, event, ui)  => boolean
+        (node: LukioKurssiTreeNode, to: LukioKurssiTreeNode)  => boolean
     updatePagination: (arr:PaginationNode[], pagination:PaginationDetails) => void
     hideBySearch: (state:LukioKurssiTreeState, search:string, root?: LukioKurssiTreeNode) => void
     luoHaku: (state:LukioKurssiTreeState, root?: LukioKurssiTreeNode) => Rajaus
@@ -45,80 +47,157 @@ interface LukioKurssiTreeNode extends PaginationNode {
     $$nodeParent?: LukioKurssiTreeNode
     koosteinen?: boolean
     koodiArvo?: string
+    oppiaineet?: Lukio.LukioOppiaineJarjestys[]
     lokalisoituKoodi?: l.Lokalisoitu
     kurssit?: Lukio.LukiokurssiOps[]
     oppimaarat?: Lukio.LukioOppiaine[]
     jarjestys?: number
     oppiaineId?: number
+    tyyppi?: string
+    muokattu?: number
+    paginationUsed?: boolean
 }
 interface LukioTreeTemplatesI {
-    treeHandle: () => string
-    kurssiColorbox: () => string
-    timestamp: () => string
-    collapse: (node: LukioKurssiTreeNode) => string
-    name: (node: LukioKurssiTreeNode) => string
-    nodeTemplate: (node: LukioKurssiTreeNode) => string
-    nodeTemplateKurssilista: (n:LukioKurssiTreeNode) => string
+    treeHandle: (node: LukioKurssiTreeNode) => JQuery
+    kurssiColorbox: (node: LukioKurssiTreeNode) => JQuery
+    timestamp: (node: LukioKurssiTreeNode) => JQuery
+    collapse: (node: LukioKurssiTreeNode) => JQuery
+    name: (node: LukioKurssiTreeNode) => JQuery
+    nodeTemplate: (node: LukioKurssiTreeNode) => JQuery
+    nodeTemplateKurssilista: (n:LukioKurssiTreeNode) => JQuery
 }
 interface PaginationDetails {
     currentPage:number,
     showPerPage:number,
     total?:number,
     multiPage?:boolean,
-    changePage:(to:number) => void
+    changePage?: (to:number) => void,
+    state: LukioKurssiTreeState
 }
 
 ylopsApp
-    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli, $timeout, $rootScope) {
+    .service('LukioTreeUtils', function ($log, $state, $stateParams, Kaanna, Kieli, $timeout, $rootScope, $filter) {
+        function toggleNode(node, $event, state?: LukioKurssiTreeState) {
+            node.$$collapsed = !node.$$collapsed;
+            $event.preventDefault();
+            if (state) {
+                state.scope.$broadcast('genericTree:updateNode', $event.target);
+            }
+            return false;
+        }
+        function createHref(node) {
+            if (node.dtype === LukioKurssiTreeNodeType.kurssi && node.$$nodeParent) {
+                return $state.href('root.opetussuunnitelmat.lukio.opetus.kurssi', {
+                    id: $stateParams.id,
+                    oppiaineId: node.$$nodeParent.id,
+                    kurssiId: node.id
+                });
+            } else if(node.dtype === LukioKurssiTreeNodeType.oppiaine) {
+                return $state.href('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                    id: $stateParams.id,
+                    oppiaineId: node.id
+                });
+            }
+            return null;
+        }
+        function removeKurssiFromOppiaine(state:LukioKurssiTreeState, node:LukioKurssiTreeNode) {
+            $rootScope.$broadcast('genericTree:beforeChange');
+            _.remove(node.$$nodeParent.lapset, n => n.id === node.id);
+            var oppiaine = node.$$nodeParent;
+            _.remove(oppiaine.lapset, node);
+            var kurssitInTree = _(state.root()).flattenTree(n => n.lapset)
+                .filter(c => c.dtype == LukioKurssiTreeNodeType.kurssi && c.id == node.id).value(),
+                foundInTree = !_.isEmpty(kurssitInTree),
+                inLiittamattomat = _.filter(state.liittamattomatKurssit(), n => n.id == node.id);
+            if (!foundInTree && _.isEmpty(inLiittamattomat)) {
+                state.liittamattomatKurssit().push(node);
+                _.remove(state.liitetytKurssit(), n => n.id == node.id);
+            }
+            state.updatePagination();
+            $timeout(() => {
+                $rootScope.$broadcast('genericTree:afterChange');
+            });
+        }
+
         var templatesByState = (state:LukioKurssiTreeState) => {
-            var templateAround = (tmpl:string) => (!state.isEditMode() ? ' <a class="container-link' : '<span class="span-container')+
-                    ' tree-list-item" '+(!state.isEditMode() ? ' ng-href="{{createHref()}}"': '')+
-                    ' ng-show="!node.$$hide" ng-class="{ \'opetussisaltopuu-solmu-paataso\': (node.$$depth === 0), \'bubble\': dtypeString() != \'kurssi\',' +
-                    '           \'bubble-osa\': dtypeString() == \'kurssi\',' +
-                    '           \'empty-item\': !node.lapset.length }">'+tmpl +
-                    (!state.isEditMode() ? ' </a>' : '</span>');
-            var kurssiListaTemplateAround = (tmpl:string) => '<span class="span-container liittamaton-kurssi recursivetree tree-list-item bubble-osa empty-item"'
-                    +' ng-show="!node.$$hide && node.$$pagingShow">'+tmpl + '</span>';
+            var templateAround = (tmpl:JQuery, node) => {
+                var classes = 'tree-list-item ' + (node.$$depth === 0 ? 'opetussisaltopuu-solmu-paataso ':'')
+                        +(node.dtype != LukioKurssiTreeNodeType.kurssi ? 'bubble ':'')
+                        +(node.dtype == LukioKurssiTreeNodeType.kurssi ? 'bubble-osa ':'')
+                        +(node.lapset.length ? 'empty-item ':''),
+                    $el:JQuery;
+                if (state.isEditMode()) {
+                    classes += 'span-container';
+                    $el = $('<span class="'+classes+'"></span>');
+                } else {
+                    classes += 'container-link';
+                    $el = $('<a class="'+classes+'"></a>').attr('href', createHref(node));
+                }
+                return $el.append(tmpl);
+            };
+            var kurssiListaTemplateAround = (tmpl:JQuery, node) => $('<span class="span-container liittamaton-kurssi recursivetree tree-list-item bubble-osa empty-item"></span>')
+                    .append(tmpl);
             var templates = <LukioTreeTemplatesI>{
-                treeHandle: () => state.isEditMode() ? '<span icon-role="drag" class="treehandle"></span>' : '',
-                kurssiColorbox: () => '  <span class="colorbox kurssi-tyyppi {{node.tyyppi.toLowerCase()}}"></span>',
-                timestamp: () => !state.isEditMode() ? '<span class="aikaleima" ng-bind="node.muokattu || 0 | ' +
-                    'aikaleima: \'ago\'" title="{{\'muokattu\' | kaanna }} {{node.muokattu || 0 | aikaleima}}"></span>' : '',
+                treeHandle: node => {
+                    return state.isEditMode() ? $('<span icon-role="drag" class="treehandle"><span class="glyphicon glyphicon-resize-vertical"></span></span>') : null;
+                },
+                kurssiColorbox: node => $('<span class="colorbox kurssi-tyyppi ' + node.tyyppi.toLowerCase() + '"></span>'),
+                timestamp: node => !state.isEditMode() ? $('<span class="aikaleima"></span>')
+                    .attr('title', $filter('kaanna')('muokattu') + ' ' + $filter('aikaleima')(node.muokattu || 0))
+                    .text($filter('aikaleima')(node.muokattu || 0)) : null,
                 name: node => {
-                    var base = node.dtype == LukioKurssiTreeNodeType.kurssi
-                        ? '<span ng-bind="(node.nimi | kaanna) + ((node.lokalisoituKoodi | kaanna) ? \' (\'+(node.lokalisoituKoodi | kaanna)+\')\' : \'\')" title="{{node.nimi | kaanna}} {{(node.lokalisoituKoodi | kaanna) ? \'(\'+(node.lokalisoituKoodi | kaanna)+\')\' : \'\'}}"></span>'
-                        : '{{ node.nimi | kaanna }}';
-                    if (!state.isEditMode()) {
-                        return '<span '
-                            + (node.dtype != LukioKurssiTreeNodeType.kurssi ? ' title="' + base + '"' : '')
-                            +'>' + base + '</span>';
+                    var base;
+                    if (node.dtype == LukioKurssiTreeNodeType.kurssi) {
+                        var lokalisoituKoodi = $filter('kaanna')(node.lokalisoituKoodi),
+                            name = $filter('kaanna')(node.nimi) + ' ' + (lokalisoituKoodi ? ' ('+lokalisoituKoodi+')' : '');
+                        base = $('<span title="'+name+'">'+name+'</span>');
+                    } else {
+                        base = $('<span></span>').text($filter('kaanna')(node.nimi));
                     }
                     return base;
                 },
                 collapse: (n:LukioKurssiTreeNode) =>
-                    (!state.isEditMode() || n.dtype == LukioKurssiTreeNodeType.oppiaine) ? '<span ng-show="node.lapset.length" ng-click="toggle($event)"' +
-                    '           class="colorbox collapse-toggle" ng-class="{\'suljettu\': node.$$collapsed}">' +
-                    '    <span ng-hide="node.$$collapsed" class="glyphicon glyphicon-chevron-down"></span>' +
-                    '    <span ng-show="node.$$collapsed" class="glyphicon glyphicon-chevron-right"></span>' +
-                    '</span>' : '',
+                        ((!state.isEditMode() || n.dtype == LukioKurssiTreeNodeType.oppiaine) && n.lapset.length)
+                        ?  $('<span class="colorbox collapse-toggle"></span>')
+                            .append($('<span ng-hide="node.$$collapsed" class="glyphicon collapse-based"></span>')
+                                    .addClass(n.$$collapsed ? 'glyphicon-chevron-right' : 'glyphicon-chevron-down'))
+                                    .attr('data-uncollapse-class', 'glyphicon-chevron-down')
+                                    .attr('data-collapse-class', 'glyphicon-chevron-right suljettu')
+                            .addClass(n.$$collapsed ? 'suljettu': '')
+                            .click(e => toggleNode(n, e, state)) : null,
                 nodeTemplate: (n:LukioKurssiTreeNode) => {
                     if (n.dtype == LukioKurssiTreeNodeType.kurssi) {
-                        var remove = state.isEditMode() ? '   <span class="remove" icon-role="remove" ng-click="removeKurssiFromOppiaine(node)"></span>' : '';
-                        return templateAround('<span class="span-container puu-node kurssi-node" ng-class="{\'liittamaton\': node.oppiaineet.length === 0}">' +
-                            templates.treeHandle() + templates.kurssiColorbox() + templates.timestamp() +
-                                '   <span class="span-container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
-                            templates.name(n) + '   </span>' + remove + '</span>');
+                        var remove = state.isEditMode() ? $('<span class="remove" icon-role="remove"><span class="glyphicon glyphicon-remove"></span></span>')
+                                .click(e => removeKurssiFromOppiaine(state, n)) : null;
+                        return templateAround($('<span class="span-container puu-node kurssi-node"></span>')
+                                .addClass(_.isEmpty(n.oppiaineet) ? 'liittamaton' : '')
+                                .append(templates.treeHandle(n))
+                                .append(templates.kurssiColorbox(n))
+                                .append(templates.timestamp(n))
+                                .append($('<span class="span-container node-content left">')
+                                        .addClass(_.isEmpty(n.lapset) ? 'empty-node' : '')
+                                        .append(templates.name(n))
+                                ).append(remove),n);
                     } else {
-                        return templateAround('<span class="span-container puu-node oppiaine-node">' + templates.treeHandle()
-                            + templates.collapse(n) + templates.timestamp() + '<span class="span-container node-content left" ng-class="{ \'empty-node\': !node.lapset.length }">' +
-                            '<strong>' + templates.name(n) + '</strong></span></span>');
+                        return templateAround($('<span class="span-container puu-node oppiaine-node">')
+                                .append(templates.treeHandle(n))
+                                .append(templates.collapse(n))
+                                .append(templates.timestamp(n))
+                                .append($('<span class="span-container node-content left"></span>')
+                                    .addClass(_.isEmpty(n.lapset) ? 'empty-node' : '')
+                                    .append($('<strong></strong>')
+                                        .append(templates.name(n)))
+                                ),n);
                     }
                 },
                 nodeTemplateKurssilista: (n:LukioKurssiTreeNode) =>
-                    kurssiListaTemplateAround('<span class="span-container puu-node kurssi-node">' +
-                        templates.treeHandle() + templates.kurssiColorbox() + templates.timestamp() +
-                        '   <span class="span-container node-content left">' + templates.name(n) + '</span>' +
-                        '</span>')
+                    kurssiListaTemplateAround($('<span class="span-container puu-node kurssi-node"></span>')
+                            .append(templates.treeHandle(n))
+                            .append(templates.kurssiColorbox(n))
+                            .append(templates.timestamp(n))
+                            .append($('<span class="span-container node-content left"></span>')
+                                .append(templates.name(n))
+                            ),n)
             };
             return templates;
         };
@@ -148,10 +227,13 @@ ylopsApp
         };
         var treeRootLapsetFromRakenne = (rakenne: Lukio.LukioOpetussuunnitelmaRakenneOps) =>
             transformOppiaineToTreeNodes(rakenne.oppiaineet);
-        var defaultHidden = (node: LukioKurssiTreeNode) => !node || node.$$hide || (node.$$nodeParent && node.$$nodeParent.$$collapsed);
+        var defaultHidden = (usePagination) => (node: LukioKurssiTreeNode) => !node || node.$$hide || (node.$$nodeParent && node.$$nodeParent.$$collapsed)
+                            || (usePagination && !node.$$pagingShow);
+        var defaultCollapsed = (node: LukioKurssiTreeNode) => node && (node.$$collapsed || (node.$$nodeParent && node.$$nodeParent.$$collapsed))
+                    && !(node.dtype == LukioKurssiTreeNodeType.oppiaine && _.isEmpty(node.lapset));
         var doSetCollapse = (root: LukioKurssiTreeNode, stateSetter: boolean|((n:LukioKurssiTreeNode)=> boolean)) => {
             _.each(_(root).flattenTree(n => n.lapset).value(), ((n:LukioKurssiTreeNode) =>
-                {n.$$collapsed = stateSetter instanceof Function ? stateSetter(n) : stateSetter;}));
+                {n.$$collapsed = <boolean>(stateSetter instanceof Function ? stateSetter(n) : stateSetter);}));
         };
         var updateCollapse = (state: LukioKurssiTreeState) => {
             doSetCollapse(state.root(),
@@ -160,6 +242,7 @@ ylopsApp
                         !(n.dtype == LukioKurssiTreeNodeType.oppiaine && n.koosteinen)
                         : false)
                     : state.defaultCollapse);
+            state.scope.$broadcast('genericTree:updateNode');
         };
         var collapseToggler = (treeRootProvider: Provider<LukioKurssiTreeNode>, state: LukioKurssiTreeState) => () => {
             state.defaultCollapse = !state.defaultCollapse;
@@ -168,43 +251,13 @@ ylopsApp
         var extensions = (state: LukioKurssiTreeState, myExtensions?: ((node:LukioKurssiTreeNode, scope:any) => void)) => {
             return (node:LukioKurssiTreeNode, scope:any) => {
                 scope.toggle = ($event) => {
-                    node.$$collapsed = !node.$$collapsed;
-                    $event.preventDefault();
-                    return false;
+                    return toggleNode(node, $event);
                 };
                 scope.createHref = () => {
-                    if (node.dtype === LukioKurssiTreeNodeType.kurssi
-                                && node.$$nodeParent) {
-                        return $state.href('root.opetussuunnitelmat.lukio.opetus.kurssi', {
-                            id: $stateParams.id,
-                            oppiaineId: node.$$nodeParent.id,
-                            kurssiId: node.id
-                        });
-                    } else if(node.dtype === LukioKurssiTreeNodeType.oppiaine) {
-                        return $state.href('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
-                            id: $stateParams.id,
-                            oppiaineId: node.id
-                        });
-                    }
-                    return null;
+                    return createHref(node);
                 };
                 scope.removeKurssiFromOppiaine = (node:LukioKurssiTreeNode) => {
-                    $rootScope.$broadcast('genericTree:beforeChange');
-                    _.remove(node.$$nodeParent.lapset, n => n.id === node.id);
-                    var oppiaine = node.$$nodeParent;
-                    _.remove(oppiaine.lapset, node);
-                    var kurssitInTree = _(state.root()).flattenTree(n => n.lapset)
-                            .filter(c => c.dtype == LukioKurssiTreeNodeType.kurssi && c.id == node.id).value(),
-                        foundInTree = !_.isEmpty(kurssitInTree),
-                        inLiittamattomat = _.filter(state.liittamattomatKurssit(), n => n.id == node.id);
-                    if (!foundInTree && _.isEmpty(inLiittamattomat)) {
-                        state.liittamattomatKurssit().push(node);
-                        _.remove(state.liitetytKurssit(), n => n.id == node.id);
-                    }
-                    state.updatePagination();
-                    $timeout(() => {
-                        $rootScope.$broadcast('genericTree:afterChange');
-                    });
+                    return removeKurssiFromOppiaine(state, node);
                 };
                 scope.dtypeString = () => {
                     return LukioKurssiTreeNodeType[node.dtype];
@@ -214,7 +267,7 @@ ylopsApp
                 }
             };
         };
-        var acceptMove = function(node: LukioKurssiTreeNode, to: LukioKurssiTreeNode, event, ui) {
+        var acceptMove = function(node: LukioKurssiTreeNode, to: LukioKurssiTreeNode) {
             if (!node) {
                 return false;
             }
@@ -228,12 +281,13 @@ ylopsApp
                     && kurssi.id === node.id)) {
                 return false;
             }
+            //$log.info('acccept', _.cloneDeep(node), _.cloneDeep(to));
             return (node.dtype === LukioKurssiTreeNodeType.oppiaine
                             && to.dtype === LukioKurssiTreeNodeType.root
                             && !node.oppiaineId) ||
                 (node.dtype === LukioKurssiTreeNodeType.oppiaine
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
-                    && to.koosteinen && !node.koosteinen
+                    && to.koosteinen && !node.koosteinen && node.$$nodeParent
                     && to.id == node.$$nodeParent.id) ||
                 (node.dtype === LukioKurssiTreeNodeType.kurssi
                     && to.dtype === LukioKurssiTreeNodeType.oppiaine
@@ -249,8 +303,8 @@ ylopsApp
             state.updatePagination();
         };
         var moveWrapper = (state: LukioKurssiTreeState) =>
-                    (node: LukioKurssiTreeNode, to: LukioKurssiTreeNode, event, ui) => {
-            var accepted = acceptMove(node, to, event, ui);
+                    (node: LukioKurssiTreeNode, to: LukioKurssiTreeNode) => {
+            var accepted = acceptMove(node, to);
             if (accepted) {
                 moved(state, node, to);
             }
@@ -287,6 +341,10 @@ ylopsApp
             pagination.multiPage = pagination.total  > pagination.showPerPage;
             if (pagination.total > 0 && pagination.total <= (pagination.currentPage - 1) * pagination.showPerPage) {
                 changePage(arr, pagination, pagination.currentPage - 1);
+            } else {
+                pagination.state.scope.$broadcast('genericTree:updateVisibilityGiven', function(root:LukioKurssiTreeNode) {
+                    return root.paginationUsed;
+                });
             }
         };
         var changePage = function(arr:PaginationNode[], pagination:PaginationDetails, to:number) {
@@ -343,7 +401,8 @@ ylopsApp
             return textMatch([nimi, koodiArvo, lokalisoituKoodi], search);
         };
         var hideBySearch = (state:LukioKurssiTreeState, search:string, root?: LukioKurssiTreeNode) => {
-            _.each(_(root || state.root()).flattenTree(n => n.lapset)
+            root = root || state.root();
+            _.each(_(root).flattenTree(n => n.lapset)
                     .filter(n => n.dtype != LukioKurssiTreeNodeType.root).value(),
                 (n:LukioKurssiTreeNode) => {
                     n.$$hide = !matchesSearch(n, search);
@@ -355,6 +414,9 @@ ylopsApp
                     }
                 });
             state.updatePagination();
+            if (!root.paginationUsed) {
+                state.scope.$broadcast('genericTree:refreshVisibility');
+            }
         };
         var luoHaku = (state:LukioKurssiTreeState, root?: LukioKurssiTreeNode) => {
             var haku = <Rajaus>{
@@ -371,6 +433,7 @@ ylopsApp
             templates: templatesByState,
             treeRootLapsetFromRakenne : treeRootLapsetFromRakenne ,
             defaultHidden: defaultHidden,
+            defaultCollapsed: defaultCollapsed,
             collapseToggler: collapseToggler,
             updateCollapse: updateCollapse,
             extensions: extensions,

@@ -45,4 +45,12 @@ public class PerusopetuksenPerusteenSisaltoDto implements Serializable {
             .findAny();
 
     }
+
+    public Optional<PerusteVuosiluokkakokonaisuusDto> getVuosiluokkakokonaisuudet(UUID tunniste) {
+        return vuosiluokkakokonaisuudet.stream()
+                .flatMap(Stream::of)
+                .filter(vlk -> Objects.equals(vlk.getTunniste(), tunniste))
+                .findAny();
+
+    }
 }

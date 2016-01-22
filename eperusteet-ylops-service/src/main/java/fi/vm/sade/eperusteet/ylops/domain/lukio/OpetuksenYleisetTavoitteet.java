@@ -86,7 +86,7 @@ public class OpetuksenYleisetTavoitteet extends AbstractAuditedReferenceableEnti
     public OpetuksenYleisetTavoitteet copyInto(OpetuksenYleisetTavoitteet to) {
         to.uuidTunniste = this.uuidTunniste;
         to.otsikko = this.otsikko;
-        to.kuvaus = this.kuvaus;
+        // to.kuvaus = this.kuvaus;
         return to;
     }
 }

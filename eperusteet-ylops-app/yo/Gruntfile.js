@@ -9,6 +9,7 @@ var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-connect-proxy');
+  grunt.loadNpmTasks('grunt-image');
   grunt.loadNpmTasks('grunt-angular-templates');
   require('load-grunt-tasks')(grunt);
 //require('time-grunt')(grunt);
@@ -222,16 +223,28 @@ module.exports = function(grunt) {
         }
       }
     },
-    imagemin: {
-      dist: {
+    image: {
+      dynamic: {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/images',
-          src: '{,*/}*.{png,jpg,jpeg}',
+          src: '**/*.{png,jpg,jpeg}',
           dest: '<%= yeoman.dist %>/images'
         }]
       }
     },
+    // Kokeillaan grunt-imagea
+    // imagemin: {
+    //   dist: {
+    //     files: [{
+    //       expand: true,
+    //       cwd: '<%= yeoman.app %>/images',
+    //       // src: '*|)}>#*.{png,jpg,jpeg}',
+    //       src: 'whatever',
+    //       dest: '<%= yeoman.dist %>/images'
+    //     }]
+    //   }
+    // },
     svgmin: {
       dist: {
         files: [{
@@ -350,7 +363,7 @@ module.exports = function(grunt) {
       ],
       dist: [
         'sass',
-        'imagemin',
+        'image',
         'svgmin',
         'htmlmin'
       ]

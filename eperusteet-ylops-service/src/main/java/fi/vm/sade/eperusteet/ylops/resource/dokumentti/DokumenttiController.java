@@ -24,7 +24,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
-import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +87,7 @@ public class DokumenttiController {
             service.generateWithDto(dtoForDokumentti);
 
             status = HttpStatus.ACCEPTED;
-        } else if (dtoForDokumentti.getTila() == DokumenttiTila.LUODAAN) {
+        } else {
             status = HttpStatus.FORBIDDEN;
         }
 

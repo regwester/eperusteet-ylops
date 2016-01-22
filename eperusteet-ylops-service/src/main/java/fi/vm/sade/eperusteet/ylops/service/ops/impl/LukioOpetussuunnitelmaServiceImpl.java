@@ -30,6 +30,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuusOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.*;
@@ -46,12 +47,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity.idEquals;
-import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
@@ -90,6 +91,9 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Autowired
     private AihekokonaisuusRepository aihekokonaisuusRepository;
+    
+    @Autowired
+    private OpetuksenYleisetTavoitteetRepository opetuksenYleisetTavoitteetRepository;
 
     @Autowired
     private KoodistoService koodistoService;
@@ -98,7 +102,6 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     @Transactional(readOnly = true)
     public LukioOpetussuunnitelmaRakenneOpsDto getRakenne(long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        PerusteDto perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
         LukioOpetussuunnitelmaRakenneOpsDto rakenne = new LukioOpetussuunnitelmaRakenneOpsDto();
         rakenne.setMuokattu(ops.getMuokattu());
         rakenne.setOpsId(ops.getId());
@@ -115,81 +118,125 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         Map<Long,Long> parentKurssis = lukiokurssiRepository.findParentKurssisByOps(opsId)
                 .stream().filter(p -> p.getParentId() != null)
                 .collect(toMap(LukioKurssiParentDto::getId, LukioKurssiParentDto::getParentId));
-        Map<UUID,List<Oppiaine>> pohjanTarjontaByOppiaineUUID = alinPohja.getOppiaineet().stream()
-                .flatMap(opsOppiaine -> opsOppiaine.getOppiaine().maarineen()).filter(oa
-                        -> oa.isAbstraktiBool() && oa.getOppiaine() != null)
-                .sorted(compareOppiaineet(jarjestys(jarjestyksetAlinPohja)))
-                .collect(groupingBy(oa -> oa.getOppiaine().getTunniste()));
-        Function<Long, List<OppiaineLukiokurssi>> pohjanKurssiTarjonta = alinPohja.lukiokurssitByOppiaine();
         map(ops.getOppiaineet().stream().map(OpsOppiaine::getOppiaine),
             LambdaUtil.map(parentRelateionsByOppiaineId, OpsOppiaineParentView::isOma),
             LambdaUtil.map(parentRelateionsByOppiaineId, OpsOppiaineParentView::getPohjanOppiaine),
             jarjestys(jarjestykset),
-            orEmpty(pohjanTarjontaByOppiaineUUID::get),
-            rakenne.getOppiaineet(),
+            rakenne.getOppiaineet()::add,
             ops.lukiokurssitByOppiaine(),
             parentKurssis::get,
-            pohjanKurssiTarjonta);
+            oa -> new LukioOppiaineRakenneListausDto(), LukiokurssiListausOpsDto::new);
         Set<UUID> juuriUuids = ops.getOppiaineet().stream().map(opsOa -> opsOa.getOppiaine().getTunniste())
-                .collect(Collectors.toSet());
+                .collect(toSet());
         map(alinPohja.getOppiaineet().stream()
                         .map(OpsOppiaine::getOppiaine).filter(oa -> oa.isAbstraktiBool()
                                 && !juuriUuids.contains(oa.getTunniste())),
                 oma -> false, pohjan -> null, jarjestys(jarjestyksetAlinPohja),
-                id -> Collections.<Oppiaine>emptyList(), rakenne.getPohjanTarjonta(),
-                pohjanKurssiTarjonta, id -> null, id -> Collections.<OppiaineLukiokurssi>emptyList());
-        rakenne.setPerusteen(perusteDto.getLukiokoulutus().getRakenne());
+                rakenne.getPohjanTarjonta()::add,
+                uuid -> new ArrayList<>(), id -> null,
+                oa -> new LukioOppiaineRakenneListausDto(), LukiokurssiListausOpsDto::new);
         return rakenne;
     }
 
-    private void map(Stream<Oppiaine> from, Function<Long,Boolean> isOma,
+    @Override
+    @Transactional(readOnly = true)
+    public LukioOppiaineTiedotDto getOppiaineTiedot(long opsId, long oppiaineId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        LukioOppiaineJarjestys jarjestys = jarjestysRepository.findByOppiaineId(opsId, oppiaineId);
+        if (jarjestys == null) {
+            throw new BusinessRuleViolationException("Oppiaineta ei löytynyt.");
+        }
+        Oppiaine oppiaine = jarjestys.getOppiaine();
+
+        LukioOppiaineTiedotDto dto = new LukioOppiaineTiedotDto();
+        OpsOppiaineParentView parentRelateion
+                = oppiaineParentViewRepository.findByTunnisteAndOpetusuunnitelmaId(ops.getId(),
+                (oppiaine.getOppiaine() != null ? oppiaine.getOppiaine() : oppiaine).getTunniste());
+        Oppiaine pohjanOppiaine = parentRelateion != null ? parentRelateion.getPohjanOppiaine() : null;
+        mapPerustiedot(dto, oppiaine, parentRelateion != null && parentRelateion.isOma(), pohjanOppiaine);
+        List<OppiaineLukiokurssi> kurssit = oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, oppiaineId);
+        Map<Long,Long> parentKurssis = lukiokurssiRepository.findParentKurssisByOps(opsId)
+                .stream().filter(p -> p.getParentId() != null)
+                .collect(toMap(LukioKurssiParentDto::getId, LukioKurssiParentDto::getParentId));
+        dto.setKurssit(kurssit.stream()
+                .map(lk -> mapKurssi(lk, parentKurssis::get, LukiokurssiOpsDto::new)).collect(toList()));
+        dto.setKurssiTyyppiKuvaukset(LokalisoituTekstiDto.ofOptionalMap(oppiaine.getKurssiTyyppiKuvaukset()));
+        Map<Long,OppiaineJarjestysDto> jarjestykset =
+                jarjestysRepository.findJarjestysDtosByOpetussuunnitelmaId(opsId,
+                        oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())).stream()
+                        .collect(toMap(OppiaineJarjestysDto::getId, o -> o));
+        if (oppiaine.isKoosteinen()) {
+            oppiaine.getOppimaarat().stream().sorted(compareOppiaineet(jarjestys(jarjestykset))).forEach(om -> {
+                LukioOppimaaraPerusTiedotDto oppimaara = new LukioOppimaaraPerusTiedotDto();
+                mapPerustiedot(oppimaara, om, dto.isOma(), null);
+                dto.getOppimaarat().add(oppimaara);
+            });
+
+            Opetussuunnitelma alinPohja = ops.getAlinPohja();
+            Map<Long, OppiaineJarjestysDto> jarjestyksetAlinPohja = jarjestysRepository.findJarjestysDtosByOpetussuunnitelmaId(alinPohja.getId()).stream()
+                    .collect(toMap(OppiaineJarjestysDto::getId, o -> o));
+            Map<UUID, List<Oppiaine>> pohjanTarjontaByOppiaineUUID = alinPohja.getOppiaineet().stream()
+                    .filter(ap -> ap.getOppiaine().getTunniste().equals(oppiaine.getTunniste()))
+                    .flatMap(opsOppiaine -> opsOppiaine.getOppiaine().maarineen()).filter(oa
+                            -> oa.isAbstraktiBool() && oa.getOppiaine() != null)
+                    .sorted(compareOppiaineet(jarjestys(jarjestyksetAlinPohja)))
+                    .collect(groupingBy(oa -> oa.getOppiaine().getTunniste()));
+            List<Oppiaine> pohjanTarjontaOppiaineet = pohjanTarjontaByOppiaineUUID.get(oppiaine.getTunniste());
+            if (pohjanTarjontaOppiaineet != null && !pohjanTarjontaOppiaineet.isEmpty()) {
+                Set<UUID> pohjanToteutukset = "KT".equals(dto.getKoodiArvo())
+                        ? dto.getOppimaarat().stream().map(LukioOppimaaraPerusTiedotDto::getTunniste).collect(toSet())
+                        : Collections.emptySet();
+                pohjanTarjontaOppiaineet.stream()
+                        .filter(t -> !pohjanToteutukset.contains(t.getTunniste())).forEach(tarjottava -> {
+                    LukioOppimaaraPerusTiedotDto tarjottavaDto = new LukioOppimaaraPerusTiedotDto();
+                    mapPerustiedot(tarjottavaDto, tarjottava, false, null);
+                    dto.getPohjanTarjonta().add(tarjottavaDto);
+                });
+            }
+        }
+
+        PerusteDto perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        LukioPerusteOppiaineDto perusteOppiaine = perusteDto.getLukiokoulutus().getRakenne().getOppiaineet().stream()
+                .flatMap(LukioPerusteOppiaineDto::maarineen)
+                .filter(poa -> poa.getTunniste().equals(oppiaine.getTunniste())).findFirst().orElse(null);
+        if (perusteOppiaine != null) {
+            dto.setPerusteen(perusteOppiaine);
+        }
+
+        return dto;
+    }
+
+
+    private <Kt extends LukiokurssiListausOpsDto,
+            T extends LukioOppiaineRakenneDto<T, Kt>> void map(Stream<Oppiaine> from, Function<Long,Boolean> isOma,
                      Function<Long,Oppiaine> pohjanOppiaineById,
                      Function<Long,Integer> jarjestys,
-                     Function<UUID,List<Oppiaine>> pohjanTarjonta,
-                     Collection<LukioOppiaineListausDto> to,
+                     Consumer<T> to,
                      Function<Long, List<OppiaineLukiokurssi>> lukiokurssiByOppiaineId,
                      Function<Long,Long> parentKurssisById,
-                     Function<Long, List<OppiaineLukiokurssi>> pohjanTarjontaLukiokurssiByOppiaineId) {
+                     Function<Oppiaine,T> constructor, Supplier<Kt> kurssiConstructor) {
         from.sorted(compareOppiaineet(jarjestys)).forEach(oa -> {
-            LukioOppiaineListausDto dto = mapper.map(oa, new LukioOppiaineListausDto());
-            dto.setOppiaineId(oa.getOppiaine() == null ? null : oa.getOppiaine().getId());
-            dto.setOma(isOma.apply(oa.getId()));
+            T dto = constructor.apply(oa);
             Oppiaine pohjanOppiaine = pohjanOppiaineById.apply(oa.getId());
-            dto.setMaariteltyPohjassa(pohjanOppiaine != null);
-            dto.setKurssiTyyppiKuvaukset(LokalisoituTekstiDto.ofOptionalMap(oa.getKurssiTyyppiKuvaukset()));
+            mapPerustiedot(dto, oa, isOma.apply(oa.getId()), pohjanOppiaine);
             dto.setKurssit(lukiokurssiByOppiaineId.apply(oa.getId()).stream()
-                    .map(lk -> mapKurssi(lk, parentKurssisById)).collect(toList()));
+                    .map(lk -> mapKurssi(lk, parentKurssisById, kurssiConstructor)).collect(toList()));
             Set<Oppiaine> maarat = oa.getOppimaaratReal();
             map(maarat.stream(), childId -> dto.isOma(),
-                    pohjanOppiaine != null && !maarat.isEmpty()
-                            ? pohjanOppiaine.getOppimaarat().stream().collect(toMap(Oppiaine::getId, cOa -> cOa))::get
-                            : childId -> null,
-                    jarjestys, pohjanTarjonta,
-                    dto.getOppimaarat(),
-                    lukiokurssiByOppiaineId, parentKurssisById, pohjanTarjontaLukiokurssiByOppiaineId);
-            to.add(dto);
-            List<Oppiaine> pohjanTarjontaOppiaineet = pohjanTarjonta.apply(oa.getTunniste());
-            if (!pohjanTarjontaOppiaineet.isEmpty()) {
-                Set<UUID> pohjanToteutukset = "KT".equals(dto.getKoodiArvo())
-                        ? dto.getOppimaarat().stream().map(LukioOppiaineListausDto::getTunniste).collect(toSet())
-                        : Collections.emptySet();
-                map(pohjanTarjontaOppiaineet.stream()
-                        .filter(t -> !pohjanToteutukset.contains(t.getTunniste())),
-                    oma -> false, pohjan -> null,
-                    new Function<Long, Integer>() { // Ovat jo järjestyksessä
-                        private Integer max = 0;
-                        @Override
-                        public Integer apply(Long aLong) {
-                            return max++;
-                        }
-                    },
-                    id -> Collections.<Oppiaine>emptyList(),
-                    dto.getPohjanTarjonta(),
-                    pohjanTarjontaLukiokurssiByOppiaineId, id -> null,
-                    id -> Collections.<OppiaineLukiokurssi>emptyList()
-                );
-            }
+                    childId -> null, jarjestys,
+                    dto.getOppimaarat()::add,
+                    lukiokurssiByOppiaineId, parentKurssisById,
+                    constructor, kurssiConstructor);
+            to.accept(dto);
         });
+    }
+
+    private <T extends LukioOppimaaraPerusTiedotDto> void mapPerustiedot(
+            T dto, Oppiaine oa, boolean oma, Oppiaine pohjanOppiaine) {
+        mapper.map(oa, dto);
+        dto.setOppiaineId(oa.getOppiaine() == null ? null : oa.getOppiaine().getId());
+        dto.setOma(oma);
+        dto.setMaariteltyPohjassa(pohjanOppiaine != null);
     }
 
     private Function<Long, Integer> jarjestys(Map<Long, OppiaineJarjestysDto> jarjestykset) {
@@ -201,8 +248,9 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 .thenComparing(comparing((Oppiaine oa)-> oa.getNimi().firstByKieliOrder().orElse("")));
     }
 
-    private LukiokurssiOpsDto mapKurssi(OppiaineLukiokurssi oaLk, Function<Long, Long> parentKurssisById) {
-        LukiokurssiOpsDto kurssiDto = mapper.map(oaLk.getKurssi(), new LukiokurssiOpsDto());
+    private <Kt extends LukiokurssiListausOpsDto> Kt mapKurssi(OppiaineLukiokurssi oaLk, Function<Long, Long> parentKurssisById,
+                                                                              Supplier<Kt> constructor) {
+        Kt kurssiDto = mapper.map(oaLk.getKurssi(), constructor.get());
         kurssiDto.setOma(oaLk.isOma());
         kurssiDto.setPalautettava(parentKurssisById.apply(oaLk.getKurssi().getId())  != null);
         return kurssiDto;
@@ -235,9 +283,17 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         return new OpetuksenYleisetTavoitteetPerusteOpsDto(
             mapper.map(perusteDto.getLukiokoulutus().getOpetuksenYleisetTavoitteet(),
                     OpetuksenYleisetTavoitteetDto.class),
-            mapper.map(ops.getAihekokonaisuudet(),
+            mapper.map(ops.getOpetuksenYleisetTavoitteet(),
                     OpetuksenYleisetTavoitteetOpsDto.class)
         );
+    }
+
+    @Override
+    @Transactional
+    public void updateOpetuksenYleisetTavoitteet(long opsId, OpetuksenYleisetTavoitteetUpdateDto tavoitteet) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        opetuksenYleisetTavoitteetRepository.lock(ops.getOpetuksenYleisetTavoitteet());
+        mapper.map(tavoitteet, ops.getOpetuksenYleisetTavoitteet());
     }
 
     @Override
@@ -530,19 +586,17 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
     public void removeKurssi(long opsId, long kurssiId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         opetussuunnitelmaRepository.lock(ops);
-        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi( opsId, kurssiId).stream().findAny()
+        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi(opsId, kurssiId).stream().findAny()
                 .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
-
-        if( !oaKurssi.isOma() ){
+        
+        if (!oaKurssi.isOma()) {
             throw new BusinessRuleViolationException("kurssia ei voi poistaa");
         }
-
-        Iterator<OppiaineLukiokurssi> it = oaKurssi.getKurssi().getOppiaineet().iterator();
-        while(it.hasNext()){
-            it.next();
-            it.remove();
+        if (!oaKurssi.getKurssi().getTyyppi().isPaikallinen()) {
+            throw new BusinessRuleViolationException("Valtakunnallista kurssia ei voida poista..");
         }
 
+        oaKurssi.getKurssi().getOppiaineet().clear();
         oppiaineLukiokurssiRepository.delete(oaKurssi);
     }
 

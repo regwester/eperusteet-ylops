@@ -43,6 +43,13 @@ public class LukioOpetussuunnitelmatController {
         return lukioOpetussuunnitelmaService.getRakenne(opsId);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/oppiaine/{oppiaineId}", method = RequestMethod.GET)
+    public LukioOppiaineTiedotDto getOppiaine(@PathVariable("opsId") Long opsId,
+                                                           @PathVariable("oppiaineId") Long oppiaineId) {
+        return lukioOpetussuunnitelmaService.getOppiaineTiedot(opsId, oppiaineId);
+    }
+
     @RequestMapping(value = "/rakenne", method = POST)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateStructure(@PathVariable("opsId") final Long opsId,
@@ -92,6 +99,13 @@ public class LukioOpetussuunnitelmatController {
     @RequestMapping(value = "/opetuksenYleisetTavoitteet", method = RequestMethod.GET)
     public OpetuksenYleisetTavoitteetPerusteOpsDto getOpetuksenYleisetTavoitteet(@PathVariable("opsId") Long opsId) {
         return lukioOpetussuunnitelmaService.getOpetuksenYleisetTavoitteet(opsId);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/opetuksenYleisetTavoitteet", method = RequestMethod.POST)
+    public void updateOpetuksenYleisetTavoitteet(@PathVariable("opsId") Long opsId,
+                                                 @RequestBody OpetuksenYleisetTavoitteetUpdateDto tavoitteet) {
+        lukioOpetussuunnitelmaService.updateOpetuksenYleisetTavoitteet(opsId, tavoitteet);
     }
 
     @ResponseBody
