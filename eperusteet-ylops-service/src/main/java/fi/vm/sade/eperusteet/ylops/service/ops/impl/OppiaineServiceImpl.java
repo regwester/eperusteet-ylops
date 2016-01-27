@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -266,6 +267,41 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         delete(opsId, oppiaineDto.getId());
 
         return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, tavoitteetDto);
+    }
+
+    private Oppiaine latestNotNull(Long oppiaineId) {
+        List<Revision> revisions = oppiaineet.getRevisions(oppiaineId);
+        Collections.reverse(revisions);
+
+        for (Revision revision : revisions) {
+            Oppiaine last = oppiaineet.findRevision(oppiaineId, revision.getNumero());
+            if (last != null) {
+                return last;
+            }
+        }
+        return null;
+    }
+
+    private OppiaineLaajaDto restoredOppiaine(Long opsId, Long oppiaineId) {
+        if (oppiaineet.findOne(oppiaineId) != null) {
+            throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
+        }
+
+        Oppiaine latest = latestNotNull(oppiaineId);
+        if (oppiaineet.findOne(oppiaineId) != null) {
+            throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
+        }
+
+        OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
+        oppiaine.setId(oppiaineId);
+        oppiaine.setOppimaarat(new HashSet<>());
+//        oppiaine.setOppimaarat(new HashSet<>());
+        return oppiaine;
+    }
+
+    @Override
+    public OppiaineLaajaDto restore(Long opsId, Long oppiaineId) {
+        return add(opsId, restoredOppiaine(opsId, oppiaineId));
     }
 
     @Override

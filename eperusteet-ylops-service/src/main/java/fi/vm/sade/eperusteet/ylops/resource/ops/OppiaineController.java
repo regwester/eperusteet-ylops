@@ -20,6 +20,7 @@ import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -118,6 +119,12 @@ public class OppiaineController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         oppiaineService.delete(opsId, id);
+    }
+
+    @RequestMapping(value = "/{id}/restore", method = RequestMethod.POST)
+    @ResponseBody
+    public OppiaineLaajaDto restore(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        return oppiaineService.restore(opsId, id);
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
