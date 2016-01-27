@@ -369,6 +369,7 @@
   "palauta-ylempaan": "Palauta ylempi oppiaine",
   "palauta-oppiaine": "Palauta oppiaine",
   "varmista-oppiaineen-palautus": "Haluatko varmasti palauttaa ylemmän oppiaineen?",
+  "varmista-oppiaineen-palautus-teksti": "Ylemmän oppiaineen palauttaminen poistaa tekemäsi muutokset. Tätä toimintoa ei voida perua.",
   "palaaminen-vanhaan-onnistui": "Oppiaineen palauttaminen onnistui",
   "palauta-ylempi-oppiaine": "Poistaa nykyisen sisällön ja palauttaa tilalle ylemmässä opetussuunnitelmassa sijaitsevan oppiaineen.",
   "virhe": "Virhe",

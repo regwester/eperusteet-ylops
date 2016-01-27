@@ -308,7 +308,9 @@ ylopsApp
   $scope.palautaVanhaan = () => {
     Varmistusdialogi.dialogi({
       otsikko: 'varmista-oppiaineen-palautus',
+      teksti: 'varmista-oppiaineen-palautus-teksti',
       primaryBtn: 'palauta-oppiaine',
+      primaryBtnClass: 'danger-btn',
       successCb: function () {
          OppiaineCRUD.palautaYlempaan({
            opsId: $stateParams.id,
