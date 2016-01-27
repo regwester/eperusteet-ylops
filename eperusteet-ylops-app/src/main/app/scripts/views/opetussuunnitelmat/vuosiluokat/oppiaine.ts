@@ -86,6 +86,10 @@ ylopsApp
   $scope.alueOrder = Utils.sort;
   $scope.startEditing = function() { Editointikontrollit.startEditing(); };
 
+  OpsService.fetchPohja($scope.model.pohja.id).$promise.then(( pohja ) => {
+    $scope.pohja = pohja;
+  });
+
   const commonParams = $scope.oppiaineenVlk ? {
     opsId: $stateParams.id,
     vlkId: $scope.oppiaineenVlk.id,
