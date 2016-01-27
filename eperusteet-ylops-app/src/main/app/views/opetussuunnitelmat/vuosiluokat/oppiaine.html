@@ -32,6 +32,12 @@
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
 
 <div class="tekstiosa-wrapper" ng-show="isVuosiluokkaistettava && !oppiaine.koosteinen && oppiaineenVlk">
+
+  <div ng-if="oppiaine.laajuus">
+    <h3 kaanna="laajuus"></h3>
+    <p class="tekstiosa" ng-bind="oppiaine.laajuus"></p>
+  </div>
+
   <h3>
     <div class="action-buttons-inline" ng-show="isEditable()">
       <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="lukkotiedot.lukittu" class="btn btn-default"
