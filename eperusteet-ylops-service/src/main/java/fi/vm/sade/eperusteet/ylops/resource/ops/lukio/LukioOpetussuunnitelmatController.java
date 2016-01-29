@@ -102,6 +102,13 @@ public class LukioOpetussuunnitelmatController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/opetuksenYleisetTavoitteet", method = RequestMethod.POST)
+    public void updateOpetuksenYleisetTavoitteet(@PathVariable("opsId") Long opsId,
+                                                 @RequestBody OpetuksenYleisetTavoitteetUpdateDto tavoitteet) {
+        lukioOpetussuunnitelmaService.updateOpetuksenYleisetTavoitteet(opsId, tavoitteet);
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/oppiaine", method = RequestMethod.POST)
     public LongIdResultDto saveOppiaine(@PathVariable("opsId") Long opsId,
                                         @RequestBody LukioOppiaineSaveDto oppiaine) {

@@ -369,6 +369,7 @@
   "palauta-ylempaan": "Palauta ylempi oppiaine",
   "palauta-oppiaine": "Palauta oppiaine",
   "varmista-oppiaineen-palautus": "Haluatko varmasti palauttaa ylemmän oppiaineen?",
+  "varmista-oppiaineen-palautus-teksti": "Ylemmän oppiaineen palauttaminen poistaa tekemäsi muutokset. Tätä toimintoa ei voida perua.",
   "palaaminen-vanhaan-onnistui": "Oppiaineen palauttaminen onnistui",
   "palauta-ylempi-oppiaine": "Poistaa nykyisen sisällön ja palauttaa tilalle ylemmässä opetussuunnitelmassa sijaitsevan oppiaineen.",
   "virhe": "Virhe",
@@ -544,5 +545,8 @@
   "alaviite-ohje": "Jos käsite on merkattu alaviitteeksi, se näytetään myös generoiduissa dokumenteissa.",
   "lataa-ops-pdf-muodossa": "Lataa opetussuunnitelma PDF-muodossa",
   "dokumentti-luotu": "Dokumentti luotu",
-  "ei_ole": "Ei ole"
+  "ei_ole": "Ei ole",
+  "opetuksen-yleisten-tavoitteiden-yleiskuvauksen-paivitys-onnistui": "Opetuksen yleisten tavoitteiden muokkaus onnistui",
+  "opetuksen-yleiset-tavoitteet-yleiskuvaus-header": "Yleiskuvaus",
+  "opetuksen-yleiset-tavoitteet-yleiskuvaus-placeholder": "Opetuksen yleisten tavoitteiden paikallinen tarkennus" 
 }

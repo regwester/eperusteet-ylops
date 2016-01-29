@@ -40,6 +40,7 @@ public class AihekokonaisuudetOpsDto extends AihekokonaisuudetBaseDto
             implements PerusteeseenViittaava<AihekokonaisuudetDto> {
     @JsonIgnore
     private AihekokonaisuudetDto perusteen;
+    private AihekokonaisuudetBaseDto parent;
     private List<AihekokonaisuusOpsDto> aihekokonaisuudet = new ArrayList<>();
 
     @Override @JsonIgnore // already uuidTunniste

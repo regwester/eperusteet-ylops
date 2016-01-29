@@ -14,7 +14,7 @@
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="$onKieliTaiUskonto" class="btn btn-default" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
-  <button class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'" ng-if="oppiaine.oppimaarat === null && oppiaine.tyyppi === 'yhteinen'"
+  <button class="btn btn-default danger-btn" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'" ng-if="oppiaine.oppimaarat === null && oppiaine.tyyppi === 'yhteinen' && pohja.tyyppi !== 'pohja'"
           icon-role="ep-text-clone" tooltip="{{ 'palauta-ylempi-oppiaine' | kaanna }}" ng-click="palautaVanhaan()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
 </div>
 
@@ -32,6 +32,12 @@
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
 
 <div class="tekstiosa-wrapper" ng-show="isVuosiluokkaistettava && !oppiaine.koosteinen && oppiaineenVlk">
+
+  <div ng-if="oppiaine.laajuus">
+    <h3 kaanna="laajuus"></h3>
+    <p class="tekstiosa" ng-bind="oppiaine.laajuus"></p>
+  </div>
+
   <h3>
     <div class="action-buttons-inline" ng-show="isEditable()">
       <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="lukkotiedot.lukittu" class="btn btn-default"
