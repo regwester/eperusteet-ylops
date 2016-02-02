@@ -270,7 +270,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private Oppiaine latestNotNull(Long oppiaineId) {
-        List<Revision> revisions = oppiaineet.getRevisions(oppiaineId);
+        List<Revision> revisions = oppiaineet.getRevisions(oppiaineId).stream()
+                .sorted((a, b) -> Long.compare(a.getNumero(), b.getNumero()))
+                .collect(Collectors.toList());
         Collections.reverse(revisions);
 
         for (Revision revision : revisions) {
@@ -282,26 +284,34 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         return null;
     }
 
-    private OppiaineLaajaDto restoredOppiaine(Long opsId, Long oppiaineId) {
-        if (oppiaineet.findOne(oppiaineId) != null) {
-            throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
-        }
-
-        Oppiaine latest = latestNotNull(oppiaineId);
-        if (oppiaineet.findOne(oppiaineId) != null) {
-            throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
-        }
-
-        OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
-        oppiaine.setId(oppiaineId);
-        oppiaine.setOppimaarat(new HashSet<>());
-//        oppiaine.setOppimaarat(new HashSet<>());
-        return oppiaine;
+    @Override
+    public List<OppiaineLaajaDto> getAllVersions(Long opsId, Long oppiaineId) {
+        return oppiaineet.getRevisions(oppiaineId).stream()
+                .sorted((a, b) -> Long.compare(a.getNumero(), b.getNumero()))
+                .map((revision) -> oppiaineet.findRevision(oppiaineId, revision.getNumero()))
+                .filter(Objects::nonNull)
+                .map((oppiaine) -> mapper.map(oppiaine, OppiaineLaajaDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public OppiaineLaajaDto restore(Long opsId, Long oppiaineId) {
-        return add(opsId, restoredOppiaine(opsId, oppiaineId));
+        if (oppiaineet.findOne(oppiaineId) != null) {
+            throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
+        }
+
+        oppiaineet.findOne(oppiaineId);
+        Oppiaine latest = latestNotNull(oppiaineId);
+//        OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
+
+//        latest.setOppimaarat(new HashSet<>());
+        Oppiaine parent = oppiaineet.findOne(1166L);
+//        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
+        Oppiaine pelastettu = Oppiaine.copyOf(latest, false);
+        pelastettu = oppiaineet.save(pelastettu);
+        pelastettu.setOppiaine(parent);
+        parent.addOppimaara(pelastettu);
+        return mapper.map(pelastettu, OppiaineLaajaDto.class);
     }
 
     @Override
