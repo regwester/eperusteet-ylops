@@ -117,11 +117,12 @@ ylopsApp
       })
 
       .state('root.opetussuunnitelmat.yksi.sisalto.tekstikappale', {
-        url: '/tekstikappale/:tekstikappaleId',
+        url: '/tekstikappale/:tekstikappaleId{versio:(?:/[^/]+)?}',
         templateUrl: 'views/opetussuunnitelmat/tekstikappale.html',
         controller: 'TekstikappaleController',
         resolve: {
           tekstikappaleId: ['$stateParams', function ($stateParams) {
+            console.log("params", $stateParams);
             return $stateParams.tekstikappaleId;
           }],
           teksti: ['$q', '$stateParams', 'OpetussuunnitelmanTekstit', function($q, $stateParams, OpetussuunnitelmanTekstit) {
@@ -134,7 +135,12 @@ ylopsApp
               });
             }
             else {
-              return OpetussuunnitelmanTekstit.get({ opsId: $stateParams.id, viiteId: $stateParams.tekstikappaleId }).$promise;
+              console.log($stateParams);
+              console.log("get old", !_.isEmpty($stateParams.versio));
+              if (_.isEmpty($stateParams.versio)) {
+                return OpetussuunnitelmanTekstit.get({ opsId: $stateParams.id, viiteId: $stateParams.tekstikappaleId }).$promise;
+              }
+              return OpetussuunnitelmanTekstit.versio({ opsId: $stateParams.id, viiteId: $stateParams.tekstikappaleId, id: 1 }).$promise;
             }
           }],
         }

@@ -17,9 +17,11 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -36,6 +38,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -215,6 +218,25 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.setOmistussuhde(Omistussuhde.OMA);
         viite = repository.save(viite);
         return mapper.map(viite, TekstiKappaleViiteDto.Puu.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RevisionDto> getVersions(long viiteId) {
+        List<Revision> versions = tekstiKappaleRepository.getRevisions(viiteId);
+        return mapper.mapAsList(versions, RevisionDto.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TekstiKappaleDto findTekstikappaleVersion(long viiteId, long versio) {
+        TekstiKappale a = tekstiKappaleRepository.findOne(viiteId);
+
+        List<Revision> versions = tekstiKappaleRepository.getRevisions(viiteId);
+//        a = a.get(versio);
+        Revision test = versions.get(0);
+        TekstiKappale tekstiKappale = tekstiKappaleRepository.findRevision(viiteId, test.getNumero());
+        return mapper.map(tekstiKappale, TekstiKappaleDto.class);
     }
 
     private List<TekstiKappaleViite> findViitteet(Long opsId, Long viiteId) {

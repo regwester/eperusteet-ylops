@@ -27,7 +27,7 @@ ylopsApp
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit, Kieli,
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
     KommentitByTekstikappaleViite, Lukko, Varmistusdialogi, teksti,
-    reresolver) {
+    reresolver, $location) {
 
     $scope.lukkotiedot = null;
     $scope.perusteteksti = {};
@@ -84,7 +84,29 @@ ylopsApp
     setup(teksti);
     fetchOhje(teksti);
 
+    $scope.vaihdaVersio = function () {
+      var versionUrl = $state.href($state.current.name).replace(/#/g, '');
+      if(_.last($scope.versiot.list).numero !== $scope.versiot.chosen.numero){
+        versionUrl += '/'+$scope.versiot.chosen.index;
+      }
+      $location.url(versionUrl);
+    };
+
     function updateMuokkaustieto() {
+
+      console.log(">>>>>>>>>>>>>>>>> ", $stateParams);
+      //_.isEmpty($stateParams.versio)
+
+      OpetussuunnitelmanTekstit.versiot({id: $stateParams.id, tekstiId: $scope.model.tekstiKappale.id}, {}, function(res){
+        $scope.versiot = {list: []};
+        _.forEach( res, (value, key) => {
+          value.index = key+1;
+          $scope.versiot.list.push(value);
+        });
+        $scope.versiot.latest = true;
+        $scope.versiot.chosen = _.last($scope.versiot.list);
+      });
+
       if ($scope.model.tekstiKappale) {
         $scope.$$muokkaustiedot = {
           luotu: $scope.model.tekstiKappale.luotu,

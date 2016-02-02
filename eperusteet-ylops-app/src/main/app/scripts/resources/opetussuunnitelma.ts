@@ -58,6 +58,8 @@ ylopsApp
       addChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/lapsi'},
       kloonaaTekstikappale: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/muokattavakopio'},
       otsikot: {method: 'GET', url: YlopsResources.OPS + '/otsikot'},
+      versiot: {method: 'GET', url: YlopsResources.OPS + ':id/tekstit/:tekstiId/versiot', isArray: true},
+      versio: {method: 'GET', url: YlopsResources.OPS + '/tekstit/:viiteId/versio/:id'}
     });
   })
 
