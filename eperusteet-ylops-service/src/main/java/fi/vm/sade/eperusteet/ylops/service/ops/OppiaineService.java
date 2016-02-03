@@ -33,8 +33,6 @@ import java.util.UUID;
  * @author mikkom
  */
 public interface OppiaineService extends LockService<OpsOppiaineCtx> {
-
-
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long vlkId, Map<Vuosiluokka, Set<UUID>> tavoitteet);
 
@@ -72,6 +70,12 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                   Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteet);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
+    List<OppiaineLaajaDto> getAllVersions(Long opsId, Long oppiaineId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    OppiaineLaajaDto restore(Long opsId, Long oppiaineId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
     OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id);

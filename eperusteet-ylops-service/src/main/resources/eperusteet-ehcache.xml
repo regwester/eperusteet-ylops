@@ -312,13 +312,13 @@
     <cache name="kayttajat"
            maxElementsInMemory="10000"
            eternal="false"
-           timeToLiveSeconds="3600"
+           timeToLiveSeconds="36000"
            overflowToDisk="false" />
 
     <cache name="perusteet"
            maxElementsInMemory="10"
            eternal="false"
-           timeToLiveSeconds="3600"
+           timeToLiveSeconds="36000"
            overflowToDisk="false" />
 
     <cache name="lokalisoinnit"
