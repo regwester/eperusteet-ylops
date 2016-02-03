@@ -25,7 +25,8 @@ ylopsApp
       muokattava: '=?',
       callbacks: '=',
       startCollapsed: '=?',
-      ohjepallo: '='
+      ohjepallo: '=',
+      shouldDisable: '='
     },
     templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
     controller: 'TekstiosaController',
@@ -51,7 +52,8 @@ ylopsApp
       model: '=yksinkertainenTekstiosa',
       callbacks: '=',
       startCollapsed: '=?',
-      otsikko: '@?'
+      otsikko: '@?',
+      shouldDisable: '='
     },
     templateUrl: 'views/opetussuunnitelmat/directives/yksinkertainentekstiosa.html',
     controller: 'TekstiosaController',
