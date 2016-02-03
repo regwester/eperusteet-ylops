@@ -51,5 +51,6 @@ public interface TekstiKappaleViiteService {
 
     List<RevisionDto> getVersions(long viiteId);
 
-    TekstiKappaleDto findTekstikappaleVersion(long viiteId, long versio);
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    TekstiKappaleDto findTekstikappaleVersion(long opsId, long viiteId, long versio);
 }

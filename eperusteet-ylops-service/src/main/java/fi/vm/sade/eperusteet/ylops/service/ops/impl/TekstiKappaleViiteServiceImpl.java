@@ -229,13 +229,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = true)
-    public TekstiKappaleDto findTekstikappaleVersion(long viiteId, long versio) {
-        TekstiKappale a = tekstiKappaleRepository.findOne(viiteId);
-
-        List<Revision> versions = tekstiKappaleRepository.getRevisions(viiteId);
-//        a = a.get(versio);
-        Revision test = versions.get(0);
-        TekstiKappale tekstiKappale = tekstiKappaleRepository.findRevision(viiteId, test.getNumero());
+    public TekstiKappaleDto findTekstikappaleVersion(long opsId, long viiteId, long versio) {
+        Long kappaleId = getTekstiKappaleViite(opsId, viiteId).getTekstiKappale().getId();
+        TekstiKappale tekstiKappale = tekstiKappaleRepository.findRevision(kappaleId, (int) versio);
         return mapper.map(tekstiKappale, TekstiKappaleDto.class);
     }
 

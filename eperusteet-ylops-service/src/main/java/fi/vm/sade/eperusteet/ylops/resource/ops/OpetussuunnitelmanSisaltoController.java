@@ -71,10 +71,10 @@ public class OpetussuunnitelmanSisaltoController {
 
     @RequestMapping(value = "/tekstit/{viiteId}/versio/{versio}", method = GET)
     public TekstiKappaleDto getVersionForTekstiKappaleViite(
-            @PathVariable("viiteId") final long viiteId, @PathVariable("versio") final long versio) {
-
-        System.out.println("test > " + viiteId + " ---- " + versio);
-        return tekstiKappaleViiteService.findTekstikappaleVersion(viiteId, versio);
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("viiteId") final long viiteId,
+            @PathVariable("versio") final long versio) {
+        return tekstiKappaleViiteService.findTekstikappaleVersion(opsId, viiteId, versio);
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}/lapsi", method = RequestMethod.POST)

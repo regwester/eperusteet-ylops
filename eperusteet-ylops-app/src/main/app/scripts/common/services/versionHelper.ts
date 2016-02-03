@@ -137,7 +137,7 @@ ylopsApp
         //}
 
         this.lastModified = function (data) {
-            console.log('last', data);
+            //console.log('last', data);
             //if (data && data.chosen) {
             //    var found = _.find(data.list, {numero: data.chosen.numero});
             //    if (found) {

@@ -24,11 +24,11 @@ ylopsApp
             controller: function ($scope) {
                 console.log("test" , $scope);
                 $scope.lastModified = function () {
-                    console.log(">>> ", $scope );
+                    //console.log(">>> ", $scope );
                     return VersionHelper.lastModified($scope.versiot);
                 };
                 $scope.history = function () {
-                    console.log(">>>-- ", $scope );
+                    //console.log(">>>-- ", $scope );
 
                     VersionHelper.historyView($scope.versiot);
                 };

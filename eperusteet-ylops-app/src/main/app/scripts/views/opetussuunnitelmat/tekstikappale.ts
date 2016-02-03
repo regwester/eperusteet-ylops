@@ -41,8 +41,8 @@ ylopsApp
     $scope.editMode = false;
 
     Kommentit.haeKommentit(KommentitByTekstikappaleViite, {
-      id: $stateParams.tekstikappaleId,
-      tekstiKappaleViiteId: $stateParams.tekstikappaleId,
+      id: $stateParams.tekstikappaleId.split('/')[0],
+      tekstiKappaleViiteId: $stateParams.tekstikappaleId.split('/')[0],
       opsId: $stateParams.id
     });
 
@@ -74,8 +74,9 @@ ylopsApp
     }
 
     function setup(value) {
+      console.log( value );
       $scope.model = value;
-      if ($stateParams.id !== 'uusi') {
+      if ($stateParams.id !== 'uusi' && value.tekstikappale) {
         originalOtsikko = _.cloneDeep(value.tekstiKappale.nimi);
         originalTekstiKappale = _.cloneDeep(value.tekstiKappale);
         MurupolkuData.set('tekstiNimi', value.tekstiKappale.nimi);
@@ -86,25 +87,28 @@ ylopsApp
 
     $scope.vaihdaVersio = function () {
       var versionUrl = $state.href($state.current.name).replace(/#/g, '');
+      versionUrl = versionUrl.split('%')[0];
+
       if(_.last($scope.versiot.list).numero !== $scope.versiot.chosen.numero){
-        versionUrl += '/'+$scope.versiot.chosen.index;
+        versionUrl += '/'+$scope.versiot.chosen.numero;
       }
+      console.log('to url', versionUrl);
       $location.url(versionUrl);
     };
 
     function updateMuokkaustieto() {
-
-      console.log(">>>>>>>>>>>>>>>>> ", $stateParams);
-      //_.isEmpty($stateParams.versio)
-
       OpetussuunnitelmanTekstit.versiot({id: $stateParams.id, tekstiId: $scope.model.tekstiKappale.id}, {}, function(res){
         $scope.versiot = {list: []};
-        _.forEach( res, (value, key) => {
-          value.index = key+1;
+        _.forEach(res, (value, key) => {
+          value.index = res.length-key;
           $scope.versiot.list.push(value);
         });
-        $scope.versiot.latest = true;
-        $scope.versiot.chosen = _.last($scope.versiot.list);
+        $scope.versiot.latest = _.isEmpty($stateParams.versio);
+        if($scope.versiot.latest) {
+          $scope.versiot.chosen = _.first($scope.versiot.list);
+        } else {
+          $scope.versiot.chosen = _.find($scope.versiot.list, {'numero': parseInt($stateParams.versio.replace('/', ''))});
+        }
       });
 
       if ($scope.model.tekstiKappale) {
