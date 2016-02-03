@@ -85,14 +85,11 @@ ylopsApp
     setup(teksti);
     fetchOhje(teksti);
 
-    $scope.vaihdaVersio = function () {
-      var versionUrl = $state.href($state.current.name).replace(/#/g, '');
-      versionUrl = versionUrl.split('%')[0];
-
+    $scope.vaihdaVersio = () => {
+      let versionUrl = $state.href($state.current.name).replace(/#/g, '').split('%')[0];
       if(_.last($scope.versiot.list).numero !== $scope.versiot.chosen.numero){
         versionUrl += '/'+$scope.versiot.chosen.numero;
       }
-      console.log('to url', versionUrl);
       $location.url(versionUrl);
     };
 

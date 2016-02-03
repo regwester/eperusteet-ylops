@@ -134,7 +134,6 @@ ylopsApp
               });
             }
             else {
-              console.log('vers', $stateParams.versio, $stateParams.tekstikappaleId);
               if (_.isEmpty($stateParams.versio)) {
                 return OpetussuunnitelmanTekstit.get({ opsId: $stateParams.id, viiteId: $stateParams.tekstikappaleId }).$promise;
               } else {

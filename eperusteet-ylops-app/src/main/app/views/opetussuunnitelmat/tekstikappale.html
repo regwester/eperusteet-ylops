@@ -75,12 +75,25 @@
     </div>
   </div>
 
-  --
-  <pre>{{versiot | json}}</pre>
-  --
+
+
+
+
+
+
+
+  <div>
+    <div ng-if="!versiot.latest" class="version-warning">
+      <div class="note"></div>
+      <button ng-click="version.revert()" class="btn btn-default btn-sm" kaanna>ota-versio-kayttoon</button>
+      <div class="content">
+        <p>{{'katselet-vanhaa-versiota'|kaanna}}</p>
+        <p><a class="action-link" ng-click="version.goToLatest()" kaanna>katso-uusin-versio</a></p>
+      </div>
+    </div>
+  </div>
+
   <versiotiedot></versiotiedot>
-  <pre>{{$$muokkaustiedot | json}}</pre>
-  --
   <muokkaustieto tiedot="$$muokkaustiedot"></muokkaustieto>
 
   <h4>
