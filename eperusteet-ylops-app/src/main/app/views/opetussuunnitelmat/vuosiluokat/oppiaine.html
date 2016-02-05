@@ -1,4 +1,4 @@
-<div ng-if="isEditable() && (oppiaine.tyyppi !== 'yhteinen' || !oppiaine.oma)" class="action-buttons-inline">
+<div ng-hide="options.editing" ng-if="(oppiaine.tyyppi !== 'yhteinen' || !oppiaine.oma)" class="action-buttons-inline">
   <span class="lukko-wrapper">
     <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip" size="small"></lukko>
   </span>
@@ -7,8 +7,9 @@
   <button ng-if="!oppiaine.oma && !oppiaine.$parent" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'"
           icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
 </div>
-<div ng-if="isEditable() && oppiaine.oma" class="action-buttons-inline">
-  <button ng-if="$onKieliTaiUskonto" ng-hide="options.editing" class="btn btn-default" ng-click="startEditing()" icon-role="edit" kaanna="'muuta-nimea'"
+
+<div ng-hide="options.editing" ng-if="oppiaine.oma" class="action-buttons-inline">
+  <button ng-if="$onKieliTaiUskonto" ng-hide="options.editing" class="btn btn-default" ng-click="muokkaaNimea()" icon-role="edit" kaanna="'muuta-nimea'"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
   <button ng-if="valitseOppimaara" class="btn btn-default" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"
           oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
@@ -18,29 +19,28 @@
           icon-role="ep-text-clone" tooltip="{{ 'palauta-ylempi-oppiaine' | kaanna }}" ng-click="palautaVanhaan()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
 </div>
 
-<h2 ng-hide="options.editing && $onKieliTaiUskonto" ng-bind="oppiaine.nimi | kaanna"></h2>
-<input ng-show="options.editing && $onKieliTaiUskonto" class="form-control" slocalized ng-model="oppiaine.nimi"></input>
+<h2 ng-hide="$$muokkaaNimea" ng-bind="oppiaine.nimi | kaanna"></h2>
+<input ng-show="$$muokkaaNimea" class="form-control" slocalized ng-model="oppiaine.nimi"></input>
 
 <p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>
 
-<div ng-show="$onKieliTaiUskonto" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
-<div ng-hide="$onKieliTaiUskonto" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
+<div ng-show="$onKieliTaiUskonto" should-disable="options.editing" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
+<div ng-hide="$onKieliTaiUskonto" should-disable="options.editing" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
 
-<div perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
+<div should-disable="options.editing" perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 
-<div class="tekstiosa-wrapper" ng-hide="oppiaine.tyyppi !== 'yhteinen' || oppiaine.koosteinen || (isVuosiluokkaistettava && oppiaineenVlk)"
+<div should-disable="options.editing" class="tekstiosa-wrapper" ng-hide="oppiaine.tyyppi !== 'yhteinen' || oppiaine.koosteinen || (isVuosiluokkaistettava && oppiaineenVlk)"
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
 
 <div class="tekstiosa-wrapper" ng-show="isVuosiluokkaistettava && !oppiaine.koosteinen && oppiaineenVlk">
-
   <div ng-if="oppiaine.laajuus">
     <h3 kaanna="laajuus"></h3>
     <p class="tekstiosa" ng-bind="oppiaine.laajuus"></p>
   </div>
 
   <h3>
-    <div class="action-buttons-inline" ng-show="isEditable()">
-      <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="lukkotiedot.lukittu" class="btn btn-default"
+    <div class="action-buttons-inline">
+      <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="options.editing || lukkotiedot.lukittu" class="btn btn-default"
               icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"
               oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     </div>
@@ -65,8 +65,8 @@
   </table>
 </div>
 
-<div ng-if="perusteOpVlk.tyotavat" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
-<div ng-if="perusteOpVlk.ohjaus" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
-<div ng-if="perusteOpVlk.arviointi" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.tyotavat" should-disable="options.editing" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.ohjaus" should-disable="options.editing" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.arviointi" should-disable="options.editing" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
 
 <kommentit></kommentit>

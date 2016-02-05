@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -266,6 +267,51 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         delete(opsId, oppiaineDto.getId());
 
         return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, tavoitteetDto);
+    }
+
+    private Oppiaine latestNotNull(Long oppiaineId) {
+        List<Revision> revisions = oppiaineet.getRevisions(oppiaineId).stream()
+                .sorted((a, b) -> Long.compare(a.getNumero(), b.getNumero()))
+                .collect(Collectors.toList());
+        Collections.reverse(revisions);
+
+        for (Revision revision : revisions) {
+            Oppiaine last = oppiaineet.findRevision(oppiaineId, revision.getNumero());
+            if (last != null) {
+                return last;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<OppiaineLaajaDto> getAllVersions(Long opsId, Long oppiaineId) {
+        return oppiaineet.getRevisions(oppiaineId).stream()
+                .sorted((a, b) -> Long.compare(a.getNumero(), b.getNumero()))
+                .map((revision) -> oppiaineet.findRevision(oppiaineId, revision.getNumero()))
+                .filter(Objects::nonNull)
+                .map((oppiaine) -> mapper.map(oppiaine, OppiaineLaajaDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public OppiaineLaajaDto restore(Long opsId, Long oppiaineId) {
+        if (oppiaineet.findOne(oppiaineId) != null) {
+            throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
+        }
+
+        oppiaineet.findOne(oppiaineId);
+        Oppiaine latest = latestNotNull(oppiaineId);
+//        OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
+
+//        latest.setOppimaarat(new HashSet<>());
+        Oppiaine parent = oppiaineet.findOne(1166L);
+//        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
+        Oppiaine pelastettu = Oppiaine.copyOf(latest, false);
+        pelastettu = oppiaineet.save(pelastettu);
+        pelastettu.setOppiaine(parent);
+        parent.addOppimaara(pelastettu);
+        return mapper.map(pelastettu, OppiaineLaajaDto.class);
     }
 
     @Override

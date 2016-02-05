@@ -85,6 +85,11 @@ ylopsApp
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
   $scope.startEditing = function() { Editointikontrollit.startEditing(); };
+  $scope.$$muokkaaNimea = false;
+  $scope.muokkaaNimea = () => {
+    $scope.$$muokkaaNimea = true;
+    $scope.startEditing();
+  };
 
   OpsService.fetchPohja($scope.model.pohja.id).$promise.then(( pohja ) => {
     $scope.pohja = pohja;
@@ -107,6 +112,7 @@ ylopsApp
   OppiaineService.getParent()
     .then(function(res) {
       $scope.oppiaine.$parent = res;
+      console.log(res);
       $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
       if ($scope.$onKieliTaiUskonto) {
         $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
@@ -234,8 +240,12 @@ ylopsApp
 
   $scope.callbacks = {
     edit: refetch,
-    cancel: refetch,
+    cancel: () => $q((resolve) => {
+      $scope.$$muokkaaNimea = false;
+      return refetch().then(resolve);
+    }),
     save: () => $q((resolve) => {
+      $scope.$$muokkaaNimea = false;
       $scope.oppiaine.$save({ opsId: $stateParams.id }, () => {
         OppiaineService.saveVlk($scope.oppiaineenVlk).then(resolve);
       });

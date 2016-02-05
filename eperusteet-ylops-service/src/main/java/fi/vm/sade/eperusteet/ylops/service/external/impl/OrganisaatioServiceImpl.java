@@ -82,14 +82,8 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         @PostConstruct
         public void init() {
-            peruskouluHakuehto =
-                "&organisaatiotyyppi=Oppilaitos" +
-                oppilaitostyypit.stream()
-                                .reduce("", (acc, t) -> acc + "&oppilaitostyyppi=oppilaitostyyppi_" + t + "%23*");
-            lukioHakuehto =
-                    "&organisaatiotyyppi=Oppilaitos" +
-                            lukioOppilaitostyypit.stream()
-                                    .reduce("", (acc, t) -> acc + "&oppilaitostyyppi=oppilaitostyyppi_" + t + "%23*");
+            peruskouluHakuehto = "&organisaatiotyyppi=Oppilaitos";
+            lukioHakuehto = "&organisaatiotyyppi=Oppilaitos";
         }
 
         @Cacheable("organisaatiot")
@@ -137,6 +131,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                                 tyypit.stream()
                                         .map(t -> "oppilaitostyyppi_" + t + "#1")
                                         .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
+
             } catch (IOException ex) {
                 throw new BusinessRuleViolationException("Lukioiden tietojen hakeminen epäonnistui", ex);
             }
