@@ -86,7 +86,7 @@ ylopsApp
 
     $scope.vaihdaVersio = () => {
       let versionUrl = $state.href($state.current.name).replace(/#/g, '').split('%')[0];
-      if(_.last($scope.versiot.list).numero !== $scope.versiot.chosen.numero){
+      if(_.first($scope.versiot.list).numero !== $scope.versiot.chosen.numero){
         versionUrl += '/'+$scope.versiot.chosen.numero;
       }
       $location.url(versionUrl);

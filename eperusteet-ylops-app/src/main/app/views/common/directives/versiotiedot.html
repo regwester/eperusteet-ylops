@@ -1,10 +1,4 @@
-<!--<h3>test versiotiedot</h3>-->
 <div>
-  <!--<pre>{{$$muokkaustiedot | json}}</pre>-->
-
-
-
-  <!-- versiotiedot.html -->
   <div ng-if="versiot.chosen" class="muokkaustiedot" ng-hide="editEnabled">
     <div class="muokattu-viimeksi">
       <span ng-show="versiot.chosen.index > 1" kaanna>muokattu-viimeksi</span><span ng-show="versiot.chosen.index === 1" kaanna>luotu</span>: {{$$muokkaustiedot.muokattu | aikaleima:'ago'}}
