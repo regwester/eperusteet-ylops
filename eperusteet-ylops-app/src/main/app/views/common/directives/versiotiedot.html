@@ -1,9 +1,13 @@
-<h3>test versiotiedot</h3>
+<!--<h3>test versiotiedot</h3>-->
 <div>
+  <!--<pre>{{$$muokkaustiedot | json}}</pre>-->
+
+
+
   <!-- versiotiedot.html -->
   <div ng-if="versiot.chosen" class="muokkaustiedot" ng-hide="editEnabled">
     <div class="muokattu-viimeksi">
-      <span ng-show="versiot.chosen.index > 1" kaanna>muokattu-viimeksi</span><span ng-show="versiot.chosen.index === 1" kaanna>luotu</span>: {{lastModified() | aikaleima:'ago'}}
+      <span ng-show="versiot.chosen.index > 1" kaanna>muokattu-viimeksi</span><span ng-show="versiot.chosen.index === 1" kaanna>luotu</span>: {{$$muokkaustiedot.muokattu | aikaleima:'ago'}}
     </div>
     <div class="versiotiedot">
       <ul>
@@ -15,9 +19,9 @@
       </ul>
     </div>
     <div class="muokkaaja">
-      <span ng-show="versiot.chosen.index > 1" kaanna>muokkaaja</span><span ng-show="versiot.chosen.index === 1" kaanna>luoja</span>: {{ versiot.chosen.$nimi }}
+      <span ng-show="versiot.chosen.index > 1" kaanna>muokkaaja</span><span ng-show="versiot.chosen.index === 1" kaanna>luoja</span>: {{ $$muokkaustiedot.muokkaajaOid }}
     </div>
-    <div class="clearfix" ng-if="!dontFixVersiot"></div>
+    <!--<div class="clearfix" ng-if="!dontFixVersiot"></div>-->
   </div>
   <hr class="versioraja">
 </div>

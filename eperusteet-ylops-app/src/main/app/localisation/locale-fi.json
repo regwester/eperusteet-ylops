@@ -548,5 +548,10 @@
   "ei_ole": "Ei ole",
   "opetuksen-yleisten-tavoitteiden-yleiskuvauksen-paivitys-onnistui": "Opetuksen yleisten tavoitteiden muokkaus onnistui",
   "opetuksen-yleiset-tavoitteet-yleiskuvaus-header": "Yleiskuvaus",
-  "opetuksen-yleiset-tavoitteet-yleiskuvaus-placeholder": "Opetuksen yleisten tavoitteiden paikallinen tarkennus" 
+  "opetuksen-yleiset-tavoitteet-yleiskuvaus-placeholder": "Opetuksen yleisten tavoitteiden paikallinen tarkennus",
+  "nayta-versiohistoria": "Historia",
+  "katso-uusin-versio": "Katso uusin versio",
+  "katselet-vanhaa-versiota": "Tarkastelet vanhaa versiota sivusta.",
+  "ota-versio-kayttoon": "Ota tämä versio käyttöön.",
+  "versio": "Versio"
 }

@@ -235,6 +235,15 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         return mapper.map(tekstiKappale, TekstiKappaleDto.class);
     }
 
+    @Override
+    @Transactional
+    public void revertToVersion(Long opsId, Long viiteId, Integer versio) {
+        Long kappaleId = getTekstiKappaleViite(opsId, viiteId).getTekstiKappale().getId();
+        TekstiKappale tekstiKappale = tekstiKappaleRepository.findRevision(kappaleId, versio);
+        TekstiKappaleDto dto = mapper.map(tekstiKappale, TekstiKappaleDto.class);
+        tekstiKappaleService.update( dto );
+    }
+
     private List<TekstiKappaleViite> findViitteet(Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         return repository.findAllByTekstiKappale(viite.getTekstiKappale());

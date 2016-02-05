@@ -18,139 +18,23 @@
 'use strict';
 
 ylopsApp
-    .service('VersionHelper', function(
-        //PerusteenOsat, $modal, RakenneVersiot, $log,
-        //                               RakenneVersio, Notifikaatiot, $state, $location, $stateParams, TutkinnonOsaViitteet,
-        //                               LukioYleisetTavoitteetService, LukioAihekokonaisuudetService, LukioKurssiService,
-        //                               LukioOppiaineService
-    ) {
+    .service('VersionHelper', function($modal, $state, $stateParams) {
 
-        //
-        //function rakennaNimi(v) {
-        //    var nimi = (v.kutsumanimi || '') + ' ' + (v.sukunimi || '');
-        //    v.$nimi = nimi === ' ' ? v.muokkaajaOid : nimi;
-        //}
-        //
-        //function rakennaNimet(list) {
-        //    _.forEach(list, rakennaNimi);
-        //}
-        //
-        //function getVersions(data, tunniste, tyyppi, force, cb) {
-        //    cb = cb || angular.noop;
-        //    if (!_.isObject(data)) {
-        //        throw 'VersionHelper: not an object!';
-        //    }
-        //    if (!force && data.list) {
-        //        return;
-        //    }
-        //    var handle = function (res) {
-        //        rakennaNimet(res);
-        //        data.list = res;
-        //        versiotListHandler(data);
-        //        cb(res);
-        //    };
-        //    switch (tyyppi) {
-        //        case 'perusteenosa':        PerusteenOsat.versiot({osanId: tunniste.id}, handle);           break;
-        //        case 'tutkinnonOsaViite':   TutkinnonOsaViitteet.versiot({viiteId: tunniste.id}, handle);   break;
-        //        case 'perusteenOsaViite':   PerusteenOsat.versiotByViite({viiteId: tunniste.id}, handle);   break;
-        //        case 'rakenne':             RakenneVersiot.query({perusteId: tunniste.id, suoritustapa: tunniste.suoritustapa}, handle); break;
-        //        case 'lukioyleisettavoitteet': LukioYleisetTavoitteetService.getVersiot().then(handle);     break;
-        //        case 'lukioaihekokonaisuudet': LukioAihekokonaisuudetService.getAihekokonaisuudetYleiskuvausVersiot().then(handle); break;
-        //        case 'lukioaihekokonaisuus': LukioAihekokonaisuudetService.getAihekokonaisuusVersiot(tunniste.id) .then(handle); break;
-        //        case 'lukiokurssi':          LukioKurssiService.listVersions(tunniste.id, cb).then(handle); break;
-        //        case 'lukiooppiaine':        LukioOppiaineService.listVersions(tunniste.id, cb).then(handle);break;
-        //        case 'lukiorakenne':         LukioKurssiService.listRakenneVersions(cb).then(handle); break;
-        //        default: $log.error('Unknwon versio tyyppi: ', tyyppi);
-        //    }
-        //}
-        //
-        //function versiotListHandler(data) {
-        //    data.chosen = latest(data.list);
-        //    data.latest = true;
-        //
-        //    _.each(data.list, function(item, index) {
-        //        // reverse numbering for UI, oldest = 1
-        //        item.index = data.list.length - index;
-        //    });
-        //}
-        //
-        //function latest(data) {
-        //    return _.first(data) || {};
-        //}
-        //
-        //function revert(data, tunniste, tyyppi, cb) {
-        //    var genericHandler = function(res) {
-        //        cb(res);
-        //    };
-        //    // revert = get old (currently chosen) data, save as new version
-        //    if (tyyppi === 'Perusteenosa' || tyyppi === 'Tutkinnonosa') {
-        //        PerusteenOsat.palauta({
-        //            osanId: tunniste.id,
-        //            versioId: data.chosen.numero
-        //        }, {}, cb, Notifikaatiot.serverCb);
-        //    }
-        //    else if (tyyppi === 'Rakenne') {
-        //        RakenneVersio.palauta({
-        //            perusteId: tunniste.id,
-        //            suoritustapa: tunniste.suoritustapa,
-        //            versioId: data.chosen.numero
-        //        }, {}, cb, Notifikaatiot.serverCb);
-        //    } else if (tyyppi === 'TutkinnonOsaViite') {
-        //        TutkinnonOsaViitteet.palauta({
-        //            viiteId: tunniste.id,
-        //            versioId: data.chosen.numero
-        //        }, {}, cb, Notifikaatiot.serverCb);
-        //    } else if (tyyppi === 'lukioyleisettavoitteet') {
-        //        LukioYleisetTavoitteetService.palauta(tunniste.id, data.chosen.numero).then(genericHandler);
-        //    } else if (tyyppi === 'lukioaihekokonaosuudetyleiskuvaus') {
-        //        LukioAihekokonaisuudetService.palautaAihekokonaisuudetYleiskuvaus(data.chosen.numero).then(genericHandler);
-        //    }  else if (tyyppi === 'lukioaihekokonaisuus') {
-        //        LukioAihekokonaisuudetService.palautaAihekokonaisuus(tunniste.id, data.chosen.numero).then(genericHandler);
-        //    } else if (tyyppi === 'lukiokurssi') {
-        //        LukioKurssiService.palautaLukiokurssi(tunniste, data.chosen.numero).then(genericHandler);
-        //    } else if(tyyppi === 'lukiooppiaine') {
-        //        LukioOppiaineService.palautaLukioOppiaine(tunniste, data.chosen.numero).then(genericHandler);
-        //    } else if(tyyppi === 'lukiorakenne') {
-        //        LukioKurssiService.palautaRakenne(data.chosen.numero).then(genericHandler);
-        //    }
-        //}
-        //
-        //function change(data, tunniste, tyyppi, cb) {
-        //    if (tyyppi === 'Perusteenosa') {
-        //        PerusteenOsat.getVersio({
-        //            osanId: tunniste.id,
-        //            versioId: data.chosen.numero
-        //        }, function(response) {
-        //            changeResponseHandler(data, response, cb);
-        //        });
-        //    }
-        //    else if (tyyppi === 'Rakenne') {
-        //        RakenneVersio.get({perusteId: tunniste.id, suoritustapa: tunniste.suoritustapa, versioId: data.chosen.numero}, function(response) {
-        //            changeResponseHandler(data, response, cb);
-        //        });
-        //    }
-        //}
-        //
-        //function changeResponseHandler(data, response, cb) {
-        //    cb(response);
-        //    data.latest = data.chosen.numero === latest(data.list).numero;
-        //}
+        //this.lastModified = function (data) {
+        //    //console.log('last', data);
+        //    //if (data && data.chosen) {
+        //    //    var found = _.find(data.list, {numero: data.chosen.numero});
+        //    //    if (found) {
+        //    //        return found.pvm;
+        //    //    }
+        //    //}
+        //};
 
-        this.lastModified = function (data) {
-            //console.log('last', data);
-            //if (data && data.chosen) {
-            //    var found = _.find(data.list, {numero: data.chosen.numero});
-            //    if (found) {
-            //        return found.pvm;
-            //    }
-            //}
-        };
-
-        this.getOpsTekstiVersions = function(id, versiot){
-            console.log('get vers', id, versiot);
-            //getVersions(data, tunniste, 'perusteenosa', force, cb);
-            versiot = {test: 1};
-        };
+        //this.getOpsTekstiVersions = function(id, versiot){
+        //    console.log('get vers', id, versiot);
+        //    getVersions(data, tunniste, 'perusteenosa', force, cb);
+            //versiot = {test: 1};
+        //};
         //
         //this.select = function (data, index) {
         //    var found = _.find(data.list, {index: parseInt(index, 10)});
@@ -287,39 +171,42 @@ ylopsApp
         //    }
         //};
 
-        this.historyView = function (data) {
+        this.historyView = (data) => {
             console.log("history");
-            //$modal.open({
-            //        templateUrl: 'views/partials/muokkaus/versiohelper.html',
-            //        controller: 'HistoryViewCtrl',
-            //        resolve: {
-            //            versions: function() {
-            //                return data;
-            //            }
-            //        }
-            //    })
-            //    .result.then(function(re) {
-            //    var params = _.clone($stateParams);
-            //    params.versio = '/' + re.index;
-            //    $state.go($state.current.name, params);
-        }
+            $modal.open({
 
-        //};
-        //})
-        //.controller('HistoryViewCtrl', function ($scope, versions, $modalInstance) {
-        //    $scope.versions = versions;
-        //    $scope.close = function(versio) {
-        //        if (versio) {
-        //            $modalInstance.close(versio);
-        //        }
-        //        else {
-        //            $modalInstance.dismiss();
-        //        }
-        //    };
-        //    $scope.paginate = {
-        //        current: 1,
-        //        perPage: 10
-        //    };
-        //});
+                    templateUrl: 'views/common/modals/versiohelper.html',
+                    //templateUrl: 'views/partials/muokkaus/versiohelper.html',
+                    //template: "<p>hello</p>",
+                    controller: 'HistoryViewCtrl',
+                    resolve: {
+                        versions: function () {
+                            return data;
+                        }
+                    }
+                })
+                .result.then(function (re) {
+                console.log(re);
+                var params = _.clone($stateParams);
+                params.versio = '/' + re.numero;
+                $state.go($state.current.name, params);
+            });
+        };
 
+    })
+
+    .controller('HistoryViewCtrl', function ($scope, versions, $modalInstance) {
+        $scope.versions = versions;
+        $scope.close = function(versio) {
+            if (versio) {
+                $modalInstance.close(versio);
+            }
+            else {
+                $modalInstance.dismiss();
+            }
+        };
+        $scope.paginate = {
+            current: 1,
+            perPage: 10
+        };
     });

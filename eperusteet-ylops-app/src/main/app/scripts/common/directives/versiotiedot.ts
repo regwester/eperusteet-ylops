@@ -17,19 +17,12 @@
 'use strict';
 
 ylopsApp
-    .directive('versiotiedot', function(VersionHelper) {
+    .directive('versiotiedot', (VersionHelper) => {
         return {
             templateUrl: 'views/common/directives/versiotiedot.html',
             restrict: 'E',
-            controller: function ($scope) {
-                console.log("test" , $scope);
-                $scope.lastModified = function () {
-                    //console.log(">>> ", $scope );
-                    return VersionHelper.lastModified($scope.versiot);
-                };
-                $scope.history = function () {
-                    //console.log(">>>-- ", $scope );
-
+            controller: ($scope) => {
+                $scope.history = () => {
                     VersionHelper.historyView($scope.versiot);
                 };
             }

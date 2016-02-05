@@ -74,7 +74,6 @@ ylopsApp
     }
 
     function setup(value) {
-      console.log( value );
       $scope.model = value;
       if ($stateParams.id !== 'uusi' && value.tekstikappale) {
         originalOtsikko = _.cloneDeep(value.tekstiKappale.nimi);
@@ -93,8 +92,25 @@ ylopsApp
       $location.url(versionUrl);
     };
 
-    function updateMuokkaustieto() {
-      OpetussuunnitelmanTekstit.versiot({id: $stateParams.id, tekstiId: $scope.model.tekstiKappale.id}, {}, function(res){
+    $scope.goToLatest = () => {
+      const versionUrl = $state.href($state.current.name).replace(/#/g, '').split('%')[0];
+      $location.url(versionUrl);
+    };
+
+    $scope.revertToCurrentVersion = () => {
+      const params = {
+        opsId: parseInt($stateParams.id),
+        viiteId: $scope.model.id,
+        versio: $scope.versiot.chosen.numero
+      };
+
+      OpetussuunnitelmanTekstit.revertTo(params, {}, () => {
+        $scope.goToLatest();
+      });
+    };
+
+    const updateMuokkaustieto = () => {
+      OpetussuunnitelmanTekstit.versiot({id: $stateParams.id, tekstiId: $scope.model.tekstiKappale.id}, {}, (res) => {
         $scope.versiot = {list: []};
         _.forEach(res, (value, key) => {
           value.index = res.length-key;
@@ -115,7 +131,8 @@ ylopsApp
           muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
         };
       }
-    }
+    };
+
     updateMuokkaustieto();
 
     var commonParams = {

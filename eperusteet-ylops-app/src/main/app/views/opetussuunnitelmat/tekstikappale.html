@@ -42,7 +42,7 @@
 </div>
 
 <div class="panel-clear-fix tekstiosa single">
-  <div class="action-buttons-inline" ng-if="isEditable()" ng-hide="editMode">
+  <div class="action-buttons-inline" ng-if="isEditable() && versiot.latest" ng-hide="editMode">
     <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip"></lukko>
     <button ng-disabled="lukkotiedot.lukittu" ng-show="canRemove() && (!model.lapset || model.lapset.length === 0) && !model.pakollinen"
             class="btn btn-default" kaanna="'poista'" icon-role="remove" ng-click="remove()"
@@ -80,21 +80,23 @@
 
 
 
-
-
+  <!--<pre>{{$$muokkaustiedot | json}}</pre>-->
   <div>
+    <br/>
+    <br/>
+
     <div ng-if="!versiot.latest" class="version-warning">
       <div class="note"></div>
-      <button ng-click="version.revert()" class="btn btn-default btn-sm" kaanna>ota-versio-kayttoon</button>
+      <button ng-click="revertToCurrentVersion()" class="btn btn-default btn-sm" kaanna>ota-versio-kayttoon</button>
       <div class="content">
         <p>{{'katselet-vanhaa-versiota'|kaanna}}</p>
-        <p><a class="action-link" ng-click="version.goToLatest()" kaanna>katso-uusin-versio</a></p>
+        <p><a class="action-link" ng-click="goToLatest()" kaanna>katso-uusin-versio</a></p>
       </div>
     </div>
   </div>
 
   <versiotiedot></versiotiedot>
-  <muokkaustieto tiedot="$$muokkaustiedot"></muokkaustieto>
+  <!--<muokkaustieto tiedot="$$muokkaustiedot"></muokkaustieto>-->
 
   <h4>
     <span kaanna="'opsin-teksti'"></span>
