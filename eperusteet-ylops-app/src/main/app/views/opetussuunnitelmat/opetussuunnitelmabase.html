@@ -5,10 +5,10 @@
   <div class="tabitus">
     <ul ng-if="!luonnissa" class="nav nav-tabs">
       <li ui-sref-active="active">
-        <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" kaanna="'yhteiset-osuudet'"></a>
+        <a ui-sref="root.opetussuunnitelmat.yksi.sisalto" kaanna="model.koulutustyyppi === 'koulutustyyppi_2' ? 'yleiset-osuudet' : 'yhteiset-osuudet'"></a>
       </li>
       <li ng-show="model.koulutustyyppi === 'koulutustyyppi_2'" ui-sref-active="active">
-        <a ui-sref="root.opetussuunnitelmat.lukio.opetus" kaanna="'lukio-opetus'"></a>
+        <a ui-sref="root.opetussuunnitelmat.lukio.opetus" kaanna="'lukio-tavoitteet-ja-sisallot'"></a>
       </li>
       <li ng-show="model.koulutustyyppi === 'koulutustyyppi_16'" ui-sref-active="active">
         <a ui-sref="root.opetussuunnitelmat.yksi.opetus" kaanna="'vuosiluokat-ja-oppiaineet'"></a>
