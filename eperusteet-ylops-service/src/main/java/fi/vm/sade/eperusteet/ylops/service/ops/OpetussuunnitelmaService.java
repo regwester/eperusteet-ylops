@@ -108,5 +108,5 @@ public interface OpetussuunnitelmaService {
      * @return Peruste
      */
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public PerusteDto getPeruste(@P("opsId") Long opsId);
+    PerusteDto getPeruste(@P("opsId") Long opsId);
 }
