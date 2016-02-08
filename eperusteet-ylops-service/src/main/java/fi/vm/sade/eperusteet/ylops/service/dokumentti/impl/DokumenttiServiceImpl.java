@@ -25,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.slf4j.Logger;
@@ -129,11 +130,14 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
             // Tallennetaan valmis dokumentti
             dokumenttiRepository.save(dokumentti);
-        } catch (IOException | SAXException | TransformerException | JAXBException | ParserConfigurationException ex) {
+        } catch (IOException | SAXException | TransformerException | JAXBException
+                | ParserConfigurationException ex) {
             LOG.error(ex.getMessage());
             dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
             dokumentti.setVirhekoodi(ex.getLocalizedMessage());
             dokumenttiRepository.save(dokumentti);
+
+            throw new DokumenttiException(ex.getLocalizedMessage(), ex.getCause());
         }
     }
     @Override
