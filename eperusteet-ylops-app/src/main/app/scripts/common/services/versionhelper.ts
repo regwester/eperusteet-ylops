@@ -29,7 +29,7 @@ ylopsApp
                         return data;
                     }
                 }
-            }).result.then( (re) => {
+            }).result.then((re) => {
                 let params = _.clone($stateParams);
                 params.versio = (re.openOld) ? '/' + re.versio.numero : "";
                 $state.go($state.current.name, params);
@@ -38,7 +38,7 @@ ylopsApp
 
     })
 
-    .controller('HistoryViewCtrl', ($scope, versions, $modalInstance) => {
+    .controller('HistoryViewController', ($scope, versions, $modalInstance) => {
         $scope.versions = versions;
         $scope.close = (versio, current) => {
             if (versio) {
