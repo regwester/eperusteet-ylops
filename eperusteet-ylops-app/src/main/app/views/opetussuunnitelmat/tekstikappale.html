@@ -75,16 +75,9 @@
     </div>
   </div>
 
+  <pre>{{ versiot | json }}</pre>
 
-
-
-
-
-  <!--<pre>{{$$muokkaustiedot | json}}</pre>-->
   <div>
-    <br/>
-    <br/>
-
     <div ng-if="!versiot.latest" class="version-warning">
       <div class="note"></div>
       <button ng-click="revertToCurrentVersion()" class="btn btn-default btn-sm" kaanna>ota-versio-kayttoon</button>
