@@ -30,18 +30,18 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface LiiteService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    public UUID add(@P("opsId") final Long opsId, String tyyppi, String nimi, long length, InputStream is);
+    UUID add(@P("opsId") final Long opsId, String tyyppi, String nimi, long length, InputStream is);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public LiiteDto get(Long opsId, UUID id);
+    LiiteDto get(Long opsId, UUID id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public List<LiiteDto> getAll(Long opsId);
+    List<LiiteDto> getAll(Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    public void delete(Long opsId, UUID id);
+    void delete(Long opsId, UUID id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public void export(@P("opsId") final Long opsId, UUID id, OutputStream os);
+    void export(@P("opsId") final Long opsId, UUID id, OutputStream os);
 
 }
