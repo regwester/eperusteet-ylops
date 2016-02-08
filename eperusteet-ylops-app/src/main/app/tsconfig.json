@@ -59,7 +59,7 @@
     "scripts/common/services/lokalisointi.ts",
     "scripts/common/services/varihyrra.ts",
     "scripts/common/services/virhe.ts",
-    "scripts/common/services/versionHelper.ts",
+    "scripts/common/services/versionhelper.ts",
     "scripts/common/services/algoritmit.ts",
     "scripts/common/services/notifikaatiot.ts",
     "scripts/common/services/editointikontrollit.ts",
