@@ -156,14 +156,13 @@ ylopsApp
   });
   refetch();
 
+  console.log($scope.oppiaine.oma);
   $scope.options = {
     editing: false,
-    isEditable: function() {
-      return $scope.oppiaine.oma && OpsService.isEditable();
-    }
+    isEditable: () => $scope.oppiaine.oma
   };
 
-  $scope.sisaltoaluetunnisteet = _($scope.sisaltoAlueetMap) 
+  $scope.sisaltoaluetunnisteet = _($scope.sisaltoAlueetMap)
     .values()
     .indexBy('tunniste')
     .value();
