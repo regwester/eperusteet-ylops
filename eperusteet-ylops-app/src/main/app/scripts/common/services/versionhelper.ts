@@ -38,14 +38,7 @@ ylopsApp
 
     })
 
-<<<<<<< b546c794d83d66c5188052814fadfc923f1b5e6f:eperusteet-ylops-app/src/main/app/scripts/common/services/versionhelper.ts
     .controller('HistoryViewController', ($scope, versions, $modalInstance) => {
-||||||| merged common ancestors
-    .controller('HistoryViewCtrl', ($scope, versions, $modalInstance) => {
-=======
-    .controller('HistoryViewController', ($scope, versions, $modalInstance) => {
-        console.log('initing');
->>>>>>> Vaihdettu tiedostonimi:eperusteet-ylops-app/src/main/app/scripts/common/services/versionhelper.ts
         $scope.versions = versions;
         $scope.close = (versio, current) => {
             if (versio) {
