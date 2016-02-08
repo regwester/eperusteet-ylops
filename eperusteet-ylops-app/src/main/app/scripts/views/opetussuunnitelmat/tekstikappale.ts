@@ -27,7 +27,7 @@ ylopsApp
     Notifikaatiot, $timeout, $stateParams, $state, OpetussuunnitelmanTekstit, Kieli,
     OhjeCRUD, MurupolkuData, $rootScope, OpsService, TekstikappaleOps, Utils, Kommentit,
     KommentitByTekstikappaleViite, Lukko, Varmistusdialogi, teksti,
-    reresolver) {
+    reresolver, $location) {
 
     $scope.lukkotiedot = null;
     $scope.perusteteksti = {};
@@ -41,8 +41,8 @@ ylopsApp
     $scope.editMode = false;
 
     Kommentit.haeKommentit(KommentitByTekstikappaleViite, {
-      id: $stateParams.tekstikappaleId,
-      tekstiKappaleViiteId: $stateParams.tekstikappaleId,
+      id: $stateParams.tekstikappaleId.split('/')[0],
+      tekstiKappaleViiteId: $stateParams.tekstikappaleId.split('/')[0],
       opsId: $stateParams.id
     });
 
@@ -75,7 +75,7 @@ ylopsApp
 
     function setup(value) {
       $scope.model = value;
-      if ($stateParams.id !== 'uusi') {
+      if ($stateParams.id !== 'uusi' && value.tekstikappale) {
         originalOtsikko = _.cloneDeep(value.tekstiKappale.nimi);
         originalTekstiKappale = _.cloneDeep(value.tekstiKappale);
         MurupolkuData.set('tekstiNimi', value.tekstiKappale.nimi);
@@ -84,7 +84,46 @@ ylopsApp
     setup(teksti);
     fetchOhje(teksti);
 
-    function updateMuokkaustieto() {
+    $scope.vaihdaVersio = () => {
+      let versionUrl = $state.href($state.current.name).replace(/#/g, '').split('%')[0];
+      if(_.first($scope.versiot.list).numero !== $scope.versiot.chosen.numero){
+        versionUrl += '/'+$scope.versiot.chosen.numero;
+      }
+      $location.url(versionUrl);
+    };
+
+    $scope.goToLatest = () => {
+      const versionUrl = $state.href($state.current.name).replace(/#/g, '').split('%')[0];
+      $location.url(versionUrl);
+    };
+
+    $scope.revertToCurrentVersion = () => {
+      const params = {
+        opsId: parseInt($stateParams.id),
+        viiteId: $scope.model.id,
+        versio: $scope.versiot.chosen.numero
+      };
+
+      OpetussuunnitelmanTekstit.revertTo(params, {}, () => {
+        $scope.goToLatest();
+      });
+    };
+
+    const updateMuokkaustieto = () => {
+      OpetussuunnitelmanTekstit.versiot({id: $stateParams.id, tekstiId: $scope.model.tekstiKappale.id}, {}, (res) => {
+        $scope.versiot = {list: []};
+        _.forEach(res, (value, key) => {
+          value.index = res.length-key;
+          $scope.versiot.list.push(value);
+        });
+        $scope.versiot.latest = _.isEmpty($stateParams.versio);
+        if($scope.versiot.latest) {
+          $scope.versiot.chosen = _.first($scope.versiot.list);
+        } else {
+          $scope.versiot.chosen = _.find($scope.versiot.list, {'numero': parseInt($stateParams.versio.replace('/', ''))});
+        }
+      });
+
       if ($scope.model.tekstiKappale) {
         $scope.$$muokkaustiedot = {
           luotu: $scope.model.tekstiKappale.luotu,
@@ -92,7 +131,8 @@ ylopsApp
           muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
         };
       }
-    }
+    };
+
     updateMuokkaustieto();
 
     var commonParams = {
