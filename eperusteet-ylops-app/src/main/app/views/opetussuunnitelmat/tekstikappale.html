@@ -75,9 +75,7 @@
     </div>
   </div>
 
-  <pre>{{ versiot | json }}</pre>
-
-  <div>
+  <div ng-if="versiot">
     <div ng-if="!versiot.latest" class="version-warning">
       <div class="note"></div>
       <button ng-click="revertToCurrentVersion()" class="btn btn-default btn-sm" kaanna>ota-versio-kayttoon</button>
@@ -86,9 +84,10 @@
         <p><a class="action-link" ng-click="goToLatest()" kaanna>katso-uusin-versio</a></p>
       </div>
     </div>
+
+    <versiotiedot></versiotiedot>
   </div>
 
-  <versiotiedot></versiotiedot>
   <!--<muokkaustieto tiedot="$$muokkaustiedot"></muokkaustieto>-->
 
   <h4>
