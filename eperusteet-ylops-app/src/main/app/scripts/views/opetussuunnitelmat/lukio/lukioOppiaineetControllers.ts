@@ -725,7 +725,7 @@ ylopsApp
 
     .controller('LukioOppiaineSisaltoController', function($scope, $q:IQService, $stateParams,
                                                   LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
-        $scope.textHidden = true;
+        $scope.textHidden = false;
         $scope.editing = false;
 
         $scope.toggleTextVisible = () => {
@@ -733,8 +733,6 @@ ylopsApp
         };
 
         $scope.edit = () => {
-            //console.log("edit", $scope);
-            //$scope.$parent.toEditMode();
             $scope.editing = true;
         };
     })
