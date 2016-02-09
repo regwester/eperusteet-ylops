@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  *
@@ -79,6 +80,15 @@ public class OpetussuunnitelmanSisaltoController {
         tekstiKappaleViiteService.revertToVersion(opsId, viiteId, versio);
     }
 
+    @RequestMapping(value = "/tekstit/removed", method = GET)
+    public ResponseEntity<List<TekstiKappaleDto>> getVersionsForTekstiKappaleViite(@PathVariable("opsId") final Long opsId) {
+        return new ResponseEntity<>(tekstiKappaleViiteService.getRemovedTekstikappaleetForOps(opsId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/tekstit/{id}/returnRemoved", method = POST)
+    public void returnRemoved(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        tekstiKappaleViiteService.returnRemovedTekstikappale(opsId, id);
+    }
 
     @RequestMapping(value = "/tekstit/{viiteId}/lapsi", method = RequestMethod.POST)
     @ResponseBody

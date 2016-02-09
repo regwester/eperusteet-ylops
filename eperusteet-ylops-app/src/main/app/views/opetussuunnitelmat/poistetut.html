@@ -1,0 +1,20 @@
+<div>
+  <p>poist..</p>
+  <!--<pre>{{poistetut | json}}</pre>-->
+  <table>
+    <tr>
+      <td>nimi</td>
+      <td>poistettu</td>
+      <td>nimi</td>
+      <td>asian tyyppi</td>
+      <td>Pal</td>
+    </tr>
+    <tr ng-repeat="poistettu in poistetut">
+      <td>{{poistettu.nimi | kaanna}}</td>
+      <td>{{poistettu.muokattu}}</td>
+      <td>{{poistettu.muokkaaja}}</td>
+      <td></td>
+      <td><a ng-click="returnVersion(poistettu.id)">Palauta</a></td>
+    </tr>
+  </table>
+</div>

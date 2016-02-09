@@ -88,7 +88,8 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void removeTekstiKappaleFromOps(Long id, Long opsId) {
+
         repository.delete(id);
     }
 }

@@ -167,7 +167,14 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.kasitteet', {
+      .state('root.opetussuunnitelmat.yksi.poistetut', {
+        url: '/poistetut?:pohjaId',
+        templateUrl: 'views/opetussuunnitelmat/poistetut.html',
+        controller: 'OpetussuunnitelmaPoistetutController'
+      })
+
+
+        .state('root.opetussuunnitelmat.yksi.kasitteet', {
         url: '/kasitteet',
         templateUrl: 'views/opetussuunnitelmat/kasitteet.html',
         controller: 'KasitteetController',

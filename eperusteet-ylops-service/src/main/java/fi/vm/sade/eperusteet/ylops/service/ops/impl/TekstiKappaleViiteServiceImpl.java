@@ -32,11 +32,8 @@ import fi.vm.sade.eperusteet.ylops.service.locking.LockManager;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import java.util.UUID;
 
 /**
  * @author mikkom
@@ -181,6 +177,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Transactional(readOnly = false)
     public void removeTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         if (viite.getVanhempi() == null) {
             throw new BusinessRuleViolationException("Sisällön juurielementtiä ei voi poistaa");
@@ -198,7 +195,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         if (viite.getTekstiKappale() != null && viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
             lockMgr.lock(viite.getTekstiKappale().getId());
             TekstiKappale tekstiKappale = viite.getTekstiKappale();
-            tekstiKappaleService.delete(tekstiKappale.getId());
+            tekstiKappaleService.removeTekstiKappaleFromOps(tekstiKappale.getId(), opsId);
         }
         viite.setTekstiKappale(null);
         viite.getVanhempi().getLapset().remove(viite);
@@ -242,6 +239,46 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappale tekstiKappale = tekstiKappaleRepository.findRevision(kappaleId, versio);
         TekstiKappaleDto dto = mapper.map(tekstiKappale, TekstiKappaleDto.class);
         tekstiKappaleService.update( dto );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TekstiKappaleDto> getRemovedTekstikappaleetForOps(Long opsId) {
+
+        return tekstiKappaleRepository.getDeletedRevisions()
+                .stream()
+                .map(revision -> tekstiKappaleRepository.getRevisions(revision.getId()))
+                .filter(revisions -> revisions.size() > 1)
+                .map(revisions -> {
+                    Revision latestBeforeDeleted = revisions.get(1);
+                    TekstiKappale removed = tekstiKappaleRepository.findRevision(latestBeforeDeleted.getId(), latestBeforeDeleted.getNumero());
+
+//                    tekstiKappaleRepository.
+
+                    return mapper.map(removed, TekstiKappaleDto.class);
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public TekstiKappaleDto returnRemovedTekstikappale(Long opsId, Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        TekstiKappaleViite teksti = ops.getTekstit().getLapset().get(0);
+        TekstiKappaleDto dto = null;
+        List<Revision> tekst = tekstiKappaleRepository.getRevisions(new Long(id));
+
+        if (tekst.size() > 1) {
+            Revision revision = tekst.get(1);
+            TekstiKappale t = tekstiKappaleRepository.findRevision(revision.getId(), revision.getNumero());
+            dto = mapper.map(t, TekstiKappaleDto.class);
+            dto.setId(null);
+            addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto));
+//            int size = teksti.getLapset().size();
+            Collections.rotate(teksti.getLapset(), 1);
+        }else{
+            throw new BusinessRuleViolationException("Tekstikappaletta ei löytynyt");
+        }
+        return dto;
     }
 
     private List<TekstiKappaleViite> findViitteet(Long opsId, Long viiteId) {
