@@ -111,11 +111,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private OhjeService ohjeService;
 
     @Autowired
-    @Qualifier("koodistoServiceImpl")
     private KoodistoService koodistoService;
 
     @Autowired
-    @Qualifier("organisaatioServiceImpl")
     private OrganisaatioService organisaatioService;
 
     @Autowired
