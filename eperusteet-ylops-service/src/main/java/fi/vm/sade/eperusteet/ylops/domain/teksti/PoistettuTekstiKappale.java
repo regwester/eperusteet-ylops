@@ -33,16 +33,14 @@ public class PoistettuTekstiKappale extends AbstractAuditedEntity implements Ser
     @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
     private Opetussuunnitelma opetussuunnitelma;
 
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ManyToOne
     @Getter
     @Setter
-    private LokalisoituTeksti nimi;
+    private TekstiKappale tekstiKappale;
 
     @Getter
     @Setter
-    private Boolean valmis;
+    private Boolean palautettu;
 
 }
 
