@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -34,8 +35,6 @@ import java.util.Locale;
  */
 @Service
 public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
-    private static final Logger LOG = LoggerFactory.getLogger(LocalizedMessagesServiceImpl.class);
-
     @Autowired
     private MessageSource messageSource;
 
@@ -51,8 +50,10 @@ public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
             return valueDto.getValue();
         }
 
-        //LOG.warn("Fallback to messageSource for lokalisointi {} ({})", key, kieli.toString());
-        // Jos kummastakaan ei löydy, heitetään NoSuchMessageException
-        return messageSource.getMessage(key, null, Locale.forLanguageTag(kieli.toString()));
+        try {
+            return messageSource.getMessage(key, null, Locale.forLanguageTag(kieli.toString()));
+        } catch (NoSuchMessageException ex) {
+            return key;
+        }
     }
 }
