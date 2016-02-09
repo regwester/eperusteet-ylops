@@ -30,7 +30,8 @@
 
   <div class="tekstiosa perusteen-teksti" ng-if="perusteenTeksti && (perusteenTeksti | kaanna).trim()">
     <a ng-class="{'toggle-perusteen-teksti peruste-teksti': true,'is-open': !textHidden}" ng-click="toggleTextVisible()">
-      <span kaanna="nayta-perusteen-teksti"></span>
+      <span ng-if="textHidden" kaanna="'nayta-perusteen-teksti'"></span>
+      <span ng-if="!textHidden" kaanna="'piilota-perusteen-teksti'"></span>
     </a>
     <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna | unsafe" termisto-viitteet="perusteenTeksti"></span>
   </div>
