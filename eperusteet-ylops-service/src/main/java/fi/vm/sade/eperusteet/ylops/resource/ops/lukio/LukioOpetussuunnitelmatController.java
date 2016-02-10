@@ -16,7 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.resource.ops.lukio;
 
-import com.mangofactory.swagger.annotations.ApiIgnore;
+import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/lukio/{opsId}")
-@ApiIgnore
+@Api(value = "Lukio")
 public class LukioOpetussuunnitelmatController {
     @Autowired
     private LukioOpetussuunnitelmaService lukioOpetussuunnitelmaService;

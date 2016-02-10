@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
+import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.resource.util.AbstractLockController;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import fi.vm.sade.eperusteet.ylops.service.locking.OpsCtx;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = "/opetussuunnitelmat/{opsId}/tekstit/lukko")
+@ApiIgnore
 public class OpsSisaltoLockController extends AbstractLockController<OpsCtx> {
     @Autowired
     private OpsSisaltoLockService service;
