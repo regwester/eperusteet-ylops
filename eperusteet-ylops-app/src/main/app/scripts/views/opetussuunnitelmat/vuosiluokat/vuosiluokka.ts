@@ -20,12 +20,10 @@
 
 ylopsApp
 .controller('VuosiluokkaBaseController', function ($scope, $stateParams, MurupolkuData, $state, Kaanna,
-  VuosiluokatService, baseLaajaalaiset, Kommentit, KommentitByVuosiluokka, $timeout) {
-
-  $scope.vuosiluokka = _.find($scope.oppiaineenVlk.vuosiluokat, function (vuosiluokka) {
-    return '' + vuosiluokka.id === $stateParams.vlId;
-  });
+  VuosiluokatService, baseLaajaalaiset, Kommentit, KommentitByVuosiluokka, $timeout, vuosiluokkaSisalto) {
+  $scope.vuosiluokka = vuosiluokkaSisalto;
   $scope.vuosiluokkaNro = VuosiluokatService.fromEnum($scope.vuosiluokka.vuosiluokka);
+
   MurupolkuData.set('vuosiluokkaNimi', Kaanna.kaanna('vuosiluokka') + ' ' + $scope.vuosiluokkaNro);
   $scope.perusteOpVlk = $scope.perusteOppiaine ?
     _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
@@ -52,10 +50,6 @@ ylopsApp
     vlId: $stateParams.vlId,
     id: $stateParams.vlId
   });
-
-  if ($state.is('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka')) {
-    $timeout(() => $state.go('.tavoitteet', {}, {location: 'replace'})); // Hack: ilman timeoutia saattaa sisältö jäädä latautumatta.
-  }
 })
 
 .service('VuosiluokkaMapper', function ($state, $stateParams, Utils) {
@@ -140,7 +134,7 @@ ylopsApp
 })
 
 .controller('VuosiluokkaTavoitteetController', function ($scope, VuosiluokatService, Editointikontrollit, Utils, $q,
-  $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $rootScope, VuosiluokkaMapper, OpsService, $timeout) {
+  $state, OppiaineService, Varmistusdialogi, Notifikaatiot, $rootScope, VuosiluokkaMapper, OpsService, $timeout, vuosiluokkaSisalto) {
 
   $rootScope.$broadcast('update:kommentit'); // Hack: pakotetaan kommenttien näyttö lataamatta niitä uudelleen.
   $scope.tunnisteet = [];
@@ -154,12 +148,12 @@ ylopsApp
       resolve();
     });
   });
-  refetch();
+  $scope.vuosiluokka = vuosiluokkaSisalto;
+  VuosiluokkaMapper.mapModel($scope);
 
-  console.log($scope.oppiaine.oma);
   $scope.options = {
     editing: false,
-    isEditable: () => $scope.oppiaine.oma
+    isEditable: () => $scope.oppiaine.oma && OpsService.isEditable()
   };
 
   $scope.sisaltoaluetunnisteet = _($scope.sisaltoAlueetMap)
@@ -221,8 +215,6 @@ ylopsApp
         OppiaineService.saveVuosiluokka(postdata, (res) => {
           $scope.vuosiluokka = res;
           resolve();
-          // FIXME Kaikki näyttäisi toimivan
-          // VuosiluokkaMapper.mapModel($scope);
         });
       }
     }),
@@ -263,7 +255,7 @@ ylopsApp
 }) // end of VuosiluokkaTavoitteetController
 
 .controller('VuosiluokkaSisaltoalueetController', function ($q, $scope, $rootScope, Editointikontrollit,
-  $timeout, $location, $anchorScroll, OppiaineService, VuosiluokkaMapper, OpsService) {
+  $timeout, $location, $anchorScroll, OppiaineService, VuosiluokkaMapper, OpsService, vuosiluokkaSisalto) {
 
   $rootScope.$broadcast('update:kommentit'); // Hack: pakotetaan kommenttien näyttö lataamatta niitä uudelleen.
   $scope.tunnisteet = [];
@@ -286,7 +278,8 @@ ylopsApp
       resolve();
     });
   });
-  refetch();
+  $scope.vuosiluokka = vuosiluokkaSisalto;
+  mapOnce();
 
   $scope.options = {
     editing: false,
