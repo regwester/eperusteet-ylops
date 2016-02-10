@@ -3,8 +3,9 @@
   <div class="header">
       <div class="toggle-nimi">
         <span ng-show="perusteOpVlk.sisaltoalueinfo.teksti" class="toggle" collapse-toggler="sisaltoInfoCollapse"></span>
-        <span class="nimi nimi-otsikko" ng-click="sisaltoInfoCollapse = !sisaltoInfoCollapse"
-              ng-bind="perusteOpVlk.sisaltoalueinfo.otsikko | kaanna"></span>
+        <span class="nimi nimi-otsikko" ng-click="sisaltoInfoCollapse = !sisaltoInfoCollapse">
+          <span ng-bind="perusteOpVlk.sisaltoalueinfo.otsikko | kaanna"></span>
+        </span>
       </div>
     </div>
     <div class="peruste-body ikoni-peruste" collapse="sisaltoInfoCollapse || !perusteOpVlk.sisaltoalueinfo.teksti">
@@ -19,8 +20,10 @@
     <div class="header">
       <div class="toggle-nimi">
         <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
-        <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
-              ng-bind="perusteSisaltoalueet[tunniste].nimi | kaanna"></span>
+        <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]">
+          <span ng-bind="perusteSisaltoalueet[tunniste].nimi | kaanna"></span>
+          <span ng-show="muokattavat[tunniste].piilotettu">(<b>{{ 'piilotettu' | kaanna }}</b>)</span>
+        </span>
       </div>
     </div>
 
@@ -32,9 +35,11 @@
         </div>
       </div>
       <div class="ops-body">
-        <div style="margin-bottom: 20px;" class="checkbox-label">
-          <input ng-disabled="!options.editing" type="checkbox" ng-model="muokattavat[tunniste].piilotettu"></input>
-          <label kaanna="'piilota-sisaltoalue'"></label>
+        <div style="margin-bottom: 20px;" class="checkbox-label" ng-show="options.editing">
+          <span ng-click="muokattavat[tunniste].piilotettu = !muokattavat[tunniste].piilotettu">
+            <input type="checkbox" ng-model="muokattavat[tunniste].piilotettu"></input>
+            <label kaanna="'piilota-sisaltoalue'"></label>
+          </span>
         </div>
         <div ops-teksti="muokattavat[tunniste]" callbacks="callbacks" config="options"></div>
       </div>
