@@ -21,6 +21,7 @@
         <span class="toggle" collapse-toggler="collapsed[tunniste]"></span>
         <span class="nimi" ng-click="collapsed[tunniste] = !collapsed[tunniste]"
               ng-bind="perusteSisaltoalueet[tunniste].nimi | kaanna"></span>
+        <span ng-show="muokattavat[tunniste].piilotettu">(<b>{{ 'piilotettu-tavoitteista' | kaanna }}</b>)</span>
       </div>
     </div>
 
@@ -32,9 +33,9 @@
         </div>
       </div>
       <div class="ops-body">
-        <div style="margin-bottom: 20px;" class="checkbox-label">
-          <input ng-disabled="!options.editing" type="checkbox" ng-model="muokattavat[tunniste].piilotettu"></input>
-          <label kaanna="'piilota-sisaltoalue'"></label>
+        <div style="margin-bottom: 20px;" class="checkbox-label" ng-show="options.editing">
+          <input type="checkbox" ng-model="muokattavat[tunniste].piilotettu"></input>
+          <label kaanna="'piilota-sisaltoalue'" ng-click="muokattavat[tunniste].piilotettu = !muokattavat[tunniste].piilotettu"></label>
         </div>
         <div ops-teksti="muokattavat[tunniste]" callbacks="callbacks" config="options"></div>
       </div>

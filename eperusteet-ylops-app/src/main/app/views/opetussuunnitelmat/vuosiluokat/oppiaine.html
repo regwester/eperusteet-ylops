@@ -58,8 +58,8 @@
         </tr>
         <tr class="vuosiluokka-row" ng-repeat="vuosiluokka in vuosiluokat | orderBy:'$numero'" ng-click="goToVuosiluokka(vuosiluokka)">
         <td>
-            <a ui-sref="root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka({vlId: vuosiluokka.id})">
-            <span kaanna="'vuosiluokka'"></span> {{vuosiluokka.$numero}}
+            <a ng-href="{{ getVuosiluokkaUrl(vuosiluokka) }}">
+                <span kaanna="'vuosiluokka'"></span> {{vuosiluokka.$numero}}
             </a>
         </td>
         </tr>

@@ -130,8 +130,16 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vuosiluokka.html',
         controller: 'VuosiluokkaBaseController',
         resolve: {
-          baseLaajaalaiset: ['VuosiluokatService', 'opsId', function (VuosiluokatService, opsId) {
+          baseLaajaalaiset: ['VuosiluokatService', 'opsId', function(VuosiluokatService, opsId) {
             return VuosiluokatService.getLaajaalaiset(opsId);
+          }],
+          vuosiluokkaSisalto: ['VuosiluokkaCRUD', '$stateParams', function(VuosiluokkaCRUD, $stateParams) {
+            return VuosiluokkaCRUD.get({
+              opsId: $stateParams.id,
+              oppiaineId: $stateParams.oppiaineId,
+              vlkId: $stateParams.vlkId,
+              vlId: $stateParams.vlId
+            }).$promise;
           }]
         }
       })
@@ -154,9 +162,6 @@ ylopsApp
         controller: 'VuosiluokkaistaminenController',
         resolve: {
           vuosiluokatService: 'VuosiluokatService',
-          /*tavoitteet: ['vuosiluokatService', function (vuosiluokatService) {
-            return vuosiluokatService.getTavoitteet(oppiaineenVlkId);
-          }],*/
         }
       })
 
