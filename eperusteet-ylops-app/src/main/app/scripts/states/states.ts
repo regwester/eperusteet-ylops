@@ -90,7 +90,6 @@ ylopsApp
             return fetched.$promise ? fetched.$promise : fetched;
           }],
           pohjaModel: ['opsModel', 'OpetussuunnitelmaCRUD', function(opsModel, OpetussuunnitelmaCRUD) {
-            console.log(opsModel);
             return opsModel && opsModel.pohja ? OpetussuunnitelmaCRUD.get({
               opsId: opsModel.pohja.id
             }).$promise : {};
