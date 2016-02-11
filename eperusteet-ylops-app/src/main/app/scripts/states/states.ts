@@ -90,9 +90,10 @@ ylopsApp
             return fetched.$promise ? fetched.$promise : fetched;
           }],
           pohjaModel: ['opsModel', 'OpetussuunnitelmaCRUD', function(opsModel, OpetussuunnitelmaCRUD) {
-            return OpetussuunnitelmaCRUD.get({
+            console.log(opsModel);
+            return opsModel && opsModel.pohja ? OpetussuunnitelmaCRUD.get({
               opsId: opsModel.pohja.id
-            }).$promise;
+            }).$promise : {};
           }],
           vuosiluokkakokonaisuudet: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
             return vuosiluokatService.getVuosiluokkakokonaisuudet(opsModel);

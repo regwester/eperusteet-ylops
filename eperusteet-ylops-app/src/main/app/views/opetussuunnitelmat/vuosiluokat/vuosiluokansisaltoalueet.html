@@ -3,8 +3,9 @@
   <div class="header">
       <div class="toggle-nimi">
         <span ng-show="perusteOpVlk.sisaltoalueinfo.teksti" class="toggle" collapse-toggler="sisaltoInfoCollapse"></span>
-        <span class="nimi nimi-otsikko" ng-click="sisaltoInfoCollapse = !sisaltoInfoCollapse"
-              ng-bind="perusteOpVlk.sisaltoalueinfo.otsikko | kaanna"></span>
+        <span class="nimi nimi-otsikko" ng-click="sisaltoInfoCollapse = !sisaltoInfoCollapse">
+          <span ng-bind="perusteOpVlk.sisaltoalueinfo.otsikko | kaanna"></span>
+        </span>
       </div>
     </div>
     <div class="peruste-body ikoni-peruste" collapse="sisaltoInfoCollapse || !perusteOpVlk.sisaltoalueinfo.teksti">
