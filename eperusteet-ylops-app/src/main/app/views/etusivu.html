@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="etusivu-osiot col-md-8 col-sm-9">
+  <div style="{{ !hasLuontiBox && 'margin: 10px;' }}" class="etusivu-osiot {{ hasLuontiBox && 'col-md-8 col-sm-9' }}">
     <div class="osio" kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'luku' }">
       <h2 kaanna="'omat-opetussuunnitelmat'"></h2>
       <div ng-controller="OpetussuunnitelmatListaController">
@@ -15,8 +15,8 @@
     </div>
   </div>
 
-  <div class="etusivu-osiot etusivu-lisaajat col-md-4 col-sm-3">
-    <div kayttajaoikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'luonti' }">
+  <div class="etusivu-osiot etusivu-lisaajat col-md-4 col-sm-3" ng-show="hasLuontiBox">
+    <div ng-show="hasLuontiOps">
       <h2 kaanna="'aloita-uusi-ops'"></h2>
       <form name="aloitauusiForm" ng-controller="UusiOpsController">
         <label>
@@ -41,22 +41,9 @@
       </form>
     </div>
 
-    <div class="pohjaosio" kayttajaoikeustarkastelu="{ target: 'pohja', permission: 'luonti' }">
+    <div class="pohjaosio" ng-show="hasLuontiPohja">
       <h2 class="otsikko" kaanna="'aloita-uusi-pohja'"></h2>
       <button class="btn btn-primary luo-nappi" ng-click="addNewPohja()" kaanna="'luo-pohja'"></button>
     </div>
   </div>
 </div>
-
-<!-- <div class="osio col-md-3 col-sm-12">
-  <h2></h2>
-  <div ng-controller="TiedotteetController" class="etusivu-tiedotteet">
-    <h3 kaanna="'tiedotteet'"></h3>
-    <div class="tiedote-list-item" ng-repeat="tiedote in tiedotteet">
-      <a ng-bind="tiedote.nimi | kaanna"></a>
-      <div class="tiedote-lista-tiedot">
-        <span ng-bind="tiedote.muokattu"></span>
-      </div>
-    </div>
-  </div>
-</div> -->
