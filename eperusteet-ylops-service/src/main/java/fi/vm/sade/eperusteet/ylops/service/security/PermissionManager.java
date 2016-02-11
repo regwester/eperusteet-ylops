@@ -131,13 +131,13 @@ public class PermissionManager {
             case KOMMENTOINTI:
                 permissions = EnumSet.allOf(RolePermission.class);
                 break;
-            case MUOKKAUS:
-                permissions = EnumSet.of(RolePermission.CRUD, RolePermission.READ_UPDATE, RolePermission.ADMIN);
-                break;
             case TILANVAIHTO:
             case LUONTI:
             case POISTO:
                 permissions = EnumSet.of(RolePermission.CRUD, RolePermission.ADMIN);
+                break;
+            case MUOKKAUS:
+                permissions = EnumSet.of(RolePermission.CRUD, RolePermission.READ_UPDATE, RolePermission.ADMIN);
                 break;
             case HALLINTA:
                 permissions = EnumSet.of(RolePermission.ADMIN);
@@ -248,10 +248,10 @@ public class PermissionManager {
             case CRUD:
                 permissions.add(Permission.LUONTI);
                 permissions.add(Permission.POISTO);
+                permissions.add(Permission.TILANVAIHTO);
             case READ_UPDATE:
                 permissions.add(Permission.LUKU);
                 permissions.add(Permission.MUOKKAUS);
-                permissions.add(Permission.TILANVAIHTO);
             case READ:
                 permissions.add(Permission.LUKU);
                 permissions.add(Permission.KOMMENTOINTI);
