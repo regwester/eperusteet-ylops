@@ -89,11 +89,6 @@ ylopsApp
             var fetched = opsService.fetch(opsId);
             return fetched.$promise ? fetched.$promise : fetched;
           }],
-          pohjaModel: ['opsModel', 'OpetussuunnitelmaCRUD', function(opsModel, OpetussuunnitelmaCRUD) {
-            return opsModel && opsModel.pohja ? OpetussuunnitelmaCRUD.get({
-              opsId: opsModel.pohja.id
-            }).$promise : {};
-          }],
           vuosiluokkakokonaisuudet: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
             return vuosiluokatService.getVuosiluokkakokonaisuudet(opsModel);
           }],
