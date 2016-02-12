@@ -108,9 +108,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private LiiteService liiteService;
 
     @Autowired
-    private OhjeService ohjeService;
-
-    @Autowired
     private KoodistoService koodistoService;
 
     @Autowired
@@ -164,21 +161,21 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         addMetaPages(docBase);
 
         // Sisältöelementit
-        addSisaltoElement(docBase);
-
+        addYhteisetOsuudet(docBase);
 
         // Perusopetus
-        if (ops.getKoulutustyyppi() == KoulutusTyyppi.PERUSOPETUS) {
-            PerusteDto perusteDto;
+        if (ops.getKoulutustyyppi() != null && ops.getKoulutustyyppi() == KoulutusTyyppi.PERUSOPETUS) {
+            PerusteDto perusteDto = null;
             if (ops.getCachedPeruste() != null && ops.getCachedPeruste().getPerusteId() != null) {
                 // Käytetään ensisijaisesti cachetettua perustetta
                 perusteDto = eperusteetService.getEperusteetPeruste(ops.getCachedPeruste().getPerusteId());
                 if (perusteDto == null) {
                     perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-                } if (perusteDto != null) {
-                    docBase.setPerusteDto(perusteDto);
-                    addVuosiluokkakokonaisuudet(docBase);
                 }
+            }
+            if (perusteDto != null) {
+                docBase.setPerusteDto(perusteDto);
+                addVuosiluokkakokonaisuudet(docBase);
             }
         }
 
@@ -258,94 +255,46 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addSisaltoElement(DokumenttiBase docBase)
+    private void addYhteisetOsuudet(DokumenttiBase docBase)
             throws IOException, SAXException, ParserConfigurationException {
 
-        docBase.getGenerator().increaseDepth();
-
-        for (TekstiKappaleViite viite : docBase.getOps().getTekstit().getLapset()) {
-            // Tedään luvut
-            Element header = docBase.getDocument().createElement("h" + docBase.getGenerator().getDepth());
-            header.setAttribute("number", docBase.getGenerator().generateNumber());
-            header.appendChild(docBase.getDocument().createTextNode(
-                    getTextString(viite.getTekstiKappale().getNimi(), docBase.getKieli())));
-            docBase.getBodyElement().appendChild(header);
-
-            // Perusteen teksti luvulle
-            addPerusteTeksti(docBase, viite);
-
-            // Luodaan pohjan sisältö kappaleelle
-            String teskti = "<div>" + getTextString(viite.getTekstiKappale().getTeksti(), docBase.getKieli()) + "</div>";
-
-            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
-            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
-
-            docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
-
-            addTekstiKappale(docBase, viite);
-
-            docBase.getGenerator().increaseNumber();
+        if (docBase.getOps() != null & docBase.getOps().getTekstit() != null) {
+            addTekstiKappale(docBase, docBase.getOps().getTekstit());
         }
     }
 
     private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite)
             throws ParserConfigurationException, IOException, SAXException {
-
         docBase.getGenerator().increaseDepth();
+
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
-            // Tedään luvut
-            String nimi = getTextString(lapsi.getTekstiKappale().getNimi(), docBase.getKieli());
-            Element header = docBase.getDocument().createElement("h" + docBase.getGenerator().getDepth());
-            header.setAttribute("number", docBase.getGenerator().generateNumber());
-            header.appendChild(docBase.getDocument().createTextNode(nimi));
-            docBase.getBodyElement().appendChild(header);
+            if (lapsi.getTekstiKappale() != null && lapsi.getTekstiKappale().getNimi() != null) {
+                addHeader(docBase, getTextString(lapsi.getTekstiKappale().getNimi(), docBase.getKieli()));
 
-            // Perusteen teksti luvulle
-            addPerusteTeksti(docBase, lapsi);
+                // Opsin teksti luvulle
+                if (lapsi.getTekstiKappale().getTeksti() != null) {
+                    String teskti = "<div>" + getTextString(lapsi.getTekstiKappale().getTeksti(), docBase.getKieli()) + "</div>";
 
-            // Luodaan sisältö
-            String teskti = "<div>" + getTextString(lapsi.getTekstiKappale().getTeksti(), docBase.getKieli()) + "</div>";
+                    Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
+                    Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
 
-            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
-            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+                    docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
 
-            docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
+                }
+                // Rekursiivisesti
+                addTekstiKappale(docBase, lapsi);
 
-            // Rekursiivisesti
-            addTekstiKappale(docBase, lapsi);
-
-            docBase.getGenerator().increaseNumber();
+                docBase.getGenerator().increaseNumber();
+            }
         }
+
         docBase.getGenerator().decreaseDepth();
-    }
-
-    private void addPerusteTeksti(DokumenttiBase docBase, TekstiKappaleViite viite)
-            throws ParserConfigurationException, IOException, SAXException {
-
-        // Perusteen teksti luvulle
-        List<OhjeDto> ohjeDto = ohjeService.getTekstiKappaleOhjeet(viite.getTekstiKappale().getTunniste());
-
-        // Luodaan sisältö
-        ohjeDto.stream()
-                .filter(ohje -> ohje.getTyyppi() == OhjeTyyppi.PERUSTETEKSTI)
-                .forEach(ohje -> {
-            LokalisoituTekstiDto tekstiDto = ohje.getTeksti();
-            LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
-
-            // Luodaan sisältö
-            String teskti = "<cite>" + getTextString(teksti, docBase.getKieli()) + "</cite>";
-
-            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
-            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
-
-            docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
-        });
     }
 
     private void addVuosiluokkakokonaisuudet(DokumenttiBase docBase) {
         Set<OpsVuosiluokkakokonaisuus> opsVlkset = docBase.getOps().getVuosiluokkakokonaisuudet();
 
-        // Haetaan vuosiluokkkakokonaisuudet
+        // Haetaan omat vuosiluokkkakokonaisuudet
         ArrayList<Vuosiluokkakokonaisuus> vlkset = new ArrayList<>();
         for (OpsVuosiluokkakokonaisuus opsVlk : opsVlkset) {
             if (opsVlk.isOma())
@@ -359,34 +308,40 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 .collect(Collectors.toCollection(ArrayList::new));
 
         for (Vuosiluokkakokonaisuus vlk : vlkset) {
+            docBase.getGenerator().increaseDepth();
 
             addHeader(docBase, getTextString(vlk.getNimi(), docBase.getKieli()));
 
-            // Vuosiluokkan sisältö
-            docBase.getGenerator().increaseDepth();
 
             // Perusteen osa
-            PerusteVuosiluokkakokonaisuusDto perusteVlk = docBase.getPerusteDto().getPerusopetus()
-                    .getVuosiluokkakokonaisuudet(vlk.getTunniste().getId()).get();
+            PerusopetuksenPerusteenSisaltoDto poPerusteenSisaltoDto = docBase.getPerusteDto().getPerusopetus();
+            if (poPerusteenSisaltoDto != null && vlk.getTunniste() != null && vlk.getTunniste().getId() != null) {
+                Optional<PerusteVuosiluokkakokonaisuusDto> optPerusteVlkDto =
+                        poPerusteenSisaltoDto.getVuosiluokkakokonaisuudet(vlk.getTunniste().getId());
+                if (optPerusteVlkDto.isPresent()) {
+                    PerusteVuosiluokkakokonaisuusDto perusteVlk = optPerusteVlkDto.get();
 
-            addSiirtyminenEdellisesta(docBase, vlk, perusteVlk);
+                    // Vuosiluokkan sisältö
+                    docBase.getGenerator().increaseDepth();
 
-            addTehtava(docBase, vlk, perusteVlk);
+                    addSiirtyminenEdellisesta(docBase, vlk, perusteVlk);
 
-            addSiirtyminenSeuraavaan(docBase, vlk, perusteVlk);
+                    addTehtava(docBase, vlk, perusteVlk);
 
-            addLaajaalainenOsaaminen(docBase, vlk, perusteVlk);
+                    addSiirtyminenSeuraavaan(docBase, vlk, perusteVlk);
 
-            addPaikallisestiPaatettavat(docBase, perusteVlk);
+                    addLaajaalainenOsaaminen(docBase, vlk, perusteVlk);
 
-            addOppiaineet(docBase, vlk);
+                    addPaikallisestiPaatettavat(docBase, perusteVlk);
+
+                    addOppiaineet(docBase, vlk);
+
+                    docBase.getGenerator().decreaseDepth();
+                }
+            }
 
             docBase.getGenerator().decreaseDepth();
-
-            docBase.getGenerator().increaseNumber();
         }
-
-        docBase.getGenerator().decreaseDepth();
     }
 
     private void addSiirtyminenEdellisesta(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk,
@@ -934,7 +889,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 TermiDto termiDto = termistoService.getTermi(docBase.getOps().getId(), element.getAttribute("data-viite"));
                 if (termiDto == null) {
                     // todo: perusteen viite
-                    LOG.debug("missing abbr");
                 }
                 if (termiDto != null && termiDto.isAlaviite()) {
                     element.setAttribute("number", String.valueOf(noteNumber));

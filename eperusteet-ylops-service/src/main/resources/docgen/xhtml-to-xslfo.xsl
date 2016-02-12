@@ -643,9 +643,6 @@
     </xsl:template>
 
     <xsl:template match="abbr">
-        <xsl:if test="@footnote='1'">
-            <xsl:text>ON ALATUNNISTE</xsl:text>
-        </xsl:if>
 
         <xsl:value-of select="." />
 
