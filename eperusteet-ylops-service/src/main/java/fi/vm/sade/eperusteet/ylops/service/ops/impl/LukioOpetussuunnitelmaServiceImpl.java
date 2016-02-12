@@ -592,7 +592,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         if (!oaKurssi.isOma()) {
             throw new BusinessRuleViolationException("kurssia ei voi poistaa");
         }
-        if (!oaKurssi.getKurssi().getTyyppi().isPaikallinen()) {
+        if (!oaKurssi.getKurssi().getTyyppi().isPaikallinen() &&
+                oaKurssi.getKurssi().getTyyppi().compareTo(LukiokurssiTyyppi.VALTAKUNNALLINEN_SOVELTAVA) != 0 ) {
             throw new BusinessRuleViolationException("Valtakunnallista kurssia ei voida poista..");
         }
 
