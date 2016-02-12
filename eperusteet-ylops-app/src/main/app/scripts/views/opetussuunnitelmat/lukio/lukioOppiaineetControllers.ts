@@ -436,6 +436,7 @@ ylopsApp
                 parentOppiaineId: $stateParams.oppiaineId
             }, { reload: true, notify: true });
         };
+        console.log("add tarjonnasta kielitarjontamodaali");
         $scope.addTarjonnasta = (pohjanOppiaine) => {
             $modal.open({
                 templateUrl: 'views/opetussuunnitelmat/modals/lukioKieliTarjontaModaali.html',
@@ -787,6 +788,8 @@ ylopsApp
             return 'kieli';
         } else if (oppiaine.koodiArvo === 'KT') {
             return 'uskonto';
+        } else if (oppiaine.koodiArvo === 'AI') {
+            return 'aidinkieli';
         } else {
             $log.warn('Oppiaineen täytyy olla kieli tai uskonto');
             return '';
