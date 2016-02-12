@@ -19,7 +19,6 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
-import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
@@ -32,11 +31,9 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Laajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
-import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -49,7 +46,6 @@ import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
 import org.apache.xml.security.utils.Base64;
@@ -58,7 +54,6 @@ import org.jsoup.helper.W3CDom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -258,7 +253,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private void addYhteisetOsuudet(DokumenttiBase docBase)
             throws IOException, SAXException, ParserConfigurationException {
 
-        if (docBase.getOps() != null & docBase.getOps().getTekstit() != null) {
+        if (docBase.getOps().getTekstit() != null) {
             addTekstiKappale(docBase, docBase.getOps().getTekstit());
         }
     }
@@ -310,258 +305,144 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         for (Vuosiluokkakokonaisuus vlk : vlkset) {
             docBase.getGenerator().increaseDepth();
 
-            addHeader(docBase, getTextString(vlk.getNimi(), docBase.getKieli()));
+            if (vlk.getNimi() != null) {
+                addHeader(docBase, getTextString(vlk.getNimi(), docBase.getKieli()));
 
+                PerusopetuksenPerusteenSisaltoDto poPerusteenSisaltoDto = docBase.getPerusteDto().getPerusopetus();
+                if (poPerusteenSisaltoDto != null && vlk.getTunniste().getId() != null) {
+                    Optional<PerusteVuosiluokkakokonaisuusDto> optPerusteVlkDto =
+                            poPerusteenSisaltoDto.getVuosiluokkakokonaisuudet(vlk.getTunniste().getId());
+                    if (optPerusteVlkDto.isPresent()) {
+                        PerusteVuosiluokkakokonaisuusDto perusteVlk = optPerusteVlkDto.get();
 
-            // Perusteen osa
-            PerusopetuksenPerusteenSisaltoDto poPerusteenSisaltoDto = docBase.getPerusteDto().getPerusopetus();
-            if (poPerusteenSisaltoDto != null && vlk.getTunniste() != null && vlk.getTunniste().getId() != null) {
-                Optional<PerusteVuosiluokkakokonaisuusDto> optPerusteVlkDto =
-                        poPerusteenSisaltoDto.getVuosiluokkakokonaisuudet(vlk.getTunniste().getId());
-                if (optPerusteVlkDto.isPresent()) {
-                    PerusteVuosiluokkakokonaisuusDto perusteVlk = optPerusteVlkDto.get();
+                        // Vuosiluokkan sisältö
+                        docBase.getGenerator().increaseDepth();
 
-                    // Vuosiluokkan sisältö
-                    docBase.getGenerator().increaseDepth();
+                        if (perusteVlk.getSiirtymaEdellisesta() != null) {
+                            addVlkYleisetOsiot(docBase, vlk, perusteVlk.getSiirtymaEdellisesta());
+                        }
 
-                    addSiirtyminenEdellisesta(docBase, vlk, perusteVlk);
+                        if (perusteVlk.getTehtava() != null) {
+                            addVlkYleisetOsiot(docBase, vlk, perusteVlk.getTehtava());
+                        }
 
-                    addTehtava(docBase, vlk, perusteVlk);
+                        if (perusteVlk.getSiirtymaSeuraavaan() != null) {
+                            addVlkYleisetOsiot(docBase, vlk, perusteVlk.getSiirtymaSeuraavaan());
+                        }
 
-                    addSiirtyminenSeuraavaan(docBase, vlk, perusteVlk);
+                        if (perusteVlk.getLaajaalainenOsaaminen() != null) {
+                            addVlkYleisetOsiot(docBase, vlk, perusteVlk.getLaajaalainenOsaaminen());
+                        }
 
-                    addLaajaalainenOsaaminen(docBase, vlk, perusteVlk);
+                        addPaikallisestiPaatettavat(docBase, perusteVlk);
 
-                    addPaikallisestiPaatettavat(docBase, perusteVlk);
+                        addOppiaineet(docBase, vlk);
 
-                    addOppiaineet(docBase, vlk);
-
-                    docBase.getGenerator().decreaseDepth();
+                        docBase.getGenerator().decreaseDepth();
+                    }
                 }
+                docBase.getGenerator().decreaseDepth();
             }
-
-            docBase.getGenerator().decreaseDepth();
         }
     }
 
-    private void addSiirtyminenEdellisesta(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk,
-                                           PerusteVuosiluokkakokonaisuusDto perusteVlk) {
-
-        PerusteTekstiOsaDto perusteTekstiOsaDto = perusteVlk.getSiirtymaEdellisesta();
-        LokalisoituTeksti perusteOtsikko = mapper.map(perusteTekstiOsaDto.getOtsikko(), LokalisoituTeksti.class);
-
+    private void addVlkYleisetOsiot(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk,
+                                    PerusteTekstiOsaDto perusteTekstiOsaDto) {
         // Otsikko
-        addHeader(docBase, getTextString(perusteOtsikko, docBase.getKieli()));
+        if (perusteTekstiOsaDto.getOtsikko() != null) {
+            addHeader(docBase, getTextString(perusteTekstiOsaDto.getOtsikko(), docBase.getKieli()));
 
-        // Perusteen teksi
-        LokalisoituTeksti perusteTeksti = mapper.map(perusteTekstiOsaDto.getTeksti(), LokalisoituTeksti.class);
-        addLokalisoituteksti(docBase, perusteTeksti, "cite");
-
-        // Opsin teksti
-        Tekstiosa siirtymaEdellisesta = vlk.getSiirtymaEdellisesta();
-        if (siirtymaEdellisesta != null)
-            addLokalisoituteksti(docBase, siirtymaEdellisesta.getTeksti(), "div");
-
-        docBase.getGenerator().increaseNumber();
-    }
-
-    private void addTehtava(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk,
-                            PerusteVuosiluokkakokonaisuusDto perusteVlk) {
-
-        // Perusteen osa
-        PerusteTekstiOsaDto perusteTekstiOsaDto = perusteVlk.getTehtava();
-        LokalisoituTeksti perusteOtsikko = mapper.map(perusteTekstiOsaDto.getOtsikko(), LokalisoituTeksti.class);
-
-        // Otsikko
-        addHeader(docBase, getTextString(perusteOtsikko, docBase.getKieli()));
-
-        // Perusteen teksi
-        LokalisoituTeksti perusteTeksti = mapper.map(perusteTekstiOsaDto.getTeksti(), LokalisoituTeksti.class);
-        addLokalisoituteksti(docBase, perusteTeksti, "cite");
-
-        // Opsin teksti
-        Tekstiosa tekstiosa = vlk.getTehtava();
-        if (tekstiosa != null)
-            addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
-
-        docBase.getGenerator().increaseNumber();
-
-    }
-
-    private void addSiirtyminenSeuraavaan(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk,
-                                          PerusteVuosiluokkakokonaisuusDto perusteVlk) {
-
-        // Perusteen osa
-        PerusteTekstiOsaDto perusteTekstiOsaDto = perusteVlk.getSiirtymaSeuraavaan();
-        LokalisoituTeksti perusteOtsikko = mapper.map(perusteTekstiOsaDto.getOtsikko(), LokalisoituTeksti.class);
-
-        // Otsikko
-        addHeader(docBase, getTextString(perusteOtsikko, docBase.getKieli()));
-
-        // Perusteen teksi
-        LokalisoituTeksti perusteTeksti = mapper.map(perusteTekstiOsaDto.getTeksti(), LokalisoituTeksti.class);
-        addLokalisoituteksti(docBase, perusteTeksti, "cite");
-
-        // Opsin teksti
-        Tekstiosa tekstiosa = vlk.getSiirtymaSeuraavaan();
-        if (tekstiosa != null)
-            addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
-
-        docBase.getGenerator().increaseNumber();
-
-    }
-
-    private void addLaajaalainenOsaaminen(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk,
-                                          PerusteVuosiluokkakokonaisuusDto perusteVlk) {
-
-        PerusteTekstiOsaDto perusteTekstiOsaDto = perusteVlk.getLaajaalainenOsaaminen();
-        LokalisoituTeksti perusteOtsikko = mapper.map(perusteTekstiOsaDto.getOtsikko(), LokalisoituTeksti.class);
-
-        // Otsikko
-        addHeader(docBase, getTextString(perusteOtsikko, docBase.getKieli()));
-
-        // Perusteen teksi
-        LokalisoituTeksti perusteTeksti = mapper.map(perusteTekstiOsaDto.getTeksti(), LokalisoituTeksti.class);
-        addLokalisoituteksti(docBase, perusteTeksti, "cite");
-
-        // Opsin teksti
-        Tekstiosa laajaalainenOsaaminen = vlk.getLaajaalainenOsaaminen();
-        if (laajaalainenOsaaminen != null)
-            addLokalisoituteksti(docBase, laajaalainenOsaaminen.getTeksti(), "div");
-
-        // Laajaalaisen osaamisen osat
-        addLaajaalainenOsaamisenOsat(docBase, vlk, perusteVlk);
-
-        docBase.getGenerator().increaseNumber();
-    }
-
-    private void addLaajaalainenOsaamisenOsat(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk,
-                                              PerusteVuosiluokkakokonaisuusDto perusteVlk) {
-
-        Set<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto> perusteOsaamiset = perusteVlk.getLaajaalaisetOsaamiset();
-        Set<Laajaalainenosaaminen> osaamiset = vlk.getLaajaalaisetosaamiset();
-
-        List<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto> perusteOsaamisetLista = perusteOsaamiset.stream()
-                .sorted((pvl1, pvl2) -> pvl1.getLaajaalainenOsaaminen().getNimi().get(docBase.getKieli())
-                        .compareTo(pvl2.getLaajaalainenOsaaminen().getNimi().get(docBase.getKieli())))
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        docBase.getGenerator().increaseDepth();
-        docBase.getGenerator().increaseDepth();
-        docBase.getGenerator().increaseDepth();
-
-        perusteOsaamisetLista.stream()
-                .filter(osat -> osat.getLaajaalainenOsaaminen() != null)
-                .forEach(osat -> {
-            LokalisoituTekstiDto nimi = osat.getLaajaalainenOsaaminen().getNimi();
-            LokalisoituTekstiDto kuvaus = osat.getLaajaalainenOsaaminen().getKuvaus();
-
-            // Perusteen teksti
-            addHeader(docBase, getTextString(nimi, docBase.getKieli()));
-            addLokalisoituteksti(docBase, mapper.map(kuvaus, LokalisoituTeksti.class), "cite");
+            // Perusteen teksi
+            if (perusteTekstiOsaDto.getTeksti() != null) {
+                addLokalisoituteksti(docBase, perusteTekstiOsaDto.getTeksti(), "cite");
+            }
 
             // Opsin teksti
-            Optional<Laajaalainenosaaminen> vastaavaOpsissa = osaamiset.stream()
-                    .filter(osaaminen -> osaaminen.getLaajaalainenosaaminen().getViite()
-                            .equals(osat.getLaajaalainenOsaaminen().getTunniste().toString()))
-                    .findFirst();
-            addLokalisoituteksti(docBase, vastaavaOpsissa.get().getKuvaus(), "div");
+            Tekstiosa siirtymaEdellisesta = vlk.getSiirtymaEdellisesta();
+            if (siirtymaEdellisesta != null && siirtymaEdellisesta.getTeksti() != null) {
+                addLokalisoituteksti(docBase, siirtymaEdellisesta.getTeksti(), "div");
+            }
 
             docBase.getGenerator().increaseNumber();
-        });
-
-        docBase.getGenerator().decreaseDepth();
-        docBase.getGenerator().decreaseDepth();
-        docBase.getGenerator().decreaseDepth();
+        }
     }
 
     private void addPaikallisestiPaatettavat(DokumenttiBase docBase, PerusteVuosiluokkakokonaisuusDto perusteVlk) {
         PerusteTekstiOsaDto perusteTekstiOsaDtoDto = perusteVlk.getPaikallisestiPaatettavatAsiat();
-        if (perusteTekstiOsaDtoDto == null)
-            return;
+        if (perusteTekstiOsaDtoDto != null) {
+            if (perusteTekstiOsaDtoDto.getOtsikko() != null) {
+                LokalisoituTekstiDto otsikkoDto = perusteTekstiOsaDtoDto.getOtsikko();
+                addHeader(docBase, getTextString(otsikkoDto, docBase.getKieli()));
 
-        LokalisoituTekstiDto otsikkoDto = perusteTekstiOsaDtoDto.getOtsikko();
-        LokalisoituTekstiDto tekstiDto = perusteTekstiOsaDtoDto.getTeksti();
+                if (perusteTekstiOsaDtoDto.getTeksti() != null) {
+                    LokalisoituTekstiDto tekstiDto = perusteTekstiOsaDtoDto.getTeksti();
+                    addLokalisoituteksti(docBase, tekstiDto, "cite");
+                }
 
-        if (otsikkoDto == null || tekstiDto == null)
-            return;
-
-        LokalisoituTeksti otsikko = mapper.map(otsikkoDto, LokalisoituTeksti.class);
-        LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
-
-        if (otsikko == null || teksti == null)
-            return;
-
-        addHeader(docBase, getTextString(otsikko, docBase.getKieli()));
-        addLokalisoituteksti(docBase, teksti, "cite");
-
-        docBase.getGenerator().increaseNumber();
+                docBase.getGenerator().increaseNumber();
+            }
+        }
     }
 
     private void addOppiaineet(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk) {
-        Set<OpsOppiaine> oppiaineet = docBase.getOps().getOppiaineet();
-        if (oppiaineet == null)
-            return;
+        if (docBase.getOps() != null && docBase.getOps().getOppiaineet() != null) {
+            Set<OpsOppiaine> oppiaineet = docBase.getOps().getOppiaineet();
 
-        List<OpsOppiaine> oppiaineetAsc = oppiaineet.stream()
-                .filter(oa -> oa.getOppiaine() != null)
-                .sorted((oa1, oa2) -> oa1.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())
-                        .compareTo(oa2.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())))
-                .collect(Collectors.toCollection(ArrayList::new));
+            List<OpsOppiaine> oppiaineetAsc = oppiaineet.stream()
+                    .filter(oa -> oa.getOppiaine() != null)
+                    .sorted((oa1, oa2) -> oa1.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())
+                            .compareTo(oa2.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())))
+                    .collect(Collectors.toCollection(ArrayList::new));
 
-        addHeader(docBase, messages.translate("oppiaineet", docBase.getKieli()));
+            addHeader(docBase, messages.translate("oppiaineet", docBase.getKieli()));
 
-        docBase.getGenerator().increaseDepth();
+            docBase.getGenerator().increaseDepth();
 
-        // Oppiaineet
-        for (OpsOppiaine opsOppiaine : oppiaineetAsc) {
-            Oppiaine oppiaine = opsOppiaine.getOppiaine();
+            // Oppiaineet akkosjärjestyksessä
+            for (OpsOppiaine opsOppiaine : oppiaineetAsc) {
+                Oppiaine oppiaine = opsOppiaine.getOppiaine();
 
-            Set<Oppiaineenvuosiluokkakokonaisuus> oaVlkset = oppiaine.getVuosiluokkakokonaisuudet();
+                Set<Oppiaineenvuosiluokkakokonaisuus> oaVlkset = oppiaine.getVuosiluokkakokonaisuudet();
 
-            Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk = oaVlkset.stream()
-                    .filter(o -> o.getVuosiluokkakokonaisuus().getId() == vlk.getTunniste().getId())
-                    .findFirst();
+                Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk = oaVlkset.stream()
+                        .filter(o -> o.getVuosiluokkakokonaisuus().getId() == vlk.getTunniste().getId())
+                        .findFirst();
 
-            if (optOaVlk.isPresent()) {
-                UUID tunniste = oppiaine.getTunniste();
+                if (optOaVlk.isPresent()) {
+                    UUID tunniste = oppiaine.getTunniste();
 
-                addHeader(docBase, getTextString(oppiaine.getNimi(), docBase.getKieli()));
-                addOppiaineTehtava(docBase, tunniste, oppiaine, docBase.getPerusteDto());
+                    addHeader(docBase, getTextString(oppiaine.getNimi(), docBase.getKieli()));
+                    addOppiaineTehtava(docBase, tunniste, oppiaine);
 
-                docBase.getGenerator().increaseDepth();
-                docBase.getGenerator().increaseDepth();
+                    docBase.getGenerator().increaseDepth();
+                    docBase.getGenerator().increaseDepth();
 
-                Oppiaineenvuosiluokkakokonaisuus oaVlk = optOaVlk.get();
 
-                // Perusteen osa
-                Optional<PerusteOppiaineDto> optPerusteOppiaineDto = docBase.getPerusteDto().getPerusopetus().getOppiaine(tunniste);
 
-                PerusteOppiaineDto perusteOppiaineDto = null;
-                if (optPerusteOppiaineDto.isPresent())
-                    perusteOppiaineDto = optPerusteOppiaineDto.get();
+                    Oppiaineenvuosiluokkakokonaisuus oaVlk = optOaVlk.get();
+                    Optional<PerusteOppiaineDto> optPerusteOppiaineDto = docBase.getPerusteDto().getPerusopetus().getOppiaine(tunniste);
 
-                if (perusteOppiaineDto != null) {
-                    Optional<PerusteOppiaineenVuosiluokkakokonaisuusDto> optPerusteOaVlkDto =
-                            perusteOppiaineDto.getVuosiluokkakokonaisuus(oaVlk.getVuosiluokkakokonaisuus().getId());
-                    if (optPerusteOaVlkDto.isPresent()) {
-                        // Peruste & ops
-                        addOppiaineVuosiluokkkakokonaisuus(docBase, optPerusteOaVlkDto.get(), oaVlk, vlk);
+                    PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto = null;
+                    if (optPerusteOppiaineDto.isPresent()) {
+                        PerusteOppiaineDto perusteOppiaineDto = optPerusteOppiaineDto.get();
+
+                        Optional<PerusteOppiaineenVuosiluokkakokonaisuusDto> optPerusteOaVlkDto =
+                                perusteOppiaineDto.getVuosiluokkakokonaisuus(oaVlk.getVuosiluokkakokonaisuus().getId());
+                        if (optPerusteOaVlkDto.isPresent()) {
+                            perusteOaVlkDto = optPerusteOaVlkDto.get();
+                        }
                     }
+
+                    // Oppiaineen vuosiluokkakokonaiuuden generointi
+                    addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk, vlk);
+
+                    docBase.getGenerator().decreaseDepth();
+                    docBase.getGenerator().decreaseDepth();
                 }
-
-                docBase.getGenerator().decreaseDepth();
-                docBase.getGenerator().decreaseDepth();
+                docBase.getGenerator().increaseNumber();
             }
-
-
-
-            docBase.getGenerator().increaseNumber();
-
-
+            docBase.getGenerator().decreaseDepth();
         }
-
-        docBase.getGenerator().decreaseDepth();
     }
 
     private void addOppiaineVuosiluokkkakokonaisuus(DokumenttiBase docBase,
@@ -571,112 +452,80 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
 
         // Tehtävä
-        PerusteTekstiOsaDto perusteTekstiOsaDto = perusteOaVlkDto.getTehtava();
-        if (perusteTekstiOsaDto != null) {
-            LokalisoituTekstiDto otsikko = perusteTekstiOsaDto.getOtsikko();
-            LokalisoituTekstiDto teksti = perusteTekstiOsaDto.getTeksti();
-            if (otsikko != null) {
-                addHeader(docBase, getTextString(otsikko, docBase.getKieli()));
-            }
-            if (teksti != null) {
-                addOppiainePerusteTeksti(docBase, perusteTekstiOsaDto);
-            }
-        }
-
-        Tekstiosa tekstiOsa = oaVlkDto.getTehtava();
-        if (tekstiOsa != null) {
-            LokalisoituTeksti teksti = tekstiOsa.getTeksti();
-            if (teksti != null) {
-                addLokalisoituteksti(docBase, teksti, "div");
-            }
+        if (perusteOaVlkDto != null) {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
+        } else {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava());
         }
 
         // Tavoitteet
-        List<PerusteOpetuksentavoiteDto> tavoitteet = perusteOaVlkDto.getTavoitteet();
-
-        if (tavoitteet != null) {
+        if (perusteOaVlkDto != null && perusteOaVlkDto.getTavoitteet() != null) {
+            List<PerusteOpetuksentavoiteDto> tavoitteet = perusteOaVlkDto.getTavoitteet();
             addHeader(docBase, messages.translate("tavoitteet-ja-sisallot-vuosiluokittain", docBase.getKieli()));
+
+            for (PerusteOpetuksentavoiteDto perusteTavoiteDto : tavoitteet) {
+                LokalisoituTekstiDto tavoiteDto = perusteTavoiteDto.getTavoite();
+                addLokalisoituteksti(docBase, tavoiteDto, "cite");
+            }
         }
-
-        /*for (PerusteOpetuksentavoiteDto perusteTavoiteDto : tavoitteet) {
-
-            LokalisoituTekstiDto tavoiteDto = perusteTavoiteDto.getTavoite();
-            LokalisoituTeksti tavoite = mapper.map(tavoiteDto, LokalisoituTeksti.class);
-            addLokalisoituteksti(doc, bodyElement, tavoite, "cite", kieli);
-        }*/
-
-        ArrayList<Oppiaineenvuosiluokka> vuosiluokat = oaVlkDto.getVuosiluokat().stream()
-                .sorted((el1, el2) -> el1.getVuosiluokka().toString().compareTo(el2.getVuosiluokka().toString()))
-                .collect(Collectors.toCollection(ArrayList::new));
 
         // Oppiaine vuosiluokka
+        /*ArrayList<Oppiaineenvuosiluokka> vuosiluokat = oaVlkDto.getVuosiluokat().stream()
+                .sorted((el1, el2) -> el1.getVuosiluokka().toString().compareTo(el2.getVuosiluokka().toString()))
+                .collect(Collectors.toCollection(ArrayList::new));
         for (Oppiaineenvuosiluokka oaVuosiluokka : vuosiluokat) {
             // Vuosiluokka otsikko
-            try {
-                addHeader(docBase,
-                        messages.translate(oaVuosiluokka.getVuosiluokka().toString(), docBase.getKieli()));
-            } catch (NoSuchMessageException ex) {
-                LOG.warn(ex.getLocalizedMessage());
-                addHeader(docBase, oaVuosiluokka.getVuosiluokka().toString());
-            }
+            addHeader(docBase, messages.translate(oaVuosiluokka.getVuosiluokka().toString(), docBase.getKieli()));
 
-            for (Keskeinensisaltoalue ksa : oaVuosiluokka.getSisaltoalueet()) {
-                docBase.getGenerator().increaseDepth();
+            if (oaVuosiluokka.getSisaltoalueet() != null) {
+                for (Keskeinensisaltoalue ksa : oaVuosiluokka.getSisaltoalueet()) {
+                    docBase.getGenerator().increaseDepth();
 
-                addHeader(docBase, getTextString(ksa.getNimi(), docBase.getKieli()));
+                    addHeader(docBase, getTextString(ksa.getNimi(), docBase.getKieli()));
 
-                // Peruste
-                Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
-                        .filter(pKsa -> pKsa.getTunniste().equals(ksa.getTunniste()))
-                        .findFirst();
+                    // Peruste
+                    Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
+                            .filter(pKsa -> pKsa.getTunniste().equals(ksa.getTunniste()))
+                            .findFirst();
+                    if (optPerusteKsa.isPresent()) {
+                        PerusteKeskeinensisaltoalueDto perusteKsa = optPerusteKsa.get();
+                        LokalisoituTekstiDto tekstiDto = perusteKsa.getKuvaus();
+                        if (tekstiDto != null) {
+                            addLokalisoituteksti(docBase, tekstiDto, "cite");
+                        }
+                    }
 
-
-                if (optPerusteKsa.isPresent()) {
-                    PerusteKeskeinensisaltoalueDto perusteKsa = optPerusteKsa.get();
-                    LokalisoituTekstiDto tekstiDto = perusteKsa.getKuvaus();
-                    LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
-                    addLokalisoituteksti(docBase, teksti, "cite");
+                    // Ops
+                    if (ksa.getKuvaus() != null) {
+                        addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
+                        docBase.getGenerator().decreaseDepth();
+                    }
                 }
-
-                // Ops
-                addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
-                docBase.getGenerator().decreaseDepth();
             }
-        }
+        }*/
 
         // Työtavat
-        PerusteTekstiOsaDto perusteTyotavat = perusteOaVlkDto.getTyotavat();
-        if (perusteTyotavat != null) {
-            addHeader(docBase, getTextString(perusteTyotavat.getOtsikko(), docBase.getKieli()));
-            addOppiainePerusteTeksti(docBase, perusteTyotavat);
+        if (perusteOaVlkDto != null) {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
+        } else {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat());
         }
-
-        Tekstiosa tyotavat = oaVlkDto.getTyotavat();
-        LokalisoituTeksti tyotavatTeksti = tyotavat.getTeksti();
-        addLokalisoituteksti(docBase, tyotavatTeksti, "div");
 
         // Ohjaus
-        PerusteTekstiOsaDto perusteOhjaus = perusteOaVlkDto.getOhjaus();
-        if (perusteOhjaus != null) {
-            addHeader(docBase, getTextString(perusteOhjaus.getOtsikko(), docBase.getKieli()));
-            addOppiainePerusteTeksti(docBase, perusteOhjaus);
+        if (perusteOaVlkDto != null) {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
+        } else {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus());
         }
-
-        Tekstiosa ohjaus = oaVlkDto.getOhjaus();
-        LokalisoituTeksti ohjausTeksti = ohjaus.getTeksti();
-        addLokalisoituteksti(docBase, ohjausTeksti, "div");
 
         // Arviointi
-        PerusteTekstiOsaDto perusteArviointi = perusteOaVlkDto.getArviointi();
-        if (perusteArviointi != null) {
-            addHeader(docBase, getTextString(perusteArviointi.getOtsikko(), docBase.getKieli()));
-            addOppiainePerusteTeksti(docBase, perusteArviointi);
+        if (perusteOaVlkDto != null) {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
+        } else {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi());
         }
 
-        Tekstiosa arviointi = oaVlkDto.getArviointi();
-        LokalisoituTeksti arviointiTeksti = arviointi.getTeksti();
-        addLokalisoituteksti(docBase, arviointiTeksti, "div");
-
+        /*
         // Oppimäärät
         Oppiaine oppiaine = oaVlkDto.getOppiaine();
         if (oppiaine != null) {
@@ -690,6 +539,26 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
                 addOppimaarat(docBase, perusteOppimaarat, oppimaarat, vlk);
             }
+        }*/
+    }
+
+    private void addOppiaineYleisetOsiot(DokumenttiBase docBase, Tekstiosa tekstiosa) {
+        if (tekstiosa != null) {
+            addHeader(docBase, getTextString(tekstiosa.getOtsikko(), docBase.getKieli()));
+            addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
+        }
+    }
+    private void addOppiaineYleisetOsiot(DokumenttiBase docBase, Tekstiosa tekstiosa, PerusteTekstiOsaDto perusteTekstiOsaDto) {
+        if (tekstiosa != null) {
+            LokalisoituTeksti otsikko = tekstiosa.getOtsikko();
+            if (otsikko != null) {
+                addHeader(docBase, getTextString(otsikko, docBase.getKieli()));
+            } else if (perusteTekstiOsaDto != null) {
+                addHeader(docBase, getTextString(perusteTekstiOsaDto.getOtsikko(), docBase.getKieli()));
+                addLokalisoituteksti(docBase, perusteTekstiOsaDto.getTeksti(), "cite");
+            }
+
+            addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
         }
     }
 
@@ -730,59 +599,58 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             if (optPerusteOaVlkDto.isPresent()) {
                 perusteOaVlkDto = optPerusteOaVlkDto.get();
 
-                Oppiaineenvuosiluokkakokonaisuus oaVlk = null;
                 if (oppiaine != null) {
                     Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk
                             = oppiaine.getVuosiluokkakokonaisuus(vlk.getTunniste().getId());
 
                     if (optOaVlk.isPresent()) {
-                        oaVlk = optOaVlk.get();
+                        Oppiaineenvuosiluokkakokonaisuus oaVlk = optOaVlk.get();
+
+                        // Vuosiluokkakokonaisuudella
+                        addOppimaaraTehtavaVuosiluokalla(docBase, perusteOaVlkDto, oaVlk);
+
+                        // todo: Oppimäärän tavoitteet
+                        // Oppimäärän tavoitteet vuosiluokkakokonaisuudella
+                        //addOppimaaraTavoitteetVuosiluokkakokonaisuudella(docBase, perusteOaVlkDto, oaVlk);
+
+                        // Työtavat
+                        PerusteTekstiOsaDto perusteTyotavat = perusteOaVlkDto.getTyotavat();
+                        if (perusteTyotavat != null) {
+                            addHeader(docBase, getTextString(perusteTyotavat.getOtsikko(), docBase.getKieli()));
+                            addLokalisoituteksti(docBase, perusteTyotavat.getTeksti(), "cite");
+                        }
+                        if (oaVlk != null) {
+                            Tekstiosa tyotavat = oaVlk.getTyotavat();
+                            LokalisoituTeksti ohjausTeksti = tyotavat.getTeksti();
+                            addLokalisoituteksti(docBase, ohjausTeksti, "div");
+                        }
+
+                        // Ohjaus
+                        PerusteTekstiOsaDto perusteOhjaus = perusteOaVlkDto.getOhjaus();
+                        if (perusteOhjaus != null) {
+                            addHeader(docBase, getTextString(perusteOhjaus.getOtsikko(), docBase.getKieli()));
+                            addLokalisoituteksti(docBase, perusteOhjaus.getTeksti(), "cite");
+                        }
+
+                        if (oaVlk != null) {
+                            Tekstiosa ohjaus = oaVlk.getOhjaus();
+                            LokalisoituTeksti ohjausTeksti = ohjaus.getTeksti();
+                            addLokalisoituteksti(docBase, ohjausTeksti, "div");
+                        }
+
+                        // Arviointi
+                        PerusteTekstiOsaDto perusteArviointi = perusteOaVlkDto.getArviointi();
+                        if (perusteArviointi != null) {
+                            addHeader(docBase, getTextString(perusteArviointi.getOtsikko(), docBase.getKieli()));
+                            addLokalisoituteksti(docBase, perusteArviointi.getTeksti(), "cite");
+                        }
+
+                        if (oaVlk != null) {
+                            Tekstiosa arviointi = oaVlk.getArviointi();
+                            LokalisoituTeksti arviointiTeksti = arviointi.getTeksti();
+                            addLokalisoituteksti(docBase, arviointiTeksti, "div");
+                        }
                     }
-                }
-
-                // Vuosiluokkakokonaisuudella
-                addOppimaaraTehtavaVuosiluokalla(docBase, perusteOaVlkDto, oaVlk);
-
-                // todo: Oppimäärän tavoitteet
-                // Oppimäärän tavoitteet vuosiluokkakokonaisuudella
-                //addOppimaaraTavoitteetVuosiluokkakokonaisuudella(doc, bodyElement, perusteOaVlkDto, oaVlk, kieli);
-
-                // Työtavat
-                PerusteTekstiOsaDto perusteTyotavat = perusteOaVlkDto.getTyotavat();
-                if (perusteTyotavat != null) {
-                    addHeader(docBase, getTextString(perusteTyotavat.getOtsikko(), docBase.getKieli()));
-                    addOppiainePerusteTeksti(docBase, perusteTyotavat);
-                }
-                if (oaVlk != null) {
-                    Tekstiosa tyotavat = oaVlk.getTyotavat();
-                    LokalisoituTeksti ohjausTeksti = tyotavat.getTeksti();
-                    addLokalisoituteksti(docBase, ohjausTeksti, "div");
-                }
-
-                // Ohjaus
-                PerusteTekstiOsaDto perusteOhjaus = perusteOaVlkDto.getOhjaus();
-                if (perusteOhjaus != null) {
-                    addHeader(docBase, getTextString(perusteOhjaus.getOtsikko(), docBase.getKieli()));
-                    addOppiainePerusteTeksti(docBase, perusteOhjaus);
-                }
-
-                if (oaVlk != null) {
-                    Tekstiosa ohjaus = oaVlk.getOhjaus();
-                    LokalisoituTeksti ohjausTeksti = ohjaus.getTeksti();
-                    addLokalisoituteksti(docBase, ohjausTeksti, "div");
-                }
-
-                // Arviointi
-                PerusteTekstiOsaDto perusteArviointi = perusteOaVlkDto.getArviointi();
-                if (perusteArviointi != null) {
-                    addHeader(docBase, getTextString(perusteArviointi.getOtsikko(), docBase.getKieli()));
-                    addOppiainePerusteTeksti(docBase, perusteArviointi);
-                }
-
-                if (oaVlk != null) {
-                    Tekstiosa arviointi = oaVlk.getArviointi();
-                    LokalisoituTeksti arviointiTeksti = arviointi.getTeksti();
-                    addLokalisoituteksti(docBase, arviointiTeksti, "div");
                 }
             }
 
@@ -800,11 +668,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             LokalisoituTekstiDto tekstiDto = perusteTekstiOsaDto.getTeksti();
 
             if (otsikkoDto != null && tekstiDto != null) {
-                LokalisoituTeksti otsikko = mapper.map(otsikkoDto, LokalisoituTeksti.class);
-                LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
-
-                addHeader(docBase, getTextString(otsikko, docBase.getKieli()));
-                addLokalisoituteksti(docBase, teksti, "cite");
+                addHeader(docBase, getTextString(otsikkoDto, docBase.getKieli()));
+                addLokalisoituteksti(docBase, tekstiDto, "cite");
 
                 if (oppiaine != null) {
                     Tekstiosa tekstiosa = oppiaine.getTehtava();
@@ -823,12 +688,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         PerusteTekstiOsaDto perusteTekstiOsaDto = perusteOaVlkDto.getTehtava();
         if (perusteTekstiOsaDto != null) {
             LokalisoituTekstiDto tekstiDto = perusteTekstiOsaDto.getTeksti();
-            LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
 
             // Tehtävä ei löydy valitulla kielellä
-            if (teksti.getTeksti().get(docBase.getKieli()) != null) {
+            if (tekstiDto != null) {
                 addHeader(docBase, getTextString(perusteTekstiOsaDto.getOtsikko(), docBase.getKieli()));
-                addLokalisoituteksti(docBase, teksti, "cite");
+                addLokalisoituteksti(docBase, tekstiDto, "cite");
 
                 if (oaVlk != null) {
                     Tekstiosa tekstiosa = oaVlk.getTehtava();
@@ -855,20 +719,22 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }*/
 
     private void addOppiaineTehtava(DokumenttiBase docBase, UUID tunniste,
-                                    Oppiaine oppiaine, PerusteDto perusteDto) {
+                                    Oppiaine oppiaine) {
 
-        if (tunniste != null && perusteDto.getPerusopetus().getOppiaine(tunniste) != null) {
-            Optional<PerusteOppiaineDto> optPerusteenOppiaineet = perusteDto.getPerusopetus().getOppiaine(tunniste);
+        if (docBase.getPerusteDto().getPerusopetus() != null) {
+            Optional<PerusteOppiaineDto> optPerusteenOppiaineet
+                    = docBase.getPerusteDto().getPerusopetus().getOppiaine(tunniste);
             PerusteOppiaineDto perusteenOppiaineet = null;
 
-            if (optPerusteenOppiaineet.isPresent())
+            if (optPerusteenOppiaineet.isPresent()) {
                 perusteenOppiaineet = optPerusteenOppiaineet.get();
+            }
 
             if (perusteenOppiaineet != null) {
 
                 PerusteTekstiOsaDto tehtava = perusteenOppiaineet.getTehtava();
                 if (tehtava != null)
-                    addOppiainePerusteTeksti(docBase, tehtava);
+                    addLokalisoituteksti(docBase, tehtava.getTeksti(), "cite");
             }
         }
 
@@ -886,14 +752,26 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             int noteNumber = 1;
             for (int i = 0; i < list.getLength(); i++) {
                 Element element = (Element) list.item(i);
-                TermiDto termiDto = termistoService.getTermi(docBase.getOps().getId(), element.getAttribute("data-viite"));
-                if (termiDto == null) {
-                    // todo: perusteen viite
-                }
-                if (termiDto != null && termiDto.isAlaviite()) {
-                    element.setAttribute("number", String.valueOf(noteNumber));
-                    element.setAttribute("text", getFootnoteText(termiDto, docBase.getKieli()));
-                    noteNumber++;
+                Node node = list.item(i);
+                if (node.getAttributes() != null & node.getAttributes().getNamedItem("data-viite") != null) {
+                    String avain = node.getAttributes().getNamedItem("data-viite").getNodeValue();
+
+                    if (docBase.getOps() != null && docBase.getOps().getId() != null) {
+                        TermiDto termiDto = termistoService.getTermi(docBase.getOps().getId(), avain);
+
+                        // todo: perusteen viite
+                        //if (termiDto == null) {}
+                        if (termiDto != null && termiDto.isAlaviite() && termiDto.getSelitys() != null) {
+                            element.setAttribute("number", String.valueOf(noteNumber));
+
+                            LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
+                            String selitys = getTextString(
+                                    mapper.map(tekstiDto, LokalisoituTeksti.class), docBase.getKieli())
+                                    .replaceAll("<[^>]+>", ""); // Tällä hetkellä tuetaan vain tekstiä
+                            element.setAttribute("text", selitys);
+                            noteNumber++;
+                        }
+                    }
                 }
             }
 
@@ -960,27 +838,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addOppiainePerusteTeksti(DokumenttiBase docBase, PerusteTekstiOsaDto tekstiOsaDto) {
-
-        LokalisoituTekstiDto tekstiDto = tekstiOsaDto.getTeksti();
-        if (tekstiDto == null)
-            return;
-
-        // Luodaan sisältö
-        String teskti = "<cite>" + getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), docBase.getKieli()) + "</cite>";
-
-        Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
-        Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
-
-        docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
+    private void addLokalisoituteksti(DokumenttiBase docBase, LokalisoituTekstiDto lTekstiDto, String tagi) {
+        if (lTekstiDto != null) {
+            addLokalisoituteksti(docBase, mapper.map(lTekstiDto, LokalisoituTeksti.class), tagi);
+        }
     }
 
     private void addLokalisoituteksti(DokumenttiBase docBase, LokalisoituTeksti lTeksti, String tagi) {
-        if (lTeksti == null || lTeksti.getTeksti() == null || lTeksti.getTeksti().get(docBase.getKieli()) == null)
-            return;
-
-        String teksti = lTeksti.getTeksti().get(docBase.getKieli());
-        if (teksti != null) {
+        if (lTeksti != null && lTeksti.getTeksti() != null && lTeksti.getTeksti().get(docBase.getKieli()) != null) {
+            String teksti = lTeksti.getTeksti().get(docBase.getKieli());
             teksti = "<" + tagi + ">" + unescapeHtml5(teksti) + "</" + tagi + ">";
 
             Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
@@ -1010,14 +876,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             header.appendChild(docBase.getDocument().createTextNode(unescapeHtml5(text)));
             docBase.getBodyElement().appendChild(header);
         }
-    }
-
-    private String getFootnoteText(TermiDto termiDto, Kieli kieli) {
-        LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
-        String selitys = getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli);
-        selitys = selitys.replaceAll("<[^>]+>", "");
-
-        return selitys;
     }
 
     private String getTextString(LokalisoituTekstiDto lokalisoituTekstiDto, Kieli kieli) {
