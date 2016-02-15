@@ -150,9 +150,9 @@
 
     <xsl:template match="head">
 
-        <fo:block break-before='page' font-size="18pt" font-weight="bold" padding-bottom="12pt">
+        <!--<fo:block break-before='page' font-size="18pt" font-weight="bold" padding-bottom="12pt">
             <xsl:value-of select="title" />
-        </fo:block>
+        </fo:block>-->
 
         <fo:table table-layout="fixed" width="100%"
                   border-collapse="separate" border-separation="4pt">
@@ -181,7 +181,7 @@
 
 
                 <!-- Diaarinumero -->
-                <xsl:if test="boolean(/html/head/meta[@name='diary'])">
+                <!--<xsl:if test="boolean(/html/head/meta[@name='diary'])">
                     <fo:table-row>
                         <fo:table-cell>
                             <fo:block font-weight="bold">
@@ -199,10 +199,10 @@
                             </fo:block>
                         </fo:table-cell>
                     </fo:table-row>
-                </xsl:if>
+                </xsl:if>-->
 
                 <!-- Koulutustyyppi -->
-                <xsl:if test="boolean(/html/head/meta[@name='type'])">
+                <!--<xsl:if test="boolean(/html/head/meta[@name='type'])">
                     <fo:table-row>
                         <fo:table-cell>
                             <fo:block font-weight="bold">
@@ -220,7 +220,7 @@
                             </fo:block>
                         </fo:table-cell>
                     </fo:table-row>
-                </xsl:if>
+                </xsl:if>-->
 
                 <!-- Tiivistelmä -->
                 <xsl:if test="boolean(/html/head/meta[@name='description'])">
