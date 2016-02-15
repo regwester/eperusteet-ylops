@@ -38,6 +38,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -61,6 +62,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
@@ -69,6 +71,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,6 +143,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
+
+    @Autowired
+    private LukioOpetussuunnitelmaService lukioOpetussuunnitelmaService;
 
     @Override
     @Transactional(readOnly = true)
@@ -372,11 +378,29 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             luoOpsPohjasta(pohja, ops);
             ops.setTila(Tila.LUONNOS);
             ops = repository.save(ops);
+
+            if(isPohjastaTehtyPohja(pohja)){
+                LisaaTeemaopinnotJosPohjassa(ops, pohja);
+            }
+
         } else {
             throw new BusinessRuleViolationException("Valmista opetussuunnitelman pohjaa ei löytynyt");
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private void LisaaTeemaopinnotJosPohjassa(Opetussuunnitelma ops, Opetussuunnitelma pohja) {
+        final Long opsId = ops.getId();
+        pohja.getOppiaineet().stream()
+                .filter(opsOppiaine1 -> opsOppiaine1.getOppiaine().getKoodiUri().compareTo("oppiaineetyleissivistava2_to")==0)
+                .findFirst()
+                .ifPresent(opsOppiaine -> {
+                    LukioAbstraktiOppiaineTuontiDto dto = new LukioAbstraktiOppiaineTuontiDto();
+                    dto.setNimi(mapper.map(opsOppiaine.getOppiaine().getNimi(), LokalisoituTekstiDto.class));
+                    dto.setTunniste(opsOppiaine.getOppiaine().getTunniste());
+                    lukioOpetussuunnitelmaService.addAbstraktiOppiaine(opsId, dto);
+                });
     }
 
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
@@ -390,11 +414,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
-        Opetussuunnitelma ylinpohja = pohja;
-        while (ylinpohja.getPohja() != null) {
-            ylinpohja = ylinpohja.getPohja();
-        }
-        boolean onPohjastaTehtyPohja = ylinpohja.getId().equals(pohja.getId());
+        boolean onPohjastaTehtyPohja = isPohjastaTehtyPohja(pohja);
 
         Copier<Oppiaine> oppiaineCopier = teeKopio ? Oppiaine.basicCopier() : Copier.nothing();
         Map<Long,Oppiaine> newOppiaineByOld = new HashMap<>();
@@ -449,6 +469,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
                 .collect(toSet());
         ops.setVuosiluokkakokonaisuudet(ovlkoot);
+    }
+
+    private boolean isPohjastaTehtyPohja(Opetussuunnitelma pohja) {
+        Opetussuunnitelma ylinpohja = pohja;
+        while (ylinpohja.getPohja() != null) {
+            ylinpohja = ylinpohja.getPohja();
+        }
+        return ylinpohja.getId().equals(pohja.getId());
     }
 
     @SuppressWarnings({"ServiceMethodEntity", "TransactionalAnnotations"})
