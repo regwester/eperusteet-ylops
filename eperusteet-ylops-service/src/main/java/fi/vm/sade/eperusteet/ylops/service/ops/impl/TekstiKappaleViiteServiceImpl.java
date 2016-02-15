@@ -19,12 +19,15 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.PoistettuTekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -64,6 +67,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Autowired
     private TekstiKappaleService tekstiKappaleService;
+
+    @Autowired
+    private PoistettuTekstiKappaleRepository poistettuTekstiKappaleRepository;
 
     @Autowired
     private LockManager lockMgr;
@@ -243,20 +249,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<TekstiKappaleDto> getRemovedTekstikappaleetForOps(Long opsId) {
-
-        return tekstiKappaleRepository.getDeletedRevisions()
-                .stream()
-                .map(revision -> tekstiKappaleRepository.getRevisions(revision.getId()))
-                .filter(revisions -> revisions.size() > 1)
-                .map(revisions -> {
-                    Revision latestBeforeDeleted = revisions.get(1);
-                    TekstiKappale removed = tekstiKappaleRepository.findRevision(latestBeforeDeleted.getId(), latestBeforeDeleted.getNumero());
-
-//                    tekstiKappaleRepository.
-
-                    return mapper.map(removed, TekstiKappaleDto.class);
-                }).collect(Collectors.toList());
+    public List<PoistettuTekstiKappaleDto> getRemovedTekstikappaleetForOps(Long opsId) {
+        return mapper.mapAsList(poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId), PoistettuTekstiKappaleDto.class);
     }
 
     @Override
@@ -264,20 +258,14 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public TekstiKappaleDto returnRemovedTekstikappale(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         TekstiKappaleViite teksti = ops.getTekstit().getLapset().get(0);
-        TekstiKappaleDto dto = null;
-        List<Revision> tekst = tekstiKappaleRepository.getRevisions(new Long(id));
+        PoistettuTekstiKappale poistettu = poistettuTekstiKappaleRepository.findOne(id);
 
-        if (tekst.size() > 1) {
-            Revision revision = tekst.get(1);
-            TekstiKappale t = tekstiKappaleRepository.findRevision(revision.getId(), revision.getNumero());
-            dto = mapper.map(t, TekstiKappaleDto.class);
-            dto.setId(null);
-            addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto));
-//            int size = teksti.getLapset().size();
-            Collections.rotate(teksti.getLapset(), 1);
-        }else{
-            throw new BusinessRuleViolationException("Tekstikappaletta ei löytynyt");
-        }
+        TekstiKappaleDto dto = mapper.map(poistettu.getTekstiKappale(), TekstiKappaleDto.class);
+        dto.setId(null);
+        addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto));
+        Collections.rotate(teksti.getLapset(), 1);
+
+        poistettu.setPalautettu(true);
         return dto;
     }
 

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,27 +20,21 @@ import java.util.UUID;
 @Entity
 @Table(name = "poistettu_tekstikappale")
 @Audited
+@Getter
+@Setter
 public class PoistettuTekstiKappale extends AbstractAuditedEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
     private Opetussuunnitelma opetussuunnitelma;
 
     @ManyToOne
-    @Getter
-    @Setter
     private TekstiKappale tekstiKappale;
 
-    @Getter
-    @Setter
     private Boolean palautettu;
 
 }

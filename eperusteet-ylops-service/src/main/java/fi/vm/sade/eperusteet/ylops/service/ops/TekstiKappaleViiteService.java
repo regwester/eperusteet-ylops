@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import org.springframework.security.access.method.P;
@@ -59,7 +60,7 @@ public interface TekstiKappaleViiteService {
     void revertToVersion(Long opsId, Long viiteId, Integer versio);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<TekstiKappaleDto> getRemovedTekstikappaleetForOps(Long opsId);
+    List<PoistettuTekstiKappaleDto> getRemovedTekstikappaleetForOps(Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleDto returnRemovedTekstikappale(Long opsId, Long id);

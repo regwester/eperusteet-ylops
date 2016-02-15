@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
@@ -81,7 +82,7 @@ public class OpetussuunnitelmanSisaltoController {
     }
 
     @RequestMapping(value = "/tekstit/removed", method = GET)
-    public ResponseEntity<List<TekstiKappaleDto>> getVersionsForTekstiKappaleViite(@PathVariable("opsId") final Long opsId) {
+    public ResponseEntity<List<PoistettuTekstiKappaleDto>> getVersionsForTekstiKappaleViite(@PathVariable("opsId") final Long opsId) {
         return new ResponseEntity<>(tekstiKappaleViiteService.getRemovedTekstikappaleetForOps(opsId), HttpStatus.OK);
     }
 
