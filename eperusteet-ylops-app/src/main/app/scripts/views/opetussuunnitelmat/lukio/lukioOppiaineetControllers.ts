@@ -824,7 +824,7 @@ ylopsApp
     $scope.oppiaine = oppiaine;
     $scope.$valittu = _.cloneDeep(valittu);
     $scope.$valittu.kieli = LukioControllerHelpers.kielella('');
-    $scope.$omaNimi = $scope.$type == 'uskonto' ? _.cloneDeep($scope.$valittu.nimi) : LukioControllerHelpers.kielella('');
+    $scope.$omaNimi = (!$scope.$type || $scope.$type == 'uskonto') ? _.cloneDeep($scope.$valittu.nimi) : LukioControllerHelpers.kielella('');
     $scope.$concretet = _.reject(oppiaine.perusteen.oppimaarat, om => om.abstrakti);
     $scope.openKieliKoodisto = LukioControllerHelpers.openOppiaineKieliKoodisto($scope.$valittu,
         koodi => {
