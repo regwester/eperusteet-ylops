@@ -316,6 +316,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                         // Vuosiluokkan sisältö
                         docBase.getGenerator().increaseDepth();
 
+
+                        // Vuosiluokkakokonaisuuden kohdat
+
                         addVlkYleisetOsiot(docBase, perusteVlk.getSiirtymaEdellisesta(), vlk.getSiirtymaEdellisesta());
 
                         addVlkYleisetOsiot(docBase, perusteVlk.getTehtava(), vlk.getTehtava());
@@ -329,6 +332,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                         addPaikallisestiPaatettavat(docBase, perusteVlk);
 
                         addOppiaineet(docBase, vlk);
+
 
                         docBase.getGenerator().decreaseDepth();
                     }
@@ -454,13 +458,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 if (optOaVlk.isPresent()) {
                     UUID tunniste = oppiaine.getTunniste();
 
+                    // Oppiaine nimi
                     addHeader(docBase, getTextString(oppiaine.getNimi(), docBase.getKieli()));
+
                     addOppiaineTehtava(docBase, tunniste, oppiaine);
-
-                    docBase.getGenerator().increaseDepth();
-                    docBase.getGenerator().increaseDepth();
-
-
 
                     Oppiaineenvuosiluokkakokonaisuus oaVlk = optOaVlk.get();
                     Optional<PerusteOppiaineDto> optPerusteOppiaineDto = docBase.getPerusteDto().getPerusopetus().getOppiaine(tunniste);
@@ -475,6 +476,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                             perusteOaVlkDto = optPerusteOaVlkDto.get();
                         }
                     }
+
+                    docBase.getGenerator().increaseDepth();
+                    docBase.getGenerator().increaseDepth();
 
                     // Oppiaineen vuosiluokkakokonaiuuden generointi
                     addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk, vlk);
@@ -493,39 +497,19 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                                                     Oppiaineenvuosiluokkakokonaisuus oaVlkDto,
                                                     Vuosiluokkakokonaisuus vlk) {
 
-
         // Tehtävä
         if (perusteOaVlkDto != null) {
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
-        } else {
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava());
-        }
-
-        // Tavoitteet ja sisältöalueet
-        if (perusteOaVlkDto != null) {
             addTavoitteetJaSisaltoalueet(docBase, perusteOaVlkDto, oaVlkDto);
-        }
-
-
-        // Työtavat
-        if (perusteOaVlkDto != null) {
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
-        } else {
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat());
-        }
-
-        // Ohjaus
-        if (perusteOaVlkDto != null) {
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
-        } else {
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus());
-        }
-
-        // Arviointi
-        if (perusteOaVlkDto != null) {
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
         } else {
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), null);
+            addTavoitteetJaSisaltoalueet(docBase, null, oaVlkDto);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), null);
         }
 
         // Oppimäärät
@@ -549,23 +533,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                                               PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
                                               Oppiaineenvuosiluokkakokonaisuus oaVlkDto) {
         // Tavoite taulukko
-        if (perusteOaVlkDto.getTavoitteet() != null) {
+        if (perusteOaVlkDto != null && perusteOaVlkDto.getTavoitteet() != null) {
             List<PerusteOpetuksentavoiteDto> tavoitteet = perusteOaVlkDto.getTavoitteet();
             addHeader(docBase, messages.translate("tavoitteet-ja-sisallot-vuosiluokittain", docBase.getKieli()));
 
 
-            /*String teksti = "<table>\n" +
-                    "  <tr>\n" +
-                    "    <td>Jill</td>\n" +
-                    "    <td>Smith</td> \n" +
-                    "    <td>50</td>\n" +
-                    "  </tr>\n" +
-                    "  <tr>\n" +
-                    "    <td>Eve</td>\n" +
-                    "    <td>Jackson</td> \n" +
-                    "    <td>94</td>\n" +
-                    "  </tr>\n" +
-                    "</table>";
+            /*String teksti = "<table></table>";
 
             Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
             Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
@@ -598,7 +571,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                         addHeader(docBase, getTextString(ksa.getNimi(), docBase.getKieli()));
 
                         // Peruste
-                        if (perusteOaVlkDto.getSisaltoalueet() != null) {
+                        if (perusteOaVlkDto != null && perusteOaVlkDto.getSisaltoalueet() != null) {
                             Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
                                     .filter(pKsa -> pKsa.getTunniste().equals(ksa.getTunniste()))
                                     .findFirst();
@@ -630,12 +603,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addOppiaineYleisetOsiot(DokumenttiBase docBase, Tekstiosa tekstiosa) {
-        if (tekstiosa != null) {
-            addHeader(docBase, getTextString(tekstiosa.getOtsikko(), docBase.getKieli()));
-            addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
-        }
-    }
     private void addOppiaineYleisetOsiot(DokumenttiBase docBase, Tekstiosa tekstiosa, PerusteTekstiOsaDto perusteTekstiOsaDto) {
         if (tekstiosa != null) {
             LokalisoituTeksti otsikko = tekstiosa.getOtsikko();
