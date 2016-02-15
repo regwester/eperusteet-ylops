@@ -380,7 +380,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ops = repository.save(ops);
 
             if(isPohjastaTehtyPohja(pohja)){
-                LisaaTeemaopinnotJosPohjassa(ops, pohja);
+                lisaaTeemaopinnotJosPohjassa(ops, pohja);
             }
 
         } else {
@@ -390,7 +390,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
-    private void LisaaTeemaopinnotJosPohjassa(Opetussuunnitelma ops, Opetussuunnitelma pohja) {
+    private void lisaaTeemaopinnotJosPohjassa(Opetussuunnitelma ops, Opetussuunnitelma pohja) {
         final Long opsId = ops.getId();
         pohja.getOppiaineet().stream()
                 .filter(opsOppiaine1 -> opsOppiaine1.getOppiaine().getKoodiUri().compareTo("oppiaineetyleissivistava2_to")==0)
