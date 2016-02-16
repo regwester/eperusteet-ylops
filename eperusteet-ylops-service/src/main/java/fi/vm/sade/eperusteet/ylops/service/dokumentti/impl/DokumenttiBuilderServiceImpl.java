@@ -203,9 +203,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
 
         Set<KoodistoKoodi> koodistoKoodit = docBase.getOps().getKunnat();
-        Element municipalities = docBase.getDocument().createElement("municipalities");
+        Element municipalities = docBase.getDocument().createElement("kunnat");
         for (KoodistoKoodi koodistoKoodi : koodistoKoodit) {
-            Element kuntaEl = docBase.getDocument().createElement("municipality");
+            Element kuntaEl = docBase.getDocument().createElement("kunta");
             KoodistoKoodiDto koodistoKoodiDto = koodistoService.get("kunta", koodistoKoodi.getKoodiUri());
             if (koodistoKoodiDto != null) {
                 for (KoodistoMetadataDto metadata : koodistoKoodiDto.getMetadata()) {
@@ -219,27 +219,55 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
         docBase.getHeadElement().appendChild(municipalities);
 
+        // Organisaatiot
         Set<String> organisaatiot = docBase.getOps().getOrganisaatiot();
-        Element organizations = docBase.getDocument().createElement("organizations");
-        for (String org : organisaatiot) {
+        Element organizations = docBase.getDocument().createElement("organisaatiot");
+        organisaatiot.stream().forEach(org -> {
             JsonNode orgNode = organisaatioService.getOrganisaatio(org);
             JsonNode nimiNode = orgNode.get("nimi");
-            Element orgEl = docBase.getDocument().createElement("organization");
+            Element orgEl = docBase.getDocument().createElement("organisaatio");
             orgEl.setTextContent(nimiNode.get(docBase.getKieli().toString()).asText());
             organizations.appendChild(orgEl);
-        }
+        });
         docBase.getHeadElement().appendChild(organizations);
 
+        // Päätöspäivämäärä
         Date paatospaivamaara = docBase.getOps().getPaatospaivamaara();
+        Element dateEl = docBase.getDocument().createElement("meta");
+        dateEl.setAttribute("name", "date");
         if (paatospaivamaara != null) {
             String paatospaivamaaraText = new SimpleDateFormat("d.m.yyyy").format(paatospaivamaara);
-            Element dateEl = docBase.getDocument().createElement("meta");
-            dateEl.setAttribute("name", "date");
             dateEl.setAttribute("content", paatospaivamaaraText);
-            docBase.getHeadElement().appendChild(dateEl);
+        } else {
+            dateEl.setAttribute("content", "");
         }
+        docBase.getHeadElement().appendChild(dateEl);
 
 
+        // Koulun nimi
+        Element koulutEl = docBase.getDocument().createElement("koulut");
+
+        docBase.getOps().getOrganisaatiot().stream()
+                .map(org -> organisaatioService.getOrganisaatio(org))
+                .filter(node -> {
+                    JsonNode tyypit = node.get("tyypit");
+                    if (tyypit.isArray()) {
+                        for (JsonNode asd : tyypit) {
+                            if (asd.textValue().equals("Oppilaitos")) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                })
+                .map(node -> node.get("nimi").get(docBase.getKieli().toString()).asText())
+                .forEach(koulu -> {
+                    Element kouluEl = docBase.getDocument().createElement("koulu");
+                    kouluEl.setTextContent(koulu);
+                    koulutEl.appendChild(kouluEl);
+                });
+
+        docBase.getHeadElement().appendChild(koulutEl);
     }
 
     private void addYhteisetOsuudet(DokumenttiBase docBase)
@@ -611,58 +639,60 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                             .findFirst();
                     if (optPerusteOpetuksentavoiteDto.isPresent()) {
                         PerusteOpetuksentavoiteDto perusteOpetuksentavoiteDto = optPerusteOpetuksentavoiteDto.get();
+
                         if (perusteOpetuksentavoiteDto.getTavoite() != null
                                 && perusteOpetuksentavoiteDto.getTavoite().get(docBase.getKieli()) != null) {
                             String tavoite = perusteOpetuksentavoiteDto.getTavoite().get(docBase.getKieli());
                             rivi.addSarake(tavoite.substring(0, tavoite.indexOf(" ")));
                         }
-                    }
-                }
 
 
-                // Tavoitteisiin liittyvät sisltöalueet
-                Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = opetuksentavoite.getSisaltoalueet();
 
-                if (sisaltoalueet != null) {
-                    List<OpetuksenKeskeinensisaltoalue> sisaltoalueetAsc = sisaltoalueet.stream()
-                            .sorted((s1, s2) -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli()).compareTo(
-                                    s2.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
-                            .collect(Collectors.toCollection(ArrayList::new));
+                        // Tavoitteisiin liittyvät sisltöalueet
+                        Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = opetuksentavoite.getSisaltoalueet();
 
-                    StringBuilder sisaltoalueetBuilder = new StringBuilder();
+                        if (sisaltoalueet != null) {
+                            List<OpetuksenKeskeinensisaltoalue> sisaltoalueetAsc = sisaltoalueet.stream()
+                                    .sorted((s1, s2) -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli()).compareTo(
+                                            s2.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
+                                    .collect(Collectors.toCollection(ArrayList::new));
 
-                    for (OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue : sisaltoalueetAsc) {
-                        Keskeinensisaltoalue keskeinensisaltoalue
-                                = opetuksenKeskeinensisaltoalue.getSisaltoalueet();
-                        if (keskeinensisaltoalue != null) {
-                            if (keskeinensisaltoalue.getNimi() != null
-                                    && keskeinensisaltoalue.getNimi().getTeksti() != null
-                                    && keskeinensisaltoalue.getNimi().getTeksti().containsKey(docBase.getKieli())) {
-                                String nimi = keskeinensisaltoalue.getNimi().getTeksti().get(docBase.getKieli());
-                                if(nimi.contains(" ")){
-                                    sisaltoalueetBuilder.append(nimi.substring(0, nimi.indexOf(" ")));
-                                    sisaltoalueetBuilder.append(", ");
+                            StringBuilder sisaltoalueetBuilder = new StringBuilder();
+
+                            for (OpetuksenKeskeinensisaltoalue opetuksenKeskeinensisaltoalue : sisaltoalueetAsc) {
+                                Keskeinensisaltoalue keskeinensisaltoalue
+                                        = opetuksenKeskeinensisaltoalue.getSisaltoalueet();
+                                if (keskeinensisaltoalue != null) {
+                                    if (keskeinensisaltoalue.getNimi() != null
+                                            && keskeinensisaltoalue.getNimi().getTeksti() != null
+                                            && keskeinensisaltoalue.getNimi().getTeksti().containsKey(docBase.getKieli())) {
+                                        String nimi = keskeinensisaltoalue.getNimi().getTeksti().get(docBase.getKieli());
+                                        if(nimi.contains(" ")){
+                                            sisaltoalueetBuilder.append(nimi.substring(0, nimi.indexOf(" ")));
+                                            sisaltoalueetBuilder.append(", ");
+                                        }
+                                    }
                                 }
                             }
+                            String sisaltoalueetString = sisaltoalueetBuilder.toString().replaceAll(", $", "");
+                            rivi.addSarake(sisaltoalueetString);
                         }
+
+                        // Laaja-alainen osaaminen
+                        Set<LaajaalainenosaaminenViite> laajaalainenosaamisenViitteet = opetuksentavoite.getLaajattavoitteet();
+                        if (laajaalainenosaamisenViitteet != null) {
+                            StringBuilder laajaalainenOsaaminenBuilder = new StringBuilder();
+
+                            for (LaajaalainenosaaminenViite laajaalainenosaaminenViite : laajaalainenosaamisenViitteet) {
+                                laajaalainenOsaaminenBuilder.append(laajaalainenosaaminenViite.getViite().charAt(0));
+                                laajaalainenOsaaminenBuilder.append(", ");
+                            }
+                            rivi.addSarake(laajaalainenOsaaminenBuilder.toString().replaceAll(", $", ""));
+                        }
+
+                        taulukko.addRivi(rivi);
                     }
-                    String sisaltoalueetString = sisaltoalueetBuilder.toString().replaceAll(", $", "");
-                    rivi.addSarake(sisaltoalueetString);
                 }
-
-                // Laaja-alainen osaaminen
-                Set<LaajaalainenosaaminenViite> laajaalainenosaamisenViitteet = opetuksentavoite.getLaajattavoitteet();
-                if (laajaalainenosaamisenViitteet != null) {
-                    StringBuilder laajaalainenOsaaminenBuilder = new StringBuilder();
-
-                    for (LaajaalainenosaaminenViite laajaalainenosaaminenViite : laajaalainenosaamisenViitteet) {
-                        laajaalainenOsaaminenBuilder.append(laajaalainenosaaminenViite.getViite().charAt(0));
-                        laajaalainenOsaaminenBuilder.append(", ");
-                    }
-                    rivi.addSarake(laajaalainenOsaaminenBuilder.toString().replaceAll(", $", ""));
-                }
-
-                taulukko.addRivi(rivi);
             }
 
             if (taulukko.toString().length() > 0) {

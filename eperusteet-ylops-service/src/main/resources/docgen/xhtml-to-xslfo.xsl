@@ -221,9 +221,11 @@
                     </fo:table-row>
                 </xsl:if>
 
-                <xsl:apply-templates select="municipalities" />
+                <xsl:apply-templates select="kunnat" />
 
-                <xsl:apply-templates select="organizations" />
+                <xsl:apply-templates select="organisaatiot" />
+
+                <xsl:apply-templates select="koulut" />
 
                 <!-- Voimaantulo -->
                 <xsl:if test="boolean(/html/head/meta[@name='date'])">
@@ -873,13 +875,13 @@
     <!-- Custom tags -->
 
 
-    <xsl:template match="municipalities">
-        <xsl:for-each select="municipality">
+    <xsl:template match="kunnat">
+        <xsl:for-each select="kunta">
             <fo:table-row>
                 <fo:table-cell>
                     <fo:block font-weight="bold">
                         <xsl:if test="//html/@lang = 'fi'">
-                            <xsl:text>Kunna</xsl:text>
+                            <xsl:text>Kunta</xsl:text>
                         </xsl:if>
                         <xsl:if test="//html/@lang = 'sv'">
                             <xsl:text>Kommun</xsl:text>
@@ -895,8 +897,8 @@
         </xsl:for-each>
     </xsl:template>
 
-    <xsl:template match="organizations">
-        <xsl:for-each select="organization">
+    <xsl:template match="organisaatiot">
+        <xsl:for-each select="organisaatio">
             <fo:table-row>
                 <fo:table-cell>
                     <fo:block font-weight="bold">
@@ -906,6 +908,30 @@
                             </xsl:if>
                             <xsl:if test="//html/@lang = 'sv'">
                                 <xsl:text>Organisation</xsl:text>
+                            </xsl:if>
+                        </xsl:if>
+                    </fo:block>
+                </fo:table-cell>
+                <fo:table-cell>
+                    <fo:block>
+                        <xsl:apply-templates select="." />
+                    </fo:block>
+                </fo:table-cell>
+            </fo:table-row>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="koulut">
+        <xsl:for-each select="koulu">
+            <fo:table-row>
+                <fo:table-cell>
+                    <fo:block font-weight="bold">
+                        <xsl:if test="position()=1">
+                            <xsl:if test="//html/@lang = 'fi'">
+                                <xsl:text>Koulu</xsl:text>
+                            </xsl:if>
+                            <xsl:if test="//html/@lang = 'sv'">
+                                <xsl:text>Skola</xsl:text>
                             </xsl:if>
                         </xsl:if>
                     </fo:block>
