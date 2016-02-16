@@ -25,6 +25,10 @@ import java.util.List;
 public class CharapterNumberGenerator {
     private List<Integer> numbers = new ArrayList<>();
 
+    public CharapterNumberGenerator() {
+        numbers.add(1);
+    }
+
     public int getDepth() {
         return numbers.size();
     }

@@ -179,28 +179,6 @@
                     </fo:table-cell>
                 </fo:table-row>
 
-
-                <!-- Diaarinumero -->
-                <!--<xsl:if test="boolean(/html/head/meta[@name='diary'])">
-                    <fo:table-row>
-                        <fo:table-cell>
-                            <fo:block font-weight="bold">
-                                <xsl:if test="//html/@lang = 'fi'">
-                                    <xsl:text>Määräyksen diaarinumero</xsl:text>
-                                </xsl:if>
-                                <xsl:if test="//html/@lang = 'sv'">
-                                    <xsl:text>Föreskriftens diarienummer</xsl:text>
-                                </xsl:if>
-                            </fo:block>
-                        </fo:table-cell>
-                        <fo:table-cell>
-                            <fo:block>
-                                <xsl:apply-templates select="/html/head/meta[@name='diary']/@content" />
-                            </fo:block>
-                        </fo:table-cell>
-                    </fo:table-row>
-                </xsl:if>-->
-
                 <!-- Koulutustyyppi -->
                 <!--<xsl:if test="boolean(/html/head/meta[@name='type'])">
                     <fo:table-row>
@@ -629,15 +607,15 @@
     </xsl:template>
 
     <xsl:template match="p">
-        <fo:block font-size="10pt" line-height="1.25em"
-                  space-after="12pt" text-align="justify">
+        <fo:block>
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
 
 
     <xsl:template match="div">
-        <fo:block font-size="10pt" space-after="12pt">
+        <fo:block font-size="10pt" line-height="1.25em"
+                  space-after="12pt" text-align="justify">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
@@ -901,10 +879,10 @@
                 <fo:table-cell>
                     <fo:block font-weight="bold">
                         <xsl:if test="//html/@lang = 'fi'">
-                            <xsl:text>Kunnat</xsl:text>
+                            <xsl:text>Kunna</xsl:text>
                         </xsl:if>
                         <xsl:if test="//html/@lang = 'sv'">
-                            <xsl:text>Kommuner</xsl:text>
+                            <xsl:text>Kommun</xsl:text>
                         </xsl:if>
                     </fo:block>
                 </fo:table-cell>
@@ -924,10 +902,10 @@
                     <fo:block font-weight="bold">
                         <xsl:if test="position()=1">
                             <xsl:if test="//html/@lang = 'fi'">
-                                <xsl:text>Organisaatiot</xsl:text>
+                                <xsl:text>Organisaatio</xsl:text>
                             </xsl:if>
                             <xsl:if test="//html/@lang = 'sv'">
-                                <xsl:text>Organisationer</xsl:text>
+                                <xsl:text>Organisation</xsl:text>
                             </xsl:if>
                         </xsl:if>
                     </fo:block>
