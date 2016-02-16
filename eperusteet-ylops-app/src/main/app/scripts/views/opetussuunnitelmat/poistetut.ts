@@ -18,21 +18,41 @@
 /*global _*/
 
 ylopsApp
-.controller('OpetussuunnitelmaPoistetutController', function ($scope, OpetussuunnitelmanTekstit, $stateParams) {
+.controller('OpetussuunnitelmaPoistetutController', (poistetut, $scope, OpetussuunnitelmanTekstit, $stateParams,
+                                                     $state, Algoritmit, $filter) => {
 
-  OpetussuunnitelmanTekstit.poistetut( {opsId: $stateParams.id}, (poistetut) => {
-    $scope.poistetut = poistetut;
+  $scope.kaikki = poistetut;
+  $scope.poistetut = poistetut;
+  $scope.currentPage = 1;
+  $scope.itemsPerPage = 10;
+  $scope.haku = '';
+
+  $scope.$watch('haku', (searchString) => {
+    if(_.isEmpty(searchString)){
+      $scope.poistetut = $scope.kaikki;
+      return;
+    }
+
+    $scope.poistetut = _.filter($scope.kaikki, (item) => {
+      const matchRemover = Algoritmit.match(searchString, item.luoja);
+      const matchRemovedDate = Algoritmit.match(searchString, $filter('aikaleima')(item.luotu, 'date'));
+      const matchTextTitle = Algoritmit.match(searchString, item.tekstiKappale.nimi);
+      return matchRemover || matchRemovedDate || matchTextTitle;
+    });
   });
+
+  $scope.clearSearch = () => {
+    $scope.haku = '';
+  };
 
   $scope.returnVersion = (id) => {
     const params = {
       opsId: parseInt($stateParams.id),
       id: id,
     };
-    OpetussuunnitelmanTekstit.palauta( params, {}, (palautettu) => {
-      console.log("palautettu", palautettu);
+    OpetussuunnitelmanTekstit.palauta( params, {}).$promise.then( () => {
+      $state.go('root.opetussuunnitelmat.yksi.sisalto', { reload: true });
     });
-
   }
 
 });

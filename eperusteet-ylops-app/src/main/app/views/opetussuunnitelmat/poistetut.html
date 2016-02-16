@@ -1,20 +1,44 @@
 <div>
-  <p>poist..</p>
-  <!--<pre>{{poistetut | json}}</pre>-->
-  <table>
-    <tr>
-      <td>nimi</td>
-      <td>poistettu</td>
-      <td>nimi</td>
-      <td>asian tyyppi</td>
-      <td>Pal</td>
-    </tr>
-    <tr ng-repeat="poistettu in poistetut">
-      <td>{{poistettu.nimi | kaanna}}</td>
-      <td>{{poistettu.muokattu}}</td>
-      <td>{{poistettu.muokkaaja}}</td>
-      <td></td>
-      <td><a ng-click="returnVersion(poistettu.id)">Palauta</a></td>
-    </tr>
-  </table>
+
+  <div class="row">
+    <div class="col-xs-6">
+      <h2 kaanna="tekstikappale-poistetut"></h2>
+    </div>
+    <div class="col-xs-6">
+      <div class="input-group input-group-sm">
+        <input class="form-control" type="text" ng-model="haku" placeholder="{{'haku-nimi'|kaanna}}"/>
+        <span class="input-group-btn">
+          <button class="btn btn-default" ng-click="clearSearch()">
+            <i class="glyphicon glyphicon-remove"/>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <p ng-if="!poistetut.length" kaanna="ei-poistettuja-tekstikappaleita"></p>
+
+  <div ng-if="poistetut.length">
+    <table class="table table-striped removed-tekstikappaleet">
+      <thead>
+        <tr>
+          <td kaanna="tekstikappale-otsikko"></td>
+          <td kaanna="tekstikappale-poistaja"></td>
+          <td kaanna="tekstikappale-poistettu"></td>
+          <td kaanna="tekstikappale-toiminnot"></td>
+        </tr>
+      </thead>
+      <tr ng-repeat="poistettu in poistetut | startFrom:itemsPerPage*(currentPage-1) | limitTo:itemsPerPage">
+        <td>{{poistettu.tekstiKappale.nimi | kaanna}}</td>
+        <td>{{poistettu.muokkaaja}}</td>
+        <td>{{poistettu.muokattu | aikaleima:'date'}}</td>
+        <td><a ng-click="returnVersion(poistettu.id)" class="label label-warning">Palauta</a></td>
+      </tr>
+    </table>
+
+    <nav class="text-center">
+      <pagination ng-model="currentPage"  total-items="poistetut.length" items-per-page="itemsPerPage"></pagination>
+    </nav>
+  </div>
+
 </div>

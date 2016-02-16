@@ -170,7 +170,12 @@ ylopsApp
       .state('root.opetussuunnitelmat.yksi.poistetut', {
         url: '/poistetut?:pohjaId',
         templateUrl: 'views/opetussuunnitelmat/poistetut.html',
-        controller: 'OpetussuunnitelmaPoistetutController'
+        controller: 'OpetussuunnitelmaPoistetutController',
+        resolve: {
+          poistetut: (OpetussuunnitelmanTekstit, $stateParams) => {
+            return OpetussuunnitelmanTekstit.poistetut({opsId: $stateParams.id});
+          }
+        }
       })
 
 
