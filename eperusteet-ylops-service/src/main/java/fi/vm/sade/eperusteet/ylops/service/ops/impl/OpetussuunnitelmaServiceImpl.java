@@ -91,6 +91,7 @@ import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.*;
+import org.springframework.cache.annotation.Cacheable;
 
 /**
  *
