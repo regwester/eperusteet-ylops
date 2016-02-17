@@ -37,5 +37,8 @@ public interface TekstiKappaleService {
     TekstiKappaleDto mergeNew(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
 
     @PreAuthorize("permitAll()")
+    void delete(Long id);
+
+    @PreAuthorize("permitAll()")
     void removeTekstiKappaleFromOps(Long id, Long opsId);
 }

@@ -250,7 +250,30 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     @Transactional(readOnly = true)
     public List<PoistettuTekstiKappaleDto> getRemovedTekstikappaleetForOps(Long opsId) {
-        return mapper.mapAsList(poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId), PoistettuTekstiKappaleDto.class);
+        connectMissingTekstikappaleetIfAny(opsId);
+        List<PoistettuTekstiKappaleDto> list = mapper.mapAsList(poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId), PoistettuTekstiKappaleDto.class);
+        list.forEach(poistettuTekstiKappaleDto -> {
+            poistettuTekstiKappaleDto.setTekstiKappaleDto(tekstiKappaleService.get(poistettuTekstiKappaleDto.getTekstiKappale()));
+        });
+        return list;
+    }
+
+    private void connectMissingTekstikappaleetIfAny(Long opsId) {
+        poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId)
+            .stream()
+            .filter(poistettuTekstiKappale -> {
+                TekstiKappale tk = tekstiKappaleRepository.findOne(poistettuTekstiKappale.getTekstiKappale());
+                return (tk == null);
+            })
+            .collect(Collectors.toList())
+            .forEach(poistettuTekstiKappale -> {
+                List<Revision> revs = tekstiKappaleRepository.getRevisions(poistettuTekstiKappale.getTekstiKappale());
+                if (revs.size() > 1) {
+                    TekstiKappale rev = tekstiKappaleRepository.findRevision(revs.get(1).getId(), revs.get(1).getNumero());
+                    rev = tekstiKappaleRepository.save(rev);
+                    poistettuTekstiKappale.setTekstiKappale(rev.getId());
+                }
+            });
     }
 
     @Override
@@ -258,14 +281,16 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public TekstiKappaleDto returnRemovedTekstikappale(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         TekstiKappaleViite teksti = ops.getTekstit().getLapset().get(0);
-        PoistettuTekstiKappale poistettu = poistettuTekstiKappaleRepository.findOne(id);
+        repository.lock(teksti.getRoot());
 
-        TekstiKappaleDto dto = mapper.map(poistettu.getTekstiKappale(), TekstiKappaleDto.class);
+        PoistettuTekstiKappale poistettu = poistettuTekstiKappaleRepository.findOne(id);
+        TekstiKappale tekstikappale = tekstiKappaleRepository.findOne(poistettu.getTekstiKappale());
+        TekstiKappaleDto dto = mapper.map(tekstikappale, TekstiKappaleDto.class);
         dto.setId(null);
         addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto));
         Collections.rotate(teksti.getLapset(), 1);
-
         poistettu.setPalautettu(true);
+
         return dto;
     }
 

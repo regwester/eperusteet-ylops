@@ -29,10 +29,10 @@
         </tr>
       </thead>
       <tr ng-repeat="poistettu in poistetut | startFrom:itemsPerPage*(currentPage-1) | limitTo:itemsPerPage">
-        <td>{{poistettu.tekstiKappale.nimi | kaanna}}</td>
+        <td>{{poistettu.tekstiKappaleDto.nimi | kaanna}}</td>
         <td>{{poistettu.muokkaaja}}</td>
         <td>{{poistettu.muokattu | aikaleima:'date'}}</td>
-        <td><a ng-click="returnVersion(poistettu.id)" class="label label-warning">Palauta</a></td>
+        <td><a ng-click="returnVersion(poistettu.id)" class="label label-warning" kaanna="palauta"></a></td>
       </tr>
     </table>
 

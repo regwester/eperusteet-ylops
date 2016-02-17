@@ -11,6 +11,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
+import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -32,8 +33,8 @@ public class PoistettuTekstiKappale extends AbstractAuditedEntity implements Ser
     @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
     private Opetussuunnitelma opetussuunnitelma;
 
-    @ManyToOne
-    private TekstiKappale tekstiKappale;
+    @Column(name = "tekstikappale_id")
+    private Long tekstiKappale;
 
     private Boolean palautettu;
 

@@ -61,6 +61,4 @@ public interface JpaWithVersioningRepository<T, ID extends Serializable> extends
      */
     void setRevisioKommentti(String kommentti);
 
-    List<Revision> getDeletedRevisions();
-
 }

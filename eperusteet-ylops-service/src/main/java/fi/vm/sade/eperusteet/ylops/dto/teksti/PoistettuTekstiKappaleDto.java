@@ -12,7 +12,8 @@ import java.util.Date;
 @Setter
 public class PoistettuTekstiKappaleDto {
     private Long id;
-    private TekstiKappaleDto tekstiKappale;
+    private Long tekstiKappale;
+    private TekstiKappaleDto tekstiKappaleDto;
     private Boolean palautettu;
     private String luoja;
     private Date luotu;

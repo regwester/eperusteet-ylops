@@ -104,7 +104,12 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         poistettu.setOpetussuunnitelma(ops);
-        poistettu.setTekstiKappale(tekstiKappale);
+        poistettu.setTekstiKappale(tekstiKappale.getId());
         poistettuTekstiKappaleRepository.save(poistettu);
+    }
+
+    @Override
+    public void delete(Long id) {
+        repository.delete(id);
     }
 }

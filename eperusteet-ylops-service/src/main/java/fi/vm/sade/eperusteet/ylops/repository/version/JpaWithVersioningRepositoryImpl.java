@@ -94,28 +94,4 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
         currentRevision.addKommentti(kommentti);
     }
 
-    @Override
-    public List<Revision> getDeletedRevisions() {
-        AuditReader auditReader = AuditReaderFactory.get(entityManager);
-
-        @SuppressWarnings("unchecked")
-        List<Object[]> results = (List<Object[]>) auditReader.createQuery()
-                .forRevisionsOfEntity(entityInformation.getJavaType(), false, true)
-                .addProjection(AuditEntity.id())
-                .addProjection(AuditEntity.revisionNumber())
-                .addProjection(AuditEntity.revisionProperty(RevisionInfo_.timestamp.getName()))
-                .addProjection(AuditEntity.revisionProperty(RevisionInfo_.muokkaajaOid.getName()))
-                .addProjection(AuditEntity.revisionProperty(RevisionInfo_.kommentti.getName()))
-                .addOrder(AuditEntity.revisionProperty(RevisionInfo_.timestamp.getName()).desc())
-                .add(AuditEntity.revisionType().eq(RevisionType.DEL))
-                .getResultList();
-
-        List<Revision> revisions = new ArrayList<>();
-        for (Object[] result : results) {
-            revisions.add(new Revision((Long) result[0], (Integer) result[1], (Long) result[2], (String)result[3], (String)result[4]));
-        }
-
-        return revisions;
-    }
-
 }
