@@ -26,6 +26,7 @@
     "scripts/views/opetussuunnitelmat/pohja/tekstikappale.ts",
     "scripts/views/opetussuunnitelmat/pohja/pohja.ts",
     "scripts/views/opetussuunnitelmat/tiedot.ts",
+    "scripts/views/opetussuunnitelmat/poistetut.ts",
     "scripts/views/opetussuunnitelmat/vuosiluokat/valinnaiset.ts",
     "scripts/views/opetussuunnitelmat/vuosiluokat/uusioppiaine.ts",
     "scripts/views/opetussuunnitelmat/vuosiluokat/oppiaine.ts",

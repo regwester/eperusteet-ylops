@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
@@ -180,6 +181,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
             cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private OpetuksenYleisetTavoitteet opetuksenYleisetTavoitteet;
+
+    @Getter
+    @Audited
+    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private Set<PoistettuTekstiKappale> poistetutTekstiKappaleet = new HashSet<>();
 
 
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
