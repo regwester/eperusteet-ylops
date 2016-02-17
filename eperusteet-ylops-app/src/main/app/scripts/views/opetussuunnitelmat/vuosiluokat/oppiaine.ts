@@ -84,16 +84,17 @@ ylopsApp
   $scope.lukkotiedot = null;
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
-  $scope.startEditing = function() { Editointikontrollit.startEditing(); };
+  $scope.startEditing = Editointikontrollit.startEditing;
   $scope.$$muokkaaNimea = false;
   $scope.muokkaaNimea = () => {
     $scope.$$muokkaaNimea = true;
     $scope.startEditing();
   };
 
-  OpsService.fetchPohja($scope.model.pohja.id).$promise.then(( pohja ) => {
-    $scope.pohja = pohja;
-  });
+  $scope.kopioitavanaMuokattavaksi = () => !$scope.oppiaine.oma && !$scope.oppiaine.$parent;
+
+  $scope.getVuosiluokkaUrl = (vuosiluokka) =>
+    $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.tavoitteet', _.merge(_.clone($stateParams), { vlId: vuosiluokka.id }));
 
   const commonParams = $scope.oppiaineenVlk ? {
     opsId: $stateParams.id,
@@ -143,12 +144,8 @@ ylopsApp
         // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
         var lisatytVlkt = _(ops.vuosiluokkakokonaisuudet)
             .map('vuosiluokkakokonaisuus')
-            .filter(function (vlk) {
-              return _.includes(tunnisteet, vlk._tunniste);
-            })
-            .sortBy(function (vlk) {
-              return Kaanna.kaanna(vlk.nimi);
-            })
+            .filter(vlk => _.includes(tunnisteet, vlk._tunniste))
+            .sortBy(vlk => Kaanna.kaanna(vlk.nimi))
             .value();
 
         Notifikaatiot.onnistui(

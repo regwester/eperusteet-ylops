@@ -18,10 +18,12 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
@@ -29,6 +31,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
+import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Laajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
@@ -39,6 +42,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.PdfService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.CharapterNumberGenerator;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -47,18 +51,19 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.fop.apps.*;
 import org.apache.xml.security.utils.Base64;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.imageio.IIOImage;
@@ -69,15 +74,14 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -98,9 +102,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private LocalizedMessagesService messages;
 
     @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
     private TermistoService termistoService;
 
     @Autowired
@@ -119,21 +120,22 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private EperusteetService eperusteetService;
 
     @Autowired
-    private DtoMapper mapper;
+    private PdfService pdfService;
 
-    CharapterNumberGenerator generator;
-    PerusteDto perusteDto;
+    @Autowired
+    private DtoMapper mapper;
 
     @Override
     public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
-            throws TransformerException, IOException, SAXException, ParserConfigurationException {
+            throws TransformerException, IOException, SAXException, ParserConfigurationException, NullPointerException {
 
-        // Säilytetään luonnin aikana pdf dataa muistissa
+        // Säilytetään luonnin aikana pdf data muistissa
         ByteArrayOutputStream pdf = new ByteArrayOutputStream();
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
+        // Luodaan XHTML pohja
         Document doc = docBuilder.newDocument();
         Element rootElement = doc.createElement("html");
         rootElement.setAttribute("lang", kieli.toString());
@@ -150,18 +152,30 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         rootElement.appendChild(headElement);
         rootElement.appendChild(bodyElement);
 
-        generator = new CharapterNumberGenerator();
-        perusteDto = eperusteetService.getEperusteetPeruste(ops.getCachedPeruste().getPerusteId());
+        // Aloitetaan varsinaisen dokumentin luonti
+        CharapterNumberGenerator generator = new CharapterNumberGenerator();
+
 
         // Kansilehti & Infosivu
         addMetaPages(doc, headElement, ops, kieli);
 
         // Sisältöelementit
-        addSisaltoElement(doc, bodyElement, ops, kieli);
+        addSisaltoElement(doc, bodyElement, ops, generator, kieli);
+
+
 
         // Vuosiluokkakokonaisuudet ja oppiaineet
-        if (ops.getKoulutustyyppi() == KoulutusTyyppi.PERUSOPETUS)
-            addVuosiluokkakokonaisuudet(doc, bodyElement, ops, kieli);
+        if (ops.getKoulutustyyppi() == KoulutusTyyppi.PERUSOPETUS) {
+
+            PerusteDto perusteDto;
+            if (ops.getCachedPeruste() != null && ops.getCachedPeruste().getPerusteId() != null) {
+                perusteDto = eperusteetService.getEperusteetPeruste(ops.getCachedPeruste().getPerusteId());
+            } else {
+                perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+            }
+
+            addVuosiluokkakokonaisuudet(doc, bodyElement, ops, perusteDto, generator, kieli);
+        }
 
         // Alaviitteet
         buildFootnotes(doc, ops, kieli);
@@ -169,93 +183,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Kuvat
         buildImages(doc, ops);
 
-        Resource resource = applicationContext.getResource("classpath:docgen/xhtml-to-xslfo.xsl");
-        pdf.write(convertOps2PDF(doc, resource.getFile()));
+        // PDF luonti dokumentista
+        pdf.write(pdfService.xhtml2pdf(doc));
 
         return pdf.toByteArray();
-    }
-
-    private byte[] convertOps2PDF(Document doc, File xslt)
-            throws IOException, TransformerException, SAXException {
-        // Streams
-        ByteArrayOutputStream xmlStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream foStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream pdfStream = new ByteArrayOutputStream();
-
-        // Muunnetaan ops objekti xml muotoon
-        convertOps2XML(doc, xmlStream);
-        //LOG.info("Generted XML  :");
-        //printStream(xmlStream);
-
-        // Muunntetaan saatu xml malli fo:ksi
-        InputStream xmlInputStream = new ByteArrayInputStream(xmlStream.toByteArray());
-        convertXML2FO(xmlInputStream, xslt, foStream);
-        //LOG.info("Generated XSL-FO:");
-        //printStream(foStream);
-
-        // Muunnetaan saatu fo malli pdf:ksi
-        InputStream foInputStream = new ByteArrayInputStream(foStream.toByteArray());
-        convertFO2PDF(foInputStream, pdfStream);
-
-        return pdfStream.toByteArray();
-    }
-
-    private void convertOps2XML(Document doc, OutputStream xml)
-            throws IOException, TransformerException {
-        TransformerFactory factory = TransformerFactory.newInstance();
-        Transformer transformer = factory.newTransformer();
-
-        // To avoid <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-
-        Source src = new DOMSource(doc);
-        Result res = new StreamResult(xml);
-
-        transformer.transform(src, res);
-    }
-
-    public void convertXML2FO(InputStream xml, File xslt, OutputStream fo)
-            throws IOException, TransformerException {
-        try {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer(new StreamSource(xslt));
-
-            Source src = new StreamSource(xml);
-            Result res = new StreamResult(fo);
-
-            transformer.transform(src, res);
-        } finally {
-            fo.close();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void convertFO2PDF(InputStream fo, OutputStream pdf)
-            throws IOException, SAXException, TransformerException {
-
-        Resource resource = applicationContext.getResource("classpath:docgen/fop.xconf");
-        FopFactory fopFactory = FopFactory.newInstance(resource.getFile());
-
-        try {
-            FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
-            foUserAgent.getRendererOptions().put("pdf-a-mode", "PDF/A-1b");
-
-            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
-
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer();
-
-            // XSLT version
-            transformer.setParameter("versionParam", "2.0");
-
-            Source src = new StreamSource(fo);
-            Result res = new SAXResult(fop.getDefaultHandler());
-
-            transformer.transform(src, res);
-        } finally {
-            pdf.close();
-        }
     }
 
     private void addMetaPages(Document doc, Element headElement, Opetussuunnitelma ops, Kieli kieli) {
@@ -324,7 +255,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addSisaltoElement(Document doc, Element rootElement, Opetussuunnitelma ops, Kieli kieli)
+    private void addSisaltoElement(Document doc, Element rootElement, Opetussuunnitelma ops,
+                                   CharapterNumberGenerator generator, Kieli kieli)
             throws IOException, SAXException, ParserConfigurationException {
 
         generator.increaseDepth();
@@ -340,13 +272,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             addPerusteTeksti(doc, rootElement, viite, kieli);
 
             // Luodaan pohjan sisältö kappaleelle
-            String teskti = "<p>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</p>";
+            String teskti = "<div>" + getTextString(viite.getTekstiKappale().getTeksti(), kieli) + "</div>";
 
-            Node node = DocumentBuilderFactory
-                    .newInstance()
-                    .newDocumentBuilder()
-                    .parse(new ByteArrayInputStream(teskti.getBytes()))
-                    .getDocumentElement();
+            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
+            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+
             rootElement.appendChild(doc.importNode(node, true));
 
             addTekstiKappale(doc, rootElement, viite, kieli, generator);
@@ -372,14 +302,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             addPerusteTeksti(doc, element, lapsi, kieli);
 
             // Luodaan sisältö
-            String teskti = "<p>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</p>";
-            teskti = teskti.replace("&shy;", "");
+            String teskti = "<div>" + getTextString(lapsi.getTekstiKappale().getTeksti(), kieli) + "</div>";
 
-            Node node = DocumentBuilderFactory
-                    .newInstance()
-                    .newDocumentBuilder()
-                    .parse(new ByteArrayInputStream(teskti.getBytes()))
-                    .getDocumentElement();
+            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
+            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+
             element.appendChild(doc.importNode(node, true));
 
             // Rekursiivisesti
@@ -396,24 +323,21 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Perusteen teksti luvulle
         List<OhjeDto> ohjeDto = ohjeService.getTekstiKappaleOhjeet(viite.getTekstiKappale().getTunniste());
 
-        for (OhjeDto ohje : ohjeDto) {
+        // Luodaan sisältö
+        ohjeDto.stream()
+                .filter(ohje -> ohje.getTyyppi() == OhjeTyyppi.PERUSTETEKSTI)
+                .forEach(ohje -> {
+            LokalisoituTekstiDto tekstiDto = ohje.getTeksti();
+            LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
 
-            if (ohje.getTyyppi() == OhjeTyyppi.PERUSTETEKSTI) {
-                LokalisoituTekstiDto tekstiDto = ohje.getTeksti();
-                LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
+            // Luodaan sisältö
+            String teskti = "<cite>" + getTextString(teksti, kieli) + "</cite>";
 
-                // Luodaan sisältö
-                String teskti = "<cite>" + getTextString(teksti, kieli) + "</cite>";
-                teskti = teskti.replace("&shy;", "");
+            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
+            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
 
-                Node node = DocumentBuilderFactory
-                        .newInstance()
-                        .newDocumentBuilder()
-                        .parse(new ByteArrayInputStream(teskti.getBytes()))
-                        .getDocumentElement();
-                rootElement.appendChild(doc.importNode(node, true));
-            }
-        }
+            rootElement.appendChild(doc.importNode(node, true));
+        });
     }
 
     private void buildFootnotes(Document doc, Opetussuunnitelma ops, Kieli kieli) {
@@ -439,7 +363,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addVuosiluokkakokonaisuudet(Document doc, Element bodyElement, Opetussuunnitelma ops, Kieli kieli) {
+    private void addVuosiluokkakokonaisuudet(Document doc, Element bodyElement, Opetussuunnitelma ops,
+                                             PerusteDto perusteDto, CharapterNumberGenerator generator, Kieli kieli) {
         Set<OpsVuosiluokkakokonaisuus> opsVlkset = ops.getVuosiluokkakokonaisuudet();
 
         // Haetaan vuosiluokkkakokonaisuudet
@@ -457,7 +382,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         for (Vuosiluokkakokonaisuus vlk : vlkset) {
 
-            addHeader(doc, bodyElement, getTextString(vlk.getNimi(), kieli));
+            addHeader(doc, bodyElement, getTextString(vlk.getNimi(), kieli), generator);
 
             // Vuosiluokkan sisältö
             generator.increaseDepth();
@@ -466,17 +391,17 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             PerusteVuosiluokkakokonaisuusDto perusteVlk = perusteDto.getPerusopetus()
                     .getVuosiluokkakokonaisuudet(vlk.getTunniste().getId()).get();
 
-            addSiirtyminenEdellisesta(doc, bodyElement, vlk, perusteVlk, kieli);
+            addSiirtyminenEdellisesta(doc, bodyElement, vlk, perusteVlk, generator, kieli);
 
-            addTehtava(doc, bodyElement, vlk, perusteVlk, kieli);
+            addTehtava(doc, bodyElement, vlk, perusteVlk, generator, kieli);
 
-            addSiirtyminenSeuraavaan(doc, bodyElement, vlk, perusteVlk, kieli);
+            addSiirtyminenSeuraavaan(doc, bodyElement, vlk, perusteVlk, generator, kieli);
 
-            addLaajaalainenOsaaminen(doc, bodyElement, vlk, perusteVlk, kieli);
+            addLaajaalainenOsaaminen(doc, bodyElement, vlk, perusteVlk, generator, kieli);
 
-            addPaikallisestiPaatettavat(doc, bodyElement, perusteVlk, kieli);
+            addPaikallisestiPaatettavat(doc, bodyElement, perusteVlk, generator, kieli);
 
-            addOppiaineet(doc, bodyElement, ops, vlk, kieli);
+            addOppiaineet(doc, bodyElement, ops, vlk, perusteDto, generator, kieli);
 
             generator.decreaseDepth();
 
@@ -487,13 +412,14 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addSiirtyminenEdellisesta(Document doc, Element bodyElement, Vuosiluokkakokonaisuus vlk,
-                                           PerusteVuosiluokkakokonaisuusDto perusteVlk, Kieli kieli) {
+                                           PerusteVuosiluokkakokonaisuusDto perusteVlk,
+                                           CharapterNumberGenerator generator, Kieli kieli) {
 
         PerusteTekstiOsaDto perusteTekstiOsaDto = perusteVlk.getSiirtymaEdellisesta();
         LokalisoituTeksti perusteOtsikko = mapper.map(perusteTekstiOsaDto.getOtsikko(), LokalisoituTeksti.class);
 
         // Otsikko
-        addHeader(doc, bodyElement, getTextString(perusteOtsikko, kieli));
+        addHeader(doc, bodyElement, getTextString(perusteOtsikko, kieli), generator);
 
         // Perusteen teksi
         LokalisoituTeksti perusteTeksti = mapper.map(perusteTekstiOsaDto.getTeksti(), LokalisoituTeksti.class);
@@ -508,14 +434,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addTehtava(Document doc, Element bodyElement, Vuosiluokkakokonaisuus vlk,
-                            PerusteVuosiluokkakokonaisuusDto perusteVlk, Kieli kieli) {
+                            PerusteVuosiluokkakokonaisuusDto perusteVlk,
+                            CharapterNumberGenerator generator, Kieli kieli) {
 
         // Perusteen osa
         PerusteTekstiOsaDto perusteTekstiOsaDto = perusteVlk.getTehtava();
         LokalisoituTeksti perusteOtsikko = mapper.map(perusteTekstiOsaDto.getOtsikko(), LokalisoituTeksti.class);
 
         // Otsikko
-        addHeader(doc, bodyElement, getTextString(perusteOtsikko, kieli));
+        addHeader(doc, bodyElement, getTextString(perusteOtsikko, kieli), generator);
 
         // Perusteen teksi
         LokalisoituTeksti perusteTeksti = mapper.map(perusteTekstiOsaDto.getTeksti(), LokalisoituTeksti.class);
@@ -531,14 +458,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addSiirtyminenSeuraavaan(Document doc, Element bodyElement, Vuosiluokkakokonaisuus vlk,
-                                          PerusteVuosiluokkakokonaisuusDto perusteVlk, Kieli kieli) {
+                                          PerusteVuosiluokkakokonaisuusDto perusteVlk,
+                                          CharapterNumberGenerator generator, Kieli kieli) {
 
         // Perusteen osa
         PerusteTekstiOsaDto perusteTekstiOsaDto = perusteVlk.getSiirtymaSeuraavaan();
         LokalisoituTeksti perusteOtsikko = mapper.map(perusteTekstiOsaDto.getOtsikko(), LokalisoituTeksti.class);
 
         // Otsikko
-        addHeader(doc, bodyElement, getTextString(perusteOtsikko, kieli));
+        addHeader(doc, bodyElement, getTextString(perusteOtsikko, kieli), generator);
 
         // Perusteen teksi
         LokalisoituTeksti perusteTeksti = mapper.map(perusteTekstiOsaDto.getTeksti(), LokalisoituTeksti.class);
@@ -554,13 +482,14 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addLaajaalainenOsaaminen(Document doc, Element bodyElement, Vuosiluokkakokonaisuus vlk,
-                                          PerusteVuosiluokkakokonaisuusDto perusteVlk, Kieli kieli) {
+                                          PerusteVuosiluokkakokonaisuusDto perusteVlk,
+                                          CharapterNumberGenerator generator, Kieli kieli) {
 
         PerusteTekstiOsaDto perusteTekstiOsaDto = perusteVlk.getLaajaalainenOsaaminen();
         LokalisoituTeksti perusteOtsikko = mapper.map(perusteTekstiOsaDto.getOtsikko(), LokalisoituTeksti.class);
 
         // Otsikko
-        addHeader(doc, bodyElement, getTextString(perusteOtsikko, kieli));
+        addHeader(doc, bodyElement, getTextString(perusteOtsikko, kieli), generator);
 
         // Perusteen teksi
         LokalisoituTeksti perusteTeksti = mapper.map(perusteTekstiOsaDto.getTeksti(), LokalisoituTeksti.class);
@@ -572,13 +501,14 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             addLokalisoituteksti(doc, bodyElement, laajaalainenOsaaminen.getTeksti(), "div", kieli);
 
         // Laajaalaisen osaamisen osat
-        addLaajaalainenOsaamisenOsat(doc, bodyElement, vlk, perusteVlk, kieli);
+        addLaajaalainenOsaamisenOsat(doc, bodyElement, vlk, perusteVlk, generator, kieli);
 
         generator.increaseNumber();
     }
 
     private void addLaajaalainenOsaamisenOsat(Document doc, Element bodyElement, Vuosiluokkakokonaisuus vlk,
-                                             PerusteVuosiluokkakokonaisuusDto perusteVlk, Kieli kieli) {
+                                             PerusteVuosiluokkakokonaisuusDto perusteVlk,
+                                              CharapterNumberGenerator generator, Kieli kieli) {
 
         Set<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto> perusteOsaamiset = perusteVlk.getLaajaalaisetOsaamiset();
         Set<Laajaalainenosaaminen> osaamiset = vlk.getLaajaalaisetosaamiset();
@@ -592,25 +522,25 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         generator.increaseDepth();
         generator.increaseDepth();
 
-        for (PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto osat : perusteOsaamisetLista) {
-            if (osat.getLaajaalainenOsaaminen() != null) {
-                LokalisoituTekstiDto nimi = osat.getLaajaalainenOsaaminen().getNimi();
-                LokalisoituTekstiDto kuvaus = osat.getLaajaalainenOsaaminen().getKuvaus();
+        perusteOsaamisetLista.stream()
+                .filter(osat -> osat.getLaajaalainenOsaaminen() != null)
+                .forEach(osat -> {
+            LokalisoituTekstiDto nimi = osat.getLaajaalainenOsaaminen().getNimi();
+            LokalisoituTekstiDto kuvaus = osat.getLaajaalainenOsaaminen().getKuvaus();
 
-                // Perusteen teksti
-                addHeader(doc, bodyElement, getTextString(nimi, kieli));
-                addLokalisoituteksti(doc, bodyElement, mapper.map(kuvaus, LokalisoituTeksti.class), "cite", kieli);
+            // Perusteen teksti
+            addHeader(doc, bodyElement, getTextString(nimi, kieli), generator);
+            addLokalisoituteksti(doc, bodyElement, mapper.map(kuvaus, LokalisoituTeksti.class), "cite", kieli);
 
-                // Opsin teksti
-                Optional<Laajaalainenosaaminen> vastaavaOpsissa = osaamiset.stream()
-                        .filter(osaaminen -> osaaminen.getLaajaalainenosaaminen().getViite()
-                                .equals(osat.getLaajaalainenOsaaminen().getTunniste().toString()))
-                        .findFirst();
-                addLokalisoituteksti(doc, bodyElement, vastaavaOpsissa.get().getKuvaus(), "div", kieli);
+            // Opsin teksti
+            Optional<Laajaalainenosaaminen> vastaavaOpsissa = osaamiset.stream()
+                    .filter(osaaminen -> osaaminen.getLaajaalainenosaaminen().getViite()
+                            .equals(osat.getLaajaalainenOsaaminen().getTunniste().toString()))
+                    .findFirst();
+            addLokalisoituteksti(doc, bodyElement, vastaavaOpsissa.get().getKuvaus(), "div", kieli);
 
-                generator.increaseNumber();
-            }
-        }
+            generator.increaseNumber();
+        });
 
         generator.decreaseDepth();
         generator.decreaseDepth();
@@ -618,7 +548,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addPaikallisestiPaatettavat(Document doc, Element bodyElement,
-                                             PerusteVuosiluokkakokonaisuusDto perusteVlk, Kieli kieli) {
+                                             PerusteVuosiluokkakokonaisuusDto perusteVlk,
+                                             CharapterNumberGenerator generator, Kieli kieli) {
         PerusteTekstiOsaDto perusteTekstiOsaDtoDto = perusteVlk.getPaikallisestiPaatettavatAsiat();
         if (perusteTekstiOsaDtoDto == null)
             return;
@@ -635,14 +566,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         if (otsikko == null || teksti == null)
             return;
 
-        addHeader(doc, bodyElement, getTextString(otsikko, kieli));
+        addHeader(doc, bodyElement, getTextString(otsikko, kieli), generator);
         addLokalisoituteksti(doc, bodyElement, teksti, "cite", kieli);
 
         generator.increaseNumber();
     }
 
     private void addOppiaineet(Document doc, Element bodyElement, Opetussuunnitelma ops,
-                               Vuosiluokkakokonaisuus vlk, Kieli kieli) {
+                               Vuosiluokkakokonaisuus vlk, PerusteDto perusteDto,
+                               CharapterNumberGenerator generator, Kieli kieli) {
         Set<OpsOppiaine> oppiaineet = ops.getOppiaineet();
         if (oppiaineet == null)
             return;
@@ -653,7 +585,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                         .compareTo(oa2.getOppiaine().getNimi().getTeksti().get(kieli)))
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        addHeader(doc, bodyElement, messages.translate("oppiaineet", kieli));
+        addHeader(doc, bodyElement, messages.translate("oppiaineet", kieli), generator);
 
         generator.increaseDepth();
 
@@ -670,8 +602,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             if (optOaVlk.isPresent()) {
                 UUID tunniste = oppiaine.getTunniste();
 
-                addHeader(doc, bodyElement, getTextString(oppiaine.getNimi(), kieli));
-                addOppiaineTehtava(doc, bodyElement, tunniste, oppiaine, kieli);
+                addHeader(doc, bodyElement, getTextString(oppiaine.getNimi(), kieli), generator);
+                addOppiaineTehtava(doc, bodyElement, tunniste, oppiaine, perusteDto, kieli);
 
                 generator.increaseDepth();
                 generator.increaseDepth();
@@ -690,7 +622,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                             perusteOppiaineDto.getVuosiluokkakokonaisuus(oaVlk.getVuosiluokkakokonaisuus().getId());
                     if (optPerusteOaVlkDto.isPresent()) {
                         // Peruste & ops
-                        addOppiaineVuosiluokkkakokonaisuus(doc, bodyElement, optPerusteOaVlkDto.get(), oaVlk, vlk, kieli);
+                        addOppiaineVuosiluokkkakokonaisuus(doc, bodyElement, optPerusteOaVlkDto.get(), oaVlk,
+                                vlk, perusteDto, generator, kieli);
                     }
                 }
 
@@ -711,7 +644,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private void addOppiaineVuosiluokkkakokonaisuus(Document doc, Element bodyElement,
                                                     PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
                                                     Oppiaineenvuosiluokkakokonaisuus oaVlkDto,
-                                                    Vuosiluokkakokonaisuus vlk, Kieli kieli) {
+                                                    Vuosiluokkakokonaisuus vlk, PerusteDto perusteDto,
+                                                    CharapterNumberGenerator generator, Kieli kieli) {
 
 
         // Tehtävä
@@ -720,7 +654,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             LokalisoituTekstiDto otsikko = perusteTekstiOsaDto.getOtsikko();
             LokalisoituTekstiDto teksti = perusteTekstiOsaDto.getTeksti();
             if (otsikko != null) {
-                addHeader(doc, bodyElement, getTextString(otsikko, kieli));
+                addHeader(doc, bodyElement, getTextString(otsikko, kieli), generator);
             }
             if (teksti != null) {
                 addOppiainePerusteTeksti(doc, bodyElement, perusteTekstiOsaDto, kieli);
@@ -739,7 +673,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         List<PerusteOpetuksentavoiteDto> tavoitteet = perusteOaVlkDto.getTavoitteet();
 
         if (tavoitteet != null) {
-            addHeader(doc, bodyElement, messages.translate("tavoitteet-ja-sisallot-vuosiluokittain", kieli));
+            addHeader(doc, bodyElement, messages.translate("tavoitteet-ja-sisallot-vuosiluokittain", kieli), generator);
         }
 
         /*for (PerusteOpetuksentavoiteDto perusteTavoiteDto : tavoitteet) {
@@ -757,16 +691,17 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         for (Oppiaineenvuosiluokka oaVuosiluokka : vuosiluokat) {
             // Vuosiluokka otsikko
             try {
-                addHeader(doc, bodyElement, messages.translate(oaVuosiluokka.getVuosiluokka().toString(), kieli));
+                addHeader(doc, bodyElement,
+                        messages.translate(oaVuosiluokka.getVuosiluokka().toString(), kieli), generator);
             } catch (NoSuchMessageException ex) {
                 LOG.warn(ex.getLocalizedMessage());
-                addHeader(doc, bodyElement, oaVuosiluokka.getVuosiluokka().toString());
+                addHeader(doc, bodyElement, oaVuosiluokka.getVuosiluokka().toString(), generator);
             }
 
             for (Keskeinensisaltoalue ksa : oaVuosiluokka.getSisaltoalueet()) {
                 generator.increaseDepth();
 
-                addHeader(doc, bodyElement, getTextString(ksa.getNimi(), kieli));
+                addHeader(doc, bodyElement, getTextString(ksa.getNimi(), kieli), generator);
 
                 // Peruste
                 Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
@@ -790,7 +725,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Työtavat
         PerusteTekstiOsaDto perusteTyotavat = perusteOaVlkDto.getTyotavat();
         if (perusteTyotavat != null) {
-            addHeader(doc, bodyElement, getTextString(perusteTyotavat.getOtsikko(), kieli));
+            addHeader(doc, bodyElement, getTextString(perusteTyotavat.getOtsikko(), kieli), generator);
             addOppiainePerusteTeksti(doc, bodyElement, perusteTyotavat, kieli);
         }
 
@@ -801,7 +736,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Ohjaus
         PerusteTekstiOsaDto perusteOhjaus = perusteOaVlkDto.getOhjaus();
         if (perusteOhjaus != null) {
-            addHeader(doc, bodyElement, getTextString(perusteOhjaus.getOtsikko(), kieli));
+            addHeader(doc, bodyElement, getTextString(perusteOhjaus.getOtsikko(), kieli), generator);
             addOppiainePerusteTeksti(doc, bodyElement, perusteOhjaus, kieli);
         }
 
@@ -812,7 +747,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Arviointi
         PerusteTekstiOsaDto perusteArviointi = perusteOaVlkDto.getArviointi();
         if (perusteArviointi != null) {
-            addHeader(doc, bodyElement, getTextString(perusteArviointi.getOtsikko(), kieli));
+            addHeader(doc, bodyElement, getTextString(perusteArviointi.getOtsikko(), kieli), generator);
             addOppiainePerusteTeksti(doc, bodyElement, perusteArviointi, kieli);
         }
 
@@ -831,14 +766,14 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 Set<PerusteOppiaineDto> perusteOppimaarat = perusteOppiaineDto.getOppimaarat();
                 Set<Oppiaine> oppimaarat = oppiaine.getOppimaarat();
 
-                addOppimaarat(doc, bodyElement, perusteOppimaarat, oppimaarat, vlk, kieli);
+                addOppimaarat(doc, bodyElement, perusteOppimaarat, oppimaarat, vlk, generator, kieli);
             }
         }
     }
 
     private void addOppimaarat(Document doc, Element bodyElement,
                                Set<PerusteOppiaineDto> perusteOppimaarat, Set<Oppiaine> oppimaarat,
-                               Vuosiluokkakokonaisuus vlk, Kieli kieli) {
+                               Vuosiluokkakokonaisuus vlk, CharapterNumberGenerator generator, Kieli kieli) {
         if (perusteOppimaarat != null) {
             for (PerusteOppiaineDto perusteOppiaineDto : perusteOppimaarat) {
 
@@ -850,22 +785,22 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     oppiaine = optOppimaara.get();
                 }
 
-                addOppimaara(doc, bodyElement, perusteOppiaineDto, oppiaine, vlk, kieli);
+                addOppimaara(doc, bodyElement, perusteOppiaineDto, oppiaine, vlk, generator, kieli);
             }
         }
     }
 
     private void addOppimaara(Document doc, Element bodyElement,
                               PerusteOppiaineDto perusteOppiaineDto, Oppiaine oppiaine,
-                              Vuosiluokkakokonaisuus vlk, Kieli kieli) {
+                              Vuosiluokkakokonaisuus vlk, CharapterNumberGenerator generator, Kieli kieli) {
 
         if (perusteOppiaineDto.getNimi().get(kieli) != null) {
             // Otsikko
-            addHeader(doc, bodyElement, getTextString(perusteOppiaineDto.getNimi(), kieli));
+            addHeader(doc, bodyElement, getTextString(perusteOppiaineDto.getNimi(), kieli), generator);
 
             generator.increaseDepth();
             // Tehtävä
-            addOppimaaraTehtava(doc, bodyElement, perusteOppiaineDto, oppiaine, kieli);
+            addOppimaaraTehtava(doc, bodyElement, perusteOppiaineDto, oppiaine, generator, kieli);
 
             Optional<PerusteOppiaineenVuosiluokkakokonaisuusDto> optPerusteOaVlkDto
                     = perusteOppiaineDto.getVuosiluokkakokonaisuus(vlk.getTunniste().getId());
@@ -886,7 +821,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 }
 
                 // Vuosiluokkakokonaisuudella
-                addOppimaaraTehtavaVuosiluokalla(doc, bodyElement, perusteOaVlkDto, oaVlk, kieli);
+                addOppimaaraTehtavaVuosiluokalla(doc, bodyElement, perusteOaVlkDto, oaVlk, generator, kieli);
 
                 // todo: Oppimäärän tavoitteet
                 // Oppimäärän tavoitteet vuosiluokkakokonaisuudella
@@ -895,7 +830,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 // Työtavat
                 PerusteTekstiOsaDto perusteTyotavat = perusteOaVlkDto.getTyotavat();
                 if (perusteTyotavat != null) {
-                    addHeader(doc, bodyElement, getTextString(perusteTyotavat.getOtsikko(), kieli));
+                    addHeader(doc, bodyElement, getTextString(perusteTyotavat.getOtsikko(), kieli), generator);
                     addOppiainePerusteTeksti(doc, bodyElement, perusteTyotavat, kieli);
                 }
                 if (oaVlk != null) {
@@ -907,7 +842,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 // Ohjaus
                 PerusteTekstiOsaDto perusteOhjaus = perusteOaVlkDto.getOhjaus();
                 if (perusteOhjaus != null) {
-                    addHeader(doc, bodyElement, getTextString(perusteOhjaus.getOtsikko(), kieli));
+                    addHeader(doc, bodyElement, getTextString(perusteOhjaus.getOtsikko(), kieli), generator);
                     addOppiainePerusteTeksti(doc, bodyElement, perusteOhjaus, kieli);
                 }
 
@@ -920,7 +855,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 // Arviointi
                 PerusteTekstiOsaDto perusteArviointi = perusteOaVlkDto.getArviointi();
                 if (perusteArviointi != null) {
-                    addHeader(doc, bodyElement, getTextString(perusteArviointi.getOtsikko(), kieli));
+                    addHeader(doc, bodyElement, getTextString(perusteArviointi.getOtsikko(), kieli), generator);
                     addOppiainePerusteTeksti(doc, bodyElement, perusteArviointi, kieli);
                 }
 
@@ -937,19 +872,19 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addOppimaaraTehtava(Document doc, Element bodyElement,
-                                     PerusteOppiaineDto perusteOppiaineDto, Oppiaine oppiaine, Kieli kieli) {
+                                     PerusteOppiaineDto perusteOppiaineDto, Oppiaine oppiaine,
+                                     CharapterNumberGenerator generator, Kieli kieli) {
         // Erityinen tehtävä
         PerusteTekstiOsaDto perusteTekstiOsaDto = perusteOppiaineDto.getTehtava();
         if (perusteTekstiOsaDto != null) {
             LokalisoituTekstiDto otsikkoDto = perusteTekstiOsaDto.getOtsikko();
-            LokalisoituTeksti otsikko = mapper.map(otsikkoDto, LokalisoituTeksti.class);
-
             LokalisoituTekstiDto tekstiDto = perusteTekstiOsaDto.getTeksti();
-            LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
 
-            if (teksti.getTeksti().get(kieli) != null) {
-                addHeader(doc, bodyElement, getTextString(otsikko, kieli));
+            if (otsikkoDto != null && tekstiDto != null) {
+                LokalisoituTeksti otsikko = mapper.map(otsikkoDto, LokalisoituTeksti.class);
+                LokalisoituTeksti teksti = mapper.map(tekstiDto, LokalisoituTeksti.class);
 
+                addHeader(doc, bodyElement, getTextString(otsikko, kieli), generator);
                 addLokalisoituteksti(doc, bodyElement, teksti, "cite", kieli);
 
                 if (oppiaine != null) {
@@ -964,7 +899,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private void addOppimaaraTehtavaVuosiluokalla(Document doc, Element bodyElement,
                                                   PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
-                                                  Oppiaineenvuosiluokkakokonaisuus oaVlk, Kieli kieli) {
+                                                  Oppiaineenvuosiluokkakokonaisuus oaVlk,
+                                                  CharapterNumberGenerator generator, Kieli kieli) {
 
         PerusteTekstiOsaDto perusteTekstiOsaDto = perusteOaVlkDto.getTehtava();
         if (perusteTekstiOsaDto != null) {
@@ -973,7 +909,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             // Tehtävä ei löydy valitulla kielellä
             if (teksti.getTeksti().get(kieli) != null) {
-                addHeader(doc, bodyElement, getTextString(perusteTekstiOsaDto.getOtsikko(), kieli));
+                addHeader(doc, bodyElement, getTextString(perusteTekstiOsaDto.getOtsikko(), kieli), generator);
                 addLokalisoituteksti(doc, bodyElement, teksti, "cite", kieli);
 
                 if (oaVlk != null) {
@@ -986,9 +922,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private void addOppimaaraTavoitteetVuosiluokkakokonaisuudella(Document doc, Element bodyElement,
                                                                   PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
-                                                                  Oppiaineenvuosiluokkakokonaisuus oaVlk, Kieli kieli) {
+                                                                  Oppiaineenvuosiluokkakokonaisuus oaVlk,
+                                                                  CharapterNumberGenerator generator, Kieli kieli) {
 
-        addHeader(doc, bodyElement, "Tavoitteet!");
+        addHeader(doc, bodyElement, "Tavoitteet!", generator);
 
         // Tavoitteet
         List<PerusteOpetuksentavoiteDto> perusteOpetuksentavoiteDtos = perusteOaVlkDto.getTavoitteet();
@@ -1001,7 +938,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private void addOppiaineTehtava(Document doc, Element bodyElement, UUID tunniste,
-                                    Oppiaine oppiaine, Kieli kieli) {
+                                    Oppiaine oppiaine, PerusteDto perusteDto, Kieli kieli) {
 
         if (tunniste != null && perusteDto.getPerusopetus().getOppiaine(tunniste) != null) {
             Optional<PerusteOppiaineDto> optPerusteenOppiaineet = perusteDto.getPerusopetus().getOppiaine(tunniste);
@@ -1087,38 +1024,25 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Luodaan sisältö
         String teskti = "<cite>" + getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli) + "</cite>";
-        teskti = teskti.replace("&shy;", "");
 
-        try {
-            Node node = DocumentBuilderFactory
-                    .newInstance()
-                    .newDocumentBuilder()
-                    .parse(new ByteArrayInputStream(teskti.getBytes()))
-                    .getDocumentElement();
-            rootElement.appendChild(doc.importNode(node, true));
-        } catch (ParserConfigurationException | IOException | SAXException ex) {
-            LOG.error(ex.getLocalizedMessage());
-        }
+        Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
+        Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+
+        rootElement.appendChild(doc.importNode(node, true));
     }
 
-    private void addLokalisoituteksti(Document doc, Element parent, LokalisoituTeksti lokalisoituTeksti, String tagi, Kieli kieli) {
-        if (lokalisoituTeksti == null)
+    private void addLokalisoituteksti(Document doc, Element parent, LokalisoituTeksti lTeksti, String tagi, Kieli kieli) {
+        if (lTeksti == null || lTeksti.getTeksti() == null || lTeksti.getTeksti().get(kieli) == null)
             return;
 
-        try {
-            String teksti = lokalisoituTeksti.getTeksti().get(kieli);
-            if (teksti != null) {
-                teksti = "<" + tagi + ">" + unescapeHtml5(teksti) + "</" + tagi + ">";
+        String teksti = lTeksti.getTeksti().get(kieli);
+        if (teksti != null) {
+            teksti = "<" + tagi + ">" + unescapeHtml5(teksti) + "</" + tagi + ">";
 
-                Node node = DocumentBuilderFactory
-                        .newInstance()
-                        .newDocumentBuilder()
-                        .parse(new ByteArrayInputStream(teksti.getBytes()))
-                        .getDocumentElement();
-                parent.appendChild(doc.importNode(node, true));
-            }
-        } catch (ParserConfigurationException | IOException | SAXException ex) {
-            LOG.error(ex.getLocalizedMessage());
+            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
+            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+
+            parent.appendChild(doc.importNode(node, true));
         }
     }
 
@@ -1135,7 +1059,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addHeader(Document doc, Element bodyElement, String text) {
+    private void addHeader(Document doc, Element bodyElement, String text, CharapterNumberGenerator generator) {
         if (text != null) {
             Element header = doc.createElement("h" + generator.getDepth());
             header.setAttribute("number", generator.generateNumber());
@@ -1147,7 +1071,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private String getFootnoteText(TermiDto termiDto, Kieli kieli) {
         LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
         String selitys = getTextString(mapper.map(tekstiDto, LokalisoituTeksti.class), kieli);
-        selitys = StringEscapeUtils.unescapeHtml(selitys);
         selitys = selitys.replaceAll("<[^>]+>", "");
 
         return selitys;
@@ -1168,13 +1091,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     }
 
     private static String unescapeHtml5(String string) {
-        return string
-                .replaceAll("&shy;", "")
-                .replaceAll("&ndash;", "–")
-                .replaceAll("&rdquo;", "”")
-                .replaceAll("&rsquo;", "’")
-                .replaceAll("&sect;", "§")
-                .replaceAll("&minus;", "−");
+        return Jsoup.clean(string, ValidHtml.WhitelistType.NORMAL.getWhitelist());
     }
-
 }

@@ -44,9 +44,9 @@
             <span ng-hide="!muokattavat[tunniste].muokattavaKuvaus.isEditing && muokattavat[tunniste].muokattavaKuvaus.kaytaOmaaKuvausta"
                   kaanna="'sisaltoalueen-kuvaus'"></span>
           </h4>
-          <div class="action-buttons-inline ng-scope">
+          <div class="action-buttons-inline ng-scope" ng-show="options.isEditable()">
             <button oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }" class="btn btn-default"
-                    ng-click="muokkaaKuvausta(muokattavat[tunniste].muokattavaKuvaus)" ng-hide="options.editing">
+                    ng-click="muokkaaKuvausta(muokattavat[tunniste].muokattavaKuvaus)">
               <span icon-role="edit" kaanna="'muokkaa'"></span>
             </button>
           </div>

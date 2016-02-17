@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import org.apache.fop.apps.FOPException;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -34,5 +33,6 @@ import java.io.IOException;
 public interface DokumenttiBuilderService {
 
     byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
-            throws TransformerException, IOException, SAXException, JAXBException, ParserConfigurationException;
+            throws TransformerException, IOException, SAXException, JAXBException,
+            ParserConfigurationException, NullPointerException;
 }

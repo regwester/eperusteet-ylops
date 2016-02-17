@@ -92,8 +92,8 @@ ylopsApp
           vuosiluokkakokonaisuudet: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
             return vuosiluokatService.getVuosiluokkakokonaisuudet(opsModel);
           }],
-          'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
-          'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
+          opsOikeudetNouto: ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
             return opsOikeudet.fetch($stateParams);
           }]
         },

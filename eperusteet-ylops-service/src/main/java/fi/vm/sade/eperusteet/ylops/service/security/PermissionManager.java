@@ -248,10 +248,10 @@ public class PermissionManager {
             case CRUD:
                 permissions.add(Permission.LUONTI);
                 permissions.add(Permission.POISTO);
+                permissions.add(Permission.TILANVAIHTO);
             case READ_UPDATE:
                 permissions.add(Permission.LUKU);
                 permissions.add(Permission.MUOKKAUS);
-                permissions.add(Permission.TILANVAIHTO);
             case READ:
                 permissions.add(Permission.LUKU);
                 permissions.add(Permission.KOMMENTOINTI);

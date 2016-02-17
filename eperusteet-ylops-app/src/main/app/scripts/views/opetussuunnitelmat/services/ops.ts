@@ -83,7 +83,7 @@ ylopsApp
   }
 
   this.oppiaineIsKieli = function(oppiaine) {
-    return _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK'], oppiaine.koodiArvo.toUpperCase());
+    return _.isString(oppiaine.koodiArvo) && _.includes(['VK', 'TK'], oppiaine.koodiArvo.toUpperCase());
   };
 
   this.fetch = fetch;

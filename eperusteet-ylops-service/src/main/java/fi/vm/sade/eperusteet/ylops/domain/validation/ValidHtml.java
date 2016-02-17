@@ -43,7 +43,7 @@ public @interface ValidHtml {
 
     Class<? extends Payload>[] payload() default { };
 
-    public enum WhitelistType {
+    enum WhitelistType {
         MINIMAL(Whitelist.none()),
         SIMPLIFIED(Whitelist.none().addTags("p","strong","em","s","ol","li","ul")),
         NORMAL(Whitelist.none()

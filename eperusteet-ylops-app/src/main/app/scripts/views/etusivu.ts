@@ -34,8 +34,12 @@ ylopsApp
         $scope.pohjat = OpsListaService.query(false);
         $scope.sorter = Utils.sort;
     })
-    .controller('EtusivuController', function ($scope, Oikeudet, $state) {
+    .controller('EtusivuController', function ($scope, Oikeudet, $state, OpetussuunnitelmaOikeudetService) {
         $scope.isVirkailija = Oikeudet.isVirkailija;
+
+        $scope.hasLuontiOps = OpetussuunnitelmaOikeudetService.onkoOikeudet('opetussuunnitelma', 'luonti', true);
+        $scope.hasLuontiPohja = OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luonti', true);
+        $scope.hasLuontiBox = $scope.hasLuontiOps || $scope.hasLuontiPohja;
 
         $scope.addNewPohja = function () {
             $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});

@@ -331,6 +331,30 @@ ylopsApp
             );
         };
 
+        $scope.isKurssiDeletable = (kurssi) => {
+            return kurssi.tyyppi === "VALTAKUNNALLINEN_SOVELTAVA" || _.any(LukioControllerHelpers.paikallisetKurssiTyypit(), t => kurssi.tyyppi == t);
+        };
+
+        $scope.removeKurssi = ($event, kurssi) => {
+            $event.preventDefault();
+            $event.stopPropagation();
+
+            LukioOpetussuunnitelmaService.lukitseKurssi(kurssi.id).then(() => {
+                Varmistusdialogi.dialogi({
+                    otsikko: 'varmista-poista-kurssi',
+                    primaryBtn: 'poista-kurssi',
+                    failureCb: () => LukioOpetussuunnitelmaService.vapautaKurssi(kurssi.id),
+                    successCb: () => LukioOpetussuunnitelmaService.removeKurssi(kurssi.id, $stateParams.id).then( () => {
+                        Notifikaatiot.onnistui('kurssin-poisto-onnistui');
+                        $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                            id: $stateParams.id,
+                            oppiaineId: $stateParams.oppiaineId
+                        }, { reload: true, notify: true }));
+                    })
+                })();
+            });
+        };
+
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
             $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat(oa);
@@ -436,6 +460,7 @@ ylopsApp
                 parentOppiaineId: $stateParams.oppiaineId
             }, { reload: true, notify: true });
         };
+
         $scope.addTarjonnasta = (pohjanOppiaine) => {
             $modal.open({
                 templateUrl: 'views/opetussuunnitelmat/modals/lukioKieliTarjontaModaali.html',
@@ -555,7 +580,7 @@ ylopsApp
         $scope.connected = () => $scope.kurssi && !$scope.kurssi.oma && !$scope.rootOps;
         $scope.isReconnectable = () => $scope.kurssi && $scope.kurssi.oma && !$scope.rootOps && $scope.kurssi.palautettava;
         $scope.isEditAllowed = () => $scope.kurssi && $scope.kurssi.oma;
-        $scope.isDeletable = () => $scope.kurssi && $scope.kurssi.oma && $scope.isPaikallinen();
+        $scope.isDeletable = () => $scope.kurssi && ($scope.kurssi.oma && $scope.isPaikallinen()) || ($scope.kurssi.tyyppi === 'VALTAKUNNALLINEN_SOVELTAVA');
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
         });
@@ -725,7 +750,7 @@ ylopsApp
 
     .controller('LukioOppiaineSisaltoController', function($scope, $q:IQService, $stateParams,
                                                   LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Kaanna, $log) {
-        $scope.textHidden = true;
+        $scope.textHidden = false;
         $scope.editing = false;
 
         $scope.toggleTextVisible = () => {
@@ -733,8 +758,6 @@ ylopsApp
         };
 
         $scope.edit = () => {
-            //console.log("edit", $scope);
-            //$scope.$parent.toEditMode();
             $scope.editing = true;
         };
     })
@@ -789,6 +812,8 @@ ylopsApp
             return 'kieli';
         } else if (oppiaine.koodiArvo === 'KT') {
             return 'uskonto';
+        } else if (oppiaine.koodiArvo === 'AI') {
+            return 'aidinkieli';
         } else {
             $log.warn('Oppiaineen täytyy olla kieli tai uskonto');
             return '';
@@ -799,7 +824,7 @@ ylopsApp
     $scope.oppiaine = oppiaine;
     $scope.$valittu = _.cloneDeep(valittu);
     $scope.$valittu.kieli = LukioControllerHelpers.kielella('');
-    $scope.$omaNimi = $scope.$type == 'uskonto' ? _.cloneDeep($scope.$valittu.nimi) : LukioControllerHelpers.kielella('');
+    $scope.$omaNimi = (!$scope.$type || $scope.$type == 'uskonto') ? _.cloneDeep($scope.$valittu.nimi) : LukioControllerHelpers.kielella('');
     $scope.$concretet = _.reject(oppiaine.perusteen.oppimaarat, om => om.abstrakti);
     $scope.openKieliKoodisto = LukioControllerHelpers.openOppiaineKieliKoodisto($scope.$valittu,
         koodi => {

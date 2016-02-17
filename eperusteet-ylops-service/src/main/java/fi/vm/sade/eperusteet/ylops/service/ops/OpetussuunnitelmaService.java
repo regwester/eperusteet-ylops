@@ -68,7 +68,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     OpetussuunnitelmaDto addPohja(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto);
 
-    @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'POISTO')")
     OpetussuunnitelmaDto updateOpetussuunnitelma(@P("ops") OpetussuunnitelmaDto opetussuunnitelmaDto);
 
     @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'TILANVAIHTO')")
@@ -86,10 +86,10 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void updateLapsiOpetussuunnitelmat(Long opsId);
 
-    @PreAuthorize("hasPermission(#pohjaId, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#pohjaId, 'opetussuunnitelma', 'HALLINTA')")
     void syncPohja(Long pohjaId);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
     void updateOppiainejarjestys(Long opsId, List<JarjestysDto> oppiainejarjestys);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
@@ -108,5 +108,5 @@ public interface OpetussuunnitelmaService {
      * @return Peruste
      */
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public PerusteDto getPeruste(@P("opsId") Long opsId);
+    PerusteDto getPeruste(@P("opsId") Long opsId);
 }
