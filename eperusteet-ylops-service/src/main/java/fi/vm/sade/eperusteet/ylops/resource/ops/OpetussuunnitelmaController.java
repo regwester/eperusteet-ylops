@@ -73,6 +73,13 @@ public class OpetussuunnitelmaController {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelma(id), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{id}/kaikki", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<OpetussuunnitelmaDto> getKaikki(@PathVariable("id") final Long id) {
+        return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.GET)
     @ResponseBody
     @Timed
