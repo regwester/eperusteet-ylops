@@ -141,7 +141,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Apuluokka datan säilömiseen generoinin ajaksi
         DokumenttiBase docBase = new DokumenttiBase();
-
         docBase.setDocument(doc);
         docBase.setHeadElement(headElement);
         docBase.setBodyElement(bodyElement);
@@ -188,12 +187,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         title.appendChild(docBase.getDocument().createTextNode(nimi));
         docBase.getHeadElement().appendChild(title);
 
-        String tyyppi = messages.translate(docBase.getOps().getKoulutustyyppi().toString(), docBase.getKieli());
-        Element type = docBase.getDocument().createElement("meta");
-        type.setAttribute("name", "type");
-        type.setAttribute("content", tyyppi);
-        docBase.getHeadElement().appendChild(type);
-
         String kuvaus = getTextString(docBase.getOps().getKuvaus(), docBase.getKieli());
         if (kuvaus != null && kuvaus.length() != 0) {
             Element description = docBase.getDocument().createElement("meta");
@@ -220,16 +213,30 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         docBase.getHeadElement().appendChild(municipalities);
 
         // Organisaatiot
-        Set<String> organisaatiot = docBase.getOps().getOrganisaatiot();
-        Element organizations = docBase.getDocument().createElement("organisaatiot");
-        organisaatiot.stream().forEach(org -> {
-            JsonNode orgNode = organisaatioService.getOrganisaatio(org);
-            JsonNode nimiNode = orgNode.get("nimi");
-            Element orgEl = docBase.getDocument().createElement("organisaatio");
-            orgEl.setTextContent(nimiNode.get(docBase.getKieli().toString()).asText());
-            organizations.appendChild(orgEl);
-        });
-        docBase.getHeadElement().appendChild(organizations);
+        Element organisaatiot = docBase.getDocument().createElement("organisaatiot");
+
+        docBase.getOps().getOrganisaatiot().stream()
+                .map(org -> organisaatioService.getOrganisaatio(org))
+                .filter(node -> {
+                    JsonNode tyypit = node.get("tyypit");
+                    if (tyypit.isArray()) {
+                        for (JsonNode asd : tyypit) {
+                            if (asd.textValue().equals("Koulutustoimija")) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                })
+                .map(node -> node.get("nimi").get(docBase.getKieli().toString()).asText())
+                .forEach(koulu -> {
+                    Element orgEl = docBase.getDocument().createElement("koulu");
+                    orgEl.setTextContent(koulu);
+                    organisaatiot.appendChild(orgEl);
+                });
+
+        docBase.getHeadElement().appendChild(organisaatiot);
+
 
         // Päätöspäivämäärä
         Date paatospaivamaara = docBase.getOps().getPaatospaivamaara();
@@ -273,36 +280,46 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private void addYhteisetOsuudet(DokumenttiBase docBase)
             throws IOException, SAXException, ParserConfigurationException {
 
+        boolean paataso = true;
         if (docBase.getOps().getTekstit() != null) {
-            addTekstiKappale(docBase, docBase.getOps().getTekstit());
+            addTekstiKappale(docBase, docBase.getOps().getTekstit(), paataso);
         }
     }
 
-    private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite)
+    private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso)
             throws ParserConfigurationException, IOException, SAXException {
 
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
             if (lapsi.getTekstiKappale() != null && lapsi.getTekstiKappale().getNimi() != null) {
-                addHeader(docBase, getTextString(lapsi.getTekstiKappale().getNimi(), docBase.getKieli()));
 
-                // Opsin teksti luvulle
-                if (lapsi.getTekstiKappale().getTeksti() != null) {
-                    String teskti = "<div>" + getTextString(lapsi.getTekstiKappale().getTeksti(), docBase.getKieli()) + "</div>";
+                // Ei näytetä yhteisen osien Pääkappaleiden otsikoita
+                // Opetuksen järjestäminen ja Opetuksen toteuttamisen lähtökohdat
+                if (paataso) {
+                    addTekstiKappale(docBase, lapsi, false);
+                } else {
 
-                    Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
-                    Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+                    addHeader(docBase, getTextString(lapsi.getTekstiKappale().getNimi(), docBase.getKieli()));
 
-                    docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
+                    // Opsin teksti luvulle
+                    if (lapsi.getTekstiKappale().getTeksti() != null) {
+                        String teskti = "<div>" + getTextString(lapsi.getTekstiKappale().getTeksti(), docBase.getKieli()) + "</div>";
+
+                        Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
+                        Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+
+                        docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
+
+                    }
+
+                    docBase.getGenerator().increaseDepth();
+
+                    // Rekursiivisesti
+                    addTekstiKappale(docBase, lapsi, false);
+
+                    docBase.getGenerator().decreaseDepth();
+                    docBase.getGenerator().increaseNumber();
 
                 }
-
-                docBase.getGenerator().increaseDepth();
-
-                // Rekursiivisesti
-                addTekstiKappale(docBase, lapsi);
-
-                docBase.getGenerator().decreaseDepth();
-                docBase.getGenerator().increaseNumber();
             }
         }
     }
