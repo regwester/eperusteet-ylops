@@ -227,13 +227,13 @@
 
                 <xsl:apply-templates select="koulut" />
 
-                <!-- Voimaantulo -->
+                <!-- Hyväksymispäivämäärä -->
                 <xsl:if test="boolean(/html/head/meta[@name='date'])">
                     <fo:table-row>
                         <fo:table-cell>
                             <fo:block font-weight="bold">
                                 <xsl:if test="//html/@lang = 'fi'">
-                                    <xsl:text>Voimaantulo</xsl:text>
+                                    <xsl:text>Hyväksymispäivämäärä</xsl:text>
                                 </xsl:if>
                                 <xsl:if test="//html/@lang = 'sv'">
                                     <xsl:text>Träder i kraft</xsl:text>
