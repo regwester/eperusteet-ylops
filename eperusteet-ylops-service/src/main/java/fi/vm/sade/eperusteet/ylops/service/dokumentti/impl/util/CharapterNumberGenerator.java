@@ -24,14 +24,17 @@ import java.util.List;
  */
 public class CharapterNumberGenerator {
     private List<Integer> numbers = new ArrayList<>();
-    private int startingValue = 1;
+
+    public CharapterNumberGenerator() {
+        numbers.add(1);
+    }
 
     public int getDepth() {
         return numbers.size();
     }
 
     public void increaseDepth() {
-        numbers.add(startingValue);
+        numbers.add(1);
     }
 
     public void decreaseDepth() {
