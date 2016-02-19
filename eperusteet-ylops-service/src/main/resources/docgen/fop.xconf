@@ -58,18 +58,6 @@
         (normal = 400, bold = 700)
         -->
 
-        <!--
-        <font metrics-url="arial.xml" kerning="yes" embed-url="arial.ttf">
-          <font-triplet name="Arial" style="normal" weight="normal"/>
-          <font-triplet name="ArialMT" style="normal" weight="normal"/>
-        </font>
-        <font metrics-url="arialb.xml" kerning="yes" embed-url="arialb.ttf">
-          <font-triplet name="Arial" style="normal" weight="bold"/>
-          <font-triplet name="ArialMT" style="normal" weight="bold"/>
-        </font>
-        -->
-
-
         <font embed-url="fonts/Arimo-Bold.ttf" >
           <font-triplet name="sans-serif" style="normal" weight="bold" />
           <font-triplet name="Symbol" style="normal" weight="bold"/>
@@ -116,9 +104,7 @@
         </font>
 
         <!-- auto-detect fonts -->
-        <!--
-        <auto-detect/>
-        -->
+        <!--<auto-detect/>-->
       </fonts>
 
       <!-- This option lets you specify additional options on an XML handler -->
