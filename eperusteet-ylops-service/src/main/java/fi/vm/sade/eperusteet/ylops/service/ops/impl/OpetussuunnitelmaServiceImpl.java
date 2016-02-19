@@ -380,7 +380,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ops.setTila(Tila.LUONNOS);
             ops = repository.save(ops);
 
-            if(isPohjastaTehtyPohja(pohja)){
+            if(isPohjastaTehtyPohja(pohja) && pohja.getKoulutustyyppi().compareTo(KoulutusTyyppi.LUKIOKOULUTUS) == 0){
                 lisaaTeemaopinnotJosPohjassa(ops, pohja);
             }
 
