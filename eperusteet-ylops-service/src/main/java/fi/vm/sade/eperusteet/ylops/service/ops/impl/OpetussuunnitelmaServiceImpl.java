@@ -269,6 +269,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
+    public OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        OpetussuunnitelmaLaajaDto dto = mapper.map(ops, OpetussuunnitelmaLaajaDto.class);
+        fetchKuntaNimet(dto);
+        fetchOrganisaatioNimet(dto);
+        return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public OpetussuunnitelmaDto getOpetussuunnitelmaKaikki(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");

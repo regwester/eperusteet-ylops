@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -25,6 +26,8 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +53,7 @@ public class VuosiluokkakokonaisuusController {
     public VuosiluokkakokonaisuusDto add(@PathVariable("opsId") final Long opsId, @RequestBody VuosiluokkakokonaisuusDto dto) {
         return vuosiluokkakokonaisuudet.add(opsId, dto);
     }
-
+    
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<UnwrappedOpsVuosiluokkakokonaisuusDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         return Responses.ofNullable(new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.get(opsId, id)));

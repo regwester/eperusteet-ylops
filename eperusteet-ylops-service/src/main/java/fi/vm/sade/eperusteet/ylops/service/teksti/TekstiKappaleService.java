@@ -27,15 +27,15 @@ public interface TekstiKappaleService {
     @PreAuthorize("permitAll()")
     TekstiKappaleDto get(Long id);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     TekstiKappaleDto add(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     TekstiKappaleDto update(TekstiKappaleDto tekstiKappaleDto);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     TekstiKappaleDto mergeNew(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     void delete(Long id);
 }

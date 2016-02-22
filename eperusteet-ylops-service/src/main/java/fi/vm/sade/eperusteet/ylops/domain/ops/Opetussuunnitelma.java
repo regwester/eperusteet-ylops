@@ -50,7 +50,7 @@ import static java.util.stream.Collectors.groupingBy;
  *
  * @author mikkom
  */
-@Entity
+    @Entity
 @Audited
 @Table(name = "opetussuunnitelma")
 public class Opetussuunnitelma extends AbstractAuditedEntity
