@@ -91,7 +91,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Autowired
     private AihekokonaisuusRepository aihekokonaisuusRepository;
-    
+
     @Autowired
     private OpetuksenYleisetTavoitteetRepository opetuksenYleisetTavoitteetRepository;
 
@@ -245,7 +245,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     private Comparator<Oppiaine> compareOppiaineet(Function<Long, Integer> jarjestys) {
         return comparing((Oppiaine oa) -> ofNullable(jarjestys.apply(oa.getId())).orElse(Integer.MAX_VALUE))
-                .thenComparing(comparing((Oppiaine oa)-> oa.getNimi().firstByKieliOrder().orElse("")));
+                .thenComparing(comparing((Oppiaine oa) -> oa.getNimi().firstByKieliOrder().orElse("")));
     }
 
     private <Kt extends LukiokurssiListausOpsDto> Kt mapKurssi(OppiaineLukiokurssi oaLk, Function<Long, Long> parentKurssisById,
@@ -588,7 +588,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         opetussuunnitelmaRepository.lock(ops);
         OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi(opsId, kurssiId).stream().findAny()
                 .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
-        
+
         if (!oaKurssi.isOma()) {
             throw new BusinessRuleViolationException("kurssia ei voi poistaa");
         }
