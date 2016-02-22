@@ -59,5 +59,5 @@ FROM (
          WHERE revtype = 2
        ) GROUP BY id, rev
      ) a
-where rn =1;
+where rn =1 and findOpsForTekstikappaleAud(id) IS NOT NULL;
 

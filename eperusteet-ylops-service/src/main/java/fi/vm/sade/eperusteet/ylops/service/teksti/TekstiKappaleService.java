@@ -24,21 +24,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
  */
 public interface TekstiKappaleService {
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     TekstiKappaleDto get(Long id);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleDto add(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleDto update(TekstiKappaleDto tekstiKappaleDto);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleDto mergeNew(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void delete(Long id);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void removeTekstiKappaleFromOps(Long id, Long opsId);
 }

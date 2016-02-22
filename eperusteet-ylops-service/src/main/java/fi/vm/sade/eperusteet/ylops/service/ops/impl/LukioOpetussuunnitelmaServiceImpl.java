@@ -245,7 +245,12 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     private Comparator<Oppiaine> compareOppiaineet(Function<Long, Integer> jarjestys) {
         return comparing((Oppiaine oa) -> ofNullable(jarjestys.apply(oa.getId())).orElse(Integer.MAX_VALUE))
-                .thenComparing(comparing((Oppiaine oa) -> oa.getNimi().firstByKieliOrder().orElse("")));
+                .thenComparing(comparing((Oppiaine oa)-> {
+                    if( oa == null || oa.getNimi() == null){
+                        return "";
+                    }
+                    return oa.getNimi().firstByKieliOrder().orElse("");
+                }));
     }
 
     private <Kt extends LukiokurssiListausOpsDto> Kt mapKurssi(OppiaineLukiokurssi oaLk, Function<Long, Long> parentKurssisById,
