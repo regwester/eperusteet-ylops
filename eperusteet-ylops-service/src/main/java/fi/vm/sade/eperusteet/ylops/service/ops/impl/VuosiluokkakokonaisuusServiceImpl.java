@@ -106,6 +106,7 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
                 opetuksentavoite.getSisaltoalueet().forEach( opetuksenKeskeinensisaltoalue -> {
                     opetuksenkeskeinenSisaltoalueRepository.delete( opetuksenKeskeinensisaltoalue );
                 } );
+                opetuksentavoite.getSisaltoalueet().clear();
             });
         });
     }

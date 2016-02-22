@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  *
@@ -79,6 +81,15 @@ public class OpetussuunnitelmanSisaltoController {
         tekstiKappaleViiteService.revertToVersion(opsId, viiteId, versio);
     }
 
+    @RequestMapping(value = "/tekstit/removed", method = GET)
+    public ResponseEntity<List<PoistettuTekstiKappaleDto>> getVersionsForTekstiKappaleViite(@PathVariable("opsId") final Long opsId) {
+        return new ResponseEntity<>(tekstiKappaleViiteService.getRemovedTekstikappaleetForOps(opsId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/tekstit/{id}/returnRemoved", method = POST)
+    public void returnRemoved(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        tekstiKappaleViiteService.returnRemovedTekstikappale(opsId, id);
+    }
 
     @RequestMapping(value = "/tekstit/{viiteId}/lapsi", method = RequestMethod.POST)
     @ResponseBody

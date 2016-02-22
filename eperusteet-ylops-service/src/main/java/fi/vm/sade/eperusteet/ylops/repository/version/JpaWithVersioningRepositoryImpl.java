@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -49,6 +50,7 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
         @SuppressWarnings("unchecked")
         List<Object[]> results = (List<Object[]>) auditReader.createQuery()
             .forRevisionsOfEntity(entityInformation.getJavaType(), false, true)
+            .addProjection(AuditEntity.id())
             .addProjection(AuditEntity.revisionNumber())
             .addProjection(AuditEntity.revisionProperty(RevisionInfo_.timestamp.getName()))
             .addProjection(AuditEntity.revisionProperty(RevisionInfo_.muokkaajaOid.getName()))
@@ -59,7 +61,7 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
 
         List<Revision> revisions = new ArrayList<>();
         for (Object[] result : results) {
-            revisions.add(new Revision((Integer) result[0], (Long) result[1], (String)result[2], (String)result[3]));
+            revisions.add(new Revision((Long) result[0], (Integer) result[1], (Long) result[2], (String)result[3], (String)result[4]));
         }
 
         return revisions;

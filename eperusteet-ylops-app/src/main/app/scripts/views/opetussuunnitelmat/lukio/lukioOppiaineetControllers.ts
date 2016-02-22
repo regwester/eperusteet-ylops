@@ -322,6 +322,8 @@ ylopsApp
         $scope.canAddOppimaara = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma;
         $scope.canAddFromTarjonta = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma
                         && !_.isEmpty($scope.oppiaine.pohjanTarjonta);
+        const noOwnCourses = ["oppiaineetyleissivistava2_tvk", "oppiaineetyleissivistava2_ld", "oppiaineetyleissivistava2_to"];
+        $scope.canAddKurssi = () => !$scope.editing && $scope.oppiaine && !$scope.oppiaine.koosteinen && !_.any(noOwnCourses, k => k === $scope.oppiaine.koodiUri);
         $scope.tarjottavaTyyppi = () => {
             if (!$scope.canAddFromTarjonta()) {
                 return null;
@@ -329,6 +331,29 @@ ylopsApp
             return OpsService.oppiaineIsKieli($scope.oppiaine) ? 'kieli' : (
                 $scope.oppiaine.koodiArvo == 'KT' ? 'uskonto' : 'tuntematon'
             );
+        };
+        $scope.isKurssiDeletable = (kurssi) => {
+            return kurssi.tyyppi === "VALTAKUNNALLINEN_SOVELTAVA" || _.any(LukioControllerHelpers.paikallisetKurssiTyypit(), t => kurssi.tyyppi == t);
+        };
+
+        $scope.removeKurssi = ($event, kurssi) => {
+            $event.preventDefault();
+            $event.stopPropagation();
+
+            LukioOpetussuunnitelmaService.lukitseKurssi(kurssi.id).then(() => {
+                Varmistusdialogi.dialogi({
+                    otsikko: 'varmista-poista-kurssi',
+                    primaryBtn: 'poista-kurssi',
+                    failureCb: () => LukioOpetussuunnitelmaService.vapautaKurssi(kurssi.id),
+                    successCb: () => LukioOpetussuunnitelmaService.removeKurssi(kurssi.id, $stateParams.id).then( () => {
+                        Notifikaatiot.onnistui('kurssin-poisto-onnistui');
+                        $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                            id: $stateParams.id,
+                            oppiaineId: $stateParams.oppiaineId
+                        }, { reload: true, notify: true }));
+                    })
+                })();
+            });
         };
 
         $scope.isKurssiDeletable = (kurssi) => {

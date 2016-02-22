@@ -557,5 +557,13 @@
   "katso-uusin-versio": "Katso uusin versio",
   "katselet-vanhaa-versiota": "Tarkastelet vanhaa versiota sivusta.",
   "ota-versio-kayttoon": "Ota tämä versio käyttöön.",
-  "versio": "Versio"
+  "versio": "Versio",
+  "opsn-poistetut": "Poistetut",
+  "ei-poistettuja-tekstikappaleita": "Poistettuja tekstikappaleita ei ole.",
+  "tekstikappale-poistetut": "Poistetut",
+  "tekstikappale-otsikko": "Tekstikappaleen otsikko",
+  "tekstikappale-poistaja": "Poistaja",
+  "tekstikappale-poistettu": "Poistettu",
+  "tekstikappale-toiminnot": "Toiminnot",
+  "haku-nimi": "Haku"
 }

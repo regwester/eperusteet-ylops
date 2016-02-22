@@ -38,4 +38,7 @@ public interface TekstiKappaleService {
 
     @PreAuthorize("isAuthenticated()")
     void delete(Long id);
+
+    @PreAuthorize("permitAll()")
+    void removeTekstiKappaleFromOps(Long id, Long opsId);
 }

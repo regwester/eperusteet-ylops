@@ -16,10 +16,14 @@
 package fi.vm.sade.eperusteet.ylops.service.teksti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.PoistettuTekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
@@ -42,6 +46,12 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
 
     @Autowired
     private TekstiKappaleRepository repository;
+
+    @Autowired
+    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    private PoistettuTekstiKappaleRepository poistettuTekstiKappaleRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -85,6 +95,17 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
 
         mapper.map(clone, tekstiKappaleDto);
         return tekstiKappaleDto;
+    }
+
+    @Override
+    public void removeTekstiKappaleFromOps(Long id, Long opsId) {
+        PoistettuTekstiKappale poistettu = new PoistettuTekstiKappale();
+        TekstiKappale tekstiKappale = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+
+        poistettu.setOpetussuunnitelma(ops);
+        poistettu.setTekstiKappale(tekstiKappale.getId());
+        poistettuTekstiKappaleRepository.save(poistettu);
     }
 
     @Override
