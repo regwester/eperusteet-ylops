@@ -36,7 +36,7 @@ ylopsApp
     $scope.poistetut = _.filter($scope.kaikki, (item) => {
       const matchRemover = Algoritmit.match(searchString, item.luoja);
       const matchRemovedDate = Algoritmit.match(searchString, $filter('aikaleima')(item.luotu, 'date'));
-      const matchTextTitle = Algoritmit.match(searchString, item.tekstiKappale.nimi);
+      const matchTextTitle = Algoritmit.match(searchString, item.tekstiKappaleDto.nimi);
       return matchRemover || matchRemovedDate || matchTextTitle;
     });
   });
