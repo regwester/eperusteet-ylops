@@ -31,7 +31,7 @@
     "grunt-svgmin": "0.4.0",
     "grunt-ts": "~5.0.0-beta.1",
     "grunt-usemin": "2.4.0",
-    "karma": "^0.13.21",
+    "karma": "0.13.21",
     "karma-jasmine": "0.1.6",
     "karma-ng-html2js-preprocessor": "0.1.2",
     "karma-ng-scenario": "0.1.0",
