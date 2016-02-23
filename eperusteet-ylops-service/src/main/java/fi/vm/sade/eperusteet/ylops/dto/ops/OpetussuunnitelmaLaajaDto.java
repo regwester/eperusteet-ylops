@@ -32,5 +32,5 @@ public class OpetussuunnitelmaLaajaDto extends OpetussuunnitelmaBaseDto {
     private OpetussuunnitelmaNimiDto pohja;
     private Optional<TekstiKappaleViiteDto.Puu> tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
-    private Set<OpsOppiaineDto> oppiaineet;
+    private Set<OpsOppiaineLaajaDto> oppiaineet;
 }

@@ -59,7 +59,7 @@
                             <goal>grunt</goal>
                         </goals>
                         <configuration>
-                            <arguments>build</arguments>
+                            <arguments>build --no-color</arguments>
                         </configuration>
                     </execution>
                 </executions>
