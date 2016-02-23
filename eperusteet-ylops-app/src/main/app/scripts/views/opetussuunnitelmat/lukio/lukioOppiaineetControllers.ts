@@ -356,6 +356,30 @@ ylopsApp
             });
         };
 
+        $scope.isKurssiDeletable = (kurssi) => {
+            return kurssi.tyyppi === "VALTAKUNNALLINEN_SOVELTAVA" || _.any(LukioControllerHelpers.paikallisetKurssiTyypit(), t => kurssi.tyyppi == t);
+        };
+
+        $scope.removeKurssi = ($event, kurssi) => {
+            $event.preventDefault();
+            $event.stopPropagation();
+
+            LukioOpetussuunnitelmaService.lukitseKurssi(kurssi.id).then(() => {
+                Varmistusdialogi.dialogi({
+                    otsikko: 'varmista-poista-kurssi',
+                    primaryBtn: 'poista-kurssi',
+                    failureCb: () => LukioOpetussuunnitelmaService.vapautaKurssi(kurssi.id),
+                    successCb: () => LukioOpetussuunnitelmaService.removeKurssi(kurssi.id, $stateParams.id).then( () => {
+                        Notifikaatiot.onnistui('kurssin-poisto-onnistui');
+                        $timeout(() =>  $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+                            id: $stateParams.id,
+                            oppiaineId: $stateParams.oppiaineId
+                        }, { reload: true, notify: true }));
+                    })
+                })();
+            });
+        };
+
         LukioOpetussuunnitelmaService.getOppiaine($stateParams.oppiaineId).then(oa => {
             $scope.oppiaine = oa;
             $scope.muokattavatOsat = LukioControllerHelpers.muokattavatOppiaineOsat(oa);

@@ -88,9 +88,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = false)
-    public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId, Long parentViiteId,
+    public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("rootId") Long rootId, Long parentViiteId,
         TekstiKappaleViiteDto.Matala viiteDto) {
-        TekstiKappaleViite parentViite = findViite(opsId, parentViiteId);
+        TekstiKappaleViite parentViite = findViite(rootId, parentViiteId);
         TekstiKappaleViite uusiViite = new TekstiKappaleViite(Omistussuhde.OMA);
         if (viiteDto != null) {
             uusiViite.setPakollinen(viiteDto.isPakollinen());
