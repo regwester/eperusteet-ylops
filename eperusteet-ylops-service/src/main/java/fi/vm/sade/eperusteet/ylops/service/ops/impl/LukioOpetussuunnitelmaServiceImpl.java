@@ -599,7 +599,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         }
         if (!oaKurssi.getKurssi().getTyyppi().isPaikallinen() &&
                 oaKurssi.getKurssi().getTyyppi().compareTo(LukiokurssiTyyppi.VALTAKUNNALLINEN_SOVELTAVA) != 0 ) {
-            throw new BusinessRuleViolationException("Valtakunnallista kurssia ei voida poista..");
+            throw new BusinessRuleViolationException("Valtakunnallista kurssia ei voida poistaa.");
         }
 
         oaKurssi.getKurssi().getOppiaineet().clear();
