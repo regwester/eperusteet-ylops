@@ -132,7 +132,10 @@ ylopsApp
       addKielitarjonta: {method: 'POST', url: YlopsResources.OPPIAINE + '/kielitarjonta'},
       getParent: {method: 'GET', url: YlopsResources.OPPIAINE + '/parent'},
       kloonaaMuokattavaksi: {method: 'POST', url: YlopsResources.OPPIAINE + '/muokattavakopio'},
-      palautaYlempaan: {method: 'POST', url: YlopsResources.OPPIAINE + '/palautaYlempi'}
+      palautaYlempaan: {method: 'POST', url: YlopsResources.OPPIAINE + '/palautaYlempi'},
+      getVersions: {method: 'GET', url: YlopsResources.OPPIAINE + '/versiot', isArray: true},
+      getVersion: {method: 'GET', url: YlopsResources.OPPIAINE + '/versio/:versio'},
+      revertToVersion: {method: 'POST', url: YlopsResources.OPPIAINE + '/versio/:versio'}
     });
   })
 

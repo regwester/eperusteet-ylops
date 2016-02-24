@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -34,4 +35,6 @@ public class OppiaineDto extends OppiaineBaseDto {
     private Set<OppiaineenVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private String koodiUri;
     private String koodiArvo;
+    private String muokkaaja;
+    private Date muokattu;
 }

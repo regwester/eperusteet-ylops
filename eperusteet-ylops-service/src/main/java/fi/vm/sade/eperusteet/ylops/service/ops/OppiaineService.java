@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
@@ -99,4 +100,13 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
     OpsOppiaineDto palautaYlempi(@P("opsId") Long opsId, Long id);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    List<RevisionDto> getVersions(Long opsId, Long id);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpsOppiaineDto getVersion(Long opsId, Long id, Integer versio);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    OpsOppiaineDto revertTo(Long opsId, Long id, Integer versio);
 }

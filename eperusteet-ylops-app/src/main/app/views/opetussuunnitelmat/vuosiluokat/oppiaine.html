@@ -1,3 +1,16 @@
+<div ng-if="versiot">
+    <div ng-if="!versiot.latest" class="version-warning">
+        <div class="note"></div>
+        <button ng-click="revertToCurrentVersion()" class="btn btn-default btn-sm" kaanna>ota-versio-kayttoon</button>
+        <div class="content">
+            <p>{{'katselet-vanhaa-versiota'|kaanna}}</p>
+            <p><a class="action-link" ng-click="goToLatest()" kaanna>katso-uusin-versio</a></p>
+        </div>
+    </div>
+
+    <versiotiedot></versiotiedot>
+</div>
+
 <div ng-hide="options.editing" ng-if="(oppiaine.tyyppi !== 'yhteinen' || !oppiaine.oma)" class="action-buttons-inline">
     <span class="lukko-wrapper">
         <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip" size="small"></lukko>
@@ -8,7 +21,7 @@
             icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'poisto' }"></button>
 </div>
 
-<div ng-hide="options.editing" ng-if="oppiaine.oma" class="action-buttons-inline">
+<div ng-hide="options.editing" ng-if="oppiaine.oma && isLatest()" class="action-buttons-inline">
     <button ng-if="$onKieliTaiUskonto" ng-hide="options.editing" class="btn btn-default" ng-click="muokkaaNimea()" icon-role="edit" kaanna="'muuta-nimea'"
             oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button ng-if="valitseOppimaara" class="btn btn-default" icon-role="plus" kaanna="oppiaine.koodiArvo == 'KT' ? 'lisaa-muu-uskonto' : 'lisaa-kielitarjonta'" ng-click="valitseOppimaara()"
@@ -24,12 +37,12 @@
 
 <p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>
 
-<div ng-show="$onKieliTaiUskonto" should-disable="kopioitavanaMuokattavaksi() || options.editing" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
-<div ng-hide="$onKieliTaiUskonto" should-disable="kopioitavanaMuokattavaksi() || options.editing" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
+<div ng-show="$onKieliTaiUskonto" should-disable="kopioitavanaMuokattavaksi() || options.editing || !isLatest()" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
+<div ng-hide="$onKieliTaiUskonto" should-disable="kopioitavanaMuokattavaksi() || options.editing || !isLatest()" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
 
-<div should-disable="kopioitavanaMuokattavaksi() || options.editing" perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
+<div should-disable="kopioitavanaMuokattavaksi() || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 
-<div should-disable="kopioitavanaMuokattavaksi() || options.editing" class="tekstiosa-wrapper"
+<div should-disable="kopioitavanaMuokattavaksi() || options.editing || !isLatest()" class="tekstiosa-wrapper"
      ng-hide="isVuosiluokkaistettava && (oppiaine.tyyppi !== 'yhteinen' || isVuosiluokkaistettava)"
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
 
@@ -41,7 +54,7 @@
 
     <h3>
         <div class="action-buttons-inline">
-        <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="options.editing || lukkotiedot.lukittu" class="btn btn-default"
+        <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="options.editing || lukkotiedot.lukittu || !isLatest()" class="btn btn-default"
                 icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"
                 oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
         </div>
@@ -66,8 +79,8 @@
     </table>
 </div>
 
-<div ng-if="perusteOpVlk.tyotavat" should-disable="kopioitavanaMuokattavaksi() || options.editing" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
-<div ng-if="perusteOpVlk.ohjaus" should-disable="kopioitavanaMuokattavaksi() || options.editing" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
-<div ng-if="perusteOpVlk.arviointi" should-disable="kopioitavanaMuokattavaksi() || options.editing" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.tyotavat" should-disable="kopioitavanaMuokattavaksi() || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.ohjaus" should-disable="kopioitavanaMuokattavaksi() || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.arviointi" should-disable="kopioitavanaMuokattavaksi() || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
 
 <kommentit></kommentit>

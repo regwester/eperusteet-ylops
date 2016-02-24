@@ -15,12 +15,11 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
-import com.mangofactory.swagger.annotations.ApiIgnore;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -73,6 +72,27 @@ public class OppiaineController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<UnwrappedOpsOppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.get(opsId, id)));
+    }
+
+    @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.GET)
+    public ResponseEntity<UnwrappedOpsOppiaineDto> getVersion(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("id") final Long id,
+            @PathVariable("versio") final Integer versio) {
+        return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.getVersion(opsId, id, versio)));
+    }
+
+    @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.POST)
+    public ResponseEntity<UnwrappedOpsOppiaineDto> revertToVersion(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("id") final Long id,
+            @PathVariable("versio") final Integer versio) {
+        return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.revertTo(opsId, id, versio)));
+    }
+
+    @RequestMapping(value = "/{id}/versiot", method = RequestMethod.GET)
+    public List<RevisionDto> getVersionHistory(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+        return oppiaineService.getVersions(opsId, id);
     }
 
     @RequestMapping(value = "/{id}/parent", method = RequestMethod.GET)

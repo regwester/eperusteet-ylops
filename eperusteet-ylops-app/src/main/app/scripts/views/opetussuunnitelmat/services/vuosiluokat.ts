@@ -89,7 +89,10 @@ ylopsApp
     return deferred.promise;
   }
 
-  function getOppiaine(oppiaineId) {
+  function getOppiaine(oppiaineId, versio) {
+    if(versio){
+      return OppiaineCRUD.getVersion({opsId: opsId || OpsService.getId(), versio: versio}, {id: oppiaineId});
+    }
     return OppiaineCRUD.get({opsId: opsId || OpsService.getId()}, {id: oppiaineId});
   }
 
@@ -122,16 +125,17 @@ ylopsApp
       }
     }
 
-    function generateOppiaineItem(oppiaine, vlk, depth) {
+    const generateOppiaineItem = (oppiaine, vlk, depth) => {
       return {
         depth: depth || 1,
         label: oppiaine.nimi,
         id: oppiaine.id,
         vlkId: vlk.id,
         tyyppi: oppiaine.tyyppi,
-        url: $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine', {vlkId: vlk.id, oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi}),
+        url: $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine',
+            {vlkId: vlk.id, oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi, versio: null})
       };
-    }
+    };
 
     _(oppiaineet)
       .each(alustaVlk)

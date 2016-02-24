@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
@@ -153,11 +154,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Override
     @Transactional(readOnly = true)
     public OpsOppiaineDto get(@P("opsId") Long opsId, Long id) {
+        return getOpsOppiaine(opsId, id, null);
+    }
+
+    private OpsOppiaineDto getOpsOppiaine(Long opsId, Long id, Integer version) {
         Boolean isOma = oppiaineet.isOma(opsId, id);
         if (isOma == null) {
             throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
         }
-        Oppiaine oppiaine = oppiaineet.findOne(id);
+        Oppiaine oppiaine = (version == null) ? oppiaineet.findOne(id) : oppiaineet.findRevision(id, version);
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
         return mapper.map(new OpsOppiaine(oppiaine, isOma), OpsOppiaineDto.class);
     }
@@ -580,6 +585,23 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         return mapper.map( oldOppiaine, OpsOppiaineDto.class );
+    }
+
+    @Override
+    public List<RevisionDto> getVersions(Long opsId, Long id) {
+        List<Revision> versions = oppiaineet.getRevisions(id);
+        return mapper.mapAsList(versions, RevisionDto.class);
+    }
+
+    @Override
+    public OpsOppiaineDto getVersion(Long opsId, Long id, Integer versio) {
+        return getOpsOppiaine(opsId, id, versio);
+    }
+
+    @Override
+    public OpsOppiaineDto revertTo(Long opsId, Long id, Integer versio) {
+        OpsOppiaineDto vanha = getOpsOppiaine(opsId, id, versio);
+        return update(opsId, vanha.getOppiaine());
     }
 
     private void remapLukiokurssit(Opetussuunnitelma ops, Oppiaine oppiaine, Oppiaine newOppiaine) {
