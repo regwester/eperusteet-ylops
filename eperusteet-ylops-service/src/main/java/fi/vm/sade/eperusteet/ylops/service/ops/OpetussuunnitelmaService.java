@@ -62,6 +62,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaDto getOpetussuunnitelmaKaikki (@P("opsId") Long id);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(@P("opsId") Long id);
+
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUONTI')")
     OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto);
 

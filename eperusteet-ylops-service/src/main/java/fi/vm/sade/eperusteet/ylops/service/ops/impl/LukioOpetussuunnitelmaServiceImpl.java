@@ -91,7 +91,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Autowired
     private AihekokonaisuusRepository aihekokonaisuusRepository;
-    
+
     @Autowired
     private OpetuksenYleisetTavoitteetRepository opetuksenYleisetTavoitteetRepository;
 
@@ -593,7 +593,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         opetussuunnitelmaRepository.lock(ops);
         OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi(opsId, kurssiId).stream().findAny()
                 .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
-        
+
         if (!oaKurssi.isOma()) {
             throw new BusinessRuleViolationException("kurssia ei voi poistaa");
         }
