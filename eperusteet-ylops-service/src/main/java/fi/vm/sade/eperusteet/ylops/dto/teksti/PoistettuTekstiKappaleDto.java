@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
+import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,13 +11,6 @@ import java.util.Date;
  */
 @Getter
 @Setter
-public class PoistettuTekstiKappaleDto {
-    private Long id;
+public class PoistettuTekstiKappaleDto extends PoistettuDto{
     private Long tekstiKappale;
-    private TekstiKappaleDto tekstiKappaleDto;
-    private Boolean palautettu;
-    private String luoja;
-    private Date luotu;
-    private String muokkaaja;
-    private Date muokattu;
 }

@@ -172,8 +172,11 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/poistetut.html',
         controller: 'OpetussuunnitelmaPoistetutController',
         resolve: {
-          poistetut: (OpetussuunnitelmanTekstit, $stateParams) => {
-            return OpetussuunnitelmanTekstit.poistetut({opsId: $stateParams.id});
+          tekstiKappaleet: (OpetussuunnitelmanTekstit, $stateParams) => {
+            return OpetussuunnitelmanTekstit.poistetut({opsId: $stateParams.id}).$promise;
+          },
+          oppiaineet: (OppiaineCRUD, $stateParams) => {
+            return OppiaineCRUD.getRemoved({opsId: $stateParams.id}).$promise;
           }
         }
       })

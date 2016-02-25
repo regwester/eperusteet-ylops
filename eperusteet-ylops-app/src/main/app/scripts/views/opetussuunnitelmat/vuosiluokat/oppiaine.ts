@@ -25,20 +25,23 @@ ylopsApp
   $scope.perusteenVlk = perusteOppiaine && _.find(perusteOppiaine.vuosiluokkakokonaisuudet,
     (vlk) => $scope.oppiaineenVlk._vuosiluokkakokonaisuus === vlk._vuosiluokkakokonaisuus);
 
-  $scope.versiot = {
-    latest: true,
-    list: []
+  const updateHistory = () => {
+    $scope.versiot = {
+      latest: true,
+      list: []
+    };
+
+    _.forEach(versionHistory, (value, key) => {
+      value.index = versionHistory.length-key;
+      $scope.versiot.list.push(value);
+    });
+
+    $scope.versiot.first = _.first($scope.versiot.list);
+    $scope.versiot.chosen = _.first($scope.versiot.list);
   };
 
-  _.forEach(versionHistory, (value, key) => {
-    value.index = versionHistory.length-key;
-    $scope.versiot.list.push(value);
-  });
-
-  $scope.versiot.first = _.first($scope.versiot.list);
-  $scope.versiot.chosen = _.first($scope.versiot.list);
+  updateHistory();
   $scope.isLatest = () => $scope.versiot.chosen && _.first($scope.versiot.list).numero === $scope.versiot.chosen.numero;
-
   $scope.goToLatest = () => {
     const versionUrl = $state.href($state.current.name).replace(/&versio=\d+/i, '').replace(/#/g, '').split('%')[0];
     $location.url(versionUrl);
@@ -93,6 +96,10 @@ ylopsApp
   });
 
   $scope.$on('oppiaine:reload', () => {
+    OppiaineService.getVersions($stateParams).then( (res) => {
+      versionHistory = res;
+      updateHistory();
+    });
     OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId);
   });
 })
@@ -150,7 +157,6 @@ ylopsApp
   OppiaineService.getParent()
     .then(function(res) {
       $scope.oppiaine.$parent = res;
-      console.log(res);
       $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
       if ($scope.$onKieliTaiUskonto) {
         $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};

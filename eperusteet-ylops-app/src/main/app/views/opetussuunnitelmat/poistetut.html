@@ -16,23 +16,25 @@
     </div>
   </div>
 
-  <p ng-if="!poistetut.length" kaanna="ei-poistettuja-tekstikappaleita"></p>
+  <p ng-if="!poistetut.length" kaanna="ei-poistettua-sisaltoa"></p>
 
   <div ng-if="poistetut.length">
     <table class="table table-striped removed-tekstikappaleet">
       <thead>
         <tr>
-          <td kaanna="tekstikappale-otsikko"></td>
-          <td kaanna="tekstikappale-poistaja"></td>
-          <td kaanna="tekstikappale-poistettu"></td>
-          <td kaanna="tekstikappale-toiminnot"></td>
+          <td kaanna="poistettu-otsikko"></td>
+          <td kaanna="poistettu-tyyppi"></td>
+          <td kaanna="poistettu-poistaja"></td>
+          <td kaanna="poistettu-poistettu"></td>
+          <td kaanna="poistettu-toiminnot"></td>
         </tr>
       </thead>
       <tr ng-repeat="poistettu in poistetut | startFrom:itemsPerPage*(currentPage-1) | limitTo:itemsPerPage">
-        <td>{{poistettu.tekstiKappaleDto.nimi | kaanna}}</td>
+        <td>{{poistettu.nimi | kaanna}}</td>
+        <td>{{'poistettu-tyyppi-'+poistettu.type | kaanna}}</td>
         <td>{{poistettu.muokkaaja}}</td>
         <td>{{poistettu.muokattu | aikaleima:'date'}}</td>
-        <td><a ng-click="returnVersion(poistettu.id)" class="label label-warning" kaanna="palauta"></a></td>
+        <td><a ng-click="returnVersion(poistettu.id, poistettu.type)" class="label label-warning" kaanna="palauta"></a></td>
       </tr>
     </table>
 

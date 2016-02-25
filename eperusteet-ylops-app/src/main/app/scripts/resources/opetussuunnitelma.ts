@@ -135,7 +135,9 @@ ylopsApp
       palautaYlempaan: {method: 'POST', url: YlopsResources.OPPIAINE + '/palautaYlempi'},
       getVersions: {method: 'GET', url: YlopsResources.OPPIAINE + '/versiot', isArray: true},
       getVersion: {method: 'GET', url: YlopsResources.OPPIAINE + '/versio/:versio'},
-      revertToVersion: {method: 'POST', url: YlopsResources.OPPIAINE + '/versio/:versio'}
+      revertToVersion: {method: 'POST', url: YlopsResources.OPPIAINE + '/versio/:versio'},
+      getRemoved: {method: 'GET', url: YlopsResources.OPPIAINE + '/poistetut', isArray: true},
+      palautaOppiaine: {method: 'POST', url: YlopsResources.OPPIAINE + '/palauta/:oppimaara'}
     });
   })
 

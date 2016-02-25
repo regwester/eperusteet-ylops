@@ -18,10 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
@@ -90,9 +87,29 @@ public class OppiaineController {
         return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.revertTo(opsId, id, versio)));
     }
 
+    @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
+    public OppiaineLaajaDto restoreOppiaine(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("id") final Long id) {
+        return oppiaineService.restore(opsId, id, null);
+    }
+
+    @RequestMapping(value = "/{id}/palauta/{oppimaaraId}", method = RequestMethod.POST)
+    public OppiaineLaajaDto restoreOppiaine(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("id") final Long id,
+            @PathVariable("oppimaaraId") final Long oppimaaraId) {
+        return oppiaineService.restore(opsId, id, oppimaaraId);
+    }
+
     @RequestMapping(value = "/{id}/versiot", method = RequestMethod.GET)
     public List<RevisionDto> getVersionHistory(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         return oppiaineService.getVersions(opsId, id);
+    }
+
+    @RequestMapping(value = "/poistetut", method = RequestMethod.GET)
+    public ResponseEntity<List<PoistettuOppiaineDto>> getRemoved(@PathVariable("opsId") final Long opsId) {
+        return Responses.ofNullable(oppiaineService.getRemoved(opsId));
     }
 
     @RequestMapping(value = "/{id}/parent", method = RequestMethod.GET)
