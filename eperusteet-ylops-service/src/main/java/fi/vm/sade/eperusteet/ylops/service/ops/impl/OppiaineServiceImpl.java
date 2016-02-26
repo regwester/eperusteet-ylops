@@ -460,14 +460,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oppiaine.getOppiaine().removeOppimaara(oppiaine);
         } else {
             ops.removeOppiaine(oppiaine);
+            PoistettuOppiaine poistettu = new PoistettuOppiaine();
+            poistettu.setOpetussuunnitelma(ops);
+            poistettu.setOppiaine(id);
+            poistettu = poistettuOppiaineRepository.save(poistettu);
+            return mapper.map(poistettu, PoistettuOppiaineDto.class);
         }
 
-        PoistettuOppiaine poistettu = new PoistettuOppiaine();
-        poistettu.setOpetussuunnitelma(ops);
-        poistettu.setOppiaine(id);
-        poistettu = poistettuOppiaineRepository.save(poistettu);
         oppiaineet.delete(oppiaine);
-        return mapper.map(poistettu, PoistettuOppiaineDto.class);
+        return null;
     }
 
     @Override
@@ -626,7 +627,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             Oppiaine latest = latestNotNull(poistettuOppiaine.getOppiaine());
             poistettuOppiaine.setNimi(mapper.map(latest.getNimi(), LokalisoituTekstiDto.class));
             poistettuOppiaine.setOppiaine(latest.getId());
-//            poistettuOppiaine.setOppiaineDto(mapper.map(latest, OppiaineDto.class));
         });
         return mapper.mapAsList(poistetut, PoistettuOppiaineDto.class);
     }

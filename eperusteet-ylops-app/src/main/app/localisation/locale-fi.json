@@ -570,5 +570,6 @@
   "poistettu-tyyppi-teksti": "Tekstikappale",
   "haku-nimi": "Haku",
   "palauta-oppiaineena": "Palauta oppiaineena",
-  "palauta-oppimaarana": "Palauta oppimääränä"
+  "palauta-oppimaarana": "Palauta oppimääränä",
+  "palautus-epaonnistui": "Palauttaminen epäonnistui"
 }

@@ -19,7 +19,8 @@
 
 ylopsApp
 .controller('OpetussuunnitelmaPoistetutController', (tekstiKappaleet, oppiaineet, $scope, OpetussuunnitelmanTekstit, $stateParams,
-                                                     $state, Algoritmit, $filter, OppiaineService, $modal, OpetussuunnitelmaCRUD) => {
+                                                     $state, Algoritmit, $filter, OppiaineService, $modal, OpetussuunnitelmaCRUD,
+                                                     Notifikaatiot) => {
 
   $scope.kaikki = [];
   $scope.currentPage = 1;
@@ -73,6 +74,8 @@ ylopsApp
           oppiaineId: palautettu.id,
           vlkId: _.first(palautettu.vuosiluokkakokonaisuudet).id
         }, { reload: true });
+      }, () => {
+        Notifikaatiot.fataali('palautus-epaonnistui');
       });
     });
   };
