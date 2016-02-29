@@ -25,13 +25,15 @@ ylopsApp
                 templateUrl: 'views/common/modals/versiohelper.html',
                 controller: 'HistoryViewController',
                 resolve: {
-                    versions:  () => {
+                    versions: () => {
                         return data;
                     }
                 }
             }).result.then((re) => {
                 let params = _.clone($stateParams);
-                params.versio = (re.openOld) ? '/' + re.versio.numero : "";
+                const isOppiaine = _.contains($state.current.name, "root.opetussuunnitelmat.yksi.opetus.oppiaine");
+                params.versio = (re.openOld) ? (isOppiaine ? '' : '/') + re.versio.numero : "";
+                console.log($state.current.name, params);
                 $state.go($state.current.name, params);
             });
         };

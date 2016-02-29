@@ -90,11 +90,14 @@ ylopsApp
       })
 
       .state('root.opetussuunnitelmat.yksi.opetus.oppiaine', {
-        url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId?oppiaineTyyppi',
+        url: '/vuosiluokat/:vlkId/oppiaine/:oppiaineId?oppiaineTyyppi?versio',
         template: '<div ui-view></div>',
         abstract: true,
         controller: 'OppiaineBaseController',
         resolve: {
+          versionHistory: ['$stateParams', 'OppiaineCRUD', ($stateParams, OppiaineCRUD) => {
+            return OppiaineCRUD.getVersions({opsId: $stateParams.id, oppiaineId: $stateParams.oppiaineId});
+          }],
           vuosiluokatService: 'VuosiluokatService',
           oppiaineId: ['$stateParams', function($stateParams){
             return $stateParams.oppiaineId;
@@ -105,10 +108,11 @@ ylopsApp
           oppiaineTyyppi: ['$stateParams', function($stateParams) {
             return $stateParams.oppiaineTyyppi;
           }],
-          oppiaineInit: ['OppiaineService', 'oppiaineId', 'opsModel', 'vlkId', function (OppiaineService, oppiaineId, opsModel, vlkId) {
-            return OppiaineService.refresh(opsModel, oppiaineId, vlkId);
+          oppiaineInit: ['OppiaineService', 'oppiaineId', 'opsModel', 'vlkId', '$stateParams',
+            (OppiaineService, oppiaineId, opsModel, vlkId, $stateParams) => {
+              return OppiaineService.refresh(opsModel, oppiaineId, vlkId, $stateParams.versio);
           }],
-          perusteOppiaine: ['vuosiluokatService', 'oppiaineId', 'oppiaineTyyppi', 'oppiaineInit', function(
+          perusteOppiaine: ['vuosiluokatService', 'oppiaineId', 'oppiaineTyyppi', 'oppiaineInit', '$stateParams', function(
                                vuosiluokatService, oppiaineId, oppiaineTyyppi, oppiaineInit) {
             return oppiaineTyyppi === 'yhteinen' ? vuosiluokatService.getPerusteOppiaine(oppiaineId) : null;
           }]

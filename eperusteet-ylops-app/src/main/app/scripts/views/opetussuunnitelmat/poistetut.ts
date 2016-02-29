@@ -18,14 +18,26 @@
 /*global _*/
 
 ylopsApp
-.controller('OpetussuunnitelmaPoistetutController', (poistetut, $scope, OpetussuunnitelmanTekstit, $stateParams,
-                                                     $state, Algoritmit, $filter) => {
+.controller('OpetussuunnitelmaPoistetutController', (tekstiKappaleet, oppiaineet, $scope, OpetussuunnitelmanTekstit, $stateParams,
+                                                     $state, Algoritmit, $filter, OppiaineService, $modal, OpetussuunnitelmaCRUD,
+                                                     Notifikaatiot) => {
 
-  $scope.kaikki = poistetut;
-  $scope.poistetut = poistetut;
+  $scope.kaikki = [];
   $scope.currentPage = 1;
   $scope.itemsPerPage = 10;
   $scope.haku = '';
+
+  const addItems = (items, type) => {
+    _.forEach( items, (item) => {
+      item.type= type;
+      $scope.kaikki.push(item);
+    });
+  };
+
+  addItems(tekstiKappaleet, "teksti");
+  addItems(oppiaineet, "oppiaine");
+  $scope.kaikki = _.sortBy($scope.kaikki, 'luotu');
+  $scope.poistetut = $scope.kaikki;
 
   $scope.$watch('haku', (searchString) => {
     if(_.isEmpty(searchString)){
@@ -36,7 +48,7 @@ ylopsApp
     $scope.poistetut = _.filter($scope.kaikki, (item) => {
       const matchRemover = Algoritmit.match(searchString, item.luoja);
       const matchRemovedDate = Algoritmit.match(searchString, $filter('aikaleima')(item.luotu, 'date'));
-      const matchTextTitle = Algoritmit.match(searchString, item.tekstiKappaleDto.nimi);
+      const matchTextTitle = Algoritmit.match(searchString, item.nimi);
       return matchRemover || matchRemovedDate || matchTextTitle;
     });
   });
@@ -45,14 +57,53 @@ ylopsApp
     $scope.haku = '';
   };
 
-  $scope.returnVersion = (id) => {
+  const palautaOppiaine = (params) => {
+    $modal.open({
+      templateUrl: 'views/common/modals/oppiainePalautus.html',
+      controller: 'OppiaineModalController',
+      size: 'lg',
+      resolve: {
+        ops: () => {
+          return OpetussuunnitelmaCRUD.get({opsId: params.opsId}, {}).$promise;
+        }
+      }
+    }).result.then((palautettava) => {
+      params.oppimaara = (palautettava.type==="oppimaara" ? palautettava.oppimaara.oppiaine.id: null);
+      OppiaineService.palauta(params, {}).then((palautettu) => {
+        $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
+          oppiaineId: palautettu.id,
+          vlkId: _.first(palautettu.vuosiluokkakokonaisuudet).id
+        }, { reload: true });
+      }, () => {
+        Notifikaatiot.fataali('palautus-epaonnistui');
+      });
+    });
+  };
+
+  $scope.returnVersion = (id, type) => {
     const params = {
       opsId: parseInt($stateParams.id),
       id: id,
     };
-    OpetussuunnitelmanTekstit.palauta( params, {}).$promise.then( () => {
-      $state.go('root.opetussuunnitelmat.yksi.sisalto', { reload: true });
-    });
+    if(type === "oppiaine"){
+      palautaOppiaine(params);
+    }else if(type === "teksti"){
+      OpetussuunnitelmanTekstit.palauta( params, {}).$promise.then( () => {
+        $state.go('root.opetussuunnitelmat.yksi.sisalto', { reload: true });
+      });
+    }
   }
 
+})
+
+.controller('OppiaineModalController', (ops, $scope, OppiaineService, $modalInstance) => {
+  $scope.koosteiset = _.filter(ops.oppiaineet, 'oppiaine.koosteinen');
+  $scope.palauta = {
+    type: 'oppiaine'
+  };
+
+  $scope.isValid = () => { return ( $scope.palauta.type === 'oppimaara' ) ? !_.isEmpty($scope.palauta.oppimaara) : true };
+  $scope.ok = () => $modalInstance.close($scope.palauta);
+  $scope.peruuta = () => $modalInstance.dismiss();
 });
+

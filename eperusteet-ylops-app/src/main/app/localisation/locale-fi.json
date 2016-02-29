@@ -559,11 +559,17 @@
   "ota-versio-kayttoon": "Ota tämä versio käyttöön.",
   "versio": "Versio",
   "opsn-poistetut": "Poistetut",
-  "ei-poistettuja-tekstikappaleita": "Poistettuja tekstikappaleita ei ole.",
+  "ei-poistettua-sisaltoa": "Poistettua sisältöä ei ole.",
   "tekstikappale-poistetut": "Poistetut",
-  "tekstikappale-otsikko": "Tekstikappaleen otsikko",
-  "tekstikappale-poistaja": "Poistaja",
-  "tekstikappale-poistettu": "Poistettu",
-  "tekstikappale-toiminnot": "Toiminnot",
-  "haku-nimi": "Haku"
+  "poistettu-otsikko": "Otsikko",
+  "poistettu-poistaja": "Poistaja",
+  "poistettu-poistettu": "Poistettu",
+  "poistettu-toiminnot": "Toiminnot",
+  "poistettu-tyyppi": "Tyyppi",
+  "poistettu-tyyppi-oppiaine": "Oppiaine",
+  "poistettu-tyyppi-teksti": "Tekstikappale",
+  "haku-nimi": "Haku",
+  "palauta-oppiaineena": "Palauta oppiaineena",
+  "palauta-oppimaarana": "Palauta oppimääränä",
+  "palautus-epaonnistui": "Palauttaminen epäonnistui"
 }
