@@ -464,6 +464,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             poistettu.setOpetussuunnitelma(ops);
             poistettu.setOppiaine(id);
             poistettu = poistettuOppiaineRepository.save(poistettu);
+            oppiaineet.delete(oppiaine);
             return mapper.map(poistettu, PoistettuOppiaineDto.class);
         }
 
