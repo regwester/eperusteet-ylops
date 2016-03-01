@@ -449,7 +449,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         oppiaine.getVuosiluokkakokonaisuudet().forEach(vuosiluokkakokonaisuus -> {
-            vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(vuosiluokkakokonaisuus);
+            vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(vuosiluokkakokonaisuus, true);
         });
 
         lukioOppiaineJarjestysRepository.delete(
@@ -686,7 +686,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             throw new BusinessRuleViolationException("Yksi tai useampi vuosiluokka ei kuulu tähän vuosiluokkakokonaisuuteen");
         }
 
-        vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(v);
+        vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(v, false);
 
         tavoitteet.entrySet().stream()
             .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))

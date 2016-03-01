@@ -100,13 +100,15 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
     }
 
     @Override
-    public void removeSisaltoalueetInKeskeinensisaltoalueet(Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus) {
+    public void removeSisaltoalueetInKeskeinensisaltoalueet(Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean clearSisaltoalueet) {
         vuosiluokkakokonaisuus.getVuosiluokat().forEach( oppiaineenvuosiluokka -> {
             oppiaineenvuosiluokka.getTavoitteet().forEach( opetuksentavoite -> {
                 opetuksentavoite.getSisaltoalueet().forEach( opetuksenKeskeinensisaltoalue -> {
                     opetuksenkeskeinenSisaltoalueRepository.delete( opetuksenKeskeinensisaltoalue );
                 } );
-                opetuksentavoite.getSisaltoalueet().clear();
+                if(clearSisaltoalueet){
+                    opetuksentavoite.getSisaltoalueet().clear();
+                }
             });
         });
     }
