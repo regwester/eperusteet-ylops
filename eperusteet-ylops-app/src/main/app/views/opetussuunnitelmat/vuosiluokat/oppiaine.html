@@ -52,7 +52,24 @@
         <p class="tekstiosa" ng-bind="oppiaine.laajuus"></p>
     </div>
 
-    <h3>
+  <div ng-if="isValinnainen()">
+    <div ng-if="firstVuosiluokka().tyotavat">
+      <h3 kaanna="firstVuosiluokka().tyotavat.otsikko"></h3>
+      <p class="tekstiosa" ng-bind-html="firstVuosiluokka().tyotavat.teksti | kaanna"></p>
+    </div>
+
+    <div ng-if="firstVuosiluokka().ohjaus">
+      <h3 kaanna="firstVuosiluokka().ohjaus.otsikko"></h3>
+      <p class="tekstiosa" ng-bind-html="firstVuosiluokka().ohjaus.teksti | kaanna"></p>
+    </div>
+
+    <div ng-if="firstVuosiluokka().arviointi">
+      <h3 kaanna="firstVuosiluokka().arviointi.otsikko"></h3>
+      <p class="tekstiosa" ng-bind-html="firstVuosiluokka().arviointi.teksti | kaanna"></p>
+    </div>
+  </div>
+
+  <h3>
         <div class="action-buttons-inline">
         <button ng-if="oppiaine.tyyppi === 'yhteinen' && oppiaine.oma && !eiPerustetta" ng-disabled="options.editing || lukkotiedot.lukittu || !isLatest()" class="btn btn-default"
                 icon-role="th-list" ng-click="startVuosiluokkaistaminen()" kaanna="'tavoitteiden-vuosiluokkaistaminen'"

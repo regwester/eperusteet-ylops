@@ -136,6 +136,8 @@ ylopsApp
   };
 
   $scope.kopioitavanaMuokattavaksi = () => !$scope.oppiaine.oma && !$scope.oppiaine.$parent;
+  $scope.firstVuosiluokka = () => _.first($scope.oppiaine.vuosiluokkakokonaisuudet);
+  $scope.isValinnainen = () => _.includes(['muu_valinnainen', 'taide_taitoaine'], $scope.oppiaine.tyyppi);
 
   $scope.getVuosiluokkaUrl = (vuosiluokka) =>
     $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.tavoitteet', _.merge(_.clone($stateParams), { vlId: vuosiluokka.id }));
