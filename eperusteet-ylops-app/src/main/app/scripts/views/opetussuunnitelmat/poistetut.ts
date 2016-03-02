@@ -26,6 +26,7 @@ ylopsApp
   $scope.currentPage = 1;
   $scope.itemsPerPage = 10;
   $scope.haku = '';
+  const isLukio = () => $scope.model.koulutustyyppi === 'koulutustyyppi_2';
 
   const addItems = (items, type) => {
     _.forEach( items, (item) => {
@@ -35,7 +36,10 @@ ylopsApp
   };
 
   addItems(tekstiKappaleet, "teksti");
-  addItems(oppiaineet, "oppiaine");
+  //TODO lukion oppiaineiden palauttaminen puuttuu
+  if( !isLukio() ){
+    addItems(oppiaineet, "oppiaine");
+  }
   $scope.kaikki = _.sortBy($scope.kaikki, 'luotu');
   $scope.poistetut = $scope.kaikki;
 
