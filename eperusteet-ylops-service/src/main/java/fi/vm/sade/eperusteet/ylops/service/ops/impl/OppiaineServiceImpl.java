@@ -157,7 +157,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Override
     @Transactional(readOnly = true)
     public OpsOppiaineDto get(@P("opsId") Long opsId, Long id) {
-        return getOpsOppiaine(opsId, id, null);
+        OpsOppiaineDto oppiaine = getOpsOppiaine(opsId, id, null);
+        oppiaine.setKopioitavissa(canCopyOppiaine(opsId,id));
+        return oppiaine;
     }
 
     private OpsOppiaineDto getOpsOppiaine(Long opsId, Long id, Integer version) {
@@ -630,6 +632,30 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             poistettuOppiaine.setOppiaine(latest.getId());
         });
         return mapper.mapAsList(poistetut, PoistettuOppiaineDto.class);
+    }
+
+    private Boolean canCopyOppiaine(Long opsId, Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        if(ops == null){
+            return false;
+        }
+
+        Boolean isOma = oppiaineet.isOma(opsId, id);
+        if (isOma == null) {
+            return false;
+        } else if (isOma) {
+            return false;
+        }
+
+        try {
+            Oppiaine oppiaine = getOppiaine(opsId, id);
+            if (oppiaine.getOppiaine() != null) {
+                return false;
+            }
+        }catch (BusinessRuleViolationException e){
+            return false;
+        }
+        return true;
     }
 
     private void remapLukiokurssit(Opetussuunnitelma ops, Oppiaine oppiaine, Oppiaine newOppiaine) {

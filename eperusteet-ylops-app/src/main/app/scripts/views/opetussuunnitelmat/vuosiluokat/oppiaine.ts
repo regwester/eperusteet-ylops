@@ -135,7 +135,6 @@ ylopsApp
     $scope.startEditing();
   };
 
-  $scope.kopioitavanaMuokattavaksi = () => !$scope.oppiaine.oma && !$scope.oppiaine.$parent;
   $scope.firstVuosiluokka = () => _.first($scope.oppiaine.vuosiluokkakokonaisuudet);
   $scope.isValinnainen = () => _.includes(['muu_valinnainen', 'taide_taitoaine'], $scope.oppiaine.tyyppi);
 

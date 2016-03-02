@@ -27,11 +27,13 @@ import lombok.Setter;
 @Setter
 public class UnwrappedOpsOppiaineDto {
     private boolean oma;
+    private boolean kopioitavissa;
     @JsonUnwrapped
     private OppiaineDto oppiaine;
 
     public UnwrappedOpsOppiaineDto(OpsOppiaineDto dto) {
         oma = dto.isOma();
+        kopioitavissa = dto.isKopioitavissa();
         oppiaine = dto.getOppiaine();
     }
 }

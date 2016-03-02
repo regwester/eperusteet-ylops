@@ -26,5 +26,6 @@ import lombok.Setter;
 @Setter
 public class OpsOppiaineDto {
     private boolean oma;
+    private boolean kopioitavissa;
     private OppiaineDto oppiaine;
 }
