@@ -17,29 +17,23 @@
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * User: tommiratamaa
- * Date: 27.11.2015
- * Time: 13.06
+ * Date: 12.1.2016
+ * Time: 17.45
  */
 @Getter
 @Setter
-public class LukioOppiaineListausDto implements Serializable,
-        PerusteeseenViittaava<LukioPerusteOppiaineDto> {
-    private LukioPerusteOppiaineDto perusteen;
+public class LukioOppimaaraPerusTiedotDto implements Serializable  {
     private Long id;
     private Long oppiaineId;
     private Date muokattu;
@@ -53,21 +47,8 @@ public class LukioOppiaineListausDto implements Serializable,
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;
     private Boolean abstrakti;
-    private TekstiosaDto tehtava;
-    private TekstiosaDto tavoitteet;
-    private TekstiosaDto arviointi;
-    private Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kurssiTyyppiKuvaukset = new HashMap<>();
-    private List<LukioOppiaineListausDto> oppimaarat = new ArrayList<>();
-    private List<LukioOppiaineListausDto> pohjanTarjonta = new ArrayList<>();
     private String koodiUri;
     private String koodiArvo;
     private String kieliKoodiUri;
     private String kieliKoodiArvo;
-    private LokalisoituTekstiDto kieli;
-    private List<LukiokurssiOpsDto> kurssit = new ArrayList<>();
-
-    @Override
-    public Stream<? extends PerusteeseenViittaava<?>> viittaukset() {
-        return Stream.concat(Stream.concat(oppimaarat.stream(), kurssit.stream()), pohjanTarjonta.stream());
-    }
 }

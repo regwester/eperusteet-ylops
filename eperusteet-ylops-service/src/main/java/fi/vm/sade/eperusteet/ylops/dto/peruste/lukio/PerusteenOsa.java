@@ -53,7 +53,7 @@ public interface PerusteenOsa {
                         //noinspection unchecked
                         PerusteeseenViittaava viittaava = p;
                         PerusteenOsa osa = perusteenOsat.get(p.getTunniste());
-                        if (osa != null) {
+                        if (osa != null && viittaava.getPerusteen() == null) {
                             //noinspection unchecked
                             viittaava.setPerusteen(osa);
                         }

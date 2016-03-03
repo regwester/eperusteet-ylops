@@ -16,7 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.resource.ops.lukio;
 
-import com.mangofactory.swagger.annotations.ApiIgnore;
+import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/lukio/{opsId}")
-@ApiIgnore
+@Api(value = "Lukio")
 public class LukioOpetussuunnitelmatController {
     @Autowired
     private LukioOpetussuunnitelmaService lukioOpetussuunnitelmaService;
@@ -41,6 +41,13 @@ public class LukioOpetussuunnitelmatController {
     @RequestMapping(value = "/rakenne", method = RequestMethod.GET)
     public LukioOpetussuunnitelmaRakenneOpsDto getRakenne(@PathVariable("opsId") Long opsId) {
         return lukioOpetussuunnitelmaService.getRakenne(opsId);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/oppiaine/{oppiaineId}", method = RequestMethod.GET)
+    public LukioOppiaineTiedotDto getOppiaine(@PathVariable("opsId") Long opsId,
+                                                           @PathVariable("oppiaineId") Long oppiaineId) {
+        return lukioOpetussuunnitelmaService.getOppiaineTiedot(opsId, oppiaineId);
     }
 
     @RequestMapping(value = "/rakenne", method = POST)
@@ -92,6 +99,13 @@ public class LukioOpetussuunnitelmatController {
     @RequestMapping(value = "/opetuksenYleisetTavoitteet", method = RequestMethod.GET)
     public OpetuksenYleisetTavoitteetPerusteOpsDto getOpetuksenYleisetTavoitteet(@PathVariable("opsId") Long opsId) {
         return lukioOpetussuunnitelmaService.getOpetuksenYleisetTavoitteet(opsId);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/opetuksenYleisetTavoitteet", method = RequestMethod.POST)
+    public void updateOpetuksenYleisetTavoitteet(@PathVariable("opsId") Long opsId,
+                                                 @RequestBody OpetuksenYleisetTavoitteetUpdateDto tavoitteet) {
+        lukioOpetussuunnitelmaService.updateOpetuksenYleisetTavoitteet(opsId, tavoitteet);
     }
 
     @ResponseBody

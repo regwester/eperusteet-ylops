@@ -66,8 +66,14 @@ declare module Lukio {
     }
 
     export interface OpetuksenYleisetTavoitteet {
+        parent?: OpetuksenYleisetTavoitteet
         uuidTunniste?: string;
         id?: number;
+        otsikko?: l.Lokalisoitu;
+        kuvaus?: l.Lokalisoitu;
+    }
+
+    export interface OpetuksenYleisetTavoitteetUpdate {
         otsikko?: l.Lokalisoitu;
         kuvaus?: l.Lokalisoitu;
     }
@@ -211,16 +217,20 @@ declare module Lukio {
         jarjestys?: number;
         tyyppi: OppiaineTyyppi;
         laajuus: string;
-        kurssiTyyppiKuvaukset: { [key:string/*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu; };
+        kurssiTyyppiKuvaukset?: { [key:string/*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu; };
         oppimaarat?: LukioOppiaine[];
         kurssit: LukiokurssiOps[];
         pohjanTarjonta?: LukioOppiaine[];
     }
 
+    export interface LukioOppiaineJarjestys {
+        oppiaineId: number
+        jarjestys: number
+    }
+
     export interface LukioOpetussuunnitelmaRakenneOps {
         perusteId: number;
-        root: boolean;
-        perusteen: LukioOpetussuunnitelmaRakennePeruste;
+        root: boolean
         oppiaineet: LukioOppiaine[];
         pohjanTarjonta: LukioOppiaine[];
     }

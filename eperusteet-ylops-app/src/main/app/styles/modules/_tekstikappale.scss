@@ -186,3 +186,97 @@ $ohje-ikoni-size: 48px;
 .ikoni-ohjeistus-pd {
   padding-top: 8px;
 }
+
+
+
+
+
+
+.version-warning {
+  //position: absolute;
+  //top: -63px;
+  border: 1px solid #ddd;
+  background-color: #f2f2f2;
+  width: 70%;
+  z-index: 1020;
+  .note {
+  font-size: 30px;
+    line-height: 38px;
+    font-weight: 700;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #333;
+    float: left;
+    //@include borderradius(10px);
+    margin: 5px;
+    text-align: center;
+    &::before {
+      content: "!";
+    }
+  }
+  .content {
+    p {
+      margin: 0;
+      margin-top: 5px;
+      padding: 0;
+    }
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+  & > button {
+    margin: 5px;
+    float: right;
+  }
+}
+@media (max-width: $screen-md-max) {
+  .version-warning {
+    left: 150px;
+    width: 60%;
+  }
+}
+
+.muokkaustiedot {
+  //color: $secondary-lighter;
+  & > div:not(.clearfix) {
+    height: 2.7em;
+    line-height: 2.7em;
+    overflow: hidden;
+  }
+  span {
+    font-weight: 700;
+  }
+  .muokattu-viimeksi {
+    float: left;
+  }
+  .versiotiedot {
+    float: right;
+    ul {
+      display: inline-block;
+      padding: 0;
+      li {
+        display: inline-block;
+        list-style-type: none;
+        &:not(:first-child) {
+          margin-left: 15px;
+        }
+      }
+    }
+  }
+  .muokkaaja {
+    padding-left: 15px;
+  }
+  @media (max-width: 700px) {
+    .muokkaaja { display: none; }
+  }
+}
+
+.removed-tekstikappaleet{
+  thead{
+    color: #337ab7;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+}
+
+

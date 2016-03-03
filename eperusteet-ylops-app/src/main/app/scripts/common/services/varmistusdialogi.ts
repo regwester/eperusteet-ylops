@@ -25,6 +25,7 @@ ylopsApp
           opts: function () {
             return {
               primaryBtn: options.primaryBtn || 'ok',
+              primaryBtnClass: options.primaryBtnClass || '',
               secondaryBtn: options.secondaryBtn || 'peruuta'
             };
           },

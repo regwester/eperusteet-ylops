@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
@@ -35,9 +36,16 @@ public class LukioLockServiceImpl extends AbstractLockService<LukioLockCtx>
         implements LukioLockService {
     @Autowired
     private ApplicationContext applicationContext;
+    
+    @Autowired
+    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Override
     protected Long getLockId(LukioLockCtx ctx) {
+        if (ctx.getLukittavaOsa().isFromOps()) {
+            return ctx.getLukittavaOsa().getFromOps().get()
+                .apply(opetussuunnitelmaRepository.findOne(ctx.getOpsId())).getId();
+        }
         Object val = getRepo(ctx).findOne(ctx.getId());
         return val == null ? null : ctx.getId();
     }
@@ -57,6 +65,6 @@ public class LukioLockServiceImpl extends AbstractLockService<LukioLockCtx>
 
     @Override
     protected int latestRevision(LukioLockCtx ctx) {
-        return getRepo(ctx).getLatestRevisionId(ctx.getId());
+        return getRepo(ctx).getLatestRevisionId(getLockId(ctx));
     }
 }

@@ -58,6 +58,11 @@ ylopsApp
       addChild: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/lapsi'},
       kloonaaTekstikappale: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/muokattavakopio'},
       otsikot: {method: 'GET', url: YlopsResources.OPS + '/otsikot'},
+      versiot: {method: 'GET', url: YlopsResources.OPS + ':id/tekstit/:tekstiId/versiot', isArray: true},
+      versio: {method: 'GET', url: YlopsResources.OPS + '/tekstit/:viiteId/versio/:id'},
+      revertTo: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:viiteId/revert/:versio'},
+      poistetut: {method: 'GET', url: YlopsResources.OPS + '/tekstit/removed', isArray: true},
+      palauta: {method: 'POST', url: YlopsResources.OPS + '/tekstit/:id/returnRemoved'}
     });
   })
 
@@ -99,6 +104,8 @@ ylopsApp
 
       rakenne: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/rakenne', isArray: false},
       opetuksenYleisetTavoitteet: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/opetuksenYleisetTavoitteet', isArray: false},
+      updateOpetuksenYleisetTavoitteet: {method: 'POST', url: YlopsResources.LUKIO_OPS+'/opetuksenYleisetTavoitteet', isArray: false},
+      oppiaine: {method: 'GET', url: YlopsResources.LUKIO_OPS+'/oppiaine/:oppiaineId', isArray: false},
       saveOppiaine: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},
       updateOppiaine: {method: 'PUT', url:YlopsResources.LUKIO_OPS+'/oppiaine', isArray: false},
       updateStructure: {method: 'POST', url:YlopsResources.LUKIO_OPS+'/rakenne', isArray:false},

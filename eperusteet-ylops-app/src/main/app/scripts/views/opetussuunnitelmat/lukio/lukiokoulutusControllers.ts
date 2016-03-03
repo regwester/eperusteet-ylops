@@ -101,8 +101,46 @@ ylopsApp
             $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaineet');
         }
     })
-    .controller('OpetuksenYleisetTavoitteetController', function($scope, $log,
-                     LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI) {
+    .controller('OpetuksenYleisetTavoitteetController', function($scope, $state, $log, $q, Notifikaatiot, $timeout,
+                     LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI, Editointikontrollit) {
         $scope.yleisetTavoitteet = {};
         LukioOpetussuunnitelmaService.getOpetuksenYleisetTavoitteet().then(yt => $scope.yleisetTavoitteet = yt);
+        $scope.editMode = false;
+
+        Editointikontrollit.registerCallback({
+            validate: function () {
+                return true;
+            },
+            edit: () => $q((resolve) => {
+                LukioOpetussuunnitelmaService.lukitseYleisetTavoitteet()
+                    .then(() => {
+                        $scope.editMode = true;
+                        resolve();
+                    });
+            }),
+            cancel: () => $q((resolve) => {
+                LukioOpetussuunnitelmaService.vapautaYleisetTavoitteet()
+                    .then(() => {
+                        resolve();
+                        $scope.editMode = false;
+                        $timeout(() => $state.reload());
+                    });
+            }),
+            save: () => $q((resolve) => {
+                $scope.yleiskuvaEditMode = false;
+                LukioOpetussuunnitelmaService.updateYleisetTavoitteet($scope.yleisetTavoitteet.paikallinen).then(() => {
+                    Notifikaatiot.onnistui('opetuksen-yleisten-tavoitteiden-yleiskuvauksen-paivitys-onnistui');
+                    LukioOpetussuunnitelmaService.vapautaYleisetTavoitteet()
+                        .then(() => {
+                            resolve();
+                            $scope.editMode = false;
+                            $timeout(() => $state.reload());
+                        });
+                });
+            })
+        });
+        
+        $scope.toEditMode = () => {
+            Editointikontrollit.startEditing();
+        };
     });

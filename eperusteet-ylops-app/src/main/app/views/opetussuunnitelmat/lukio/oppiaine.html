@@ -53,7 +53,7 @@
 
   <hr class="mujuviiva"/>
 
-  <div class="action-buttons-inline" ng-if="!editing && !oppiaine.koosteinen">
+  <div class="action-buttons-inline" ng-if="canAddKurssi()">
     <button class="btn btn-default" kaanna="'lisaa-kurssi'" ng-click="lisaaKurssi()"></button>
   </div>
   <h4 ng-bind="'oppiaine-kurssit' | kaanna" ng-if="!oppiaine.koosteinen" ></h4>
@@ -63,6 +63,7 @@
       <a ng-click="openKurssi(kurssi)" class="container-link tree-list-item ng-scope bubble-osa empty-item">
         <span class="span-container puu-node kurssi-node">
           <span class="colorbox kurssi-tyyppi {{kurssi.tyyppi | lowercase}}"></span>
+          <span ng-if="isKurssiDeletable(kurssi)" icon-role="remove" class="remove remove-kurssi" ng-click="removeKurssi($event, kurssi)"></span>
           <span class="aikaleima ng-binding">{{kurssi.muokattu | aikaleima: 'short' }}</span>
           <span class="kurssikoodi">{{(kurssi.lokalisoituKoodi | kaanna) || kurssi.koodiArvo}} {{kurssi.nimi | kaanna}}</span>
         </span>

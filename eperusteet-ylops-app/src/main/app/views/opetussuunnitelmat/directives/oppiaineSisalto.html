@@ -14,7 +14,7 @@
   ~  European Union Public Licence for more details.
   -->
 
-<div class="oppiaine-sisalto" ng-if="oppiaineenTeksti || perusteenTeksti">
+<div class="oppiaine-sisalto" ng-if="(oppiaineenTeksti && (oppiaineenTeksti | kaanna).trim()) || (perusteenTeksti && (perusteenTeksti | kaanna).trim())">
   <span>
     <h3>
       <span>
@@ -28,14 +28,15 @@
     </h3>
   </span>
 
-  <div class="tekstiosa perusteen-teksti" ng-if="perusteenTeksti">
+  <div class="tekstiosa perusteen-teksti" ng-if="perusteenTeksti && (perusteenTeksti | kaanna).trim()">
     <a ng-class="{'toggle-perusteen-teksti peruste-teksti': true,'is-open': !textHidden}" ng-click="toggleTextVisible()">
-      <span kaanna="nayta-perusteen-teksti"></span>
+      <span ng-if="textHidden" kaanna="'nayta-perusteen-teksti'"></span>
+      <span ng-if="!textHidden" kaanna="'piilota-perusteen-teksti'"></span>
     </a>
     <span style="margin-top: 20px; display: inline-block;" ng-if="!textHidden" ng-bind-html="perusteenTeksti | kaanna | unsafe" termisto-viitteet="perusteenTeksti"></span>
   </div>
 
-  <div class="oppiaine-paikallinen" ng-if="pohjanTeksti">
+  <div class="oppiaine-paikallinen" ng-if="pohjanTeksti && (pohjanTeksti | kaanna).trim()">
     <span>
       <strong>{{ 'pohjan-tarkennus' | kaanna}}</strong>
       <span ng-bind-html="pohjanTeksti | kaanna | unsafe" termisto-viitteet="pohjanTeksti"></span>
@@ -43,7 +44,7 @@
   </div>
 
   <div class="oppiaine-paikallinen">
-    <span ng-if="oppiaineenTeksti && !editingField">
+    <span ng-if="(oppiaineenTeksti && (oppiaineenTeksti | kaanna).trim()) && !editingField">
       <strong>{{ 'paikallinen-tarkennus' | kaanna}}</strong>
       <span ng-bind-html="oppiaineenTeksti | kaanna | unsafe" termisto-viitteet="oppiaineenTeksti"></span>
     </span>

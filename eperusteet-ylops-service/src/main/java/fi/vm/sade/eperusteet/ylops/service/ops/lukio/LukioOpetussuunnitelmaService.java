@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * User: tommiratamaa
@@ -30,11 +31,17 @@ public interface LukioOpetussuunnitelmaService {
     LukioOpetussuunnitelmaRakenneOpsDto getRakenne(long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    LukioOppiaineTiedotDto getOppiaineTiedot(long opsId, long oppiaineId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     AihekokonaisuudetPerusteOpsDto getAihekokonaisuudet(long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetuksenYleisetTavoitteetPerusteOpsDto getOpetuksenYleisetTavoitteet(long opsId);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void updateOpetuksenYleisetTavoitteet(long opsId, OpetuksenYleisetTavoitteetUpdateDto tavoitteet);
+    
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     long saveOppiaine(long opsId, LukioOppiaineSaveDto oppiaine);
 

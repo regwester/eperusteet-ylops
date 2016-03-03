@@ -92,8 +92,8 @@ ylopsApp
           vuosiluokkakokonaisuudet: ['vuosiluokatService', 'opsModel', function (vuosiluokatService, opsModel) {
             return vuosiluokatService.getVuosiluokkakokonaisuudet(opsModel);
           }],
-          'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
-          'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
+          opsOikeudet: 'OpetussuunnitelmaOikeudetService',
+          opsOikeudetNouto: ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
             return opsOikeudet.fetch($stateParams);
           }]
         },
@@ -117,11 +117,11 @@ ylopsApp
       })
 
       .state('root.opetussuunnitelmat.yksi.sisalto.tekstikappale', {
-        url: '/tekstikappale/:tekstikappaleId',
+        url: '/tekstikappale/:tekstikappaleId{versio:(?:/[^/]+)?}',
         templateUrl: 'views/opetussuunnitelmat/tekstikappale.html',
         controller: 'TekstikappaleController',
         resolve: {
-          tekstikappaleId: ['$stateParams', function ($stateParams) {
+          tekstikappaleId: ['$stateParams', function ($stateParams, $scope) {
             return $stateParams.tekstikappaleId;
           }],
           teksti: ['$q', '$stateParams', 'OpetussuunnitelmanTekstit', function($q, $stateParams, OpetussuunnitelmanTekstit) {
@@ -134,7 +134,17 @@ ylopsApp
               });
             }
             else {
-              return OpetussuunnitelmanTekstit.get({ opsId: $stateParams.id, viiteId: $stateParams.tekstikappaleId }).$promise;
+              if (_.isEmpty($stateParams.versio)) {
+                return OpetussuunnitelmanTekstit.get({ opsId: $stateParams.id, viiteId: $stateParams.tekstikappaleId }).$promise;
+              } else {
+                return OpetussuunnitelmanTekstit.versio({ opsId: $stateParams.id, viiteId: $stateParams.tekstikappaleId.split('/')[0],
+                  id: $stateParams.versio.replace("/","") }).$promise.then(function(dat){
+                  return {
+                    id: $stateParams.tekstikappaleId.split('/')[0],
+                    tekstiKappale: dat
+                  };
+                });
+              }
             }
           }],
         }
@@ -157,7 +167,19 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.kasitteet', {
+      .state('root.opetussuunnitelmat.yksi.poistetut', {
+        url: '/poistetut?:pohjaId',
+        templateUrl: 'views/opetussuunnitelmat/poistetut.html',
+        controller: 'OpetussuunnitelmaPoistetutController',
+        resolve: {
+          poistetut: (OpetussuunnitelmanTekstit, $stateParams) => {
+            return OpetussuunnitelmanTekstit.poistetut({opsId: $stateParams.id});
+          }
+        }
+      })
+
+
+        .state('root.opetussuunnitelmat.yksi.kasitteet', {
         url: '/kasitteet',
         templateUrl: 'views/opetussuunnitelmat/kasitteet.html',
         controller: 'KasitteetController',

@@ -21,8 +21,8 @@ ylopsApp
         return {
             restrict: 'A',
             require: 'ngModel',
-            link: (scope, element, attrs, c) => {
-                var $e = $(element);
+            link: (scope, element, attrs, c:any) => {
+                var $e = <any>$(element);
                 $e.spinner({
                     spin: (event, ui) => c.$setViewValue(ui.value),
                     change: () => {

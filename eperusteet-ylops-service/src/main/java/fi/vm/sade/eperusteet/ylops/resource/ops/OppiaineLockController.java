@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
+import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.resource.util.AbstractLockController;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
     "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/lukko",
     "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat/{vuosiluokkaId}/lukko"
 })
+@ApiIgnore
 public class OppiaineLockController extends AbstractLockController<OpsOppiaineCtx>{
     @Autowired
     private OppiaineService service;

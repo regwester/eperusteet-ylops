@@ -84,7 +84,17 @@ ylopsApp
   $scope.lukkotiedot = null;
   $scope.vuosiluokat = [];
   $scope.alueOrder = Utils.sort;
-  $scope.startEditing = function() { Editointikontrollit.startEditing(); };
+  $scope.startEditing = Editointikontrollit.startEditing;
+  $scope.$$muokkaaNimea = false;
+  $scope.muokkaaNimea = () => {
+    $scope.$$muokkaaNimea = true;
+    $scope.startEditing();
+  };
+
+  $scope.kopioitavanaMuokattavaksi = () => !$scope.oppiaine.oma && !$scope.oppiaine.$parent;
+
+  $scope.getVuosiluokkaUrl = (vuosiluokka) =>
+    $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.tavoitteet', _.merge(_.clone($stateParams), { vlId: vuosiluokka.id }));
 
   const commonParams = $scope.oppiaineenVlk ? {
     opsId: $stateParams.id,
@@ -103,6 +113,7 @@ ylopsApp
   OppiaineService.getParent()
     .then(function(res) {
       $scope.oppiaine.$parent = res;
+      console.log(res);
       $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
       if ($scope.$onKieliTaiUskonto) {
         $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
@@ -133,12 +144,8 @@ ylopsApp
         // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
         var lisatytVlkt = _(ops.vuosiluokkakokonaisuudet)
             .map('vuosiluokkakokonaisuus')
-            .filter(function (vlk) {
-              return _.includes(tunnisteet, vlk._tunniste);
-            })
-            .sortBy(function (vlk) {
-              return Kaanna.kaanna(vlk.nimi);
-            })
+            .filter(vlk => _.includes(tunnisteet, vlk._tunniste))
+            .sortBy(vlk => Kaanna.kaanna(vlk.nimi))
             .value();
 
         Notifikaatiot.onnistui(
@@ -230,8 +237,12 @@ ylopsApp
 
   $scope.callbacks = {
     edit: refetch,
-    cancel: refetch,
+    cancel: () => $q((resolve) => {
+      $scope.$$muokkaaNimea = false;
+      return refetch().then(resolve);
+    }),
     save: () => $q((resolve) => {
+      $scope.$$muokkaaNimea = false;
       $scope.oppiaine.$save({ opsId: $stateParams.id }, () => {
         OppiaineService.saveVlk($scope.oppiaineenVlk).then(resolve);
       });
@@ -304,7 +315,9 @@ ylopsApp
   $scope.palautaVanhaan = () => {
     Varmistusdialogi.dialogi({
       otsikko: 'varmista-oppiaineen-palautus',
+      teksti: 'varmista-oppiaineen-palautus-teksti',
       primaryBtn: 'palauta-oppiaine',
+      primaryBtnClass: 'danger-btn',
       successCb: function () {
          OppiaineCRUD.palautaYlempaan({
            opsId: $stateParams.id,
