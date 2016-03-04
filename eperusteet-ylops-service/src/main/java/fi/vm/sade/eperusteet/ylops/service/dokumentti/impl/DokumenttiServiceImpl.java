@@ -25,7 +25,6 @@ import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
-import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.slf4j.Logger;
@@ -35,12 +34,9 @@ import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.io.IOException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
 
@@ -64,6 +60,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Autowired
     private DokumenttiBuilderService builder;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     @Transactional
@@ -130,16 +129,21 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
             // Tallennetaan valmis dokumentti
             dokumenttiRepository.save(dokumentti);
-        } catch (IOException | SAXException | TransformerException | JAXBException
-                | ParserConfigurationException ex) {
-            LOG.error(ex.getMessage());
+        } catch (Exception ex) {
             dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
-            dokumentti.setVirhekoodi(ex.getLocalizedMessage());
+
+            String virhekoodiBuilder = "internal error - " + new Date().toString();
+
+            dokumentti.setVirhekoodi(virhekoodiBuilder);
             dokumenttiRepository.save(dokumentti);
 
-            throw new DokumenttiException(ex.getLocalizedMessage(), ex.getCause());
+            LOG.error(ex.getLocalizedMessage(), ex.getCause());
+            ex.printStackTrace();
+
+            //throw new DokumenttiException(ex.getLocalizedMessage(), ex.getCause());
         }
     }
+
     @Override
     @Transactional
     public DokumenttiDto getDto(@P("id") long id) {

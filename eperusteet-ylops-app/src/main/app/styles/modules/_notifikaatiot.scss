@@ -107,11 +107,11 @@
 .jarjestelmavirhe-viesti {
   margin-left: 128px;
   min-height: 60px;
+  word-wrap: break-word;
 }
 
 .jarjestelmavirhe-ok {
-  margin-top: 12px;
-  margin-left: 50%;
+  text-align: center;
   button {
     width: 60px;
   }
