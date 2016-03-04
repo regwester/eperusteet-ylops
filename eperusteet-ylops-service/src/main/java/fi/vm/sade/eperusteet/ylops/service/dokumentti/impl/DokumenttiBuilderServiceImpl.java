@@ -196,21 +196,23 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
 
         Set<KoodistoKoodi> koodistoKoodit = docBase.getOps().getKunnat();
-        Element municipalities = docBase.getDocument().createElement("kunnat");
-        for (KoodistoKoodi koodistoKoodi : koodistoKoodit) {
-            Element kuntaEl = docBase.getDocument().createElement("kunta");
-            KoodistoKoodiDto koodistoKoodiDto = koodistoService.get("kunta", koodistoKoodi.getKoodiUri());
-            if (koodistoKoodiDto != null) {
-                for (KoodistoMetadataDto metadata : koodistoKoodiDto.getMetadata()) {
-                    if (metadata.getKieli().toLowerCase()
-                            .equals(docBase.getKieli().toString().toLowerCase()))
-                        kuntaEl.setTextContent(metadata.getNimi());
+        if (koodistoKoodit != null) {
+            Element municipalities = docBase.getDocument().createElement("kunnat");
+            for (KoodistoKoodi koodistoKoodi : koodistoKoodit) {
+                Element kuntaEl = docBase.getDocument().createElement("kunta");
+                KoodistoKoodiDto koodistoKoodiDto = koodistoService.get("kunta", koodistoKoodi.getKoodiUri());
+                if (koodistoKoodiDto != null && koodistoKoodiDto.getMetadata() != null) {
+                    for (KoodistoMetadataDto metadata : koodistoKoodiDto.getMetadata()) {
+                        if (metadata.getNimi() != null && metadata.getKieli().toLowerCase()
+                                .equals(docBase.getKieli().toString().toLowerCase())) {
+                            kuntaEl.setTextContent(metadata.getNimi());
+                        }
+                    }
                 }
+                municipalities.appendChild(kuntaEl);
             }
-
-            municipalities.appendChild(kuntaEl);
+            docBase.getHeadElement().appendChild(municipalities);
         }
-        docBase.getHeadElement().appendChild(municipalities);
 
         // Organisaatiot
         Element organisaatiot = docBase.getDocument().createElement("organisaatiot");
@@ -228,7 +230,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     }
                     return false;
                 })
-                .map(node -> node.get("nimi").get(docBase.getKieli().toString()).asText())
+                .map(node -> node.get("nimi"))
+                .filter(Objects::nonNull)
+                .map(x -> x.get(docBase.getKieli().toString()))
+                .filter(Objects::nonNull)
+                .map(JsonNode::asText)
                 .forEach(koulu -> {
                     Element orgEl = docBase.getDocument().createElement("koulu");
                     orgEl.setTextContent(koulu);
@@ -243,7 +249,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         Element dateEl = docBase.getDocument().createElement("meta");
         dateEl.setAttribute("name", "date");
         if (paatospaivamaara != null) {
-            String paatospaivamaaraText = new SimpleDateFormat("d.m.yyyy").format(paatospaivamaara);
+            String paatospaivamaaraText = new SimpleDateFormat("d.M.yyyy").format(paatospaivamaara);
+            LOG.info(paatospaivamaaraText);
             dateEl.setAttribute("content", paatospaivamaaraText);
         } else {
             dateEl.setAttribute("content", "");
@@ -253,6 +260,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Koulun nimi
         Element koulutEl = docBase.getDocument().createElement("koulut");
+
+        docBase.getKieli().toString();
 
         docBase.getOps().getOrganisaatiot().stream()
                 .map(org -> organisaatioService.getOrganisaatio(org))
@@ -267,7 +276,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     }
                     return false;
                 })
-                .map(node -> node.get("nimi").get(docBase.getKieli().toString()).asText())
+                .map(node -> node.get("nimi"))
+                .filter(Objects::nonNull)
+                .map(x -> x.get(docBase.getKieli().toString()))
+                .filter(Objects::nonNull)
+                .map(JsonNode::asText)
                 .forEach(koulu -> {
                     Element kouluEl = docBase.getDocument().createElement("koulu");
                     kouluEl.setTextContent(koulu);
@@ -369,8 +382,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
                     addLaajaalaisetOsaamisenAlueet(docBase, perusteVlk, vlk);
 
-                    addPaikallisestiPaatettavat(docBase, perusteVlk);
-
                     addOppiaineet(docBase, vlk);
 
                     docBase.getGenerator().decreaseDepth();
@@ -454,29 +465,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void addPaikallisestiPaatettavat(DokumenttiBase docBase, PerusteVuosiluokkakokonaisuusDto perusteVlk) {
-        PerusteTekstiOsaDto perusteTekstiOsaDtoDto = perusteVlk.getPaikallisestiPaatettavatAsiat();
-        if (perusteTekstiOsaDtoDto != null) {
-            if (perusteTekstiOsaDtoDto.getOtsikko() != null) {
-                LokalisoituTekstiDto otsikkoDto = perusteTekstiOsaDtoDto.getOtsikko();
-                addHeader(docBase, getTextString(otsikkoDto, docBase.getKieli()));
-
-                if (perusteTekstiOsaDtoDto.getTeksti() != null) {
-                    LokalisoituTekstiDto tekstiDto = perusteTekstiOsaDtoDto.getTeksti();
-                    addLokalisoituteksti(docBase, tekstiDto, "cite");
-                }
-
-                docBase.getGenerator().increaseNumber();
-            }
-        }
-    }
-
     private void addOppiaineet(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk) {
         if (docBase.getOps() != null && docBase.getOps().getOppiaineet() != null) {
             Set<OpsOppiaine> oppiaineet = docBase.getOps().getOppiaineet();
 
             List<OpsOppiaine> oppiaineetAsc = oppiaineet.stream()
-                    .filter(oa -> oa.getOppiaine() != null)
+                    .filter(oa -> oa.getOppiaine() != null
+                            && oa.getOppiaine().getNimi() != null
+                            && oa.getOppiaine().getNimi().getTeksti() != null
+                            && oa.getOppiaine().getNimi().getTeksti().get(docBase.getKieli()) != null)
                     .sorted((oa1, oa2) -> oa1.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())
                             .compareTo(oa2.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())))
                     .collect(Collectors.toCollection(ArrayList::new));
@@ -608,29 +605,31 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         if (oaVuosiluokka.getSisaltoalueet() != null) {
             addHeader(docBase, messages.translate("vuosiluokan-keskeiset-sisaltoalueet", docBase.getKieli()));
 
-            for (Keskeinensisaltoalue ksa : oaVuosiluokka.getSisaltoalueet()) {
-                docBase.getGenerator().increaseDepth();
+            oaVuosiluokka.getSisaltoalueet().stream()
+                    .filter(s -> s.getPiilotettu() == null || !s.getPiilotettu())
+                    .forEach(ksa -> {
+                        docBase.getGenerator().increaseDepth();
 
-                // Sisältöalue otsikko
-                addHeader(docBase, getTextString(ksa.getNimi(), docBase.getKieli()));
+                        // Sisältöalue otsikko
+                        addHeader(docBase, getTextString(ksa.getNimi(), docBase.getKieli()));
 
-                // Sisältöalue peruste
-                if (perusteOaVlkDto != null && perusteOaVlkDto.getSisaltoalueet() != null) {
-                    Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
-                            .filter(pKsa -> pKsa.getTunniste().equals(ksa.getTunniste()))
-                            .findFirst();
-                    if (optPerusteKsa.isPresent()) {
-                        addLokalisoituteksti(docBase, optPerusteKsa.get().getKuvaus(), "cite");
-                    }
-                }
+                        // Sisältöalue peruste
+                        if (perusteOaVlkDto != null && perusteOaVlkDto.getSisaltoalueet() != null) {
+                            Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
+                                    .filter(pKsa -> pKsa.getTunniste().equals(ksa.getTunniste()))
+                                    .findFirst();
+                            if (optPerusteKsa.isPresent()) {
+                                addLokalisoituteksti(docBase, optPerusteKsa.get().getKuvaus(), "cite");
+                            }
+                        }
 
-                // Sisältöalue ops
-                if (ksa.getKuvaus() != null) {
-                    addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
-                }
+                        // Sisältöalue ops
+                        if (ksa.getKuvaus() != null) {
+                            addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
+                        }
 
-                docBase.getGenerator().decreaseDepth();
-            }
+                        docBase.getGenerator().decreaseDepth();
+            });
         }
     }
 
@@ -670,6 +669,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
                         if (sisaltoalueet != null) {
                             List<OpetuksenKeskeinensisaltoalue> sisaltoalueetAsc = sisaltoalueet.stream()
+                                    .filter(s -> s.getSisaltoalueet() != null
+                                            && (s.getSisaltoalueet().getPiilotettu() == null
+                                            || !s.getSisaltoalueet().getPiilotettu()))
                                     .sorted((s1, s2) -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli()).compareTo(
                                             s2.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
                                     .collect(Collectors.toCollection(ArrayList::new));
@@ -699,11 +701,55 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                         Set<LaajaalainenosaaminenViite> laajaalainenosaamisenViitteet = opetuksentavoite.getLaajattavoitteet();
                         if (laajaalainenosaamisenViitteet != null) {
                             StringBuilder laajaalainenOsaaminenBuilder = new StringBuilder();
+                            List<String> laajaalaisetLista = new ArrayList<>();
 
                             for (LaajaalainenosaaminenViite laajaalainenosaaminenViite : laajaalainenosaamisenViitteet) {
-                                laajaalainenOsaaminenBuilder.append(laajaalainenosaaminenViite.getViite().charAt(0));
-                                laajaalainenOsaaminenBuilder.append(", ");
+                                String viite = laajaalainenosaaminenViite.getViite();
+                                if (viite != null) {
+                                    // Haetaan laaja-alainen
+                                    PerusopetuksenPerusteenSisaltoDto perusopetusPerusteSisaltoDto
+                                            = docBase.getPerusteDto().getPerusopetus();
+                                    Optional<PerusteVuosiluokkakokonaisuusDto> perusteVlk = perusopetusPerusteSisaltoDto
+                                            .getVuosiluokkakokonaisuudet(
+                                                    oaVuosiluokka.getKokonaisuus().getVuosiluokkakokonaisuus().getId());
+
+                                    if (perusteVlk.isPresent()) {
+                                        if (perusteVlk.get().getLaajaalaisetOsaamiset() != null) {
+                                            Optional<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto> optPerusteLao
+                                                    = perusteVlk.get().getLaajaalaisetOsaamiset().stream()
+                                                    .filter(Objects::nonNull)
+                                                    .filter(lao -> lao.getLaajaalainenOsaaminen() != null
+                                                            || lao.getLaajaalainenOsaaminen().getTunniste() != null)
+                                                    .filter(lao -> lao.getLaajaalainenOsaaminen().getTunniste().toString()
+                                                            .equals(laajaalainenosaaminenViite.getViite()))
+                                                    .findFirst();
+
+                                            if (optPerusteLao.isPresent()) {
+                                                PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto perusteLao = optPerusteLao.get();
+                                                if (perusteLao.getLaajaalainenOsaaminen() != null
+                                                        || perusteLao.getLaajaalainenOsaaminen().getNimi() != null
+                                                        || perusteLao.getLaajaalainenOsaaminen()
+                                                        .getNimi().get(docBase.getKieli()) != null) {
+
+                                                    String nimi = perusteLao.getLaajaalainenOsaaminen()
+                                                            .getNimi().get(docBase.getKieli());
+
+                                                    if(nimi.contains(" ")){
+                                                        laajaalaisetLista.add(nimi.substring(0, nimi.indexOf(" ")));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
+                            // Laaja-alaiset aakkosjärjestykseen
+                            laajaalaisetLista.stream()
+                                    .sorted(String::compareTo)
+                                    .forEach(el ->  {
+                                        laajaalainenOsaaminenBuilder.append(el);
+                                        laajaalainenOsaaminenBuilder.append(", ");
+                                    });
                             rivi.addSarake(laajaalainenOsaaminenBuilder.toString().replaceAll(", $", ""));
                         }
 
@@ -763,27 +809,24 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = opetuksentavoite.getSisaltoalueet();
         List<OpetuksenKeskeinensisaltoalue> sisaltoalueetAsc = sisaltoalueet.stream()
+                .filter(Objects::nonNull)
+                .filter(s -> s.getSisaltoalueet() != null
+                        && (s.getSisaltoalueet().getPiilotettu() == null
+                        || !s.getSisaltoalueet().getPiilotettu()))
                 .sorted((s1, s2) -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli()).compareTo(
                         s2.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (sisaltoalueetAsc.size() > 0) {
-            //addHeader(docBase, messages.translate("vuosiluokan-tavoitekohtaiset-sisaltoalueet", docBase.getKieli()));
 
             sisaltoalueetAsc.stream()
                     .forEach(s -> {
-                        if (s.getSisaltoalueet() != null
-                                && (s.getSisaltoalueet().getPiilotettu() == null || !s.getSisaltoalueet().getPiilotettu())) {
+                        if (s.getSisaltoalueet() != null) {
 
                             // Tavoitteen sisältöalue
-                            if (s.getOmaKuvaus() != null || s.getSisaltoalueet().getKuvaus() != null) {
+                            if (s.getOmaKuvaus() != null) {
                                 addLokalisoituteksti(docBase, s.getSisaltoalueet().getNimi(), "h6");
-
-                                if (s.getOmaKuvaus() != null) {
-                                    addLokalisoituteksti(docBase, s.getOmaKuvaus(), "div");
-                                } else {
-                                    addLokalisoituteksti(docBase, s.getSisaltoalueet().getKuvaus(), "div");
-                                }
+                                addLokalisoituteksti(docBase, s.getOmaKuvaus(), "div");
                             }
                         }
                     });

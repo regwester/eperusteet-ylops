@@ -57,14 +57,13 @@ public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
 
     @Override
     public String translate(String key, Kieli kieli) {
-
-        // koitetaan ensin lokalisointipalvelusta
-        LokalisointiDto valueDto = lokalisointiService.get(key, kieli.toString());
-        if (valueDto != null) {
-            return valueDto.getValue();
-        }
-
         try {
+            // koitetaan ensin lokalisointipalvelusta
+            LokalisointiDto valueDto = lokalisointiService.get(key, kieli.toString());
+            if (valueDto != null) {
+                return valueDto.getValue();
+            }
+
             return messageSource.getMessage(key, null, Locale.forLanguageTag(kieli.toString()));
         } catch (NoSuchMessageException ex) {
             return key;

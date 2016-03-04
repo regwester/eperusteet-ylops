@@ -112,7 +112,7 @@ ylopsApp
     var pdfToken = null;
 
     $scope.hasPdf = function() {
-      return !!$scope.docs[$scope.kielet.valittu];
+      return $scope.docs[$scope.kielet.valittu];
     };
 
     function fetchLatest(lang) {
@@ -125,12 +125,14 @@ ylopsApp
       _.each(kielet, function(kieli) {
 
         Pdf.haeUusin(opsId, kieli, function(res) {
+          if (res.tila == 'valmis') {
+            if (res.id !== null) {
+              res.url = Pdf.haeLinkki(res.id);
+              $scope.docs[kieli] = res;
+            }
+          }
           if (kieli === $scope.kielet.valittu) {
             $scope.tila = res.tila;
-          }
-          if (res.id !== null) {
-            res.url = Pdf.haeLinkki(res.id);
-            $scope.docs[kieli] = res;
           }
         }, function () {
           $scope.tila = 'ei_ole';
@@ -155,7 +157,7 @@ ylopsApp
             $scope.docs[$scope.kielet.valittu] = res;
             enableActions();
             break;
-          default: // 'epaonnistui' + others(?)
+          default: // 'epaonnistui'
             Notifikaatiot.fataali(Kaanna.kaanna('dokumentin-luonti-epaonnistui') +
               ': ' + res.virhekoodi || res.tila);
             enableActions();
@@ -167,7 +169,7 @@ ylopsApp
     function startPolling(id) {
       $scope.poller = $timeout(function() {
         getStatus(id);
-      }, 3000);
+      }, 5000);
     }
 
     $scope.$on('$destroy', function() {

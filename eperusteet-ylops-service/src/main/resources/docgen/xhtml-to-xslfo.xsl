@@ -673,32 +673,22 @@
     </xsl:template>
 
     <xsl:template match="table">
-        <!--<fo:table-and-caption>
-            <fo:table-caption>
-                <fo:block font-weight="bold" font-size="12pt">
-                    <xsl:value-of select="caption" />
-                </fo:block>
-            </fo:table-caption>
-            <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt">
+        <xsl:if test="thead|tbody">
+            <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt" font-size="10pt">
+                <xsl:if test="caption">
+                    <fo:table-header>
+                        <fo:table-cell>
+                            <fo:block font-weight="bold" font-size="12pt">
+                                <xsl:value-of select="caption" />
+                            </fo:block>
+                        </fo:table-cell>
+                    </fo:table-header>
+                </xsl:if>
                 <fo:table-body>
-                    <xsl:apply-templates select="*" />
+                        <xsl:apply-templates select="thead|tbody" />
                 </fo:table-body>
             </fo:table>
-        </fo:table-and-caption>-->
-
-        <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt">
-            <fo:table-header>
-                <fo:table-cell>
-                    <fo:block font-weight="bold" font-size="12pt">
-                        <xsl:value-of select="caption" />
-                    </fo:block>
-                </fo:table-cell>
-            </fo:table-header>
-            <fo:table-body>
-                <xsl:apply-templates select="*" />
-            </fo:table-body>
-        </fo:table>
-
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="td">
@@ -820,9 +810,13 @@
         <xsl:apply-templates select="tr" />
     </xsl:template>
 
+    <xsl:template match="tbody">
+        <xsl:apply-templates select="tr" />
+    </xsl:template>
+
     <xsl:template match="tr">
         <fo:table-row>
-            <xsl:apply-templates select="*|text()" />
+            <xsl:apply-templates select="th|td" />
         </fo:table-row>
     </xsl:template>
 
@@ -1025,9 +1019,6 @@
                     </xsl:if>
                     <xsl:apply-templates select="*|text()" />
                 </fo:basic-link>
-
-                <!--<fo:leader leader-pattern="dots" leader-pattern-width="5pt"
-                           leader-length.maximum="100%" leader-length.optimum="100%" />-->
 
                 <fo:leader leader-pattern="dots" leader-pattern-width="8pt" />
 

@@ -22,6 +22,7 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import org.apache.commons.lang.time.DateUtils;
@@ -43,7 +44,7 @@ import java.util.Date;
  */
 @RestController
 @RequestMapping("/dokumentit")
-//@InternalApi
+@InternalApi
 public class DokumenttiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiController.class);
@@ -54,7 +55,6 @@ public class DokumenttiController {
     DokumenttiService service;
 
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
     @ApiOperation("luo dokumentti")
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "dokumentti luodaan"),
@@ -103,7 +103,6 @@ public class DokumenttiController {
     }
 
     @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")
-    @ResponseBody
     @ApiOperation("luo dokumentti")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "dokumentti ladattu onnistuneesti"),
@@ -123,13 +122,11 @@ public class DokumenttiController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
-        //headers.set("Content-disposition", "attachment; filename=\"" + dokumenttiId + ".pdf\"");
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, params = "opsId")
-    @ResponseBody
     public ResponseEntity<DokumenttiDto> getDokumentti(
             @RequestParam("opsId") final Long opsId,
             @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
@@ -147,7 +144,6 @@ public class DokumenttiController {
     }
 
     @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
-    @ResponseBody
     public ResponseEntity<DokumenttiDto> query(@PathVariable("dokumenttiId") final Long dokumenttiId) {
         DokumenttiDto dto = service.query(dokumenttiId);
         if (dto == null)
