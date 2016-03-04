@@ -99,6 +99,7 @@ ylopsApp
         },
         controller: function ($scope, $stateParams, opsModel, vuosiluokkakokonaisuudet, opsService) {
           $scope.model = opsModel;
+          $scope.isLukio = _.some(['koulutustyyppi_2', 'koulutustyyppi_23'], (i) => i === opsModel.koulutustyyppi);
           $scope.isEditable = opsService.isEditable;
           $scope.vuosiluokkakokonaisuudet = vuosiluokkakokonaisuudet;
           $scope.luonnissa = $stateParams.id === 'uusi';
@@ -146,7 +147,7 @@ ylopsApp
                 });
               }
             }
-          }],
+          }]
         }
       })
 
@@ -172,8 +173,11 @@ ylopsApp
         templateUrl: 'views/opetussuunnitelmat/poistetut.html',
         controller: 'OpetussuunnitelmaPoistetutController',
         resolve: {
-          poistetut: (OpetussuunnitelmanTekstit, $stateParams) => {
-            return OpetussuunnitelmanTekstit.poistetut({opsId: $stateParams.id});
+          tekstiKappaleet: (OpetussuunnitelmanTekstit, $stateParams) => {
+            return OpetussuunnitelmanTekstit.poistetut({opsId: $stateParams.id}).$promise;
+          },
+          oppiaineet: (OppiaineCRUD, $stateParams) => {
+            return OppiaineCRUD.getRemoved({opsId: $stateParams.id}).$promise;
           }
         }
       })

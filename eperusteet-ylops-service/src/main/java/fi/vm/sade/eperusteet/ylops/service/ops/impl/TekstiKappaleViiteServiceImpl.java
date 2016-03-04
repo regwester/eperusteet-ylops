@@ -253,7 +253,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         connectMissingTekstikappaleetIfAny(opsId);
         List<PoistettuTekstiKappaleDto> list = mapper.mapAsList(poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId), PoistettuTekstiKappaleDto.class);
         list.forEach(poistettuTekstiKappaleDto -> {
-            poistettuTekstiKappaleDto.setTekstiKappaleDto(tekstiKappaleService.get(poistettuTekstiKappaleDto.getTekstiKappale()));
+            TekstiKappaleDto a = tekstiKappaleService.get(poistettuTekstiKappaleDto.getTekstiKappale());
+            poistettuTekstiKappaleDto.setNimi(a.getNimi());
+            poistettuTekstiKappaleDto.setTekstiKappale(a.getId());
         });
         return list;
     }

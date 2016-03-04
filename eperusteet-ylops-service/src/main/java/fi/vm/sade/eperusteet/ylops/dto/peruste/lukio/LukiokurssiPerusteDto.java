@@ -31,6 +31,6 @@ public class LukiokurssiPerusteDto extends KurssiDto implements PerusteenOsa {
     private PerusteenLukiokurssiTyyppi tyyppi;
     private LukioOpetussuunnitelmaRakenneDto opetussuunnitelma;
     private PerusteTekstiOsaDto tavoitteet;
-    private PerusteTekstiOsaDto keskeinenSisalto;
-    private PerusteTekstiOsaDto tavoitteetJaKeskeinenSisalto;
+    private PerusteTekstiOsaDto keskeisetSisallot;
+    private PerusteTekstiOsaDto tavoitteetJaKeskeisetSisallot;
 }

@@ -117,17 +117,12 @@ ylopsApp
         return;
       }
 
-      // FIXME ?
-      if( $scope.model.koulutustyyppi === 'koulutustyyppi_2' ) {
-          EperusteetLukiokoulutus.query({}, function (perusteet) {
-              $scope.perustelista = perusteet;
-          }, Notifikaatiot.serverCb);
+      const isLukio = _.any(["koulutustyyppi_2", "koulutustyyppi_23"], (i) => i === $scope.model.koulutustyyppi);
+      const perusteet = isLukio ? EperusteetLukiokoulutus : EperusteetPerusopetus;
+      perusteet.query({}, (perusteet) => {
+        $scope.perustelista = perusteet;
+      }, Notifikaatiot.serverCb);
 
-      } else {
-        EperusteetPerusopetus.query({}, function (perusteet) {
-            $scope.perustelista = perusteet;
-        }, Notifikaatiot.serverCb);
-      }
     };
 
     $scope.delete = function () {

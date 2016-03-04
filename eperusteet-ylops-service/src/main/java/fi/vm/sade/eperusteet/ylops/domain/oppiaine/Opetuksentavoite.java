@@ -130,7 +130,8 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
 
     public Optional<OpetuksenKeskeinensisaltoalue> getOpetuksenkeskeinenSisaltoalueBySisaltoalueId(Long id) {
         return this.sisaltoalueet.stream()
-                .filter(k -> (id != null && Long.compare(k.getSisaltoalueet().getId(), id) == 0))
+                .filter(k -> (id != null && k.getSisaltoalueet() != null && k.getSisaltoalueet().getId() != null
+                        && Long.compare(k.getSisaltoalueet().getId(), id) == 0))
                 .findAny();
     }
 

@@ -232,12 +232,10 @@ ylopsApp
     placeholder: 'placeholder'
   };
 
-  $scope.isLukio = $scope.model.koulutustyyppi === 'koulutustyyppi_2';
-
   $scope.tekstitProvider = $q.when({
     root: _.constant($q.when($scope.model.tekstit)),
     isLukio: $scope.isLukio,
-    hidden: function(node) {
+    hidden: (node) => {
         if ($scope.$$isRakenneMuokkaus || !node.$$nodeParent) {
           return false;
         }
@@ -245,20 +243,15 @@ ylopsApp
           return (_.isEmpty($scope.rajaus.term) && node.$$nodeParent.$$hidden) || node.$$searchHidden;
         }
     },
-    template: function() {
-      return $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate';
+    template: () => $scope.$$isRakenneMuokkaus  ? 'sisaltoNodeEditingTemplate' : 'sisaltoNodeTemplate',
+    children: (node) => $q.when(node && node.lapset ? node.lapset : []),
+    useUiSortable: () => !$scope.$$isRakenneMuokkaus,
+    acceptDrop: (node, target, parentScope) => {
+      return target !== $scope.model.tekstit || parentScope === $scope ||
+          (!_.isEmpty(target.tekstiKappale) && $scope.isLukio) || node.$$depth === 0;
     },
-    children: function(node) {
-      return $q.when(node && node.lapset ? node.lapset : []);
-    },
-    useUiSortable: function() {
-      return !$scope.$$isRakenneMuokkaus;
-    },
-    acceptDrop: function(node, target, parentScope) {
-      return target !== $scope.model.tekstit || parentScope === $scope || $scope.isLukio;
-    },
-    sortableClass: function(node) {
-      var result = '';
+    sortableClass: (node) => {
+      let result = '';
       if (node !== $scope.model.tekstit || $scope.isLukio) {
         result += 'is-draggable-into';
         if ($scope.$$isRakenneMuokkaus && _.isEmpty(node.lapset)) {
@@ -267,7 +260,7 @@ ylopsApp
       }
       return result;
     },
-    extension: function(node, scope) {
+    extension: (node, scope) => {
       scope.taustanVari = node.$$depth === 0 ? '#f2f2f9' : '#ffffff';
       scope.addLapsi = lisaaTekstikappale;
     }

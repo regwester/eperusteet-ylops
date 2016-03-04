@@ -46,9 +46,22 @@ ylopsApp
       oppiaineId: oppiaine.id
     }).$promise;
   };
-  this.refresh = function (ops, oppiaineId, vlkId) {
+  this.revertToVersion = (version) => {
+    return OppiaineCRUD.revertToVersion({
+      opsId: opetussuunnitelma.id,
+      oppiaineId: oppiaine.id,
+      versio: version
+    }, {}).$promise;
+  };
+  this.getVersions = (params) => {
+    return OppiaineCRUD.getVersions({opsId: params.id, oppiaineId: params.oppiaineId}).$promise;
+  };
+  this.palauta = (params) => {
+    return OppiaineCRUD.palautaOppiaine({opsId: params.opsId, oppiaineId: params.id, oppimaara: params.oppimaara}, {}).$promise;
+  };
+  this.refresh = function (ops, oppiaineId, vlkId, versio) {
     return $q((resolve, reject) => {
-      VuosiluokatService.getOppiaine(oppiaineId).$promise
+      VuosiluokatService.getOppiaine(oppiaineId, versio).$promise
         .then(function (res) {
           setup(ops, vlkId, res).then(resolve);
           $rootScope.$broadcast('oppiainevlk:updated', oppiaineenVlk);

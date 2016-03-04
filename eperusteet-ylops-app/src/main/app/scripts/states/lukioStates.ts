@@ -42,6 +42,7 @@ ylopsApp
                 $scope.model = opsModel;
                 $scope.isEditable = opsService.isEditable;
                 $scope.luonnissa = $stateParams.id === 'uusi';
+                $scope.isLukio = true;
             }
         })
         .state('root.opetussuunnitelmat.lukio.opetus', {

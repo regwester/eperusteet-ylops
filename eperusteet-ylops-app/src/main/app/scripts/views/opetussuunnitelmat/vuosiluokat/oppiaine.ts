@@ -17,18 +17,58 @@
 'use strict';
 
 ylopsApp
-.controller('OppiaineBaseController', function (
-    $scope,
-    perusteOppiaine,
-    MurupolkuData,
-    $stateParams,
-    $rootScope,
-    OppiaineService) {
+.controller('OppiaineBaseController', ($scope, perusteOppiaine, MurupolkuData, $stateParams, $rootScope,
+                                       OppiaineService, versionHistory, $location, $state) => {
 
   $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.oppiaineenVlk = OppiaineService.getOpVlk();
   $scope.perusteenVlk = perusteOppiaine && _.find(perusteOppiaine.vuosiluokkakokonaisuudet,
     (vlk) => $scope.oppiaineenVlk._vuosiluokkakokonaisuus === vlk._vuosiluokkakokonaisuus);
+
+  const updateHistory = () => {
+    $scope.versiot = {
+      latest: true,
+      list: []
+    };
+
+    _.forEach(versionHistory, (value, key) => {
+      value.index = versionHistory.length-key;
+      $scope.versiot.list.push(value);
+    });
+
+    $scope.versiot.first = _.first($scope.versiot.list);
+    $scope.versiot.chosen = _.first($scope.versiot.list);
+  };
+
+  updateHistory();
+  $scope.isLatest = () => $scope.versiot.chosen && _.first($scope.versiot.list).numero === $scope.versiot.chosen.numero;
+  $scope.goToLatest = () => {
+    const versionUrl = $state.href($state.current.name).replace(/&versio=\d+/i, '').replace(/#/g, '').split('%')[0];
+    $location.url(versionUrl);
+  };
+
+  $scope.revertToCurrentVersion = () => {
+    OppiaineService.revertToVersion($stateParams.versio).then( $scope.goToLatest );
+  };
+
+  if($stateParams.versio){
+    $scope.versiot.chosen = _.chain($scope.versiot.list)
+        .filter((versio) => { return versio.numero === parseInt($stateParams.versio) })
+        .first()
+        .value();
+    $scope.versiot.latest = $scope.isLatest();
+  }
+
+  $scope.$$muokkaustiedot = {
+    muokattu: $scope.oppiaine.muokattu,
+    muokkaajaOid: $scope.oppiaine.muokkaaja
+  };
+
+  $scope.vaihdaVersio = () => {
+    let versionUrl = $state.href($state.current.name).replace(/&versio=\d+/i, '').replace(/#/g, '').split('%')[0];
+    versionUrl += !$scope.isLatest() ? '&versio='+$scope.versiot.chosen.numero : '';
+    $location.url(versionUrl);
+  };
 
   if (perusteOppiaine) {
     if (perusteOppiaine.eiPerustetta) {
@@ -38,7 +78,7 @@ ylopsApp
       $scope.perusteOppiaine = perusteOppiaine;
     }
     else {
-      $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, function (om) {
+      $scope.perusteOppiaine = _.find(perusteOppiaine.oppimaarat, (om) => {
         return om.tunniste === $scope.oppiaine.tunniste;
       });
     }
@@ -50,12 +90,16 @@ ylopsApp
     hasVlkTavoitteet = !perusteOppiaine || $scope.perusteenVlk && !_.isEmpty($scope.perusteenVlk.tavoitteet);
   $scope.isVuosiluokkaistettava = hasVuosiluokkakokonaisuudet && onOma && hasVlkTavoitteet;
 
-  $scope.$on('oppiainevlk:updated', function (event, value) {
+  $scope.$on('oppiainevlk:updated', (event, value) => {
     $scope.oppiaineenVlk = value;
     $scope.oppiaine = OppiaineService.getOppiaine();
   });
 
-  $scope.$on('oppiaine:reload', function () {
+  $scope.$on('oppiaine:reload', () => {
+    OppiaineService.getVersions($stateParams).then( (res) => {
+      versionHistory = res;
+      updateHistory();
+    });
     OppiaineService.refresh($scope.model, $stateParams.oppiaineId, $stateParams.vlkId);
   });
 })
@@ -91,7 +135,8 @@ ylopsApp
     $scope.startEditing();
   };
 
-  $scope.kopioitavanaMuokattavaksi = () => !$scope.oppiaine.oma && !$scope.oppiaine.$parent;
+  $scope.firstVuosiluokka = () => _.first($scope.oppiaine.vuosiluokkakokonaisuudet);
+  $scope.isValinnainen = () => _.includes(['muu_valinnainen', 'taide_taitoaine'], $scope.oppiaine.tyyppi);
 
   $scope.getVuosiluokkaUrl = (vuosiluokka) =>
     $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka.tavoitteet', _.merge(_.clone($stateParams), { vlId: vuosiluokka.id }));
@@ -113,7 +158,6 @@ ylopsApp
   OppiaineService.getParent()
     .then(function(res) {
       $scope.oppiaine.$parent = res;
-      console.log(res);
       $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
       if ($scope.$onKieliTaiUskonto) {
         $scope.oppiaine.tehtava = $scope.oppiaine.tehtava || {};
