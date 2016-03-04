@@ -391,7 +391,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ops.setTila(Tila.LUONNOS);
             ops = repository.save(ops);
 
-            if(isPohjastaTehtyPohja(pohja) && pohja.getKoulutustyyppi().compareTo(KoulutusTyyppi.LUKIOKOULUTUS) == 0){
+            if(isPohjastaTehtyPohja(pohja) && pohja.getKoulutustyyppi().isLukio() ){
                 lisaaTeemaopinnotJosPohjassa(ops, pohja);
             }
         } else {
@@ -430,7 +430,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Copier<Oppiaine> oppiaineCopier = teeKopio ? Oppiaine.basicCopier() : Copier.nothing();
         Map<Long,Oppiaine> newOppiaineByOld = new HashMap<>();
         Copier<Oppiaine> kurssiCopier = null;
-        if (pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+        if (pohja.getKoulutustyyppi().isLukio()) {
             luoLukiokoulutusPohjasta(pohja, ops);
             kurssiCopier = getLukiokurssitOppiaineCopier(pohja, ops, teeKopio);
             oppiaineCopier = oppiaineCopier.and(kurssiCopier)
@@ -442,9 +442,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oppiaineCopier = oppiaineCopier.and(Oppiaine.perusopetusCopier());
         }
         final Copier<Oppiaine> oppiainePerusCopier = oppiaineCopier;
-        if (teeKopio && (!onPohjastaTehtyPohja || pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS)) {
+        if (teeKopio && (!onPohjastaTehtyPohja || pohja.getKoulutustyyppi().isLukio())) {
             ConstructedCopier<Oppiaine> omConst = oppiainePerusCopier.construct(oa -> new Oppiaine(oa.getTunniste()));
-            if (onPohjastaTehtyPohja && pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+            if (onPohjastaTehtyPohja && pohja.getKoulutustyyppi().isLukio()) {
                 oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(om -> !om.isAbstraktiBool(), omConst));
             } else {
                 oppiaineCopier = oppiaineCopier.and(Oppiaine.oppimaaraCopier(omConst));
@@ -461,7 +461,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
         ConstructedCopier<OpsOppiaine> opsOppiaineCopier = OpsOppiaine.copier(
                 oppiaineCopier.construct(existing -> teeKopio ? new Oppiaine(existing.getTunniste()) : existing), teeKopio);
-        Stream<OpsOppiaine> oppiaineetToCopy = pohja.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS
+        Stream<OpsOppiaine> oppiaineetToCopy = pohja.getKoulutustyyppi().isLukio()
                     && pohja.getTyyppi() == Tyyppi.POHJA // ei kopioida pohjasta abstakteja ylätason oppiaineita, mutta OPS:sta kyllä
                 ? pohja.getOppiaineet().stream().filter(opsOa -> !opsOa.getOppiaine().isAbstraktiBool())
                 : pohja.getOppiaineet().stream();
@@ -709,7 +709,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.VARHAISKASVATUS == peruste.getKoulutustyyppi()) {
             return addPohjaLisaJaEsiopetus(ops, peruste);
-        } else if (KoulutusTyyppi.LUKIOKOULUTUS == peruste.getKoulutustyyppi()) {
+        } else if (peruste.getKoulutustyyppi().isLukio()) {
             return addPohjaLukiokoulutus(ops, peruste);
         } else {
             throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
@@ -966,9 +966,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 }
             }
 
-            if (tila == Tila.VALMIS && ops.getTila() == Tila.LUONNOS
-                    && ops.getTyyppi() != Tyyppi.POHJA
-                    && ops.getKoulutustyyppi().compareTo(KoulutusTyyppi.LUKIOKOULUTUS) == 0) {
+            if (tila == Tila.VALMIS && ops.getTila() == Tila.LUONNOS && ops.getTyyppi() != Tyyppi.POHJA &&
+                    ops.getKoulutustyyppi().isLukio()) {
                 validoiLukioPohja(ops);
             }
             ops.setTila(tila);

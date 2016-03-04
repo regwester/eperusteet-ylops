@@ -232,7 +232,7 @@ ylopsApp
     placeholder: 'placeholder'
   };
 
-  $scope.isLukio = $scope.model.koulutustyyppi === 'koulutustyyppi_2';
+  const isLukio = () => _.any(["koulutustyyppi_2", "koulutustyyppi_23"], (i) => i === $scope.model.koulutustyyppi);
 
   $scope.tekstitProvider = $q.when({
     root: _.constant($q.when($scope.model.tekstit)),

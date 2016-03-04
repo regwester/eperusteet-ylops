@@ -358,7 +358,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         OpsOppiaine kopio = new OpsOppiaine(newOppiaine, true);
         opsOppiaineet.add(kopio);
         ops.setOppiaineet(opsOppiaineet);
-        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+        if (ops.getKoulutustyyppi().isLukio()) {
             newOppiaine.setAbstrakti(oppiaine.getAbstrakti());
             remapLukiokurssit(ops, oppiaine, newOppiaine);
 
@@ -597,7 +597,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         opsOppiaineet.add( oldOppiaine );
         ops.setOppiaineet( opsOppiaineet );
-        if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
+        if (ops.getKoulutustyyppi().isLukio()) {
             remapLukiokurssit(ops, oppiaine, opp);
 
             updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, opp);

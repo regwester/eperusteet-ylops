@@ -3,7 +3,7 @@
 <div class="navigaatio-content-plain">
   <ul ng-hide="luonnissa" class="nav nav-tabs">
     <li ui-sref-active="active">
-      <a ui-sref="root.pohjat.yksi.sisalto" kaanna="model.koulutustyyppi === 'koulutustyyppi_2' ? 'yleiset-osuudet' : 'yhteiset-osuudet'"></a>
+      <a ui-sref="root.pohjat.yksi.sisalto" kaanna="isLukio() ? 'yleiset-osuudet' : 'yhteiset-osuudet'"></a>
     </li>
     <li ui-sref-active="active">
       <a ui-sref="root.pohjat.yksi.tiedot" kaanna="'pohjan-tiedot'"></a>

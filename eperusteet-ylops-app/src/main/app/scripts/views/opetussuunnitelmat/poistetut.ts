@@ -26,8 +26,8 @@ ylopsApp
   $scope.currentPage = 1;
   $scope.itemsPerPage = 10;
   $scope.haku = '';
-  const isLukio = () => $scope.model.koulutustyyppi === 'koulutustyyppi_2';
 
+  const isLukio = () => _.any(["koulutustyyppi_2", "koulutustyyppi_23"], (i) => i === $scope.model.koulutustyyppi);
   const addItems = (items, type) => {
     _.forEach( items, (item) => {
       item.type= type;
