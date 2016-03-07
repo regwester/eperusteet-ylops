@@ -53,6 +53,19 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     }
 
     @Override
+    public String haeKayttajanimi(String oid) {
+        if (oid!=null) {
+            KayttajanTietoDto tiedot = client.hae(oid);
+            if (tiedot != null) {
+                String nimi = (tiedot.getEtunimet() != null) ? tiedot.getEtunimet() : "";
+                nimi += " " + ((tiedot.getSukunimi() != null) ? tiedot.getSukunimi() : "");
+                return nimi;
+            }
+        }
+        return null;
+    }
+
+    @Override
     @Async
     public Future<KayttajanTietoDto> haeAsync(String oid) {
         return new AsyncResult<>(hae(oid));

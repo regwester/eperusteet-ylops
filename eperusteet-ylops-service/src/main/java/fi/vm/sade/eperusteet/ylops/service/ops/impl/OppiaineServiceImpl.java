@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.codepoetics.protonpack.StreamUtils;
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
@@ -38,6 +37,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
@@ -102,6 +102,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Autowired
     private PoistettuOppiaineRepository poistettuOppiaineRepository;
 
+    @Autowired
+    private KayttajanTietoService kayttajanTietoService;
+
     public OppiaineServiceImpl() {
     }
 
@@ -159,6 +162,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public OpsOppiaineDto get(@P("opsId") Long opsId, Long id) {
         OpsOppiaineDto oppiaine = getOpsOppiaine(opsId, id, null);
         oppiaine.setKopioitavissa(canCopyOppiaine(opsId,id));
+        oppiaine.getOppiaine().setMuokkaaja(kayttajanTietoService.haeKayttajanimi(oppiaine.getOppiaine().getMuokkaaja()));
         return oppiaine;
     }
 
@@ -169,7 +173,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
         Oppiaine oppiaine = (version == null) ? oppiaineet.findOne(id) : oppiaineet.findRevision(id, version);
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
-        return mapper.map(new OpsOppiaine(oppiaine, isOma), OpsOppiaineDto.class);
+        OpsOppiaineDto oppiaineDto = mapper.map(new OpsOppiaine(oppiaine, isOma), OpsOppiaineDto.class);
+        oppiaineDto.getOppiaine().setMuokkaaja(kayttajanTietoService.haeKayttajanimi(oppiaine.getMuokkaaja()));
+        return oppiaineDto;
     }
 
     @Override
@@ -630,6 +636,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             Oppiaine latest = latestNotNull(poistettuOppiaine.getOppiaine());
             poistettuOppiaine.setNimi(mapper.map(latest.getNimi(), LokalisoituTekstiDto.class));
             poistettuOppiaine.setOppiaine(latest.getId());
+            poistettuOppiaine.setMuokkaaja(kayttajanTietoService.haeKayttajanimi(poistettuOppiaine.getMuokkaaja()));
         });
         return mapper.mapAsList(poistetut, PoistettuOppiaineDto.class);
     }

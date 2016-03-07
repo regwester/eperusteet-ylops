@@ -128,7 +128,7 @@ ylopsApp
         $scope.$$muokkaustiedot = {
           luotu: $scope.model.tekstiKappale.luotu,
           muokattu: $scope.model.tekstiKappale.muokattu,
-          muokkaajaOid: $scope.model.tekstiKappale.muokkaaja
+          muokkaaja: $scope.model.tekstiKappale.muokkaaja
         };
       }
     };

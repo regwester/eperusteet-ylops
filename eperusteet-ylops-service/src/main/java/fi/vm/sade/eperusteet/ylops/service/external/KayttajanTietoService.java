@@ -34,6 +34,9 @@ public interface KayttajanTietoService {
     KayttajanTietoDto hae(String oid);
 
     @PreAuthorize("isAuthenticated()")
+    String haeKayttajanimi(String oid);
+
+    @PreAuthorize("isAuthenticated()")
     Future<KayttajanTietoDto> haeAsync(String oid);
 
     @PreAuthorize("isAuthenticated()")
