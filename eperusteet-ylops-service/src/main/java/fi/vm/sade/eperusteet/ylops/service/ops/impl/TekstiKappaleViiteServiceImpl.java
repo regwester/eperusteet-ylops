@@ -31,18 +31,18 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.PoistettuTekstiKappaleRepos
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockManager;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
@@ -72,6 +72,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     private PoistettuTekstiKappaleRepository poistettuTekstiKappaleRepository;
 
     @Autowired
+    private KayttajanTietoService kayttajanTietoService;
+
+    @Autowired
     private LockManager lockMgr;
 
     @Override
@@ -83,7 +86,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     public TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
-        return mapper.map(viite, TekstiKappaleViiteDto.Matala.class);
+        TekstiKappaleViiteDto.Matala viiteDto = mapper.map(viite, TekstiKappaleViiteDto.Matala.class);
+        viiteDto.getTekstiKappale().setMuokkaaja(kayttajanTietoService.haeKayttajanimi(viiteDto.getTekstiKappale().getMuokkaaja()));
+        return viiteDto;
     }
 
     @Override
@@ -235,7 +240,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public TekstiKappaleDto findTekstikappaleVersion(long opsId, long viiteId, long versio) {
         Long kappaleId = getTekstiKappaleViite(opsId, viiteId).getTekstiKappale().getId();
         TekstiKappale tekstiKappale = tekstiKappaleRepository.findRevision(kappaleId, (int) versio);
-        return mapper.map(tekstiKappale, TekstiKappaleDto.class);
+        TekstiKappaleDto tekstiKappaleDto = mapper.map(tekstiKappale, TekstiKappaleDto.class);
+        tekstiKappaleDto.setMuokkaaja(kayttajanTietoService.haeKayttajanimi(tekstiKappaleDto.getMuokkaaja()));
+        return tekstiKappaleDto;
     }
 
     @Override
@@ -253,9 +260,10 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         connectMissingTekstikappaleetIfAny(opsId);
         List<PoistettuTekstiKappaleDto> list = mapper.mapAsList(poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId), PoistettuTekstiKappaleDto.class);
         list.forEach(poistettuTekstiKappaleDto -> {
-            TekstiKappaleDto a = tekstiKappaleService.get(poistettuTekstiKappaleDto.getTekstiKappale());
-            poistettuTekstiKappaleDto.setNimi(a.getNimi());
-            poistettuTekstiKappaleDto.setTekstiKappale(a.getId());
+            TekstiKappaleDto teksti= tekstiKappaleService.get(poistettuTekstiKappaleDto.getTekstiKappale());
+            poistettuTekstiKappaleDto.setMuokkaaja(kayttajanTietoService.haeKayttajanimi(poistettuTekstiKappaleDto.getMuokkaaja()));
+            poistettuTekstiKappaleDto.setNimi(teksti.getNimi());
+            poistettuTekstiKappaleDto.setTekstiKappale(teksti.getId());
         });
         return list;
     }

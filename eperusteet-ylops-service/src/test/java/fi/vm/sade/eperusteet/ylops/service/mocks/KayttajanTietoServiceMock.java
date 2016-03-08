@@ -36,6 +36,11 @@ public class KayttajanTietoServiceMock implements KayttajanTietoService {
     }
 
     @Override
+    public String haeKayttajanimi(String oid) {
+        return null;
+    }
+
+    @Override
     public Future<KayttajanTietoDto> haeAsync(String oid) {
         return new AsyncResult<>(hae(oid));
     }

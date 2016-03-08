@@ -61,7 +61,7 @@ ylopsApp
 
   $scope.$$muokkaustiedot = {
     muokattu: $scope.oppiaine.muokattu,
-    muokkaajaOid: $scope.oppiaine.muokkaaja
+    muokkaaja: $scope.oppiaine.muokkaaja
   };
 
   $scope.vaihdaVersio = () => {
