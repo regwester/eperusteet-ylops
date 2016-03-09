@@ -26,28 +26,28 @@ CREATE TABLE poistettu_oppiaine_aud(
 );
 
 
-insert into poistettu_oppiaine(id, oppiaine_id, opetussuunnitelma_id, palautettu)
-  select ROW_NUMBER() over() as row, oppiaine_id, opetussuunnitelma_id, FALSE
-  FROM (
-         SELECT
-           ROW_NUMBER()
-           OVER (PARTITION BY ops_oppiaine_aud.oppiaine_id
-             ORDER BY ops_oppiaine_aud.oppiaine_id ASC) AS rn,
-           tyyppi, opetussuunnitelma_id, ops_oppiaine_aud.oppiaine_id
-         FROM ops_oppiaine_aud, oppiaine_aud
-         WHERE ops_oppiaine_aud.oppiaine_id = oppiaine_aud.id
-               and ops_oppiaine_aud.revtype in (0,1)
-               AND ops_oppiaine_aud.oppiaine_id IN (
-
-           SELECT DISTINCT ops_oppiaine_aud.oppiaine_id
-           FROM ops_oppiaine_aud
-           WHERE ops_oppiaine_aud.revtype = 2
-            and oppiaine_aud.id= ops_oppiaine_aud.oppiaine_id
-         )
-       ) a
-  where rn =1
-  and opetussuunnitelma_id not in(
-    select id from opetussuunnitelma_aud where koulutustyyppi = 'LUKIOKOULUTUS'
-  )
-  and tyyppi not in('LUKIO','MUU_VALINNAINEN', 'TAIDE_TAITOAINE');
+-- insert into poistettu_oppiaine(id, oppiaine_id, opetussuunnitelma_id, palautettu)
+--  select ROW_NUMBER() over() as row, oppiaine_id, opetussuunnitelma_id, FALSE
+--  FROM (
+--         SELECT
+--           ROW_NUMBER()
+--           OVER (PARTITION BY ops_oppiaine_aud.oppiaine_id
+--             ORDER BY ops_oppiaine_aud.oppiaine_id ASC) AS rn,
+--           tyyppi, opetussuunnitelma_id, ops_oppiaine_aud.oppiaine_id
+--         FROM ops_oppiaine_aud, oppiaine_aud
+--         WHERE ops_oppiaine_aud.oppiaine_id = oppiaine_aud.id
+--               and ops_oppiaine_aud.revtype in (0,1)
+--               AND ops_oppiaine_aud.oppiaine_id IN (
+--
+--           SELECT DISTINCT ops_oppiaine_aud.oppiaine_id
+--           FROM ops_oppiaine_aud
+--           WHERE ops_oppiaine_aud.revtype = 2
+--            and oppiaine_aud.id= ops_oppiaine_aud.oppiaine_id
+--         )
+--       ) a
+--  where rn =1
+--  and opetussuunnitelma_id not in(
+--    select id from opetussuunnitelma_aud where koulutustyyppi = 'LUKIOKOULUTUS'
+--  )
+--  and tyyppi not in('LUKIO','MUU_VALINNAINEN', 'TAIDE_TAITOAINE');
 
