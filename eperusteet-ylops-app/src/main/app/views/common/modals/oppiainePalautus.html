@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <h2 kaanna="'palauta-oppiaine'"/>
+  <h2 kaanna="'palauta-oppiaine'"></h2>
 </div>
 
 <div class="modal-body">
@@ -17,9 +17,8 @@
   </div>
 
   <div ng-if="palauta.type === 'oppimaara'">
-    <strong kaanna="'oppiaine'"/>
-    <select ng-options="(item.oppiaine.nimi | kaanna) for item in koosteiset" ng-model="palauta.oppimaara" class="form-control">
-    </select>
+    <strong kaanna="'oppiaine'"></strong>
+    <select ng-options="(item.oppiaine.nimi | kaanna) for item in koosteiset" ng-model="palauta.oppimaara" class="form-control"></select>
   </div>
 
   <div class="modal-footer">
