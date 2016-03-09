@@ -133,6 +133,87 @@ ylopsApp
         }))
         .value();
 
+      console.log(jrnoMap);
+      OpetussuunnitelmaCRUD.jarjestaOppiaineet({
+        opsId: opsModel.id
+      }, jrnoMap, () => {
+        resolve();
+        Notifikaatiot.onnistui('tallennettu-ok');
+        $timeout(() => {
+          $state.go('^.vuosiluokkakokonaisuus', $stateParams, { reload: true });
+        });
+      });
+    }),
+    cancel: () => $q((resolve) => {
+      resolve();
+      $timeout(() => {
+        $state.go('^.vuosiluokkakokonaisuus', $stateParams);
+      });
+    }),
+    notify: _.noop
+  });
+
+  $timeout(Editointikontrollit.startEditing);
+})
+
+.controller('OppiaineSortController', ($q, $rootScope, $scope, $state, $stateParams, $timeout, Editointikontrollit,
+                                       Notifikaatiot, OpetussuunnitelmaCRUD, opsModel, vlk, vlkId) => {
+
+  console.log("sort ");
+  $rootScope.$broadcast('navigaatio:hide');
+  $scope.oppiaineet = _(opsModel.oppiaineet)
+      .map('oppiaine')
+      .map((oa) => {
+        return [oa, oa.oppimaarat || []];
+      })
+      .flatten(true)
+      //.filter((oa) => {
+      //  oa.$$vklid = _.findIndex(oa.vuosiluokkakokonaisuudet, (oavlk) => {
+      //    return vlk._tunniste === oavlk._vuosiluokkakokonaisuus;
+      //  });
+      //  return -1 !== oa.$$vklid;
+      //})
+      .sortBy('$$jnro')
+      .value();
+
+  console.log(opsModel);
+  console.log(">>> ", $scope.oppiaineet);
+
+  $scope.sortableOptions = {
+    handle: '> .handle',
+    placeholder: 'placeholder-vklsort',
+    connectWith: '.container-items',
+    cursor: 'move',
+    cursorAt: {top : 2, left: 2},
+    tolerance: 'pointer',
+  };
+
+  $scope.sortableOptionsOa = {
+    handle: '> .handle',
+    placeholder: 'placeholder-vklsort',
+    connectWith: '.container-items-oa',
+    cursor: 'move',
+    cursorAt: {top : 2, left: 2},
+    tolerance: 'pointer',
+  };
+
+  Editointikontrollit.registerCallback({
+    edit: () => $q.when(),
+    save: () => $q((resolve) => {
+      resolve();
+      console.log($scope.oppiaineet);
+      const jrnoMap = _($scope.oppiaineet)
+          .map((oa) => [oa, oa.oppimaarat || []])
+          .flatten(true)
+          .map((oa, idx) => ({
+            id: opsModel.id,
+            //lisaIdt: [oa.vuosiluokkakokonaisuudet[oa.$$vklid].id],
+            lisaIdt: [oa.id],
+            jnro: idx
+          }))
+          .value();
+
+      console.log('>>>', jrnoMap);
       OpetussuunnitelmaCRUD.jarjestaOppiaineet({
         opsId: opsModel.id
       }, jrnoMap, () => {
@@ -160,9 +241,8 @@ ylopsApp
       Editointikontrollit, Kaanna, MurupolkuData, Notifikaatiot, OpsService, Utils, Varmistusdialogi,
       VuosiluokatService, VuosiluokkakokonaisuusCRUD, VuosiluokkakokonaisuusMapper, baseLaajaalaiset, vlk) {
 
-  $scope.sortOppiaineet = function() {
-    $state.go('^.vuosiluokkakokonaisuussort', $stateParams);
-  };
+  $scope.sortOppiaineet = () => $state.go('^.vuosiluokkakokonaisuussort', $stateParams);
+  $scope.newSortOppiaineet = () => $state.go('^.oppiainesort', $stateParams);
 
   $timeout(function () {
     if ($location.hash()) {
