@@ -302,25 +302,21 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public void updateOppiainejarjestys(Long opsId, List<JarjestysDto> oppiainejarjestys) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        Map<Long, Oppiaineenvuosiluokkakokonaisuus> oppiaineet = new HashMap<>();
 
-        for (OpsOppiaine oa : ops.getOppiaineet()) {
-            for (Oppiaineenvuosiluokkakokonaisuus oavlk : oa.getOppiaine().getVuosiluokkakokonaisuudet()) {
-                oppiaineet.put(oavlk.getId(), oavlk);
+        Map<Long, Oppiaine> oppiaineet = new HashMap<Long, Oppiaine>();
+        ops.getOppiaineet().forEach(opsOppiaine -> {
+            oppiaineet.put(opsOppiaine.getOppiaine().getId(), opsOppiaine.getOppiaine());
+            if (opsOppiaine.getOppiaine().getOppimaarat() != null) {
+                opsOppiaine.getOppiaine().getOppimaarat().forEach(oppimaara -> oppiaineet.put(oppimaara.getId(), oppimaara));
             }
-            if (oa.getOppiaine().getOppimaarat() != null) {
-                for (Oppiaine oppimaara : oa.getOppiaine().getOppimaarat()) {
-                    for (Oppiaineenvuosiluokkakokonaisuus oavlk : oppimaara.getVuosiluokkakokonaisuudet()) {
-                        oppiaineet.put(oavlk.getId(), oavlk);
-                    }
-                }
-            }
-        }
+        });
 
         for (JarjestysDto node : oppiainejarjestys) {
-            Oppiaineenvuosiluokkakokonaisuus oavlk = oppiaineet.get(node.getLisaIdt().get(0));
-            assertExists(oavlk, "Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei ole");
-            oavlk.setJnro(node.getJnro());
+            Oppiaine oppiaine = oppiaineet.get(node.getOppiaineId());
+            assertExists(oppiaine, "Pyydettyä oppiainetta ei ole");
+            oppiaine.getVuosiluokkakokonaisuudet().forEach(oppiaineenvuosiluokkakokonaisuus -> {
+                oppiaineenvuosiluokkakokonaisuus.setJnro(node.getJnro());
+            });
         }
     }
 
