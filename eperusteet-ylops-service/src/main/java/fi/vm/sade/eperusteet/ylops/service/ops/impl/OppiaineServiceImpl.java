@@ -265,7 +265,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oavlk.setTyotavat(mapper.map(oavlktDto.getTyotavat(), Tekstiosa.class));
         oavlk.setOhjaus(mapper.map(oavlktDto.getOhjaus(), Tekstiosa.class));
         oavlk.setArviointi(mapper.map(oavlktDto.getArviointi(), Tekstiosa.class));
-
+        oavlk.setJnro(0);
         oavlk.setVuosiluokat(luoOppiaineenVuosiluokat(vuosiluokat, tavoitteetDto));
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
 
@@ -324,6 +324,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
         Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
         pelastettu.setTyyppi( oppiaine.getTyyppi() );
+        pelastettu.setLaajuus( oppiaine.getLaajuus() );
 
         if( oppimaaraId != null){
             Oppiaine parent = oppiaineet.findOne(oppimaaraId);

@@ -101,9 +101,7 @@ ylopsApp
 })
 
 .controller('OppiaineModalController', (ops, $scope, OppiaineService, $modalInstance) => {
-  console.log(ops);
   $scope.koosteiset = _.filter(ops.oppiaineet, 'oppiaine.koosteinen');
-  console.log($scope.koosteiset);
   $scope.palauta = {
     type: 'oppiaine'
   };

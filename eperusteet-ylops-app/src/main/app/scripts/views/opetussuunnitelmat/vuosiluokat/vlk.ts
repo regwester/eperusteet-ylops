@@ -101,6 +101,7 @@ ylopsApp
       .sortBy('$$jnro')
       .value();
 
+  console.log($scope.oppiaineet);
   $scope.sortableOptions = {
     handle: '> .handle',
     placeholder: 'placeholder-vklsort',
