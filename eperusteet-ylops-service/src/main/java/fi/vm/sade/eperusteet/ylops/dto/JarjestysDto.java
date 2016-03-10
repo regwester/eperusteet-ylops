@@ -26,6 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JarjestysDto {
-    Long oppiaineId;
+    Long id;
+    List<Long> lisaIdt;
     Integer jnro;
 }

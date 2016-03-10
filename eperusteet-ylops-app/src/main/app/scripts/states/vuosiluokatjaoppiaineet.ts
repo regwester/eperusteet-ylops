@@ -55,10 +55,34 @@ ylopsApp
         }
       })
 
-      .state('root.opetussuunnitelmat.yksi.opetus.oppiainesort', {
+      .state('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuussort', {
         url: '/vuosiluokat/:vlkId/jarjesta',
+        templateUrl: 'views/opetussuunnitelmat/vuosiluokat/vlksort.html',
+        controller: 'VuosiluokkakokonaisuusSortController',
+        resolve: {
+          vuosiluokatService: 'VuosiluokatService',
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
+          }]
+        }
+      })
+
+      .state('root.opetussuunnitelmat.yksi.opetus.oppiainesort', {
+        url: '/vuosiluokat/:vlkId/jarjesta2',
         templateUrl: 'views/opetussuunnitelmat/vuosiluokat/oppiainesort.html',
         controller: 'OppiaineSortController',
+        resolve: {
+          vuosiluokatService: 'VuosiluokatService',
+          vlkId: ['$stateParams', function($stateParams){
+            return $stateParams.vlkId;
+          }],
+          vlk: ['vuosiluokatService', 'vlkId', 'opsId', function (vuosiluokatService, vlkId, opsId) {
+            return vuosiluokatService.getVuosiluokkakokonaisuus(opsId, vlkId).$promise;
+          }]
+        }
       })
 
       .state('root.opetussuunnitelmat.yksi.opetus.valinnaiset', {

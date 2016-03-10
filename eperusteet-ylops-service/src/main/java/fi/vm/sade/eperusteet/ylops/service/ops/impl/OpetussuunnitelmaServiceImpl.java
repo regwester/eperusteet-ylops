@@ -303,21 +303,52 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
-        Map<Long, Oppiaine> oppiaineet = new HashMap<Long, Oppiaine>();
-        ops.getOppiaineet().forEach(opsOppiaine -> {
-            oppiaineet.put(opsOppiaine.getOppiaine().getId(), opsOppiaine.getOppiaine());
-            if (opsOppiaine.getOppiaine().getOppimaarat() != null) {
-                opsOppiaine.getOppiaine().getOppimaarat().forEach(oppimaara -> oppiaineet.put(oppimaara.getId(), oppimaara));
-            }
+        Set<OpsOppiaine> tmp = new HashSet<>();
+
+        oppiainejarjestys.forEach(jarjestysDto -> {
+            ops.getOppiaineet()
+                    .stream()
+                    .filter(oa -> oa.getOppiaine().getId().compareTo(jarjestysDto.getLisaIdt().get(0)) == 0)
+                    .findFirst()
+                    .ifPresent(opsOppiaine -> tmp.add(opsOppiaine));
+
+
+//            if (a.isPresent()) {
+//                System.out.println("add " + a.get().getOppiaine().getId());
+//                tmp.add(a.get());
+//            }else{
+//                System.out.println("not found " + jarjestysDto.getLisaIdt().get(0));
+//            }
         });
 
-        for (JarjestysDto node : oppiainejarjestys) {
-            Oppiaine oppiaine = oppiaineet.get(node.getOppiaineId());
-            assertExists(oppiaine, "Pyydettyä oppiainetta ei ole");
-            oppiaine.getVuosiluokkakokonaisuudet().forEach(oppiaineenvuosiluokkakokonaisuus -> {
-                oppiaineenvuosiluokkakokonaisuus.setJnro(node.getJnro());
-            });
-        }
+        //TODO etsi puuttuvat
+        System.out.println("test");
+        ops.setOppiaineet(tmp);
+        tmp.forEach(opsOppiaine -> {
+            System.out.println(opsOppiaine.getOppiaine().getNimi().getTeksti().get(Kieli.FI));
+        });
+
+
+//        Map<Long, Oppiaineenvuosiluokkakokonaisuus> oppiaineet = new HashMap<>();
+//
+//        for (OpsOppiaine oa : ops.getOppiaineet()) {
+//            for (Oppiaineenvuosiluokkakokonaisuus oavlk : oa.getOppiaine().getVuosiluokkakokonaisuudet()) {
+//                oppiaineet.put(oavlk.getId(), oavlk);
+//            }
+//            if (oa.getOppiaine().getOppimaarat() != null) {
+//                for (Oppiaine oppimaara : oa.getOppiaine().getOppimaarat()) {
+//                    for (Oppiaineenvuosiluokkakokonaisuus oavlk : oppimaara.getVuosiluokkakokonaisuudet()) {
+//                        oppiaineet.put(oavlk.getId(), oavlk);
+//                    }
+//                }
+//            }
+//        }
+//
+//        for (JarjestysDto node : oppiainejarjestys) {
+//            Oppiaineenvuosiluokkakokonaisuus oavlk = oppiaineet.get(node.getLisaIdt().get(0));
+//            assertExists(oavlk, "Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei ole");
+//            oavlk.setJnro(node.getJnro());
+//        }
     }
 
     private void fetchKuntaNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
