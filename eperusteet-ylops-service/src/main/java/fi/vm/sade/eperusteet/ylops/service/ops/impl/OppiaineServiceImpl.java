@@ -102,9 +102,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Autowired
     private PoistettuOppiaineRepository poistettuOppiaineRepository;
 
-    @Autowired
-    private KayttajanTietoService kayttajanTietoService;
-
     public OppiaineServiceImpl() {
     }
 
@@ -160,10 +157,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Override
     @Transactional(readOnly = true)
     public OpsOppiaineDto get(@P("opsId") Long opsId, Long id) {
-        OpsOppiaineDto oppiaine = getOpsOppiaine(opsId, id, null);
-        oppiaine.setKopioitavissa(canCopyOppiaine(opsId,id));
-        oppiaine.getOppiaine().setMuokkaaja(kayttajanTietoService.haeKayttajanimi(oppiaine.getOppiaine().getMuokkaaja()));
-        return oppiaine;
+        return getOpsOppiaine(opsId, id, null);
     }
 
     private OpsOppiaineDto getOpsOppiaine(Long opsId, Long id, Integer version) {
@@ -173,9 +167,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
         Oppiaine oppiaine = (version == null) ? oppiaineet.findOne(id) : oppiaineet.findRevision(id, version);
         assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
-        OpsOppiaineDto oppiaineDto = mapper.map(new OpsOppiaine(oppiaine, isOma), OpsOppiaineDto.class);
-        oppiaineDto.getOppiaine().setMuokkaaja(kayttajanTietoService.haeKayttajanimi(oppiaine.getMuokkaaja()));
-        return oppiaineDto;
+        return mapper.map(new OpsOppiaine(oppiaine, isOma), OpsOppiaineDto.class);
     }
 
     @Override
@@ -636,7 +628,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             Oppiaine latest = latestNotNull(poistettuOppiaine.getOppiaine());
             poistettuOppiaine.setNimi(mapper.map(latest.getNimi(), LokalisoituTekstiDto.class));
             poistettuOppiaine.setOppiaine(latest.getId());
-            poistettuOppiaine.setMuokkaaja(kayttajanTietoService.haeKayttajanimi(poistettuOppiaine.getMuokkaaja()));
         });
         return mapper.mapAsList(poistetut, PoistettuOppiaineDto.class);
     }
