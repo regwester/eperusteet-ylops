@@ -34,7 +34,7 @@
         <td>{{'poistettu-tyyppi-'+poistettu.type | kaanna}}</td>
         <td>{{poistettu.muokkaaja}}</td>
         <td>{{poistettu.muokattu | aikaleima:'date'}}</td>
-        <td><a ng-if="poistettu.type !== 'oppiaine'" ng-click="returnVersion(poistettu.id, poistettu.type)" class="label label-warning" kaanna="palauta"></a></td>
+        <td><a ng-click="returnVersion(poistettu.id, poistettu.type)" class="label label-warning" kaanna="palauta"></a></td>
       </tr>
     </table>
 
