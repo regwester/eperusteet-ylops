@@ -50,26 +50,6 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
-import org.apache.xml.security.utils.Base64;
-import org.jsoup.Jsoup;
-import org.jsoup.helper.W3CDom;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
-
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.MemoryCacheImageOutputStream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -80,6 +60,25 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.*;
+import org.apache.xml.security.utils.Base64;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -158,20 +157,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Perusopetus
         if (ops.getKoulutustyyppi() != null && ops.getKoulutustyyppi() == KoulutusTyyppi.PERUSOPETUS) {
-            PerusteDto perusteDto = null;
-            if (ops.getCachedPeruste() != null && ops.getCachedPeruste().getPerusteId() != null) {
-                // Käytetään ensisijaisesti cachetettua perustetta
-                perusteDto = eperusteetService.getEperusteetPeruste(ops.getCachedPeruste().getPerusteId());
-                if (perusteDto == null) {
-                    perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-                }
-            }
-            if (perusteDto != null) {
-                docBase.setPerusteDto(perusteDto);
-                addVuosiluokkakokonaisuudet(docBase);
-            } else {
+            PerusteDto perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+            if (perusteDto == null) {
                 throw new DokumenttiException("Peruste puuttuu", new Throwable());
             }
+            docBase.setPerusteDto(perusteDto);
+            addVuosiluokkakokonaisuudet(docBase);
         }
 
         // Alaviitteet
