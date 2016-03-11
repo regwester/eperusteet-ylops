@@ -55,7 +55,7 @@ public class OppiaineController {
     @RequestMapping(value = "/valinnainen", method = RequestMethod.POST)
     public OppiaineDto addValinnainen(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
         return oppiaineService.addValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuusId(),
-                                              dto.getVuosiluokat(), dto.getTavoitteet());
+                                              dto.getVuosiluokat(), dto.getTavoitteet(), null);
     }
 
     @RequestMapping(value = "/{id}/kielitarjonta", method = RequestMethod.POST)

@@ -98,10 +98,15 @@ ylopsApp
         return _.intersection(_.flatten(kokonaisuudet), vuosiluokat).length > 0;
       })
       .flatten(true)
+      .forEach((oa) => {
+        if(!_.isEmpty(oa.oppimaarat)){
+          const maarienVlk = _.flatten(_.map(oa.oppimaarat, 'vuosiluokkakokonaisuudet'));
+          oa.$$jnro = _.min(_.map(maarienVlk, 'jnro'));
+        }
+      })
       .sortBy('$$jnro')
       .value();
 
-  console.log($scope.oppiaineet);
   $scope.sortableOptions = {
     handle: '> .handle',
     placeholder: 'placeholder-vklsort',

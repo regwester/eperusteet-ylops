@@ -115,15 +115,14 @@ ylopsApp
     return promisify(vuosiluokka);
   }
 
-  function populateMenuItems(arr, obj, oppiaineet, depth = 1) {
-    function alustaVlk(oa) {
-      var oavlk = _.find(oa.vuosiluokkakokonaisuudet, _.equals(obj._tunniste, '_vuosiluokkakokonaisuus'));
-
+  const populateMenuItems = (arr, obj, oppiaineet, depth = 1) => {
+    const alustaVlk = (oa) => {
+      const oavlk = _.find(oa.vuosiluokkakokonaisuudet, _.equals(obj._tunniste, '_vuosiluokkakokonaisuus'));
       oa.$$oavlk = oavlk;
       if (oavlk) {
         oa.$$jnro = oavlk.jnro;
       }
-    }
+    };
 
     const generateOppiaineItem = (oppiaine, vlk, depth) => {
       return {
@@ -141,13 +140,19 @@ ylopsApp
       .each(alustaVlk)
       .sortBy(Utils.sort)
       .sortBy('$$jnro')
-      .filter(function(oa) {
-        return oa.$$oavlk || oa.koodiArvo === 'VK' || _.any(oa.oppimaarat, function(om) {
+      .filter((oa) => {
+        return oa.$$oavlk || oa.koodiArvo === 'VK' || _.any(oa.oppimaarat, (om) => {
           return _.find(om.vuosiluokkakokonaisuudet, _.equals(obj._tunniste, '_vuosiluokkakokonaisuus'));
         });
       })
+      .forEach((oa) => {
+        oa.$$jnro = (!oa.$$jnro && !_.isEmpty(oa.oppimaarat)) ? _.first(oa.oppimaarat).$$jnro : oa.$$jnro;
+        if(!oa.$$jnro && !_.isEmpty(oa.oppimaarat) && _.first(oa.oppimaarat).vuosiluokkakokonaisuudet){
+          oa.$$jnro = _.first(_.first(oa.oppimaarat).vuosiluokkakokonaisuudet).jnro;
+        }
+      })
       .sortBy('$$jnro')
-      .map(function(oa) {
+      .map((oa) => {
         return [
           generateOppiaineItem(oa, obj, depth),
           _(oa.oppimaarat)
@@ -159,9 +164,9 @@ ylopsApp
             .value() || []];
       })
       .flatten(true)
-      .each(function(oa) {arr.push(oa); })
+      .each((oa) => arr.push(oa))
       .value();
-  }
+  };
 
   function mapForMenu(ops) {
     if (!ops) {

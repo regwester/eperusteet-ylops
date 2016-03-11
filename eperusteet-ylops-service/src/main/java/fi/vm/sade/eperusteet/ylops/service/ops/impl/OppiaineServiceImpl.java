@@ -242,7 +242,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiaineDto addValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
-                                      Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto) {
+                                      Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto,
+                                      Integer oldJnro) {
 
         OppiaineenVuosiluokkakokonaisuusDto oavlktDto =
             oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
@@ -265,7 +266,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oavlk.setTyotavat(mapper.map(oavlktDto.getTyotavat(), Tekstiosa.class));
         oavlk.setOhjaus(mapper.map(oavlktDto.getOhjaus(), Tekstiosa.class));
         oavlk.setArviointi(mapper.map(oavlktDto.getArviointi(), Tekstiosa.class));
-        oavlk.setJnro(0);
+
+        if( oldJnro != null ){
+            oavlk.setJnro(oldJnro);
+        }else{
+            Optional<Integer> maxJnroInOps = getMaxJarjestysnumero(ops);
+            Integer jnro = maxJnroInOps.isPresent() ? maxJnroInOps.get()+1 : 0;
+            oavlk.setJnro(jnro);
+        }
+
         oavlk.setVuosiluokat(luoOppiaineenVuosiluokat(vuosiluokat, tavoitteetDto));
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
 
@@ -274,16 +283,28 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         return mapper.map(oppiaine, OppiaineDto.class);
     }
 
+    private Optional<Integer> getMaxJarjestysnumero(Opetussuunnitelma ops) {
+        return ops.getOppiaineet()
+                .stream()
+                .map(OpsOppiaine::getOppiaine)
+                .map(Oppiaine::getVuosiluokkakokonaisuudet)
+                .flatMap(l -> l.stream())
+                .map(Oppiaineenvuosiluokkakokonaisuus::getJnro)
+                .filter(integer -> integer != null)
+                .max(Integer::compareTo);
+    }
+
     @Override
     public OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                          Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto) {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
         assertExists(oppiaine, "Päivitettävää oppiainetta ei ole olemassa");
 
+        Integer oldJnro = oppiaine.getVuosiluokkakokonaisuudet().stream().findFirst().get().getJnro();
         PoistettuOppiaineDto deleted = delete(opsId, oppiaineDto.getId());
         poistettuOppiaineRepository.delete(deleted.getId());
 
-        return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, tavoitteetDto);
+        return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, tavoitteetDto, oldJnro);
     }
 
     private Oppiaine latestNotNull(Long oppiaineId) {
