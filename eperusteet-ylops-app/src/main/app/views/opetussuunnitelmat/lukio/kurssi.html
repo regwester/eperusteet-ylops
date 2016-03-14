@@ -67,14 +67,20 @@
   <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.kuvaus" editable="false" editing="false"
                       oppiaineen-teksti="kurssi.kuvaus" sisalto-title="'kurssi-kuvaus'"></lukio-oppiaine-osa>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteet.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.tavoitteet.teksti" sisalto-title="(kurssi.tavoitteet.otsikko | kaanna) || (kurssi.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
+  <!-- näytetään ensin kuvaukset jotka löytyvät perusteista -->
+  <div ng-repeat="i in [1,2]">
+    <lukio-oppiaine-osa ng-if="$first && inPeruste.tavoitteetJaKeskeisetSisallot || !$first && !inPeruste.tavoitteetJaKeskeisetSisallot"
+                        oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteet.teksti" editable="false" editing="false"
+                        oppiaineen-teksti="kurssi.tavoitteet.teksti" sisalto-title="(kurssi.tavoitteet.otsikko | kaanna) || (kurssi.perusteen.tavoitteet.otsikko | kaanna)"></lukio-oppiaine-osa>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.keskeisetSisallot.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.keskeinenSisalto.teksti" sisalto-title="(kurssi.keskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.keskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
+    <lukio-oppiaine-osa ng-if="$first && inPeruste.tavoitteetJaKeskeisetSisallot || !$first && !inPeruste.tavoitteetJaKeskeisetSisallot"
+                        oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.keskeisetSisallot.teksti" editable="false" editing="false"
+                        oppiaineen-teksti="kurssi.keskeinenSisalto.teksti" sisalto-title="(kurssi.keskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.keskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
 
-  <lukio-oppiaine-osa oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteetJaKeskeisetSisallot.teksti" editable="false" editing="false"
-                      oppiaineen-teksti="kurssi.tavoitteetJaKeskeinenSisalto.teksti" sisalto-title="(kurssi.tavoitteetJaKeskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.tavoitteetJaKeskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
+    <lukio-oppiaine-osa ng-if="$first && inPeruste.tavoitteetJaKeskeisetSisallot || !$first && !inPeruste.tavoitteetJaKeskeisetSisallot"
+                        oppiaine="oppiaine" perusteen-teksti="kurssi.perusteen.tavoitteetJaKeskeisetSisallot.teksti" editable="false" editing="false"
+                        oppiaineen-teksti="kurssi.tavoitteetJaKeskeinenSisalto.teksti" sisalto-title="(kurssi.tavoitteetJaKeskeinenSisalto.otsikko | kaanna) || (kurssi.perusteen.tavoitteetJaKeskeinenSisalto.otsikko | kaanna)"></lukio-oppiaine-osa>
+  </div>
 
 </div>
 <div class="lisaa-kurssi oppiaine-form" ng-if="editMode">

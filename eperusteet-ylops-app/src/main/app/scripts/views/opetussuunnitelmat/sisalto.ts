@@ -85,19 +85,18 @@ ylopsApp
     }, Notifikaatiot.serverCb);
   }
 
-  this.rakennaSivunavi = function(tekstit, isPohja) {
-    var state = isPohja ? 'root.pohjat.yksi.sisalto.tekstikappale' : 'root.opetussuunnitelmat.yksi.sisalto.tekstikappale';
+  this.rakennaSivunavi = (tekstit, isPohja) => {
+    const state = isPohja ? 'root.pohjat.yksi.sisalto.tekstikappale' : 'root.opetussuunnitelmat.yksi.sisalto.tekstikappale';
 
-    return _(_.deepFlatten(tekstit, _.property('lapset'), function(obj, depth) {
+    return _(_.deepFlatten(tekstit, _.property('lapset'), (obj, depth) => {
       if (obj.tekstiKappale) {
-        var result = {
+        return {
           id: obj.id,
           label: obj.tekstiKappale.nimi || '[otsikko]',
           valmis: obj.tekstiKappale.valmis,
           depth: depth - 1,
-          url: depth > 1 || isPohja ? $state.href(state, { tekstikappaleId: obj.id }) : undefined
+          url: $state.href(state, { tekstikappaleId: obj.id })
         };
-        return result;
       }
     }))
     .flatten(true)

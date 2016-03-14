@@ -110,14 +110,11 @@ ylopsApp
         $scope.haku = LukioTreeUtils.luoHaku(state);
         $scope.liitetytHaku = LukioTreeUtils.luoHaku(state, $scope.liitetytRoot);
         $scope.liittamattomatHaku = LukioTreeUtils.luoHaku(state, $scope.liittamattomatRoot);
-
-        $scope.addOppiaine = function() {
-            $state.go('root.opetussuunnitelmat.lukio.opetus.uusioppiaine');
-        };
+        $scope.addOppiaine = () => $state.go('root.opetussuunnitelmat.lukio.opetus.uusioppiaine');
 
         Editointikontrollit.registerCallback({
             doNotShowMandatoryMessage: true,
-            validate: function() {
+            validate: () => {
                 if (!_.isEmpty(state.liittamattomatKurssit())) {
                     Notifikaatiot.varoitus('lukio-puun-muokkaus-ei-saa-olla-liittamattomia-kursseja');
                     return false;
@@ -612,6 +609,11 @@ ylopsApp
         LukioOpetussuunnitelmaService.getRakenne().then(r => $scope.rootOps = r.root);
         LukioOpetussuunnitelmaService.getKurssi($stateParams.oppiaineId, $stateParams.kurssiId)
             .then(kurssi => {
+                $scope.inPeruste = {
+                    tavoitteetJaKeskeisetSisallot: _.has(kurssi, 'perusteen.tavoitteetJaKeskeisetSisallot.teksti'),
+                    keskeisetSisallot: _.has(kurssi, 'perusteen.keskeisetSisallot.teksti'),
+                    tavoitteet: _.has(kurssi, 'perusteen.tavoitteet.teksti')
+                };
                 $scope.kurssi = kurssi;
                 $scope.openKoodisto = LukioControllerHelpers.openKurssiKoodisto( $scope.kurssi);
                 $scope.muokattavatOsat = LukioControllerHelpers.muokattavatKurssiOsat($scope.kurssi);
@@ -627,7 +629,7 @@ ylopsApp
         };
 
         Editointikontrollit.registerCallback({
-            validate: function() {
+            validate: () => {
                 return Kaanna.kaanna($scope.kurssi.nimi) != null
                     && Kaanna.kaanna($scope.kurssi.lokalisoituKoodi)
                     && $scope.kurssi.tyyppi != null
@@ -743,7 +745,7 @@ ylopsApp
         $scope.muokattavatOsat = LukioControllerHelpers.muokattavatKurssiOsat($scope.kurssi);
 
         Editointikontrollit.registerCallback({
-            validate: function() {
+            validate: () => {
                 return Kaanna.kaanna($scope.kurssi.nimi) != null
                     && Kaanna.kaanna($scope.kurssi.lokalisoituKoodi)
                     && $scope.kurssi.tyyppi != null
@@ -788,7 +790,7 @@ ylopsApp
     })
 
 
-.directive('lukioOppiaineOsa', function () {
+.directive('lukioOppiaineOsa', () => {
     return {
         scope: {
             model: '=lukioOppiaineOsa',
@@ -807,14 +809,14 @@ ylopsApp
     };
 })
 
-.controller('LukioPerusteenSisaltoController', function($scope) {
+.controller('LukioPerusteenSisaltoController', ($scope) => {
     $scope.textHidden = true;
 
     $scope.toggleTextVisible = () => {
         $scope.textHidden = !$scope.textHidden;
     };
 })
-.directive('lukoiPerusteenSisalto', function () {
+.directive('lukoiPerusteenSisalto',  () => {
     return {
         scope: {
             model: '=lukiPerusteen',
@@ -828,7 +830,7 @@ ylopsApp
 .controller('LukioKielitarjontaModalController', function($scope, $stateParams, $modalInstance, $q, OpsService,
                   $log,  $state, opsId, oppiaine, valittu, LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
                   Notifikaatiot, LukioControllerHelpers, Kaanna) {
-    function getType() {
+    const getType = () => {
         if (!_.isString(oppiaine.koodiArvo)) {
             $log.warn('Oppiaineen koodia ei ole määritelty');
             return '';
@@ -843,7 +845,7 @@ ylopsApp
             $log.warn('Oppiaineen täytyy olla kieli tai uskonto');
             return '';
         }
-    }
+    };
 
     $scope.$type = getType();
     $scope.oppiaine = oppiaine;
@@ -878,7 +880,7 @@ ylopsApp
         });
     };
 
-    $scope.ok = function() {
+    $scope.ok = () => {
         if (!$scope.kieliJoToteutettu()) {
             // Lisätään uusi, ei tarvitse lukita:
             LukioOpetussuunnitelmaService.addKielitarjonta(oppiaine.id, {
@@ -904,7 +906,7 @@ ylopsApp
     $scope.$valittu.kieli = LukioControllerHelpers.kielella('');
     $scope.$omaNimi = _.cloneDeep($scope.$valittu.nimi);
 
-    $scope.ok = function() {
+    $scope.ok = () => {
         LukioOpetussuunnitelmaService.addAbstraktiOppiaine({
             tunniste: $scope.$valittu.tunniste,
             nimi: $scope.$omaNimi
