@@ -17,7 +17,7 @@
     </span>
     <button ng-show="oppiaine.oma" class="btn btn-default" icon-role="edit" ng-disabled="lukkotiedot.lukittu" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button ng-show="oppiaine.oma" class="btn btn-default" icon-role="remove" ng-disabled="lukkotiedot.lukittu" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
-    <button ng-if="oppiaine.kopioitavissa" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'"
+    <button ng-if="!oppiaine.oma" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'"
             icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'poisto' }"></button>
 </div>
 
@@ -37,12 +37,12 @@
 
 <p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>
 
-<div ng-show="$onKieliTaiUskonto" should-disable="oppiaine.kopioitavissa || options.editing || !isLatest()" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
-<div ng-hide="$onKieliTaiUskonto" should-disable="oppiaine.kopioitavissa || options.editing || !isLatest()" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
+<div ng-show="$onKieliTaiUskonto" should-disable="!oppiaine.oma || options.editing || !isLatest()" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
+<div ng-hide="$onKieliTaiUskonto" should-disable="!oppiaine.oma || options.editing || !isLatest()" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
 
-<div should-disable="oppiaine.kopioitavissa || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
+<div should-disable="oppiaine.oma === false || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 
-<div should-disable="oppiaine.kopioitavissa || options.editing || !isLatest()" class="tekstiosa-wrapper"
+<div should-disable="oppiaine.oma === false || options.editing || !isLatest()" class="tekstiosa-wrapper"
      ng-hide="isVuosiluokkaistettava && (oppiaine.tyyppi !== 'yhteinen' || isVuosiluokkaistettava)"
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
 
@@ -96,8 +96,8 @@
     </table>
 </div>
 
-<div ng-if="perusteOpVlk.tyotavat" should-disable="oppiaine.kopioitavissa || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
-<div ng-if="perusteOpVlk.ohjaus" should-disable="oppiaine.kopioitavissa || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
-<div ng-if="perusteOpVlk.arviointi" should-disable="oppiaine.kopioitavissa || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.tyotavat" should-disable="oppiaine.oma === false || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.ohjaus" should-disable="oppiaine.oma === false || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.arviointi" should-disable="oppiaine.oma === false || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
 
 <kommentit></kommentit>

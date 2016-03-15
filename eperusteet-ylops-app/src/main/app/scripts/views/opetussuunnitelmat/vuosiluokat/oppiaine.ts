@@ -359,7 +359,7 @@ ylopsApp
   $scope.palautaVanhaan = () => {
     Varmistusdialogi.dialogi({
       otsikko: 'varmista-oppiaineen-palautus',
-      teksti: 'varmista-oppiaineen-palautus-teksti',
+      htmlSisalto: '<h4><strong>'+ Kaanna.kaanna('varmista-oppiaineen-palautus-teksti') +'</strong></h4>',
       primaryBtn: 'palauta-oppiaine',
       primaryBtnClass: 'danger-btn',
       successCb: function () {

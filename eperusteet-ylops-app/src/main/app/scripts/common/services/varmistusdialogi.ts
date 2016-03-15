@@ -19,24 +19,25 @@
 ylopsApp
   .service('Varmistusdialogi', function($modal) {
 
-    function dialogi(options) {
-      return function(success, failure) {
+    const dialogi = (options) => {
+      return (success, failure) => {
         var resolve = {
-          opts: function () {
+          opts: () => {
             return {
               primaryBtn: options.primaryBtn || 'ok',
               primaryBtnClass: options.primaryBtnClass || '',
               secondaryBtn: options.secondaryBtn || 'peruuta'
             };
           },
-          data: function() { return options.data || null; },
-          otsikko: function() { return options.otsikko || ''; },
-          teksti: function() { return options.teksti || ''; },
-          lisaTeksti: function() { return options.lisaTeksti || ''; },
-          comment: function() { return options.comment || {}; }
+          data: () => options.data || null,
+          otsikko: () => options.otsikko || '',
+          teksti: () => options.teksti || '',
+          htmlSisalto: () => options.htmlSisalto || '',
+          lisaTeksti: () => options.lisaTeksti || '',
+          comment: () => options.comment || ''
         };
-        var successCb = success || options.successCb || angular.noop;
-        var failureCb = failure || options.failureCb || angular.noop;
+        const successCb = success || options.successCb || angular.noop;
+        const failureCb = failure || options.failureCb || angular.noop;
 
         $modal.open({
           templateUrl: 'views/common/modals/varmistusdialogi.html',
@@ -44,20 +45,22 @@ ylopsApp
           resolve: resolve
         }).result.then(successCb, failureCb);
       };
-    }
+    };
 
     return {
       dialogi: dialogi
     };
   })
-  .controller('VarmistusDialogiController', function($scope, $modalInstance, opts, data, otsikko, teksti, lisaTeksti, comment) {
+  .controller('VarmistusDialogiController', function($scope, $modalInstance, opts, data, otsikko, teksti,
+                                                     htmlSisalto, lisaTeksti, comment) {
     $scope.opts = opts;
     $scope.otsikko = otsikko;
     $scope.teksti = teksti;
+    $scope.htmlSisalto = htmlSisalto;
     $scope.lisaTeksti = lisaTeksti;
     $scope.comment = comment;
 
-    $scope.ok = function() {
+    $scope.ok = () => {
       if (data !== null) {
         $modalInstance.close(data);
       } else {
@@ -65,7 +68,5 @@ ylopsApp
       }
     };
 
-    $scope.peruuta = function() {
-      $modalInstance.dismiss();
-    };
+    $scope.peruuta = () => $modalInstance.dismiss();
   });
