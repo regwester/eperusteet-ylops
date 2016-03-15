@@ -21,6 +21,7 @@
             icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'poisto' }"></button>
 </div>
 
+<pre>{{palautettavissa}}</pre>
 <div ng-hide="options.editing" ng-if="oppiaine.oma && isLatest()" class="action-buttons-inline">
     <button ng-if="$onKieliTaiUskonto" ng-hide="options.editing" class="btn btn-default" ng-click="muokkaaNimea()" icon-role="edit" kaanna="'muuta-nimea'"
             oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>

@@ -21,6 +21,15 @@ ylopsApp
                                        OppiaineService, versionHistory, $location, $state) => {
 
   $scope.oppiaine = OppiaineService.getOppiaine();
+  $scope.palautettavissa = false;
+  if($scope.oppiaine.oma){
+    console.log($scope.palautettavissa);
+    $scope.palautettavissa = OppiaineService.palautettavissa({opsId: $stateParams.id, oppiaineId: $stateParams.oppiaineId}).then( (palautettavissa)=> {
+      console.log(">>>> ", palautettavissa);
+      $scope.palautettavissa = palautettavissa;
+    });
+  }
+
   $scope.oppiaineenVlk = OppiaineService.getOpVlk();
   $scope.perusteenVlk = perusteOppiaine && _.find(perusteOppiaine.vuosiluokkakokonaisuudet,
     (vlk) => $scope.oppiaineenVlk._vuosiluokkakokonaisuus === vlk._vuosiluokkakokonaisuus);
@@ -104,11 +113,9 @@ ylopsApp
   });
 })
 
-.service('TextUtils', function () {
-  this.toPlaintext = function (text) {
-    return String(text).replace(/<[^>]+>/gm, '');
-  };
-  this.getCode = function (text) {
+.service('TextUtils', () => {
+  this.toPlaintext = (text) => String(text).replace(/<[^>]+>/gm, '');
+  this.getCode = (text) => {
     const match = text.match(/(^|[^A-Za-z])([A-Za-z]\d{1,2})($|[^0-9])/);
     return match ? match[2] : null;
   };
@@ -151,12 +158,10 @@ ylopsApp
     Lukko.isLocked($scope, commonParams);
   }
 
-  function vanhempiOnUskontoTaiKieli(oppiaine) {
-    return _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
-  }
+  const vanhempiOnUskontoTaiKieli = (oppiaine) => _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
 
   OppiaineService.getParent()
-    .then(function(res) {
+    .then((res) =>{
       $scope.oppiaine.$parent = res;
       $scope.$onKieliTaiUskonto = vanhempiOnUskontoTaiKieli(res);
       if ($scope.$onKieliTaiUskonto) {
@@ -166,8 +171,7 @@ ylopsApp
     .catch(_.noop);
 
   $scope.perusteOpVlk = $scope.perusteOppiaine ?
-    _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, function (vlk) {
-      return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
+    _.find($scope.perusteOppiaine.vuosiluokkakokonaisuudet, (vlk) => {return vlk._vuosiluokkakokonaisuus === $scope.oppiaineenVlk._vuosiluokkakokonaisuus;
     }) : {};
   if ($scope.eiPerustetta) {
     VuosiluokkakokonaisuusMapper.createEmptyText($scope.perusteOpVlk, 'tyotavat');
@@ -180,7 +184,7 @@ ylopsApp
   if ($scope.oppiaine.koosteinen && vanhempiOnUskontoTaiKieli($scope.oppiaine)) {
     $scope.valitseOppimaara = function() {
       var opsId = $stateParams.id;
-      Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, function (res) {
+      Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, (res) => {
         // var ops = OpsService.get(opsId);
         var ops = opsModel;
 
@@ -195,7 +199,7 @@ ylopsApp
         Notifikaatiot.onnistui(
           Kaanna.kaanna(res.nimi) +
           Kaanna.kaanna('oppiaine-lisattiin-vuosiluokkakokonaisuuksiin') +
-          _.map(lisatytVlkt, function (vlk) {
+          _.map(lisatytVlkt, (vlk) => {
             return Kaanna.kaanna(vlk.nimi);
           }).join(', '));
 
@@ -211,15 +215,15 @@ ylopsApp
     };
   }
 
-  $scope.poistaOppimaara = function() {
+  $scope.poistaOppimaara = () => {
     Varmistusdialogi.dialogi({
       otsikko: 'varmista-poisto',
       primaryBtn: 'poista',
-      successCb: function () {
+      successCb:  () => {
         OppiaineCRUD.remove({
           opsId: $stateParams.id,
           oppiaineId: $stateParams.oppiaineId
-        }, function() {
+        }, () => {
           Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
           $state.go($state.current.name, _.merge(_.clone($stateParams), {
             oppiaineId: $scope.oppiaine.$parent.id
