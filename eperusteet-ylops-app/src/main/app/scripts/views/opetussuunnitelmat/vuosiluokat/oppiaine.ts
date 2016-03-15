@@ -379,7 +379,7 @@ ylopsApp
   $scope.kopioiMuokattavaksi = () => {
     Varmistusdialogi.dialogi({
       otsikko: 'varmista-kopiointi',
-      htmlSisalto: '<h4><strong>' + Kaanna.kaanna('varmista-kopiointi-teksti') +'</strong></h4>',
+      htmlSisalto: '<p>'+ Kaanna.kaanna('varmista-kopiointi-teksti') +'</p><h4><strong>' + Kaanna.kaanna('ei-voi-perua') +'</strong></h4>',
       primaryBtn: 'luo-kopio',
       successCb: () => {
         OppiaineCRUD.kloonaaMuokattavaksi({
