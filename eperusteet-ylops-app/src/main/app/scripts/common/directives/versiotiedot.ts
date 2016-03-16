@@ -17,14 +17,25 @@
 'use strict';
 
 ylopsApp
-    .directive('versiotiedot', (VersionHelper) => {
+    .directive('versiotiedot', (VersionHelper, $q) => {
         return {
             templateUrl: 'views/common/directives/versiotiedot.html',
             restrict: 'E',
-            controller: ($scope) => {
-                $scope.history = () => {
-                    VersionHelper.historyView($scope.versiot);
-                };
+            controller: ($scope, EperusteetKayttajatiedot) => {
+              let reqs = [];
+              _.forEach(_.uniq($scope.versiot.list, 'muokkaajaOid'), (i) => reqs.push(EperusteetKayttajatiedot.get({oid: i.muokkaajaOid}).$promise));
+
+              $q.all(reqs).then((values) => {
+                _.forEach($scope.versiot.list, (name) => {
+                  const henkilo = _.find(values, (i) => i.oidHenkilo === name.muokkaajaOid);
+                  const nimi = _.isEmpty(henkilo) ? ' ': (henkilo.kutsumanimi || '') + ' ' + (henkilo.sukunimi || '');
+                  name.muokkaaja = nimi === ' ' ? name.muokkaajaOid : nimi;
+                });
+              });
+
+              $scope.history = () => {
+                  VersionHelper.historyView($scope.versiot);
+              };
             }
         };
     });

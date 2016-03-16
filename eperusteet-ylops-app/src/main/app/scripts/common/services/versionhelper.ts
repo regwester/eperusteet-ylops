@@ -33,7 +33,6 @@ ylopsApp
                 let params = _.clone($stateParams);
                 const isOppiaine = _.contains($state.current.name, "root.opetussuunnitelmat.yksi.opetus.oppiaine");
                 params.versio = (re.openOld) ? (isOppiaine ? '' : '/') + re.versio.numero : "";
-                console.log($state.current.name, params);
                 $state.go($state.current.name, params);
             });
         };

@@ -15,7 +15,7 @@
     <tr ng-repeat="ver in versions.list | startFrom:paginate.perPage*(paginate.current-1) | limitTo:paginate.perPage"
         ng-click="close(ver, $first)" class="navigoitava" title="{{'tarkastele-versiota' | kaanna}}">
       <td><a class="action-link" ng-click="$event.stopPropagation(); close(ver, $first);">{{ ver.index }}</a></td>
-      <td>{{ ver.muokkaajaOid }}</td>
+      <td>{{ver.muokkaaja}}</td>
       <!--<td>{{ ver.kommentti || '-' }}</td>-->
       <td>{{ ver.pvm | aikaleima:'time' }}</td>
     </tr>

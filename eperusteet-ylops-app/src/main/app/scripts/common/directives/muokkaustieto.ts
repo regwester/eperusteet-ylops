@@ -32,12 +32,12 @@ angular.module('ylopsApp')
       scope: {
         tiedot: '='
       },
-      controller: function($scope) {
-        $scope.$watch('tiedot', function(tiedot) {
+      controller: ($scope) => {
+        $scope.$watch('tiedot', (tiedot) => {
           if (tiedot && tiedot.muokkaajaOid) {
             EperusteetKayttajatiedot.get({
               oid: tiedot.muokkaajaOid
-            }, function(res) {
+            }, (res) => {
               if (res.sukunimi && (res.kutsumanimi || res.etunimet)) {
                 $scope.muokkaajanNimi = (res.kutsumanimi || res.etunimet) + ' ' + res.sukunimi;
               }
