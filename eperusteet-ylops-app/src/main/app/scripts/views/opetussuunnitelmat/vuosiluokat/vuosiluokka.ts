@@ -183,6 +183,10 @@ ylopsApp
   $scope.callbacks = {
     edit: () => $q(resolve => resolve()),
     cancel: refetch,
+    validate: () => {
+      console.log("TODO validate");
+      return true;
+    },
     save: () => $q((resolve) => {
       if ($scope.onValinnaiselle) {
         $rootScope.$broadcast('notifyCKEditor');

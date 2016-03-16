@@ -35,7 +35,7 @@ ylopsApp
   $scope.valitutVuosiluokat = {};
 
   if ($scope.luonnissa) {
-    var sisaltokieli = Kieli.getSisaltokieli();
+    const sisaltokieli = Kieli.getSisaltokieli();
     vlk.tehtava = {
       otsikko: {},
       teksti: {}
@@ -67,8 +67,8 @@ ylopsApp
 
     $scope.tavoitteet = [];
   } else {
-    var opsId = OpsService.getId();
-    OppiaineCRUD.get({opsId: opsId}, {id: $stateParams.oppiaineId}, function (oppiaine) {
+    const opsId = OpsService.getId();
+    OppiaineCRUD.get({opsId: opsId}, {id: $stateParams.oppiaineId}, (oppiaine) => {
       $scope.oppiaine = oppiaine;
 
       $scope.commonParams = {
@@ -78,14 +78,14 @@ ylopsApp
       };
       Lukko.isLocked($scope, $scope.commonParams);
 
-      var vuosiluokat = oppiaine.vuosiluokkakokonaisuudet[0].vuosiluokat;
-      _.forEach(vuosiluokat, function (vl) {
+      const vuosiluokat = oppiaine.vuosiluokkakokonaisuudet[0].vuosiluokat;
+      _.forEach(vuosiluokat, (vl) => {
         $scope.valitutVuosiluokat[vl.vuosiluokka] = true;
       });
-      var vuosiluokka = vuosiluokat[0];
-      var tavoitteet = _.map(vuosiluokka.tavoitteet, 'tavoite');
-      var sisallot = _.map(vuosiluokka.sisaltoalueet, 'kuvaus');
-      $scope.tavoitteet = _.map(_.zip(tavoitteet, sisallot), function (pair) {
+      const vuosiluokka = vuosiluokat[0];
+      const tavoitteet = _.map(vuosiluokka.tavoitteet, 'tavoite');
+      const sisallot = _.map(vuosiluokka.sisaltoalueet, 'kuvaus');
+      $scope.tavoitteet = _.map(_.zip(tavoitteet, sisallot), (pair) => {
         return {
           otsikko: pair[0],
           teksti: pair[1]
@@ -99,8 +99,10 @@ ylopsApp
     $scope.chosenVlk[$stateParams.vlkId] = true;
   }
 
-  $scope.hasRequiredFields = function () {
-    var model = $scope.oppiaine;
+  $scope.hasRequiredFields = () => {
+    const model = $scope.oppiaine;
+    console.log('vuostav', _.every($scope.tavoitteet, (tavoite) => Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti)));
+
     return model &&
            Utils.hasLocalizedText(model.nimi) &&
            _.any(_.values($scope.chosenVlk)) &&
@@ -108,12 +110,10 @@ ylopsApp
            model.laajuus &&
            model.vuosiluokkakokonaisuudet[0].tehtava.teksti &&
            $scope.valitutVuosiluokat && _($scope.valitutVuosiluokat).values().some() &&
-           _.every($scope.tavoitteet, function (tavoite) {
-             return Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti);
-           });
+           _.every($scope.tavoitteet, (tavoite) => Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti));
   };
 
-  var successCb = function (res) {
+  const successCb = (res) => {
     Notifikaatiot.onnistui('tallennettu-ok');
     $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
       oppiaineId: res.id,
@@ -123,16 +123,16 @@ ylopsApp
   };
 
   $scope.uusi = {
-    create: function () {
+    create: () => {
       $rootScope.$broadcast('notifyCKEditor');
 
-      var vuosiluokat = _($scope.valitutVuosiluokat)
+      const vuosiluokat = _($scope.valitutVuosiluokat)
         .keys()
-        .filter(function (vuosiluokka) {
+        .filter((vuosiluokka) => {
           return $scope.valitutVuosiluokat[vuosiluokka];
         }).value();
 
-      var tallennusDto = {
+      const tallennusDto = {
         oppiaine: $scope.oppiaine,
         vuosiluokkakokonaisuusId: vlk.id,
         vuosiluokat: vuosiluokat,
@@ -144,7 +144,7 @@ ylopsApp
           opsId: $scope.ops.id
         }, tallennusDto, successCb, Notifikaatiot.serverCb);
       } else {
-        Lukko.unlock($scope.commonParams, function () {
+        Lukko.unlock($scope.commonParams, () => {
           OppiaineCRUD.saveValinnainen({
             opsId: $scope.ops.id,
             oppiaineId: $scope.oppiaine.id
@@ -152,7 +152,7 @@ ylopsApp
         });
       }
     },
-    cancel: function () {
+    cancel: () => {
       if ($scope.luonnissa) {
         $state.go('root.opetussuunnitelmat.yksi.opetus.valinnaiset', { vlkId: $stateParams.vlkId });
       }
@@ -164,7 +164,7 @@ ylopsApp
   };
 
   $scope.tavoiteFns = {
-    add: function () {
+    add: () => {
       if (!$scope.tavoitteet) {
         $scope.tavoitteet = [];
       }
@@ -175,7 +175,7 @@ ylopsApp
       });
     },
 
-    remove: function (item) {
+    remove: (item) => {
       if ($scope.tavoitteet) {
         $scope.tavoitteet.splice(item, 1);
       }
