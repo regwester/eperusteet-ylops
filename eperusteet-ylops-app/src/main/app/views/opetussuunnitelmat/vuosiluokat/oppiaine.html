@@ -21,7 +21,6 @@
             icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'poisto' }"></button>
 </div>
 
-<pre>{{palautettavissa}}</pre>
 <div ng-hide="options.editing" ng-if="oppiaine.oma && isLatest()" class="action-buttons-inline">
     <button ng-if="$onKieliTaiUskonto" ng-hide="options.editing" class="btn btn-default" ng-click="muokkaaNimea()" icon-role="edit" kaanna="'muuta-nimea'"
             oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
@@ -29,8 +28,8 @@
             oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button ng-if="$onKieliTaiUskonto" class="btn btn-default" icon-role="remove" kaanna="'poista'" ng-click="poistaOppimaara()"
             oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
-    <!--<button class="btn btn-default danger-btn" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'" ng-if="oppiaine.oppimaarat === null && oppiaine.tyyppi === 'yhteinen'"-->
-            <!--icon-role="ep-text-clone" tooltip="{{ 'palauta-ylempi-oppiaine' | kaanna }}" ng-click="palautaVanhaan()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'poisto' }"></button>-->
+    <button class="btn btn-default danger-btn" ng-disabled="lukkotiedot.lukittu" kaanna="'palauta-ylempaan'" ng-if="palautettavissa && oppiaine.oppimaarat === null && oppiaine.tyyppi === 'yhteinen'"
+            icon-role="ep-text-clone" tooltip="{{ 'palauta-ylempi-oppiaine' | kaanna }}" ng-click="palautaVanhaan()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'poisto' }"></button>
 </div>
 
 <h2 ng-hide="$$muokkaaNimea" ng-bind="oppiaine.nimi | kaanna"></h2>

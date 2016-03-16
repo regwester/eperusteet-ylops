@@ -647,10 +647,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .filter(a -> (a.getOppiaine().getTunniste().compareTo(tunniste) == 0))
                 .collect(Collectors.toList());
 
-        if( pohjanOppiaineet.size() != 1){
-            return false;
-        }
-        return true;
+        return pohjanOppiaineet.size() == 1;
     }
 
     @Override

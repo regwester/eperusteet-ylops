@@ -159,20 +159,6 @@ public class OppiaineController {
         oppiaineService.delete(opsId, id);
     }
 
-//    @RequestMapping(value = "/{id}/versions", method = RequestMethod.GET)
-//    @ApiIgnore
-//    @ResponseBody
-//    public List<OppiaineLaajaDto> getAllVersions(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-//        return oppiaineService.getAllVersions(opsId, id);
-//    }
-//
-//    @RequestMapping(value = "/{id}/restore", method = RequestMethod.POST)
-//    @ApiIgnore
-//    @ResponseBody
-//    public OppiaineLaajaDto restore(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-//        return oppiaineService.restore(opsId, id);
-//    }
-
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     public ResponseEntity<PerusteOppiaineDto> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         PerusteDto p = ops.getPeruste(opsId);

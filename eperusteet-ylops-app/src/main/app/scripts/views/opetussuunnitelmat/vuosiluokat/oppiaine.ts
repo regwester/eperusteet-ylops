@@ -23,9 +23,7 @@ ylopsApp
   $scope.oppiaine = OppiaineService.getOppiaine();
   $scope.palautettavissa = false;
   if($scope.oppiaine.oma){
-    console.log($scope.palautettavissa);
-    $scope.palautettavissa = OppiaineService.palautettavissa({opsId: $stateParams.id, oppiaineId: $stateParams.oppiaineId}).then( (palautettavissa)=> {
-      console.log(">>>> ", palautettavissa);
+    OppiaineService.palautettavissa({opsId: $stateParams.id, oppiaineId: $stateParams.oppiaineId}).then( (palautettavissa) => {
       $scope.palautettavissa = palautettavissa;
     });
   }
@@ -182,7 +180,7 @@ ylopsApp
   var perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : null, 'tunniste');
 
   if ($scope.oppiaine.koosteinen && vanhempiOnUskontoTaiKieli($scope.oppiaine)) {
-    $scope.valitseOppimaara = function() {
+    $scope.valitseOppimaara = () => {
       var opsId = $stateParams.id;
       Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, (res) => {
         // var ops = OpsService.get(opsId);
@@ -260,10 +258,10 @@ ylopsApp
       });
       vlk.$sisaltoalueetShort = allShort;
     });
-  }
+  };
   updateVuosiluokat();
 
-  $scope.$on('oppiainevlk:updated', function (event, value) {
+  $scope.$on('oppiainevlk:updated', (event, value) => {
     $scope.oppiaineenVlk = value;
     updateVuosiluokat();
   });
@@ -278,7 +276,7 @@ ylopsApp
 
   $scope.options = {
     editing: false,
-    isEditable: function () {
+    isEditable: () => {
       return OpsService.isEditable() && $scope.oppiaine.oma && (!$scope.lukkotiedot || !$scope.lukkotiedot.lukittu);
     }
   };
@@ -303,25 +301,25 @@ ylopsApp
   };
   Editointikontrollit.registerCallback($scope.callbacks);
 
-  function vuosiluokkaistamisVaroitus(cb) {
+  const vuosiluokkaistamisVaroitus = (cb) => {
     Varmistusdialogi.dialogi({
       otsikko: 'vuosiluokkaistaminen-on-jo-tehty',
       teksti: 'vuosiluokkaistaminen-varoitus',
       primaryBtn: 'jatka',
       successCb: cb
     })();
-  }
+  };
 
-  $scope.goToVuosiluokka = function (vuosiluokka) {
+  $scope.goToVuosiluokka = (vuosiluokka) => {
     $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokka', {vlId: vuosiluokka.id});
   };
 
-  $scope.startVuosiluokkaistaminen = function () {
-    function start() {
+  $scope.startVuosiluokkaistaminen = () => {
+    const start = () => {
       $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.vuosiluokkaistaminen', {
         vlkId: $stateParams.vlkId
       });
-    }
+    };
     if (_.isArray($scope.vuosiluokat) && $scope.vuosiluokat.length > 0) {
       vuosiluokkaistamisVaroitus(start);
     } else {
@@ -329,8 +327,8 @@ ylopsApp
     }
   };
 
-  $scope.editOppiaine = function () {
-    Lukko.lock(commonParams, function () {
+  $scope.editOppiaine = () => {
+    Lukko.lock(commonParams, () => {
       $state.go('root.opetussuunnitelmat.yksi.opetus.uusioppiaine', {
         vlkId: $stateParams.vlkId,
         oppiaineId: $scope.oppiaine.id
@@ -338,24 +336,22 @@ ylopsApp
     });
   };
 
-  $scope.removeOppiaine = function () {
-    Lukko.lock(commonParams, function () {
+  $scope.removeOppiaine = () => {
+    Lukko.lock(commonParams, () => {
       Varmistusdialogi.dialogi({
         otsikko: 'varmista-poisto',
         primaryBtn: 'poista',
-        successCb: function () {
-          $scope.oppiaine.$delete({opsId: OpsService.getId()}, function () {
+        successCb: () => {
+          $scope.oppiaine.$delete({opsId: OpsService.getId()}, () => {
             Lukko.unlock(commonParams);
             Notifikaatiot.onnistui('poisto-onnistui');
             $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, {reload: true});
-          }, function () {
+          }, () => {
             Lukko.unlock(commonParams);
             Notifikaatiot.serverCb();
           });
         },
-        failureCb: function () {
-          Lukko.unlock(commonParams);
-        }
+        failureCb: () => Lukko.unlock(commonParams)
       })();
     });
   };

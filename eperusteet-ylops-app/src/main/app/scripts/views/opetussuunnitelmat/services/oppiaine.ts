@@ -118,10 +118,9 @@ ylopsApp
   };
   this.palautettavissa = (params) => {
     return $q((resolve, reject) => {
-      OppiaineCRUD.palautettavissa({opsId: params.opsId, oppiaineId: params.oppiaineId}, {}).$promise.then( (test) => {
-        console.log('---', test.palautettavissa);
-        resolve(true);
-      });
+      OppiaineCRUD.palautettavissa({opsId: params.opsId, oppiaineId: params.oppiaineId}, {}).$promise.then( (res) => {
+        resolve(res.palautettavissa);
+      }, reject);
     });
   }
 });
