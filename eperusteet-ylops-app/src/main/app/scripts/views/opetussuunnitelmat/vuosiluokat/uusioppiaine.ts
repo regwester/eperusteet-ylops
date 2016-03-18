@@ -99,9 +99,11 @@ ylopsApp
     $scope.chosenVlk[$stateParams.vlkId] = true;
   }
 
+  const hasRequiredTavoitteet = () => _.every($scope.tavoitteet,
+      (tavoite) => Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti));
+
   $scope.hasRequiredFields = () => {
     const model = $scope.oppiaine;
-    console.log('vuostav', _.every($scope.tavoitteet, (tavoite) => Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti)));
 
     return model &&
            Utils.hasLocalizedText(model.nimi) &&
@@ -110,7 +112,7 @@ ylopsApp
            model.laajuus &&
            model.vuosiluokkakokonaisuudet[0].tehtava.teksti &&
            $scope.valitutVuosiluokat && _($scope.valitutVuosiluokat).values().some() &&
-           _.every($scope.tavoitteet, (tavoite) => Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti));
+            model.id ? true : hasRequiredTavoitteet();
   };
 
   const successCb = (res) => {
