@@ -112,7 +112,7 @@ ylopsApp
            model.laajuus &&
            model.vuosiluokkakokonaisuudet[0].tehtava.teksti &&
            $scope.valitutVuosiluokat && _($scope.valitutVuosiluokat).values().some() &&
-            model.id ? true : hasRequiredTavoitteet();
+        (model.id ? true : hasRequiredTavoitteet());
   };
 
   const successCb = (res) => {
