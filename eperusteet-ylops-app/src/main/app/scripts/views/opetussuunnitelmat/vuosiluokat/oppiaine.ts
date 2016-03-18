@@ -88,7 +88,8 @@ ylopsApp
     onOma = $scope.oppiaine.oma,
     hasVuosiluokkakokonaisuudet = !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet),
     hasVlkTavoitteet = !perusteOppiaine || $scope.perusteenVlk && !_.isEmpty($scope.perusteenVlk.tavoitteet);
-  $scope.isVuosiluokkaistettava = hasVuosiluokkakokonaisuudet && onOma && hasVlkTavoitteet;
+
+  $scope.isVuosiluokkaistettava = hasVuosiluokkakokonaisuudet && hasVlkTavoitteet;
 
   $scope.$on('oppiainevlk:updated', (event, value) => {
     $scope.oppiaineenVlk = value;
