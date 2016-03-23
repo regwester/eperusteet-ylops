@@ -25,6 +25,7 @@ ylopsApp
     basePath = basePath.substr(0, basePath.indexOf('bower_components/'));
     CKEDITOR.plugins.addExternal('epimage', basePath + 'ckeditor-plugins/epimage/', 'plugin.js');
     CKEDITOR.plugins.addExternal('termi', basePath + 'ckeditor-plugins/termi/', 'plugin.js');
+    CKEDITOR.plugins.addExternal('quicktable', basePath + 'ckeditor-plugins/quicktable/', 'plugin.js');
   })
   .constant('editorLayouts', {
     minimal: [
@@ -192,7 +193,7 @@ ylopsApp
         editor = CKEDITOR.inline(element[0], {
           toolbar: toolbarLayout,
           removePlugins: 'resize,elementspath,scayt,wsc,image',
-          extraPlugins: 'divarea,sharedspace,epimage,termi',
+          extraPlugins: 'divarea,sharedspace,epimage,termi,quicktable',
           disallowedContent: 'br; tr td{width,height}',
           extraAllowedContent: 'img[!data-uid,src]; abbr[data-viite]',
           disableObjectResizing: true, // doesn't seem to work with inline editor
