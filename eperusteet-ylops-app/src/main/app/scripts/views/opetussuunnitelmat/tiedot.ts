@@ -69,7 +69,7 @@ ylopsApp
       _(model.vuosiluokkakokonaisuudet).filter({valittu: true}).size() > 0;
     return nimiOk && organisaatiotOk && julkaisukieletOk && vlkOk;
   };
-  const isLukio = () => _.any(["koulutustyyppi_2", "koulutustyyppi_23"], (i) => i === $scope.editableModel.koulutustyyppi);
+  const isLukio = () => _.any(["koulutustyyppi_2", "koulutustyyppi_23", "koulutustyyppi_14"], (i) => i === $scope.editableModel.koulutustyyppi);
 
   function mapKunnat(lista) {
     return _(lista).map(function (kunta) {
@@ -357,7 +357,7 @@ ylopsApp
 
     $scope.avataInputs = function(valittuKoulutustyyppi) {
       $scope.koulutustyyppiOnValittu = false;
-      var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6', 'koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_22'];
+      var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6', 'koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_22', 'koulutustyyppi_14'];
       return _.includes(validTyypit, valittuKoulutustyyppi) ? ($scope.koulutustyyppiOnValittu = true) : ($scope.koulutustyyppiOnValittu = false);
     };
 

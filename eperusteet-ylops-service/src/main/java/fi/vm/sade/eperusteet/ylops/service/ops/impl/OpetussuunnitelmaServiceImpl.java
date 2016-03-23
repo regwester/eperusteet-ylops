@@ -885,32 +885,32 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         //TODO:should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
         PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        if (peruste.getPerusopetus() != null) {
+            ops.getOppiaineet().stream()
+                .filter(OpsOppiaine::isOma)
+                .map(OpsOppiaine::getOppiaine)
+                .forEach(oa -> {
+                    peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
+                        Oppiaine.validoi(validointi, oa, julkaisukielet);
+                        Set<UUID> PerusteenTavoitteet = new HashSet<>();
 
-        ops.getOppiaineet().stream()
-            .filter(OpsOppiaine::isOma)
-            .map(OpsOppiaine::getOppiaine)
-            .forEach(oa -> {
-                peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
-                    Oppiaine.validoi(validointi, oa, julkaisukielet);
-                    Set<UUID> PerusteenTavoitteet = new HashSet<>();
+                        poppiaine.getVuosiluokkakokonaisuudet().stream()
+                                .forEach(vlk -> vlk.getTavoitteet().stream()
+                                        .forEach(tavoite -> PerusteenTavoitteet.add(tavoite.getTunniste())));
 
-                    poppiaine.getVuosiluokkakokonaisuudet().stream()
-                    .forEach(vlk -> vlk.getTavoitteet().stream()
-                        .forEach(tavoite -> PerusteenTavoitteet.add(tavoite.getTunniste())));
-
-                    Set<UUID> OpsinTavoitteet = oa.getVuosiluokkakokonaisuudet().stream()
-                        .flatMap(vlk -> vlk.getVuosiluokat().stream())
-                            .map(ovlk -> ovlk.getTavoitteet())
-                            .flatMap(tavoitteet -> tavoitteet.stream())
+                        Set<UUID> OpsinTavoitteet = oa.getVuosiluokkakokonaisuudet().stream()
+                                .flatMap(vlk -> vlk.getVuosiluokat().stream())
+                                .map(ovlk -> ovlk.getTavoitteet())
+                                .flatMap(tavoitteet -> tavoitteet.stream())
                                 .map(tavoite -> tavoite.getTunniste())
                                 .collect(Collectors.toSet());
 
-                    if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
-    //                    validointi.lisaaVirhe(Validointi.luoVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi()));
-                    }
-        		});
-            });
-
+                        if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
+                            //                    validointi.lisaaVirhe(Validointi.luoVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi()));
+                        }
+                    });
+                });
+        }
         validointi.tuomitse();
     }
 

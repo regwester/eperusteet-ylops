@@ -23,7 +23,7 @@ ylopsApp
   }
   $scope.model = pohjaModel;
   $scope.luonnissa = $stateParams.pohjaId === 'uusi';
-  const isLukio = () => _.any(["koulutustyyppi_2", "koulutustyyppi_23"], (i) => i === $scope.model.koulutustyyppi);
+  const isLukio = () => _.any(['koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_14'], (i) => i === $scope.model.koulutustyyppi);
 })
 .controller('PohjaListaController', function ($scope, $state, OpetussuunnitelmaCRUD, ListaSorter, Notifikaatiot) {
   $scope.pohjaMaxLimit = 9999;
