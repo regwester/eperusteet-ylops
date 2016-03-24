@@ -334,7 +334,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         Oppiaine latest = latestNotNull(poistettu.getOppiaine());
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
-        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
+        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), true);
         pelastettu.setTyyppi( oppiaine.getTyyppi() );
         pelastettu.setLaajuus( oppiaine.getLaajuus() );
 
