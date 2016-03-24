@@ -183,8 +183,6 @@ ylopsApp
   $scope.callbacks = {
     edit: () => $q(resolve => resolve()),
     cancel: refetch,
-    validate: () => _.every($scope.valinnaisenTavoitteet, (tavoite) =>
-      Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti)),
     save: () => $q((resolve) => {
       if ($scope.onValinnaiselle) {
         $rootScope.$broadcast('notifyCKEditor');
