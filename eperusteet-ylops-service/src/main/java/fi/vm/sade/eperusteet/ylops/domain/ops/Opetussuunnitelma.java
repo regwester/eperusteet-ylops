@@ -68,6 +68,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     @Getter
     @Setter
+    private String hyvaksyjataho;
+
+    @Getter
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @JoinColumn(name = "cached_peruste")
