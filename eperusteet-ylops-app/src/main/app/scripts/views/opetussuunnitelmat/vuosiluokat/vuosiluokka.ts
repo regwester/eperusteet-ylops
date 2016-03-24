@@ -192,8 +192,8 @@ ylopsApp
           Notifikaatiot.onnistui('tallennettu-ok');
           $scope.vuosiluokka = res;
           resolve();
-          // FIXME Kaikki näyttäisi toimivan
-          // VuosiluokkaMapper.mapModel($scope);
+          //needed to make sure the data is updated when switching between tabs sisältöalueet <-> tavoitteet
+          refetch();
         });
       }
       else {
