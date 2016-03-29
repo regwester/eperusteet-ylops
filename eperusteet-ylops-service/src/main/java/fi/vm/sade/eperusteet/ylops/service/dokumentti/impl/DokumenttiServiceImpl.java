@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -32,13 +33,11 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
 
@@ -63,13 +62,10 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Autowired
     private DokumenttiBuilderService builder;
 
-    @PersistenceContext
-    private EntityManager em;
-
     @Override
     @Transactional
     @PreAuthorize("isAuthenticated()")
-    public DokumenttiDto getDto(@P("id") long opsId, Kieli kieli) {
+    public DokumenttiDto getDto(Long opsId, Kieli kieli) {
         List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
 
         // Jos löytyy
@@ -83,7 +79,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional
     @PreAuthorize("isAuthenticated()")
-    public DokumenttiDto createDtoFor(@P("id") long id, Kieli kieli) {
+    public DokumenttiDto createDtoFor(Long id, Kieli kieli) {
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = new Dokumentti();
         dokumentti.setTila(DokumenttiTila.EI_OLE);
@@ -103,7 +99,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     @Transactional
-    public void setStarted(@P("dto") DokumenttiDto dto) {
+    public void setStarted(DokumenttiDto dto) {
         // Asetetaan dokumentti luonti tilaan
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
@@ -115,7 +111,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     @Transactional
-    public void generateWithDto(@P("dto") DokumenttiDto dto) throws DokumenttiException {
+    public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
         Kieli kieli = dokumentti.getKieli();
@@ -136,13 +132,13 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             dokumentti.setVirhekoodi(ExceptionUtils.getStackTrace(ex));
             dokumenttiRepository.save(dokumentti);
 
-            throw new DokumenttiException(ex.getLocalizedMessage(), ex.getCause());
+            throw new DokumenttiException(ex.getMessage(), ex);
         }
     }
 
     @Override
     @Transactional
-    public DokumenttiDto getDto(@P("id") long id) {
+    public DokumenttiDto getDto(Long id) {
         Dokumentti dokumentti = dokumenttiRepository.findById(id);
         return mapper.map(dokumentti, DokumenttiDto.class);
     }
@@ -151,11 +147,17 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional(readOnly = true)
     public byte[] get(Long id) {
         Dokumentti dokumentti = dokumenttiRepository.findById(id);
-        if (dokumentti != null) {
-            return dokumentti.getData();
-        } else {
+        if (dokumentti == null) {
             return null;
         }
+
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (ops.getTila().equals(Tila.JULKAISTU) || !name.equals("anonymousUser")) {
+            return dokumentti.getData();
+        }
+
+        return null;
     }
 
     @Override

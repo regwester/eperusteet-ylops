@@ -20,7 +20,7 @@ ylopsApp
     var baseUrl = SERVICE_LOC+'/dokumentit/:id';
     return $resource(baseUrl, {}, {
       query: {method: 'GET', params: {id: '@id'}, isArray: true },
-      tila: {method: 'GET', url: baseUrl+'/tila'}
+      tila: {method: 'GET', url: baseUrl+'/dokumentti'}
     });
   })
   .service('Pdf', function(Dokumentti, SERVICE_LOC) {

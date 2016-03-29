@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
@@ -30,22 +29,22 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface DokumenttiService {
 
     @PreAuthorize("isAuthenticated()")
-    DokumenttiDto getDto(@P("id") final long opsId, Kieli kieli);
+    DokumenttiDto getDto(Long opsId, Kieli kieli);
 
     @PreAuthorize("isAuthenticated()")
-    DokumenttiDto createDtoFor(@P("id") final long id, Kieli kieli);
+    DokumenttiDto createDtoFor(Long id, Kieli kieli);
 
     @PreAuthorize("isAuthenticated()")
-    void setStarted(@P("dto") DokumenttiDto dto);
+    void setStarted(DokumenttiDto dto);
 
     @PreAuthorize("isAuthenticated()")
     @Async(value = "docTaskExecutor")
-    void generateWithDto(@P("dto") DokumenttiDto dto) throws DokumenttiException;
+    void generateWithDto(DokumenttiDto dto) throws DokumenttiException;
 
     @PreAuthorize("isAuthenticated()")
-    DokumenttiDto getDto(@P("id") final long id);
+    DokumenttiDto getDto(Long id);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll")
     byte[] get(Long id);
 
     @PreAuthorize("isAuthenticated()")

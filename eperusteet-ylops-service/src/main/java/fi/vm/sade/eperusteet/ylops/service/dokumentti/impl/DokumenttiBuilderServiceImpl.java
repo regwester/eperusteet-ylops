@@ -331,7 +331,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private void addVuosiluokkakokonaisuudet(DokumenttiBase docBase) {
         Set<OpsVuosiluokkakokonaisuus> opsVlkset = docBase.getOps().getVuosiluokkakokonaisuudet();
 
-        //todo: fiksaa streami
         // Haetaan vuosiluokkkakokonaisuudet
         ArrayList<Vuosiluokkakokonaisuus> vlkset = new ArrayList<>();
         for (OpsVuosiluokkakokonaisuus opsVlk : opsVlkset) {
@@ -476,6 +475,16 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             // Oppiaineet akkosjärjestyksessä
             for (OpsOppiaine opsOppiaine : oppiaineetAsc) {
                 Oppiaine oppiaine = opsOppiaine.getOppiaine();
+
+                if (oppiaine.isKoosteinen()) {
+                    // todo: käydään lävitse koosteinen oppiaine
+
+                    // Oppimäärät
+                    Set<Oppiaine> oppimaarat = oppiaine.getOppimaarat();
+                    if (oppimaarat != null) {
+                        addOppimaarat(docBase, null, oppimaarat, vlk);
+                    }
+                }
 
                 Set<Oppiaineenvuosiluokkakokonaisuus> oaVlkset = oppiaine.getVuosiluokkakokonaisuudet();
 
@@ -848,7 +857,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private void addOppimaara(DokumenttiBase docBase, PerusteOppiaineDto perusteOppiaineDto,
                               Oppiaine oppiaine, Vuosiluokkakokonaisuus vlk) {
-        Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk = oppiaine.getVuosiluokkakokonaisuus(vlk.getTunniste().getId());
+        Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk
+                = oppiaine.getVuosiluokkakokonaisuus(vlk.getTunniste().getId());
+
         if (!optOaVlk.isPresent()) {
             return;
         }
@@ -969,7 +980,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 element.setAttribute("src", "data:image/jpg;base64," + base64);
             }
 
-        } catch (XPathExpressionException | IOException | NullPointerException e) {
+        } catch (XPathExpressionException | IOException e) {
             LOG.error(e.getLocalizedMessage());
         }
     }
