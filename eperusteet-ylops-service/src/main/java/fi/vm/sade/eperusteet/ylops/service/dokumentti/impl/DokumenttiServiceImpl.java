@@ -25,8 +25,10 @@ import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +115,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     @Transactional
-    public void generateWithDto(@P("dto") DokumenttiDto dto) {
+    public void generateWithDto(@P("dto") DokumenttiDto dto) throws DokumenttiException {
         Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
         Kieli kieli = dokumentti.getKieli();
@@ -131,16 +133,10 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             dokumenttiRepository.save(dokumentti);
         } catch (Exception ex) {
             dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
-
-            String virhekoodiBuilder = "internal error - " + new Date().toString();
-
-            dokumentti.setVirhekoodi(virhekoodiBuilder);
+            dokumentti.setVirhekoodi(ExceptionUtils.getStackTrace(ex));
             dokumenttiRepository.save(dokumentti);
 
-            LOG.error(ex.getLocalizedMessage(), ex.getCause());
-            ex.printStackTrace();
-
-            //throw new DokumenttiException(ex.getLocalizedMessage(), ex.getCause());
+            throw new DokumenttiException(ex.getLocalizedMessage(), ex.getCause());
         }
     }
 

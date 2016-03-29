@@ -28,7 +28,6 @@
         <swagger.version>1.0.2</swagger.version>
         <schema.file>${project.basedir}/target/schema.ddl</schema.file>
         <hibernate.export.type>CREATE</hibernate.export.type>
-        <handlebars.version>4.0.1</handlebars.version>
     </properties>
 
     <repositories>

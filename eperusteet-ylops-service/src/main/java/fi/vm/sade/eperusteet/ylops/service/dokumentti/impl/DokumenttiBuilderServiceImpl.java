@@ -117,7 +117,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     @Override
     public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
-            throws TransformerException, IOException, SAXException, ParserConfigurationException, NullPointerException {
+            throws TransformerException, IOException, SAXException,
+            ParserConfigurationException, NullPointerException, DokumenttiException {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -348,17 +349,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     String teksti = getTextString(vlk.getNimi(), docBase.getKieli());
                     addHeader(docBase, !teksti.isEmpty() ? teksti : "Vuosiluokkakokonaisuuden otsikko puuttuu");
 
-                    LOG.info("vlk " + teksti);
-
                     PerusopetuksenPerusteenSisaltoDto poPerusteenSisaltoDto = docBase.getPerusteDto().getPerusopetus();
                     if (poPerusteenSisaltoDto != null && vlk.getTunniste().getId() != null) {
                         Optional<PerusteVuosiluokkakokonaisuusDto> optPerusteVlkDto =
                                 poPerusteenSisaltoDto.getVuosiluokkakokonaisuudet(vlk.getTunniste().getId());
 
-                        LOG.info("vlk a");
-
                         if (optPerusteVlkDto.isPresent()) {
-                            LOG.info("vlk b");
 
                             PerusteVuosiluokkakokonaisuusDto perusteVlk = optPerusteVlkDto.get();
 
@@ -553,20 +549,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                                                     PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
                                                     Oppiaineenvuosiluokkakokonaisuus oaVlkDto) {
 
-        // Tehtävä
-        if (perusteOaVlkDto != null) {
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
-            addTavoitteetJaSisaltoalueet(docBase, perusteOaVlkDto, oaVlkDto);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
-        } else {
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), null);
-            addTavoitteetJaSisaltoalueet(docBase, null, oaVlkDto);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), null);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), null);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), null);
-        }
+        addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
+        addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
+        addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
+        addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
+        addTavoitteetJaSisaltoalueet(docBase, perusteOaVlkDto, oaVlkDto);
+
     }
 
     private void addTavoitteetJaSisaltoalueet(DokumenttiBase docBase,

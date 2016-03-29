@@ -25,17 +25,17 @@ import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -64,7 +64,8 @@ public class DokumenttiController {
     })
     public ResponseEntity<DokumenttiDto> create(
             @RequestParam("opsId") final long opsId,
-            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
+            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli)
+            throws DokumenttiException {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
@@ -102,7 +103,7 @@ public class DokumenttiController {
         return newDate.before(new Date());
     }
 
-    @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")
+    @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET)
     @ApiOperation("luo dokumentti")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "dokumentti ladattu onnistuneesti"),
@@ -110,9 +111,7 @@ public class DokumenttiController {
             @ApiResponse(code = 404, message = "dokumenttia ei löydy")
     })
     @CacheControl(age = CacheControl.ONE_YEAR, nonpublic = false)
-    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-    public ResponseEntity<Object> get(@PathVariable("dokumenttiId") final Long dokumenttiId)
-            throws IOException {
+    public ResponseEntity<Object> get(@PathVariable("dokumenttiId") final Long dokumenttiId) {
         byte[] pdfdata = service.get(dokumenttiId);
 
         if (pdfdata == null || pdfdata.length == 0) {
@@ -121,7 +120,9 @@ public class DokumenttiController {
         }
 
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "pdf"));
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
+        headers.setContentLength(pdfdata.length);
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }

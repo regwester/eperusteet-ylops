@@ -158,8 +158,7 @@ ylopsApp
             enableActions();
             break;
           default: // 'epaonnistui'
-            Notifikaatiot.fataali(Kaanna.kaanna('dokumentin-luonti-epaonnistui') +
-              ': ' + res.virhekoodi || res.tila);
+            Notifikaatiot.fataali(Kaanna.kaanna('dokumentin-luonti-epaonnistui'));
             enableActions();
             break;
         }
