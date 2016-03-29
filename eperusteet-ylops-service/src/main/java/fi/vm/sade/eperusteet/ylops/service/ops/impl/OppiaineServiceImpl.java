@@ -18,10 +18,12 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import com.codepoetics.protonpack.StreamUtils;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
@@ -324,7 +326,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineLaajaDto restore(Long opsId, Long oppiaineId, Long oppimaaraId) {
+    public OppiainePalautettuDto restore(Long opsId, Long oppiaineId, Long oppimaaraId) {
         PoistettuOppiaine poistettu = poistettuOppiaineRepository.findOne(oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
@@ -334,7 +336,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         Oppiaine latest = latestNotNull(poistettu.getOppiaine());
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
-        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
+        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), true);
         pelastettu.setTyyppi( oppiaine.getTyyppi() );
         pelastettu.setLaajuus( oppiaine.getLaajuus() );
 
@@ -347,7 +349,28 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         pelastettu = oppiaineet.save(pelastettu);
         poistettu.setPalautettu(true);
-        return mapper.map(pelastettu, OppiaineLaajaDto.class);
+
+        Optional<Vuosiluokkakokonaisuus> firstVlk = findFirstVlk(ops, pelastettu);
+        OppiainePalautettuDto palautettuDto = mapper.map(pelastettu, OppiainePalautettuDto.class);
+        if(firstVlk.isPresent()){
+            palautettuDto.setVlkId(firstVlk.get().getId());
+        }
+
+        return palautettuDto;
+    }
+
+    private Optional<Vuosiluokkakokonaisuus> findFirstVlk(Opetussuunnitelma ops, Oppiaine pelastettu) {
+        List<UUID> vlk = pelastettu.getVuosiluokkakokonaisuudet()
+                .stream()
+                .map(Oppiaineenvuosiluokkakokonaisuus::getVuosiluokkakokonaisuus)
+                .map(Vuosiluokkakokonaisuusviite::getId)
+                .collect(Collectors.toList());
+
+        return (Optional<Vuosiluokkakokonaisuus>) ops.getVuosiluokkakokonaisuudet()
+                .stream()
+                .map(OpsVuosiluokkakokonaisuus::getVuosiluokkakokonaisuus)
+                .filter(vuosiluokkakokonaisuus -> vlk.contains(vuosiluokkakokonaisuus.getTunniste().getId()))
+                .findFirst();
     }
 
     @Override
@@ -481,16 +504,17 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oppiaine.getOppiaine().removeOppimaara(oppiaine);
         } else {
             ops.removeOppiaine(oppiaine);
-            PoistettuOppiaine poistettu = new PoistettuOppiaine();
-            poistettu.setOpetussuunnitelma(ops);
-            poistettu.setOppiaine(id);
-            poistettu = poistettuOppiaineRepository.save(poistettu);
-            oppiaineet.delete(oppiaine);
-            return mapper.map(poistettu, PoistettuOppiaineDto.class);
         }
+        return tallennaPoistettu(id, ops, oppiaine);
+    }
 
+    private PoistettuOppiaineDto tallennaPoistettu(Long id, Opetussuunnitelma ops, Oppiaine oppiaine) {
+        PoistettuOppiaine poistettu = new PoistettuOppiaine();
+        poistettu.setOpetussuunnitelma(ops);
+        poistettu.setOppiaine(id);
+        poistettu = poistettuOppiaineRepository.save(poistettu);
         oppiaineet.delete(oppiaine);
-        return null;
+        return mapper.map(poistettu, PoistettuOppiaineDto.class);
     }
 
     @Override

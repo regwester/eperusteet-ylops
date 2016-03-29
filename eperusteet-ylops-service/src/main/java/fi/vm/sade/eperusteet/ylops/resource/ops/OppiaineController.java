@@ -88,14 +88,14 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
-    public OppiaineLaajaDto restoreOppiaine(
+    public OppiainePalautettuDto restoreOppiaine(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("id") final Long id) {
         return oppiaineService.restore(opsId, id, null);
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}", method = RequestMethod.POST)
-    public OppiaineLaajaDto restoreOppiaine(
+    public OppiainePalautettuDto restoreOppiaine(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("id") final Long id,
             @PathVariable("oppimaaraId") final Long oppimaaraId) {

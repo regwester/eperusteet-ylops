@@ -53,22 +53,29 @@ ylopsApp
 })
 
 .service('VuosiluokkaMapper', function ($state, $stateParams, Utils) {
-  function processTavoitteet(scope) {
+
+  const getSisaltoalueet = (paikallinen, scope) => {
+    let sisAlue = (paikallinen.sisaltoalueet[0]) ? scope.sisaltoAlueetMap[paikallinen.sisaltoalueet[0].sisaltoalueet.id] : null;
+    if(!sisAlue){
+      sisAlue = _.has(paikallinen, 'sisaltoalueet[0].sisaltoalueet') ? paikallinen.sisaltoalueet[0].sisaltoalueet : null;
+    }
+    return sisAlue;
+  };
+
+  const processTavoitteet = (scope) => {
     var perusteKohdealueet = scope.perusteOppiaine ? _.indexBy(scope.perusteOppiaine.kohdealueet, 'id') : [];
-    _.each(scope.tavoitteet, function (item) {
+    _.each(scope.tavoitteet, (item) => {
       if (scope.perusteOpVlk) {
-        var perusteTavoite = _.find(scope.perusteOpVlk.tavoitteet, function (pTavoite) {
-          return pTavoite.tunniste === item.tunniste;
-        });
+        const perusteTavoite = _.find(scope.perusteOpVlk.tavoitteet, (pTavoite) => pTavoite.tunniste === item.tunniste);
         item.$tavoite = perusteTavoite.tavoite;
-        item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, function (tunniste) {
-          var sisaltoalue = scope.perusteSisaltoalueet[tunniste] || {};
+        item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, (tunniste) => {
+          let sisaltoalue = scope.perusteSisaltoalueet[tunniste] || {};
           sisaltoalue.$url = $state.href('^.sisaltoalueet') + '#' + tunniste;
           return sisaltoalue;
         });
         item.$kohdealue = perusteKohdealueet[_.first(perusteTavoite.kohdealueet)];
-        item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, function (tunniste) {
-          var laajaalainen = scope.laajaalaiset[tunniste];
+        item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, (tunniste) => {
+          let laajaalainen = scope.laajaalaiset[tunniste];
           laajaalainen.$url = $state.href('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus',
             {vlkId: $stateParams.vlkId}) + '#' + tunniste;
           return laajaalainen;
@@ -79,7 +86,8 @@ ylopsApp
 
     scope.tavoiteMap = _.indexBy(scope.tavoitteet, 'tunniste');
 
-    if (scope.onValinnaiselle) {
+    //TODO käytetäänks scope.valinnaisenTekstiosat ees missään?
+    if (scope.onValinnaiselle && !_.isEmpty(scope.sisaltoAlueetMap)) {
       const otsikot = _.map(scope.tavoitteet, 'tavoite');
       const tekstit = _(scope.tavoitteet)
         .map('sisaltoalueet')
@@ -95,27 +103,25 @@ ylopsApp
     }
 
     scope.tunnisteet = _.keys(scope.tavoiteMap);
-    _.each(scope.tunnisteet, function (tunniste) {
-      var paikallinen = _.find(scope.tavoitteet, function (tavoite) {
-        return tavoite.tunniste === tunniste;
-      });
+    _.each(scope.tunnisteet, (tunniste) => {
+      const paikallinen = _.find(scope.tavoitteet, (tavoite) => tavoite.tunniste === tunniste);
 
       scope.muokattavat[tunniste] = (paikallinen && _.isObject(paikallinen.tavoite)) ?
       { teksti: paikallinen.tavoite,
-        sisaltoalue: (paikallinen.sisaltoalueet[0]) ? scope.sisaltoAlueetMap[paikallinen.sisaltoalueet[0].sisaltoalueet.id] : null } :
+        sisaltoalue: getSisaltoalueet(paikallinen, scope) } :
       { teksti: {}, sisaltoalue: {} };
     });
 
-    scope.valinnaisenTavoitteet = _.map(scope.muokattavat, function(tavoite) {
-        return {
+    scope.valinnaisenTavoitteet = _.map(scope.muokattavat, (tavoite) => {
+      return {
           otsikko: tavoite.teksti,
           teksti: tavoite.sisaltoalue ? tavoite.sisaltoalue.kuvaus : {}
         };
       });
-  }
+  };
 
 
-  this.mapModel = function (scope) {
+  this.mapModel = (scope) => {
     scope.muokattavat = {};
     scope.tavoitteet = scope.vuosiluokka.tavoitteet;
     scope.sisaltoAlueetMap = _.indexBy(scope.vuosiluokka.sisaltoalueet, 'id');
@@ -166,7 +172,7 @@ ylopsApp
     Editointikontrollit.startEditing();
   };
 
-  $scope.naytaKuvaus = function(sisaltoalue, id, tavoiteTunniste) {
+  $scope.naytaKuvaus = (sisaltoalue, id, tavoiteTunniste) => {
     const kuvaus = _.find(_.find($scope.vuosiluokka.tavoitteet, { 'id': id }).sisaltoalueet,
       (alue) => sisaltoalue.tunniste === alue.sisaltoalueet.tunniste);
 
@@ -186,19 +192,19 @@ ylopsApp
     save: () => $q((resolve) => {
       if ($scope.onValinnaiselle) {
         $rootScope.$broadcast('notifyCKEditor');
-        var tavoitteet = angular.copy($scope.valinnaisenTavoitteet);
+        const tavoitteet = angular.copy($scope.valinnaisenTavoitteet);
 
         OppiaineService.saveValinnainenVuosiluokka($scope.vuosiluokka.id, tavoitteet, (res) => {
           Notifikaatiot.onnistui('tallennettu-ok');
           $scope.vuosiluokka = res;
           resolve();
-          // FIXME Kaikki näyttäisi toimivan
-          // VuosiluokkaMapper.mapModel($scope);
+          //needed to make sure the data is updated when switching between tabs sisältöalueet <-> tavoitteet
+          refetch();
         });
       }
       else {
         var postdata = angular.copy($scope.vuosiluokka);
-        _.each(postdata.tavoitteet, function (tavoite) {
+        _.each(postdata.tavoitteet, (tavoite) => {
           tavoite.tavoite = $scope.muokattavat[tavoite.tunniste].teksti;
 
           if ($scope.muokattavat[tavoite.tunniste].muokattavaKuvaus) {
@@ -224,7 +230,7 @@ ylopsApp
         teksti: {}
       });
       $timeout(() => {
-        var el: any = angular.element('[valinnaisen-ops-teksti]').last();
+        const el: any = angular.element('[valinnaisen-ops-teksti]').last();
         if (el.length === 1 && el.isolateScope()) {
           el.isolateScope().startEditing();
         }
@@ -235,7 +241,7 @@ ylopsApp
         otsikko: 'varmista-poisto',
         primaryBtn: 'poista',
         successCb: () => {
-          var tavoitteet = _.without($scope.valinnaisenTavoitteet, item);
+          const tavoitteet = _.without($scope.valinnaisenTavoitteet, item);
 
           OppiaineService.saveValinnainenVuosiluokka($scope.vuosiluokka.id, tavoitteet, (res) => {
             Notifikaatiot.onnistui('poisto-onnistui');
@@ -263,14 +269,14 @@ ylopsApp
   $scope.sisaltoInfo = {};
   $scope.sisaltoInfoCollapse = false;
 
-  function mapModel() {
+  const mapModel = () => {
     $scope.sisaltoalueet = $scope.vuosiluokka.sisaltoalueet;
     $scope.muokattavat = VuosiluokkaMapper.mapSisaltoalueet($scope.sisaltoalueet);
     $scope.tunnisteet = _.keys($scope.muokattavat);
-  }
+  };
 
   // FIXME mapOnce saattaa hajottaa jotain
-  var mapOnce = _.once(mapModel);
+  const mapOnce = _.once(mapModel);
   const refetch = () => $q((resolve) => {
     OppiaineService.fetchVuosiluokka($scope.vuosiluokka.id, (res) => {
       $scope.vuosiluokka = res;
@@ -325,14 +331,14 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/vuosiluokat/directives/opsteksti.html',
     controller: 'TekstiosaController',
-    link: function (scope: any, element, attrs) {
+    link: (scope: any, element, attrs) => {
       scope.editable = !!attrs.opsTeksti;
       scope.options = {
         collapsed: scope.editable
       };
       scope.isEmpty = _.isEmpty;
-      scope.focusAndScroll = function () {
-        $timeout(function () {
+      scope.focusAndScroll =  () => {
+        $timeout( () => {
           var el = element.find('[ckeditor]');
           if (el && el.length > 0) {
             el[0].focus();

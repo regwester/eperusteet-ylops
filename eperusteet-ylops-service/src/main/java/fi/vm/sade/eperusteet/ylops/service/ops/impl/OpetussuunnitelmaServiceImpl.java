@@ -703,6 +703,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             return addPohjaPerusopetus(ops, peruste);
         } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()
+                || KoulutusTyyppi.PERUSOPETUSVALMISTAVA == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.VARHAISKASVATUS == peruste.getKoulutustyyppi()) {
             return addPohjaLisaJaEsiopetus(ops, peruste);
         } else if (peruste.getKoulutustyyppi().isLukio()) {

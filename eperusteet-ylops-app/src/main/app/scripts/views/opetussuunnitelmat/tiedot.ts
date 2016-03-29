@@ -357,7 +357,7 @@ ylopsApp
 
     $scope.avataInputs = function(valittuKoulutustyyppi) {
       $scope.koulutustyyppiOnValittu = false;
-      var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6', 'koulutustyyppi_2', 'koulutustyyppi_23'];
+      var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6', 'koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_22'];
       return _.includes(validTyypit, valittuKoulutustyyppi) ? ($scope.koulutustyyppiOnValittu = true) : ($scope.koulutustyyppiOnValittu = false);
     };
 

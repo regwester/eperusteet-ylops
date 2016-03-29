@@ -32,8 +32,8 @@
       <tr ng-repeat="poistettu in poistetut | startFrom:itemsPerPage*(currentPage-1) | limitTo:itemsPerPage">
         <td>{{poistettu.nimi | kaanna}}</td>
         <td>{{'poistettu-tyyppi-'+poistettu.type | kaanna}}</td>
-        <td>{{poistettu.muokkaaja}}</td>
-        <td>{{poistettu.muokattu | aikaleima:'date'}}</td>
+        <td>{{poistettu.luoja}}</td>
+        <td>{{poistettu.luotu | aikaleima:'date'}}</td>
         <td><a ng-click="returnVersion(poistettu.id, poistettu.type)" class="label label-warning" kaanna="palauta"></a></td>
       </tr>
     </table>

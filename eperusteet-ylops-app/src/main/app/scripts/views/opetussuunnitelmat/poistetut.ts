@@ -20,7 +20,7 @@
 ylopsApp
 .controller('OpetussuunnitelmaPoistetutController', (tekstiKappaleet, oppiaineet, $scope, OpetussuunnitelmanTekstit, $stateParams,
                                                      $state, Algoritmit, $filter, OppiaineService, $modal, OpetussuunnitelmaCRUD,
-                                                     Notifikaatiot) => {
+                                                     Notifikaatiot, EperusteetKayttajatiedot, $q) => {
 
   $scope.kaikki = [];
   $scope.currentPage = 1;
@@ -29,6 +29,19 @@ ylopsApp
 
   const isLukio = () => _.any(["koulutustyyppi_2", "koulutustyyppi_23"], (i) => i === $scope.model.koulutustyyppi);
   const addItems = (items, type) => {
+
+    let reqs = [];
+    _.forEach(_.uniq(items, 'luoja'), (i) => reqs.push(EperusteetKayttajatiedot.get({oid: i.luoja}).$promise));
+    reqs.push();
+
+    $q.all(reqs).then((values) => {
+      _.forEach(items, (item) => {
+        const henkilo = _.find(values, (i) => i.oidHenkilo === item.luoja);
+        const nimi = _.isEmpty(henkilo) ? ' ': (henkilo.kutsumanimi || '') + ' ' + (henkilo.sukunimi || '');
+        item.luoja = nimi === ' ' ? item.luoja : nimi;
+      });
+    });
+    
     _.forEach( items, (item) => {
       item.type= type;
       $scope.kaikki.push(item);
@@ -76,8 +89,9 @@ ylopsApp
       OppiaineService.palauta(params, {}).then((palautettu) => {
         $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
           oppiaineId: palautettu.id,
-          vlkId: _.first(palautettu.vuosiluokkakokonaisuudet).id
-        }, { reload: true });
+          vlkId: palautettu.vlkId,
+          oppiaineTyyppi: palautettu.tyyppi
+        }, { reload: true, notify: true });
       }, () => {
         Notifikaatiot.fataali('palautus-epaonnistui');
       });

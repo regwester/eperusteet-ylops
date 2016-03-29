@@ -91,7 +91,8 @@ public class EperusteetServiceImpl implements EperusteetService {
             KoulutusTyyppi.LISAOPETUS,
             KoulutusTyyppi.VARHAISKASVATUS,
             KoulutusTyyppi.LUKIOKOULUTUS,
-            KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS
+            KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS,
+            KoulutusTyyppi.PERUSOPETUSVALMISTAVA
         };
         return new HashSet<>(Arrays.asList(vaihtoehdot));
     }
