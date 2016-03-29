@@ -518,6 +518,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 // Oppiaineen vuosiluokkakokonaiuuden kohtaiset
                 addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk);
 
+                docBase.getGenerator().decreaseDepth();
+
                 // Oppimäärät
                 Set<Oppiaine> oppimaarat = oppiaine.getOppimaarat();
                 if (oppimaarat != null) {
@@ -530,7 +532,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     addOppimaarat(docBase, perusteOppimaarat, oppimaarat, vlk);
                 }
 
-                docBase.getGenerator().decreaseDepth();
                 docBase.getGenerator().decreaseDepth();
 
                 docBase.getGenerator().increaseNumber();
@@ -864,6 +865,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     }
                 }
 
+
                 addOppimaara(docBase, perusteOppiaineDto, oppimaara, vlk);
             }
         }
@@ -880,6 +882,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Oppimäärä otsikko
         addHeader(docBase, getTextString(oppiaine.getNimi(), docBase.getKieli()));
+
+        docBase.getGenerator().increaseDepth();
 
         // Peruste
         PerusteTekstiOsaDto perusteTekstiOsaDto = null;
@@ -901,6 +905,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         Oppiaineenvuosiluokkakokonaisuus oaVlk = optOaVlk.get();
 
         addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk);
+
+        docBase.getGenerator().decreaseDepth();
+
+        docBase.getGenerator().increaseNumber();
     }
 
     private void buildFootnotes(DokumenttiBase docBase) {

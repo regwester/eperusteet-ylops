@@ -400,7 +400,6 @@
     <xsl:template match="h4">
         <fo:block font-size="12pt" line-height="1.25em" font-weight="bold"
                   keep-with-next="always" space-after="10pt" color="#007EC5">
-
             <xsl:attribute name="id">
                 <xsl:choose>
                     <xsl:when test="@id">
@@ -411,32 +410,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
-
-            <xsl:choose>
-                <xsl:when test="@number">
-                    <fo:table table-layout="fixed" width="100%">
-                        <fo:table-column column-width="20mm" />
-                        <fo:table-column column-width="proportional-column-width(1)" />
-                        <fo:table-body>
-                            <fo:table-row>
-                                <fo:table-cell>
-                                    <fo:block>
-                                        <xsl:value-of select="@number" />
-                                    </fo:block>
-                                </fo:table-cell>
-                                <fo:table-cell>
-                                    <fo:block>
-                                        <xsl:apply-templates select="*|text()" />
-                                    </fo:block>
-                                </fo:table-cell>
-                            </fo:table-row>
-                        </fo:table-body>
-                    </fo:table>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:apply-templates select="*|text()" />
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
 
@@ -986,7 +960,8 @@
                             <xsl:text>2cm</xsl:text>
                         </xsl:when>
                         <xsl:when test="name() = 'h4'">
-                            <xsl:text>2.5cm</xsl:text>
+                            <!-- No number -->
+                            <xsl:text>3cm</xsl:text>
                         </xsl:when>
                     </xsl:choose>
                 </xsl:attribute>
@@ -1014,8 +989,10 @@
                     </xsl:attribute>
 
                     <xsl:if test="@number">
-                        <xsl:value-of select="@number" />
-                        <xsl:text> </xsl:text>
+                        <xsl:if test="name() != 'h4'">
+                            <xsl:value-of select="@number" />
+                            <xsl:text> </xsl:text>
+                        </xsl:if>
                     </xsl:if>
                     <xsl:apply-templates select="*|text()" />
                 </fo:basic-link>
