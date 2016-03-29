@@ -558,11 +558,19 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                                                     PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
                                                     Oppiaineenvuosiluokkakokonaisuus oaVlkDto) {
 
-        addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
-        addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
-        addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
-        addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
-        addTavoitteetJaSisaltoalueet(docBase, perusteOaVlkDto, oaVlkDto);
+        if (perusteOaVlkDto != null) {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
+            addTavoitteetJaSisaltoalueet(docBase, perusteOaVlkDto, oaVlkDto);
+        } else {
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), null);
+            addTavoitteetJaSisaltoalueet(docBase, null, oaVlkDto);
+        }
 
     }
 
@@ -844,12 +852,16 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         if (oppimaarat != null) {
             for (Oppiaine oppimaara : oppimaarat) {
                 PerusteOppiaineDto perusteOppiaineDto = null;
-                Optional<PerusteOppiaineDto> optPerusteOppimaara = perusteOppimaarat.stream()
-                        .filter(perusteOppiaine -> perusteOppiaine.getTunniste().equals(oppimaara.getTunniste()))
-                        .findFirst();
-                if (optPerusteOppimaara.isPresent()) {
-                    perusteOppiaineDto = optPerusteOppimaara.get();
+                if (perusteOppimaarat != null) {
+                    Optional<PerusteOppiaineDto> optPerusteOppimaara = perusteOppimaarat.stream()
+                            .filter(perusteOppiaine -> perusteOppiaine.getTunniste().equals(oppimaara.getTunniste()))
+                            .findFirst();
+
+                    if (optPerusteOppimaara.isPresent()) {
+                        perusteOppiaineDto = optPerusteOppimaara.get();
+                    }
                 }
+
                 addOppimaara(docBase, perusteOppiaineDto, oppimaara, vlk);
             }
         }
