@@ -39,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  *
@@ -66,14 +65,13 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional
     @PreAuthorize("isAuthenticated()")
     public DokumenttiDto getDto(Long opsId, Kieli kieli) {
-        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
+        Dokumentti dokumentti = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
 
         // Jos löytyy
-        if (!dokumentit.isEmpty()) {
-            return mapper.map(dokumentit.get(0), DokumenttiDto.class);
-        } else {
-            return null;
+        if (dokumentti != null) {
+            return mapper.map(dokumentti, DokumenttiDto.class);
         }
+        return null;
     }
 
     @Override
@@ -102,7 +100,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     public void setStarted(DokumenttiDto dto) {
         // Asetetaan dokumentti luonti tilaan
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
-        Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
+        Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
         dokumentti.setAloitusaika(new Date());
         dokumentti.setLuoja(name);
         dokumentti.setTila(DokumenttiTila.LUODAAN);
@@ -112,7 +110,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
-        Dokumentti dokumentti = dokumenttiRepository.findById(dto.getId());
+        Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
         Kieli kieli = dokumentti.getKieli();
 
@@ -139,14 +137,14 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional
     public DokumenttiDto getDto(Long id) {
-        Dokumentti dokumentti = dokumenttiRepository.findById(id);
+        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
         return mapper.map(dokumentti, DokumenttiDto.class);
     }
 
     @Override
     @Transactional(readOnly = true)
     public byte[] get(Long id) {
-        Dokumentti dokumentti = dokumenttiRepository.findById(id);
+        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
         if (dokumentti == null) {
             return null;
         }
@@ -163,7 +161,20 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional(readOnly = true)
     public DokumenttiDto query(Long id) {
-        Dokumentti findById = dokumenttiRepository.findById(id);
-        return mapper.map(findById, DokumenttiDto.class);
+        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
+        return mapper.map(dokumentti, DokumenttiDto.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DokumenttiTila getTila(Long opsId, Kieli kieli) {
+        Dokumentti dokumentti = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
+
+        // Jos löytyy
+        if (dokumentti != null) {
+            return mapper.map(dokumentti, DokumenttiDto.class).getTila();
+        }
+
+        return null;
     }
 }

@@ -107,7 +107,7 @@ public class DokumenttiController {
             @ApiResponse(code = 404, message = "dokumenttia ei löydy")
     })
     @CacheControl(age = CacheControl.ONE_YEAR, nonpublic = false)
-    public ResponseEntity<Object> get(@PathVariable("dokumenttiId") final Long dokumenttiId) {
+    public ResponseEntity<byte[]> get(@PathVariable("dokumenttiId") final Long dokumenttiId) {
         byte[] pdfdata = service.get(dokumenttiId);
 
         if (pdfdata == null || pdfdata.length == 0) {
@@ -149,11 +149,11 @@ public class DokumenttiController {
             @RequestParam("opsId") final Long opsId,
             @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
         Kieli k = Kieli.of(kieli);
-        DokumenttiDto dto = service.getDto(opsId, k);
-        if (dto == null) {
+        DokumenttiTila tila = service.getTila(opsId, k);
+        if (tila == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(dto.getTila(), HttpStatus.OK);
+            return ResponseEntity.ok(tila);
         }
     }
 }
