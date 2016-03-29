@@ -22,20 +22,18 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
-import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -44,7 +42,6 @@ import java.util.Date;
  */
 @RestController
 @RequestMapping("/dokumentit")
-@InternalApi
 public class DokumenttiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiController.class);
@@ -64,7 +61,7 @@ public class DokumenttiController {
     })
     public ResponseEntity<DokumenttiDto> create(
             @RequestParam("opsId") final long opsId,
-            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
+            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) throws DokumenttiException {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
@@ -102,7 +99,7 @@ public class DokumenttiController {
         return newDate.before(new Date());
     }
 
-    @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")
+    @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET)
     @ApiOperation("luo dokumentti")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "dokumentti ladattu onnistuneesti"),
@@ -110,18 +107,17 @@ public class DokumenttiController {
             @ApiResponse(code = 404, message = "dokumenttia ei löydy")
     })
     @CacheControl(age = CacheControl.ONE_YEAR, nonpublic = false)
-    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
-    public ResponseEntity<Object> get(@PathVariable("dokumenttiId") final Long dokumenttiId)
-            throws IOException {
+    public ResponseEntity<byte[]> get(@PathVariable("dokumenttiId") final Long dokumenttiId) {
         byte[] pdfdata = service.get(dokumenttiId);
 
         if (pdfdata == null || pdfdata.length == 0) {
-            LOG.error("Got null or empty data from service");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "pdf"));
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
+        headers.setContentLength(pdfdata.length);
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
@@ -130,25 +126,34 @@ public class DokumenttiController {
     public ResponseEntity<DokumenttiDto> getDokumentti(
             @RequestParam("opsId") final Long opsId,
             @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
-        try {
-            Kieli k = Kieli.of(kieli);
-            DokumenttiDto dto = service.getDto(opsId, k);
-            if (dto == null)
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            else
-                return new ResponseEntity<>(dto, HttpStatus.OK);
-        } catch (IllegalArgumentException ex) {
-            LOG.warn(ex.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Kieli k = Kieli.of(kieli);
+        DokumenttiDto dto = service.getDto(opsId, k);
+        if (dto == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(dto, HttpStatus.OK);
         }
     }
 
-    @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
+    @RequestMapping(value = "/{dokumenttiId}/dokumentti", method = RequestMethod.GET)
     public ResponseEntity<DokumenttiDto> query(@PathVariable("dokumenttiId") final Long dokumenttiId) {
         DokumenttiDto dto = service.query(dokumenttiId);
         if (dto == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         else
             return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
+    public ResponseEntity<DokumenttiTila> exist(
+            @RequestParam("opsId") final Long opsId,
+            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
+        Kieli k = Kieli.of(kieli);
+        DokumenttiTila tila = service.getTila(opsId, k);
+        if (tila == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return ResponseEntity.ok(tila);
+        }
     }
 }
