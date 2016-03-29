@@ -89,8 +89,9 @@ ylopsApp
       OppiaineService.palauta(params, {}).then((palautettu) => {
         $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
           oppiaineId: palautettu.id,
-          vlkId: _.first(palautettu.vuosiluokkakokonaisuudet).id
-        }, { reload: true });
+          vlkId: palautettu.vlkId,
+          oppiaineTyyppi: palautettu.tyyppi
+        }, { reload: true, notify: true });
       }, () => {
         Notifikaatiot.fataali('palautus-epaonnistui');
       });

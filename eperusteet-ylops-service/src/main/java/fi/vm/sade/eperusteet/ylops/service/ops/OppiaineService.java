@@ -76,7 +76,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     List<OppiaineLaajaDto> getAllVersions(Long opsId, Long oppiaineId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    OppiaineLaajaDto restore(@P("opsId") Long opsId, Long oppiaineId, Long oppimaaraId);
+    OppiainePalautettuDto restore(@P("opsId") Long opsId, Long oppiaineId, Long oppimaaraId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id);
