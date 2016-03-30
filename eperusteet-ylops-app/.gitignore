@@ -8,6 +8,6 @@ dist
 bower_components/
 .netbeans.xml
 *~
-
 *.js
 *.map
+!src/main/app/ckeditor-plugins/
