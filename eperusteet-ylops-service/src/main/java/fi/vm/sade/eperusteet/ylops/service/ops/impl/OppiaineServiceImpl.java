@@ -264,8 +264,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oavlk.setJnro(oldJnro);
         }else{
             Optional<Integer> maxJnroInOps = getMaxJarjestysnumero(ops);
-            Integer jnro = maxJnroInOps.isPresent() ? maxJnroInOps.get()+1 : 0;
-            oavlk.setJnro(jnro);
+            int max = ops.getOppiaineet().size()+1;
+            if (maxJnroInOps.isPresent()) {
+                max = (maxJnroInOps.get()+1 > max) ? maxJnroInOps.get()+1 : max;
+            }
+            oavlk.setJnro(max);
         }
 
         oavlk.setVuosiluokat(luoOppiaineenVuosiluokat(vuosiluokat, tavoitteetDto));
