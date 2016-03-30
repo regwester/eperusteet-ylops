@@ -254,8 +254,16 @@
 
     <xsl:template match="body">
         <fo:flow flow-name="xsl-region-body">
-            <!-- Set default font-size -->
-            <xsl:apply-templates select="*|text()" />
+            <xsl:choose>
+                <xsl:when test="*|text()">
+                    <xsl:apply-templates select="*|text()" />
+                </xsl:when>
+                <xsl:otherwise>
+                    <fo:block>
+                        <xsl:text>Content is missing</xsl:text>
+                    </fo:block>
+                </xsl:otherwise>
+            </xsl:choose>
         </fo:flow>
     </xsl:template>
 
@@ -508,36 +516,38 @@
     </xsl:template>
 
     <xsl:template match="ol">
-        <fo:list-block provisional-distance-between-starts="1cm"
-                       provisional-label-separation="0.5cm">
-            <xsl:attribute name="space-after">
-                <xsl:choose>
-                    <xsl:when test="ancestor::ul or ancestor::ol">
-                        <xsl:text>0pt</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text>10pt</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:attribute>
-            <xsl:attribute name="start-indent">
-                <xsl:variable name="ancestors">
+        <xsl:if test="node()/li">
+            <fo:list-block provisional-distance-between-starts="1cm"
+                           provisional-label-separation="0.5cm">
+                <xsl:attribute name="space-after">
                     <xsl:choose>
-                        <xsl:when test="count(ancestor::ol) or boolean(count(ancestor::ul))">
-                            <xsl:value-of select="1 +
+                        <xsl:when test="ancestor::ul or ancestor::ol">
+                            <xsl:text>0pt</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>10pt</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:attribute>
+                <xsl:attribute name="start-indent">
+                    <xsl:variable name="ancestors">
+                        <xsl:choose>
+                            <xsl:when test="count(ancestor::ol) or boolean(count(ancestor::ul))">
+                                <xsl:value-of select="1 +
                                     (count(ancestor::ol) +
                                      count(ancestor::ul)) *
                                     1.25" />
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>1</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:variable>
-                <xsl:value-of select="concat($ancestors, 'cm')" />
-            </xsl:attribute>
-            <xsl:apply-templates select="*" />
-        </fo:list-block>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:text>1</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <xsl:value-of select="concat($ancestors, 'cm')" />
+                </xsl:attribute>
+                <xsl:apply-templates select="*" />
+            </fo:list-block>
+        </xsl:if>
     </xsl:template>
 
 
@@ -795,36 +805,38 @@
     </xsl:template>
 
     <xsl:template match="ul">
-        <fo:list-block provisional-distance-between-starts="0.5cm"
-                       provisional-label-separation="0.25cm">
-            <xsl:attribute name="space-after">
-                <xsl:choose>
-                    <xsl:when test="ancestor::ul or ancestor::ol">
-                        <xsl:text>0pt</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text>12pt</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:attribute>
-            <xsl:attribute name="start-indent">
-                <xsl:variable name="ancestors">
+        <xsl:if test="node()/li">
+            <fo:list-block provisional-distance-between-starts="0.5cm"
+                           provisional-label-separation="0.25cm">
+                <xsl:attribute name="space-after">
                     <xsl:choose>
-                        <xsl:when test="count(ancestor::ol) or boolean(count(ancestor::ul))">
-                            <xsl:value-of select="0.5 +
-                                    (count(ancestor::ol) +
-                                     count(ancestor::ul)) *
-                                    0.75" />
+                        <xsl:when test="ancestor::ul or ancestor::ol">
+                            <xsl:text>0pt</xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:text>0.5</xsl:text>
+                            <xsl:text>12pt</xsl:text>
                         </xsl:otherwise>
                     </xsl:choose>
-                </xsl:variable>
-                <xsl:value-of select="concat($ancestors, 'cm')" />
-            </xsl:attribute>
-            <xsl:apply-templates select="*" />
-        </fo:list-block>
+                </xsl:attribute>
+                <xsl:attribute name="start-indent">
+                    <xsl:variable name="ancestors">
+                        <xsl:choose>
+                            <xsl:when test="count(ancestor::ol) or boolean(count(ancestor::ul))">
+                                <xsl:value-of select="0.5 +
+                                        (count(ancestor::ol) +
+                                         count(ancestor::ul)) *
+                                        0.75" />
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:text>0.5</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <xsl:value-of select="concat($ancestors, 'cm')" />
+                </xsl:attribute>
+                <xsl:apply-templates select="*" />
+            </fo:list-block>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="ul/li">
