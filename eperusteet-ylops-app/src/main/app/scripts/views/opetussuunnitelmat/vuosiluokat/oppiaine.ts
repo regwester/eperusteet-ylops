@@ -177,15 +177,14 @@ ylopsApp
   var perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : null, 'tunniste');
 
   if ($scope.oppiaine.koosteinen && vanhempiOnUskontoTaiKieli($scope.oppiaine)) {
-    $scope.valitseOppimaara = function() {
-      var opsId = $stateParams.id;
-      Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, function (res) {
-        // var ops = OpsService.get(opsId);
-        var ops = opsModel;
+    $scope.valitseOppimaara = () => {
+      const opsId = $stateParams.id;
+      Kielitarjonta.rakenna(opsId, $scope.oppiaine, $scope.perusteOppiaine, (res) => {
+        const ops = opsModel;
+        const tunnisteet = _.map(res.vuosiluokkakokonaisuudet, '_vuosiluokkakokonaisuus');
 
-        var tunnisteet = _.map(res.vuosiluokkakokonaisuudet, '_vuosiluokkakokonaisuus');
         // TODO järjestys vuosiluokkaenumin mukaan nimen sijasta?
-        var lisatytVlkt = _(ops.vuosiluokkakokonaisuudet)
+        const lisatytVlkt = _(ops.vuosiluokkakokonaisuudet)
             .map('vuosiluokkakokonaisuus')
             .filter(vlk => _.includes(tunnisteet, vlk._tunniste))
             .sortBy(vlk => Kaanna.kaanna(vlk.nimi))
@@ -194,12 +193,12 @@ ylopsApp
         Notifikaatiot.onnistui(
           Kaanna.kaanna(res.nimi) +
           Kaanna.kaanna('oppiaine-lisattiin-vuosiluokkakokonaisuuksiin') +
-          _.map(lisatytVlkt, function (vlk) {
+          _.map(lisatytVlkt, (vlk) => {
             return Kaanna.kaanna(vlk.nimi);
           }).join(', '));
 
-        var vlkId =
-          _(lisatytVlkt).map('id').includes(parseInt($stateParams.vlkId))? $stateParams.vlkId : lisatytVlkt[0].id;
+        const vlkId = _(lisatytVlkt).map('id')
+            .includes(parseInt($stateParams.vlkId))? $stateParams.vlkId : lisatytVlkt[0].id;
 
         $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
           oppiaineId: res.id,

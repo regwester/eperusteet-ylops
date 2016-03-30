@@ -284,7 +284,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .stream()
                 .map(OpsOppiaine::getOppiaine)
                 .map(Oppiaine::getVuosiluokkakokonaisuudet)
-                .flatMap(l -> l.stream())
+                .flatMap(Collection::stream)
                 .map(Oppiaineenvuosiluokkakokonaisuus::getJnro)
                 .filter(integer -> integer != null)
                 .max(Integer::compareTo);
