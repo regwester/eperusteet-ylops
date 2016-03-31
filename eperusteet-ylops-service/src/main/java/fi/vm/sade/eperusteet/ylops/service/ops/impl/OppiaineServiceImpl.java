@@ -52,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.stream.Collectors.toList;
@@ -274,9 +275,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         if( oldOaVlk != null && updateOld ){
 
-            HashSet<Oppiaineenvuosiluokka> oldVlks = mapper.mapToCollection(oldOaVlk.getVuosiluokat(), new HashSet<Oppiaineenvuosiluokka>(), Oppiaineenvuosiluokka.class);
-            oavlk.setVuosiluokat(oldVlks);
-
+            HashSet<Oppiaineenvuosiluokka> oldVlks = updateValinnainenVuosiluokat(vuosiluokat, oldOaVlk, oavlk);
             oldVlks.stream().forEach(oppiaineenvuosiluokka -> {
                 oppiaineenvuosiluokka.getTavoitteet().forEach(opetuksentavoite -> {
                     opetuksentavoite.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
@@ -292,6 +291,30 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
         oppiaine = oppiaineet.save(oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
+    }
+
+    private HashSet<Oppiaineenvuosiluokka> updateValinnainenVuosiluokat(Set<Vuosiluokka> vuosiluokat, OppiaineenVuosiluokkakokonaisuusDto oldOaVlk, Oppiaineenvuosiluokkakokonaisuus oavlk) {
+        HashSet<Oppiaineenvuosiluokka> oldVlks = mapper.mapToCollection(oldOaVlk.getVuosiluokat(), new HashSet<Oppiaineenvuosiluokka>(), Oppiaineenvuosiluokka.class);
+        Set<Oppiaineenvuosiluokka> filteredVlks = oldVlks
+                .stream()
+                .filter(oppiaineenvuosiluokka ->
+                        vuosiluokat.contains(oppiaineenvuosiluokka.getVuosiluokka())).collect(toSet());
+
+
+        HashSet<Oppiaineenvuosiluokka> uudet = new HashSet<>();
+        vuosiluokat.forEach(vuosiluokka -> {
+            List<Oppiaineenvuosiluokka> found = filteredVlks.stream().filter(oppiaineenvuosiluokka ->
+                    oppiaineenvuosiluokka.getVuosiluokka().compareTo(vuosiluokka) == 0).collect(toList());
+            if (found.size() == 0) {
+                uudet.addAll(luoOppiaineenVuosiluokat(new HashSet<>(Collections.singleton(vuosiluokka)), new ArrayList<TekstiosaDto>()));
+            }
+        });
+
+        oldVlks = new HashSet<>(filteredVlks);
+        oldVlks.addAll(uudet);
+
+        oavlk.setVuosiluokat(oldVlks);
+        return oldVlks;
     }
 
     private Optional<Integer> getMaxJarjestysnumero(Opetussuunnitelma ops) {
@@ -310,7 +333,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                                          Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto) {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
         assertExists(oppiaine, "Päivitettävää oppiainetta ei ole olemassa");
-        OppiaineenVuosiluokkakokonaisuusDto oldOavlk = mapper.map( (Oppiaineenvuosiluokkakokonaisuus) oppiaine.getVuosiluokkakokonaisuudet().toArray()[0], OppiaineenVuosiluokkakokonaisuusDto.class);
+        OppiaineenVuosiluokkakokonaisuusDto oldOavlk = mapper.map((Oppiaineenvuosiluokkakokonaisuus)
+                oppiaine.getVuosiluokkakokonaisuudet().toArray()[0], OppiaineenVuosiluokkakokonaisuusDto.class);
 
         Integer oldJnro = oppiaine.getVuosiluokkakokonaisuudet().stream().findFirst().get().getJnro();
         PoistettuOppiaineDto deleted = delete(opsId, oppiaineDto.getId());
