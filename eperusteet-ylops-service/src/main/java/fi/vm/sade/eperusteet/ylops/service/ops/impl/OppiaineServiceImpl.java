@@ -54,6 +54,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -273,10 +274,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         if( oldOaVlk != null && updateOld ){
 
-            HashSet<Oppiaineenvuosiluokka> vuosluok = mapper.mapToCollection(oldOaVlk.getVuosiluokat(), new HashSet<Oppiaineenvuosiluokka>(), Oppiaineenvuosiluokka.class);
-            oavlk.setVuosiluokat(vuosluok);
+            HashSet<Oppiaineenvuosiluokka> oldVlks = mapper.mapToCollection(oldOaVlk.getVuosiluokat(), new HashSet<Oppiaineenvuosiluokka>(), Oppiaineenvuosiluokka.class);
+            oavlk.setVuosiluokat(oldVlks);
 
-            vuosluok.stream().forEach(oppiaineenvuosiluokka -> {
+            oldVlks.stream().forEach(oppiaineenvuosiluokka -> {
                 oppiaineenvuosiluokka.getTavoitteet().forEach(opetuksentavoite -> {
                     opetuksentavoite.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
                         opetuksenKeskeinensisaltoalue.setOpetuksentavoite(opetuksentavoite);
@@ -284,41 +285,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 });
             });
 
-
-//            Set<Oppiaineenvuosiluokka> oldVuosiluokat = new HashSet<>();
-//            oldOaVlk.getVuosiluokat().stream().forEach(oppiaineenVuosiluokkaDto -> {
-//                oppiaineenVuosiluokkaDto.getVuosiluokka();
-//                List<TekstiosaDto> vlkTavoitteet = new ArrayList<TekstiosaDto>();
-//                oppiaineenVuosiluokkaDto.getTavoitteet().forEach(opetuksenTavoiteDto -> {
-//                    opetuksenTavoiteDto.getTavoite();
-//                    OpetuksenKeskeinensisaltoalueDto tav = (OpetuksenKeskeinensisaltoalueDto) opetuksenTavoiteDto.getSisaltoalueet().toArray()[0];
-//                    tav.getSisaltoalueet().getKuvaus();
-//                    TekstiosaDto tavoite = new TekstiosaDto(Optional.of(opetuksenTavoiteDto.getTavoite()), Optional.of(tav.getSisaltoalueet().getKuvaus()));
-//                    vlkTavoitteet.add(tavoite);
-//                });
-////                if(vlkTavoitteet.size() != 0){
-////                    Set<Oppiaineenvuosiluokka> aa = luoOppiaineenVuosiluokat(new HashSet<>(singletonList(oppiaineenVuosiluokkaDto.getVuosiluokka())), vlkTavoitteet);
-////                    oldVuosiluokat.addAll(aa);
-////                }
-//            });
-//            oavlk.setVuosiluokat(oldVuosiluokat);
-
         }else if( !updateOld ){
             oavlk.setVuosiluokat(luoOppiaineenVuosiluokat(vuosiluokat, tavoitteetDto));
         }
+
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
-
-//        oppiaine.getVuosiluokkakokonaisuudet().stream().forEach(oppiaineenvuosiluokkakokonaisuus -> {
-//            oppiaineenvuosiluokkakokonaisuus.getVuosiluokat().stream().forEach(oppiaineenvuosiluokka -> {
-//                oppiaineenvuosiluokka.getTavoitteet().forEach(opetuksentavoite -> {
-//                    opetuksentavoite.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
-//                        opetuksenKeskeinensisaltoalue.setOpetuksentavoite(opetuksentavoite);
-//                    });
-//                });
-//            });
-//        });
         oppiaine = oppiaineet.save(oppiaine);
-
         return mapper.map(oppiaine, OppiaineDto.class);
     }
 
