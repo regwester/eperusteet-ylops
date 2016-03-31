@@ -236,7 +236,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Override
     public OppiaineDto addValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                       Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto,
-                                      Integer oldJnro) {
+                                      Integer oldJnro, OppiaineenVuosiluokkakokonaisuusDto oldOaVlk, boolean updateOld) {
 
         OppiaineenVuosiluokkakokonaisuusDto oavlktDto =
             oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
@@ -271,9 +271,52 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oavlk.setJnro(max);
         }
 
-        oavlk.setVuosiluokat(luoOppiaineenVuosiluokat(vuosiluokat, tavoitteetDto));
+        if( oldOaVlk != null && updateOld ){
+
+            HashSet<Oppiaineenvuosiluokka> vuosluok = mapper.mapToCollection(oldOaVlk.getVuosiluokat(), new HashSet<Oppiaineenvuosiluokka>(), Oppiaineenvuosiluokka.class);
+            oavlk.setVuosiluokat(vuosluok);
+
+            vuosluok.stream().forEach(oppiaineenvuosiluokka -> {
+                oppiaineenvuosiluokka.getTavoitteet().forEach(opetuksentavoite -> {
+                    opetuksentavoite.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
+                        opetuksenKeskeinensisaltoalue.setOpetuksentavoite(opetuksentavoite);
+                    });
+                });
+            });
+
+
+//            Set<Oppiaineenvuosiluokka> oldVuosiluokat = new HashSet<>();
+//            oldOaVlk.getVuosiluokat().stream().forEach(oppiaineenVuosiluokkaDto -> {
+//                oppiaineenVuosiluokkaDto.getVuosiluokka();
+//                List<TekstiosaDto> vlkTavoitteet = new ArrayList<TekstiosaDto>();
+//                oppiaineenVuosiluokkaDto.getTavoitteet().forEach(opetuksenTavoiteDto -> {
+//                    opetuksenTavoiteDto.getTavoite();
+//                    OpetuksenKeskeinensisaltoalueDto tav = (OpetuksenKeskeinensisaltoalueDto) opetuksenTavoiteDto.getSisaltoalueet().toArray()[0];
+//                    tav.getSisaltoalueet().getKuvaus();
+//                    TekstiosaDto tavoite = new TekstiosaDto(Optional.of(opetuksenTavoiteDto.getTavoite()), Optional.of(tav.getSisaltoalueet().getKuvaus()));
+//                    vlkTavoitteet.add(tavoite);
+//                });
+////                if(vlkTavoitteet.size() != 0){
+////                    Set<Oppiaineenvuosiluokka> aa = luoOppiaineenVuosiluokat(new HashSet<>(singletonList(oppiaineenVuosiluokkaDto.getVuosiluokka())), vlkTavoitteet);
+////                    oldVuosiluokat.addAll(aa);
+////                }
+//            });
+//            oavlk.setVuosiluokat(oldVuosiluokat);
+
+        }else if( !updateOld ){
+            oavlk.setVuosiluokat(luoOppiaineenVuosiluokat(vuosiluokat, tavoitteetDto));
+        }
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
 
+//        oppiaine.getVuosiluokkakokonaisuudet().stream().forEach(oppiaineenvuosiluokkakokonaisuus -> {
+//            oppiaineenvuosiluokkakokonaisuus.getVuosiluokat().stream().forEach(oppiaineenvuosiluokka -> {
+//                oppiaineenvuosiluokka.getTavoitteet().forEach(opetuksentavoite -> {
+//                    opetuksentavoite.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
+//                        opetuksenKeskeinensisaltoalue.setOpetuksentavoite(opetuksentavoite);
+//                    });
+//                });
+//            });
+//        });
         oppiaine = oppiaineet.save(oppiaine);
 
         return mapper.map(oppiaine, OppiaineDto.class);
@@ -295,12 +338,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                                          Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto) {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
         assertExists(oppiaine, "Päivitettävää oppiainetta ei ole olemassa");
+        OppiaineenVuosiluokkakokonaisuusDto oldOavlk = mapper.map( (Oppiaineenvuosiluokkakokonaisuus) oppiaine.getVuosiluokkakokonaisuudet().toArray()[0], OppiaineenVuosiluokkakokonaisuusDto.class);
 
         Integer oldJnro = oppiaine.getVuosiluokkakokonaisuudet().stream().findFirst().get().getJnro();
         PoistettuOppiaineDto deleted = delete(opsId, oppiaineDto.getId());
         poistettuOppiaineRepository.delete(deleted.getId());
 
-        return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, tavoitteetDto, oldJnro);
+        return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, null, oldJnro, oldOavlk, true);
     }
 
     private Oppiaine latestNotNull(Long oppiaineId) {
