@@ -669,7 +669,11 @@
                     </fo:table-header>
                 </xsl:if>
                 <fo:table-body>
-                        <xsl:apply-templates select="thead|tbody" />
+                    <!-- todo: EP-830 -->
+                    <fo:table-row>
+                        <fo:table-cell/>
+                    </fo:table-row>
+                    <xsl:apply-templates select="thead|tbody" />
                 </fo:table-body>
             </fo:table>
         </xsl:if>
