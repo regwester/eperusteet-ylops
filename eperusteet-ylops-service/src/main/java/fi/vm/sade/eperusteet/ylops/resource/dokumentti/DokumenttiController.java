@@ -95,7 +95,12 @@ public class DokumenttiController {
     }
 
     private boolean isTimePass(DokumenttiDto dokumenttiDto) {
-        Date newDate = DateUtils.addMinutes(dokumenttiDto.getAloitusaika(), MAX_TIME_IN_MINUTES);
+        Date date = dokumenttiDto.getAloitusaika();
+        if (date == null) {
+            return true;
+        }
+
+        Date newDate = DateUtils.addMinutes(date, MAX_TIME_IN_MINUTES);
         return newDate.before(new Date());
     }
 
