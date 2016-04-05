@@ -38,6 +38,10 @@ public class DokumenttiTaulukko {
         rivit.add(rivi);
     }
 
+    public boolean isEmpty() {
+        return rivit.size() == 0;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

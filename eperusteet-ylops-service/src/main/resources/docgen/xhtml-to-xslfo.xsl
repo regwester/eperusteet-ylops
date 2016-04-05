@@ -671,7 +671,9 @@
                 <fo:table-body>
                     <!-- todo: EP-830 -->
                     <fo:table-row>
-                        <fo:table-cell/>
+                        <fo:table-cell>
+                            <fo:block></fo:block>
+                        </fo:table-cell>
                     </fo:table-row>
                     <xsl:apply-templates select="thead|tbody" />
                 </fo:table-body>

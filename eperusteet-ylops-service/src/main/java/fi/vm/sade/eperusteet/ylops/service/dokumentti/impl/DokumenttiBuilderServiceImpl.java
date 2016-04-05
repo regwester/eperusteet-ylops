@@ -779,7 +779,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             for (Opetuksentavoite opetuksentavoite : oaVuosiluokka.getTavoitteet()) {
 
-                // Opsin tavoitetta vastaava perusteen tavoite
+                // Opsin tavoitetta vastaava perusteen tavoite ja perusteen arviointi tavoitteelle
                 PerusteOpetuksentavoiteDto perusteOpetuksentavoiteDto = null;
                 if (perusteOaVlkDto != null) {
                     List<PerusteOpetuksentavoiteDto> perusteTavoitteet = perusteOaVlkDto.getTavoitteet();
@@ -799,6 +799,37 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
                     // Ops tavoite
                     addLokalisoituteksti(docBase, opetuksentavoite.getTavoite(), "div");
+
+                    // Tavoitteen arviointi
+                    DokumenttiTaulukko taulukko = new DokumenttiTaulukko();
+                    taulukko.addOtsikko(messages.translate("arviointi-vuosiluokan-paatteeksi", docBase.getKieli()));
+                    taulukko.addOtsikkoSarake(messages.translate("arvioinnin-kohde", docBase.getKieli()));
+                    taulukko.addOtsikkoSarake(messages.translate("arvion-hyva-osaaminen", docBase.getKieli()));
+
+                    perusteOpetuksentavoiteDto.getArvioinninkohteet().stream()
+                    .forEach(perusteenTavoitteenArviointi -> {
+                        DokumenttiRivi rivi = new DokumenttiRivi();
+                        String kohde = "";
+                        if (perusteenTavoitteenArviointi.getArvioinninKohde() != null
+                                && perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()) != null) {
+                            kohde = unescapeHtml5(perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()));
+                        }
+                        rivi.addSarake(kohde);
+                        String kuvaus = "";
+                        if (perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus() != null
+                                && perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()) != null) {
+                            kuvaus = unescapeHtml5(perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()));
+                        }
+                        rivi.addSarake(kuvaus);
+                        taulukko.addRivi(rivi);
+                    });
+
+                    if (!taulukko.isEmpty()) {
+                        Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(taulukko.toString()));
+                        Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+                        docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
+                    }
+
 
                     // Tavoitteen sisaltoalueet
                     addVuosiluokkaTavoitteenSisaltoalueet(docBase, opetuksentavoite);
@@ -865,6 +896,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     }
                 }
 
+                // Jos on koosteinen oppimäärä ja oppimäärälle ei löydy perustetta
+                // perusteen oppiaineesta, käytetään opsin perusteen oppiainetta
+                if (oppimaara.getOppiaine().isKoosteinen() && perusteOppiaineDto == null) {
+                    Optional<PerusteOppiaineDto> optPerusteOppiaineDto = docBase.getPerusteDto().getPerusopetus()
+                            .getOppiaine(oppimaara.getTunniste());
+                    if (optPerusteOppiaineDto.isPresent()) {
+                        perusteOppiaineDto = optPerusteOppiaineDto.get();
+                    }
+                }
 
                 addOppimaara(docBase, perusteOppiaineDto, oppimaara, vlk);
             }
@@ -885,11 +925,18 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         docBase.getGenerator().increaseDepth();
 
-        // Peruste
         PerusteTekstiOsaDto perusteTekstiOsaDto = null;
-        PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto = null;
         if (perusteOppiaineDto != null) {
             perusteTekstiOsaDto = perusteOppiaineDto.getTehtava();
+        }
+
+        // Tehtävä
+        addOppiaineYleisetOsiot(docBase, oppiaine.getTehtava(), perusteTekstiOsaDto);
+
+        // Peruste
+        PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto = null;
+
+        if (perusteOppiaineDto != null) {
             Optional<PerusteOppiaineenVuosiluokkakokonaisuusDto> optPerusteOaVlkDto
                     = perusteOppiaineDto.getVuosiluokkakokonaisuus(vlk.getTunniste().getId());
             if (optPerusteOaVlkDto.isPresent()) {
@@ -897,17 +944,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             }
         }
 
-        // Tehtävä
-        addOppiaineYleisetOsiot(docBase, oppiaine.getTehtava(), perusteTekstiOsaDto);
-
         // Oppimäärän vuosiluokkakokonaiuuden kohtaiset
-
-        Oppiaineenvuosiluokkakokonaisuus oaVlk = optOaVlk.get();
-
-        addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk);
+        addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, optOaVlk.get());
 
         docBase.getGenerator().decreaseDepth();
-
         docBase.getGenerator().increaseNumber();
     }
 
