@@ -149,13 +149,19 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             return null;
         }
 
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (ops.getTila().equals(Tila.JULKAISTU) || !name.equals("anonymousUser")) {
-            return dokumentti.getData();
+        return dokumentti.getData();
+    }
+
+    @Override
+    public boolean hasPermission(Long id) {
+        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
+        if (dokumentti == null) {
+            return false;
         }
 
-        return null;
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ops.getTila().equals(Tila.JULKAISTU) || !name.equals("anonymousUser");
     }
 
     @Override

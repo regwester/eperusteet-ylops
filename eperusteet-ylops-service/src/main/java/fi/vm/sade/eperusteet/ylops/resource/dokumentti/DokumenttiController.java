@@ -111,12 +111,15 @@ public class DokumenttiController {
             @ApiResponse(code = 401, message = "ei oikeutta luoda dokumenttia"),
             @ApiResponse(code = 404, message = "dokumenttia ei löydy")
     })
-    @CacheControl(age = CacheControl.ONE_YEAR, nonpublic = false)
     public ResponseEntity<byte[]> get(@PathVariable("dokumenttiId") final Long dokumenttiId) {
         byte[] pdfdata = service.get(dokumenttiId);
 
         if (pdfdata == null || pdfdata.length == 0) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (!service.hasPermission(dokumenttiId)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         HttpHeaders headers = new HttpHeaders();
