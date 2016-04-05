@@ -508,35 +508,35 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 // Oppiaine nimi
                 if (oppiaine.isKoosteinen() || optOaVlk.isPresent()) {
                     addHeader(docBase, getTextString(oppiaine.getNimi(), docBase.getKieli()));
-                }
 
-                docBase.getGenerator().increaseDepth();
-                docBase.getGenerator().increaseDepth();
+                    docBase.getGenerator().increaseDepth();
+                    docBase.getGenerator().increaseDepth();
 
 
-                // Tehtävä
-                addOppiaineTehtava(docBase, oppiaine, perusteOppiaineDto);
+                    // Tehtävä
+                    addOppiaineTehtava(docBase, oppiaine, perusteOppiaineDto);
 
-                // Oppiaineen vuosiluokkakokonaiuuden kohtaiset
-                addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk);
+                    // Oppiaineen vuosiluokkakokonaiuuden kohtaiset
+                    addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk);
 
-                docBase.getGenerator().decreaseDepth();
+                    docBase.getGenerator().decreaseDepth();
 
-                // Oppimäärät
-                Set<Oppiaine> oppimaarat = oppiaine.getOppimaarat();
-                if (oppimaarat != null) {
+                    // Oppimäärät
+                    Set<Oppiaine> oppimaarat = oppiaine.getOppimaarat();
+                    if (oppimaarat != null) {
 
-                    Set<PerusteOppiaineDto> perusteOppimaarat = null;
-                    if (perusteOppiaineDto != null) {
-                        perusteOppimaarat = perusteOppiaineDto.getOppimaarat();
+                        Set<PerusteOppiaineDto> perusteOppimaarat = null;
+                        if (perusteOppiaineDto != null) {
+                            perusteOppimaarat = perusteOppiaineDto.getOppimaarat();
+                        }
+
+                        addOppimaarat(docBase, perusteOppimaarat, oppimaarat, vlk);
                     }
 
-                    addOppimaarat(docBase, perusteOppimaarat, oppimaarat, vlk);
+                    docBase.getGenerator().decreaseDepth();
+
+                    docBase.getGenerator().increaseNumber();
                 }
-
-                docBase.getGenerator().decreaseDepth();
-
-                docBase.getGenerator().increaseNumber();
             }
             docBase.getGenerator().decreaseDepth();
 
