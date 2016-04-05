@@ -761,12 +761,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 }
             }
 
-            if (taulukko.toString().length() > 0) {
-                Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(taulukko.toString()));
-                Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
-
-                docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
-            }
+            taulukko.addToDokumentti(docBase);
         }
     }
 
@@ -824,12 +819,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                         taulukko.addRivi(rivi);
                     });
 
-                    if (!taulukko.isEmpty()) {
-                        Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(taulukko.toString()));
-                        Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
-                        docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
-                    }
-
+                    taulukko.addToDokumentti(docBase);
 
                     // Tavoitteen sisaltoalueet
                     addVuosiluokkaTavoitteenSisaltoalueet(docBase, opetuksentavoite);

@@ -651,9 +651,9 @@
     </xsl:template>
 
     <xsl:template match="strong">
-        <fo:inline font-weight="bold">
+        <fo:block font-weight="bold">
             <xsl:apply-templates select="*|text()" />
-        </fo:inline>
+        </fo:block>
     </xsl:template>
 
     <xsl:template match="table">
