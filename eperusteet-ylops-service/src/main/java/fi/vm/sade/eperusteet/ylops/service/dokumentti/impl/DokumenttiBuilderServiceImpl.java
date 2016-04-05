@@ -482,14 +482,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
                 Set<Oppiaineenvuosiluokkakokonaisuus> oaVlkset = oppiaine.getVuosiluokkakokonaisuudet();
 
-
                 UUID tunniste = oppiaine.getTunniste();
-
-                // Oppiaine nimi
-                addHeader(docBase, getTextString(oppiaine.getNimi(), docBase.getKieli()));
-
-                docBase.getGenerator().increaseDepth();
-                docBase.getGenerator().increaseDepth();
 
                 PerusteOppiaineDto perusteOppiaineDto = null;
                 PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto = null;
@@ -511,6 +504,15 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                         }
                     }
                 }
+
+                // Oppiaine nimi
+                if (oppiaine.isKoosteinen() || optOaVlk.isPresent()) {
+                    addHeader(docBase, getTextString(oppiaine.getNimi(), docBase.getKieli()));
+                }
+
+                docBase.getGenerator().increaseDepth();
+                docBase.getGenerator().increaseDepth();
+
 
                 // Tehtävä
                 addOppiaineTehtava(docBase, oppiaine, perusteOppiaineDto);
