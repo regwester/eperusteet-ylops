@@ -153,8 +153,8 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
         // TODO: Ilmeisesti porukkaa ei nämä kiinnosta lopulta
 //        LokalisoituTeksti edellinenTeksti = (vlk.getSiirtymaEdellisesta() != null) ? vlk.getSiirtymaEdellisesta().getTeksti() : null;
 //        LokalisoituTeksti seuraavaTeksti = (vlk.getSiirtymaSeuraavaan() != null) ? vlk.getSiirtymaSeuraavaan().getTeksti() : null;
-//        LokalisoituTeksti.validoi(validointi, kielet, edellinenTeksti);
-//        LokalisoituTeksti.validoi(validointi, kielet, seuraavaTeksti);
+        LokalisoituTeksti.validoi(validointi, kielet, edellinenTeksti);
+        LokalisoituTeksti.validoi(validointi, kielet, seuraavaTeksti);
     }
 
 }
