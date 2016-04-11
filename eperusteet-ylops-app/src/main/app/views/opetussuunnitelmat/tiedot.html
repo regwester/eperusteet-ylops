@@ -2,7 +2,7 @@
   <h2 ng-hide="luonnissa">
     <div class="action-buttons-inline">
       <button ng-hide="editMode" class="btn btn-default" kaanna="'muokkaa'"
-              oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'hallinta' }" icon-role="edit" ng-click="edit()"></button>
+        oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'hallinta' }" icon-role="edit" ng-click="edit()"></button>
     </div>
     <span kaanna="'opsn-tiedot'"></span>
   </h2>
@@ -105,6 +105,16 @@
         <span ng-repeat="kielikoodi in model.julkaisukielet | orderBy:kieliOrderFn">
           <span ng-bind="kielikoodi | kaanna"></span><span ng-show="!$last" ng-bind="', '"></span>
         </span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-3 formfield-label">
+        <label kaanna="'hyvaksyjataho'"></label>
+      </div>
+      <div class="col-sm-9 formfield-data viewmode">
+        <div ng-if="model.hyvaksyjataho" ng-bind="model.hyvaksyjataho"></div>
+        <div ng-if="!model.hyvaksyjataho" ng-bind="'ei-maaritetty' | kaanna"></div>
       </div>
     </div>
 
@@ -253,6 +263,17 @@
                    ng-disabled="(model.tila==='valmis' || model.tila==='julkaistu')">
             <span ng-bind="kielikoodi | kaanna"></span>
           </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-3 formfield-label">
+          <label for="ops-field-hyvaksyjataho"><span kaanna="'hyvaksyjataho'"></span></label>
+        </div>
+        <div class="col-sm-9 formfield-data">
+          <input id="ops-field-hyvaksyjataho" ng-model="editableModel.hyvaksyjataho"
+                 slocalised class="form-control" placeholder="{{'lisaa-nimi' | kaanna}}"/>
+
         </div>
       </div>
 

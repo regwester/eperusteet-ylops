@@ -12,9 +12,13 @@
       <div class="col-md-3">
         <h3 kaanna="'maarat-kuntatasoittain'"></h3>
         <ul>
-          <li ng-repeat="(taso, arr) in statsit.maaratTasoittain">
-            <label kaanna="'{{ 'kuntataso-' + taso }}'"></label>:
-            {{ arr.length || 0 }}
+          <li>
+            <label kaanna="'kunnat'"></label>:
+            {{ statsit.kunnat || 0 }}
+          </li>
+          <li>
+            <label kaanna="'koulut'"></label>:
+            {{ statsit.koulut || 0 }}
           </li>
         </ul>
       </div>
