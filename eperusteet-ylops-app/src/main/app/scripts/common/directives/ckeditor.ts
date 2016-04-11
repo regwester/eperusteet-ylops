@@ -25,6 +25,7 @@ ylopsApp
     basePath = basePath.substr(0, basePath.indexOf('bower_components/'));
     CKEDITOR.plugins.addExternal('epimage', basePath + 'ckeditor-plugins/epimage/', 'plugin.js');
     CKEDITOR.plugins.addExternal('termi', basePath + 'ckeditor-plugins/termi/', 'plugin.js');
+    CKEDITOR.plugins.addExternal('quicktable', basePath + 'ckeditor-plugins/quicktable/', 'plugin.js');
   })
   .constant('editorLayouts', {
     minimal: [
@@ -34,20 +35,20 @@ ylopsApp
     simplified: [
       {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo']},
       {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
-      {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent']},
+      {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-']},
       {name: 'tools', items: ['About']}
     ],
     light: [
       {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', '-', 'Undo', 'Redo']},
       {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
-      {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent']},
+      {name: 'paragraph', items: ['NumberedList', 'BulletedList']},
       {name: 'insert', items: ['Table', 'Link', 'Termi']},
       {name: 'tools', items: ['About']}
     ],
     normal: [
       {name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
       {name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
-      {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote']},
+      {name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote']},
       {name: 'insert', items: ['Table', 'HorizontalRule', 'SpecialChar', 'Link', 'Termi', 'epimage']},
       {name: 'tools', items: ['About']}
     ]
@@ -192,7 +193,7 @@ ylopsApp
         editor = CKEDITOR.inline(element[0], {
           toolbar: toolbarLayout,
           removePlugins: 'resize,elementspath,scayt,wsc,image',
-          extraPlugins: 'divarea,sharedspace,epimage,termi',
+          extraPlugins: 'divarea,sharedspace,epimage,termi,quicktable',
           disallowedContent: 'br; tr td{width,height}',
           extraAllowedContent: 'img[!data-uid,src]; abbr[data-viite]',
           disableObjectResizing: true, // doesn't seem to work with inline editor

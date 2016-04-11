@@ -17,7 +17,7 @@
 'use strict';
 
 ylopsApp
-.controller('AdminController', function ($scope, ListaSorter, Algoritmit, OpsinTila, Notifikaatiot, opsStatistiikka) {
+.controller('AdminController', function ($scope, ListaSorter, Algoritmit, OpsinTila, Notifikaatiot, opsStatistiikka, opsit) {
   $scope.sorter = ListaSorter.init($scope);
   $scope.opsiLista = true;
   $scope.tilat = ['luonnos', 'valmis', 'poistettu'];
@@ -51,13 +51,16 @@ ylopsApp
     }
   };
 
-  function updatePageinfo() {
+  const updatePageinfo = () => {
     $scope.lastVisible = Math.min(($scope.paginate.current - 1) * $scope.paginate.perPage + $scope.paginate.perPage,
       $scope.filtered.length);
-  }
+  };
 
-  function generoiStatsit(items) {
-    var statsit: any = {};
+  const koulutMap =
+      _(opsit).map('organisaatiot').flatten().filter((org) => _.includes(org.tyypit, 'Oppilaitos')).indexBy('oid').value();
+
+  const generoiStatsit = (items) => {
+    let statsit: any = {};
     statsit.maaratKielittain = _.reduce(items, function(acc, item) {
       _.each(item.julkaisukielet, function(jk) {
         acc[jk] = _.isNumber(acc[jk]) ? acc[jk] + 1 : 0;
@@ -65,26 +68,20 @@ ylopsApp
       return acc;
     }, {});
 
-    _.each(items, function(item) {
-      item.$$taso = 1;
-      var koulutasoinen = _.any(item.organisaatiot, function(org) {
-        return _.findIndex(org.tyypit, 'Oppilaitos') !== -1;
-      });
+    statsit.koulut = _.reduce(items, (acc, item) => {
+      return acc + _.filter(item.organisaatiot, function(org) {
+        return koulutMap[org.oid];
+      }).length;
+    }, 0);
 
-      if (koulutasoinen) {
-        item.$$taso = 0;
-      }
-
-      if (_.size(item.kunnat) > 1) {
-        item.$$taso = 2;
-      }
-    });
+    statsit.kunnat = _.reduce(items, (acc, item) => {
+      return acc + item.kunnat.length;
+    },0);
 
     statsit.maaratTyypeittain = _.groupBy(items, 'koulutustyyppi');
-    statsit.maaratTasoittain = _.groupBy(items, '$$taso');
     statsit.maaratTiloittain = _.groupBy(items, 'tila');
     return statsit;
-  }
+  };
 
   // updatePageinfo();
   $scope.statsit = generoiStatsit($scope.items);
@@ -95,8 +92,8 @@ ylopsApp
 
   $scope.$watch('paginate.current', updatePageinfo);
 
-  $scope.palauta = function (ops) {
-    OpsinTila.palauta(ops, function (res) {
+  $scope.palauta = (ops) => {
+    OpsinTila.palauta(ops, (res) => {
       ops.tila = res.tila;
       Notifikaatiot.onnistui('tallennettu-ok');
     });

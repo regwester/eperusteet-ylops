@@ -11,7 +11,7 @@
     <versiotiedot></versiotiedot>
 </div>
 
-<div ng-hide="options.editing" ng-if="(oppiaine.tyyppi !== 'yhteinen' || !oppiaine.oma)" class="action-buttons-inline">
+<div ng-hide="options.editing" ng-if="(oppiaine.tyyppi !== 'yhteinen' || !oppiaine.oma || ($itseKieliTaiUskonto && !oppiaine.$parent))" class="action-buttons-inline">
     <span class="lukko-wrapper">
         <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip" size="small"></lukko>
     </span>
@@ -40,9 +40,9 @@
 <div ng-show="$onKieliTaiUskonto" should-disable="!oppiaine.oma || options.editing || !isLatest()" perusteen-tekstiosa="perusteOppiaine.tehtava" muokattava="oppiaine.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 <div ng-hide="$onKieliTaiUskonto" should-disable="!oppiaine.oma || options.editing || !isLatest()" perusteen-tekstiosa="perusteOppiaine.tehtava" start-collapsed="false"></div>
 
-<div should-disable="oppiaine.oma === false || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
+<div should-disable="!oppiaine.oma || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tehtava" muokattava="oppiaineenVlk.tehtava" callbacks="callbacks" start-collapsed="false"></div>
 
-<div should-disable="oppiaine.oma === false || options.editing || !isLatest()" class="tekstiosa-wrapper"
+<div should-disable="!oppiaine.oma || options.editing || !isLatest()" class="tekstiosa-wrapper"
      ng-hide="isVuosiluokkaistettava && (oppiaine.tyyppi !== 'yhteinen' || isVuosiluokkaistettava)"
      yksinkertainen-tekstiosa="oppiaineenVlk.yleistavoitteet" otsikko="tavoitteet-ja-sisallot" callbacks="callbacks"></div>
 
@@ -96,8 +96,8 @@
     </table>
 </div>
 
-<div ng-if="perusteOpVlk.tyotavat" should-disable="oppiaine.oma === false || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
-<div ng-if="perusteOpVlk.ohjaus" should-disable="oppiaine.oma === false || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
-<div ng-if="perusteOpVlk.arviointi" should-disable="oppiaine.oma === false || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.tyotavat" should-disable="!oppiaine.oma || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.tyotavat" muokattava="oppiaineenVlk.tyotavat" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.ohjaus" should-disable="!oppiaine.oma || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.ohjaus" muokattava="oppiaineenVlk.ohjaus" callbacks="callbacks"></div>
+<div ng-if="perusteOpVlk.arviointi" should-disable="!oppiaine.oma || options.editing || !isLatest()" perusteen-tekstiosa="perusteOpVlk.arviointi" muokattava="oppiaineenVlk.arviointi" callbacks="callbacks"></div>
 
 <kommentit></kommentit>

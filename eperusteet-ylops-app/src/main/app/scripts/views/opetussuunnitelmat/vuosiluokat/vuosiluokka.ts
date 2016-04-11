@@ -53,22 +53,29 @@ ylopsApp
 })
 
 .service('VuosiluokkaMapper', function ($state, $stateParams, Utils) {
-  function processTavoitteet(scope) {
+
+  const getSisaltoalueet = (paikallinen, scope) => {
+    let sisAlue = (paikallinen.sisaltoalueet[0]) ? scope.sisaltoAlueetMap[paikallinen.sisaltoalueet[0].sisaltoalueet.id] : null;
+    if(!sisAlue){
+      sisAlue = _.has(paikallinen, 'sisaltoalueet[0].sisaltoalueet') ? paikallinen.sisaltoalueet[0].sisaltoalueet : null;
+    }
+    return sisAlue;
+  };
+
+  const processTavoitteet = (scope) => {
     var perusteKohdealueet = scope.perusteOppiaine ? _.indexBy(scope.perusteOppiaine.kohdealueet, 'id') : [];
-    _.each(scope.tavoitteet, function (item) {
+    _.each(scope.tavoitteet, (item) => {
       if (scope.perusteOpVlk) {
-        var perusteTavoite = _.find(scope.perusteOpVlk.tavoitteet, function (pTavoite) {
-          return pTavoite.tunniste === item.tunniste;
-        });
+        const perusteTavoite = _.find(scope.perusteOpVlk.tavoitteet, (pTavoite) => pTavoite.tunniste === item.tunniste);
         item.$tavoite = perusteTavoite.tavoite;
-        item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, function (tunniste) {
-          var sisaltoalue = scope.perusteSisaltoalueet[tunniste] || {};
+        item.$sisaltoalueet = _.map(perusteTavoite.sisaltoalueet, (tunniste) => {
+          let sisaltoalue = scope.perusteSisaltoalueet[tunniste] || {};
           sisaltoalue.$url = $state.href('^.sisaltoalueet') + '#' + tunniste;
           return sisaltoalue;
         });
         item.$kohdealue = perusteKohdealueet[_.first(perusteTavoite.kohdealueet)];
-        item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, function (tunniste) {
-          var laajaalainen = scope.laajaalaiset[tunniste];
+        item.$laajaalaiset = _.map(perusteTavoite.laajaalaisetosaamiset, (tunniste) => {
+          let laajaalainen = scope.laajaalaiset[tunniste];
           laajaalainen.$url = $state.href('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus',
             {vlkId: $stateParams.vlkId}) + '#' + tunniste;
           return laajaalainen;
@@ -79,7 +86,8 @@ ylopsApp
 
     scope.tavoiteMap = _.indexBy(scope.tavoitteet, 'tunniste');
 
-    if (scope.onValinnaiselle) {
+    //TODO käytetäänks scope.valinnaisenTekstiosat ees missään?
+    if (scope.onValinnaiselle && !_.isEmpty(scope.sisaltoAlueetMap)) {
       const otsikot = _.map(scope.tavoitteet, 'tavoite');
       const tekstit = _(scope.tavoitteet)
         .map('sisaltoalueet')
@@ -95,27 +103,25 @@ ylopsApp
     }
 
     scope.tunnisteet = _.keys(scope.tavoiteMap);
-    _.each(scope.tunnisteet, function (tunniste) {
-      var paikallinen = _.find(scope.tavoitteet, function (tavoite) {
-        return tavoite.tunniste === tunniste;
-      });
+    _.each(scope.tunnisteet, (tunniste) => {
+      const paikallinen = _.find(scope.tavoitteet, (tavoite) => tavoite.tunniste === tunniste);
 
       scope.muokattavat[tunniste] = (paikallinen && _.isObject(paikallinen.tavoite)) ?
       { teksti: paikallinen.tavoite,
-        sisaltoalue: (paikallinen.sisaltoalueet[0]) ? scope.sisaltoAlueetMap[paikallinen.sisaltoalueet[0].sisaltoalueet.id] : null } :
+        sisaltoalue: getSisaltoalueet(paikallinen, scope) } :
       { teksti: {}, sisaltoalue: {} };
     });
 
-    scope.valinnaisenTavoitteet = _.map(scope.muokattavat, function(tavoite) {
-        return {
+    scope.valinnaisenTavoitteet = _.map(scope.muokattavat, (tavoite) => {
+      return {
           otsikko: tavoite.teksti,
           teksti: tavoite.sisaltoalue ? tavoite.sisaltoalue.kuvaus : {}
         };
       });
-  }
+  };
 
 
-  this.mapModel = function (scope) {
+  this.mapModel = (scope) => {
     scope.muokattavat = {};
     scope.tavoitteet = scope.vuosiluokka.tavoitteet;
     scope.sisaltoAlueetMap = _.indexBy(scope.vuosiluokka.sisaltoalueet, 'id');
@@ -183,8 +189,6 @@ ylopsApp
   $scope.callbacks = {
     edit: () => $q(resolve => resolve()),
     cancel: refetch,
-    validate: () => _.every($scope.valinnaisenTavoitteet, (tavoite) =>
-      Utils.hasLocalizedText(tavoite.otsikko) && Utils.hasLocalizedText(tavoite.teksti)),
     save: () => $q((resolve) => {
       if ($scope.onValinnaiselle) {
         $rootScope.$broadcast('notifyCKEditor');
@@ -194,8 +198,8 @@ ylopsApp
           Notifikaatiot.onnistui('tallennettu-ok');
           $scope.vuosiluokka = res;
           resolve();
-          // FIXME Kaikki näyttäisi toimivan
-          // VuosiluokkaMapper.mapModel($scope);
+          //needed to make sure the data is updated when switching between tabs sisältöalueet <-> tavoitteet
+          refetch();
         });
       }
       else {

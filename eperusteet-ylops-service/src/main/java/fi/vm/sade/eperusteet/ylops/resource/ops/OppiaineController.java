@@ -55,7 +55,7 @@ public class OppiaineController {
     @RequestMapping(value = "/valinnainen", method = RequestMethod.POST)
     public OppiaineDto addValinnainen(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
         return oppiaineService.addValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuusId(),
-                                              dto.getVuosiluokat(), dto.getTavoitteet(), null);
+                                              dto.getVuosiluokat(), dto.getTavoitteet(), null, null, false);
     }
 
     @RequestMapping(value = "/{id}/kielitarjonta", method = RequestMethod.POST)
@@ -88,14 +88,14 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
-    public OppiaineLaajaDto restoreOppiaine(
+    public OppiainePalautettuDto restoreOppiaine(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("id") final Long id) {
         return oppiaineService.restore(opsId, id, null);
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}", method = RequestMethod.POST)
-    public OppiaineLaajaDto restoreOppiaine(
+    public OppiainePalautettuDto restoreOppiaine(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("id") final Long id,
             @PathVariable("oppimaaraId") final Long oppimaaraId) {

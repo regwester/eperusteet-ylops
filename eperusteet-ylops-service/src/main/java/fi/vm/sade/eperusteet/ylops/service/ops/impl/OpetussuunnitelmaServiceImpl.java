@@ -69,9 +69,18 @@ import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import org.apache.commons.lang.LocaleUtils;
+import java.math.BigDecimal;
+import java.util.*;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,19 +88,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.*;
-import org.springframework.cache.annotation.Cacheable;
 
 /**
  *
@@ -911,6 +907,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     });
                 });
         }
+
         validointi.tuomitse();
     }
 
@@ -944,6 +941,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.JULKAISTU) {
             tila = Tila.VALMIS;
+        }
+
+        if (ops.getTyyppi() == Tyyppi.OPS && ops.getTila() == Tila.JULKAISTU && tila == Tila.VALMIS) {
+            ops.setTila(tila);
+            ops = repository.save(ops);
         }
 
         if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi()

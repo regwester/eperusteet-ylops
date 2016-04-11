@@ -28,6 +28,5 @@ import java.util.List;
  */
 @Repository
 public interface DokumenttiRepository extends JpaRepository<Dokumentti, Long> {
-    Dokumentti findById(Long id);
-    List<Dokumentti> findByOpsIdAndKieli(Long opsId, Kieli kieli);
+    Dokumentti findByOpsIdAndKieli(Long opsId, Kieli kieli);
 }

@@ -55,7 +55,7 @@
         <property name="permissionEvaluator" ref="ylopsPermissionEvaluator"/>
     </bean>
 
-    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
+    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
         <security:expression-handler ref="expressionHandler"/>
     </security:global-method-security>
 
@@ -63,8 +63,8 @@
 
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service"/>
     <tx:annotation-driven/>
-    <cache:annotation-driven />
-    <aop:aspectj-autoproxy  />
+    <cache:annotation-driven/>
+    <aop:aspectj-autoproxy/>
 
     <jee:jndi-lookup id="dataSource" jndi-name="jdbc/eperusteet-ylops" expected-type="javax.sql.DataSource"/>
 
@@ -107,9 +107,7 @@
     <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean" />
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-        <property name="basename">
-            <value>messages</value>
-        </property>
+        <property name="basename" value="messages"/>
     </bean>
 
     <task:annotation-driven executor="defaultExecutor"/>
@@ -120,14 +118,4 @@
     <bean id="defaultExecutor" class="org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor">
         <constructor-arg ref="defaultThreadPool"/>
     </bean>
-
-    <bean id="docThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="2"/>
-        <property name="maxPoolSize"  value="4"/>
-        <property name="queueCapacity" value="100"/>
-    </bean>
-    <bean id="docTaskExecutor" class="org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor">
-        <constructor-arg ref="docThreadPool"/>
-    </bean>
-
 </beans>

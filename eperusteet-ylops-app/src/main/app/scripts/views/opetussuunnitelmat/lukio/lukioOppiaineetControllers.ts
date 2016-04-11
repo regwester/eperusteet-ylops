@@ -315,7 +315,7 @@ ylopsApp
                 && !$scope.oppiaine.oppiaineId;
         $scope.isEditable = () => $scope.oppiaine && $scope.oppiaine.oma;
         $scope.isDeletable = () => $scope.oppiaine && $scope.oppiaine.oma && (!$scope.oppiaine.maariteltyPohjassa
-                || (!$scope.oppiaine.oppiaineId && $scope.oppiaine.abstrakti));
+                || (!$scope.oppiaine.oppiaineId && $scope.oppiaine.abstrakti) || ($scope.oppiaine.oppiaineId && !$scope.oppiaine.abstrakti));
         $scope.canAddOppimaara = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma;
         $scope.canAddFromTarjonta = () => $scope.oppiaine && $scope.oppiaine.koosteinen && $scope.oppiaine.oma
                         && !_.isEmpty($scope.oppiaine.pohjanTarjonta);

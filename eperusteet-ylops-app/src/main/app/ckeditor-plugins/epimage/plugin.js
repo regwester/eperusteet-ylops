@@ -17,7 +17,7 @@
 'use strict';
 /* global CKEDITOR */
 
-CKEDITOR.plugins.add( 'epimage', {
+CKEDITOR.plugins.add('epimage', {
 	requires: 'dialog',
 	icons: 'epimage',
 	init: function( editor ) {

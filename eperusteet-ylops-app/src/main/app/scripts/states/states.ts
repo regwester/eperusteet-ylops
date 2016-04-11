@@ -44,8 +44,11 @@ ylopsApp
         templateUrl: 'views/admin.html',
         controller: 'AdminController',
         resolve: {
-          opsStatistiikka: function(OpetussuunnitelmaCRUD) {
+          opsStatistiikka: (OpetussuunnitelmaCRUD) => {
             return OpetussuunnitelmaCRUD.tilastot().$promise;
+          },
+          opsit: (OpetussuunnitelmaCRUD) => {
+            return OpetussuunnitelmaCRUD.query({}).$promise;
           }
         }
       })

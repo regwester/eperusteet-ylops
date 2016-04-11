@@ -29,7 +29,7 @@
           <td kaanna="poistettu-toiminnot"></td>
         </tr>
       </thead>
-      <tr ng-repeat="poistettu in poistetut | startFrom:itemsPerPage*(currentPage-1) | limitTo:itemsPerPage">
+      <tr ng-repeat="poistettu in poistetut | startFrom:itemsPerPage*(currentPage-1) | limitTo:itemsPerPage">
         <td>{{poistettu.nimi | kaanna}}</td>
         <td>{{'poistettu-tyyppi-'+poistettu.type | kaanna}}</td>
         <td>{{poistettu.luoja}}</td>

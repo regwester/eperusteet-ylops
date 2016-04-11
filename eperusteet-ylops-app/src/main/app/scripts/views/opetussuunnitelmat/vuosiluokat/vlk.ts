@@ -146,7 +146,7 @@ ylopsApp
         $timeout(() => {
           $state.go('^.vuosiluokkakokonaisuus', $stateParams, { reload: true });
         });
-      });
+      }, (res) => Notifikaatiot.fataali( _.has(res, 'data.syy') ? res.data.syy : 'tallennus-epaonnistui'));
     }),
     cancel: () => $q((resolve) => {
       resolve();
@@ -266,7 +266,7 @@ ylopsApp
       }, Notifikaatiot.serverCb);
     }),
     notify: (mode) => {
-      $scope.options.editing = mode
+      $scope.options.editing = mode;
       $scope.callbacks.notifier(mode);
     },
     notifier: _.noop
