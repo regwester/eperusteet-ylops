@@ -152,7 +152,9 @@ ylopsApp
     Lukko.isLocked($scope, commonParams);
   }
 
-  const vanhempiOnUskontoTaiKieli = (oppiaine) => _.isString(oppiaine.koodiArvo) && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
+  const vanhempiOnUskontoTaiKieli = (oppiaine) => _.isString(oppiaine.koodiArvo)
+    && _.includes(['A1', 'B1', 'AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
+  $scope.$itseKieliTaiUskonto = vanhempiOnUskontoTaiKieli($scope.oppiaine);
 
   OppiaineService.getParent()
     .then((res) => {

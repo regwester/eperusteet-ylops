@@ -41,7 +41,7 @@ ylopsApp
         item.luoja = nimi === ' ' ? item.luoja : nimi;
       });
     });
-    
+
     _.forEach( items, (item) => {
       item.type= type;
       $scope.kaikki.push(item);
@@ -66,7 +66,7 @@ ylopsApp
       const matchRemover = Algoritmit.match(searchString, item.luoja);
       const matchRemovedDate = Algoritmit.match(searchString, $filter('aikaleima')(item.luotu, 'date'));
       const matchTextTitle = Algoritmit.match(searchString, item.nimi);
-      return matchRemover || matchRemovedDate || matchTextTitle;
+      return matchRemover || matchRemovedDate || matchTextTitle;
     });
   });
 
