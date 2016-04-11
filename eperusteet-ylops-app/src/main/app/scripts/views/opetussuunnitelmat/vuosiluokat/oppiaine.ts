@@ -153,8 +153,14 @@ ylopsApp
   }
 
   const vanhempiOnUskontoTaiKieli = (oppiaine) => _.isString(oppiaine.koodiArvo)
-    && _.includes(['A1', 'B1', 'AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
-  $scope.$itseKieliTaiUskonto = vanhempiOnUskontoTaiKieli($scope.oppiaine);
+    && _.includes(['AI', 'VK', 'TK', 'KT'], oppiaine.koodiArvo.toUpperCase());
+
+  const oppimaaraUskontoTaiKieli = (oppiaine) => _.isString(oppiaine.koodiArvo)
+    && !_.some(['AI', 'VK', 'TK', 'KT'], (koodi) => koodi === oppiaine.koodiArvo)
+    && !!(_.some(['AI', 'VK', 'TK', 'KT'], (koodi) => _.startsWith(oppiaine.koodiArvo, koodi))
+        || oppiaine.koodiArvo.match(/^(?:RU)[AB]\d+$/g));
+
+  $scope.$itseKieliTaiUskonto = oppimaaraUskontoTaiKieli($scope.oppiaine);
 
   OppiaineService.getParent()
     .then((res) => {

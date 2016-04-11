@@ -52,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.stream.Collectors.toList;
