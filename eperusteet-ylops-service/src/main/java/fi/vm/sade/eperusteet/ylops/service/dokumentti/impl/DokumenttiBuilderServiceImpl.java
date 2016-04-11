@@ -298,7 +298,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             throws ParserConfigurationException, IOException, SAXException {
 
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
-            if (lapsi.getTekstiKappale() != null && lapsi.getTekstiKappale().getNimi() != null) {
+            if (lapsi.getTekstiKappale() != null) {
 
                 // Ei näytetä yhteisen osien Pääkappaleiden otsikoita
                 // Opetuksen järjestäminen ja Opetuksen toteuttamisen lähtökohdat
@@ -306,7 +306,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     addTekstiKappale(docBase, lapsi, false);
                 } else {
 
-                    addHeader(docBase, getTextString(lapsi.getTekstiKappale().getNimi(), docBase.getKieli()));
+                    if (lapsi.getTekstiKappale().getNimi() != null) {
+                        addHeader(docBase, getTextString(lapsi.getTekstiKappale().getNimi(), docBase.getKieli()));
+                    }
 
                     // Opsin teksti luvulle
                     if (lapsi.getTekstiKappale().getTeksti() != null) {
@@ -319,14 +321,17 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
                     }
 
-                    docBase.getGenerator().increaseDepth();
+                    if (lapsi.getTekstiKappale().getNimi() != null) {
+                        docBase.getGenerator().increaseDepth();
+                    }
 
                     // Rekursiivisesti
                     addTekstiKappale(docBase, lapsi, false);
 
-                    docBase.getGenerator().decreaseDepth();
-                    docBase.getGenerator().increaseNumber();
-
+                    if (lapsi.getTekstiKappale().getNimi() != null) {
+                        docBase.getGenerator().decreaseDepth();
+                        docBase.getGenerator().increaseNumber();
+                    }
                 }
             }
         }

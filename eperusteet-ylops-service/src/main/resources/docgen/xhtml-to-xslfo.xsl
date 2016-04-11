@@ -55,7 +55,7 @@
                                               extent="20mm" />
                             <fo:region-after region-name="ra-right"
                                              extent="20mm" />
-                            <fo:region-start extent="30mm"/>
+                            <fo:region-start extent="30mm" />
                             <fo:region-end region-name="re-right" extent="30mm"
                                            reference-orientation="90" display-align="after"
                                            background-image="gradient.svg"
@@ -509,14 +509,33 @@
 
     <xsl:template match="img">
         <fo:block space-after="12pt" text-align="center">
-            <fo:external-graphic src="{@src}" content-width="scale-to-fit" content-height="100%"
-                                 width="100%" scaling="uniform">
-            </fo:external-graphic>
+            <!--<fo:external-graphic src="{@src}" content-width="scale-to-fit" content-height="100%"
+                                 width="100%" scaling="uniform" />-->
+            <fo:table table-layout="fixed" width="100%">
+                <fo:table-column column-width="proportional-column-width(1)" />
+                <fo:table-body>
+                    <fo:table-row keep-with-next="always">
+                        <fo:table-cell>
+                            <fo:block>
+                                <fo:external-graphic src="{@src}" content-width="scale-to-fit" content-height="100%"
+                                                     width="100%" scaling="uniform" />
+                            </fo:block>
+                        </fo:table-cell>
+                    </fo:table-row>
+                    <fo:table-row>
+                        <fo:table-cell>
+                            <fo:block>
+                                <xsl:value-of select="@alt" />
+                            </fo:block>
+                        </fo:table-cell>
+                    </fo:table-row>
+                </fo:table-body>
+            </fo:table>
         </fo:block>
     </xsl:template>
 
     <xsl:template match="ol">
-        <xsl:if test="node()/li">
+        <xsl:if test="li">
             <fo:list-block provisional-distance-between-starts="1cm"
                            provisional-label-separation="0.5cm">
                 <xsl:attribute name="space-after">
@@ -658,7 +677,8 @@
 
     <xsl:template match="table">
         <xsl:if test="thead|tbody">
-            <fo:table table-layout="fixed" inline-progression-dimension="100%" space-after="12pt" font-size="10pt">
+            <fo:table table-layout="fixed" inline-progression-dimension="100%"
+                      space-after="12pt" font-size="10pt" page-break-inside="avoid">
                 <xsl:if test="caption">
                     <fo:table-header>
                         <fo:table-cell>
@@ -811,7 +831,7 @@
     </xsl:template>
 
     <xsl:template match="ul">
-        <xsl:if test="node()/li">
+        <xsl:if test="li">
             <fo:list-block provisional-distance-between-starts="0.5cm"
                            provisional-label-separation="0.25cm">
                 <xsl:attribute name="space-after">
