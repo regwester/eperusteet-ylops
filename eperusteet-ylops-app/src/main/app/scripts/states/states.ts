@@ -102,7 +102,7 @@ ylopsApp
         },
         controller: function ($scope, $stateParams, opsModel, vuosiluokkakokonaisuudet, opsService) {
           $scope.model = opsModel;
-          $scope.isLukio = _.some(['koulutustyyppi_2', 'koulutustyyppi_23'], (i) => i === opsModel.koulutustyyppi);
+          $scope.isLukio = _.some(['koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_14'], (i) => i === opsModel.koulutustyyppi);
           $scope.isEditable = opsService.isEditable;
           $scope.vuosiluokkakokonaisuudet = vuosiluokkakokonaisuudet;
           $scope.luonnissa = $stateParams.id === 'uusi';

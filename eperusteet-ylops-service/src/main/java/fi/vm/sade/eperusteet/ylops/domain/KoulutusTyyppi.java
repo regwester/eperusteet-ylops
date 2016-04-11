@@ -31,7 +31,8 @@ public enum KoulutusTyyppi {
     PERUSOPETUS("koulutustyyppi_16"),
     LUKIOKOULUTUS("koulutustyyppi_2"),
     LUKIOVALMISTAVAKOULUTUS("koulutustyyppi_23"),
-    PERUSOPETUSVALMISTAVA("koulutustyyppi_22");
+    PERUSOPETUSVALMISTAVA("koulutustyyppi_22"),
+    AIKUISLUKIOKOULUTUS("koulutustyyppi_14");
 
     private final String tyyppi;
 
@@ -68,6 +69,7 @@ public enum KoulutusTyyppi {
     }
 
     public boolean isLukio() {
-        return tyyppi != null && (tyyppi.equals(LUKIOKOULUTUS.toString()) || tyyppi.equals(LUKIOVALMISTAVAKOULUTUS.toString()));
+        return tyyppi != null && (tyyppi.equals(LUKIOKOULUTUS.toString()) ||
+                tyyppi.equals(LUKIOVALMISTAVAKOULUTUS.toString()) || tyyppi.equals(AIKUISLUKIOKOULUTUS.toString()));
     }
 }

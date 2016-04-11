@@ -92,7 +92,8 @@ public class EperusteetServiceImpl implements EperusteetService {
             KoulutusTyyppi.VARHAISKASVATUS,
             KoulutusTyyppi.LUKIOKOULUTUS,
             KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS,
-            KoulutusTyyppi.PERUSOPETUSVALMISTAVA
+            KoulutusTyyppi.PERUSOPETUSVALMISTAVA,
+            KoulutusTyyppi.AIKUISLUKIOKOULUTUS
         };
         return new HashSet<>(Arrays.asList(vaihtoehdot));
     }
@@ -186,7 +187,8 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public List<PerusteInfoDto> findLukiokoulutusPerusteet() {
-        return findPerusteet(new HashSet<>(Arrays.asList(KoulutusTyyppi.LUKIOKOULUTUS, KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS)));
+        return findPerusteet(new HashSet<>(Arrays.asList(KoulutusTyyppi.LUKIOKOULUTUS,
+                KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS, KoulutusTyyppi.AIKUISLUKIOKOULUTUS)));
     }
 
     @Override

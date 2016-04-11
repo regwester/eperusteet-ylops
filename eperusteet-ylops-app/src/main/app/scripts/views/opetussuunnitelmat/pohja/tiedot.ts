@@ -117,7 +117,7 @@ ylopsApp
         return;
       }
 
-      const isLukio = _.any(["koulutustyyppi_2", "koulutustyyppi_23"], (i) => i === $scope.model.koulutustyyppi);
+      const isLukio = _.any(['koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_14'], (i) => i === $scope.model.koulutustyyppi);
       const perusteet = isLukio ? EperusteetLukiokoulutus : EperusteetPerusopetus;
       perusteet.query({}, (perusteet) => {
         $scope.perustelista = perusteet;

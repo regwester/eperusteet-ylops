@@ -69,8 +69,18 @@ import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import java.math.BigDecimal;
+import java.util.*;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,18 +88,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.*;
 
 /**
  *
@@ -883,32 +881,31 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         //TODO:should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
         PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-
         if (peruste.getPerusopetus() != null) {
             ops.getOppiaineet().stream()
-                    .filter(OpsOppiaine::isOma)
-                    .map(OpsOppiaine::getOppiaine)
-                    .forEach(oa -> {
-                        peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
-                            Oppiaine.validoi(validointi, oa, julkaisukielet);
-                            Set<UUID> PerusteenTavoitteet = new HashSet<>();
+                .filter(OpsOppiaine::isOma)
+                .map(OpsOppiaine::getOppiaine)
+                .forEach(oa -> {
+                    peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
+                        Oppiaine.validoi(validointi, oa, julkaisukielet);
+                        Set<UUID> PerusteenTavoitteet = new HashSet<>();
 
-                            poppiaine.getVuosiluokkakokonaisuudet().stream()
-                                    .forEach(vlk -> vlk.getTavoitteet().stream()
-                                            .forEach(tavoite -> PerusteenTavoitteet.add(tavoite.getTunniste())));
+                        poppiaine.getVuosiluokkakokonaisuudet().stream()
+                                .forEach(vlk -> vlk.getTavoitteet().stream()
+                                        .forEach(tavoite -> PerusteenTavoitteet.add(tavoite.getTunniste())));
 
-                            Set<UUID> OpsinTavoitteet = oa.getVuosiluokkakokonaisuudet().stream()
-                                    .flatMap(vlk -> vlk.getVuosiluokat().stream())
-                                    .map(ovlk -> ovlk.getTavoitteet())
-                                    .flatMap(tavoitteet -> tavoitteet.stream())
-                                    .map(tavoite -> tavoite.getTunniste())
-                                    .collect(Collectors.toSet());
+                        Set<UUID> OpsinTavoitteet = oa.getVuosiluokkakokonaisuudet().stream()
+                                .flatMap(vlk -> vlk.getVuosiluokat().stream())
+                                .map(ovlk -> ovlk.getTavoitteet())
+                                .flatMap(tavoitteet -> tavoitteet.stream())
+                                .map(tavoite -> tavoite.getTunniste())
+                                .collect(Collectors.toSet());
 
-                            if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
-                                //                    validointi.lisaaVirhe(Validointi.luoVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi()));
-                            }
-                        });
+                        if (!OpsinTavoitteet.equals(PerusteenTavoitteet)) {
+                            //                    validointi.lisaaVirhe(Validointi.luoVirhe("opsin-oppiainetta-ei-ole-vuosiluokkaistettu", poppiaine.getNimi()));
+                        }
                     });
+                });
         }
 
         validointi.tuomitse();
