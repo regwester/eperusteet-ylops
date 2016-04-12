@@ -44,19 +44,17 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * @author mikkom
@@ -304,8 +302,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         vuosiluokat.forEach(vuosiluokka -> {
             List<Oppiaineenvuosiluokka> found = filteredVlks.stream().filter(oppiaineenvuosiluokka ->
                     oppiaineenvuosiluokka.getVuosiluokka().compareTo(vuosiluokka) == 0).collect(toList());
-            if (found.size() == 0) {
-                uudet.addAll(luoOppiaineenVuosiluokat(new HashSet<>(Collections.singleton(vuosiluokka)), new ArrayList<TekstiosaDto>()));
+            if (found.isEmpty()) {
+                uudet.addAll(luoOppiaineenVuosiluokat(new HashSet<>(Collections.singleton(vuosiluokka)), new ArrayList<>()));
             }
         });
 
@@ -378,7 +376,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         Oppiaine latest = latestNotNull(poistettu.getOppiaine());
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
-        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), true);
+        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
         pelastettu.setTyyppi( oppiaine.getTyyppi() );
         pelastettu.setLaajuus( oppiaine.getLaajuus() );
 
