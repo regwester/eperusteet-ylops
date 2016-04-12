@@ -514,6 +514,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         mapper.map(oppiaineDto, oppiaine);
 
+        oppiaine.muokattu();
         oppiaine = oppiaineet.save(oppiaine);
         return mapper.map(new OpsOppiaine(oppiaine, isOma), OpsOppiaineDto.class);
     }

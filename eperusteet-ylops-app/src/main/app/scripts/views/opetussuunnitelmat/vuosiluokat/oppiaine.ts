@@ -222,15 +222,19 @@ ylopsApp
       otsikko: 'varmista-poisto',
       primaryBtn: 'poista',
       successCb: () => {
-        OppiaineCRUD.remove({
-          opsId: $stateParams.id,
-          oppiaineId: $stateParams.oppiaineId
-        }, () => {
-          Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
-          $state.go($state.current.name, _.merge(_.clone($stateParams), {
-            oppiaineId: $scope.oppiaine.$parent.id
-          }), { reload: true, notify: true});
-        }, Notifikaatiot.serverCb);
+        const parentId = $scope.oppiaine.$parent.id;
+        //tallennetaan ennen poistoa, jotta voidaan palauttaa uusin versio
+        $scope.oppiaine.$save({ opsId: $stateParams.id }, () => {
+          OppiaineCRUD.remove({
+            opsId: $stateParams.id,
+            oppiaineId: $stateParams.oppiaineId
+          }, () => {
+            Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
+            $state.go($state.current.name, _.merge(_.clone($stateParams), {
+              oppiaineId: parentId
+            }), { reload: true, notify: true});
+          }, Notifikaatiot.serverCb);
+        });
       }
     })();
   };
