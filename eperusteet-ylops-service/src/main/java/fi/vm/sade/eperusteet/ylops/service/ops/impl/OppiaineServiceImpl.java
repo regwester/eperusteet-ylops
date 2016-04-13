@@ -28,6 +28,7 @@ import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -101,6 +102,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Autowired
     private PoistettuOppiaineRepository poistettuOppiaineRepository;
+
+    @Autowired
+    private OpetuksenkohdealueRepository opetuksenkohdealueRepository;
 
     public OppiaineServiceImpl() {
     }
@@ -375,6 +379,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         Oppiaine latest = latestNotNull(poistettu.getOppiaine());
+        updateOpetuksenKohdealueet(latest);
+
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
         Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
         pelastettu.setTyyppi( oppiaine.getTyyppi() );
@@ -397,6 +403,39 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         return palautettuDto;
+    }
+
+    private void updateOpetuksenKohdealueet(Oppiaine latest) {
+        Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
+        Map<Long, Opetuksenkohdealue> ids = new HashedMap();
+
+        for (Opetuksenkohdealue opetuksenkohdealue : latest.getKohdealueet()) {
+            if (opetuksenkohdealueRepository.findOne(opetuksenkohdealue.getId()) == null) {
+                List<Revision> revisions = opetuksenkohdealueRepository.getRevisions(opetuksenkohdealue.getId());
+                if(revisions.size() > 1){
+                    Revision revision = revisions.get(revisions.size() - 1);
+                    opetuksenkohdealue = opetuksenkohdealueRepository.findRevision(revision.getId(), revision.getNumero());
+                    Opetuksenkohdealue a = opetuksenkohdealueRepository.save(opetuksenkohdealue);
+                    kohdealueet.add(a);
+                    ids.put(opetuksenkohdealue.getId(), a);
+                }
+            }
+        }
+
+        latest.getKohdealueet().clear();
+        latest.setKohdealueet(kohdealueet);
+
+        latest.getVuosiluokkakokonaisuudet().forEach(oppiaineenvuosiluokkakokonaisuus -> {
+            oppiaineenvuosiluokkakokonaisuus.getVuosiluokat().forEach(oppiaineenvuosiluokka -> {
+                oppiaineenvuosiluokka.getTavoitteet().forEach(opetuksentavoite -> {
+                    Set<Opetuksenkohdealue> tmpKohdealueet = new HashSet<>();
+                    opetuksentavoite.getKohdealueet().forEach(opetuksenkohdealue -> {
+                        tmpKohdealueet.add(ids.get(opetuksenkohdealue.getId()));
+                    });
+                    opetuksentavoite.setKohdealueet(tmpKohdealueet);
+                });
+            });
+        });
     }
 
     private Optional<Vuosiluokkakokonaisuus> findFirstVlk(Opetussuunnitelma ops, Oppiaine pelastettu) {
