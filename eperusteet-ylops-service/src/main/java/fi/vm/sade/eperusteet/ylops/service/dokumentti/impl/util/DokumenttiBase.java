@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import lombok.Getter;
 import lombok.Setter;
 import org.w3c.dom.Document;
@@ -36,4 +37,5 @@ public class DokumenttiBase {
     PerusteDto perusteDto;
     CharapterNumberGenerator generator;
     Kieli kieli;
+    DtoMapper mapper;
 }

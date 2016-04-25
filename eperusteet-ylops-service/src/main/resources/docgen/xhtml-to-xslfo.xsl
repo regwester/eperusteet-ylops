@@ -612,7 +612,7 @@
     </xsl:template>
 
     <xsl:template match="p">
-        <fo:block>
+        <fo:block space-after="0.75em">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
@@ -620,7 +620,7 @@
 
     <xsl:template match="div">
         <fo:block font-size="10pt" line-height="1.25em"
-                  space-after="12pt" text-align="justify">
+                  space-after="20pt" text-align="justify">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
@@ -670,9 +670,9 @@
     </xsl:template>
 
     <xsl:template match="strong">
-        <fo:block font-weight="bold">
+        <fo:inline font-weight="bold">
             <xsl:apply-templates select="*|text()" />
-        </fo:block>
+        </fo:inline>
     </xsl:template>
 
     <xsl:template match="table">
@@ -952,7 +952,8 @@
     </xsl:template>
 
     <xsl:template match="cite">
-        <fo:block color="#444444" font-style="italic" font-size="10pt" space-after="12pt">
+        <fo:block color="#444444" font-style="italic" font-size="10pt"
+                  space-after="20pt" text-align="justify" line-height="1.25em">
             <xsl:apply-templates select="*|text()" />
         </fo:block>
     </xsl:template>
@@ -982,8 +983,8 @@
         /html/body//h2 |
         /html/body//h3 |
         /html/body//h4">
-            <fo:block text-align-last="justify" line-height="15pt"
-                      font-size="12pt" space-after="3pt" text-align="start"
+            <fo:block text-align-last="justify" line-height="1.25em"
+                      font-size="10pt" space-after="0.75em" text-align="start"
                       text-indent="-1cm">
 
                 <xsl:attribute name="start-indent">
