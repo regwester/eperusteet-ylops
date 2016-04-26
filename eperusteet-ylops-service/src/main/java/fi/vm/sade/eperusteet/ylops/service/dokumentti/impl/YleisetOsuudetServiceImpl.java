@@ -3,17 +3,15 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
-import org.jsoup.Jsoup;
-import org.jsoup.helper.W3CDom;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addHeader;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addLokalisoituteksti;
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.getTextString;
 
 /**
@@ -48,13 +46,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
                     // Opsin teksti luvulle
                     if (lapsi.getTekstiKappale().getTeksti() != null) {
-                        String teskti = "<div>" + getTextString(docBase, lapsi.getTekstiKappale().getTeksti()) + "</div>";
-
-                        Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teskti));
-                        Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
-
-                        docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
-
+                        addLokalisoituteksti(docBase, lapsi.getTekstiKappale().getTeksti(), "div");
                     }
 
                     if (lapsi.getTekstiKappale().getNimi() != null) {

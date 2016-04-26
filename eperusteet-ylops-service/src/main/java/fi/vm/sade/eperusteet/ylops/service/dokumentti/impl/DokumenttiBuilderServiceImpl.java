@@ -162,9 +162,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
             // Lukio
             if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
-                lukioService.addOpetuksenYleisetTavoitteet(docBase);
-                lukioService.addAihekokonaisuudet(docBase);
-                lukioService.addOppiaineet(docBase);
+                lukioService.addOppimistavoitteetJaOpetuksenKeskeisetSisallot(docBase);
             }
         }
 

@@ -968,8 +968,8 @@
     </xsl:template>
 
     <xsl:template name="toc">
-        <fo:block break-before='page' space-after="12pt" id="TableOfContents" color="#007EC5" font-weight="bold"
-                  line-height="21pt" font-size="16pt" text-align="start">
+        <fo:block break-before="page" space-after="20pt" id="TableOfContents" color="#007EC5" font-weight="bold"
+                  line-height="20pt" font-size="18pt" text-align="start">
             <xsl:if test="//html/@lang = 'fi'">
                 <xsl:text>SISÄLTÖ</xsl:text>
             </xsl:if>
@@ -983,9 +983,8 @@
         /html/body//h2 |
         /html/body//h3 |
         /html/body//h4">
-            <fo:block text-align-last="justify" line-height="1.25em"
-                      font-size="10pt" space-after="0.75em" text-align="start"
-                      text-indent="-1cm">
+            <fo:block text-align-last="justify" font-size="12pt"
+                      space-after="0.25em" text-align="start" text-indent="-1cm">
 
                 <xsl:attribute name="start-indent">
                     <xsl:choose>
@@ -1008,6 +1007,9 @@
                 <xsl:if test="name() = 'h1'">
                     <xsl:attribute name="color">
                         <xsl:text>#007EC5</xsl:text>
+                    </xsl:attribute>
+                    <xsl:attribute name="space-before">
+                        <xsl:text>0.5em</xsl:text>
                     </xsl:attribute>
                 </xsl:if>
 

@@ -33,6 +33,17 @@ public class DokumenttiUtils {
         }
     }
 
+    public static void addTeksti(DokumenttiBase docBase, String teksti, String tagi) {
+        if (teksti != null) {
+            teksti = "<" + tagi + ">" + unescapeHtml5(teksti) + "</" + tagi + ">";
+
+            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
+            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+
+            docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
+        }
+    }
+
     public static void addTekstiosa(DokumenttiBase docBase, Tekstiosa tekstiosa, String tagi) {
         if (tekstiosa != null) {
             LokalisoituTeksti otsikko = tekstiosa.getOtsikko();

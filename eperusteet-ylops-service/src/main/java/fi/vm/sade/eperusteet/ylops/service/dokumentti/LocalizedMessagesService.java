@@ -24,7 +24,5 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * @author iSaul
  */
 public interface LocalizedMessagesService {
-
-    @PreAuthorize("permitAll()")
     String translate(String key, Kieli kieli);
 }
