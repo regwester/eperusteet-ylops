@@ -532,8 +532,7 @@ ylopsApp
                     LukioOpetussuunnitelmaService.vapautaOppiaine($scope.oppiaine.id)
                         .then(() => {
                             $scope.editMode = false;
-                            resolve();
-                            $timeout(() => $state.reload());
+                            resolve().then($state.reload);
                         });
                 });
             })

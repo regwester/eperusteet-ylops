@@ -196,23 +196,24 @@ ylopsApp
     opsId: $stateParams.id,
   };
 
-  Editointikontrollit.registerCallback({
-    edit: () => $q.when(),
-    save: () => $q((resolve, reject) => {
-      TekstikappaleOps.saveRakenne($scope.model, () => {
-        Lukko.unlock(commonParams);
-        $scope.$$isRakenneMuokkaus = false;
-        $rootScope.$broadcast('genericTree:refresh');
-        resolve();
-      });
-    }),
-    cancel: () => $q((resolve) => {
-      resolve();
-      Lukko.unlock(commonParams, $state.reload);
-    })
-  });
 
   $scope.muokkaaRakennetta = () => {
+    Editointikontrollit.registerCallback({
+      edit: () => $q.when(),
+      save: () => $q((resolve, reject) => {
+        TekstikappaleOps.saveRakenne($scope.model, () => {
+          Lukko.unlock(commonParams);
+          $scope.$$isRakenneMuokkaus = false;
+          $rootScope.$broadcast('genericTree:refresh');
+          resolve();
+        });
+      }),
+      cancel: () => $q((resolve) => {
+        resolve();
+        Lukko.unlock(commonParams, $state.reload);
+      })
+    });
+    
     Lukko.lock(commonParams, () => {
       Editointikontrollit.startEditing().then(() => {
         $scope.$$isRakenneMuokkaus = true;
