@@ -466,18 +466,9 @@
             </xsl:when>
             <xsl:when test="@href">
                 <fo:basic-link color="blue">
-                    <xsl:choose>
-                        <xsl:when test="starts-with(@href, '#')">
-                            <xsl:attribute name="internal-destination">
-                                <xsl:value-of select="substring(@href, 2)" />
-                            </xsl:attribute>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:attribute name="external-destination">
-                                <xsl:value-of select="@href" />
-                            </xsl:attribute>
-                        </xsl:otherwise>
-                    </xsl:choose>
+                    <xsl:attribute name="external-destination">
+                        <xsl:value-of select="@href" />
+                    </xsl:attribute>
                     <xsl:apply-templates select="*|text()" />
                 </fo:basic-link>
             </xsl:when>

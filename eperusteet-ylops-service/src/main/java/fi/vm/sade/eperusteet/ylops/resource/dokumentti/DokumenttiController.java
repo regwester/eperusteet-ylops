@@ -16,18 +16,12 @@
 
 package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
-import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import org.apache.commons.lang.time.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -43,22 +37,12 @@ import java.util.Date;
 @RestController
 @RequestMapping("/dokumentit")
 public class DokumenttiController {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DokumenttiController.class);
-
     private static final int MAX_TIME_IN_MINUTES = 2;
 
     @Autowired
     DokumenttiService service;
 
     @RequestMapping(method = RequestMethod.POST)
-    @ApiOperation("luo dokumentti")
-    @ApiResponses(value = {
-            @ApiResponse(code = 202, message = "dokumentti luodaan"),
-            @ApiResponse(code = 401, message = "ei oikeutta luoda dokumenttia"),
-            @ApiResponse(code = 404, message = "opetussuunnitelma ei löydy"),
-            @ApiResponse(code = 403, message = "dokumentin luonti on jo käynnissä")
-    })
     public ResponseEntity<DokumenttiDto> create(
             @RequestParam("opsId") final long opsId,
             @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) throws DokumenttiException {
@@ -105,12 +89,6 @@ public class DokumenttiController {
     }
 
     @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET)
-    @ApiOperation("luo dokumentti")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "dokumentti ladattu onnistuneesti"),
-            @ApiResponse(code = 401, message = "ei oikeutta luoda dokumenttia"),
-            @ApiResponse(code = 404, message = "dokumenttia ei löydy")
-    })
     public ResponseEntity<byte[]> get(@PathVariable("dokumenttiId") final Long dokumenttiId) {
         byte[] pdfdata = service.get(dokumenttiId);
 

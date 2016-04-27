@@ -204,26 +204,26 @@ public class LukioServiceImpl implements LukioService {
             addLokalisoituteksti(docBase, perusteOppiaine.getPakollinenKurssiKuvaus(), "cite");
         }
         addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenPakollinenKuvaus(), "div");
-        addKurssiByTyyppi(docBase, oppiaine, perusteOppiaine, LukiokurssiTyyppi.VALTAKUNNALLINEN_PAKOLLINEN);
+        addKurssitByTyyppi(docBase, oppiaine, perusteOppiaine, LukiokurssiTyyppi.VALTAKUNNALLINEN_PAKOLLINEN);
 
         // Valtakunnalliset syventävät
         addTeksti(docBase, messages.translate("valtakunnalliset-syventavat-kurssit", docBase.getKieli()), "h6");
-        addKurssiByTyyppi(docBase, oppiaine, perusteOppiaine, LukiokurssiTyyppi.VALTAKUNNALLINEN_SYVENTAVA);
+        addKurssitByTyyppi(docBase, oppiaine, perusteOppiaine, LukiokurssiTyyppi.VALTAKUNNALLINEN_SYVENTAVA);
 
         // Paikalliset syventävät
         addTeksti(docBase, messages.translate("paikalliset-syventavat-kurssit", docBase.getKieli()), "h6");
-        addKurssiByTyyppi(docBase, oppiaine, perusteOppiaine, LukiokurssiTyyppi.PAIKALLINEN_SYVENTAVA);
+        addKurssitByTyyppi(docBase, oppiaine, perusteOppiaine, LukiokurssiTyyppi.PAIKALLINEN_SYVENTAVA);
 
         // Paikalliset soveltavat
         addTeksti(docBase, messages.translate("paikalliset-soveltavat-kurssit", docBase.getKieli()), "h6");
-        addKurssiByTyyppi(docBase, oppiaine, perusteOppiaine, LukiokurssiTyyppi.PAIKALLINEN_SOVELTAVA);
+        addKurssitByTyyppi(docBase, oppiaine, perusteOppiaine, LukiokurssiTyyppi.PAIKALLINEN_SOVELTAVA);
 
         docBase.getGenerator().decreaseDepth();
 
         docBase.getGenerator().increaseNumber();
     }
 
-    private void addKurssiByTyyppi(DokumenttiBase docBase, Oppiaine oppiaine, LukioPerusteOppiaineDto perusteOppiaine, LukiokurssiTyyppi tyyppi) {
+    private void addKurssitByTyyppi(DokumenttiBase docBase, Oppiaine oppiaine, LukioPerusteOppiaineDto perusteOppiaine, LukiokurssiTyyppi tyyppi) {
         Set<LukiokurssiPerusteDto> perusteKurssit = perusteOppiaine != null ? perusteOppiaine.getKurssit() : null;
         docBase.getOps().lukiokurssitByOppiaine().apply(oppiaine.getId()).stream()
                 .filter(kurssi -> kurssi.getKurssi().getTyyppi().equals(tyyppi))
