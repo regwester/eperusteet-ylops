@@ -5,18 +5,21 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOpetussuunnitelmaRakenneOpsDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LukioService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,13 +30,18 @@ import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.Dokumentt
  */
 @Service
 public class LukioServiceImpl implements LukioService {
+    private static final Logger LOG = LoggerFactory.getLogger(LukioServiceImpl.class);
+
     @Autowired
     private LocalizedMessagesService messages;
 
     @Autowired
     private LukioOpetussuunnitelmaService lukioOpetussuunnitelmaService;
 
-    public void addOppimistavoitteetJaOpetuksenKeskeisetSisallot(DokumenttiBase docBase) {
+    @Autowired
+    private YleisetOsuudetService yleisetOsuudetService;
+
+    public void addOppimistavoitteetJaOpetuksenKeskeisetSisallot(DokumenttiBase docBase) throws ParserConfigurationException, SAXException, IOException {
         addHeader(docBase, messages.translate("oppimistavoitteet-ja-opetuksen-keskeiset-sisallot", docBase.getKieli()));
         docBase.getGenerator().increaseDepth();
 
@@ -42,9 +50,11 @@ public class LukioServiceImpl implements LukioService {
         addOppiaineet(docBase);
 
         docBase.getGenerator().decreaseDepth();
+
+        yleisetOsuudetService.addLiitteet(docBase);
     }
 
-    public void addOpetuksenYleisetTavoitteet(DokumenttiBase docBase) {
+    private void addOpetuksenYleisetTavoitteet(DokumenttiBase docBase) {
         OpetuksenYleisetTavoitteet yleisetTavoitteet = docBase.getOps().getOpetuksenYleisetTavoitteet();
         OpetuksenYleisetTavoitteetDto perusteYleisetTavoitteet = docBase.getPerusteDto().getLukiokoulutus().getOpetuksenYleisetTavoitteet();
 
@@ -61,7 +71,7 @@ public class LukioServiceImpl implements LukioService {
         docBase.getGenerator().increaseNumber();
     }
 
-    public void addAihekokonaisuudet(DokumenttiBase docBase) {
+    private void addAihekokonaisuudet(DokumenttiBase docBase) {
         Aihekokonaisuudet aihekokonaisuudet = docBase.getOps().getAihekokonaisuudet();
         AihekokonaisuudetDto perusteAihekokonaisuudet = docBase.getPerusteDto().getLukiokoulutus().getAihekokonaisuudet();
         if (aihekokonaisuudet == null || perusteAihekokonaisuudet == null) {
@@ -134,7 +144,7 @@ public class LukioServiceImpl implements LukioService {
         docBase.getGenerator().increaseNumber();
     }
 
-    public void addOppiaineet(DokumenttiBase docBase) {
+    private void addOppiaineet(DokumenttiBase docBase) {
 
         LukioOpetussuunnitelmaRakenneOpsDto lukioOpetussuunnitelmaRakenneOpsDto
                 = lukioOpetussuunnitelmaService.getRakenne(docBase.getOps().getId());
@@ -295,4 +305,5 @@ public class LukioServiceImpl implements LukioService {
             addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
         }
     }
+
 }

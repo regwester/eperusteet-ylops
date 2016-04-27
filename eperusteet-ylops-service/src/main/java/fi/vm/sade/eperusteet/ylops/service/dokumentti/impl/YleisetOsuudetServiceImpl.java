@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.Dokumentt
  */
 @Service
 public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
+    @Autowired
+    private LocalizedMessagesService messages;
 
     public void addYleisetOsuudet(DokumenttiBase docBase)
             throws IOException, SAXException, ParserConfigurationException {
@@ -33,6 +36,16 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
             if (lapsi.getTekstiKappale() != null) {
+
+                if (paataso && lapsi.getTekstiKappale() != null
+                        && lapsi.getTekstiKappale().getNimi() != null
+                        && lapsi.getTekstiKappale().getNimi().getTeksti() != null
+                        && lapsi.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli()) != null
+                        && lapsi.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli())
+                        .equals(messages.translate("liitteet", docBase.getKieli()))) {
+                    // Jos on liitteet päätasolla niin siirrytään seuraavaan tekstiin
+                    continue;
+                }
 
                 // Ei näytetä yhteisen osien Pääkappaleiden otsikoita
                 // Opetuksen järjestäminen ja Opetuksen toteuttamisen lähtökohdat
@@ -62,6 +75,36 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                     }
                 }
             }
+        }
+    }
+
+    public void addLiitteet(DokumenttiBase docBase) throws IOException, SAXException, ParserConfigurationException {
+        if (docBase.getOps().getTekstit() != null) {
+            for (TekstiKappaleViite liiteViite : docBase.getOps().getTekstit().getLapset()) {
+                if (liiteViite.getTekstiKappale() != null
+                        && liiteViite.getTekstiKappale().getNimi() != null
+                        && liiteViite.getTekstiKappale().getNimi().getTeksti() != null
+                        && liiteViite.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli()) != null
+                        && liiteViite.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli())
+                        .equals(messages.translate("liitteet", docBase.getKieli()))) {
+                    addTekstiKappale(docBase, liiteViite, false);
+                }
+            }
+
+            // todo: Miksi teksti on null streamissa?
+            /*Optional<TekstiKappaleViite> optLiitteetViite = docBase.getOps().getTekstit().getLapset().stream()
+                    .filter(teksti -> teksti.getTekstiKappale() != null
+                            && teksti.getTekstiKappale().getNimi() != null
+                            && teksti.getTekstiKappale().getNimi().getTeksti() != null
+                            && teksti.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli()) != null)
+                    .filter(teksti -> teksti.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli())
+                            .equals(messages.translate("liitteet", docBase.getKieli())))
+                    .findFirst();
+
+            if (optLiitteetViite.isPresent()) {
+                TekstiKappaleViite liiteViite = optLiitteetViite.get();
+                yleisetOsuudetService.addTekstiKappale(docBase, liiteViite, true);
+            }*/
         }
     }
 }
