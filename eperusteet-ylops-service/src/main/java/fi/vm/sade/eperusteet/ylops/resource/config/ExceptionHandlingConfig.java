@@ -19,15 +19,19 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
-import java.io.IOException;
+
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
+
+import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.ConversionNotSupportedException;
@@ -59,7 +63,6 @@ import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMeth
  *
  * @author teele1
  */
-//TODO: vaatii refaktorointia
 @ControllerAdvice
 public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
 
@@ -85,10 +88,17 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         }
     }
 
+    @ExceptionHandler(ClientAbortException.class)
+    public void clientAbortExceptionHandler(HttpServletRequest request, ClientAbortException ex) {
+        Principal principal = request.getUserPrincipal();
+        String username = principal != null ? principal.getName() :"<NONE>";
+        LOG.warn("ClientAbortException: username={}, remoteAddr={}, userAgent={}, requestedURL={}", username,
+                request.getRemoteAddr(), request.getHeader("User-Agent"), request.getRequestURL());
+    }
+
     @ExceptionHandler(value = {
         NestedRuntimeException.class,
         NestedCheckedException.class,
-        IOException.class,
         ServletException.class,
         ValidationException.class})
     public ResponseEntity<Object> handleAllExceptions(Exception e, WebRequest request) throws Exception {
@@ -174,6 +184,7 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         } else {
             LOG.error("Virhetilanne: ", ex);
         }
+
         return super.handleExceptionInternal(ex, map, headers, status, request);
     }
 }

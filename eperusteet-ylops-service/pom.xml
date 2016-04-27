@@ -48,6 +48,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -321,6 +322,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
@@ -330,7 +337,6 @@
             <artifactId>protonpack</artifactId>
             <version>1.4</version>
         </dependency>
-
         <dependency>
             <groupId>com.mangofactory</groupId>
             <artifactId>swagger-springmvc</artifactId>
