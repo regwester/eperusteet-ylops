@@ -343,7 +343,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private Oppiaine latestNotNull(Long oppiaineId) {
-        List<Revision> revisions = oppiaineet.getRevisions(oppiaineId).stream()
+        List<Revision> revisions = oppiaineet.getRevisions(oppiaineId);
+        revisions.stream()
                 .sorted((a, b) -> Long.compare(a.getNumero(), b.getNumero()))
                 .collect(Collectors.toList());
         Collections.reverse(revisions);
@@ -372,11 +373,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         PoistettuOppiaine poistettu = poistettuOppiaineRepository.findOne(oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
-        if (oppiaineet.findOne(oppiaineId) != null) {
+        if (oppiaineet.findOne(poistettu.getOppiaine()) != null) {
             throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
         }
 
-        Oppiaine latest = latestNotNull(oppiaineId);
+        Oppiaine latest = latestNotNull(poistettu.getOppiaine());
         updateOpetuksenKohdealueet(latest);
 
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
@@ -392,9 +393,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         pelastettu = oppiaineet.save(pelastettu);
-        if (poistettu != null) {
-            poistettu.setPalautettu(true);
-        }
+        poistettu.setPalautettu(true);
 
         Optional<Vuosiluokkakokonaisuus> firstVlk = findFirstVlk(ops, pelastettu);
         OppiainePalautettuDto palautettuDto = mapper.map(pelastettu, OppiainePalautettuDto.class);
