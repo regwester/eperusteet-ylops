@@ -21,13 +21,12 @@ import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
-import org.springframework.security.access.method.P;
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
@@ -99,7 +98,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
                                                                  Long oppiaineenVuosiluokkaId,
                                                                  List<TekstiosaDto> tavoitteetDto);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI') || hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
     OpsOppiaineDto palautaYlempi(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
