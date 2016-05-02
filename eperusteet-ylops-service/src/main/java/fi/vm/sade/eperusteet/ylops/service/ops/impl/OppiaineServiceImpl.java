@@ -44,18 +44,16 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.*;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import static java.util.stream.Collectors.*;
 
 /**
  * @author mikkom
@@ -374,11 +372,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         PoistettuOppiaine poistettu = poistettuOppiaineRepository.findOne(oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
-        if (oppiaineet.findOne(poistettu.getOppiaine()) != null) {
+        if (oppiaineet.findOne(oppiaineId) != null) {
             throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
         }
 
-        Oppiaine latest = latestNotNull(poistettu.getOppiaine());
+        Oppiaine latest = latestNotNull(oppiaineId);
         updateOpetuksenKohdealueet(latest);
 
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
@@ -394,7 +392,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         pelastettu = oppiaineet.save(pelastettu);
-        poistettu.setPalautettu(true);
+        if (poistettu != null) {
+            poistettu.setPalautettu(true);
+        }
 
         Optional<Vuosiluokkakokonaisuus> firstVlk = findFirstVlk(ops, pelastettu);
         OppiainePalautettuDto palautettuDto = mapper.map(pelastettu, OppiainePalautettuDto.class);
