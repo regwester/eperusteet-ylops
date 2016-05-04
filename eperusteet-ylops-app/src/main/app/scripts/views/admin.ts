@@ -29,6 +29,11 @@ ylopsApp
     current: 1
   };
 
+  const updatePageinfo = () => {
+    $scope.lastVisible = Math.min(($scope.paginate.current - 1) * $scope.paginate.perPage + $scope.paginate.perPage,
+      $scope.filtered.length);
+  };
+
   $scope.search = {
     term: '',
     tilaRajain: '',
@@ -51,37 +56,36 @@ ylopsApp
     }
   };
 
-  const updatePageinfo = () => {
-    $scope.lastVisible = Math.min(($scope.paginate.current - 1) * $scope.paginate.perPage + $scope.paginate.perPage,
-      $scope.filtered.length);
-  };
+  const koulutMap = _(opsit)
+    .map('organisaatiot')
+    .flatten()
+    .filter((org) => _.includes(org.tyypit, 'Oppilaitos'))
+    .indexBy('oid')
+    .value();
 
-  const koulutMap =
-      _(opsit).map('organisaatiot').flatten().filter((org) => _.includes(org.tyypit, 'Oppilaitos')).indexBy('oid').value();
+  const isKoulu = (peruste) => _(peruste.organisaatiot)
+      .filter(org => _.first(org.tyypit) === "Oppilaitos")
+      .size() === 1;
+  const isKoulujoukko = (peruste) => _(peruste.organisaatiot)
+      .filter(org => _.first(org.tyypit) === "Oppilaitos")
+      .size() > 1;
+  const isKunta = (peruste) => _.size(peruste.kunnat) === 1;
+  const isSeutukunta = (peruste) => _.size(peruste.kunnat) > 1;
 
-  const generoiStatsit = (items) => {
-    let statsit: any = {};
-    statsit.maaratKielittain = _.reduce(items, function(acc, item) {
-      _.each(item.julkaisukielet, function(jk) {
-        acc[jk] = _.isNumber(acc[jk]) ? acc[jk] + 1 : 0;
-      });
-      return acc;
-    }, {});
-
-    statsit.koulut = _.reduce(items, (acc, item) => {
-      return acc + _.filter(item.organisaatiot, function(org) {
-        return koulutMap[org.oid];
-      }).length;
-    }, 0);
-
-    statsit.kunnat = _.reduce(items, (acc, item) => {
-      return acc + item.kunnat.length;
-    },0);
-
-    statsit.maaratTyypeittain = _.groupBy(items, 'koulutustyyppi');
-    statsit.maaratTiloittain = _.groupBy(items, 'tila');
-    return statsit;
-  };
+  const generoiStatsit = (items) => ({
+      maaratKielittain: _.reduce(items, function(acc, item) {
+        _.each(item.julkaisukielet, function(jk) {
+          acc[jk] = _.isNumber(acc[jk]) ? acc[jk] + 1 : 0;
+        });
+        return acc;
+      }, {}),
+      seutukunnat: _(opsit).filter(isSeutukunta).size(),
+      kunnat: _(opsit).filter(isKunta).size(),
+      koulujoukko: _(opsit).filter(isKoulujoukko).size(),
+      koulut: _(opsit).filter(isKoulu).size(),
+      maaratTyypeittain: _.groupBy(items, 'koulutustyyppi'),
+      maaratTiloittain: _.groupBy(items, 'tila'),
+    });
 
   // updatePageinfo();
   $scope.statsit = generoiStatsit($scope.items);

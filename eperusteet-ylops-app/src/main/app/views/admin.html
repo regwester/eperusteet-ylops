@@ -12,14 +12,10 @@
       <div class="col-md-3">
         <h3 kaanna="'maarat-kuntatasoittain'"></h3>
         <ul>
-          <li>
-            <label kaanna="'kunnat'"></label>:
-            {{ statsit.kunnat || 0 }}
-          </li>
-          <li>
-            <label kaanna="'koulut'"></label>:
-            {{ statsit.koulut || 0 }}
-          </li>
+          <li><label kaanna="'seutukunnat'"></label>: {{ statsit.seutukunnat || 0 }}</li>
+          <li><label kaanna="'kunnat'"></label>: {{ statsit.kunnat || 0 }}</li>
+          <li><label kaanna="'koulujoukko'"></label>: {{ statsit.koulujoukot || 0 }}</li>
+          <li><label kaanna="'koulut'"></label>: {{ statsit.koulut || 0 }}</li>
         </ul>
       </div>
       <div class="col-md-3">
