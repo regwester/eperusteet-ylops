@@ -285,6 +285,12 @@
         memoryStoreEvictionPolicy="LRU"
     />
 
+    <cache name="tilastot"
+           maxElementsInMemory="10"
+           eternal="false"
+           timeToLiveSeconds="600"
+           overflowToDisk="false" />
+
     <cache name="koodistot"
            maxElementsInMemory="10000"
            eternal="false"

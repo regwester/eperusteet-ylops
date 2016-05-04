@@ -17,18 +17,13 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
-import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -53,7 +48,10 @@ public interface OpetussuunnitelmaService {
     OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
-    List<OpetussuunnitelmaBaseDto> getStatistiikka();
+    OpetussuunnitelmaStatistiikkaDto getStatistiikka();
+
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    List<OpetussuunnitelmaInfoDto> getAdminList();
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long id);

@@ -61,8 +61,14 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<OpetussuunnitelmaBaseDto>> getStatistiikka() {
+    public ResponseEntity<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
         return new ResponseEntity<>(opetussuunnitelmaService.getStatistiikka(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/adminlist", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<List<OpetussuunnitelmaInfoDto>> getAdminList() {
+        return new ResponseEntity<>(opetussuunnitelmaService.getAdminList(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

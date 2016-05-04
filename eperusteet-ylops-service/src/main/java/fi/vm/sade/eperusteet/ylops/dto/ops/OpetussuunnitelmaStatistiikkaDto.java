@@ -15,15 +15,9 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,14 +28,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OpetussuunnitelmaStatistiikkaDto implements Serializable {
-    private Long id;
-    private Set<Kieli> julkaisukielet;
-    private Set<OrganisaatioDto> organisaatiot;
-    private Set<KoodistoDto> kunnat;
-    private LokalisoituTekstiDto kuvaus;
-    private Date muokattu;
-    private LokalisoituTekstiDto nimi;
-    private String perusteenDiaarinumero;
-    private Tila tila;
-    private KoulutusTyyppi koulutustyyppi;
+    private Map<String, Long> kielittain = new HashMap<>();
+    private Map<String, Long> koulutustyypeittain = new HashMap<>();
+    private Map<String, Long> tasoittain = new HashMap<>();
+    private Map<String, Long> tiloittain = new HashMap<>();
 }

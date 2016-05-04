@@ -48,7 +48,7 @@ ylopsApp
             return OpetussuunnitelmaCRUD.tilastot().$promise;
           },
           opsit: (OpetussuunnitelmaCRUD) => {
-            return OpetussuunnitelmaCRUD.query({}).$promise;
+            return OpetussuunnitelmaCRUD.adminlist({}).$promise;
           }
         }
       })

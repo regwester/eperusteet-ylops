@@ -1,5 +1,4 @@
 <h1 kaanna="'hallinta'"></h1>
-
   <h2>
     <a href="" ng-click="$$collapsestats = !$$collapsestats">
       <span ng-show="$$collapsestats" icon-role="chevron-down"></span>
@@ -12,25 +11,25 @@
       <div class="col-md-3">
         <h3 kaanna="'maarat-kuntatasoittain'"></h3>
         <ul>
-          <li><label kaanna="'seutukunnat'"></label>: {{ statsit.seutukunnat || 0 }}</li>
-          <li><label kaanna="'kunnat'"></label>: {{ statsit.kunnat || 0 }}</li>
-          <li><label kaanna="'koulujoukko'"></label>: {{ statsit.koulujoukot || 0 }}</li>
-          <li><label kaanna="'koulut'"></label>: {{ statsit.koulut || 0 }}</li>
+          <li><label kaanna="'seutukunnat'"></label>: {{ statsit.tasoittain.seutukunnat || 0 }}</li>
+          <li><label kaanna="'kunnat'"></label>: {{ statsit.tasoittain.kunnat || 0 }}</li>
+          <li><label kaanna="'koulujoukko'"></label>: {{ statsit.tasoittain.koulujoukko || 0 }}</li>
+          <li><label kaanna="'koulut'"></label>: {{ statsit.tasoittain.koulut || 0 }}</li>
         </ul>
       </div>
       <div class="col-md-3">
         <h3 kaanna="'maarat-koulutustyypeittain'"></h3>
         <ul>
-          <li ng-repeat="(tyyppi, arr) in statsit.maaratTyypeittain">
+          <li ng-repeat="(tyyppi, maara) in statsit.koulutustyypeittain">
             <label kaanna="tyyppi"></label>:
-            {{ arr.length || 0 }}
+            {{ maara || 0 }}
           </li>
         </ul>
       </div>
       <div class="col-md-3">
         <h3 kaanna="'maarat-kielittain'"></h3>
         <ul>
-          <li ng-repeat="(kieli, maara) in statsit.maaratKielittain">
+          <li ng-show="maara > 0" ng-repeat="(kieli, maara) in statsit.kielittain">
             <label kaanna="kieli"></label>:
             {{ maara || 0 }}
           </li>
@@ -39,13 +38,9 @@
       <div class="col-md-3">
         <h3 kaanna="'maarat-tiloittain'"></h3>
         <ul>
-          <li ng-repeat="(tila, opsit) in statsit.maaratTiloittain">
+          <li ng-repeat="(tila, maara) in statsit.tiloittain">
             <label kaanna="tila"></label>:
-            {{ opsit.length || 0 }}
-          </li>
-          <li>
-            <label kaanna="esikatseltavissa"></label>:
-            {{ statsit.esikatseltavana || 0 }}
+            {{ maara || 0 }}
           </li>
         </ul>
       </div>

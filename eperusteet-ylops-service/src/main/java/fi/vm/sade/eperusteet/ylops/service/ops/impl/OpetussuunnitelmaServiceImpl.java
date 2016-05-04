@@ -225,9 +225,46 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OpetussuunnitelmaBaseDto> getStatistiikka() {
-        List<Opetussuunnitelma> opsit = repository.findAllByTyyppi(Tyyppi.OPS);
-        return mapper.mapAsList(opsit,OpetussuunnitelmaBaseDto.class);
+    public OpetussuunnitelmaStatistiikkaDto getStatistiikka() {
+        List<OpetussuunnitelmaInfoDto> opsit = mapper.mapAsList(repository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class).stream()
+                .map(ops -> {
+                    fetchOrganisaatioNimet(ops);
+                    return ops;
+                })
+                .collect(Collectors.toList());
+
+        OpetussuunnitelmaStatistiikkaDto result = new OpetussuunnitelmaStatistiikkaDto();
+        result.getTasoittain().put("seutukunnat", opsit.stream().filter(ops -> ops.getKunnat().size() > 1).count());
+        result.getTasoittain().put("kunnat", opsit.stream().filter(ops -> ops.getKunnat().size() == 1).count());
+        result.getTasoittain().put("koulujoukko", opsit.stream()
+            .filter(ops -> ops.getOrganisaatiot().stream()
+                .filter(org -> "Oppilaitos".equals(org.getTyypit().get(0)))
+                .count() > 1)
+            .count());
+        result.getTasoittain().put("koulut", opsit.stream()
+            .filter(ops -> ops.getOrganisaatiot().stream()
+                .filter(org -> "Oppilaitos".equals(org.getTyypit().get(0)))
+                .count() == 1)
+            .count());
+
+        result.getKielittain().put("fi", opsit.stream().filter(ops -> ops.getJulkaisukielet().contains(Kieli.FI)).count());
+        result.getKielittain().put("sv", opsit.stream().filter(ops -> ops.getJulkaisukielet().contains(Kieli.SV)).count());
+        result.getKielittain().put("se", opsit.stream().filter(ops -> ops.getJulkaisukielet().contains(Kieli.SE)).count());
+        result.getKielittain().put("en", opsit.stream().filter(ops -> ops.getJulkaisukielet().contains(Kieli.EN)).count());
+        
+        result.getTiloittain().put("esikatseltavissa", opsit.stream().filter(ops -> ops.isEsikatseltavissa()).count());
+
+        for (OpetussuunnitelmaInfoDto ops : opsit) {
+            result.getKoulutustyypeittain().put(ops.getKoulutustyyppi().toString(), result.getKoulutustyypeittain().getOrDefault(ops.getKoulutustyyppi().toString(), 0L) + 1);
+            result.getTiloittain().put(ops.getTila().toString(), result.getTiloittain().getOrDefault(ops.getTila().toString(), 0L) + 1);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<OpetussuunnitelmaInfoDto> getAdminList() {
+        return mapper.mapAsList(repository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class);
     }
 
     @Override

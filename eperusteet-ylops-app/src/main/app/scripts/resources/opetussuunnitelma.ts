@@ -37,7 +37,8 @@ ylopsApp
       lisaaKielitarjonta: {method: 'POST', url: YlopsResources.OPS + '/kielitarjonta', isArray: true},
       syncPeruste: {method: 'POST', url: YlopsResources.OPS + '/sync'},
       jarjestaOppiaineet: {method: 'POST', url: YlopsResources.OPS + '/oppiainejarjestys', isArray: true},
-      tilastot: { method: 'GET', url: SERVICE_LOC + '/opetussuunnitelmat/tilastot', isArray: true },
+      tilastot: { method: 'GET', url: SERVICE_LOC + '/opetussuunnitelmat/tilastot' },
+      adminlist: { method: 'GET', url: SERVICE_LOC + '/opetussuunnitelmat/adminlist', isArray: true },
       opetussuunnitelmat: { method: 'GET', url: SERVICE_LOC + '/opetussuunnitelmat/:opsId/opetussuunnitelmat', isArray: true },
       opetussuunnitelmatSync: { method: 'POST', url: SERVICE_LOC + '/opetussuunnitelmat/:opsId/opetussuunnitelmat', isArray: false }
     });

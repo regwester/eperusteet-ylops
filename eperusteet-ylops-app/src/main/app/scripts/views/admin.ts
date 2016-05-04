@@ -21,7 +21,7 @@ ylopsApp
   $scope.sorter = ListaSorter.init($scope);
   $scope.opsiLista = true;
   $scope.tilat = ['luonnos', 'valmis', 'poistettu'];
-  $scope.items = opsStatistiikka;
+  $scope.items = opsit;
   $scope.$$collapsestats = true;
 
   $scope.paginate = {
@@ -63,33 +63,7 @@ ylopsApp
     .indexBy('oid')
     .value();
 
-  const isKoulu = (peruste) => _(peruste.organisaatiot)
-      .filter(org => _.first(org.tyypit) === "Oppilaitos")
-      .size() === 1;
-  const isKoulujoukko = (peruste) => _(peruste.organisaatiot)
-      .filter(org => _.first(org.tyypit) === "Oppilaitos")
-      .size() > 1;
-  const isKunta = (peruste) => _.size(peruste.kunnat) === 1;
-  const isSeutukunta = (peruste) => _.size(peruste.kunnat) > 1;
-
-  const generoiStatsit = (items) => ({
-      maaratKielittain: _.reduce(items, function(acc, item) {
-        _.each(item.julkaisukielet, function(jk) {
-          acc[jk] = _.isNumber(acc[jk]) ? acc[jk] + 1 : 0;
-        });
-        return acc;
-      }, {}),
-      esikatseltavana: _(items).filter(ops => ops.esikatseltavissa).size(),
-      seutukunnat: _(items).filter(isSeutukunta).size(),
-      kunnat: _(items).filter(isKunta).size(),
-      koulujoukko: _(items).filter(isKoulujoukko).size(),
-      koulut: _(items).filter(isKoulu).size(),
-      maaratTyypeittain: _.groupBy(items, 'koulutustyyppi'),
-      maaratTiloittain: _.groupBy(items, 'tila'),
-    });
-
-  // updatePageinfo();
-  $scope.statsit = generoiStatsit($scope.items);
+  $scope.statsit = opsStatistiikka;
 
   $scope.$watch('search.tilaRajain', function () {
     $scope.search.changed($scope.search.term);
