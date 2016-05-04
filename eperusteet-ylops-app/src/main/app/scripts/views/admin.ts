@@ -79,10 +79,11 @@ ylopsApp
         });
         return acc;
       }, {}),
-      seutukunnat: _(opsit).filter(isSeutukunta).size(),
-      kunnat: _(opsit).filter(isKunta).size(),
-      koulujoukko: _(opsit).filter(isKoulujoukko).size(),
-      koulut: _(opsit).filter(isKoulu).size(),
+      esikatseltavana: _(items).filter(ops => ops.esikatseltavissa).size(),
+      seutukunnat: _(items).filter(isSeutukunta).size(),
+      kunnat: _(items).filter(isKunta).size(),
+      koulujoukko: _(items).filter(isKoulujoukko).size(),
+      koulut: _(items).filter(isKoulu).size(),
       maaratTyypeittain: _.groupBy(items, 'koulutustyyppi'),
       maaratTiloittain: _.groupBy(items, 'tila'),
     });

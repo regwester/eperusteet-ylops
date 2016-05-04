@@ -19,15 +19,14 @@ import com.codahale.metrics.annotation.Timed;
 import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +61,7 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<OpetussuunnitelmaStatistiikkaDto>> getStatistiikka() {
+    public ResponseEntity<List<OpetussuunnitelmaBaseDto>> getStatistiikka() {
         return new ResponseEntity<>(opetussuunnitelmaService.getStatistiikka(), HttpStatus.OK);
     }
 

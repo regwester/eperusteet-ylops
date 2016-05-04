@@ -225,9 +225,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
+    public List<OpetussuunnitelmaBaseDto> getStatistiikka() {
         List<Opetussuunnitelma> opsit = repository.findAllByTyyppi(Tyyppi.OPS);
-        return mapper.mapAsList(opsit,OpetussuunnitelmaStatistiikkaDto.class);
+        return mapper.mapAsList(opsit,OpetussuunnitelmaBaseDto.class);
     }
 
     @Override
