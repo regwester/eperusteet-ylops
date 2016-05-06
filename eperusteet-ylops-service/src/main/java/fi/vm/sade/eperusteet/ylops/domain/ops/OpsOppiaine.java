@@ -16,16 +16,13 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import java.io.Serializable;
-import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-
-import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
-import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +41,10 @@ public class OpsOppiaine implements Serializable {
     @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     @NotNull
     private Oppiaine oppiaine;
+
+    @Getter
+    @Setter
+    private Integer jnro;
 
     /**
      * Ilmaisee onko oppiaine oma vai lainattu. Vain omaa oppiainetta voidaan muokata,

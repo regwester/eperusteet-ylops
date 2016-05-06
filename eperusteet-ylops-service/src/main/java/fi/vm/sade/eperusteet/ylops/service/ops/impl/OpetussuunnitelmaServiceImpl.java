@@ -336,18 +336,24 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
-        Map<Long, Oppiaine> oppiaineet = new HashMap<Long, Oppiaine>();
+        Map<Long, OpsOppiaine> oppiaineet = new HashMap<>();
+        Map<Long, Oppiaine> oppimaarat = new HashMap<>();
         ops.getOppiaineet().forEach(opsOppiaine -> {
-            oppiaineet.put(opsOppiaine.getOppiaine().getId(), opsOppiaine.getOppiaine());
+            oppiaineet.put(opsOppiaine.getOppiaine().getId(), opsOppiaine);
+            oppimaarat.put(opsOppiaine.getOppiaine().getId(), opsOppiaine.getOppiaine());
             if (opsOppiaine.getOppiaine().getOppimaarat() != null) {
-                opsOppiaine.getOppiaine().getOppimaarat().forEach(oppimaara -> oppiaineet.put(oppimaara.getId(), oppimaara));
+                opsOppiaine.getOppiaine().getOppimaarat().forEach(oppimaara -> oppimaarat.put(oppimaara.getId(), oppimaara));
             }
         });
 
         for (JarjestysDto node : oppiainejarjestys) {
-            Oppiaine oppiaine = oppiaineet.get(node.getOppiaineId());
-            assertExists(oppiaine, "Pyydettyä oppiainetta ei ole");
-            oppiaine.getVuosiluokkakokonaisuudet().forEach(oppiaineenvuosiluokkakokonaisuus -> {
+            OpsOppiaine oppiaine = oppiaineet.get(node.getOppiaineId());
+            if (oppiaine != null) {
+                oppiaine.setJnro(node.getJnro());
+            }
+            Oppiaine oppimaara = oppimaarat.get(node.getOppiaineId());
+            assertExists(oppimaara, "Pyydettyä oppiainetta ei ole");
+            oppimaara.getVuosiluokkakokonaisuudet().forEach(oppiaineenvuosiluokkakokonaisuus -> {
                 oppiaineenvuosiluokkakokonaisuus.setJnro(node.getJnro());
             });
         }

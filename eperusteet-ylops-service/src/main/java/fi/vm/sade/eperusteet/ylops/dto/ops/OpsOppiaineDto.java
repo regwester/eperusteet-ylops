@@ -27,4 +27,5 @@ import lombok.Setter;
 public class OpsOppiaineDto {
     private boolean oma;
     private OppiaineDto oppiaine;
+    private Integer jnro;
 }
