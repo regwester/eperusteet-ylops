@@ -24,13 +24,12 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  *
@@ -79,6 +78,14 @@ public class OppiaineController {
         return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.getVersion(opsId, id, versio)));
     }
 
+    @RequestMapping(value = "/{id}/raakaversio/{versio}", method = RequestMethod.GET)
+    public ResponseEntity<OppiaineDto> getRevision(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("id") final Long id,
+            @PathVariable("versio") final Integer versio) {
+        return Responses.ofNullable(oppiaineService.getRevision(opsId, id, versio));
+    }
+
     @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.POST)
     public ResponseEntity<UnwrappedOpsOppiaineDto> revertToVersion(
             @PathVariable("opsId") final Long opsId,
@@ -100,6 +107,15 @@ public class OppiaineController {
             @PathVariable("id") final Long id,
             @PathVariable("oppimaaraId") final Long oppimaaraId) {
         return oppiaineService.restore(opsId, id, oppimaaraId);
+    }
+
+    @RequestMapping(value = "/{id}/palauta/{oppimaaraId}/{versio}", method = RequestMethod.POST)
+    public OppiainePalautettuDto restoreOppiaine(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("id") final Long id,
+            @PathVariable("oppimaaraId") final Long oppimaaraId,
+            @PathVariable("versio") final Integer versio) {
+        return oppiaineService.restore(opsId, id, oppimaaraId, versio);
     }
 
     @RequestMapping(value = "/{id}/versiot", method = RequestMethod.GET)

@@ -130,6 +130,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
+    public OppiaineDto getRevision(Long opsId, Long id, Integer versio) {
+        Oppiaine oppiaine = oppiaineet.findRevision(id, versio);
+        assertExists(oppiaine, "Pyydettyä oppiainetta ei ole olemassa");
+        return mapper.map(oppiaine, OppiaineDto.class);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<OppiaineDto> getAll(@P("opsId") Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -366,6 +373,36 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .filter(Objects::nonNull)
                 .map((oppiaine) -> mapper.map(oppiaine, OppiaineLaajaDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public OppiainePalautettuDto restore(Long opsId, Long oppiaineId, Long oppimaaraId, Integer versio) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+
+        Oppiaine latest = oppiaineet.findRevision(oppiaineId, versio);
+        updateOpetuksenKohdealueet(latest);
+
+        OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
+        Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
+        pelastettu.setTyyppi( oppiaine.getTyyppi() );
+        pelastettu.setLaajuus( oppiaine.getLaajuus() );
+
+        if( oppimaaraId != null){
+            Oppiaine parent = oppiaineet.findOne(oppimaaraId);
+            parent.addOppimaara(pelastettu);
+        }else{
+            ops.addOppiaine(pelastettu);
+        }
+
+        pelastettu = oppiaineet.save(pelastettu);
+
+        Optional<Vuosiluokkakokonaisuus> firstVlk = findFirstVlk(ops, pelastettu);
+        OppiainePalautettuDto palautettuDto = mapper.map(pelastettu, OppiainePalautettuDto.class);
+        if(firstVlk.isPresent()){
+            palautettuDto.setVlkId(firstVlk.get().getId());
+        }
+
+        return palautettuDto;
     }
 
     @Override
