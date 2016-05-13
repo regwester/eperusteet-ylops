@@ -49,10 +49,8 @@ ylopsApp
   };
 
   addItems(tekstiKappaleet, "teksti");
-  //TODO lukion oppiaineiden palauttaminen puuttuu
-  if( !isLukio() ){
-    addItems(oppiaineet, "oppiaine");
-  }
+  addItems(oppiaineet, "oppiaine");
+
   $scope.kaikki = _.sortBy($scope.kaikki, 'luotu');
   $scope.poistetut = $scope.kaikki;
 
@@ -87,11 +85,18 @@ ylopsApp
     }).result.then((palautettava) => {
       params.oppimaara = (palautettava.type==="oppimaara" ? palautettava.oppimaara.oppiaine.id: null);
       OppiaineService.palauta(params, {}).then((palautettu) => {
-        $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
-          oppiaineId: palautettu.id,
-          vlkId: palautettu.vlkId,
-          oppiaineTyyppi: palautettu.tyyppi
-        }, { reload: true, notify: true });
+        if(isLukio()){
+          $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
+            id: $stateParams.id,
+            oppiaineId: palautettu.id
+          }, { reload: true, notify: true });
+        }else{
+          $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
+            oppiaineId: palautettu.id,
+            vlkId: palautettu.vlkId,
+            oppiaineTyyppi: palautettu.tyyppi
+          }, { reload: true, notify: true });
+        }
       }, () => {
         Notifikaatiot.fataali('palautus-epaonnistui');
       });
@@ -103,9 +108,9 @@ ylopsApp
       opsId: parseInt($stateParams.id),
       id: id,
     };
-    if(type === "oppiaine"){
+    if (type === "oppiaine") {
       palautaOppiaine(params);
-    }else if(type === "teksti"){
+    } else if (type === "teksti") {
       OpetussuunnitelmanTekstit.palauta( params, {}).$promise.then( () => {
         $state.go('root.opetussuunnitelmat.yksi.sisalto', { reload: true });
       });

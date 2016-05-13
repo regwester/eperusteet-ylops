@@ -20,15 +20,18 @@ import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
@@ -46,8 +49,11 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
 import static java.util.stream.Collectors.*;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -352,9 +358,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private Oppiaine latestNotNull(Long oppiaineId) {
         List<Revision> revisions = oppiaineet.getRevisions(oppiaineId);
         revisions.stream()
-                .sorted((a, b) -> Long.compare(a.getNumero(), b.getNumero()))
+                .sorted((a, b) -> a.getPvm().compareTo(b.getPvm()))
                 .collect(Collectors.toList());
-        Collections.reverse(revisions);
 
         for (Revision revision : revisions) {
             Oppiaine last = oppiaineet.findRevision(oppiaineId, revision.getNumero());
@@ -415,6 +420,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         Oppiaine latest = latestNotNull(poistettu.getOppiaine());
+        Optional.ofNullable(latest.getTavoitteet()).ifPresent(Object::toString);
+        Optional.ofNullable(latest.getArviointi()).ifPresent(Object::toString);
+
         updateOpetuksenKohdealueet(latest);
 
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
@@ -430,15 +438,50 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         pelastettu = oppiaineet.save(pelastettu);
+        restoreContentIfLukioOppiaine(ops, latest, pelastettu);
         poistettu.setPalautettu(true);
 
         Optional<Vuosiluokkakokonaisuus> firstVlk = findFirstVlk(ops, pelastettu);
+
         OppiainePalautettuDto palautettuDto = mapper.map(pelastettu, OppiainePalautettuDto.class);
         if(firstVlk.isPresent()){
             palautettuDto.setVlkId(firstVlk.get().getId());
         }
 
         return palautettuDto;
+    }
+
+    private void restoreContentIfLukioOppiaine(Opetussuunnitelma ops, Oppiaine latest, Oppiaine pelastettu) {
+        if (ops.getKoulutustyyppi().isLukio()) {
+            LukioOppiaineJarjestys jarjestys = new LukioOppiaineJarjestys(ops, pelastettu, null);
+            ops.getOppiaineJarjestykset().add(jarjestys);
+
+            for (LukiokurssiTyyppi tyyppi : LukiokurssiTyyppi.values()) {
+                tyyppi.oppiaineKuvausCopier().copy(latest, pelastettu);
+            }
+
+            pelastettu.setTavoitteet(Tekstiosa.copyOf(latest.getTavoitteet()));
+            pelastettu.setArviointi(Tekstiosa.copyOf(latest.getArviointi()));
+
+            loadLokalisoituTekstiForRestoredOppiaine(pelastettu);
+        }
+    }
+
+    // text need to be loaded before persist() is applied
+    private void loadLokalisoituTekstiForRestoredOppiaine(Oppiaine pelastettu) {
+        for (LukiokurssiTyyppi tyyppi : LukiokurssiTyyppi.values()) {
+            ofNullable(tyyppi.oppiaineKuvausGetter()).apply(pelastettu).toString();
+        }
+
+        Optional.ofNullable(pelastettu.getTavoitteet()).ifPresent(applyToString());
+        Optional.ofNullable(pelastettu.getArviointi()).ifPresent(applyToString());
+    }
+
+    private Consumer<Tekstiosa> applyToString() {
+        return tekstiosa -> {
+            tekstiosa.getTeksti().toString();
+            tekstiosa.getOtsikko().toString();
+        };
     }
 
     private void updateOpetuksenKohdealueet(Oppiaine latest) {
