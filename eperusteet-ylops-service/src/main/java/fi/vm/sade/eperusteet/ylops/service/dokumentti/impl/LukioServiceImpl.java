@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.*;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addLokalisoituteksti;
 
 /**
  * @author isaul
@@ -198,21 +199,35 @@ public class LukioServiceImpl implements LukioService {
         // Oppiaineen nimi
         addHeader(docBase, getTextString(docBase, oppiaine.getNimi()));
 
-
-        if (perusteOppiaine != null && perusteOppiaine.getTehtava() != null) {
-            addLokalisoituteksti(docBase, perusteOppiaine.getTehtava().getTeksti(), "cite");
-        }
-
-        if (oppiaine.getTehtava() != null) {
-            addLokalisoituteksti(docBase, oppiaine.getTehtava().getTeksti(), "div");
-        }
-
         if (perusteOppiaine != null) {
+            addYleinenKuvaus(docBase, oppiaine.getTehtava(), perusteOppiaine.getTehtava());
             addYleinenKuvaus(docBase, oppiaine.getTavoitteet(), perusteOppiaine.getTavoitteet());
             addYleinenKuvaus(docBase, oppiaine.getArviointi(), perusteOppiaine.getArviointi());
+
+            addLokalisoituteksti(docBase, perusteOppiaine.getPakollinenKurssiKuvaus(), "cite");
+            addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenPakollinenKuvaus(), "div");
+
+            addLokalisoituteksti(docBase, perusteOppiaine.getSyventavaKurssiKuvaus(), "cite");
+            addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenSyventavaKurssiKuvaus(), "div");
+
+            addLokalisoituteksti(docBase, perusteOppiaine.getSoveltavaKurssiKuvaus(), "cite");
+            addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenSoveltavaKurssiKuvaus(), "div");
+
+            addLokalisoituteksti(docBase, oppiaine.getPaikallinenSyventavaKurssiKuvaus(), "div");
+
+            addLokalisoituteksti(docBase, oppiaine.getPaikallinenSoveltavaKurssiKuvaus(), "div");
+
         } else {
+            addYleinenKuvaus(docBase, oppiaine.getTehtava(), null);
             addYleinenKuvaus(docBase, oppiaine.getTavoitteet(), null);
             addYleinenKuvaus(docBase, oppiaine.getArviointi(), null);
+
+            addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenPakollinenKuvaus(), "div");
+            addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenSyventavaKurssiKuvaus(), "div");
+            addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenSoveltavaKurssiKuvaus(), "div");
+            addLokalisoituteksti(docBase, oppiaine.getPaikallinenSyventavaKurssiKuvaus(), "div");
+            addLokalisoituteksti(docBase, oppiaine.getPaikallinenSoveltavaKurssiKuvaus(), "div");
+
         }
 
         docBase.getGenerator().increaseDepth();
