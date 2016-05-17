@@ -186,13 +186,11 @@ public class LukioServiceImpl implements LukioService {
             return;
         }
 
+        // Oppiainetta vastaava perusteen osa
+        LukioPerusteOppiaineDto perusteOppiaine = null;
         Optional<LukioPerusteOppiaineDto> optPerusteOppiaine = perusteRakenne.getOppiaineet().stream()
                 .filter(oa -> oa.getTunniste().equals(oppiaine.getTunniste()))
                 .findFirst();
-
-        // Oppiainetta vastaava perusteen osa
-        LukioPerusteOppiaineDto perusteOppiaine = null;
-
         if (optPerusteOppiaine.isPresent()) {
             perusteOppiaine = optPerusteOppiaine.get();
         }
@@ -204,6 +202,7 @@ public class LukioServiceImpl implements LukioService {
         if (perusteOppiaine != null && perusteOppiaine.getTehtava() != null) {
             addLokalisoituteksti(docBase, perusteOppiaine.getTehtava().getTeksti(), "cite");
         }
+
         if (oppiaine.getTehtava() != null) {
             addLokalisoituteksti(docBase, oppiaine.getTehtava().getTeksti(), "div");
         }
@@ -298,9 +297,11 @@ public class LukioServiceImpl implements LukioService {
         if (perusteKurssi != null) {
             addYleinenKuvaus(docBase, lukiokurssi.getTavoitteet(), perusteKurssi.getTavoitteet());
             addYleinenKuvaus(docBase, lukiokurssi.getKeskeinenSisalto(), perusteKurssi.getKeskeisetSisallot());
+            addYleinenKuvaus(docBase, lukiokurssi.getTavoitteetJaKeskeinenSisalto(), perusteKurssi.getTavoitteetJaKeskeisetSisallot());
         } else {
             addYleinenKuvaus(docBase, lukiokurssi.getTavoitteet(), null);
             addYleinenKuvaus(docBase, lukiokurssi.getKeskeinenSisalto(), null);
+            addYleinenKuvaus(docBase, lukiokurssi.getTavoitteetJaKeskeinenSisalto(), null);
         }
 
         docBase.getGenerator().increaseNumber();
@@ -311,8 +312,6 @@ public class LukioServiceImpl implements LukioService {
             addLokalisoituteksti(docBase, tekstiosa.getOtsikko(), "h6");
         } else if (perusteTekstiosa != null && perusteTekstiosa.getOtsikko() != null) {
             addLokalisoituteksti(docBase, perusteTekstiosa.getOtsikko(), "h6");
-        } else {
-            return;
         }
 
         if (perusteTekstiosa != null) {
