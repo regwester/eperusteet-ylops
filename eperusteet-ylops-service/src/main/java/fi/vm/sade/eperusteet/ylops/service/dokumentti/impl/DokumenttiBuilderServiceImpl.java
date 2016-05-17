@@ -59,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -106,6 +107,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private DtoMapper mapper;
 
     @Override
+    @Transactional
     public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
             throws TransformerException, IOException, SAXException,
             ParserConfigurationException, NullPointerException, DokumenttiException {
@@ -122,8 +124,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         Element headElement = doc.createElement("head");
 
         // Poistetaan HEAD:in <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        if (headElement.hasChildNodes())
+        if (headElement.hasChildNodes()) {
             headElement.removeChild(headElement.getFirstChild());
+        }
 
         Element bodyElement = doc.createElement("body");
 

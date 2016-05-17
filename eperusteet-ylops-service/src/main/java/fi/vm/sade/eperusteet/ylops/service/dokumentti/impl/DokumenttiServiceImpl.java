@@ -33,8 +33,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +43,8 @@ import java.util.Date;
  * @author iSaul
  */
 @Service
+@Transactional
 public class DokumenttiServiceImpl implements DokumenttiService {
-
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiServiceImpl.class);
 
     @Autowired
@@ -62,8 +60,6 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     private DokumenttiBuilderService builder;
 
     @Override
-    @Transactional
-    @PreAuthorize("isAuthenticated()")
     public DokumenttiDto getDto(Long opsId, Kieli kieli) {
         Dokumentti dokumentti = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
 
@@ -71,12 +67,11 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         if (dokumentti != null) {
             return mapper.map(dokumentti, DokumenttiDto.class);
         }
+
         return null;
     }
 
     @Override
-    @Transactional
-    @PreAuthorize("isAuthenticated()")
     public DokumenttiDto createDtoFor(Long id, Kieli kieli) {
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = new Dokumentti();
@@ -89,14 +84,14 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         if (ops != null) {
             Dokumentti saved = dokumenttiRepository.save(dokumentti);
+
             return mapper.map(saved, DokumenttiDto.class);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     @Override
-    @Transactional
     public void setStarted(DokumenttiDto dto) {
         // Asetetaan dokumentti luonti tilaan
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
@@ -108,7 +103,6 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
-    @Transactional
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
@@ -135,7 +129,6 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
-    @Transactional
     public DokumenttiDto getDto(Long id) {
         Dokumentti dokumentti = dokumenttiRepository.findOne(id);
         return mapper.map(dokumentti, DokumenttiDto.class);
@@ -153,6 +146,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean hasPermission(Long id) {
         Dokumentti dokumentti = dokumenttiRepository.findOne(id);
         if (dokumentti == null) {
@@ -160,7 +154,8 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         }
 
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        String name = SecurityUtil.getAuthenticatedPrincipal().getName();
+
         return ops.getTila().equals(Tila.JULKAISTU) || !name.equals("anonymousUser");
     }
 

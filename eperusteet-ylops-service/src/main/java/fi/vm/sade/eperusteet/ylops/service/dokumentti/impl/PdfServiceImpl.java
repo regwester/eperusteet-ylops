@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -41,6 +42,7 @@ import java.nio.charset.StandardCharsets;
  * @author isaul
  */
 @Service
+@Transactional
 public class PdfServiceImpl implements PdfService {
     private static final Logger LOG = LoggerFactory.getLogger(PdfServiceImpl.class);
 

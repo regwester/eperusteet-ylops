@@ -44,8 +44,8 @@ public class DokumenttiController {
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<DokumenttiDto> create(
-            @RequestParam("opsId") final long opsId,
-            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) throws DokumenttiException {
+            @RequestParam final long opsId,
+            @RequestParam(defaultValue = "fi") final String kieli) throws DokumenttiException {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
@@ -89,7 +89,7 @@ public class DokumenttiController {
     }
 
     @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> get(@PathVariable("dokumenttiId") final Long dokumenttiId) {
+    public ResponseEntity<byte[]> get(@PathVariable final Long dokumenttiId) {
         byte[] pdfdata = service.get(dokumenttiId);
 
         if (pdfdata == null || pdfdata.length == 0) {
@@ -109,9 +109,8 @@ public class DokumenttiController {
     }
 
     @RequestMapping(method = RequestMethod.GET, params = "opsId")
-    public ResponseEntity<DokumenttiDto> getDokumentti(
-            @RequestParam("opsId") final Long opsId,
-            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
+    public ResponseEntity<DokumenttiDto> getDokumentti(@RequestParam final Long opsId,
+                                                       @RequestParam(defaultValue = "fi") final String kieli) {
         Kieli k = Kieli.of(kieli);
         DokumenttiDto dto = service.getDto(opsId, k);
         if (dto == null) {
@@ -122,7 +121,7 @@ public class DokumenttiController {
     }
 
     @RequestMapping(value = "/{dokumenttiId}/dokumentti", method = RequestMethod.GET)
-    public ResponseEntity<DokumenttiDto> query(@PathVariable("dokumenttiId") final Long dokumenttiId) {
+    public ResponseEntity<DokumenttiDto> query(@PathVariable final Long dokumenttiId) {
         DokumenttiDto dto = service.query(dokumenttiId);
         if (dto == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -131,9 +130,8 @@ public class DokumenttiController {
     }
 
     @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
-    public ResponseEntity<DokumenttiTila> exist(
-            @RequestParam("opsId") final Long opsId,
-            @RequestParam(value = "kieli", defaultValue = "fi") final String kieli) {
+    public ResponseEntity<DokumenttiTila> exist(@RequestParam final Long opsId,
+                                                @RequestParam(defaultValue = "fi") final String kieli) {
         Kieli k = Kieli.of(kieli);
         DokumenttiTila tila = service.getTila(opsId, k);
         if (tila == null) {

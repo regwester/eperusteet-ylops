@@ -456,6 +456,13 @@
         </fo:block>
     </xsl:template>
 
+    <xsl:template match="tavoite-otsikko">
+        <fo:block font-size="12pt" line-height="1.25em" font-weight="bold"
+                  keep-with-next="always" space-after="10pt" color="#000000">
+            <xsl:apply-templates select="*|text()" />
+        </fo:block>
+    </xsl:template>
+
     <xsl:template match="a">
         <xsl:choose>
             <xsl:when test="@name">

@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 
@@ -48,6 +49,7 @@ import java.util.Locale;
  * @author iSaul
  */
 @Service
+@Transactional
 public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
     @Autowired
     private MessageSource messageSource;
