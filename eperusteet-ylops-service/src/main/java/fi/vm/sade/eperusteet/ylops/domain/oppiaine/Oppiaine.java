@@ -22,7 +22,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
@@ -37,7 +36,6 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -381,6 +379,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         return (other, to) -> {
             to.setNimi(other.getNimi());
             to.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
+            to.setTyyppi(other.getTyyppi());
             to.setKoodi(other.getKoodi());
             to.setKoosteinen(other.isKoosteinen());
             to.setKoodiArvo(other.getKoodiArvo());
