@@ -583,6 +583,12 @@
   "poistettu-tyyppi-oppiaine": "Oppiaine",
   "poistettu-tyyppi-teksti": "Tekstikappale",
   "haku-nimi": "Haku",
+  "validointi": "Validointi",
+  "validointi": "Validointi",
+  "validointi-ei-virheita": "Opetussuunnitelma kunnossa",
+  "validointi-virheet": "Julkaisun estävät ongelmat",
+  "validointi-varoitukset": "Varoitukset",
+  "validointi-huomiot": "Muut huomiot",
   "palauta-oppiaineena": "Palauta oppiaineena",
   "palauta-oppimaarana": "Palauta oppimääränä",
   "palautus-epaonnistui": "Palauttaminen epäonnistui"

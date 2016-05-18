@@ -34,6 +34,7 @@ ylopsApp
       laajaalaiset: {method: 'GET', url: YlopsResources.OPS + '/laajaalaisetosaamiset', isArray: true},
       setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'},
       palauta: {method: 'POST', url: YlopsResources.OPS + '/palauta'},
+      validoi: {method: 'GET', url: YlopsResources.OPS + '/validoi', isArray: true},
       lisaaKielitarjonta: {method: 'POST', url: YlopsResources.OPS + '/kielitarjonta', isArray: true},
       syncPeruste: {method: 'POST', url: YlopsResources.OPS + '/sync'},
       jarjestaOppiaineet: {method: 'POST', url: YlopsResources.OPS + '/oppiainejarjestys', isArray: true},
