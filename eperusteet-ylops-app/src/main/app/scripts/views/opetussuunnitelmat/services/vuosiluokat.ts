@@ -138,8 +138,6 @@ ylopsApp
 
     _(oppiaineet)
       .each(alustaVlk)
-      .sortBy(Utils.sort)
-      .sortBy('$$jnro')
       .filter((oa) => {
         return oa.$$oavlk || oa.koodiArvo === 'VK' || _.any(oa.oppimaarat, (om) => {
           return _.find(om.vuosiluokkakokonaisuudet, _.equals(obj._tunniste, '_vuosiluokkakokonaisuus'));
@@ -151,6 +149,7 @@ ylopsApp
           oa.$$jnro = _.first(_.first(oa.oppimaarat).vuosiluokkakokonaisuudet).jnro;
         }
       })
+      .sortBy(Utils.sort)
       .sortBy('$$jnro')
       .map((oa) => {
         return [

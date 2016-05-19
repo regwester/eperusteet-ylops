@@ -200,10 +200,6 @@ public class LukioServiceImpl implements LukioService {
         addHeader(docBase, getTextString(docBase, oppiaine.getNimi()));
 
         if (perusteOppiaine != null) {
-            addYleinenKuvaus(docBase, oppiaine.getTehtava(), perusteOppiaine.getTehtava());
-            addYleinenKuvaus(docBase, oppiaine.getTavoitteet(), perusteOppiaine.getTavoitteet());
-            addYleinenKuvaus(docBase, oppiaine.getArviointi(), perusteOppiaine.getArviointi());
-
             addLokalisoituteksti(docBase, perusteOppiaine.getPakollinenKurssiKuvaus(), "cite");
             addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenPakollinenKuvaus(), "div");
 
@@ -217,17 +213,19 @@ public class LukioServiceImpl implements LukioService {
 
             addLokalisoituteksti(docBase, oppiaine.getPaikallinenSoveltavaKurssiKuvaus(), "div");
 
+            addYleinenKuvaus(docBase, oppiaine.getTehtava(), perusteOppiaine.getTehtava());
+            addYleinenKuvaus(docBase, oppiaine.getTavoitteet(), perusteOppiaine.getTavoitteet());
+            addYleinenKuvaus(docBase, oppiaine.getArviointi(), perusteOppiaine.getArviointi());
         } else {
-            addYleinenKuvaus(docBase, oppiaine.getTehtava(), null);
-            addYleinenKuvaus(docBase, oppiaine.getTavoitteet(), null);
-            addYleinenKuvaus(docBase, oppiaine.getArviointi(), null);
-
             addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenPakollinenKuvaus(), "div");
             addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenSyventavaKurssiKuvaus(), "div");
             addLokalisoituteksti(docBase, oppiaine.getValtakunnallinenSoveltavaKurssiKuvaus(), "div");
             addLokalisoituteksti(docBase, oppiaine.getPaikallinenSyventavaKurssiKuvaus(), "div");
             addLokalisoituteksti(docBase, oppiaine.getPaikallinenSoveltavaKurssiKuvaus(), "div");
 
+            addYleinenKuvaus(docBase, oppiaine.getTehtava(), null);
+            addYleinenKuvaus(docBase, oppiaine.getTavoitteet(), null);
+            addYleinenKuvaus(docBase, oppiaine.getArviointi(), null);
         }
 
         docBase.getGenerator().increaseDepth();

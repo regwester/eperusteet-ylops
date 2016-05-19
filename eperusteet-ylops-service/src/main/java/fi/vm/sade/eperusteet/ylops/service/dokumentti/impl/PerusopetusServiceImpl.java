@@ -179,6 +179,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
     private void addOppiaineet(DokumenttiBase docBase, Vuosiluokkakokonaisuus vlk) {
         if (docBase.getOps() != null && docBase.getOps().getOppiaineet() != null) {
+            addHeader(docBase, messages.translate("oppiaineet", docBase.getKieli()));
+
             Set<OpsOppiaine> oppiaineet = docBase.getOps().getOppiaineet();
 
             List<OpsOppiaine> oppiaineetAsc = oppiaineet.stream()
@@ -189,8 +191,6 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                     .sorted((oa1, oa2) -> oa1.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())
                             .compareTo(oa2.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())))
                     .collect(Collectors.toCollection(ArrayList::new));
-
-            addHeader(docBase, messages.translate("oppiaineet", docBase.getKieli()));
 
             docBase.getGenerator().increaseDepth();
 
@@ -490,7 +490,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                                  PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
         if (oaVuosiluokka.getTavoitteet() != null) {
 
-            addHeader(docBase, messages.translate("vuosiluokan-tavoitteet", docBase.getKieli()));
+            addTeksti(docBase, messages.translate("vuosiluokan-tavoitteet", docBase.getKieli()), "tavoitteet-otsikko");
 
             for (Opetuksentavoite opetuksentavoite : oaVuosiluokka.getTavoitteet()) {
 
@@ -510,7 +510,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                         && perusteOpetuksentavoiteDto.getTavoite() != null) {
 
                     // Tavoitteen otsikko
-                    addLokalisoituteksti(docBase, perusteOpetuksentavoiteDto.getTavoite(), "tavoite-otsikko");
+                    addLokalisoituteksti(docBase, perusteOpetuksentavoiteDto.getTavoite(), "h5");
 
                     // Ops tavoite
                     addLokalisoituteksti(docBase, opetuksentavoite.getTavoite(), "div");
