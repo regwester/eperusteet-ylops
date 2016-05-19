@@ -50,8 +50,8 @@ public @interface ValidHtml {
                         .addTags("p", "strong", "em", "s", "ol", "li", "ul", "blockquote", "table", "caption",
                                 "tbody", "tr", "td", "hr", "pre", "th", "thead", "a", "abbr")
                         .addAttributes("table", "align", "border", "cellpadding", "cellspacing", "style", "summary")
-                        .addAttributes("th", "scope", "colspan", "rowspan")
-                        .addAttributes("td", "colspan", "rowspan")
+                        .addAttributes("th", "scope", "colspan", "rowspan", "style")
+                        .addAttributes("td", "colspan", "rowspan", "style")
                         .addAttributes("a", "href", "target")
                         .addAttributes("img", "data-uid", "alt")
                         .addAttributes("abbr", "data-viite"));
