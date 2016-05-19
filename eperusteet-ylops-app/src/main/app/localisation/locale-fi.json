@@ -548,7 +548,7 @@
   "lukio-ei-oppiaineita": "Oppiaineet puuttuvat",
   "lukio-ei-aihekokonaisuuksia": "Aihekokonaisuudet puuttuvat",
   "lukio-oppiaineessa-ei-kursseja": "Oppiaineessa ei ole kursseja",
-  "lukio-oppiaineessa-ei-oppimaaria": "Oppiaineessa ei ole oppimääriä",
+  "lukio-oppiaineessa-ei-oppimaaria": "Oppiaineessa ei ole oppimääriä tai kursseja",
   "lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat": "Kurssin tavoitteet tai keskeinen sisaltoalue puuttuu",
   "luo-pdf-dokumentti": "Luo PDF dokumentti",
   "luo-pdf": "Luo PDF",
