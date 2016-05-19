@@ -302,3 +302,19 @@ h1.plain {
   padding: 6px;
   border: 1px dashed #eee;
 }
+
+.validointi {
+  .onnistunut {
+    color: #41763D;
+
+    h2 {
+    }
+
+    .peukku {
+      position: relative;
+      top: -56px;
+      font-size: 60px;
+      float: right;
+    }
+  }
+}

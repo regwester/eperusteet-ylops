@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -161,6 +162,14 @@ public class OpetussuunnitelmaController {
         @PathVariable("id") final Long id,
         @PathVariable("tila") Tila tila) {
         return new ResponseEntity<>(opetussuunnitelmaService.updateTila(id, tila), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/validoi", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<List<Validointi>> validoiOpetussuunnitelma(
+        @PathVariable("id") final Long id) {
+        return new ResponseEntity<>(opetussuunnitelmaService.validoiOpetussuunnitelma(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)

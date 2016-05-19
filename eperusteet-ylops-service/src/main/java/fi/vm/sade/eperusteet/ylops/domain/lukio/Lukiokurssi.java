@@ -16,28 +16,25 @@
 
 package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioKurssiParentDto;
-import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
-
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 /**
  * User: tommiratamaa
@@ -151,6 +148,6 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
             Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet, this.getNimi());
             return;
         }
-        validointi.lisaaVirhe(validointi.luoVirhe("lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat", this.getNimi()));
+        validointi.virhe("lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat", this.getNimi());
     }
 }

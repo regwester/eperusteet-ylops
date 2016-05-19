@@ -16,8 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.io.Serializable;
 import java.text.Normalizer;
@@ -163,7 +161,7 @@ public class LokalisoituTeksti implements Serializable {
 
     static public void validoi(String syy, Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, LokalisoituTeksti... parents) {
         if (teksti == null || !teksti.hasKielet(kielet)) {
-            validointi.lisaaVirhe(Validointi.luoVirhe(syy, parents));
+            validointi.virhe(syy, parents);
         }
     }
 

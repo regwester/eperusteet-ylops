@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
-
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
-
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +63,6 @@ import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMeth
  */
 @ControllerAdvice
 public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
-
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlingConfig.class);
 
     @ExceptionHandler(TransactionSystemException.class)

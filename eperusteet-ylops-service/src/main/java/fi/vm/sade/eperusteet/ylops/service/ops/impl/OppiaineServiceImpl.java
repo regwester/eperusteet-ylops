@@ -27,11 +27,9 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
@@ -48,12 +46,11 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
 import static java.util.stream.Collectors.*;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -558,10 +555,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         OpsOppiaine kopio = new OpsOppiaine(newOppiaine, true);
         opsOppiaineet.add(kopio);
         ops.setOppiaineet(opsOppiaineet);
+
         if (ops.getKoulutustyyppi().isLukio()) {
             newOppiaine.setAbstrakti(oppiaine.getAbstrakti());
             remapLukiokurssit(ops, oppiaine, newOppiaine);
-
             updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, newOppiaine);
         }
 

@@ -16,8 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
-import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -159,7 +157,7 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
                     LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getNimi(), teksti);
                 }
                 else {
-                    validointi.lisaaVirhe(Validointi.luoVirhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti));
+                    validointi.virhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti);
                 }
             }
             validoi(validointi, lapsi, julkaisukielet);

@@ -87,7 +87,19 @@ ylopsApp
 })
 
 .controller('ValidointivirheetController', function ($scope, $modalInstance, $state, virheet) {
-  $scope.virheet = virheet;
+  const create = (l, field) => _(l)
+    .map(field)
+    .flatten()
+    .value();
+
+  $scope.virheet = create(virheet ,"virheet");
+  $scope.varoitukset = create(virheet ,"varoitukset");
+  $scope.huomiot = create(virheet ,"huomiot");
+  $scope.eiVirheita =
+    _.isEmpty($scope.virheet) &&
+    _.isEmpty($scope.varoitukset) &&
+    _.isEmpty($scope.huomiot);
+
   $scope.ok = $modalInstance.dismiss;
 })
 

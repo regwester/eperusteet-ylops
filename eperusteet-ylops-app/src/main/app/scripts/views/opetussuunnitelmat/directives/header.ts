@@ -28,7 +28,7 @@ ylopsApp
   };
 })
 
-.controller('OpsHeaderController', function ($scope, $state, $location, $stateParams, PdfCreation) {
+.controller('OpsHeaderController', function ($scope, $state, $location, $modal, $stateParams, PdfCreation, OpetussuunnitelmaCRUD) {
   var POHJALINKIT = [
     // {state: 'root.pohjat.yksi.tiedot', label: 'pohjan-tiedot', role: 'info'}
   ];
@@ -81,5 +81,18 @@ ylopsApp
   $scope.luoPdf = function () {
     PdfCreation.setOpsId($scope.opsId);
     PdfCreation.openModal();
+  };
+
+  $scope.validoiOps = () => {
+    OpetussuunnitelmaCRUD.validoi({ opsId: $stateParams.id }).$promise
+      .then(res => {
+        $modal.open({
+          templateUrl: 'views/opetussuunnitelmat/modals/validointivirheet.html',
+          controller: 'ValidointivirheetController',
+          size: 'lg',
+          resolve: { virheet: _.constant(res) }
+        })
+        .result.then(_.noop)
+      });
   };
 });

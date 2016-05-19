@@ -15,15 +15,13 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.util;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
-import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -34,39 +32,57 @@ public class Validointi {
     @Getter
     static public class Virhe {
         private String syy;
-        private List<LokalisoituTeksti> nimi = new ArrayList<>();
+        private Map<Kieli, String> nimi;
 
         Virhe(String syy) {
             this.syy = syy;
             this.nimi = null;
         }
 
-        Virhe(String syy, LokalisoituTeksti... t) {
+        Virhe(String syy, LokalisoituTeksti t) {
             this.syy = syy;
-            nimi.addAll(Arrays.asList(t).stream()
-                    .filter(x -> x != null)
-                    .collect(Collectors.toList()));
+            this.nimi = t.getTeksti();
         }
 
     }
 
     private List<Virhe> virheet = new ArrayList<>();
+    private List<Virhe> varoitukset = new ArrayList<>();
+    private List<Virhe> huomiot = new ArrayList<>();
 
-    public void lisaaVirhe(Virhe virhe) {
-        virheet.add(virhe);
+    public void virhe(String syy) {
+        virheet.add(new Virhe(syy));
+    }
+
+    public void virhe(String syy, LokalisoituTeksti... args) {
+        for (LokalisoituTeksti arg : args) {
+            virheet.add(new Virhe(syy, arg));
+        }
+    }
+
+    public void varoitus(String syy) {
+        varoitukset.add(new Virhe(syy));
+    }
+
+    public void varoitus(String syy, LokalisoituTeksti... args) {
+        for (LokalisoituTeksti arg : args) {
+            varoitukset.add(new Virhe(syy, arg));
+        }
+    }
+
+    public void huomio(String syy) {
+        huomiot.add(new Virhe(syy));
+    }
+
+    public void huomio(String syy, LokalisoituTeksti... args) {
+        for (LokalisoituTeksti arg : args) {
+            huomiot.add(new Virhe(syy, arg));
+        }
     }
 
     public void tuomitse() {
         if (!virheet.isEmpty()) {
             throw new ValidointiException(this);
         }
-    }
-
-    static public Virhe luoVirhe(String syy) {
-        return new Virhe(syy);
-    }
-
-    static public Virhe luoVirhe(String syy, LokalisoituTeksti... args) {
-        return new Virhe(syy, args);
     }
 }
