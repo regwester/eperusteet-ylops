@@ -141,6 +141,6 @@ public class PdfServiceImpl implements PdfService {
 
     private void printStream(ByteArrayOutputStream stream) {
         // Escapettaminen auttaa lukemista konsolista
-        LOG.info(new String(stream.toByteArray(), StandardCharsets.UTF_8));
+        LOG.error(new String(stream.toByteArray(), StandardCharsets.UTF_8));
     }
 }
