@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
+import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
@@ -47,7 +48,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/kuvat")
+@Api("Liitetiedostot")
 public class LiitetiedostoController {
+    private static final Logger LOG = LoggerFactory.getLogger(LiitetiedostoController.class);
 
     private static final int BUFSIZE = 64 * 1024;
     final Tika tika = new Tika();
@@ -64,31 +67,25 @@ public class LiitetiedostoController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    public void reScaleImg(
-            @PathVariable("opsId")
-            @P("opsId") Long opsId,
-            @PathVariable("id") UUID id,
-            @RequestParam("width") Integer width,
-            @RequestParam("height") Integer height,
-            @RequestParam("file") Part file
-            ){
-
+    public void reScaleImg(@PathVariable @P("opsId") Long opsId,
+                           @PathVariable UUID id,
+                           @RequestParam Integer width,
+                           @RequestParam Integer height,
+                           @RequestParam Part file){
         //TODO implement image rescaling
-
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    public ResponseEntity<String> upload(
-        @PathVariable("opsId")
-        @P("opsId") Long opsId,
-        @RequestParam("nimi") String nimi,
-        @RequestParam("file") Part file,
-        @RequestParam("width") Integer width,
-        @RequestParam("height") Integer height,
-        UriComponentsBuilder ucb)
-        throws IOException, HttpMediaTypeNotSupportedException {
+    public ResponseEntity<String> upload(@PathVariable @P("opsId") Long opsId,
+                                         @RequestParam String nimi,
+                                         @RequestParam Part file,
+                                         @RequestParam Integer width,
+                                         @RequestParam Integer height,
+                                         UriComponentsBuilder ucb)
+            throws IOException, HttpMediaTypeNotSupportedException {
         final long koko = file.getSize();
+
         try (PushbackInputStream pis = new PushbackInputStream(file.getInputStream(), BUFSIZE)) {
             byte[] buf = new byte[koko < BUFSIZE ? (int) koko : BUFSIZE];
             int len = pis.read(buf);
@@ -105,7 +102,7 @@ public class LiitetiedostoController {
             if( width != null && height != null){
                 ByteArrayOutputStream os = scaleImage(file, tyyppi, width, height);
                 id = liitteet.add(opsId, tyyppi, nimi, os.size(), new PushbackInputStream( new ByteArrayInputStream( os.toByteArray() )));
-            }else{
+            } else {
                 id = liitteet.add(opsId, tyyppi, nimi, koko, pis);
             }
 
@@ -140,11 +137,10 @@ public class LiitetiedostoController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @CacheControl(age = CacheControl.ONE_YEAR)
-    public void get(
-        @PathVariable("opsId") Long opsId,
-        @PathVariable("id") UUID id,
-        @RequestHeader(value = "If-None-Match", required = false) String etag,
-        HttpServletResponse response) throws IOException {
+    public void get(@PathVariable Long opsId,
+                    @PathVariable UUID id,
+                    @RequestHeader(value = "If-None-Match", required = false) String etag,
+                    HttpServletResponse response) throws IOException {
 
         LiiteDto dto = liitteet.get(opsId, id);
         if (dto != null) {
@@ -165,17 +161,12 @@ public class LiitetiedostoController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
-        @PathVariable("opsId") Long opsId,
-        @PathVariable("id") UUID id) {
+    public void delete(@PathVariable Long opsId, @PathVariable UUID id) {
         liitteet.delete(opsId, id);
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<LiiteDto> getAll(@PathVariable("opsId") Long opsId) {
+    public List<LiiteDto> getAll(@PathVariable Long opsId) {
         return liitteet.getAll(opsId);
     }
-
-    private static final Logger LOG = LoggerFactory.getLogger(LiitetiedostoController.class);
-
 }

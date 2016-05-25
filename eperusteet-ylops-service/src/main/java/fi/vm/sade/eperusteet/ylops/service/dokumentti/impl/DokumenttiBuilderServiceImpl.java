@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -70,6 +69,7 @@ import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.Dokumentt
  * @author iSaul
  */
 @Service
+@Transactional
 public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiBuilderServiceImpl.class);
@@ -107,7 +107,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private DtoMapper mapper;
 
     @Override
-    @Transactional
     public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
             throws TransformerException, IOException, SAXException,
             ParserConfigurationException, NullPointerException, DokumenttiException {

@@ -43,9 +43,9 @@ public class DokumenttiController {
     DokumenttiService service;
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<DokumenttiDto> create(
-            @RequestParam final long opsId,
-            @RequestParam(defaultValue = "fi") final String kieli) throws DokumenttiException {
+    public ResponseEntity<DokumenttiDto> create(@RequestParam final long opsId,
+                                                @RequestParam(defaultValue = "fi") final String kieli)
+            throws DokumenttiException {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
