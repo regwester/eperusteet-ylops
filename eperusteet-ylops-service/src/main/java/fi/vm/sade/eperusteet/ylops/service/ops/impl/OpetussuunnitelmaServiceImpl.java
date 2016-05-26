@@ -1069,7 +1069,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
             if( opsOppiaine.getOppiaine().isKoosteinen() && opsOppiaine.getOppiaine().getOppimaarat().isEmpty()){
                 logger.error("lukio-oppiaineessa-ei-oppimaaria");
-                validointi.virhe("lukio-oppiaineessa-ei-oppimaaria", opsOppiaine.getOppiaine().getNimi());
+                validointi.varoitus("lukio-oppiaineessa-ei-oppimaaria", opsOppiaine.getOppiaine().getNimi());
             }
         });
 

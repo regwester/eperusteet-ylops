@@ -148,6 +148,6 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
             Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet, this.getNimi());
             return;
         }
-        validointi.virhe("lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat", this.getNimi());
+        validointi.varoitus("lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat", this.getNimi());
     }
 }
