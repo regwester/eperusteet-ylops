@@ -150,7 +150,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         yleisetOsuudetService.addYleisetOsuudet(docBase);
 
         if (ops.getKoulutustyyppi() != null) {
-
             PerusteDto perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
             if (perusteDto == null) {
                 throw new DokumenttiException("Peruste puuttuu", new Throwable());
@@ -181,9 +180,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private void addMetaPages(DokumenttiBase docBase) {
         Element title = docBase.getDocument().createElement("title");
         String nimi = getTextString(docBase, docBase.getOps().getNimi());
-        /*if (!docBase.getOps().getTila().equals(Tila.JULKAISTU)) {
-            nimi += " (" + docBase.getOps().getTila() + ")";
-        }*/
         title.appendChild(docBase.getDocument().createTextNode(nimi));
         docBase.getHeadElement().appendChild(title);
 

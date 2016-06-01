@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOpetussuunnitelmaRakenneOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
@@ -101,14 +102,10 @@ public class LukioServiceImpl implements LukioService {
         addLokalisoituteksti(docBase, perusteAihekokonaisuudet.getYleiskuvaus(), "cite");
         addLokalisoituteksti(docBase, aihekokonaisuudet.getYleiskuvaus(), "div");
 
-        Set<Aihekokonaisuus> aihekokonaisuudetSet = docBase.getOps().getAihekokonaisuudet().getAihekokonaisuudet();
-        if (aihekokonaisuudetSet != null) {
-            docBase.getGenerator().increaseDepth();
-            docBase.getGenerator().increaseDepth();
-            docBase.getGenerator().increaseDepth();
-            docBase.getGenerator().increaseDepth();
-
-            aihekokonaisuudetSet.stream()
+        Set<Aihekokonaisuus> aihekokonaisuudetLista = aihekokonaisuudet.getAihekokonaisuudet();
+        List<AihekokonaisuusDto> perusteAihekokonaisuudetLista = perusteAihekokonaisuudet.getAihekokonaisuudet();
+        if (aihekokonaisuudetLista != null) {
+            aihekokonaisuudetLista.stream()
                     .map(o -> {
                         if (o.getJnro() == null) {
                             o.setJnro(Long.MAX_VALUE);
@@ -116,33 +113,22 @@ public class LukioServiceImpl implements LukioService {
                         return o;
                     })
                     .sorted((o1, o2) -> Long.compare(o1.getJnro(), o2.getJnro()))
-                    .forEach(o -> addAihekokonaisuus(docBase, o));
-
-            docBase.getGenerator().decreaseDepth();
-            docBase.getGenerator().decreaseDepth();
-            docBase.getGenerator().decreaseDepth();
-            docBase.getGenerator().decreaseDepth();
+                    .forEach(aihekokonaisuus -> {
+                        AihekokonaisuusDto perusteAihekokokonaisuusDto = null;
+                        Optional<AihekokonaisuusDto> optPerusteAihekokokonaisuus = perusteAihekokonaisuudetLista.stream()
+                                .filter(dto -> dto.getTunniste().equals(aihekokonaisuus.getTunniste()))
+                                .findAny();
+                        if (optPerusteAihekokokonaisuus.isPresent()) {
+                            perusteAihekokokonaisuusDto = optPerusteAihekokokonaisuus.get();
+                        }
+                        addAihekokonaisuus(docBase, aihekokonaisuus, perusteAihekokokonaisuusDto);
+                    });
         }
 
         docBase.getGenerator().increaseNumber();
     }
 
-    private void addAihekokonaisuus(DokumenttiBase docBase, Aihekokonaisuus aihekokonaisuus) {
-        if (aihekokonaisuus.getTunniste() == null) {
-            return;
-        }
-
-        // Opsin aihekokonaisuutta vastaava peruste
-        Optional<AihekokonaisuusDto> optAihekokonaisuusDto = docBase.getPerusteDto().getLukiokoulutus()
-                .getAihekokonaisuudet().getAihekokonaisuudet().stream()
-                .filter(o -> o.getTunniste() != null)
-                .filter(o -> o.getTunniste().equals(aihekokonaisuus.getTunniste()))
-                .findFirst();
-
-        AihekokonaisuusDto perusteAihekokonaisuusDto = null;
-        if (optAihekokonaisuusDto.isPresent()) {
-            perusteAihekokonaisuusDto = optAihekokonaisuusDto.get();
-        }
+    private void addAihekokonaisuus(DokumenttiBase docBase, Aihekokonaisuus aihekokonaisuus, AihekokonaisuusDto perusteAihekokonaisuusDto) {
 
         // Näytetään opsin otsikko jos saatavilla, muuten käytetään perusteen otsikkoa.
         // Jos kumpaakaan ei ole, näytetään tieto puuttuvasta otsikosta.
@@ -157,46 +143,39 @@ public class LukioServiceImpl implements LukioService {
         if (perusteAihekokonaisuusDto != null) {
             addLokalisoituteksti(docBase, perusteAihekokonaisuusDto.getYleiskuvaus(), "cite");
         }
-
         addLokalisoituteksti(docBase, aihekokonaisuus.getYleiskuvaus(), "div");
 
         docBase.getGenerator().increaseNumber();
     }
 
     private void addOppiaineet(DokumenttiBase docBase) {
-
-        LukioOpetussuunnitelmaRakenneOpsDto lukioOpetussuunnitelmaRakenneOpsDto
-                = lukioOpetussuunnitelmaService.getRakenne(docBase.getOps().getId());
-
-        // Rakenteen mukaisesti oppiaineet
-        lukioOpetussuunnitelmaRakenneOpsDto.getOppiaineet().stream()
-                .forEach(oaRakenne ->  {
-                    Optional<Oppiaine> optOppiaine = docBase.getOps().getOppiaineet().stream()
-                            .map(OpsOppiaine::getOppiaine)
-                            .filter(oa -> oa.getTunniste().equals(oaRakenne.getTunniste()))
-                            .findFirst();
-
-                    if (optOppiaine.isPresent()) {
-                        addOppiaine(docBase, optOppiaine.get());
-                    }
-                });
-    }
-
-    private void addOppiaine(DokumenttiBase docBase, Oppiaine oppiaine) {
+        LukioOpetussuunnitelmaRakenneOpsDto lukioRakenne = lukioOpetussuunnitelmaService.getRakenne(docBase.getOps().getId());
         LukioOpetussuunnitelmaRakenneDto perusteRakenne = docBase.getPerusteDto().getLukiokoulutus().getRakenne();
-        if (perusteRakenne == null || oppiaine == null) {
+
+        if (perusteRakenne == null || lukioRakenne == null) {
             return;
         }
 
-        // Oppiainetta vastaava perusteen osa
-        LukioPerusteOppiaineDto perusteOppiaine = null;
-        Optional<LukioPerusteOppiaineDto> optPerusteOppiaine = perusteRakenne.getOppiaineet().stream()
-                .filter(oa -> oa.getTunniste().equals(oppiaine.getTunniste()))
-                .findFirst();
-        if (optPerusteOppiaine.isPresent()) {
-            perusteOppiaine = optPerusteOppiaine.get();
-        }
+        // Rakenteen mukaisesti oppiaineet
+        lukioRakenne.getOppiaineet().stream()
+                .forEach(oaRakenne -> docBase.getOps().getOppiaineet().stream()
+                        .map(OpsOppiaine::getOppiaine)
+                        .filter(oa -> oa.getTunniste().equals(oaRakenne.getTunniste()))
+                        .findAny()
+                        .ifPresent(oa -> {
+                            LukioPerusteOppiaineDto perusteOppiaineDto = null;
+                            Optional<LukioPerusteOppiaineDto> optPerusteOppiaine
+                                    = perusteRakenne.getOppiaineet().stream()
+                                    .filter(perusteOa -> perusteOa.getTunniste().equals(oa.getTunniste()))
+                                    .findAny();
+                            if (optPerusteOppiaine.isPresent()) {
+                                perusteOppiaineDto = optPerusteOppiaine.get();
+                            }
+                            addOppiaine(docBase, oa, perusteOppiaineDto, oaRakenne);
+                        }));
+    }
 
+    private void addOppiaine(DokumenttiBase docBase, Oppiaine oppiaine, LukioPerusteOppiaineDto perusteOppiaine, LukioOppiaineRakenneListausDto oaRakenne) {
         // Oppiaineen nimi
         addHeader(docBase, getTextString(docBase, oppiaine.getNimi()));
 
@@ -232,10 +211,25 @@ public class LukioServiceImpl implements LukioService {
         docBase.getGenerator().increaseDepth();
 
         // Oppimäärät
-        Set<Oppiaine> oppimaarat = oppiaine.getOppimaarat();
-        if (oppimaarat != null) {
-            oppimaarat.stream()
-                    .forEach(om -> addOppiaine(docBase, om));
+        if (oppiaine.getOppimaarat() != null) {
+            oaRakenne.getOppimaarat().stream()
+                    .forEach(omRakenne -> oppiaine.getOppimaarat().stream()
+                            .filter(om -> om.getTunniste().equals(omRakenne.getTunniste()))
+                            .findAny()
+                            .ifPresent(om -> {
+                                LukioPerusteOppiaineDto perusteOm = null;
+
+                                if (perusteOppiaine != null && perusteOppiaine.getOppimaarat() != null) {
+                                    Optional<LukioPerusteOppiaineDto> optPerusteOm = perusteOppiaine.getOppimaarat().stream()
+                                            .filter(dto -> dto.getTunniste().equals(om.getTunniste()))
+                                            .findAny();
+                                    if (optPerusteOm.isPresent()) {
+                                        perusteOm = optPerusteOm.get();
+                                    }
+                                }
+
+                                addOppiaine(docBase, om, perusteOm, oaRakenne);
+                            }));
         }
 
         // Valtakunnallinen pakolliset
@@ -332,6 +326,7 @@ public class LukioServiceImpl implements LukioService {
         if (perusteTekstiosa != null) {
             addLokalisoituteksti(docBase, perusteTekstiosa.getTeksti(), "cite");
         }
+
         if (tekstiosa != null) {
             addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
         }
