@@ -129,7 +129,6 @@ public class LukioServiceImpl implements LukioService {
     }
 
     private void addAihekokonaisuus(DokumenttiBase docBase, Aihekokonaisuus aihekokonaisuus, AihekokonaisuusDto perusteAihekokonaisuusDto) {
-
         // Näytetään opsin otsikko jos saatavilla, muuten käytetään perusteen otsikkoa.
         // Jos kumpaakaan ei ole, näytetään tieto puuttuvasta otsikosta.
         if (aihekokonaisuus.getOtsikko() != null) {
@@ -144,8 +143,6 @@ public class LukioServiceImpl implements LukioService {
             addLokalisoituteksti(docBase, perusteAihekokonaisuusDto.getYleiskuvaus(), "cite");
         }
         addLokalisoituteksti(docBase, aihekokonaisuus.getYleiskuvaus(), "div");
-
-        docBase.getGenerator().increaseNumber();
     }
 
     private void addOppiaineet(DokumenttiBase docBase) {
