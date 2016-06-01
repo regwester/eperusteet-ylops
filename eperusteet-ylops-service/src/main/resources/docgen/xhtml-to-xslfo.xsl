@@ -674,7 +674,7 @@
     </xsl:template>
 
     <xsl:template match="table">
-        <xsl:if test="thead|tbody">
+        <xsl:if test="thead/tr/th|thead/tr/td|tbody/tr/th|tbody/tr/td">
             <fo:table table-layout="fixed" inline-progression-dimension="100%"
                       space-after="12pt" font-size="10pt" page-break-inside="avoid">
                 <xsl:if test="caption">
@@ -687,12 +687,6 @@
                     </fo:table-header>
                 </xsl:if>
                 <fo:table-body>
-                    <!-- todo: EP-830 -->
-                    <fo:table-row>
-                        <fo:table-cell>
-                            <fo:block></fo:block>
-                        </fo:table-cell>
-                    </fo:table-row>
                     <xsl:apply-templates select="thead|tbody" />
                 </fo:table-body>
             </fo:table>
