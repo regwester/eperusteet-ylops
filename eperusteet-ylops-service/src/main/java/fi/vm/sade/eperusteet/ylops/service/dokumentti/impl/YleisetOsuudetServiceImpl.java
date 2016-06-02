@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
@@ -44,7 +45,11 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
             throws IOException, SAXException, ParserConfigurationException {
 
         if (docBase.getOps().getTekstit() != null) {
-            addTekstiKappale(docBase, docBase.getOps().getTekstit(), true);
+            if (docBase.getOps().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOKOULUTUS)) {
+                addTekstiKappale(docBase, docBase.getOps().getTekstit(), false);
+            } else {
+                addTekstiKappale(docBase, docBase.getOps().getTekstit(), true);
+            }
         }
     }
 

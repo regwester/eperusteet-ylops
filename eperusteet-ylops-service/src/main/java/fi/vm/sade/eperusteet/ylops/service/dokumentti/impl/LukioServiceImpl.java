@@ -25,7 +25,6 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LukioService;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import org.slf4j.Logger;
@@ -58,9 +57,6 @@ public class LukioServiceImpl implements LukioService {
     @Autowired
     private LukioOpetussuunnitelmaService lukioOpetussuunnitelmaService;
 
-    @Autowired
-    private YleisetOsuudetService yleisetOsuudetService;
-
     public void addOppimistavoitteetJaOpetuksenKeskeisetSisallot(DokumenttiBase docBase) throws ParserConfigurationException, SAXException, IOException {
         addHeader(docBase, messages.translate("oppimistavoitteet-ja-opetuksen-keskeiset-sisallot", docBase.getKieli()));
         docBase.getGenerator().increaseDepth();
@@ -70,8 +66,6 @@ public class LukioServiceImpl implements LukioService {
         addOppiaineet(docBase);
 
         docBase.getGenerator().decreaseDepth();
-
-        yleisetOsuudetService.addLiitteet(docBase);
     }
 
     private void addOpetuksenYleisetTavoitteet(DokumenttiBase docBase) {

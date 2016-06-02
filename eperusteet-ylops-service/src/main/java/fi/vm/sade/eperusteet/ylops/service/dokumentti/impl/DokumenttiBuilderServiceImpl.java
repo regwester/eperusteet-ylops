@@ -167,6 +167,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             }
         }
 
+        // Liitteet
+        yleisetOsuudetService.addLiitteet(docBase);
+
         // Alaviitteet
         buildFootnotes(docBase);
 
