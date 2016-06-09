@@ -294,25 +294,25 @@
     <cache name="koodistot"
            maxElementsInMemory="10000"
            eternal="false"
-           timeToLiveSeconds="6000"
+           timeToLiveSeconds="600"
            overflowToDisk="false" />
 
     <cache name="organisaatiot"
            maxElementsInMemory="10000"
            eternal="false"
-           timeToLiveSeconds="600"
+           timeToLiveSeconds="6000"
            overflowToDisk="false" />
 
     <cache name="organisaation-peruskoulut"
            maxElementsInMemory="10000"
            eternal="false"
-           timeToLiveSeconds="600"
+           timeToLiveSeconds="6000"
            overflowToDisk="false" />
 
     <cache name="organisaation-lukiot"
            maxElementsInMemory="10000"
            eternal="false"
-           timeToLiveSeconds="600"
+           timeToLiveSeconds="6000"
            overflowToDisk="false" />
 
     <cache name="kayttajat"
