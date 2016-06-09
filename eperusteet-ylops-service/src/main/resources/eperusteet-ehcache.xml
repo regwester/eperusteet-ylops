@@ -294,7 +294,7 @@
     <cache name="koodistot"
            maxElementsInMemory="10000"
            eternal="false"
-           timeToLiveSeconds="600"
+           timeToLiveSeconds="6000"
            overflowToDisk="false" />
 
     <cache name="organisaatiot"
