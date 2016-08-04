@@ -687,6 +687,11 @@
                     </fo:table-header>
                 </xsl:if>
                 <fo:table-body>
+                    <fo:table-row>
+                        <fo:table-cell>
+                            <fo:block/>
+                        </fo:table-cell>
+                    </fo:table-row>
                     <xsl:apply-templates select="thead|tbody" />
                 </fo:table-body>
             </fo:table>
@@ -818,7 +823,16 @@
 
     <xsl:template match="tr">
         <fo:table-row>
-            <xsl:apply-templates select="th|td" />
+            <xsl:choose>
+                <xsl:when test="th|td">
+                    <xsl:apply-templates select="th|td" />
+                </xsl:when>
+                <xsl:otherwise>
+                    <fo:table-cell>
+                        <fo:block/>
+                    </fo:table-cell>
+                </xsl:otherwise>
+            </xsl:choose>
         </fo:table-row>
     </xsl:template>
 
