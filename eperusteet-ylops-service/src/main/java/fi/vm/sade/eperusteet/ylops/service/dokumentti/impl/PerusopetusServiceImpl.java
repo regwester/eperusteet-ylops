@@ -541,13 +541,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 addVuosiluokkaTavoitteenSisaltoalueet(docBase, opetuksentavoite);
 
                 // Sisältöalue ops
-                oaVuosiluokka.getSisaltoalueet().stream()
-                        .filter(s -> s.getPiilotettu() == null || !s.getPiilotettu())
-                        .forEach(ksa -> {
-                            if (ksa.getKuvaus() != null) {
-                                addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
-                            }
-                        });
+                opetuksentavoite.getSisaltoalueet().forEach(sisaltoAlue ->addLokalisoituteksti(
+                        docBase, sisaltoAlue.getSisaltoalueet().getKuvaus(), "div"));
             }
         }
     }
