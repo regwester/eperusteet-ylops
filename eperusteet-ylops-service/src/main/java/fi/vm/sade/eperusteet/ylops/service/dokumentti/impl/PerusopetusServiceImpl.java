@@ -343,10 +343,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                             if (optPerusteKsa.isPresent()) {
                                 addLokalisoituteksti(docBase, optPerusteKsa.get().getKuvaus(), "cite");
                             }
-                        }
 
-                        // Sisältöalue ops
-                        if (ksa.getKuvaus() != null) {
+                            // Sisältöalue ops
                             addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
                         }
 
@@ -508,7 +506,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 // Tavoitteen otsikko
                 if (perusteOpetuksentavoiteDto != null) {
                     addLokalisoituteksti(docBase, perusteOpetuksentavoiteDto.getTavoite(), "h5");
-                    
+
                     addLokalisoituteksti(docBase, opetuksentavoite.getTavoite(), "div");
 
                     // Tavoitteen arviointi
@@ -541,6 +539,15 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
                 // Tavoitteen sisaltoalueet
                 addVuosiluokkaTavoitteenSisaltoalueet(docBase, opetuksentavoite);
+
+                // Sisältöalue ops
+                oaVuosiluokka.getSisaltoalueet().stream()
+                        .filter(s -> s.getPiilotettu() == null || !s.getPiilotettu())
+                        .forEach(ksa -> {
+                            if (ksa.getKuvaus() != null) {
+                                addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
+                            }
+                        });
             }
         }
     }
