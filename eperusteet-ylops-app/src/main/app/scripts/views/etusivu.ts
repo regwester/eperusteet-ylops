@@ -45,4 +45,3 @@ ylopsApp
             $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});
         };
     });
-;
