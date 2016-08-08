@@ -148,7 +148,7 @@ angular.module('eGenericTree', [])
             },
             link: function (scope: any, element) {
                 var setupMinHeightBycontainer = function(el) {
-                    var $parent = $(el).parent(),
+                    var $parent: any = $(el).parent(),
                         height = $parent.outerHeight();
                     $parent.prop('original-min-height', $parent.css('minHeight'));
                     //console.log('setting min height:', height, 'for tree container', $parent);
@@ -161,7 +161,7 @@ angular.module('eGenericTree', [])
                     });
                 };
                 var restoreParentHeight = function(el) {
-                    var $parent = $(el).parent(),
+                    var $parent: any = $(el).parent(),
                         height = $parent.prop('original-min-height') || 'inherit';
                     //console.log('restoring min height:', height, 'for tree container', $parent);
                     $parent.css('minHeight', height);
@@ -268,7 +268,7 @@ angular.module('eGenericTree', [])
             },
             link: function (scope: any, element) {
                 var setupMinHeightBycontainer = function(el) {
-                    var $parent = $(el).parent(),
+                    var $parent: any = $(el).parent(),
                         height = $parent.outerHeight();
                     $parent.prop('original-min-height', $parent.css('minHeight'));
                     //console.log('setting min height:', height, 'for tree container', $parent);
@@ -281,7 +281,7 @@ angular.module('eGenericTree', [])
                     });
                 };
                 var restoreParentHeight = function(el) {
-                    var $parent = $(el).parent(),
+                    var $parent: any = $(el).parent(),
                         height = $parent.prop('original-min-height') || 'inherit';
                     //console.log('restoring min height:', height, 'for tree container', $parent);
                     $parent.css('minHeight', height);
@@ -344,7 +344,7 @@ angular.module('eGenericTree', [])
                     }
                     if (_.isEmpty($childrenContainer)) {
                         $childrenContainer.find('.collapse-based').each(() => {
-                            var $c = $(this),
+                            var $c: any = $(this),
                                 unCollapseClass = $c.attr('data-uncollapse-class'),
                                 collapseClass = $c.attr('data-collapse-class');
                             if (collapsed) {
@@ -376,7 +376,7 @@ angular.module('eGenericTree', [])
                             delay: 100,
                             disabled: scope.tprovider.useUiSortable(),
                             tolerance: 'pointer',
-                            start: function(e, ui) {
+                            start: function (e, ui) {
                                 setupMinHeightForAllGenericTrees();
                                 var $el = $(ui.item.context).find('generic-tree-node-vanilla').first(),
                                     $parentEl = $(ui.item.parent()[0]),
@@ -389,7 +389,7 @@ angular.module('eGenericTree', [])
                                     index: ui.item.index()
                                 };
                             },
-                            stop: function() {
+                            stop: function () {
                                 restoreParentHeightForAllGenericTrees();
                             },
                             update: function (e, ui) {

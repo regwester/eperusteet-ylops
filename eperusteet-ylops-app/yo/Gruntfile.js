@@ -35,7 +35,7 @@ module.exports = function(grunt) {
     ts: {
       tests: {
         files: [{
-          src: tsconfigTest.files.map(function(file) {
+          src: tsconfigTest.files.map(function (file) {
             return yeomanConfig.test + '/' + file;
           }),
           dest: yeomanConfig.test + '/',
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
       },
       sources: {
         files: [{
-          src: tsconfig.files.map(function(file) {
+          src: tsconfig.files.map(function (file) {
             return yeomanConfig.app + '/' + file;
           }),
           dest: yeomanConfig.app,
@@ -331,7 +331,7 @@ module.exports = function(grunt) {
           cwd: '<%= yeoman.app %>/ckeditor-plugins',
           dest: '<%= yeoman.dist %>/ckeditor-plugins',
           src: [
-            '**',
+            '**'
           ]
         }, {
           expand: true,
@@ -344,14 +344,14 @@ module.exports = function(grunt) {
           expand: true,
           cwd: '<%= yeoman.app %>/bower_components/bootstrap-sass-official/assets/fonts/bootstrap',
           dest: '<%= yeoman.dist %>/styles/fonts',
-          src: '*.{eot,svg,ttf,woff}'
+          src: '*.{eot,svg,ttf,woff,woff2}'
         }]
       },
       fonts: {
         expand: true,
         cwd: '<%= yeoman.app %>/bower_components/bootstrap-sass-official/assets/fonts/bootstrap',
         dest: '.tmp/styles/fonts/',
-        src: '*.{eot,svg,ttf,woff}'
+        src: '*.{eot,svg,ttf,woff,woff2}'
       }
     },
     concurrent: {

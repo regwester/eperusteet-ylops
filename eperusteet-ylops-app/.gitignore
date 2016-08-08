@@ -9,5 +9,6 @@ bower_components/
 .netbeans.xml
 *~
 *.js
+!yo/*.js
 *.map
 !src/main/app/ckeditor-plugins/
