@@ -17,27 +17,26 @@ package fi.vm.sade.eperusteet.ylops.service.ohje;
 
 import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-import java.util.UUID;
 
 /**
  * @author mikkom
  */
 public interface OhjeService {
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     OhjeDto getOhje(@P("id") Long id);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     List<OhjeDto> getTekstiKappaleOhjeet(@P("uuid") UUID uuid);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     OhjeDto addOhje(OhjeDto ohjeDto);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     OhjeDto updateOhje(OhjeDto ohjeDto);
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     void removeOhje(@P("id") Long id);
 }
