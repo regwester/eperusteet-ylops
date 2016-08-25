@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.ops.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * User: tommiratamaa
@@ -64,10 +63,10 @@ public interface LukioOpetussuunnitelmaService {
     void updateKurssi(long opsId, long kurssiId, LukiokurssiUpdateDto kurssi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long disconnectKurssi(Long kurssiId, Long opsId);
+    long disconnectKurssi(Long kurssiId, Long oppiaineId, Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long reconnectKurssi(Long kurssiId, Long opsId);
+    long reconnectKurssi(Long kurssiId, Long oppiaineId, Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     long saveAihekokonaisuus(long opsId, AihekokonaisuusSaveDto kokonaisuus);

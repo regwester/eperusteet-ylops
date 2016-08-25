@@ -119,7 +119,7 @@ public class LukioOpetussuunnitelmatController {
     @RequestMapping(value = "/oppiaine", method = RequestMethod.PUT)
     public void updateOppiaine(@PathVariable("opsId") Long opsId,
                                @RequestBody LukioOppiaineSaveDto oppiaine) {
-        lukioOpetussuunnitelmaService.updateOppiaine( opsId, oppiaine );
+        lukioOpetussuunnitelmaService.updateOppiaine(opsId, oppiaine);
     }
 
     @ResponseBody
@@ -133,34 +133,36 @@ public class LukioOpetussuunnitelmatController {
     @ResponseBody
     @RequestMapping(value = "/oppiaine/abstrakti", method = RequestMethod.POST)
     public LongIdResultDto addAbstraktiOppiaine(@PathVariable("opsId") final Long opsId,
-                                        @RequestBody LukioAbstraktiOppiaineTuontiDto tuonti) {
+                                                @RequestBody LukioAbstraktiOppiaineTuontiDto tuonti) {
         return new LongIdResultDto(lukioOpetussuunnitelmaService.addAbstraktiOppiaine(opsId, tuonti));
     }
 
     @ResponseBody
     @RequestMapping(value = "/kurssi", method = RequestMethod.POST)
     public LongIdResultDto saveKurssi(@PathVariable("opsId") final Long opsId,
-                                        @RequestBody LukiokurssiSaveDto kurssi) {
+                                      @RequestBody LukiokurssiSaveDto kurssi) {
         return new LongIdResultDto(lukioOpetussuunnitelmaService.saveKurssi(opsId, kurssi));
     }
 
     @RequestMapping(value = "/kurssi/{kurssiId}", method = RequestMethod.POST)
     public void updateKurssi(@PathVariable("opsId") final Long opsId,
-                                      @PathVariable("kurssiId") final Long kurssiId,
-                                      @RequestBody LukiokurssiUpdateDto kurssi) {
+                             @PathVariable("kurssiId") final Long kurssiId,
+                             @RequestBody LukiokurssiUpdateDto kurssi) {
         lukioOpetussuunnitelmaService.updateKurssi(opsId, kurssiId, kurssi);
     }
 
-    @RequestMapping(value = "/kurssi/{kurssiId}/disconnect", method = RequestMethod.POST)
-    public LongIdResultDto disconnectKurssi(@PathVariable("opsId") final Long opsId,
-                                            @PathVariable("kurssiId") final Long kurssiId) {
-        return new LongIdResultDto(lukioOpetussuunnitelmaService.disconnectKurssi( kurssiId, opsId ));
+    @RequestMapping(value = "/oppiaine/{oppiaineId}/kurssi/{kurssiId}/disconnect", method = RequestMethod.POST)
+    public LongIdResultDto disconnectKurssi(@PathVariable final Long opsId,
+                                            @PathVariable final Long oppiaineId,
+                                            @PathVariable final Long kurssiId) {
+        return new LongIdResultDto(lukioOpetussuunnitelmaService.disconnectKurssi(kurssiId, oppiaineId, opsId));
     }
 
-    @RequestMapping(value = "/kurssi/{kurssiId}/reconnect", method = RequestMethod.POST)
-    public LongIdResultDto reconnectKurssi(@PathVariable("opsId") final Long opsId,
-                                           @PathVariable("kurssiId") final Long kurssiId) {
-        return new LongIdResultDto(lukioOpetussuunnitelmaService.reconnectKurssi( kurssiId, opsId ));
+    @RequestMapping(value = "/oppiaine/{oppiaineId}/kurssi/{kurssiId}/reconnect", method = RequestMethod.POST)
+    public LongIdResultDto reconnectKurssi(@PathVariable final Long opsId,
+                                           @PathVariable final Long oppiaineId,
+                                           @PathVariable final Long kurssiId) {
+        return new LongIdResultDto(lukioOpetussuunnitelmaService.reconnectKurssi(kurssiId, oppiaineId, opsId));
     }
 
     @RequestMapping(value = "/kurssi/{kurssiId}/remove", method = RequestMethod.DELETE)

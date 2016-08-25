@@ -12,7 +12,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-image');
   grunt.loadNpmTasks('grunt-angular-templates');
   require('load-grunt-tasks')(grunt);
-//require('time-grunt')(grunt);
+  //require('time-grunt')(grunt);
 
   // configurable paths
   var yeomanConfig = {
@@ -161,7 +161,7 @@ module.exports = function(grunt) {
     // },
     clean: {
       options: {
-        force: true, /* files outside working directory! */
+        force: true /* files outside working directory! */
       },
       dist: {
         files: [{
@@ -425,14 +425,14 @@ module.exports = function(grunt) {
         options: {
           /* Check that templateUrls don't start with slash */
           pattern : /templateUrl:\s*['"]\//m
-        },
+        }
       },
       showhide: {
         files: [{src: ['<%= yeoman.app %>/{scripts,views}/**/*.{js,html}']}],
         options: {
           /* Check that ng-show/ng-hide are not used in same element */
           pattern : /(ng-show=|ng-hide=)[^>]+(ng-hide=|ng-show=)/m
-        },
+        }
       },
       // emptyHrefs: {
       //   files: [{src: ['<%= yeoman.app %>/{scripts,views}#<{(||)}>#*.{js,html}']}],
@@ -446,7 +446,7 @@ module.exports = function(grunt) {
         options: {
           /* Enforce CamelCaseController naming */
           pattern : /\.controller\s*\(\s*'([a-z][^']+|([^'](?!Controller))+)'/g
-        },
+        }
       }
     },
     maxlines: {

@@ -116,8 +116,8 @@ ylopsApp
 
       saveKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi', isArray:false},
       updateKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId', isArray:false},
-      disconnectKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId/disconnect', isArray:false},
-      reconnectKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId/reconnect', isArray:false},
+      disconnectKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/oppiaine/:oppiaineId/kurssi/:kurssiId/disconnect', isArray:false},
+      reconnectKurssi: {method: 'POST', url: YlopsResources.LUKIO_OPS + '/oppiaine/:oppiaineId/kurssi/:kurssiId/reconnect', isArray:false},
       removeKurssi: {method: 'DELETE', url: YlopsResources.LUKIO_OPS + '/kurssi/:kurssiId/remove', isArray:false}
     });
   })

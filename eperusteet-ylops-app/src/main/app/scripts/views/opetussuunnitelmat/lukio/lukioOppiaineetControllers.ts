@@ -682,7 +682,7 @@ ylopsApp
                 primaryBtn: 'palauta-yhteys',
                 successCb: () => LukioOpetussuunnitelmaService.lukitseKurssi($stateParams.kurssiId)
                     .then(() => {
-                        LukioOpetussuunnitelmaService.reconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
+                        LukioOpetussuunnitelmaService.reconnectKurssi($stateParams.kurssiId, $stateParams.oppiaineId, $stateParams.id).then((r) => {
                             // ei tarvitse enää vapauttaa, koska jos yhteys taas katkaistaa, luodaanuusi kurssi
                             $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
                                 id: $stateParams.id,
@@ -699,7 +699,7 @@ ylopsApp
             Varmistusdialogi.dialogi({
                 otsikko: 'varmista-katkaise-kurssi-yhteys',
                 primaryBtn: 'katkaise-yhteys',
-                successCb: () => LukioOpetussuunnitelmaService.disconnectKurssi($stateParams.kurssiId, $stateParams.id).then((r) => {
+                successCb: () => LukioOpetussuunnitelmaService.disconnectKurssi($stateParams.kurssiId, $stateParams.oppiaineId, $stateParams.id).then((r) => {
                     $timeout(() => $state.go('root.opetussuunnitelmat.lukio.opetus.kurssi', {
                         id: $stateParams.id,
                         oppiaineId: $stateParams.oppiaineId,

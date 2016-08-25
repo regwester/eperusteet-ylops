@@ -62,8 +62,8 @@ interface LukioOpetussuunnitelmaServiceI {
     vapautaKurssi(opsId?:number): IPromise<void>
     saveKurssi(kurssi:Lukio.LuoLukiokurssi, opsId?: number): IPromise<IdHolder>
     updateKurssi(kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number): IPromise<void>
-    disconnectKurssi(kurssiId:number, opsId:number): IPromise<IdHolder>
-    reconnectKurssi(kurssiId:number, opsId:number): IPromise<IdHolder>
+    disconnectKurssi(kurssiId:number, oppiaineId: number, opsId:number): IPromise<IdHolder>
+    reconnectKurssi(kurssiId:number, oppiaineId: number, opsId:number): IPromise<IdHolder>
     removeKurssi(kurssiId:number, opsId:number): IPromise<void>
 }
 
@@ -232,11 +232,11 @@ ylopsApp
         const updateKurssi = (kurssiId:number, kurssi:Lukio.UpdateLukiokurssi, opsId?: number) =>
             OpetusuunnitelmaLukio.updateKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, kurssi)
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
-        const disconnectKurssi = (kurssiId:number, opsId:number) =>
-            OpetusuunnitelmaLukio.disconnectKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, {})
+        const disconnectKurssi = (kurssiId:number, oppiaineId: number, opsId:number) =>
+            OpetusuunnitelmaLukio.disconnectKurssi({ kurssiId: kurssiId, opsId: opsId || $stateParams.id, oppiaineId: $stateParams.oppiaineId }, {})
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
-        const reconnectKurssi = (kurssiId:number, opsId:number) =>
-            OpetusuunnitelmaLukio.reconnectKurssi({kurssiId: kurssiId, opsId: opsId || $stateParams.id}, {})
+        const reconnectKurssi = (kurssiId:number, oppiaineId: number, opsId:number) =>
+            OpetusuunnitelmaLukio.reconnectKurssi({ kurssiId: kurssiId, opsId: opsId || $stateParams.id, oppiaineId: $stateParams.oppiaineId }, {})
                 .$promise.then(r => { kurssiCache.clear(); return r; }, Notifikaatiot.serverCb);
 
         const removeKurssi = (kurssiId:number, opsId:number) =>

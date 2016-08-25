@@ -468,7 +468,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (pohja.getKoulutustyyppi().isLukio()) {
             luoLukiokoulutusPohjasta(pohja, ops);
             kurssiCopier = getLukiokurssitOppiaineCopier(pohja, ops, teeKopio);
-            oppiaineCopier = oppiaineCopier.and(kurssiCopier)
+            oppiaineCopier = oppiaineCopier
+                    .and(kurssiCopier)
                     .and((fromOa, toOa) -> {
                         toOa.setAbstrakti(fromOa.getAbstrakti());
                         newOppiaineByOld.put(fromOa.getId(), toOa);
@@ -525,28 +526,32 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return ylinpohja.getId().equals(pohja.getId());
     }
 
-    @SuppressWarnings({"ServiceMethodEntity", "TransactionalAnnotations"})
-    public static Copier<Oppiaine> getLukiokurssitOppiaineCopier(Opetussuunnitelma pohja, Opetussuunnitelma ops, boolean teeKopio) {
-        Map<UUID, Lukiokurssi> existingKurssit = teeKopio ? new HashMap<>()
-                : pohja.getLukiokurssit().stream().map(OppiaineLukiokurssi::getKurssi)
+    public static Copier<Oppiaine> getLukiokurssitOppiaineCopier(Opetussuunnitelma pohja,
+                                                                 Opetussuunnitelma ops,
+                                                                 boolean teeKopio) {
+
+        Map<UUID, Lukiokurssi> existingKurssit = teeKopio ? new HashMap<>() : pohja.getLukiokurssit().stream()
+                .map(OppiaineLukiokurssi::getKurssi)
                 .filter(k-> k.getTunniste() != null)
-                .collect(toMap(Kurssi::getTunniste, k -> k, (a, b) -> a));
-        Map<Long, List<OppiaineLukiokurssi>> lukiokurssitByPohjaOppiaineId
-                = pohja.getLukiokurssit().stream().collect(groupingBy(oak -> oak.getOppiaine().getId()));
+                .collect(toMap(Kurssi::getTunniste, k -> k, (a, b) -> a)); // Tunniste ei ole unique opsin sisällä
+
+        Map<Long, List<OppiaineLukiokurssi>> lukiokurssitByPohjaOppiaineId = pohja.getLukiokurssit().stream()
+                .collect(groupingBy(oaKurssi -> oaKurssi.getOppiaine().getId()));
+
         return (from, to) ->
                 ops.getLukiokurssit().addAll(ofNullable(lukiokurssitByPohjaOppiaineId.get(from.getId()))
                     .map(list -> list.stream().map(oaKurssi -> {
                                 Lukiokurssi kurssi = oaKurssi.getKurssi().getTunniste() == null
                                         ? null : existingKurssit.get(oaKurssi.getKurssi().getTunniste());
+
                                 if (kurssi == null) {
                                     kurssi = teeKopio ? oaKurssi.getKurssi().copy() : oaKurssi.getKurssi();
                                     if (oaKurssi.getKurssi().getTunniste() != null) {
                                         existingKurssit.put(oaKurssi.getKurssi().getTunniste(), kurssi);
                                     }
                                 }
-                                return new OppiaineLukiokurssi(
-                                        ops, to, kurssi, oaKurssi.getJarjestys(), teeKopio
-                                );
+
+                                return new OppiaineLukiokurssi(ops, to, kurssi, oaKurssi.getJarjestys(), teeKopio);
                             }).collect(toList())
                     ).orElse(emptyList()));
     }

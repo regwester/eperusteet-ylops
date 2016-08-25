@@ -314,9 +314,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
         }
         mapper.map(dto, oppiaine);
 
-        oppiaine.getKurssiTyyppiKuvaukset().forEach((lukiokurssiTyyppi, lokalisoituTeksti) -> {
-            lukiokurssiTyyppi.oppiaineKuvausSetter().set(oppiaine, null);
-        });
+        oppiaine.getKurssiTyyppiKuvaukset().forEach((lukiokurssiTyyppi, lokalisoituTeksti)
+                -> lukiokurssiTyyppi.oppiaineKuvausSetter().set(oppiaine, null));
 
         if (dto.getKurssiTyyppiKuvaukset() != null) {
             for (Map.Entry<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kv : dto.getKurssiTyyppiKuvaukset().entrySet()) {
@@ -485,16 +484,20 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Override
     @Transactional
-    public long disconnectKurssi(Long kurssiId, Long opsId) {
+    public long disconnectKurssi(Long kurssiId, Long oppiaineId, Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         opetussuunnitelmaRepository.lock(ops);
-        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi( opsId, kurssiId).stream().findAny()
+
+        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi(opsId, kurssiId).stream()
+                .findAny()
                 .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
+
         Lukiokurssi kurssi = oaKurssi.getKurssi();
         Lukiokurssi copy = kurssi.copy();
 
         kurssi.getOppiaineet().forEach(oppiaineLukiokurssi -> {
-            if (oppiaineLukiokurssi.getOpetussuunnitelma().getId().compareTo(opsId) == 0) {
+            if (oppiaineLukiokurssi.getOpetussuunnitelma().getId().equals(opsId)
+                    && oppiaineLukiokurssi.getOppiaine().getId().equals(oppiaineId)) {
                 oppiaineLukiokurssi.setKurssi(copy);
                 oppiaineLukiokurssi.setOma(true);
             }
@@ -506,10 +509,11 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
     @Override
     @Transactional
-    public long reconnectKurssi(Long kurssiId, Long opsId) {
+    public long reconnectKurssi(Long kurssiId, Long oppiaineId, Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         opetussuunnitelmaRepository.lock(ops);
-        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi( opsId, kurssiId).stream().findAny()
+        OppiaineLukiokurssi oaKurssi = oppiaineLukiokurssiRepository.findByOpsAndKurssi( opsId, kurssiId).stream()
+                .findAny()
                 .orElseThrow(() -> new BusinessRuleViolationException("Kurssia ei löytynyt."));
 
         final UUID tunniste = oaKurssi.getKurssi().getTunniste();
@@ -518,8 +522,9 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 .findAny().orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta ei löytynyt."));
 
         oaKurssi.getKurssi().getOppiaineet().forEach(oppiaineLukiokurssi -> {
-            if( oppiaineLukiokurssi.getOpetussuunnitelma().getId().compareTo( opsId ) == 0 ){
-                oppiaineLukiokurssi.setKurssi( pohjanKurssi.getKurssi() );
+            if(oppiaineLukiokurssi.getOpetussuunnitelma().getId().equals(opsId)
+                    && oppiaineLukiokurssi.getOppiaine().getId().equals(oppiaineId)) {
+                oppiaineLukiokurssi.setKurssi(pohjanKurssi.getKurssi());
                 oppiaineLukiokurssi.setOma(false);
             }
         });
@@ -579,7 +584,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 .stream().filter(ak -> ak.getId().equals(id)
                         && ak.getParent() == null).findFirst()
                 .orElseThrow(() -> new BusinessRuleViolationException("Aihekokonaisuutta ei löytynyt."));
-        aihekokonaisuusRepository.findByParent(aihekokonaisuus.getId()).stream().forEach(ak
+        aihekokonaisuusRepository.findByParent(aihekokonaisuus.getId()).forEach(ak
                 -> ak.setParent(null));
         aihekokonaisuus.setAihekokonaisuudet(null);
         ops.getAihekokonaisuudet().getAihekokonaisuudet().remove(aihekokonaisuus);
