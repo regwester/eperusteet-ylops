@@ -20,12 +20,20 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuudet;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Kurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OpetuksenYleisetTavoitteet;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -43,7 +51,13 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioOpetussuunnitelmaRakenneDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokurssiPerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -78,9 +92,18 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,10 +167,48 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Autowired
     private LukioOpetussuunnitelmaService lukioOpetussuunnitelmaService;
 
+    @PersistenceContext
+    private EntityManager em;
+
+    private List<Opetussuunnitelma> findByQuery(OpetussuunnitelmaQuery pquery) {
+        CriteriaQuery<Opetussuunnitelma> query = getQuery(pquery);
+        return em.createQuery(query).getResultList();
+    }
+
+    private CriteriaQuery<Opetussuunnitelma> getQuery(OpetussuunnitelmaQuery pquery) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Opetussuunnitelma> query = builder.createQuery(Opetussuunnitelma.class);
+        Root<Opetussuunnitelma> ops = query.from(Opetussuunnitelma.class);
+
+        // Haettu organisaatio löytyy opsilta
+        if (pquery.getOrganisaatio() != null) {
+            Expression<Set<String>> organisaatiot = ops.get(Opetussuunnitelma_.organisaatiot);
+            query.where(builder.and(builder.isMember(pquery.getOrganisaatio(), organisaatiot)));
+        }
+
+        // Koulutustyyppi
+        if (pquery.getKoulutustyyppi() != null) {
+            query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.organisaatiot), KoulutusTyyppi.of(pquery.getKoulutustyyppi()))));
+        }
+
+        // Perusteen tyyppi
+        if (pquery.getTyyppi() != null) {
+            query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tyyppi), pquery.getTyyppi())));
+        }
+
+        return query.select(ops);
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(Tyyppi tyyppi) {
-        final List<Opetussuunnitelma> opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsJulkaistu(tyyppi);
+    public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query) {
+        List<Opetussuunnitelma> opetussuunnitelmat = null;
+        if (query != null) {
+            opetussuunnitelmat = findByQuery(query);
+        }
+        else {
+            opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsJulkaistu(Tyyppi.OPS);
+        }
 
         final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat,
                 OpetussuunnitelmaJulkinenDto.class);
