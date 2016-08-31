@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.codahale.metrics.annotation.Timed;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
@@ -32,7 +33,9 @@ public class OpetussuunnitelmaJulkisetController {
 //        @ApiImplicitParam(name = "siirtyma", dataType = "boolean", paramType = "query", defaultValue = "false", value = "hae myös siirtymäajalla olevat perusteet"),
 //        @ApiImplicitParam(name = "nimi", dataType = "string", paramType = "query"),
 //        @ApiImplicitParam(name = "koulutusala", dataType = "string", paramType = "query", allowMultiple = true),
-//        @ApiImplicitParam(name = "koulutustyyppi", dataType = "string", paramType = "query", allowMultiple = true, value = "koulutustyyppi (koodistokoodi)"),
+        @ApiImplicitParam(name = "koulutustyyppi", dataType = "string", paramType = "query", allowMultiple = false, value = "koulutustyyppi (koodistokoodi)"),
+        @ApiImplicitParam(name = "organisaatio", dataType = "string", paramType = "query", allowMultiple = false, value = "organisaatio oid (organisaatiopalvelusta)"),
+        @ApiImplicitParam(name = "tyyppi", dataType = "string", paramType = "query", allowMultiple = false, value = "ops | pohja")
 //        @ApiImplicitParam(name = "kieli", dataType = "string", paramType = "query", defaultValue = "fi", value = "perusteen nimen kieli"),
 //        @ApiImplicitParam(name = "opintoala", dataType = "string", paramType = "query", allowMultiple = true, value = "opintoalakoodi"),
 //        @ApiImplicitParam(name = "muokattu", dataType = "integer", paramType = "query", value = "muokattu jälkeen (aikaleima; millisenkunteja alkaen 1970-01-01 00:00:00 UTC)")
