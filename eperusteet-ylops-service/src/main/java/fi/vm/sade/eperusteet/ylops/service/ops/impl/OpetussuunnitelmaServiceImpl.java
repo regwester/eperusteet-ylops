@@ -196,6 +196,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tyyppi), pquery.getTyyppi())));
         }
 
+        // VAIN JULKAISTUT
+        query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU)));
         return query.select(ops);
     }
 
