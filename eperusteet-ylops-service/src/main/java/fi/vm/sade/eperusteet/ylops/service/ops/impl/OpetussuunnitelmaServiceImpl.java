@@ -180,6 +180,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         CriteriaQuery<Opetussuunnitelma> query = builder.createQuery(Opetussuunnitelma.class);
         Root<Opetussuunnitelma> ops = query.from(Opetussuunnitelma.class);
 
+        // VAIN JULKAISTUT
+        query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU)));
+
         // Haettu organisaatio löytyy opsilta
         if (pquery.getOrganisaatio() != null) {
             Expression<Set<String>> organisaatiot = ops.get(Opetussuunnitelma_.organisaatiot);
@@ -188,16 +191,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         // Koulutustyyppi
         if (pquery.getKoulutustyyppi() != null) {
-            query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.organisaatiot), KoulutusTyyppi.of(pquery.getKoulutustyyppi()))));
+            query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.koulutustyyppi), KoulutusTyyppi.of(pquery.getKoulutustyyppi()))));
         }
 
         // Perusteen tyyppi
         if (pquery.getTyyppi() != null) {
             query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tyyppi), pquery.getTyyppi())));
         }
-
-        // VAIN JULKAISTUT
-        query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU)));
         return query.select(ops);
     }
 
@@ -206,6 +206,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query) {
         List<Opetussuunnitelma> opetussuunnitelmat = null;
         if (query != null) {
+            query.setTyyppi(Tyyppi.OPS);
             opetussuunnitelmat = findByQuery(query);
         }
         else {
