@@ -8,6 +8,9 @@
 
   <!-- Base URL for resolving relative URLs -->
   <base>.</base>
+
+  <!-- Font Base URL for resolving relative font URLs -->
+  <font-base>./fonts/</font-base>
   
   <!-- Source resolution in dpi (dots/pixels per inch) for determining the size of pixels in SVG and bitmap images, default: 72dpi -->
   <source-resolution>72</source-resolution>
@@ -58,53 +61,50 @@
         (normal = 400, bold = 700)
         -->
 
-        <font embed-url="fonts/Arimo-Bold.ttf" >
+        <font embed-url="Arimo-Bold.ttf">
           <font-triplet name="sans-serif" style="normal" weight="bold" />
           <font-triplet name="Symbol" style="normal" weight="bold"/>
           <font-triplet name="ZapfDingbats" style="normal" weight="bold"/>
         </font>
-        <font embed-url="fonts/Arimo-BoldItalic.ttf" >
+        <font embed-url="Arimo-BoldItalic.ttf">
           <font-triplet name="sans-serif" style="italic" weight="bold" />
           <font-triplet name="Symbol" style="italic" weight="bold" />
           <font-triplet name="ZapfDingbats" style="italic" weight="bold" />
         </font>
-        <font embed-url="fonts/Arimo-Italic.ttf" >
+        <font embed-url="Arimo-Italic.ttf">
           <font-triplet name="sans-serif" style="italic" weight="normal" />
           <font-triplet name="Symbol" style="italic" weight="normal" />
           <font-triplet name="ZapfDingbats" style="italic" weight="normal" />
         </font>
-        <font embed-url="fonts/Arimo-Regular.ttf" >
+        <font embed-url="Arimo-Regular.ttf">
           <font-triplet name="sans-serif" style="normal" weight="normal" />
           <font-triplet name="Symbol" style="normal" weight="normal"/>
           <font-triplet name="ZapfDingbats" style="normal" weight="normal"/>
         </font>
-        <font embed-url="fonts/Tinos-Bold.ttf" >
+        <font embed-url="Tinos-Bold.ttf">
           <font-triplet name="serif" style="normal" weight="bold" />
         </font>
-        <font embed-url="fonts/Tinos-BoldItalic.ttf" >
+        <font embed-url="Tinos-BoldItalic.ttf">
           <font-triplet name="serif" style="italic" weight="bold" />
         </font>
-        <font embed-url="fonts/Tinos-Italic.ttf" >
+        <font embed-url="Tinos-Italic.ttf">
           <font-triplet name="serif" style="italic" weight="normal" />
         </font>
-        <font embed-url="fonts/Tinos-Regular.ttf" >
+        <font embed-url="Tinos-Regular.ttf">
           <font-triplet name="serif" style="normal" weight="normal" />
         </font>
-        <font embed-url="fonts/Cousine-Bold.ttf" >
+        <font embed-url="Cousine-Bold.ttf">
           <font-triplet name="monospace" style="normal" weight="bold" />
         </font>
-        <font embed-url="fonts/Cousine-BoldItalic.ttf" >
+        <font embed-url="Cousine-BoldItalic.ttf">
           <font-triplet name="monospace" style="italic" weight="bold" />
         </font>
-        <font embed-url="fonts/Cousine-Italic.ttf" >
+        <font embed-url="Cousine-Italic.ttf">
           <font-triplet name="monospace" style="italic" weight="normal" />
         </font>
-        <font embed-url="fonts/Cousine-Regular.ttf" >
+        <font embed-url="Cousine-Regular.ttf">
           <font-triplet name="monospace" style="normal" weight="normal" />
         </font>
-
-        <!-- auto-detect fonts -->
-        <!--<auto-detect/>-->
       </fonts>
 
       <!-- This option lets you specify additional options on an XML handler -->
