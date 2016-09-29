@@ -103,6 +103,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -180,24 +181,29 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         CriteriaQuery<Opetussuunnitelma> query = builder.createQuery(Opetussuunnitelma.class);
         Root<Opetussuunnitelma> ops = query.from(Opetussuunnitelma.class);
 
+        List<Predicate> ehdot = new ArrayList<>();
+
         // VAIN JULKAISTUT
-        query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU)));
+        ehdot.add(builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU));
 
         // Haettu organisaatio löytyy opsilta
         if (pquery.getOrganisaatio() != null) {
             Expression<Set<String>> organisaatiot = ops.get(Opetussuunnitelma_.organisaatiot);
-            query.where(builder.and(builder.isMember(pquery.getOrganisaatio(), organisaatiot)));
+            ehdot.add(builder.and(builder.isMember(pquery.getOrganisaatio(), organisaatiot)));
         }
 
         // Koulutustyyppi
         if (pquery.getKoulutustyyppi() != null) {
-            query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.koulutustyyppi), KoulutusTyyppi.of(pquery.getKoulutustyyppi()))));
+            ehdot.add(builder.and(builder.equal(ops.get(Opetussuunnitelma_.koulutustyyppi), KoulutusTyyppi.of(pquery.getKoulutustyyppi()))));
         }
 
         // Perusteen tyyppi
         if (pquery.getTyyppi() != null) {
-            query.where(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tyyppi), pquery.getTyyppi())));
+            ehdot.add(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tyyppi), pquery.getTyyppi())));
         }
+
+        query.where(ehdot.toArray(new Predicate[ehdot.size()]));
+
         return query.select(ops);
     }
 
@@ -207,7 +213,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         List<Opetussuunnitelma> opetussuunnitelmat = null;
         if (query != null) {
             query.setTyyppi(Tyyppi.OPS);
-            opetussuunnitelmat = findByQuery(query);
+            opetussuunnitelmat = findByQuery(query).stream()
+                    .filter(ops -> ops.getTila() == Tila.JULKAISTU)
+                    .collect(Collectors.toList());
         }
         else {
             opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsJulkaistu(Tyyppi.OPS);
