@@ -24,10 +24,12 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.*;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.*;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.CharapterNumberGenerator;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -35,14 +37,19 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import org.apache.pdfbox.preflight.ValidationResult;
+import org.apache.xml.security.utils.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -53,14 +60,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.*;
-import org.apache.xml.security.utils.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.getTextString;
 
@@ -177,7 +187,21 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         buildImages(docBase);
 
         // PDF luonti XHTML dokumentista
-        return pdfService.xhtml2pdf(doc);
+        byte[] pdf = pdfService.xhtml2pdf(doc);
+
+        // Validointi
+        ValidationResult result = DokumenttiUtils.validatePdf(pdf);
+        if (result.isValid()) {
+            LOG.info("PDF (ops " + ops.getId() + ") is a valid PDF/A-1b file");
+        }
+        else {
+            LOG.warn("PDF (ops " + ops.getId() + ") is not valid, error(s) :");
+            for (ValidationResult.ValidationError error : result.getErrorsList()) {
+                LOG.warn(error.getErrorCode() + " : " + error.getDetails());
+            }
+        }
+
+        return pdf;
     }
 
     private void addMetaPages(DokumenttiBase docBase) {

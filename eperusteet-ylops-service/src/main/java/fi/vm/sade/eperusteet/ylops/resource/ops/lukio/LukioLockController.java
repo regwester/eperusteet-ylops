@@ -16,7 +16,6 @@
 
 package fi.vm.sade.eperusteet.ylops.resource.ops.lukio;
 
-import com.mangofactory.swagger.annotations.ApiIgnore;
 import fi.vm.sade.eperusteet.ylops.resource.util.AbstractLockController;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioLockCtx;
@@ -24,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioLockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * User: tommiratamaa

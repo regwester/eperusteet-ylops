@@ -16,9 +16,9 @@
 
 package fi.vm.sade.eperusteet.ylops.resource.ops.lukio;
 
-import com.wordnik.swagger.annotations.Api;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -21,8 +21,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheHeaderInterceptor;
 import fi.vm.sade.eperusteet.ylops.resource.util.LoggingInterceptor;
-import java.util.List;
-import javax.persistence.EntityManagerFactory;
 import org.apache.commons.io.Charsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,12 +32,10 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.*;
+
+import javax.persistence.EntityManagerFactory;
+import java.util.List;
 
 /**
  *
@@ -105,11 +101,10 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-        // numbers chosen by magic-random wizardry. please fix as needed.
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(4);
-        executor.setQueueCapacity(20); // overkills ftw
+        executor.setQueueCapacity(20);
         executor.setThreadFactory(new CustomizableThreadFactory("AsyncThreadFactory-"));
         executor.afterPropertiesSet();
 

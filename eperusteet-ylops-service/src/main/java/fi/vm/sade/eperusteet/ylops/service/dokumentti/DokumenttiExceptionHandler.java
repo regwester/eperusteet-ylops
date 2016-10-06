@@ -17,7 +17,7 @@ public class DokumenttiExceptionHandler implements AsyncUncaughtExceptionHandler
     @Override
     public void handleUncaughtException(Throwable throwable, Method method, Object... objects) {
         if (throwable instanceof DokumenttiException) {
-            LOG.error("Virhetilanne: ", throwable);
+            LOG.error(throwable.getMessage(), throwable);
         } else {
             new SimpleAsyncUncaughtExceptionHandler().handleUncaughtException(throwable, method, objects);
         }

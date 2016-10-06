@@ -25,9 +25,9 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Date;
 
 /**
@@ -88,8 +88,8 @@ public class DokumenttiController {
         return newDate.before(new Date());
     }
 
-    @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> get(@PathVariable final Long dokumenttiId) {
+    @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")
+    public ResponseEntity<Object> get(@PathVariable final Long dokumenttiId) {
         byte[] pdfdata = service.get(dokumenttiId);
 
         if (pdfdata == null || pdfdata.length == 0) {
@@ -101,10 +101,7 @@ public class DokumenttiController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "pdf"));
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
-        headers.setContentLength(pdfdata.length);
-
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
 

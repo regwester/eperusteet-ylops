@@ -4,16 +4,28 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.pdfbox.preflight.PreflightDocument;
+import org.apache.pdfbox.preflight.ValidationResult;
+import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
+import org.apache.pdfbox.preflight.parser.PreflightParser;
+import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.W3CDom;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+
 /**
  * @author isaul
  */
 public class DokumenttiUtils {
+    private static final int MAX_TIME_IN_MINUTES = 5;
 
     public static void addLokalisoituteksti(DokumenttiBase docBase, LokalisoituTekstiDto lTekstiDto, String tagi) {
         if (lTekstiDto != null) {
@@ -91,16 +103,46 @@ public class DokumenttiUtils {
         if (in == null || ("".equals(in))) return "";
         for (int i = 0; i < in.length(); i++) {
             current = in.charAt(i);
-            if ((current == 0x9)
-                    || (current == 0xA)
-                    || (current == 0xD)
-                    || ((current >= 0x20) && (current <= 0xD7FF))
-                    || ((current >= 0xE000) && (current <= 0xFFFD))
-                    || ((current >= 0x10000) && (current <= 0x10FFFF))) {
+            if (current == 0x9
+                    || current == 0xA
+                    || current == 0xD
+                    || current >= 0x20 && current <= 0xD7FF
+                    || current >= 0xE000 && current <= 0xFFFD) {
                 out.append(current);
             }
         }
 
         return out.toString();
+    }
+
+    public static boolean isTimePass(Date date) {
+        if (date == null) {
+            return true;
+        }
+
+        Date newDate = DateUtils.addMinutes(date, MAX_TIME_IN_MINUTES);
+        return newDate.before(new Date());
+    }
+
+    public static ValidationResult validatePdf(byte[] pdf) throws IOException {
+        ValidationResult result;
+        InputStream is = new ByteArrayInputStream(pdf);
+        PreflightParser parser = new PreflightParser(new ByteArrayDataSource(is));
+
+        try {
+            parser.parse();
+
+            PreflightDocument document = parser.getPreflightDocument();
+            document.validate();
+
+            // Get validation result
+            result = document.getResult();
+            document.close();
+
+        } catch (SyntaxValidationException e) {
+            result = e.getResult();
+        }
+
+        return result;
     }
 }
