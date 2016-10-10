@@ -19,8 +19,10 @@ package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +43,9 @@ public class DokumenttiController {
 
     @Autowired
     DokumenttiService service;
+
+    @Autowired
+    OpetussuunnitelmaService opsService;
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<DokumenttiDto> create(@RequestParam final long opsId,
@@ -101,7 +106,16 @@ public class DokumenttiController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
+
+        DokumenttiDto dokumenttiDto = service.getDto(dokumenttiId);
+        LokalisoituTekstiDto nimiDto = opsService.getOpetussuunnitelma(dokumenttiDto.getOpsId()).getNimi();
+        String nimi = nimiDto.get(dokumenttiDto.getKieli());
+        if (nimi != null) {
+            headers.set("Content-disposition", "inline; filename=\"" + nimi + ".pdf\"");
+        } else {
+            headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
+        }
+
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
 
