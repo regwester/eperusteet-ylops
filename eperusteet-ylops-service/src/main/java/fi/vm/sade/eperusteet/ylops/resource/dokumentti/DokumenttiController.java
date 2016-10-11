@@ -17,9 +17,11 @@
 package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -31,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Optional;
 
 /**
  *
@@ -46,6 +49,12 @@ public class DokumenttiController {
 
     @Autowired
     OpetussuunnitelmaService opsService;
+
+    @Autowired
+    DokumenttiRepository dokumenttiRepository;
+
+    @Autowired
+    OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<DokumenttiDto> create(@RequestParam final long opsId,
@@ -106,17 +115,26 @@ public class DokumenttiController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-
-        DokumenttiDto dokumenttiDto = service.getDto(dokumenttiId);
-        LokalisoituTekstiDto nimiDto = opsService.getOpetussuunnitelma(dokumenttiDto.getOpsId()).getNimi();
-        String nimi = nimiDto.get(dokumenttiDto.getKieli());
-        if (nimi != null) {
-            headers.set("Content-disposition", "inline; filename=\"" + nimi + ".pdf\"");
-        } else {
-            headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
-        }
+        headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
+        Optional.ofNullable(dokumenttiRepository.findOne(dokumenttiId))
+                .filter(dokumentti -> dokumentti != null)
+                .map(dokumentti -> opetussuunnitelmaRepository.findOne(dokumentti.getOpsId()))
+                .filter(dokumentti -> dokumentti != null)
+                .map(Opetussuunnitelma::getNimi)
+                .filter(dokumentti -> dokumentti != null)
+                .ifPresent(nimi -> headers.set("Content-disposition", "inline; filename=\"" + nimi + ".pdf\""));
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/ops", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Long> getDokumenttiId(
+            @RequestParam final Long opsId,
+            @RequestParam(defaultValue = "fi") final String kieli
+    ) {
+        Long dokumenttiId = service.getDokumenttiId(opsId, Kieli.of(kieli));
+        return ResponseEntity.ok(dokumenttiId);
     }
 
     @RequestMapping(method = RequestMethod.GET, params = "opsId")

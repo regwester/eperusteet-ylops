@@ -33,10 +33,12 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -143,6 +145,20 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         }
 
         return dokumentti.getData();
+    }
+
+    @Override
+    @Transactional
+    public Long getDokumenttiId(Long opsId, Kieli kieli) {
+        Sort sort = new Sort(Sort.Direction.DESC, "valmistumisaika");
+        List<Dokumentti> documents = dokumenttiRepository
+                .findByOpsIdAndKieliAndTila(opsId, kieli, DokumenttiTila.VALMIS, sort);
+
+        if (!documents.isEmpty()) {
+            return documents.get(0).getId();
+        } else {
+            return null;
+        }
     }
 
     @Override

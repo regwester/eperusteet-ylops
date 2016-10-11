@@ -670,7 +670,7 @@
             <xsl:if test="caption">
                 <fo:table-header>
                     <fo:table-cell>
-                        <fo:block font-weight="bold" font-size="12pt">
+                        <fo:block font-weight="bold" font-size="12pt" text-align="center">
                             <xsl:value-of select="caption"/>
                         </fo:block>
                     </fo:table-cell>
