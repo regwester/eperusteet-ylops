@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
@@ -39,7 +38,6 @@ public interface DokumenttiService {
     void setStarted(DokumenttiDto dto);
 
     @PreAuthorize("isAuthenticated()")
-    @Async(value = "docTaskExecutor")
     void generateWithDto(DokumenttiDto dto) throws DokumenttiException;
 
     @PreAuthorize("isAuthenticated()")

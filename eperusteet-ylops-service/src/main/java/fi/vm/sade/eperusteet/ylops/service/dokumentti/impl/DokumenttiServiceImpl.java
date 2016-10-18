@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +63,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     private DokumenttiBuilderService builder;
 
     @Override
+    @Transactional(readOnly = true)
     public DokumenttiDto getDto(Long opsId, Kieli kieli) {
         Dokumentti dokumentti = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
 
@@ -74,6 +76,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    @Transactional
     public DokumenttiDto createDtoFor(Long id, Kieli kieli) {
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = new Dokumentti();
@@ -94,6 +97,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    @Transactional
     public void setStarted(DokumenttiDto dto) {
         // Asetetaan dokumentti luonti tilaan
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
@@ -105,21 +109,18 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    @Transactional(noRollbackFor = DokumenttiException.class)
+    @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
         Kieli kieli = dokumentti.getKieli();
 
         try {
-            // Luodaan pdf
-            byte[] data = builder.generatePdf(opetussuunnitelma, kieli);
-
-            dokumentti.setData(data);
+            dokumentti.setData(builder.generatePdf(opetussuunnitelma, kieli));
             dokumentti.setTila(DokumenttiTila.VALMIS);
             dokumentti.setValmistumisaika(new Date());
             dokumentti.setVirhekoodi("");
-
-            // Tallennetaan valmis dokumentti
             dokumenttiRepository.save(dokumentti);
         } catch (Exception ex) {
             dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
@@ -131,6 +132,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public DokumenttiDto getDto(Long id) {
         Dokumentti dokumentti = dokumenttiRepository.findOne(id);
         return mapper.map(dokumentti, DokumenttiDto.class);

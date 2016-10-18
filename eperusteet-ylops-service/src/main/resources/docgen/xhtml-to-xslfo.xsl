@@ -888,17 +888,18 @@
 
     <!-- Custom tags -->
 
-
     <xsl:template match="kunnat">
         <xsl:for-each select="kunta">
             <fo:table-row>
                 <fo:table-cell>
                     <fo:block font-weight="bold">
-                        <xsl:if test="//html/@lang='fi'">
-                            <xsl:text>Kunta</xsl:text>
-                        </xsl:if>
-                        <xsl:if test="//html/@lang='sv'">
-                            <xsl:text>Kommun</xsl:text>
+                        <xsl:if test="position()=1">
+                            <xsl:if test="//html/@lang='fi'">
+                                <xsl:text>Kunta</xsl:text>
+                            </xsl:if>
+                            <xsl:if test="//html/@lang='sv'">
+                                <xsl:text>Kommun</xsl:text>
+                            </xsl:if>
                         </xsl:if>
                     </fo:block>
                 </fo:table-cell>

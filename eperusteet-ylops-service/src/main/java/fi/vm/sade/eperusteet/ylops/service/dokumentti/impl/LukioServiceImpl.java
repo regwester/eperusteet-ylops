@@ -21,12 +21,16 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOpetussuunnitelmaRakenneOpsDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
+import fi.vm.sade.eperusteet.ylops.repository.ops.LukioOppiaineJarjestysRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LukioService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +40,14 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.*;
-import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addLokalisoituteksti;
+import static java.util.Comparator.comparing;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author isaul
@@ -49,13 +55,15 @@ import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.Dokumentt
 @Service
 @Transactional
 public class LukioServiceImpl implements LukioService {
-    private static final Logger LOG = LoggerFactory.getLogger(LukioServiceImpl.class);
 
     @Autowired
     private LocalizedMessagesService messages;
 
     @Autowired
     private LukioOpetussuunnitelmaService lukioOpetussuunnitelmaService;
+
+    @Autowired
+    private LukioOppiaineJarjestysRepository jarjestysRepository;
 
     public void addOppimistavoitteetJaOpetuksenKeskeisetSisallot(DokumenttiBase docBase) throws ParserConfigurationException, SAXException, IOException {
         addHeader(docBase, messages.translate("oppimistavoitteet-ja-opetuksen-keskeiset-sisallot", docBase.getKieli()));
@@ -148,22 +156,21 @@ public class LukioServiceImpl implements LukioService {
         }
 
         // Rakenteen mukaisesti oppiaineet
-        lukioRakenne.getOppiaineet().stream()
-                .forEach(oaRakenne -> docBase.getOps().getOppiaineet().stream()
-                        .map(OpsOppiaine::getOppiaine)
-                        .filter(oa -> oa.getTunniste().equals(oaRakenne.getTunniste()))
-                        .findAny()
-                        .ifPresent(oa -> {
-                            LukioPerusteOppiaineDto perusteOppiaineDto = null;
-                            Optional<LukioPerusteOppiaineDto> optPerusteOppiaine
-                                    = perusteRakenne.getOppiaineet().stream()
-                                    .filter(perusteOa -> perusteOa.getTunniste().equals(oa.getTunniste()))
-                                    .findAny();
-                            if (optPerusteOppiaine.isPresent()) {
-                                perusteOppiaineDto = optPerusteOppiaine.get();
-                            }
-                            addOppiaine(docBase, oa, perusteOppiaineDto, oaRakenne);
-                        }));
+        lukioRakenne.getOppiaineet().forEach(oaRakenne -> docBase.getOps().getOppiaineet().stream()
+                .map(OpsOppiaine::getOppiaine)
+                .filter(oa -> oa.getTunniste().equals(oaRakenne.getTunniste()))
+                .findAny()
+                .ifPresent(oa -> {
+                    LukioPerusteOppiaineDto perusteOppiaineDto = null;
+                    Optional<LukioPerusteOppiaineDto> optPerusteOppiaine
+                            = perusteRakenne.getOppiaineet().stream()
+                            .filter(perusteOa -> perusteOa.getTunniste().equals(oa.getTunniste()))
+                            .findAny();
+                    if (optPerusteOppiaine.isPresent()) {
+                        perusteOppiaineDto = optPerusteOppiaine.get();
+                    }
+                    addOppiaine(docBase, oa, perusteOppiaineDto, oaRakenne);
+                }));
     }
 
     private void addOppiaine(DokumenttiBase docBase, Oppiaine oppiaine, LukioPerusteOppiaineDto perusteOppiaine, LukioOppiaineRakenneListausDto oaRakenne) {
@@ -203,24 +210,28 @@ public class LukioServiceImpl implements LukioService {
 
         // Oppimäärät
         if (oppiaine.getOppimaarat() != null) {
-            oaRakenne.getOppimaarat().stream()
-                    .forEach(omRakenne -> oppiaine.getOppimaarat().stream()
-                            .filter(om -> om.getTunniste().equals(omRakenne.getTunniste()))
-                            .findAny()
-                            .ifPresent(om -> {
-                                LukioPerusteOppiaineDto perusteOm = null;
+            Map<Long,OppiaineJarjestysDto> jarjestykset =
+                    jarjestysRepository.findJarjestysDtosByOpetussuunnitelmaId(docBase.getOps().getId(),
+                            oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())).stream()
+                            .collect(toMap(OppiaineJarjestysDto::getId, o -> o));
 
-                                if (perusteOppiaine != null && perusteOppiaine.getOppimaarat() != null) {
-                                    Optional<LukioPerusteOppiaineDto> optPerusteOm = perusteOppiaine.getOppimaarat().stream()
-                                            .filter(dto -> dto.getTunniste().equals(om.getTunniste()))
-                                            .findAny();
-                                    if (optPerusteOm.isPresent()) {
-                                        perusteOm = optPerusteOm.get();
-                                    }
-                                }
+            oppiaine.getOppimaarat().stream()
+                    .sorted(compareOppiaineet(jarjestys(jarjestykset)))
+                    .forEach(om -> {
+                        LukioPerusteOppiaineDto perusteOm = null;
 
-                                addOppiaine(docBase, om, perusteOm, oaRakenne);
-                            }));
+                        if (perusteOppiaine != null && perusteOppiaine.getOppimaarat() != null) {
+                            Optional<LukioPerusteOppiaineDto> optPerusteOm = perusteOppiaine.getOppimaarat().stream()
+                                    .filter(dto -> dto.getTunniste().equals(om.getTunniste()))
+                                    .findAny();
+
+                            if (optPerusteOm.isPresent()) {
+                                perusteOm = optPerusteOm.get();
+                            }
+                        }
+
+                        addOppiaine(docBase, om, perusteOm, oaRakenne);
+                    });
         }
 
         // Valtakunnallinen pakolliset
@@ -321,6 +332,20 @@ public class LukioServiceImpl implements LukioService {
         if (tekstiosa != null) {
             addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
         }
+    }
+
+    private Function<Long, Integer> jarjestys(Map<Long, OppiaineJarjestysDto> jarjestykset) {
+        return LambdaUtil.map(jarjestykset, OppiaineJarjestysDto::getJarjestys);
+    }
+
+    private Comparator<Oppiaine> compareOppiaineet(Function<Long, Integer> jarjestys) {
+        return comparing((Oppiaine oa) -> ofNullable(jarjestys.apply(oa.getId())).orElse(Integer.MAX_VALUE))
+                .thenComparing(comparing((Oppiaine oa)-> {
+                    if( oa == null || oa.getNimi() == null){
+                        return "";
+                    }
+                    return oa.getNimi().firstByKieliOrder().orElse("");
+                }));
     }
 
 }
