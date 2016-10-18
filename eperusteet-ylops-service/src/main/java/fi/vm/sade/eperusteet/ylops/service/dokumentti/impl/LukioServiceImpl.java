@@ -28,11 +28,8 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.LukioOppiaineJarjestysReposito
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LukioService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
-import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -210,10 +207,10 @@ public class LukioServiceImpl implements LukioService {
 
         // Oppimäärät
         if (oppiaine.getOppimaarat() != null) {
-            Map<Long,OppiaineJarjestysDto> jarjestykset =
-                    jarjestysRepository.findJarjestysDtosByOpetussuunnitelmaId(docBase.getOps().getId(),
+            Map<Long,OppiaineJarjestysDto> jarjestykset = jarjestysRepository
+                    .findJarjestysDtosByOpetussuunnitelmaId(docBase.getOps().getId(),
                             oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())).stream()
-                            .collect(toMap(OppiaineJarjestysDto::getId, o -> o));
+                    .collect(toMap(OppiaineJarjestysDto::getId, o -> o));
 
             oppiaine.getOppimaarat().stream()
                     .sorted(compareOppiaineet(jarjestys(jarjestykset)))

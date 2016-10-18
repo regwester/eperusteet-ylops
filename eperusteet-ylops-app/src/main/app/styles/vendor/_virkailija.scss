@@ -299,8 +299,6 @@ hr {
 /* muutetaan disabloidun kentän tausta*/
 input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly] {
     color: #333333;
-    background-image:url("../img/disabled-pat.png");
-    background-repeat: repeat;
 }
 
 

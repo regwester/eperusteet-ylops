@@ -78,11 +78,10 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional
     public DokumenttiDto createDtoFor(Long id, Kieli kieli) {
-        String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = new Dokumentti();
         dokumentti.setTila(DokumenttiTila.EI_OLE);
         dokumentti.setAloitusaika(new Date());
-        dokumentti.setLuoja(name);
+        dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
         dokumentti.setKieli(kieli);
         dokumentti.setOpsId(id);
 
@@ -99,11 +98,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional
     public void setStarted(DokumenttiDto dto) {
-        // Asetetaan dokumentti luonti tilaan
-        String name = SecurityUtil.getAuthenticatedPrincipal().getName();
         Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
         dokumentti.setAloitusaika(new Date());
-        dokumentti.setLuoja(name);
+        dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
         dokumentti.setTila(DokumenttiTila.LUODAAN);
         dokumenttiRepository.save(dokumentti);
     }
@@ -113,6 +110,10 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
+        if (dokumentti == null) {
+            dokumentti = mapper.map(dto, Dokumentti.class);
+        }
+
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
         Kieli kieli = dokumentti.getKieli();
 
