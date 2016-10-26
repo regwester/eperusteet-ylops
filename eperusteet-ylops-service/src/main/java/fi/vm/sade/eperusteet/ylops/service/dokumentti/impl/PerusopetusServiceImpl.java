@@ -282,19 +282,19 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
         if (perusteOaVlkDto != null) {
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getYleistavoitteet(), null);
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
             addTavoitteetJaSisaltoalueet(docBase, perusteOaVlkDto, oaVlkDto);
         } else {
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getYleistavoitteet(), null);
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), null);
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), null);
             addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), null);
             addTavoitteetJaSisaltoalueet(docBase, null, oaVlkDto);
         }
-
-        addOppiaineYleisetOsiot(docBase, oaVlkDto.getYleistavoitteet(), null);
     }
 
     private void addTavoitteetJaSisaltoalueet(DokumenttiBase docBase,
