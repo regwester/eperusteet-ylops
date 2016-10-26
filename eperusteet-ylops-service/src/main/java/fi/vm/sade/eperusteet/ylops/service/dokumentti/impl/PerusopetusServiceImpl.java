@@ -294,6 +294,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
             addTavoitteetJaSisaltoalueet(docBase, null, oaVlkDto);
         }
 
+        addOppiaineYleisetOsiot(docBase, oaVlkDto.getYleistavoitteet(), null);
     }
 
     private void addTavoitteetJaSisaltoalueet(DokumenttiBase docBase,
@@ -633,13 +634,13 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
         docBase.getGenerator().increaseDepth();
 
-        PerusteTekstiOsaDto perusteTekstiOsaDto = null;
+        PerusteTekstiOsaDto perusteTehtavaDto = null;
         if (perusteOppiaineDto != null) {
-            perusteTekstiOsaDto = perusteOppiaineDto.getTehtava();
+            perusteTehtavaDto = perusteOppiaineDto.getTehtava();
         }
 
         // Tehtävä
-        addOppiaineYleisetOsiot(docBase, oppiaine.getTehtava(), perusteTekstiOsaDto);
+        addOppiaineYleisetOsiot(docBase, oppiaine.getTehtava(), perusteTehtavaDto);
 
         // Peruste
         PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto = null;
