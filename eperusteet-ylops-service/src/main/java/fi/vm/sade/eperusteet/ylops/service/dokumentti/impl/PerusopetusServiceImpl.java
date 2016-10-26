@@ -187,8 +187,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                             && oa.getOppiaine().getNimi() != null
                             && oa.getOppiaine().getNimi().getTeksti() != null
                             && oa.getOppiaine().getNimi().getTeksti().get(docBase.getKieli()) != null)
-                    .sorted((oa1, oa2) -> oa1.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())
-                            .compareTo(oa2.getOppiaine().getNimi().getTeksti().get(docBase.getKieli())))
+                    .sorted((oa1, oa2) -> oa1.getJnro().compareTo(oa2.getJnro()))
                     .collect(Collectors.toCollection(ArrayList::new));
 
             docBase.getGenerator().increaseDepth();
