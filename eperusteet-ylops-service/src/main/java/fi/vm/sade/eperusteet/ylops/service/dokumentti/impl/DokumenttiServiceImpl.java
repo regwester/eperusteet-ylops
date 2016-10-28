@@ -29,6 +29,8 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import java.util.Date;
+import java.util.List;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +39,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  *
@@ -65,11 +64,14 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional(readOnly = true)
     public DokumenttiDto getDto(Long opsId, Kieli kieli) {
-        Dokumentti dokumentti = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
+        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
 
         // Jos löytyy
-        if (dokumentti != null) {
-            return mapper.map(dokumentti, DokumenttiDto.class);
+        if (!dokumentit.isEmpty()) {
+            dokumentit.sort((a, b) -> {
+                return new Long(a.getId()).compareTo(b.getId());
+            });
+            return mapper.map(dokumentit.get(0), DokumenttiDto.class);
         }
 
         return null;
@@ -188,11 +190,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional(readOnly = true)
     public DokumenttiTila getTila(Long opsId, Kieli kieli) {
-        Dokumentti dokumentti = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
-
-        // Jos löytyy
+        DokumenttiDto dokumentti = getDto(opsId, kieli);
         if (dokumentti != null) {
-            return mapper.map(dokumentti, DokumenttiDto.class).getTila();
+            return dokumentti.getTila();
         }
 
         return null;
