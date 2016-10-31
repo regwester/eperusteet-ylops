@@ -29,8 +29,6 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-import java.util.Date;
-import java.util.List;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +38,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  *
  * @author iSaul
  */
 @Service
-@Transactional
 public class DokumenttiServiceImpl implements DokumenttiService {
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiServiceImpl.class);
 
@@ -68,9 +68,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
         // Jos löytyy
         if (!dokumentit.isEmpty()) {
-            dokumentit.sort((a, b) -> {
-                return new Long(a.getId()).compareTo(b.getId());
-            });
+            dokumentit.sort((a, b) -> new Long(a.getId()).compareTo(b.getId()));
             return mapper.map(dokumentit.get(0), DokumenttiDto.class);
         }
 

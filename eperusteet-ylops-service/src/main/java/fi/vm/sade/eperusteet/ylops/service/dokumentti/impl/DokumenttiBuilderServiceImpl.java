@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -79,7 +78,6 @@ import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.Dokumentt
  * @author iSaul
  */
 @Service
-@Transactional
 public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiBuilderServiceImpl.class);

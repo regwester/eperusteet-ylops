@@ -32,7 +32,6 @@ import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaServi
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,7 +49,6 @@ import static java.util.stream.Collectors.toSet;
  * @author isaul
  */
 @Service
-@Transactional
 public class LukioServiceImpl implements LukioService {
 
     @Autowired

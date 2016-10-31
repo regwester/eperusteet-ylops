@@ -22,22 +22,19 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
-import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addHeader;
-import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addLokalisoituteksti;
-import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.getTextString;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.*;
 
 /**
  * @author isaul
  */
 @Service
-@Transactional
 public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
+
     @Autowired
     private LocalizedMessagesService messages;
 

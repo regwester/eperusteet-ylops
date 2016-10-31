@@ -1045,9 +1045,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 validointi.tuomitse();
                 for (Kieli kieli : ops.getJulkaisukielet()) {
                     try {
-                        DokumenttiDto createDtoFor = dokumenttiService.createDtoFor(ops.getId(), kieli);
-                        dokumenttiService.setStarted(createDtoFor);
-                        dokumenttiService.generateWithDto(createDtoFor);
+                        DokumenttiDto dokumenttiDto = dokumenttiService.getDto(ops.getId(), kieli);
+                        if (dokumenttiDto == null) {
+                            dokumenttiDto = dokumenttiService.createDtoFor(ops.getId(), kieli);
+                        }
+                        dokumenttiService.setStarted(dokumenttiDto);
+                        dokumenttiService.generateWithDto(dokumenttiDto);
                     } catch (DokumenttiException e) {
                         logger.error(e.getLocalizedMessage(), e.getCause());
                     }

@@ -60,7 +60,7 @@ public class DokumenttiController {
     public ResponseEntity<DokumenttiDto> create(@RequestParam final long opsId,
                                                 @RequestParam(defaultValue = "fi") final String kieli)
             throws DokumenttiException {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status;
 
         DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
 

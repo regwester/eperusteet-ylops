@@ -31,7 +31,6 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiRivi;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiTaulukko;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,7 +41,6 @@ import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.Dokumentt
  * @author isaul
  */
 @Service
-@Transactional
 public class PerusopetusServiceImpl implements PerusopetusService {
 
     @Autowired
@@ -187,7 +185,13 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                             && oa.getOppiaine().getNimi() != null
                             && oa.getOppiaine().getNimi().getTeksti() != null
                             && oa.getOppiaine().getNimi().getTeksti().get(docBase.getKieli()) != null)
-                    .sorted((oa1, oa2) -> oa1.getJnro().compareTo(oa2.getJnro()))
+                    .sorted((oa1, oa2) -> {
+                        if (oa1.getJnro() != null && oa2.getJnro() != null) {
+                            return oa1.getJnro().compareTo(oa2.getJnro());
+                        } else {
+                            return 1;
+                        }
+                    })
                     .collect(Collectors.toCollection(ArrayList::new));
 
             docBase.getGenerator().increaseDepth();

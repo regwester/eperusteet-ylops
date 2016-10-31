@@ -34,13 +34,10 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LokalisointiService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 
@@ -49,7 +46,6 @@ import java.util.Locale;
  * @author iSaul
  */
 @Service
-@Transactional
 public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
     @Autowired
     private MessageSource messageSource;
