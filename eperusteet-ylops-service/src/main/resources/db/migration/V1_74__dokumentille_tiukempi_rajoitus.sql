@@ -3,6 +3,7 @@ DELETE FROM dokumentti WHERE exists (
     from dokumentti d
     where d.ops_id = dokumentti.ops_id and
           d.kieli = dokumentti.kieli and
-          d.valmistumisaika > dokumentti.valmistumisaika
+          d.id > dokumentti.id
 );
+
 ALTER TABLE dokumentti ADD CONSTRAINT ops_id_kieli_key UNIQUE (ops_id, kieli);
