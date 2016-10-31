@@ -23,41 +23,25 @@ ylopsApp
     OpetussuunnitelmaCRUD.palauta({opsId: ops.id}, null, cb, Notifikaatiot.serverCb);
   };
 
-  this.save = function (ops, tila, cb) {
-    cb = cb || angular.noop;
-    OpetussuunnitelmaCRUD.setTila({opsId: ops.id, tila: tila}, null, cb, function(res) {
-      // Todella rumaa
-      // Samaa mieltä
-      var virheet = _(res.data.data.virheet)
-        .filter((v) => { return !_.isEmpty(v.nimi) && _.first(v.nimi).id; })
-        .groupBy((v) => { return _.first(v.nimi).id; })
-        .values()
-        .map((v) => {
-          var ongelmat = _.sortBy(_.unique(v, 'syy'), _.identity);
-          return {
-            nimi: _.first(_.first(ongelmat).nimi).teksti,
-            polku: _.first(ongelmat).nimi,
-            ongelmat: _.map(ongelmat, 'syy')
-          };
-        })
-        .value();
-
-      $modal.open({
-        templateUrl: 'views/opetussuunnitelmat/modals/validointivirheet.html',
-        controller: 'ValidointivirheetController',
-        size: 'lg',
-        resolve: {
-          virheet: _.constant(virheet)
-        }
-      }).result.then(angular.noop);
+  this.save = function (ops, tila, cb = _.noop) {
+    OpetussuunnitelmaCRUD.setTila({ opsId: ops.id, tila: tila }).$promise
+      .then(cb)
+      .catch(() => {
+        OpetussuunnitelmaCRUD.validoi({ opsId: ops.id }).$promise.then(res => {
+          $modal.open({
+            templateUrl: 'views/opetussuunnitelmat/modals/validointivirheet.html',
+            controller: 'ValidointivirheetController',
+            size: 'lg',
+            resolve: { virheet: _.constant(res) }
+          }).result.then(_.noop);
+        });
     });
   };
 })
 
 .service('OpsinTilanvaihto', function ($modal) {
   var that = this;
-  this.start = function(parametrit, setFn, successCb) {
-    successCb = successCb || angular.noop;
+  this.start = function(parametrit, setFn, successCb = _.noop) {
     if (_.isFunction(setFn)) {
       that.setFn = setFn;
     }
@@ -65,7 +49,7 @@ ylopsApp
       templateUrl: 'views/opetussuunnitelmat/modals/tilanvaihto.html',
       controller: 'OpsinTilanvaihtoController',
       resolve: {
-        data: function () {
+        data: () => {
           return {
             isPohja: parametrit.isPohja,
             oldStatus: parametrit.currentStatus,
@@ -76,7 +60,7 @@ ylopsApp
           };
         }
       }
-    }).result.then(function (res) {
+    }).result.then(res => {
       that.setFn(res);
       successCb(res);
     });

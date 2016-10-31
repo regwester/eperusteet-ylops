@@ -29,7 +29,8 @@ ylopsApp
 
   .factory('OpetussuunnitelmaCRUD', function ($resource, YlopsResources, SERVICE_LOC) {
     return $resource(YlopsResources.OPS, {
-      opsId: '@id'
+      opsId: '@opsId',
+      tila: '@tila'
     }, {
       laajaalaiset: {method: 'GET', url: YlopsResources.OPS + '/laajaalaisetosaamiset', isArray: true},
       setTila: {method: 'POST', url: YlopsResources.OPS + '/tila/:tila'},

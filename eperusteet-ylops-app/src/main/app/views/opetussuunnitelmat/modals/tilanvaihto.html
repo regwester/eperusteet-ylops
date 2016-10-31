@@ -5,9 +5,9 @@
 <div class="modal-body tilanvaihto">
   <ul class="list-group">
     <li class="list-group-item" ng-repeat="tila in data.statuses"
-    ng-class="{vanha: tila.key === data.oldStatus, uusi: tila.key === data.selected}"
-    ng-click="data.selected = tila.key"
-    ng-dblclick="data.selected = tila.key; (data.selected !== data.oldStatus) && valitse();">
+        ng-class="{vanha: tila.key === data.oldStatus, uusi: tila.key === data.selected}"
+        ng-click="data.selected = tila.key"
+        ng-dblclick="data.selected = tila.key; (data.selected !== data.oldStatus) && valitse();">
     <statusbadge editable="data.editable" status="tila.key"></statusbadge>
     <div class="description" ng-bind-html="tila.description | kaanna | unsafe"></div>
     <div class="clearfix"></div>

@@ -1,7 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.codahale.metrics.annotation.Timed;
-import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -15,9 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Created by isaul on 11/17/15.
- */
 @RestController
 @RequestMapping("/opetussuunnitelmat/julkiset")
 @Api(value = "Opetussuunnitelmat julkiset")
