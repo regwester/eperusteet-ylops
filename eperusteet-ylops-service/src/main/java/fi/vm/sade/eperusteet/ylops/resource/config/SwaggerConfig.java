@@ -30,6 +30,7 @@ import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.paths.AbstractPathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger1.annotations.EnableSwagger;
 
@@ -38,6 +39,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static com.google.common.base.Predicates.not;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  *
@@ -59,6 +61,7 @@ public class SwaggerConfig {
 
         return new Docket(DocumentationType.SWAGGER_12)
                 .apiInfo(apiInfo())
+                .pathProvider(new RelativeSwaggerPathProvider(ctx))
                 .select()
                 .apis(not(RequestHandlerSelectors.withClassAnnotation(InternalApi.class)))
                 .build()
@@ -86,5 +89,26 @@ public class SwaggerConfig {
                 "EUPL 1.1",
                 "http://ec.europa.eu/idabc/eupl"
         );
+    }
+
+    private class RelativeSwaggerPathProvider extends AbstractPathProvider {
+        String ROOT = "/";
+        private final ServletContext servletContext;
+
+        RelativeSwaggerPathProvider(ServletContext servletContext) {
+            super();
+            this.servletContext = servletContext;
+        }
+
+        @Override
+        protected String applicationPath() {
+            return isNullOrEmpty(servletContext.getContextPath())
+                    ? ROOT : servletContext.getContextPath() + "/api";
+        }
+
+        @Override
+        protected String getDocumentationPath() {
+            return ROOT;
+        }
     }
 }
