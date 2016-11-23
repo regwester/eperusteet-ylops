@@ -71,8 +71,21 @@ import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import java.math.BigDecimal;
+import java.util.*;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,21 +93,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.*;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.*;
 
 /**
  *
@@ -262,7 +260,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
+    public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi, Tila tila) {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
         final List<Opetussuunnitelma> opetussuunnitelmat;
         if (tyyppi == Tyyppi.POHJA) {
@@ -277,6 +275,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             fetchOrganisaatioNimet(dto);
         });
         return dtot;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
+        return getAll(tyyppi, null);
     }
 
     @Override

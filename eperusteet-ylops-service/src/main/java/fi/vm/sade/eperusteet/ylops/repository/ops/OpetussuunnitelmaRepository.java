@@ -53,6 +53,8 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE (o.tila = 'JULKAISTU') AND o.tyyppi = :tyyppi")
     List<Opetussuunnitelma> findAllByTyyppiAndTilaIsJulkaistu(@Param("tyyppi") Tyyppi tyyppi);
 
+    List<Opetussuunnitelma> findAllByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
+
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE o.pohja.id = ?1")
     Set<Opetussuunnitelma> findAllByPohjaId(long id);
 
@@ -62,7 +64,7 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
                                             @Param("organisaatiot") Collection<String> organisaatiot);
 
     @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
-                   "WHERE o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.POHJA AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.VALMIS OR org IN (:organisaatiot))")
+                   "WHERE o.tila != fi.vm.sade.eperusteet.ylops.domain.Tila.POISTETTU AND o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.POHJA AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.VALMIS OR org IN (:organisaatiot))")
     List<Opetussuunnitelma> findPohja(@Param("organisaatiot") Collection<String> organisaatiot);
 
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE o.tekstit.id in ?1")

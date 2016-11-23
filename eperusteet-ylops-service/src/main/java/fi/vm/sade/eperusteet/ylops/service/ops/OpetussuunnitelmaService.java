@@ -40,6 +40,8 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(null, 'tarkastelu', 'HALLINTA') ||" +
         "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and (hasPermission(null, 'opetussuunnitelma', 'LUKU'))) || " +
         "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
+    List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi, Tila tila);
+
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
     @PreAuthorize("permitAll()")

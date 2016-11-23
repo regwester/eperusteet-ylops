@@ -25,14 +25,13 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import io.swagger.annotations.Api;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -51,8 +50,10 @@ public class OpetussuunnitelmaController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public List<OpetussuunnitelmaInfoDto> getAll(@RequestParam(value="tyyppi", required=false) Tyyppi tyyppi) {
-        return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi);
+    public List<OpetussuunnitelmaInfoDto> getAll(
+            @RequestParam(value="tyyppi", required=false) Tyyppi tyyppi,
+            @RequestParam(value="tila", required=false) Tila tila) {
+        return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi, tila);
     }
 
     @RequestMapping(value = "/tilastot", method = RequestMethod.GET)

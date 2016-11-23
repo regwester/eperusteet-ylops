@@ -29,27 +29,24 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * @author mikkom

@@ -20,12 +20,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import lombok.Getter;
-
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import lombok.Getter;
 
 /**
  *
@@ -35,11 +35,20 @@ public class LokalisoituTekstiDto {
 
     @Getter
     private final Long id;
+
+    @Getter
+    private UUID tunniste;
+
     @Getter
     private final Map<Kieli, String> tekstit;
 
     public LokalisoituTekstiDto(Long id, Map<Kieli, String> values) {
+        this(id, null, values);
+    }
+
+    public LokalisoituTekstiDto(Long id, UUID tunniste, Map<Kieli, String> values) {
         this.id = id;
+        this.tunniste = tunniste;
         this.tekstit = values == null ? null : new EnumMap<>(values);
     }
 
@@ -52,7 +61,11 @@ public class LokalisoituTekstiDto {
             for (Map.Entry<String, String> entry : values.entrySet()) {
                 if ("_id".equals(entry.getKey())) {
                     tmpId = Long.valueOf(entry.getValue());
-                } else {
+                }
+                else if ("_tunniste".equals(entry.getKey())) {
+                    this.tunniste = UUID.fromString(entry.getValue());
+                }
+                else {
                     Kieli k = Kieli.of(entry.getKey());
                     tmpValues.put(k, entry.getValue());
                 }
@@ -69,6 +82,9 @@ public class LokalisoituTekstiDto {
         if (id != null) {
             map.put("_id", id.toString());
         }
+        if (tunniste != null) {
+            map.put("_tunniste", tunniste.toString());
+        }
         for (Map.Entry<Kieli, String> e : tekstit.entrySet()) {
             map.put(e.getKey().toString(), e.getValue());
         }
@@ -84,7 +100,7 @@ public class LokalisoituTekstiDto {
     public static<K> Map<K,Optional<LokalisoituTekstiDto>> ofOptionalMap(Map<K,Optional<LokalisoituTeksti>> map) {
         Map<K,Optional<LokalisoituTekstiDto>> result = new HashMap<>();
         for (Map.Entry<K,Optional<LokalisoituTeksti>> kv : map.entrySet()) {
-            result.put(kv.getKey(), kv.getValue().map(teksti -> new LokalisoituTekstiDto(teksti.getId(), teksti.getTeksti())));
+            result.put(kv.getKey(), kv.getValue().map(teksti -> new LokalisoituTekstiDto(teksti.getId(), teksti.getTunniste(), teksti.getTeksti())));
         }
         return result;
     }

@@ -1,0 +1,1 @@
+ALTER TABLE lokalisoituteksti ADD COLUMN tunniste UUID;

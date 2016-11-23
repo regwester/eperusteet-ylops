@@ -26,7 +26,16 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import static fi.vm.sade.eperusteet.ylops.service.util.ExceptionUtil.wrapRuntime;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
+import java.io.IOException;
+import java.util.*;
+import static java.util.Collections.singletonList;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -39,17 +48,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.ExceptionUtil.wrapRuntime;
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 /**
  *
@@ -67,10 +65,12 @@ public class EperusteetServiceImpl implements EperusteetService {
     private String koulutustyyppiPerusopetus;
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_lukiokoilutus:koulutustyyppi_2}")
     private String koulutustyyppiLukiokoulutus;
+
     // feature that could be used to populate data and turned off after all existing
     // perusteet in the environment has been synced:
-    @Value("${fi.vm.sade.eperusteet.ylops.update-peruste-cache-for-all-missing:false}")
+    @Value("${fi.vm.sade.eperusteet.ylops.update-peruste-cache-for-all-missing: false}")
     private boolean updateMissingToCache;
+
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
     @Autowired
@@ -122,10 +122,11 @@ public class EperusteetServiceImpl implements EperusteetService {
             logger.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
                     + " Trying from DB-cache.", e);
             return perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
-                .map(wrapRuntime(c -> c.getPerusteJson(jsonMapper),
+                .map(wrapRuntime(
+                        c -> c.getPerusteJson(jsonMapper),
                         e1 -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e)))
-                    .map(f -> mapper.map(f, PerusteInfoDto.class))
-                    .collect(toList());
+                .map(f -> mapper.map(f, PerusteInfoDto.class))
+                .collect(toList());
         }
     }
 
@@ -133,7 +134,8 @@ public class EperusteetServiceImpl implements EperusteetService {
         if (updateMissingToCache) {
             List<PerusteCache> currentList = perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit);
             Map<Long, PerusteCache> byId = currentList.stream().collect(toMap(PerusteCache::getPerusteId, c->c));
-            perusteet.stream().filter(p -> p.getGlobalVersion() != null)
+            perusteet.stream()
+                .filter(p -> p.getGlobalVersion() != null)
                 .forEach(p -> {
                     PerusteCache current = byId.get(p.getId());
                     if (current == null || current.getAikaleima().compareTo(p.getGlobalVersion().getAikaleima()) < 0) {
@@ -150,6 +152,15 @@ public class EperusteetServiceImpl implements EperusteetService {
             PerusteInfoWrapperDto wrapperDto
                 = client.getForObject(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
                                       PerusteInfoWrapperDto.class, tyyppi.toString(), 100);
+
+            for (PerusteInfoDto peruste : wrapperDto.getData()) {
+                try {
+                    logger.debug("Perustepohja:", peruste.getId(), peruste.getDiaarinumero(), peruste.getVoimassaoloAlkaa());
+                }
+                catch (Exception e) {
+                    // Just in case...
+                }
+            }
 
             // Filtteröi pois perusteet jotka eivät enää ole voimassa
             Date now = new Date();
