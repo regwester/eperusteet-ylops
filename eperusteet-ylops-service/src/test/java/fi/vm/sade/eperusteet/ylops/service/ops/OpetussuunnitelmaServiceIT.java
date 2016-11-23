@@ -177,7 +177,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(Tila.VALMIS, luotu.getTila());
 
         opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);
-        assertEquals(2, opsit.size());
+        assertEquals(1, opsit.size());
 
         luotu = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(luotu.getId());
         assertEquals(Tila.VALMIS, luotu.getTila());
