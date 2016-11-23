@@ -67,7 +67,9 @@ public class LokalisoituTekstiDto {
                 }
                 else {
                     Kieli k = Kieli.of(entry.getKey());
-                    tmpValues.put(k, entry.getValue());
+                    if (k != null) {
+                        tmpValues.put(k, entry.getValue());
+                    }
                 }
             }
         }

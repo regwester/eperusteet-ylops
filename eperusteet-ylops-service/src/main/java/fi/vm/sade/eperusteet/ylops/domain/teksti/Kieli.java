@@ -43,6 +43,10 @@ public enum Kieli {
 
     @JsonCreator
     public static Kieli of(String koodi) {
+        // FIXME: tämä pitää pystyä ottamaan pois
+        if (koodi.equals("_tunniste")) {
+            return null;
+        }
         for (Kieli k : values()) {
             if (k.koodi.equalsIgnoreCase(koodi)) {
                 return k;
