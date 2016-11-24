@@ -46,6 +46,16 @@ ylopsApp
   };
 
   $scope.model.nimi.$$validointi = Kieli.validoi($scope.model.nimi);
+  $scope.sallitutKoulutustyypit = [
+      'koulutustyyppi_2',
+      'koulutustyyppi_6',
+      'koulutustyyppi_14',
+      'koulutustyyppi_15',
+      'koulutustyyppi_16',
+      'koulutustyyppi_20',
+      'koulutustyyppi_22',
+      'koulutustyyppi_23',
+  ];
 
   $scope.dateOptions = {
     'year-format': 'yy',
@@ -357,8 +367,7 @@ ylopsApp
 
     $scope.avataInputs = function(valittuKoulutustyyppi) {
       $scope.koulutustyyppiOnValittu = false;
-      var validTyypit = ['koulutustyyppi_15', 'koulutustyyppi_16', 'koulutustyyppi_6', 'koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_22', 'koulutustyyppi_14'];
-      return _.includes(validTyypit, valittuKoulutustyyppi) ? ($scope.koulutustyyppiOnValittu = true) : ($scope.koulutustyyppiOnValittu = false);
+      return _.includes($scope.sallitutKoulutustyypit, valittuKoulutustyyppi) ? ($scope.koulutustyyppiOnValittu = true) : ($scope.koulutustyyppiOnValittu = false);
     };
 
   $scope.haeKoulutoimijat = function () {

@@ -42,6 +42,7 @@ ylopsApp
     "koulutustyyppi_15": "esiopetus",
     "koulutustyyppi_16": "perusopetus",
     "koulutustyyppi_6": "lisaopetus",
+    "koulutustyyppi_20": "varhaiskasvatus",
     "koulutustyyppi_2": "lukiokoulutus"
   };
 
