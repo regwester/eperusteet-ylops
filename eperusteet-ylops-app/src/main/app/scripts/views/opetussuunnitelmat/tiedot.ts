@@ -253,7 +253,9 @@ ylopsApp
           Notifikaatiot.serverCb(err);
         });
       } else {
-        $scope.editableModel.$save({}, (res) => {
+        OpetussuunnitelmaCRUD.save({
+          opsId: $scope.editableModel.id
+        }, $scope.editableModel, (res) => {
           successCb(res).then(resolve);
         }, (err) => {
           $scope.savingDisabled = false;
