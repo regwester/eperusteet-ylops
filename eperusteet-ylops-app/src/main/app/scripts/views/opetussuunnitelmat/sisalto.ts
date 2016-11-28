@@ -192,7 +192,7 @@ ylopsApp
   };
   $scope.toggleState();
 
-  var commonParams = {
+  let commonParams = {
     opsId: $stateParams.id,
   };
 

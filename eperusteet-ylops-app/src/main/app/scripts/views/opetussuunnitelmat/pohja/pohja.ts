@@ -117,35 +117,36 @@ ylopsApp
   };
   $scope.toggleState();
 
-  var commonParams = {
-    opsId: $stateParams.pohjaId,
-  };
-
   $scope.sync = function() {
     OpetussuunnitelmaCRUD.syncPeruste({ id: $scope.model.id }, _.bind(Notifikaatiot.onnistui, {}, 'paivitys-onnistui'), Notifikaatiot.serverCb);
   };
 
-  Editointikontrollit.registerCallback({
-    edit: () => $q((resolve) => resolve()),
-    save: () => $q((resolve, reject) => {
-      TekstikappaleOps.saveRakenne($scope.model, () => {
-        Lukko.unlock(commonParams);
-        $scope.$$isRakenneMuokkaus = false;
-        $rootScope.$broadcast('genericTree:refresh');
-        resolve();
-      });
-    }),
-    cancel: () => $q((resolve) => {
-      resolve();
-      Lukko.unlock(commonParams, $state.reload);
-    })
-  });
+  let commonParams = {
+    opsId: $stateParams.pohjaId,
+  };
 
   $scope.muokkaaRakennetta = function() {
+    Editointikontrollit.registerCallback({
+      edit: () => $q((resolve) => resolve()),
+      save: () => $q((resolve, reject) => {
+        TekstikappaleOps.saveRakenne($scope.model, () => {
+          Lukko.unlock(commonParams);
+          $scope.$$isRakenneMuokkaus = false;
+          $rootScope.$broadcast('genericTree:refresh');
+          resolve();
+        });
+      }),
+      cancel: () => $q((resolve) => {
+        resolve();
+        Lukko.unlock(commonParams, $state.reload);
+      })
+    });
+
     Lukko.lock(commonParams, function() {
-      Editointikontrollit.startEditing();
-      $scope.$$isRakenneMuokkaus = true;
-      $rootScope.$broadcast('genericTree:refresh');
+      Editointikontrollit.startEditing().then(() => {
+        $scope.$$isRakenneMuokkaus = true;
+        $rootScope.$broadcast('genericTree:refresh');
+      });
     });
   };
 

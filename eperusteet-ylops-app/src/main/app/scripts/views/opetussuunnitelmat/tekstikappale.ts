@@ -187,7 +187,9 @@ ylopsApp
             opsId: $stateParams.id
           }, function () {
             Notifikaatiot.onnistui('poisto-onnistui');
-            $state.go('root.opetussuunnitelmat.yksi.sisalto', { reload: true });
+            $state.go('root.opetussuunnitelmat.yksi.sisalto', {}, {
+              reload: true
+            });
           }, Notifikaatiot.serverCb);
         }, function () {
           Lukko.unlock(commonParams);

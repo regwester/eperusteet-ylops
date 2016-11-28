@@ -59,16 +59,24 @@ ylopsApp
   }
 
   $scope.delete = function () {
-    TekstikappaleOps.varmistusdialogi($scope.model.tekstiKappale.nimi, function () {
-      $scope.model.$delete({opsId: $stateParams.pohjaId}, function () {
-        Notifikaatiot.onnistui('poisto-onnistui');
-        OpsService.refetch(function () {
-          $rootScope.$broadcast('rakenne:updated');
-        });
-        $timeout(function () {
-          $state.go('root.pohjat.yksi.sisalto');
-        });
-      }, Notifikaatiot.serverCb);
+    Lukko.lock(commonParams, function () {
+      TekstikappaleOps.varmistusdialogi($scope.model.tekstiKappale.nimi, function () {
+        $scope.model.$delete({
+          opsId: $stateParams.pohjaId
+        }, function () {
+          Notifikaatiot.onnistui('poisto-onnistui');
+          OpsService.refetch(function () {
+            $rootScope.$broadcast('rakenne:updated');
+          });
+
+          $state.go('root.pohjat.yksi.sisalto', {}, {
+            reload: true
+          });
+        }, Notifikaatiot.serverCb);
+      },function () {
+        Lukko.unlock(commonParams);
+        Notifikaatiot.serverCb;
+      });
     });
   };
 
