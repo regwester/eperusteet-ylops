@@ -83,7 +83,13 @@ ylopsApp
           .keys()
           .filter((koodi) => $scope.julkaisukielet[koodi])
           .value();
-        OpetussuunnitelmaCRUD.save({}, $scope.model, (res) => {
+
+        const params = $scope.luonnissa ? {} : {
+          opsId: $stateParams.pohjaId
+        };
+
+
+        OpetussuunnitelmaCRUD.save(params, $scope.model, (res) => {
           successCb(res).then(resolve);
         }, Notifikaatiot.serverCb);
       }),

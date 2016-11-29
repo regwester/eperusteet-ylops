@@ -21,7 +21,6 @@ ylopsApp
 .controller('OpetussuunnitelmaTiedotController', function ($scope, Editointikontrollit, $stateParams, $state,
     $timeout, $q, $rootScope, OpetussuunnitelmaCRUD, Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku,
     PeruskoulutoimijaHaku, LukiotoimijaHaku, LukioHaku, kunnat, Kieli, OpetussuunnitelmaOikeudetService, Varmistusdialogi) {
-
   $scope.kielivalinnat = []; // Täytetään pohjan perusteella
   $scope.luonnissa = $stateParams.id === 'uusi';
   $scope.editableModel = _.clone($scope.model);
