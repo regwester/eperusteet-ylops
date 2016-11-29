@@ -464,6 +464,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
+
+        if (opetussuunnitelmaDto.getId() != null) {
+            throw new BusinessRuleViolationException("Uudessa opetussuunnitelmassa on id");
+        }
+
         opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
 
@@ -821,6 +826,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaDto addPohja(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
+        if (opetussuunnitelmaDto.getId() != null) {
+            throw new BusinessRuleViolationException("Uudessa pohjassa on id");
+        }
+
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
         // Jokainen pohja sisältää OPH:n organisaationaan
         ops.getOrganisaatiot().add(SecurityUtil.OPH_OID);
