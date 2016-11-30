@@ -24,7 +24,6 @@ import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -46,9 +45,6 @@ public class DokumenttiController {
 
     @Autowired
     DokumenttiService service;
-
-    @Autowired
-    OpetussuunnitelmaService opsService;
 
     @Autowired
     DokumenttiRepository dokumenttiRepository;
