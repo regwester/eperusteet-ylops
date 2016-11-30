@@ -419,9 +419,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
             Oppiaine oppimaara = oppimaarat.get(node.getOppiaineId());
             assertExists(oppimaara, "Pyydettyä oppiainetta ei ole");
-            oppimaara.getVuosiluokkakokonaisuudet().forEach(oppiaineenvuosiluokkakokonaisuus -> {
-                oppiaineenvuosiluokkakokonaisuus.setJnro(node.getJnro());
-            });
+            oppimaara.getVuosiluokkakokonaisuudet().forEach(
+                    oppiaineenvuosiluokkakokonaisuus -> oppiaineenvuosiluokkakokonaisuus.setJnro(node.getJnro()));
         }
     }
 
@@ -577,7 +576,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 -> !teeKopio ? new LukioOppiaineJarjestys(ops, old.getOppiaine(), old.getJarjestys())
                     : (newOppiaineByOld.get(old.getId().getOppiaineId()) != null ?
                         new LukioOppiaineJarjestys(ops, newOppiaineByOld.get(old.getId().getOppiaineId()), old.getJarjestys())
-                        : null)).filter(o -> o != null).collect(toSet()));
+                        : null)).filter(Objects::nonNull).collect(toSet()));
         Set<OpsVuosiluokkakokonaisuus> ovlkoot = pohja.getVuosiluokkakokonaisuudet().stream()
                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
                         .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste()
@@ -909,7 +908,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional()
     public void updateLapsiOpetussuunnitelmat(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
@@ -994,7 +993,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             .map(OpsVuosiluokkakokonaisuus::getVuosiluokkakokonaisuus)
             .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(validointi, vlk, julkaisukielet));
 
-        //TODO:should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
+        //TODO Should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
         PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
         if (peruste.getPerusopetus() != null) {
             ops.getOppiaineet().stream()
