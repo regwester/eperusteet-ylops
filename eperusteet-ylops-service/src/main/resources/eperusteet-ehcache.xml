@@ -286,9 +286,9 @@
     />
 
     <cache name="tilastot"
-           maxElementsInMemory="10"
+           maxElementsInMemory="1"
            eternal="false"
-           timeToLiveSeconds="600"
+           timeToLiveSeconds="604800"
            overflowToDisk="false" />
 
     <cache name="koodistot"
