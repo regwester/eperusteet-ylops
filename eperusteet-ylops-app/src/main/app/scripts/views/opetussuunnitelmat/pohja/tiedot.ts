@@ -88,7 +88,6 @@ ylopsApp
           opsId: $stateParams.pohjaId
         };
 
-
         OpetussuunnitelmaCRUD.save(params, $scope.model, (res) => {
           successCb(res).then(resolve);
         }, Notifikaatiot.serverCb);
