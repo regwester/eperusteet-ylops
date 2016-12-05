@@ -32,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -53,9 +54,10 @@ public class DokumenttiController {
     OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<DokumenttiDto> create(@RequestParam final long opsId,
-                                                @RequestParam(defaultValue = "fi") final String kieli)
-            throws DokumenttiException {
+    public ResponseEntity<DokumenttiDto> create(
+            @RequestParam final long opsId,
+            @RequestParam(defaultValue = "fi") final String kieli
+    ) throws DokumenttiException {
         HttpStatus status;
 
         DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
@@ -113,11 +115,11 @@ public class DokumenttiController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
         Optional.ofNullable(dokumenttiRepository.findOne(dokumenttiId))
-                .filter(dokumentti -> dokumentti != null)
+                .filter(Objects::nonNull)
                 .map(dokumentti -> opetussuunnitelmaRepository.findOne(dokumentti.getOpsId()))
-                .filter(dokumentti -> dokumentti != null)
+                .filter(Objects::nonNull)
                 .map(Opetussuunnitelma::getNimi)
-                .filter(dokumentti -> dokumentti != null)
+                .filter(Objects::nonNull)
                 .ifPresent(nimi -> headers.set("Content-disposition", "inline; filename=\"" + nimi + ".pdf\""));
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
@@ -134,8 +136,10 @@ public class DokumenttiController {
     }
 
     @RequestMapping(method = RequestMethod.GET, params = "opsId")
-    public ResponseEntity<DokumenttiDto> getDokumentti(@RequestParam final Long opsId,
-                                                       @RequestParam(defaultValue = "fi") final String kieli) {
+    public ResponseEntity<DokumenttiDto> getDokumentti(
+            @RequestParam final Long opsId,
+            @RequestParam(defaultValue = "fi") final String kieli
+    ) {
         Kieli k = Kieli.of(kieli);
         DokumenttiDto dto = service.getDto(opsId, k);
         if (dto == null) {
@@ -155,8 +159,10 @@ public class DokumenttiController {
     }
 
     @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
-    public ResponseEntity<DokumenttiTila> exist(@RequestParam final Long opsId,
-                                                @RequestParam(defaultValue = "fi") final String kieli) {
+    public ResponseEntity<DokumenttiTila> exist(
+            @RequestParam final Long opsId,
+            @RequestParam(defaultValue = "fi") final String kieli
+    ) {
         Kieli k = Kieli.of(kieli);
         DokumenttiTila tila = service.getTila(opsId, k);
         if (tila == null) {

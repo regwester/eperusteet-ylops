@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
@@ -60,6 +61,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Autowired
     private DokumenttiBuilderService builder;
+
+    @Autowired
+    private DokumenttiStateService dokumenttiStateService;
 
     @Override
     @Transactional(readOnly = true)
@@ -98,21 +102,18 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional
     public void setStarted(DokumenttiDto dto) {
-        Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
-        dokumentti.setAloitusaika(new Date());
-        dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
-        dokumentti.setTila(DokumenttiTila.LUODAAN);
-        dokumenttiRepository.save(dokumentti);
+        dto.setAloitusaika(new Date());
+        dto.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
+        dto.setTila(DokumenttiTila.JONOSSA);
+        dokumenttiStateService.save(dto);
     }
 
     @Override
     @Transactional(noRollbackFor = DokumenttiException.class)
     @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
-        Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
-        if (dokumentti == null) {
-            dokumentti = mapper.map(dto, Dokumentti.class);
-        }
+        dto.setTila(DokumenttiTila.LUODAAN);
+        Dokumentti dokumentti = dokumenttiStateService.save(dto);
 
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
         Kieli kieli = dokumentti.getKieli();

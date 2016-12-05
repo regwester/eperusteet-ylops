@@ -148,6 +148,7 @@ ylopsApp
       Pdf.haeTila(id, function(res) {
         $scope.tila = res.tila;
         switch (res.tila) {
+          case 'jonossa':
           case 'luodaan':
             startPolling(res.id);
             break;
@@ -178,7 +179,7 @@ ylopsApp
     $scope.generate = function() {
       enableActions(false);
       $scope.docs[$scope.kielet.valittu] = null;
-      $scope.tila = 'luodaan';
+      $scope.tila = 'jonossa';
       Pdf.generoiPdf(opsId, $scope.kielet.valittu,
       function(res) {
         if (res.id !== null) {

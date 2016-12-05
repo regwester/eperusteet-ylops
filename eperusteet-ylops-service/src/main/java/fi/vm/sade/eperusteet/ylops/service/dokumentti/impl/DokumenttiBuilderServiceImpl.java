@@ -29,7 +29,6 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.*;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.CharapterNumberGenerator;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -37,7 +36,6 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
-import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.xml.security.utils.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,6 +112,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     @Autowired
     private DtoMapper mapper;
 
+    @Autowired
+    private DokumenttiStateService dokumenttiStateService;
+
     @Override
     public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
             throws TransformerException, IOException, SAXException,
@@ -149,7 +150,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         docBase.setGenerator(new CharapterNumberGenerator());
         docBase.setKieli(kieli);
         docBase.setMapper(mapper);
-
 
         // Kansilehti & Infosivu
         addMetaPages(docBase);
@@ -188,7 +188,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         byte[] pdf = pdfService.xhtml2pdf(doc);
 
         // Validointi
-        ValidationResult result = DokumenttiUtils.validatePdf(pdf);
+        /*ValidationResult result = DokumenttiUtils.validatePdf(pdf);
         if (result.isValid()) {
             LOG.info("PDF (ops " + ops.getId() + ") is a valid PDF/A-1b file");
         }
@@ -197,7 +197,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             for (ValidationResult.ValidationError error : result.getErrorsList()) {
                 LOG.warn(error.getErrorCode() + " : " + error.getDetails());
             }
-        }
+        }*/
 
         return pdf;
     }
