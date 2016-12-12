@@ -115,6 +115,7 @@ public class PdfServiceImpl implements PdfService {
         try {
             FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
             foUserAgent.getRendererOptions().put("pdf-a-mode", "PDF/A-1b");
+            foUserAgent.getEventBroadcaster().addEventListener(new DokumenttiEventListener());
 
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
 

@@ -184,6 +184,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Kuvat
         buildImages(docBase);
 
+        LOG.info("Generate PDF (opsId=" + docBase.getOps().getId() + ")");
+
         // PDF luonti XHTML dokumentista
         byte[] pdf = pdfService.xhtml2pdf(doc);
 
