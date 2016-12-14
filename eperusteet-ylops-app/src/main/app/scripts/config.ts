@@ -37,6 +37,10 @@ ylopsApp
   })
 
   .config(function($httpProvider) {
+    $httpProvider.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+    $httpProvider.defaults.xsrfHeaderName = "CSRF";
+    $httpProvider.defaults.xsrfCookieName = "CSRF";
+
     $httpProvider.interceptors.push(['$rootScope', '$q', 'SpinnerService', function($rootScope, $q, Spinner) {
       return {
         request: function(request) {
