@@ -52,7 +52,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.*;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -483,7 +482,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     private void updateOpetuksenKohdealueet(Oppiaine latest) {
         Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
-        Map<Long, Opetuksenkohdealue> ids = new HashedMap();
+        Map<Long, Opetuksenkohdealue> ids = new HashMap();
 
         for (Opetuksenkohdealue opetuksenkohdealue : latest.getKohdealueet()) {
             if (opetuksenkohdealueRepository.findOne(opetuksenkohdealue.getId()) == null) {
