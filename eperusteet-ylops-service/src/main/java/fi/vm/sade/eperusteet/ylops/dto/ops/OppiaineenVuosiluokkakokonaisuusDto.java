@@ -39,6 +39,7 @@ public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private TekstiosaDto arviointi;
     private TekstiosaDto sisaltoalueinfo;
     private Integer jnro;
+    private Boolean piilotettu;
 
     private Set<OppiaineenVuosiluokkaDto> vuosiluokat;
 }

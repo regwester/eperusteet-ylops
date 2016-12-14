@@ -68,6 +68,8 @@ ylopsApp
       remove: 'remove',
       save: 'save',
       search: 'search',
-      settings: 'cog'
+      settings: 'cog',
+      show: 'eye-open',
+      hide: 'eye-close'
     };
   });

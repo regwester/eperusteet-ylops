@@ -170,14 +170,13 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @NotNull(groups = Strict.class)
     @Size(min = 1, groups = Strict.class)
     @Valid
-    @BatchSize(size = 3)
     private Set<Oppiaineenvuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
 
-    @Getter
-    @ManyToOne(optional = true, fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     /**
      * oppiaine johon oppimäärä kuuluu tai null jos kyseessä itse oppiaine.
      */
+    @Getter
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     private Oppiaine oppiaine;
 
     /**

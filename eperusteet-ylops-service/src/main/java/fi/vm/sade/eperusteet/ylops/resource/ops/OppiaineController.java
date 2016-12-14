@@ -48,94 +48,97 @@ public class OppiaineController {
     private OpetussuunnitelmaService ops;
 
     @RequestMapping(method = RequestMethod.POST)
-    public OppiaineDto add(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineDto dto) {
+    public OppiaineDto add(@PathVariable final Long opsId, @RequestBody OppiaineDto dto) {
         return oppiaineService.add(opsId, dto);
     }
 
     @RequestMapping(value = "/valinnainen", method = RequestMethod.POST)
-    public OppiaineDto addValinnainen(@PathVariable("opsId") final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
+    public OppiaineDto addValinnainen(@PathVariable final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
         return oppiaineService.addValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuusId(),
                                               dto.getVuosiluokat(), dto.getTavoitteet(), null, null, false);
     }
 
     @RequestMapping(value = "/{id}/kielitarjonta", method = RequestMethod.POST)
     public OppiaineDto addOppimaara(
-            @PathVariable("opsId") final Long opsId,
-            @PathVariable("id") final Long oppiaineId,
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
             @RequestBody KopioOppimaaraDto kt) {
-        return oppiaineService.addCopyOppimaara(opsId, oppiaineId, kt);
+        return oppiaineService.addCopyOppimaara(opsId, id, kt);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<UnwrappedOpsOppiaineDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public ResponseEntity<UnwrappedOpsOppiaineDto> get(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id
+    ) {
         return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.get(opsId, id)));
     }
 
     @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.GET)
     public ResponseEntity<UnwrappedOpsOppiaineDto> getVersion(
-            @PathVariable("opsId") final Long opsId,
-            @PathVariable("id") final Long id,
-            @PathVariable("versio") final Integer versio) {
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
+            @PathVariable final Integer versio) {
         return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.getVersion(opsId, id, versio)));
     }
 
     @RequestMapping(value = "/{id}/raakaversio/{versio}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineDto> getRevision(
-            @PathVariable("opsId") final Long opsId,
-            @PathVariable("id") final Long id,
-            @PathVariable("versio") final Integer versio) {
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
+            @PathVariable final Integer versio) {
         return Responses.ofNullable(oppiaineService.getRevision(opsId, id, versio));
     }
 
     @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.POST)
     public ResponseEntity<UnwrappedOpsOppiaineDto> revertToVersion(
-            @PathVariable("opsId") final Long opsId,
-            @PathVariable("id") final Long id,
-            @PathVariable("versio") final Integer versio) {
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
+            @PathVariable final Integer versio) {
         return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.revertTo(opsId, id, versio)));
     }
 
     @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
     public OppiainePalautettuDto restoreOppiaine(
-            @PathVariable("opsId") final Long opsId,
-            @PathVariable("id") final Long id) {
+            @PathVariable final Long opsId,
+            @PathVariable final Long id) {
         return oppiaineService.restore(opsId, id, null);
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}", method = RequestMethod.POST)
     public OppiainePalautettuDto restoreOppiaine(
-            @PathVariable("opsId") final Long opsId,
-            @PathVariable("id") final Long id,
-            @PathVariable("oppimaaraId") final Long oppimaaraId) {
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
+            @PathVariable final Long oppimaaraId) {
         return oppiaineService.restore(opsId, id, oppimaaraId);
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}/{versio}", method = RequestMethod.POST)
     public OppiainePalautettuDto restoreOppiaine(
-            @PathVariable("opsId") final Long opsId,
-            @PathVariable("id") final Long id,
-            @PathVariable("oppimaaraId") final Long oppimaaraId,
-            @PathVariable("versio") final Integer versio) {
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
+            @PathVariable final Long oppimaaraId,
+            @PathVariable final Integer versio) {
         return oppiaineService.restore(opsId, id, oppimaaraId, versio);
     }
 
     @RequestMapping(value = "/{id}/versiot", method = RequestMethod.GET)
-    public List<RevisionDto> getVersionHistory(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public List<RevisionDto> getVersionHistory(@PathVariable final Long opsId, @PathVariable final Long id) {
         return oppiaineService.getVersions(opsId, id);
     }
 
     @RequestMapping(value = "/poistetut", method = RequestMethod.GET)
-    public ResponseEntity<List<PoistettuOppiaineDto>> getRemoved(@PathVariable("opsId") final Long opsId) {
+    public ResponseEntity<List<PoistettuOppiaineDto>> getRemoved(@PathVariable final Long opsId) {
         return Responses.ofNullable(oppiaineService.getRemoved(opsId));
     }
 
     @RequestMapping(value = "/{id}/parent", method = RequestMethod.GET)
-    public ResponseEntity<OppiaineDto> getParent(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public ResponseEntity<OppiaineDto> getParent(@PathVariable final Long opsId, @PathVariable final Long id) {
         return Responses.ofNullable(oppiaineService.getParent(opsId, id));
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<OppiaineDto> getAll(@PathVariable("opsId") final Long opsId,
+    public List<OppiaineDto> getAll(@PathVariable final Long opsId,
                                     @RequestParam(value = "tyyppi", required = false) OppiaineTyyppi tyyppi) {
         if (tyyppi == null) {
             return oppiaineService.getAll(opsId, OppiaineTyyppi.YHTEINEN);
@@ -145,33 +148,42 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/yhteiset",method = RequestMethod.GET)
-    public List<OppiaineDto> getYhteiset(@PathVariable("opsId") final Long opsId) {
+    public List<OppiaineDto> getYhteiset(@PathVariable final Long opsId) {
         return oppiaineService.getAll(opsId, false);
     }
 
     @RequestMapping(value = "/valinnaiset",method = RequestMethod.GET)
-    public List<OppiaineDto> getValinnaiset(@PathVariable("opsId") final Long opsId) {
+    public List<OppiaineDto> getValinnaiset(@PathVariable final Long opsId) {
         return oppiaineService.getAll(opsId, true);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public UnwrappedOpsOppiaineDto update(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id,
+    public UnwrappedOpsOppiaineDto update(@PathVariable final Long opsId, @PathVariable final Long id,
         @RequestBody OppiaineDto dto) {
         dto.setId(id);
         return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, dto));
     }
 
     @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)
-    public OppiaineDto updateValinnainen(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id,
-                                         @RequestBody OppiaineenTallennusDto dto) {
+    public OppiaineDto updateValinnainen(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
+            @RequestBody OppiaineenTallennusDto dto
+    ) {
         dto.getOppiaine().setId(id);
         return oppiaineService.updateValinnainen(opsId, dto.getOppiaine(), dto.getVuosiluokkakokonaisuusId(),
                                                  dto.getVuosiluokat(), dto.getTavoitteet());
     }
 
+    @RequestMapping(value = "/{id}/vuosiluokkakokonaisuudet/{vlkId}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void hideVuosiluokkakokonaisuus(@PathVariable final Long opsId, @PathVariable final Long id, @PathVariable final Long vlkId) {
+        oppiaineService.hideVuosiluokkakokonaisuus(opsId, id, vlkId);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public void delete(@PathVariable final Long opsId, @PathVariable final Long id) {
         oppiaineService.delete(opsId, id);
     }
 
@@ -190,21 +202,28 @@ public class OppiaineController {
 //    }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
-    public ResponseEntity<PerusteOppiaineDto> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public ResponseEntity<PerusteOppiaineDto> getPerusteSisalto(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id
+    ) {
         PerusteDto p = ops.getPeruste(opsId);
         return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
             .flatMap(a -> p.getPerusopetus().getOppiaine(a.getOppiaine().getTunniste())));
     }
 
     @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
-    public UnwrappedOpsOppiaineDto kopioiMuokattavaksi(@PathVariable("opsId") final Long opsId,
-                                                       @PathVariable("id") final Long id) {
+    public UnwrappedOpsOppiaineDto kopioiMuokattavaksi(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id
+    ) {
         return new UnwrappedOpsOppiaineDto(oppiaineService.kopioiMuokattavaksi(opsId, id));
     }
 
     @RequestMapping(value = "/{id}/palautaYlempi", method = RequestMethod.POST)
-    public UnwrappedOpsOppiaineDto palautaYlempi(@PathVariable("opsId") final Long opsId,
-                                                       @PathVariable("id") final Long id) {
+    public UnwrappedOpsOppiaineDto palautaYlempi(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id
+    ) {
         return new UnwrappedOpsOppiaineDto(oppiaineService.palautaYlempi(opsId, id));
     }
 

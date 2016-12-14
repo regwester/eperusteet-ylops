@@ -56,6 +56,7 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepositor
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
@@ -257,8 +258,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmaJulkinenDto dto = mapper.map(ops, OpetussuunnitelmaJulkinenDto.class);
-        return dto;
+        if (ops.getTila() != Tila.JULKAISTU) {
+            throw new NotExistsException("Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        }
+        return mapper.map(ops, OpetussuunnitelmaJulkinenDto.class);
     }
 
     @Override

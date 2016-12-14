@@ -21,12 +21,13 @@ import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
+import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.security.access.method.P;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  *
@@ -85,6 +86,9 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void hideVuosiluokkakokonaisuus(@P("opsId") Long opsId, Long id, Long vlkId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     PoistettuOppiaineDto delete(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
@@ -105,18 +109,17 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OpsOppiaineDto palautaYlempi(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<RevisionDto> getVersions(Long opsId, Long id);
+    List<RevisionDto> getVersions(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpsOppiaineDto getVersion(Long opsId, Long id, Integer versio);
+    OpsOppiaineDto getVersion(@P("opsId") Long opsId, Long id, Integer versio);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
-    OppiaineDto getRevision(Long opsId, Long id, Integer versio);
+    OppiaineDto getRevision(@P("opsId") Long opsId, Long id, Integer versio);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    OpsOppiaineDto revertTo(Long opsId, Long id, Integer versio);
+    OpsOppiaineDto revertTo(@P("opsId") Long opsId, Long id, Integer versio);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<PoistettuOppiaineDto> getRemoved(Long opsId);
-
+    List<PoistettuOppiaineDto> getRemoved(@P("opsId") Long opsId);
 }

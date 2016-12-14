@@ -85,7 +85,6 @@ ylopsApp
   }
 
   const
-    onOma = $scope.oppiaine.oma,
     hasVuosiluokkakokonaisuudet = !_.isEmpty($scope.oppiaine.vuosiluokkakokonaisuudet),
     hasVlkTavoitteet = !perusteOppiaine || $scope.perusteenVlk && !_.isEmpty($scope.perusteenVlk.tavoitteet);
 
@@ -182,7 +181,7 @@ ylopsApp
     VuosiluokkakokonaisuusMapper.createEmptyText($scope.perusteOpVlk, 'arviointi');
   }
 
-  var perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : null, 'tunniste');
+  let perusteTavoitteet = _.indexBy($scope.perusteOpVlk ? $scope.perusteOpVlk.tavoitteet : null, 'tunniste');
 
   if ($scope.oppiaine.koosteinen && vanhempiOnUskontoTaiKieli($scope.oppiaine)) {
     $scope.valitseOppimaara = () => {
@@ -217,6 +216,38 @@ ylopsApp
     };
   }
 
+  $scope.piilotaVuosiluokkakokonaisuus = () => {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-piilottaminen',
+      primaryBtn: 'piilota',
+      successCb: () => {
+        console.log($scope.oppiaine);
+        OppiaineCRUD.piilotaVuosiluokka({
+          opsId: $stateParams.id,
+          oppiaineId: $stateParams.oppiaineId,
+          vlkId: $scope.oppiaineenVlk.id
+        }).$promise
+          .then(res => console.log(res))
+          .catch(Notifikaatiot.serverCb);
+
+        //Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
+        /*$scope.oppiaine.$save({ opsId: $stateParams.id }, () => {
+          OppiaineCRUD.remove({
+            opsId: $stateParams.id,
+            oppiaineId: $stateParams.oppiaineId
+          }, () => {
+            Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
+            if($scope.oppiaine.$parent){
+              $state.go($state.current.name, _.merge(_.clone($stateParams), {oppiaineId: $scope.oppiaine.$parent.id}), { reload: true, notify: true});
+            }else{
+              $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, {reload: true, notify: true});
+            }
+          }, Notifikaatiot.serverCb);
+        });*/
+      }
+    })();
+  };
+
   $scope.poistaOppimaara = () => {
     Varmistusdialogi.dialogi({
       otsikko: 'varmista-poisto',
@@ -247,11 +278,11 @@ ylopsApp
     $scope.vuosiluokat = $scope.oppiaineenVlk.vuosiluokat;
     _.each($scope.vuosiluokat, (vlk) => {
       vlk.$numero = VuosiluokatService.fromEnum(vlk.vuosiluokka);
-      var allShort = true;
+      let allShort = true;
       _.each(vlk.tavoitteet, (tavoite) => {
-        var perusteTavoite = perusteTavoitteet[tavoite.tunniste] || {};
+        let perusteTavoite = perusteTavoitteet[tavoite.tunniste] || {};
         tavoite.$tavoite = perusteTavoite.tavoite;
-        var tavoiteTeksti = TextUtils.toPlaintext(Kaanna.kaanna(perusteTavoite.tavoite));
+        let tavoiteTeksti = TextUtils.toPlaintext(Kaanna.kaanna(perusteTavoite.tavoite));
         tavoite.$short = TextUtils.getCode(tavoiteTeksti);
         if (!tavoite.$short) {
           allShort = false;

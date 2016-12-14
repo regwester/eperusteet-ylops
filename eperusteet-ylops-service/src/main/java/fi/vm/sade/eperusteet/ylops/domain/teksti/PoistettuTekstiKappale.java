@@ -1,12 +1,14 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
+import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import java.io.Serializable;
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by autio on 9.2.2016.

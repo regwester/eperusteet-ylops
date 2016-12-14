@@ -140,7 +140,8 @@ ylopsApp
       getVersion: {method: 'GET', url: YlopsResources.OPPIAINE + '/versio/:versio'},
       revertToVersion: {method: 'POST', url: YlopsResources.OPPIAINE + '/versio/:versio'},
       getRemoved: {method: 'GET', url: YlopsResources.OPPIAINE + '/poistetut', isArray: true},
-      palautaOppiaine: {method: 'POST', url: YlopsResources.OPPIAINE + '/palauta/:oppimaara'}
+      palautaOppiaine: {method: 'POST', url: YlopsResources.OPPIAINE + '/palauta/:oppimaara'},
+      piilotaVuosiluokka: {method: 'DELETE', url: YlopsResources.OPPIAINE + '/vuosiluokkakokonaisuudet/:vlkId'}
     });
   })
 

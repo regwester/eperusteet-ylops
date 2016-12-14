@@ -22,29 +22,16 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
 /**
  * Kuvaa oppimäärän yhteen vuosiluokkakokonaisuuteen osalta.
@@ -74,33 +61,38 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
 
     @Getter
     @Setter
-    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa tehtava;
 
     // Yleistavoitteet ovat tavoitteita, joita ei vuosiluokkaisteta, vaan annetaan vapaana tekstinä.
     @Getter
     @Setter
-    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa yleistavoitteet;
 
     @Getter
     @Setter
-    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa tyotavat;
 
     @Getter
     @Setter
-    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa ohjaus;
 
     @Getter
     @Setter
-    @OneToOne(cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Tekstiosa arviointi;
 
     @Getter
     @Setter
     private Integer jnro;
+
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private Boolean piilotettu = false;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinTable
@@ -120,10 +112,11 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
             this.vuosiluokat.retainAll(vuosiluokat);
         }
 
-        for (Oppiaineenvuosiluokka o : vuosiluokat) {
-            o.setKokonaisuus(this);
+        if (vuosiluokat != null) {
+            for (Oppiaineenvuosiluokka o : vuosiluokat) {
+                o.setKokonaisuus(this);
+            }
         }
-
     }
 
     public void addVuosiluokka(Oppiaineenvuosiluokka vuosiluokka) {
@@ -159,9 +152,7 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
         ovk.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
         ovk.setTyotavat(Tekstiosa.copyOf(other.getTyotavat()));
 
-        other.getVuosiluokat().forEach(vl -> {
-            ovk.addVuosiluokka(Oppiaineenvuosiluokka.copyOf(vl, kohdealueet));
-        });
+        other.getVuosiluokat().forEach(vl -> ovk.addVuosiluokka(Oppiaineenvuosiluokka.copyOf(vl, kohdealueet)));
 
         return ovk;
     }

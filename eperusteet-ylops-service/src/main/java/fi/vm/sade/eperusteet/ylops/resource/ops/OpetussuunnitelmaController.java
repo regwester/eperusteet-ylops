@@ -25,13 +25,14 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import io.swagger.annotations.Api;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -58,12 +59,14 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
     @ResponseBody
+    @Timed
     public ResponseEntity<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
         return new ResponseEntity<>(opetussuunnitelmaService.getStatistiikka(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/adminlist", method = RequestMethod.GET)
     @ResponseBody
+    @Timed
     public ResponseEntity<List<OpetussuunnitelmaInfoDto>> getAdminList() {
         return new ResponseEntity<>(opetussuunnitelmaService.getAdminList(), HttpStatus.OK);
     }
@@ -72,7 +75,7 @@ public class OpetussuunnitelmaController {
     @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaKevytDto> get(@PathVariable("id") final Long id) {
-        return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelma(id), HttpStatus.OK);
+        return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelma(id));
     }
 
     @RequestMapping(value = "/{id}/kaikki", method = RequestMethod.GET)

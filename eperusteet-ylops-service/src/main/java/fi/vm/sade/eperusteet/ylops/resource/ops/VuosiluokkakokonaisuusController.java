@@ -25,8 +25,6 @@ import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,17 +45,23 @@ public class VuosiluokkakokonaisuusController {
     private OpetussuunnitelmaService opetussuunnitelmat;
 
     @RequestMapping(method = RequestMethod.POST)
-    public VuosiluokkakokonaisuusDto add(@PathVariable("opsId") final Long opsId, @RequestBody VuosiluokkakokonaisuusDto dto) {
+    public VuosiluokkakokonaisuusDto add(@PathVariable final Long opsId, @RequestBody VuosiluokkakokonaisuusDto dto) {
         return vuosiluokkakokonaisuudet.add(opsId, dto);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<UnwrappedOpsVuosiluokkakokonaisuusDto> get(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public ResponseEntity<UnwrappedOpsVuosiluokkakokonaisuusDto> get(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id
+    ) {
         return Responses.ofNullable(new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.get(opsId, id)));
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
-    public PerusteVuosiluokkakokonaisuusDto getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public PerusteVuosiluokkakokonaisuusDto getPerusteSisalto(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id
+    ) {
         final PerusteDto peruste = opetussuunnitelmat.getPeruste(opsId);
         final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id).getVuosiluokkakokonaisuus();
 
@@ -66,11 +70,11 @@ public class VuosiluokkakokonaisuusController {
             .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
             .findAny();
 
-        return vkDto.get();
+        return vkDto.orElse(null);
     }
 
     @RequestMapping(value = "/{id}/oppiaineet", method = RequestMethod.GET)
-    public Set<OppiaineDto> findOppiaineet(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public Set<OppiaineDto> findOppiaineet(@PathVariable final Long opsId, @PathVariable final Long id) {
         throw new UnsupportedOperationException("Ei ole toteutettu");
     }
 
@@ -80,24 +84,26 @@ public class VuosiluokkakokonaisuusController {
 //    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public UnwrappedOpsVuosiluokkakokonaisuusDto update(@PathVariable("opsId") final Long opsId,
-        @PathVariable("id") final Long id,
-        @RequestBody VuosiluokkakokonaisuusDto dto) {
+    public UnwrappedOpsVuosiluokkakokonaisuusDto update(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
+            @RequestBody VuosiluokkakokonaisuusDto dto
+    ) {
         dto.setId(id);
         return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.update(opsId, dto));
     }
 
     @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
-    public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(@PathVariable("opsId") final Long opsId,
-                                                         @PathVariable("id") final Long id) {
+    public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id
+    ) {
         return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.kopioiMuokattavaksi(opsId, id));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
+    public void delete(@PathVariable final Long opsId, @PathVariable final Long id) {
         vuosiluokkakokonaisuudet.delete(opsId, id);
     }
-
-    private static final Logger LOG = LoggerFactory.getLogger(VuosiluokkakokonaisuusController.class);
 }

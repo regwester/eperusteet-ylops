@@ -23,10 +23,11 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import java.util.List;
-import java.util.Set;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -47,7 +48,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("permitAll()")
     List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    @PreAuthorize("permitAll()")
     OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
