@@ -57,8 +57,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
         // Järjestetään aakkosjärjestykseen
         vlkset = vlkset.stream()
-                .sorted((vlk1, vlk2) -> vlk1.getNimi().getTeksti().get(docBase.getKieli())
-                        .compareTo(vlk2.getNimi().getTeksti().get(docBase.getKieli())))
+                .sorted(Comparator.comparing(vlk2 -> vlk2.getNimi().getTeksti().get(docBase.getKieli())))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         vlkset.forEach(vlk -> {
@@ -131,8 +130,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
             List<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto> perusteLaajaalaisetOsaamiset = perusteVlk.getLaajaalaisetOsaamiset().stream()
                     .filter((lao -> lao.getLaajaalainenOsaaminen() != null))
-                    .sorted((lao1, lao2) -> lao1.getLaajaalainenOsaaminen().getNimi().getTekstit().get(docBase.getKieli())
-                            .compareTo(lao2.getLaajaalainenOsaaminen().getNimi().getTekstit().get(docBase.getKieli())))
+                    .sorted(Comparator.comparing(lao -> lao.getLaajaalainenOsaaminen().getNimi().getTekstit().get(docBase.getKieli())))
                     .collect(Collectors.toCollection(ArrayList::new));
 
             for (PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto perusteLaajaalainenosaaminen : perusteLaajaalaisetOsaamiset) {
@@ -307,7 +305,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
         // Tavoitteet vuosiluokittain
         if (oaVlkDto.getVuosiluokat() != null) {
             ArrayList<Oppiaineenvuosiluokka> vuosiluokat = oaVlkDto.getVuosiluokat().stream()
-                    .sorted((el1, el2) -> el1.getVuosiluokka().toString().compareTo(el2.getVuosiluokka().toString()))
+                    .sorted(Comparator.comparing(el -> el.getVuosiluokka().toString()))
                     .collect(Collectors.toCollection(ArrayList::new));
             // Vuosiluokka otsikko
             vuosiluokat.stream()
@@ -344,9 +342,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                             Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
                                     .filter(pKsa -> pKsa.getTunniste().equals(ksa.getTunniste()))
                                     .findFirst();
-                            if (optPerusteKsa.isPresent()) {
-                                addLokalisoituteksti(docBase, optPerusteKsa.get().getKuvaus(), "cite");
-                            }
+                            optPerusteKsa.ifPresent(perusteKeskeinensisaltoalueDto -> addLokalisoituteksti(docBase,
+                                    perusteKeskeinensisaltoalueDto.getKuvaus(), "cite"));
 
                             // Sisältöalue ops
                             addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
@@ -396,8 +393,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                     .filter(s -> s.getSisaltoalueet() != null
                                             && (s.getSisaltoalueet().getPiilotettu() == null
                                             || !s.getSisaltoalueet().getPiilotettu()))
-                                    .sorted((s1, s2) -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli()).compareTo(
-                                            s2.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
+                                    .sorted(Comparator.comparing(s -> s.getSisaltoalueet()
+                                            .getNimi().getTeksti().get(docBase.getKieli())))
                                     .collect(Collectors.toCollection(ArrayList::new));
 
                             StringBuilder sisaltoalueetBuilder = new StringBuilder();
@@ -560,8 +557,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 .filter(s -> s.getSisaltoalueet() != null
                         && (s.getSisaltoalueet().getPiilotettu() == null
                         || !s.getSisaltoalueet().getPiilotettu()))
-                .sorted((s1, s2) -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli()).compareTo(
-                        s2.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
+                .sorted(Comparator.comparing(s1 -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (sisaltoalueetAsc.size() > 0) {
@@ -629,6 +625,10 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 = oppiaine.getVuosiluokkakokonaisuus(vlk.getTunniste().getId());
 
         if (!optOaVlk.isPresent()) {
+            return;
+        }
+
+        if (optOaVlk.get().getPiilotettu() != null && optOaVlk.get().getPiilotettu()) {
             return;
         }
 

@@ -221,29 +221,34 @@ ylopsApp
       otsikko: 'varmista-piilottaminen',
       primaryBtn: 'piilota',
       successCb: () => {
-        console.log($scope.oppiaine);
         OppiaineCRUD.piilotaVuosiluokka({
           opsId: $stateParams.id,
           oppiaineId: $stateParams.oppiaineId,
-          vlkId: $scope.oppiaineenVlk.id
+          id: $scope.oppiaineenVlk.id
+        }, {
+          piilotettu: true
         }).$promise
-          .then(res => console.log(res))
+          .then(res => $state.go($state.current.name, {}, { reload: true, notify: true}))
           .catch(Notifikaatiot.serverCb);
+      }
+    })();
+  };
 
-        //Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
-        /*$scope.oppiaine.$save({ opsId: $stateParams.id }, () => {
-          OppiaineCRUD.remove({
-            opsId: $stateParams.id,
-            oppiaineId: $stateParams.oppiaineId
-          }, () => {
-            Notifikaatiot.onnistui('oppimaaran-poisto-onnistui');
-            if($scope.oppiaine.$parent){
-              $state.go($state.current.name, _.merge(_.clone($stateParams), {oppiaineId: $scope.oppiaine.$parent.id}), { reload: true, notify: true});
-            }else{
-              $state.go('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {vlkId: $stateParams.vlkId}, {reload: true, notify: true});
-            }
-          }, Notifikaatiot.serverCb);
-        });*/
+  $scope.palautaVuosiluokkakokonaisuus = () => {
+    Varmistusdialogi.dialogi({
+      otsikko: 'varmista-palauttaminen',
+      primaryBtn: 'palauta',
+      successCb: () => {
+        OppiaineCRUD.piilotaVuosiluokka({
+          opsId: $stateParams.id,
+          oppiaineId: $stateParams.oppiaineId,
+          id: $scope.oppiaineenVlk.id
+        }, {
+          id: $scope.oppiaineenVlk.id,
+          piilotettu: false
+        }).$promise
+          .then(res => $state.go($state.current.name, {}, { reload: true, notify: true}))
+          .catch(Notifikaatiot.serverCb);
       }
     })();
   };

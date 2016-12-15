@@ -95,7 +95,8 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         @PathVariable("opsId") final Long opsId,
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id,
-        @RequestBody OppiaineenVuosiluokkakokonaisuusDto dto) {
+        @RequestBody OppiaineenVuosiluokkakokonaisuusDto dto
+    ) {
         dto.setId(id);
         return oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineId, dto);
     }

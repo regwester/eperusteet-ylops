@@ -30,13 +30,16 @@
             oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
     <button ng-if="$onKieliTaiUskonto && !oppiaineenVlk.piilotettu" class="btn btn-default" icon-role="hide" kaanna="'piilota'" ng-click="piilotaVuosiluokkakokonaisuus()"
             oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
-    <button ng-if="$onKieliTaiUskonto && oppiaineenVlk.piilotettu" class="btn btn-default" icon-role="show" kaanna="'nayta'" ng-click="naytaVuosiluokkakokonaisuus()"
+    <button ng-if="$onKieliTaiUskonto && oppiaineenVlk.piilotettu" class="btn btn-default" icon-role="show" kaanna="'palauta'" ng-click="palautaVuosiluokkakokonaisuus()"
             oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'tilanvaihto' }"></button>
 </div>
 
 <h2 ng-hide="$$muokkaaNimea" ng-bind="oppiaine.nimi | kaanna"></h2>
 <input ng-show="$$muokkaaNimea" class="form-control" slocalized ng-model="oppiaine.nimi">
 
+<div ng-show="oppiaineenVlk.piilotettu">
+  <p kaanna="'oavlk-on-piilotettu'"></p>
+</div>
 
 <div ng-if="!oppiaineenVlk.piilotettu">
   <p ng-if="eiPerustetta" class="alert alert-error" kaanna="'ei-perustetta-info'"></p>

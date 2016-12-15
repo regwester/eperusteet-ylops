@@ -17,9 +17,10 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
 
 /**
  *
@@ -32,4 +33,5 @@ public class OppiaineenVuosiluokkakokonaisuusSuppeaDto implements ReferenceableD
     private Reference vuosiluokkakokonaisuus;
     private Integer jnro;
     private Set<OppiaineenVuosiluokkaKevytDto> vuosiluokat;
+    private Boolean piilotettu;
 }

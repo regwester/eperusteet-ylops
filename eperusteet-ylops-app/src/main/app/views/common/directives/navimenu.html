@@ -6,7 +6,7 @@
             ng-class="{'glyphicon-chevron-right': item.$collapsed, 'glyphicon-chevron-down': !item.$collapsed}"></span>
     </div>
     <span class="linktext">
-      <span class="truncate" ng-bind="item.label | kaanna"></span>
+      <span ng-style="item.piilotettu === true && {'text-decoration': 'line-through'}" class="truncate" ng-bind="item.label | kaanna"></span>
       <span ng-class="addIcon(item)" class="pull-right"></span>
       <span class="pull-right" ng-if="item.valmis === true" valmius-ikoni="item"></span>
     </span>

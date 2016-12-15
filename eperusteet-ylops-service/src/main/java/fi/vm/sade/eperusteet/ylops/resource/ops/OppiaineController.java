@@ -175,12 +175,6 @@ public class OppiaineController {
                                                  dto.getVuosiluokat(), dto.getTavoitteet());
     }
 
-    @RequestMapping(value = "/{id}/vuosiluokkakokonaisuudet/{vlkId}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void hideVuosiluokkakokonaisuus(@PathVariable final Long opsId, @PathVariable final Long id, @PathVariable final Long vlkId) {
-        oppiaineService.hideVuosiluokkakokonaisuus(opsId, id, vlkId);
-    }
-
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable final Long opsId, @PathVariable final Long id) {

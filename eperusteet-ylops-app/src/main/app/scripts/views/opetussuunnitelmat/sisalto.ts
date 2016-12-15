@@ -213,7 +213,7 @@ ylopsApp
         Lukko.unlock(commonParams, $state.reload);
       })
     });
-    
+
     Lukko.lock(commonParams, () => {
       Editointikontrollit.startEditing().then(() => {
         $scope.$$isRakenneMuokkaus = true;

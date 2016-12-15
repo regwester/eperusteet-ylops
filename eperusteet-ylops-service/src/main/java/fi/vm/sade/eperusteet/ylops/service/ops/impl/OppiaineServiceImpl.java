@@ -645,24 +645,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public void hideVuosiluokkakokonaisuus(@P("opsId") Long opsId, Long id, Long vlkId) {
-        Oppiaine oppiaine = getOppiaine(opsId, id);
-
-
-        Optional<Oppiaineenvuosiluokkakokonaisuus> optVlk = oppiaine.getVuosiluokkakokonaisuudet().stream()
-                .filter(vlk -> Objects.equals(vlk.getId(), vlkId))
-                .findFirst();
-
-        if (optVlk.isPresent()) {
-            Oppiaineenvuosiluokkakokonaisuus oaVlk = optVlk.get();
-            oppiaineenKokonaisuudet.lock(oaVlk);
-            oaVlk.setPiilotettu(true);
-            oppiaineenKokonaisuudet.save(oaVlk);
-        }
-
-    }
-
-    @Override
     public PoistettuOppiaineDto delete(@P("opsId") Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Oppiaine oppiaine = getOppiaine(opsId, id);
@@ -724,11 +706,24 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             .findAny()
             .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei löydy"));
 
-        oavlk.setTehtava(mapper.map(dto.getTehtava(), Tekstiosa.class));
-        oavlk.setYleistavoitteet(mapper.map(dto.getYleistavoitteet(), Tekstiosa.class));
-        oavlk.setTyotavat(mapper.map(dto.getTyotavat(), Tekstiosa.class));
-        oavlk.setOhjaus(mapper.map(dto.getOhjaus(), Tekstiosa.class));
-        oavlk.setArviointi(mapper.map(dto.getArviointi(), Tekstiosa.class));
+        if (dto.getTehtava() != null ) {
+            oavlk.setTehtava(mapper.map(dto.getTehtava(), Tekstiosa.class));
+        }
+        if (dto.getYleistavoitteet() != null) {
+            oavlk.setYleistavoitteet(mapper.map(dto.getYleistavoitteet(), Tekstiosa.class));
+        }
+        if (dto.getTyotavat() != null) {
+            oavlk.setTyotavat(mapper.map(dto.getTyotavat(), Tekstiosa.class));
+        }
+        if (dto.getOhjaus() != null) {
+            oavlk.setOhjaus(mapper.map(dto.getOhjaus(), Tekstiosa.class));
+        }
+        if (dto.getArviointi() != null) {
+            oavlk.setArviointi(mapper.map(dto.getArviointi(), Tekstiosa.class));
+        }
+        if (dto.getPiilotettu() != null) {
+            oavlk.setPiilotettu(dto.getPiilotettu());
+        }
 
         mapper.map(oavlk, dto);
         return dto;

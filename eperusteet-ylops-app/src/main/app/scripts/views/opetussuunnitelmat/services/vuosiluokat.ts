@@ -125,11 +125,19 @@ ylopsApp
     };
 
     const generateOppiaineItem = (oppiaine, vlk, depth) => {
+
+      let piilotettu = false;
+      const oaVlk = _.find(oppiaine.vuosiluokkakokonaisuudet, { _vuosiluokkakokonaisuus: vlk._tunniste });
+      if (oaVlk && oaVlk.piilotettu) {
+        piilotettu = true;
+      }
+
       return {
         depth: depth || 1,
         label: oppiaine.nimi,
         id: oppiaine.id,
         vlkId: vlk.id,
+        piilotettu: piilotettu,
         tyyppi: oppiaine.tyyppi,
         url: $state.href('root.opetussuunnitelmat.yksi.opetus.oppiaine',
             {vlkId: vlk.id, oppiaineId: oppiaine.id, oppiaineTyyppi: oppiaine.tyyppi, versio: null})
@@ -175,15 +183,15 @@ ylopsApp
     var arr = [];
 
     _.each(vuosiluokkakokonaisuudet, function (vlk) {
+
       var obj = vlk.vuosiluokkakokonaisuus;
 
       // Vuosiluokka
-      var item = {
+      arr.push({
         label: obj.nimi,
         id: obj.id,
         url: $state.href('root.opetussuunnitelmat.yksi.opetus.vuosiluokkakokonaisuus', {vlkId: obj.id}),
-      };
-      arr.push(item);
+      });
 
       // Vuosiluokan oppiaineet
       var oppiaineet = _.map(ops.oppiaineet, 'oppiaine');
