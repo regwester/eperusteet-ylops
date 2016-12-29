@@ -17,7 +17,7 @@
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiServiceImpl" level="info"/>
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiEventListener" level="warn"/>
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiBuilderServiceImpl" level="info"/>
-  <logger name="com.mangofactory.swagger" level="warn"/>
+  <logger name="springfox.documentation" level="warn"/>
   <root level="info">
     <appender-ref ref="console"/>
   </root>

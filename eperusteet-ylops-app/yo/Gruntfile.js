@@ -1,43 +1,28 @@
-// Generated on 2013-10-06 using generator-angular 0.4.0
-'use strict';
-var LIVERELOAD_PORT = 36729;
-var mountFolder = function(connect, dir) {
-  return connect.static(require('path').resolve(dir));
+const LIVERELOAD_PORT = 36729;
+
+const serveStatic = require('serve-static');
+const proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
+const livereloadSnippet = require('connect-livereload')({ port: LIVERELOAD_PORT });
+
+const yeomanConfig = {
+  app: '../src/main/app',
+  dist: '../target/yo/dist',
+  test: '../src/test/js'
 };
-var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
+const tsconfig = require(yeomanConfig.app + '/tsconfig.json');
+const tsconfigTest = require(yeomanConfig.test + '/tsconfig.json');
 
-module.exports = function(grunt) {
-  grunt.loadNpmTasks('grunt-connect-proxy');
-  grunt.loadNpmTasks('grunt-image');
-  grunt.loadNpmTasks('grunt-angular-templates');
+module.exports = grunt => {
+  require('time-grunt')(grunt);
   require('load-grunt-tasks')(grunt);
-  //require('time-grunt')(grunt);
-
-  // configurable paths
-  var yeomanConfig = {
-    app: '../src/main/app',
-    dist: '../target/yo/dist',
-    test: '../src/test/js'
-  };
-
-  var tsconfig = require(yeomanConfig.app + '/tsconfig.json');
-  var tsconfigTest = require(yeomanConfig.test + '/tsconfig.json');
-
-  try {
-    yeomanConfig.app = require('./bower.json').appPath || yeomanConfig.app;
-  } catch (e) {
-
-  }
 
   grunt.initConfig({
     yeoman: yeomanConfig,
     ts: {
       tests: {
         files: [{
-          src: tsconfigTest.files.map(function (file) {
-            return yeomanConfig.test + '/' + file;
-          }),
+          src: tsconfigTest.files.map(file => yeomanConfig.test + '/' + file),
           dest: yeomanConfig.test + '/',
           options: {
             module: 'amd',
@@ -48,9 +33,7 @@ module.exports = function(grunt) {
       },
       sources: {
         files: [{
-          src: tsconfig.files.map(function (file) {
-            return yeomanConfig.app + '/' + file;
-          }),
+          src: tsconfig.files.map(file => yeomanConfig.app + '/' + file),
           dest: yeomanConfig.app,
           options: {
             module: 'amd',
@@ -111,24 +94,25 @@ module.exports = function(grunt) {
         host: 'localhost',
         port: 8080,
         https: false,
-        changeOrigin: false,
+        changeOrigin: true,
         xforward: false
       },{
         context: '/virkailija-raamit',
         host: 'localhost',
         port: 8080,
         https: false,
-        changeOrigin: false,
+        changeOrigin: true,
         xforward: false
       }],
       livereload: {
         options: {
           base: ['.tmp', '<%= yeoman.app %>'],
-          middleware: function(connect) {
+          middleware: connect => {
             return [
               proxySnippet,
-              mountFolder(connect, '.tmp'),
-              mountFolder(connect, yeomanConfig.app)
+              livereloadSnippet,
+              serveStatic('.tmp'),
+              serveStatic(yeomanConfig.app)
             ];
           }
         }
@@ -136,32 +120,27 @@ module.exports = function(grunt) {
       test: {
         options: {
           port: 0,
-          middleware: function(connect) {
+          middleware: connect => {
             return [
-              mountFolder(connect, '.tmp'),
-              mountFolder(connect, yeomanConfig.test)
+              serveStatic('.tmp'),
+              serveStatic(yeomanConfig.test)
             ];
           }
         }
       },
       dist: {
         options: {
-          middleware: function(connect) {
+          middleware: connect => {
             return [
-              mountFolder(connect, yeomanConfig.dist)
+              serveStatic(yeomanConfig.dist)
             ];
           }
         }
       }
     },
-    // open: {
-    //   server: {
-    //     url: 'http://localhost:<%= connect.options.port %>'
-    //   }
-    // },
     clean: {
       options: {
-        force: true /* files outside working directory! */
+        force: true // files outside working directory!
       },
       dist: {
         files: [{
@@ -175,11 +154,6 @@ module.exports = function(grunt) {
       },
       server: '.tmp'
     },
-    // not used since Uglify task does concat,
-    // but still available if needed
-    /*concat: {
-     dist: {}
-     },*/
     rev: {
       dist: {
         files: {
@@ -233,18 +207,6 @@ module.exports = function(grunt) {
         }]
       }
     },
-    // Kokeillaan grunt-imagea
-    // imagemin: {
-    //   dist: {
-    //     files: [{
-    //       expand: true,
-    //       cwd: '<%= yeoman.app %>/images',
-    //       // src: '*|)}>#*.{png,jpg,jpeg}',
-    //       src: 'whatever',
-    //       dest: '<%= yeoman.dist %>/images'
-    //     }]
-    //   }
-    // },
     svgmin: {
       dist: {
         files: [{
@@ -255,32 +217,10 @@ module.exports = function(grunt) {
         }]
       }
     },
-    cssmin: {
-      // By default, your `index.html` <!-- Usemin Block --> will take care of
-      // minification. This option is pre-configured if you do not wish to use
-      // Usemin blocks.
-      // dist: {
-      //   files: {
-      //     '<%= yeoman.dist %>/styles/main.css': [
-      //       '.tmp/styles/{,*/}*.css',
-      //       '<%= yeoman.app %>/styles/{,*/}*.css'
-      //     ]
-      //   }
-      // }
-    },
+    cssmin: {},
     htmlmin: {
       dist: {
-        options: {
-          /*removeCommentsFromCDATA: true,
-           // https://github.com/yeoman/grunt-usemin/issues/44
-           //collapseWhitespace: true,
-           collapseBooleanAttributes: true,
-           removeAttributeQuotes: true,
-           removeRedundantAttributes: true,
-           useShortDoctype: true,
-           removeEmptyAttributes: true,
-           removeOptionalTags: true*/
-        },
+        options: {},
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>',
@@ -289,7 +229,6 @@ module.exports = function(grunt) {
         }]
       }
     },
-    // Put files not handled in other tasks here
     copy: {
       dist: {
         files: [{
@@ -311,7 +250,7 @@ module.exports = function(grunt) {
             '**',
             '!samples/**'
           ]
-        },{
+        }, {
             expand: true,
             cwd: '<%= yeoman.app %>/bower_components/ng-file-upload',
             dest: '<%= yeoman.dist %>/bower_components/ng-file-upload',
@@ -319,7 +258,7 @@ module.exports = function(grunt) {
                 'FileAPI.flash.swf',
                 'FileAPI.min.js'
             ]
-        },{
+        }, {
           expand: true,
           cwd: '<%= yeoman.app %>/localisation',
           dest: '<%= yeoman.dist %>/localisation',
@@ -379,16 +318,6 @@ module.exports = function(grunt) {
         html: ['<%= yeoman.dist %>/*.html']
       }
     },
-    ngmin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '<%= yeoman.dist %>/scripts',
-          src: '*.js',
-          dest: '<%= yeoman.dist %>/scripts'
-        }]
-      }
-    },
     uglify: {
       options: { mangle: false },
       dist: {
@@ -434,13 +363,6 @@ module.exports = function(grunt) {
           pattern : /(ng-show=|ng-hide=)[^>]+(ng-hide=|ng-show=)/m
         }
       },
-      // emptyHrefs: {
-      //   files: [{src: ['<%= yeoman.app %>/{scripts,views}#<{(||)}>#*.{js,html}']}],
-      //   options: {
-      //     #<{(| Check that empty href="" are not used |)}>#
-      //     pattern : /\s+href=""/m
-      //   },
-      // },
       controllerNaming: {
         files: [{src: ['<%= yeoman.app %>/scripts/**/*.js']}],
         options: {
@@ -448,57 +370,27 @@ module.exports = function(grunt) {
           pattern : /\.controller\s*\(\s*'([a-z][^']+|([^'](?!Controller))+)'/g
         }
       }
-    },
-    maxlines: {
-      options: {
-        limit: 500
-      },
-      javascript: {
-        options: {
-          limit: 300
-        },
-        files: [{src: ['<%= yeoman.app %>/scripts/**/*.ts']}]
-      },
-      scss: {
-        options: {
-          limit: 500
-        },
-        files: [{src: ['<%= yeoman.app %>/styles/**/*.scss']}]
-      }
     }
   });
 
-  var devTask = function (excludeTests) {
-    return function(target) {
-      if (target === 'dist') {
-        return grunt.task.run(['build', 'connect:dist:keepalive']);
-      }
-
-      grunt.task.run([
-        'ts',
-        'clean:server',
-        'concurrent:server',
-        'copy:fonts',
-        'autoprefixer',
-        'configureProxies',
-        'connect:livereload',
-        excludeTests ? 'focus:dev' : 'watch'
-      ]);
-    };
-  };
-
-  grunt.registerTask('server', devTask());
-  grunt.registerTask('dev', devTask(true));
+  grunt.registerTask('dev', [
+    'ts',
+    'clean:server',
+    'concurrent:server',
+    'copy:fonts',
+    'autoprefixer',
+    'configureProxies',
+    'connect:livereload',
+    'focus:dev'
+  ]);
 
   grunt.registerTask('test', [
     'ts',
     'clean:server',
-    'copy:fonts', // needed if testing while "grunt dev" is running :)
+    'copy:fonts',
     'concurrent:test',
     'autoprefixer',
-//  'connect:test',
     'regex-check',
-    'maxlines',
     'karma'
   ]);
 
@@ -511,7 +403,6 @@ module.exports = function(grunt) {
     'ngtemplates',
     'concat',
     'copy:dist',
-//  'ngmin',
     'cssmin',
     'uglify',
     'rev',

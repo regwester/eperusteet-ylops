@@ -169,27 +169,6 @@
                     </fo:table-cell>
                 </fo:table-row>
 
-                <!-- Koulutustyyppi -->
-                <!--<xsl:if test="boolean(/html/head/meta[@name='type'])">
-                    <fo:table-row>
-                        <fo:table-cell>
-                            <fo:block font-weight="bold">
-                                <xsl:if test="//html/@lang='fi'">
-                                    <xsl:text>Koulutustyyppi</xsl:text>
-                                </xsl:if>
-                                <xsl:if test="//html/@lang='sv'">
-                                    <xsl:text>Utbildningtypen</xsl:text>
-                                </xsl:if>
-                            </fo:block>
-                        </fo:table-cell>
-                        <fo:table-cell>
-                            <fo:block>
-                                <xsl:apply-templates select="/html/head/meta[@name='type']/@content"/>
-                            </fo:block>
-                        </fo:table-cell>
-                    </fo:table-row>
-                </xsl:if>-->
-
                 <!-- Tiivistelmä -->
                 <xsl:if test="boolean(/html/head/meta[@name='description'])">
                     <fo:table-row>
@@ -461,7 +440,7 @@
                               font-size="0pt" id="{@name}"/>
                 </xsl:if>
             </xsl:when>
-            <xsl:when test="@href">
+            <xsl:when test="@href and @href != ''">
                 <fo:basic-link color="blue">
                     <xsl:attribute name="external-destination">
                         <xsl:value-of select="@href"/>
