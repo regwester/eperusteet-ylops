@@ -23,8 +23,8 @@ ylopsApp
     };
 
     this.save = function (image) {
-      var deferred = $q.defer();
-      var url = (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId());
+      let deferred = $q.defer();
+      const url = (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId());
 
       Upload.upload({
         url: url,
@@ -35,37 +35,18 @@ ylopsApp
           height: image.height
         }}).success(function (data) {
           deferred.resolve(data);
-        }).error(function(data) {
+        }).error(function (data) {
           deferred.reject(data);
         });
         return deferred.promise;
     };
-
-    //this.update = function (image) {
-    //  var deferred = $q.defer();
-    //  var url = (YlopsResources.OPS + '/kuvat/'+image.id ).replace(':opsId', '' + OpsService.getId());
-    //
-    //  Upload.upload({
-    //    url: url,
-    //    file: image,
-    //    fields: {
-    //      nimi: image.name,
-    //      width: image.width,
-    //      height: image.height
-    //    }}).success(function (data) {
-    //    deferred.resolve(data);
-    //  }).error(function(data) {
-    //    deferred.reject(data);
-    //  });
-    //  return deferred.promise;
-    //};
 
     this.getUrl = function (image) {
       return (YlopsResources.OPS + '/kuvat').replace(':opsId', '' + OpsService.getId()) + '/' + image.id;
     };
   })
 
-  .controller('EpImagePluginController', function ($scope, EpImageService, Kaanna, Algoritmit, $timeout, OpsService ) {
+  .controller('EpImagePluginController', function ($scope, EpImageService, Kaanna, Algoritmit, $timeout) {
     $scope.service = EpImageService;
     $scope.filtered = [];
     $scope.images = [];
@@ -84,23 +65,23 @@ ylopsApp
       }
     });
 
-    $scope.widthChange = function(img){
+    $scope.widthChange = function (img){
       $scope.scaleError = false;
-      var tmp = img.width / img.originalWidth;
+      let tmp = img.width / img.originalWidth;
       img.height = Math.round( tmp * img.originalHeight );
     };
 
     $scope.heightChange = function(img){
       $scope.scaleError = false;
-      var tmp = img.height / img.originalHeight;
+      let tmp = img.height / img.originalHeight;
       img.width = Math.round( tmp * img.originalWidth);
     };
 
     function getDimensions(){
-      var fr = new FileReader;
-      fr.onload = function() { // file is loaded
-        var img = new Image;
-        img.onload = function() { // image is loaded; sizes are available
+      let fr = new FileReader;
+      fr.onload = function () { // file is loaded
+        let img = new Image;
+        img.onload = function () { // image is loaded; sizes are available
           $scope.model.files[0].width = img.width;
           $scope.model.files[0].height = img.height;
           $scope.model.files[0].originalWidth = img.width;
@@ -116,32 +97,33 @@ ylopsApp
       $scope.showPreview = false;
     });
 
-    $scope.rescaleImg = function(){
+    $scope.rescaleImg = function (){
       $scope.service.update($scope.model.chosen);
     };
 
-    var callback = angular.noop;
-    var setDeferred = null;
+    let callback = angular.noop;
+    let setDeferred = null;
 
     function setChosenValue (value) {
 
       function getMeta(url){
-        var img = new Image();
-        img.onload = function(){
+        let img = new Image();
+        img.onload = function (){
           const el: any = this;
           $scope.model.chosen.width = el.width;
           $scope.model.chosen.height = el.height;
           $scope.model.chosen.originalWidth = el.width;
           $scope.model.chosen.originalHeight = el.height;
+          $scope.model.chosen.alt = el.alt;
         };
         img.src = url;
       }
 
-      var found = _.find($scope.images, function (image) {
+      let found = _.find($scope.images, function (image) {
         return image.id === value;
       });
 
-      var imgurl = EpImageService.getUrl(found);
+      let imgurl = EpImageService.getUrl(found);
       getMeta( imgurl );
 
       $scope.model.chosen = found || null;
@@ -199,8 +181,8 @@ ylopsApp
 
     $scope.saveNew = function () {
 
-      var image = $scope.model.files[0];
-      if( !(image.width > 0 && image.height > 0) ){
+      let image = $scope.model.files[0];
+      if (!(image.width > 0 && image.height > 0)) {
         $scope.scaleError = 'epimage-plugin-scale-invalid';
         return;
       }
@@ -223,21 +205,27 @@ ylopsApp
     };
 
   })
-  .filter('kuvalinkit', function(EpImageService) {
-    return function(text) {
-      var modified = false;
-      var tmp = angular.element('<div>'+text+'</div>');
-      tmp.find('img[data-uid]').each(function () {
-            var el = angular.element(this);
-            var url = EpImageService.getUrl({id: el.attr('data-uid')});
-            if ( el.attr('src') !== url ) {
-              modified = true;
-              el.attr('src', EpImageService.getUrl({id: el.attr('data-uid')}));
-            }
+  .filter('kuvalinkit', function (EpImageService) {
+    return function (text) {
+      let tmp = angular.element('<div>' + text + '</div>');
+
+      tmp.find('img').each(function () {
+        let el = angular.element(this);
+        el.wrap('<figure></figure>');
+
+        if (el.attr('data-uid')) {
+          const url = EpImageService.getUrl({id: el.attr('data-uid')});
+          if ( el.attr('src') !== url ) {
+            el.attr('src', url);
+          }
+        }
+
+        if (el.attr('alt')) {
+          el.parent().append('<figcaption>' + el.attr('alt') + '</figcaption>');
+          el.parent().wrap('<div style=\'text-align: center;\'></div>');
+        }
       });
-      if ( modified ) {
-        return tmp.html();
-      }
-      return text;
+
+      return tmp.html();
     };
   });

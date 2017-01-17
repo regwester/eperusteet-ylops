@@ -43,6 +43,10 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
             '  <span ng-bind-html="epimage.nimi|kaanna|highlight:$select.search"></span></ui-select-choices>' +
             '</ui-select>' +
             '<p class="empty-epimaget" ng-if="images.length === 0" kaanna="\'ei-kuvia\'"></p>' +
+            '<label class="ckeditor-plugin-label">{{ \'epimage-plugin-kuvateksti\' | kaanna }}</label>'+
+            '<input type="text"' +
+            '       class="form-control"' +
+            '       ng-model="model.chosen.alt">'+
             '<div class="epimage-plugin-add">' +
             '  <label class="ckeditor-plugin-label">{{\'epimage-plugin-lisaa-uusi\'|kaanna}}</label>'+
             '  <div><button class="btn btn-default" ng-model-rejected="model.rejected" ngf-accept="\'.jpg,.jpeg,.png\'" ngf-select ng-model="model.files"><span kaanna="\'epimage-plugin-valitse\'"></span></button>' +
@@ -92,8 +96,10 @@ CKEDITOR.dialog.add('epimageDialog', function( editor ) {
               this.setValue(value);
             },
             commit: function (element) {
+              var chosen = controllerScope.model.chosen;
               element.setAttribute('data-uid', this.getValue());
               element.setAttribute('src', controllerScope.urlForImage({id: this.getValue()}));
+              element.setAttribute('alt', chosen.alt);
             }
           }
         ]
