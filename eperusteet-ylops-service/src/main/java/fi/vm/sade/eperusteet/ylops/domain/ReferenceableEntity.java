@@ -27,7 +27,7 @@ public interface ReferenceableEntity {
     /**
      * Palauttaa viitattavissa olevan entityn yksikäsitteisen avaimen. Avain pitää olla mahdollista muuttaa merkkijonoksi (järkevä toString-methodi vaaditaan).
      *
-     * @return
+     * @return id
      */
     Serializable getId();
 
