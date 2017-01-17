@@ -331,7 +331,7 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/vuosiluokat/directives/opsteksti.html',
     controller: 'TekstiosaController',
-    link: (scope: any, element, attrs) => {
+    link: (scope: any, element, attrs: any) => {
       scope.editable = !!attrs.opsTeksti;
       scope.options = {
         collapsed: scope.editable

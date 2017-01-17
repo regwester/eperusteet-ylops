@@ -155,7 +155,7 @@ ylopsApp
         editorPlaceholder: '@?',
         editMode: '@?editingEnabled'
       },
-      link: function(scope: any, element, attrs, ctrl) {
+      link: function(scope: any, element, attrs: any, ctrl: any) {
         var placeholderText = null;
         var editingEnabled = (scope.editMode || 'true') === 'true';
 

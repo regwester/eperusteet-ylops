@@ -30,7 +30,7 @@ ylopsApp
     },
     templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
     controller: 'TekstiosaController',
-    link: function (scope: any, element, attrs) {
+    link: function (scope: any, element, attrs: any) {
       scope.editable = !!attrs.muokattava;
       scope.focusAndScroll = function () {
         $timeout(function () {

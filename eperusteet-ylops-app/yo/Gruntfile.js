@@ -23,7 +23,7 @@ module.exports = grunt => {
       tests: {
         files: [{
           src: tsconfigTest.files.map(file => yeomanConfig.test + '/' + file),
-          dest: yeomanConfig.test + '/',
+          dest: yeomanConfig.test,
           options: {
             module: 'amd',
             target: 'es5',
@@ -55,14 +55,14 @@ module.exports = grunt => {
       },
       test: {
         files: ['<%= yeoman.app %>/**/*.{ts,html}', '<%= yeoman.test %>/**/*.ts','!<%= yeoman.app %>/bower_components/**'],
-        tasks: ['ts', 'karma:unit', 'regex-check']
+        tasks: ['ts:tests', 'karma:unit', 'regex-check']
       },
       livereload: {
         options: {
           livereload: LIVERELOAD_PORT,
           open: false
         },
-        tasks: ['ts'],
+        tasks: ['ts:sources'],
         files: [
           '<%= yeoman.app %>/**/*.{html,ts}',
           '!<%= yeoman.app %>/bower_components/**',
@@ -374,7 +374,7 @@ module.exports = grunt => {
   });
 
   grunt.registerTask('dev', [
-    'ts',
+    'ts:sources',
     'clean:server',
     'concurrent:server',
     'copy:fonts',
@@ -385,7 +385,7 @@ module.exports = grunt => {
   ]);
 
   grunt.registerTask('test', [
-    'ts',
+    'ts:tests',
     'clean:server',
     'copy:fonts',
     'concurrent:test',
@@ -396,7 +396,7 @@ module.exports = grunt => {
 
   grunt.registerTask('build', [
     'clean:dist',
-    'ts',
+    'ts:sources',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',

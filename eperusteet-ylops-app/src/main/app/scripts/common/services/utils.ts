@@ -159,7 +159,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
     return {
       restrict: 'A',
       require: 'ngModel',
-      link: function (scope: any, element: any, attrs: any, ngModel) {
+      link: function (scope: any, element: any, attrs: any, ngModel: any) {
 
         var parsedMoment: any = '';
 

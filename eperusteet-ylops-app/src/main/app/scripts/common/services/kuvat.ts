@@ -128,10 +128,11 @@ ylopsApp
       function getMeta(url){
         var img = new Image();
         img.onload = function(){
-          $scope.model.chosen.width = this.width;
-          $scope.model.chosen.height = this.height;
-          $scope.model.chosen.originalWidth = this.width;
-          $scope.model.chosen.originalHeight = this.height;
+          const el: any = this;
+          $scope.model.chosen.width = el.width;
+          $scope.model.chosen.height = el.height;
+          $scope.model.chosen.originalWidth = el.width;
+          $scope.model.chosen.originalHeight = el.height;
         };
         img.src = url;
       }
