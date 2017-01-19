@@ -72,9 +72,6 @@
                         <fileset>
                             <directory>yo/.tmp</directory>
                         </fileset>
-                      <fileset>
-                        <directory>${user.home}/.node-gyp</directory>
-                      </fileset>
                     </filesets>
                 </configuration>
             </plugin>
