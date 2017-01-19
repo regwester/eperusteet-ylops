@@ -19,6 +19,14 @@ module.exports = grunt => {
 
   grunt.initConfig({
     yeoman: yeomanConfig,
+    tsd: {
+      refresh: {
+        options: {
+          command: 'reinstall',
+          config: 'tsd.json'
+        }
+      }
+    },
     ts: {
       tests: {
         files: [{
@@ -173,7 +181,7 @@ module.exports = grunt => {
         flow: {
           html: {
             steps: {
-              js: ['concat','uglifyjs'],
+              js: ['concat','uglify'],
               css: ['cssmin']
             },
             post: {}
@@ -363,8 +371,9 @@ module.exports = grunt => {
   });
 
   grunt.registerTask('dev', [
-    'ts:sources',
     'clean:server',
+    'tsd:refresh',
+    'ts:sources',
     'concurrent:server',
     'copy:fonts',
     'autoprefixer',
@@ -374,8 +383,9 @@ module.exports = grunt => {
   ]);
 
   grunt.registerTask('test', [
-    'ts:tests',
     'clean:server',
+    'tsd:refresh',
+    'ts:tests',
     'copy:fonts',
     'concurrent:test',
     'autoprefixer',
@@ -385,6 +395,7 @@ module.exports = grunt => {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'tsd:refresh',
     'ts:sources',
     'useminPrepare',
     'concurrent:dist',
