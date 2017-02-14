@@ -25,6 +25,7 @@ public enum KoulutusTyyppi {
     PERUSTUTKINTO("koulutustyyppi_1"),
     AMMATTITUTKINTO("koulutustyyppi_11"),
     ERIKOISAMMATTITUTKINTO("koulutustyyppi_12"),
+    AIKUISTENPERUSOPETUS("koulutustyyppi_17"),
     LISAOPETUS("koulutustyyppi_6"),
     ESIOPETUS("koulutustyyppi_15"),
     VARHAISKASVATUS("koulutustyyppi_20"),
