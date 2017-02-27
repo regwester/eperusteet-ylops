@@ -17,8 +17,21 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
+import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.KUVA;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.LIITE;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import io.swagger.annotations.Api;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.*;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +46,6 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
-import java.util.List;
-
 /**
  *
  * @author jhyoty
@@ -50,6 +54,9 @@ import java.util.List;
 @RequestMapping("/opetussuunnitelmat/{opsId}/kuvat")
 @Api("Liitetiedostot")
 public class LiitetiedostoController {
+    @Autowired
+    private EperusteetYlopsAudit audit;
+
     private static final Logger LOG = LoggerFactory.getLogger(LiitetiedostoController.class);
 
     private static final int BUFSIZE = 64 * 1024;
@@ -73,6 +80,7 @@ public class LiitetiedostoController {
                            @RequestParam Integer height,
                            @RequestParam Part file){
         //TODO implement image rescaling
+//        return audit.withAudit(LogMessage.builder(opsId, LIITETIEDOSTO, MUOKKAUSKO));
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -108,6 +116,7 @@ public class LiitetiedostoController {
 
             HttpHeaders h = new HttpHeaders();
             h.setLocation(ucb.path("/opetussuunnitelmat/{opsId}/kuvat/{id}").buildAndExpand(opsId, id.toString()).toUri());
+            audit.withAudit(LogMessage.builder(opsId, KUVA, LISAYS));
             return new ResponseEntity<>(id.toString(), h, HttpStatus.CREATED);
         }
     }
@@ -162,7 +171,10 @@ public class LiitetiedostoController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long opsId, @PathVariable UUID id) {
-        liitteet.delete(opsId, id);
+        audit.withAudit(LogMessage.builder(opsId, LIITE, POISTO), (Void) -> {
+            liitteet.delete(opsId, id);
+            return null;
+        });
     }
 
     @RequestMapping(method = RequestMethod.GET)

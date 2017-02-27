@@ -17,17 +17,14 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.KommenttiDto;
+import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.KOMMENTTI;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -35,8 +32,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author mikkom
@@ -45,6 +49,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping("/kommentit")
 @ApiIgnore
 public class KommenttiController {
+    @Autowired
+    private EperusteetYlopsAudit audit;
 
     @Autowired
     private KommenttiService service;
@@ -151,17 +157,24 @@ public class KommenttiController {
 
     @RequestMapping(method = POST)
     public ResponseEntity<KommenttiDto> add(@RequestBody KommenttiDto body) {
-        return new ResponseEntity<>(service.add(body), HttpStatus.CREATED);
+        return audit.withAudit(LogMessage.builder(body.getOpetussuunnitelmaId(), KOMMENTTI, LISAYS), (Void) -> {
+            return new ResponseEntity<>(service.add(body), HttpStatus.CREATED);
+        });
     }
 
     @RequestMapping(value = "/{id}", method = PUT)
     public ResponseEntity<KommenttiDto> update(@PathVariable("id") final long id, @RequestBody KommenttiDto body) {
-        return new ResponseEntity<>(service.update(id, body), HttpStatus.OK);
+        return audit.withAudit(LogMessage.builder(body.getOpetussuunnitelmaId(), KOMMENTTI, MUOKKAUS), (Void) -> {
+            return new ResponseEntity<>(service.update(id, body), HttpStatus.OK);
+        });
     }
 
     @RequestMapping(value = "/{id}", method = DELETE)
     public void delete(@PathVariable("id") final long id) {
-        service.delete(id);
+        audit.withAudit(LogMessage.builder(null, KOMMENTTI, POISTO), (Void) -> {
+            service.delete(id);
+            return null;
+        });
     }
 
 }

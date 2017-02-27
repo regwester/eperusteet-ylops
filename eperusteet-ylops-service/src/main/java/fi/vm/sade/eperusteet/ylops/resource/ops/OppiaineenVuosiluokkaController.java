@@ -18,14 +18,18 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
+import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.VALINNAINENVUOSILUOKKA;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.VUOSILUOKKA;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
+import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import io.swagger.annotations.Api;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.List;
 
 /**
  *
@@ -36,6 +40,9 @@ import java.util.List;
 @ApiIgnore
 @Api(value = "Opetussuunnitelmat")
 public class OppiaineenVuosiluokkaController {
+    @Autowired
+    private EperusteetYlopsAudit audit;
+
     @Autowired
     private OppiaineService oppiaineService;
 
@@ -54,8 +61,10 @@ public class OppiaineenVuosiluokkaController {
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id,
         @RequestBody OppiaineenVuosiluokkaDto dto) {
-        dto.setId(id);
-        return oppiaineService.updateVuosiluokanSisalto(opsId, oppiaineId, dto);
+        return audit.withAudit(LogMessage.builder(opsId, VUOSILUOKKA, MUOKKAUS), (Void) -> {
+            dto.setId(id);
+            return oppiaineService.updateVuosiluokanSisalto(opsId, oppiaineId, dto);
+        });
     }
 
     @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)
@@ -64,6 +73,8 @@ public class OppiaineenVuosiluokkaController {
         @PathVariable("oppiaineId") final Long oppiaineId,
         @PathVariable("id") final Long id,
         @RequestBody List<TekstiosaDto> tavoitteetDto) {
-        return oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, oppiaineId, id, tavoitteetDto);
+        return audit.withAudit(LogMessage.builder(opsId, VALINNAINENVUOSILUOKKA, MUOKKAUS), (Void) -> {
+            return oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, oppiaineId, id, tavoitteetDto);
+        });
     }
 }

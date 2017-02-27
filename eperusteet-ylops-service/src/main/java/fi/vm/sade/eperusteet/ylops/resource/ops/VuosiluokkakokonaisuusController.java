@@ -22,21 +22,30 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
+import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.VUOSILUOKKAKOKONAISUUS;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.KLOONAUS;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import io.swagger.annotations.Api;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-import java.util.Set;
-
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet")
 @Api(value = "Opetussuunnitelmat")
 public class VuosiluokkakokonaisuusController {
+    @Autowired
+    private EperusteetYlopsAudit audit;
+
 
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
@@ -45,10 +54,14 @@ public class VuosiluokkakokonaisuusController {
     private OpetussuunnitelmaService opetussuunnitelmat;
 
     @RequestMapping(method = RequestMethod.POST)
-    public VuosiluokkakokonaisuusDto add(@PathVariable final Long opsId, @RequestBody VuosiluokkakokonaisuusDto dto) {
-        return vuosiluokkakokonaisuudet.add(opsId, dto);
+    public VuosiluokkakokonaisuusDto add(
+            @PathVariable final Long opsId,
+            @RequestBody VuosiluokkakokonaisuusDto dto) {
+        return audit.withAudit(LogMessage.builder(opsId, VUOSILUOKKAKOKONAISUUS, LISAYS), (Void) -> {
+            return vuosiluokkakokonaisuudet.add(opsId, dto);
+        });
     }
-    
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<UnwrappedOpsVuosiluokkakokonaisuusDto> get(
             @PathVariable final Long opsId,
@@ -87,23 +100,30 @@ public class VuosiluokkakokonaisuusController {
     public UnwrappedOpsVuosiluokkakokonaisuusDto update(
             @PathVariable final Long opsId,
             @PathVariable final Long id,
-            @RequestBody VuosiluokkakokonaisuusDto dto
-    ) {
-        dto.setId(id);
-        return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.update(opsId, dto));
+            @RequestBody VuosiluokkakokonaisuusDto dto) {
+        return audit.withAudit(LogMessage.builder(opsId, VUOSILUOKKAKOKONAISUUS, MUOKKAUS), (Void) -> {
+            dto.setId(id);
+            return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.update(opsId, dto));
+        });
     }
 
     @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
     public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(
             @PathVariable final Long opsId,
-            @PathVariable final Long id
-    ) {
-        return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.kopioiMuokattavaksi(opsId, id));
+            @PathVariable final Long id) {
+        return audit.withAudit(LogMessage.builder(opsId, VUOSILUOKKAKOKONAISUUS, KLOONAUS), (Void) -> {
+            return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.kopioiMuokattavaksi(opsId, id));
+        });
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable final Long opsId, @PathVariable final Long id) {
-        vuosiluokkakokonaisuudet.delete(opsId, id);
+    public void delete(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id) {
+        audit.withAudit(LogMessage.builder(opsId, VUOSILUOKKAKOKONAISUUS, POISTO), (Void) -> {
+            vuosiluokkakokonaisuudet.delete(opsId, id);
+            return null;
+        });
     }
 }
