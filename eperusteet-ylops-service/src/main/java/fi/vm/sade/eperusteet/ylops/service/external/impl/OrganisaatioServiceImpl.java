@@ -32,7 +32,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +40,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 /**
  *
@@ -52,9 +50,11 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
     private static final String ORGANISAATIOT = "/rest/organisaatio/";
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
+    private static final String HAKU = "v2/hae?";
     private static final String KUNTA_KRITEERI = "kunta=";
     private static final String STATUS_KRITEERI = "&aktiiviset=true&suunnitellut=true&lakkautetut=false";
     private static final String ORGANISAATIO_KRITEERI = "oidRestrictionList=";
+    private static final String KOULUTUSTOIMIJAT_KRITEERI = "&organisaatiotyyppi=Koulutustoimija";
 
     @Autowired
     private Client client;
@@ -119,22 +119,30 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
             return getLaitoksetByEhtoAndTyypit(hakuehto + lukioHakuehto, lukioOppilaitostyypit);
         }
 
-        private JsonNode getLaitoksetByEhtoAndTyypit(String hakuehto, Collection<String> tyypit) {
+        private JsonNode get(String hakuehto) {
             CachingRestClient crc = restClientFactory.getWithoutCas(serviceUrl);
             try {
-                final String url =
-                        serviceUrl + ORGANISAATIOT + HIERARKIA_HAKU + hakuehto + STATUS_KRITEERI;
+                final String url = serviceUrl + ORGANISAATIOT + hakuehto + STATUS_KRITEERI;
                 JsonNode tree = mapper.readTree(crc.getAsString(url));
-                JsonNode organisaatioTree = tree.get("organisaatiot");
-                return flattenTree(organisaatioTree, "children",
-                        node -> node.get("oppilaitostyyppi") != null &&
-                                tyypit.stream()
-                                        .map(t -> "oppilaitostyyppi_" + t + "#1")
-                                        .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
-
+                return tree.get("organisaatiot");
             } catch (IOException ex) {
-                throw new BusinessRuleViolationException("Lukioiden tietojen hakeminen epäonnistui", ex);
+                throw new BusinessRuleViolationException("Tietojen hakeminen epäonnistui", ex);
             }
+        }
+
+        private JsonNode getLaitoksetByEhtoAndTyypit(String hakuehto, Collection<String> tyypit) {
+            final String haku = HIERARKIA_HAKU + hakuehto;
+            JsonNode organisaatioTree = get(haku);
+            return flattenTree(organisaatioTree, "children",
+                    node -> node.get("oppilaitostyyppi") != null &&
+                            tyypit.stream()
+                                    .map(t -> "oppilaitostyyppi_" + t + "#1")
+                                    .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
+        }
+
+        public JsonNode getKoulutustoimijat(String kunta) {
+            final String haku = HAKU + KUNTA_KRITEERI + kunta + KOULUTUSTOIMIJAT_KRITEERI;
+            return get(haku);
         }
 
         public JsonNode getPeruskoulutByKuntaId(String kuntaId) {
@@ -191,6 +199,19 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         ArrayNode toimijat = JsonNodeFactory.instance.arrayNode();
         toimijaOidit.stream().map(this::getOrganisaatio).forEach(toimijat::add);
+        return toimijat;
+    }
+
+    @Override
+    public JsonNode getKoulutustoimijat(List<String> kuntaIdt) {
+        ArrayNode toimijat = JsonNodeFactory.instance.arrayNode();
+        kuntaIdt.stream()
+                .forEach(kuntaId -> {
+                    JsonNode koulutustoimijat = client.getKoulutustoimijat(kuntaId);
+                    if (koulutustoimijat != null) {
+                        toimijat.addAll((ArrayNode)koulutustoimijat);
+                    }
+                });
         return toimijat;
     }
 

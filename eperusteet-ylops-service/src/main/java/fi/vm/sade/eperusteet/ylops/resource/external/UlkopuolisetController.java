@@ -24,15 +24,13 @@ import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.List;
-
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  *
@@ -95,6 +93,13 @@ public class UlkopuolisetController {
     @ResponseBody
     public ResponseEntity<JsonNode> getTiedotteet(@RequestParam(value = "jalkeen", required = false) final Long jalkeen) {
         return new ResponseEntity<>(eperusteetService.getTiedotteet(jalkeen), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/organisaatiot/koulutustoimijat/{kuntaIdt}", method = GET)
+    @ResponseBody
+    public ResponseEntity<JsonNode> getKoulutustoimijat(@PathVariable(value = "kuntaIdt") final List<String> kuntaIdt) {
+        JsonNode toimijat = organisaatioService.getKoulutustoimijat(kuntaIdt);
+        return new ResponseEntity<>(toimijat, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/organisaatiot/peruskoulutoimijat/{kuntaIdt}", method = GET)

@@ -16,9 +16,8 @@
 package fi.vm.sade.eperusteet.ylops.service.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * @author mikkom
@@ -45,4 +44,7 @@ public interface OrganisaatioService {
 
     @PreAuthorize("isAuthenticated()")
     JsonNode getLukiotoimijat(List<String> kuntaIdt);
+
+    @PreAuthorize("isAuthenticated()")
+    JsonNode getKoulutustoimijat(List<String> kuntaIdt);
 }
