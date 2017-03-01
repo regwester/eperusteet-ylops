@@ -45,6 +45,7 @@ ylopsApp
       opetussuunnitelmatSync: { method: 'POST', url: SERVICE_LOC + '/opetussuunnitelmat/:opsId/opetussuunnitelmat', isArray: false }
     });
   })
+
   .factory('OpetussuunnitelmaOikeudet', function ($resource, YlopsResources) {
     return $resource(YlopsResources.OPS + '/oikeudet', {
       opsId: '@id'

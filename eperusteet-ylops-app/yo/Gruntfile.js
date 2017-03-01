@@ -33,9 +33,10 @@ module.exports = grunt => {
           src: tsconfigTest.files.map(file => yeomanConfig.test + '/' + file),
           dest: yeomanConfig.test,
           options: {
-            module: 'amd',
-            target: 'es5',
-            sourceMap: true
+            module: "commonjs",
+            target: "es3",
+            lib: ["ES2015", "DOM", "ES5"],
+            alwaysStrict: true
           }
         }]
       },
@@ -43,12 +44,13 @@ module.exports = grunt => {
         files: [{
           src: tsconfig.files.map(file => yeomanConfig.app + '/' + file),
           dest: yeomanConfig.app,
-          options: {
-            module: 'amd',
-            target: 'es5',
-            sourceMap: true
-          }
         }]
+      },
+      options: {
+        module: "commonjs",
+        target: "es3",
+        lib: ["es2015", "dom", "es5"],
+        alwaysStrict: true
       }
     },
     focus: {

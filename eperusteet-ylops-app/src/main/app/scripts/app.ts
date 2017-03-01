@@ -23,6 +23,7 @@ var ylopsApp = angular.module('ylopsApp', [
   'ngSanitize',
   'ui.router',
   'ngResource',
+  'restangular',
   'ngAnimate',
   'pascalprecht.translate',
   'ui.bootstrap',

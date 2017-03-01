@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "sourceMap": true
+    "module": "commonjs",
+    "target": "es3",
+    "lib": ["DOM", "ES2015"],
+    "alwaysStrict": true
   },
   "files": [
     "typings/tsd.d.ts",
@@ -11,6 +13,7 @@
     "scripts/types/sivunavi.d.ts",
 
     "scripts/app.ts",
+    "scripts/resources/ylops.ts",
     "scripts/common/lokalisointi.ts",
     "scripts/common/cache.ts",
     "scripts/views/etusivu.ts",
