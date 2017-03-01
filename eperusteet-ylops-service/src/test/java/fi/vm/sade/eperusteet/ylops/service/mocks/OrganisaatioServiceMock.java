@@ -17,9 +17,8 @@ package fi.vm.sade.eperusteet.ylops.service.mocks;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 /**
  *
@@ -61,4 +60,10 @@ public class OrganisaatioServiceMock implements OrganisaatioService {
     public JsonNode getLukiotoimijat(List<String> kuntaIdt) {
         return null;
     }
+
+    @Override
+    public JsonNode getKoulutustoimijat(List<String> kuntaIdt) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
