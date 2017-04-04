@@ -35,7 +35,7 @@ module.exports = grunt => {
           options: {
             module: "commonjs",
             target: "es3",
-            lib: ["ES2015", "DOM", "ES5"],
+            lib: ["es2015", "dom", "es5"],
             alwaysStrict: true
           }
         }]
