@@ -44,7 +44,7 @@ ylopsApp
     };
 
     $scope.addTekstikappale = function () {
-      $state.go('root.opetussuunnitelmat.yksi..sisalto.tetikappaletekstikappale', {tekstikappaleId: 'uusi'});
+      $state.go('root.opetussuunnitelmat.yksi.sisalto.tekstikappale', {tekstikappaleId: 'uusi'});
     };
 
     function mapSisalto(root) {
