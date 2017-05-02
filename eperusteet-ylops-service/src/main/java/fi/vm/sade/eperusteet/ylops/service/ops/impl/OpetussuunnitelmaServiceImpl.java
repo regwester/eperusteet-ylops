@@ -33,7 +33,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
-import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
@@ -72,21 +71,8 @@ import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import java.math.BigDecimal;
-import java.util.*;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import static java.util.stream.Collectors.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +81,21 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.*;
 
 /**
  *
@@ -947,10 +948,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 throw new BusinessRuleViolationException("Opetussuunnitelman vuosiluokkakokonaisuuksia ei voi vaihtaa kuin luonnoksessa");
             }
 
-            if (!opetussuunnitelmaDto.getJulkaisukielet().stream()
-                    .collect(Collectors.toSet())
-                    .equals(ops.getJulkaisukielet().stream()
-                            .collect(Collectors.toSet()))) {
+            if (!new HashSet<>(opetussuunnitelmaDto.getJulkaisukielet())
+                    .equals(new HashSet<>(ops.getJulkaisukielet()))) {
                 throw new BusinessRuleViolationException("Opetussuunnitelman julkaisukieliä ei voi vaihtaa kuin luonnoksessa");
             }
         }
@@ -1063,12 +1062,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 validointi.tuomitse();
                 for (Kieli kieli : ops.getJulkaisukielet()) {
                     try {
-                        DokumenttiDto dokumenttiDto = dokumenttiService.getDto(ops.getId(), kieli);
-                        if (dokumenttiDto == null) {
-                            dokumenttiDto = dokumenttiService.createDtoFor(ops.getId(), kieli);
-                        }
-                        dokumenttiService.setStarted(dokumenttiDto);
-                        dokumenttiService.generateWithDto(dokumenttiDto);
+                        dokumenttiService.autogenerate(ops.getId(), kieli);
                     } catch (DokumenttiException e) {
                         logger.error(e.getLocalizedMessage(), e.getCause());
                     }

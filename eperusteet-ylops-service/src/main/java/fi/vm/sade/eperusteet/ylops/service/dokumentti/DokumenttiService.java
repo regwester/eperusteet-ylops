@@ -35,6 +35,9 @@ public interface DokumenttiService {
     DokumenttiDto createDtoFor(Long id, Kieli kieli);
 
     @PreAuthorize("isAuthenticated()")
+    void autogenerate(Long id, Kieli kieli) throws DokumenttiException;
+
+    @PreAuthorize("isAuthenticated()")
     void setStarted(DokumenttiDto dto);
 
     @PreAuthorize("isAuthenticated()")

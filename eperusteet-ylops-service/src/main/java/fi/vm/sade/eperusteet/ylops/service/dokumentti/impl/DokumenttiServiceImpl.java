@@ -100,6 +100,44 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    public void autogenerate(Long id, Kieli kieli) throws DokumenttiException {
+        Dokumentti dokumentti;
+        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(id, kieli);
+        if (!dokumentit.isEmpty()) {
+            dokumentit.sort((a, b) -> new Long(a.getId()).compareTo(b.getId()));
+            dokumentti = dokumentit.get(0);
+        } else {
+            dokumentti = new Dokumentti();
+        }
+
+        dokumentti.setTila(DokumenttiTila.LUODAAN);
+        dokumentti.setAloitusaika(new Date());
+        dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
+        dokumentti.setKieli(kieli);
+        dokumentti.setOpsId(id);
+
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
+        if (ops != null) {
+            try {
+                dokumentti.setData(builder.generatePdf(ops, kieli));
+                dokumentti.setTila(DokumenttiTila.VALMIS);
+                dokumentti.setValmistumisaika(new Date());
+                dokumentti.setVirhekoodi("");
+                dokumenttiRepository.save(dokumentti);
+            } catch (Exception ex) {
+                dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
+                dokumentti.setVirhekoodi(ExceptionUtils.getStackTrace(ex));
+                dokumenttiRepository.save(dokumentti);
+
+                throw new DokumenttiException(ex.getMessage(), ex);
+            }
+        } else {
+            dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
+            dokumenttiRepository.save(dokumentti);
+        }
+    }
+
+    @Override
     @Transactional
     public void setStarted(DokumenttiDto dto) {
         dto.setAloitusaika(new Date());
