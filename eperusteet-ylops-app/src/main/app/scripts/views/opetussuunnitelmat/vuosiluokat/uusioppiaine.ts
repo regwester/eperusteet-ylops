@@ -108,7 +108,6 @@ ylopsApp
     return model &&
            Utils.hasLocalizedText(model.nimi) &&
            _.any(_.values($scope.chosenVlk)) &&
-           model.tyyppi &&
            model.laajuus &&
            model.vuosiluokkakokonaisuudet[0].tehtava.teksti &&
            $scope.valitutVuosiluokat && _($scope.valitutVuosiluokat).values().some() &&

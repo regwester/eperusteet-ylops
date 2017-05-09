@@ -45,19 +45,17 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
 import static java.util.stream.Collectors.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author mikkom
@@ -251,6 +249,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                                       Integer oldJnro, OppiaineenVuosiluokkakokonaisuusDto oldOaVlk, boolean updateOld) {
 
         OppiaineenVuosiluokkakokonaisuusDto oavlktDto = null;
+
+        // Taide- ja taitoaineet eivät ole enää käytössä. Sisällöt kirjoitetaan ylempien oppiaineiden vuosiluokkien tavoitteiden sisällöiksi.
+        // Vanhat jo luodut oppiaineet säilytetään edelleen normaalisti.
+        if (oppiaineDto.getTyyppi() == null || oppiaineDto.getTyyppi() == OppiaineTyyppi.TAIDE_TAITOAINE) {
+            oppiaineDto.setTyyppi(OppiaineTyyppi.MUU_VALINNAINEN);
+        }
+
         Optional<OppiaineenVuosiluokkakokonaisuusDto> optOavlktDto = oppiaineDto
                 .getVuosiluokkakokonaisuudet().stream().findFirst();
         if (optOavlktDto.isPresent()) {
