@@ -48,12 +48,13 @@ ylopsApp
 
     return {
       kaanna: function(input, config, useFallback) {
+        let result = "";
         if (_.isObject(input)) {
-          return kaannaSisalto(input, useFallback);
+          result = kaannaSisalto(input, useFallback);
         } else if (_.isString(input)) {
-          return $translate.instant(input, config);
+          result = $translate.instant(input, config);
         }
-        return '';
+        return result || "";
       },
       kaannaSisalto: kaannaSisalto
     };
