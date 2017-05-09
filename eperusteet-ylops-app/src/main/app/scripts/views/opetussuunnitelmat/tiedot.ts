@@ -56,6 +56,7 @@ ylopsApp
         'koulutustyyppi_14',
         'koulutustyyppi_15',
         'koulutustyyppi_16',
+        'koulutustyyppi_17',
         'koulutustyyppi_20',
         'koulutustyyppi_22',
         'koulutustyyppi_23',
