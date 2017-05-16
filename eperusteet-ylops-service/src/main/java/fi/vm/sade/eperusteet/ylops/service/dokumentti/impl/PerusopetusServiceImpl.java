@@ -87,7 +87,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
                     addVlkYleisetOsiot(docBase, perusteVlk.getLaajaalainenOsaaminen(), vlk.getLaajaalainenOsaaminen());
 
-                    addLaajaalaisetOsaamisenAlueet(docBase, perusteVlk, vlk);
+                    addVlkLaajaalaisetOsaamisenAlueet(docBase, perusteVlk, vlk);
 
                     addOppiaineet(docBase, vlk);
 
@@ -121,12 +121,14 @@ public class PerusopetusServiceImpl implements PerusopetusService {
         }
     }
 
-    private void addLaajaalaisetOsaamisenAlueet(DokumenttiBase docBase,
+    private void addVlkLaajaalaisetOsaamisenAlueet(DokumenttiBase docBase,
                                                        PerusteVuosiluokkakokonaisuusDto perusteVlk,
                                                        Vuosiluokkakokonaisuus vlk) {
         if (perusteVlk.getLaajaalaisetOsaamiset() != null ) {
 
             addHeader(docBase, messages.translate("laaja-alaisen-osaamisen-alueet", docBase.getKieli()));
+
+
 
             List<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto> perusteLaajaalaisetOsaamiset = perusteVlk.getLaajaalaisetOsaamiset().stream()
                     .filter((lao -> lao.getLaajaalainenOsaaminen() != null))
@@ -146,7 +148,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                     addHeader(docBase, getTextString(docBase, perusteLaajaalainenosaaminenDto.getNimi()));
 
                     // Perusteen osa
-                    addLokalisoituteksti(docBase, perusteLaajaalainenosaaminenDto.getKuvaus(), "cite");
+                    addLokalisoituteksti(docBase, perusteLaajaalainenosaaminen.getKuvaus(), "cite");
 
                     // Opsin osa
                     if (perusteLaajaalainenosaaminen.getLaajaalainenOsaaminen() != null
@@ -156,9 +158,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                         perusteLaajaalainenosaaminenDto.getTunniste().toString())))
                                 .findFirst();
 
-                        if (optLaajaalainenosaaminen.isPresent()) {
-                            addLokalisoituteksti(docBase, optLaajaalainenosaaminen.get().getKuvaus(), "div");
-                        }
+                        optLaajaalainenosaaminen.ifPresent(laajaalainenosaaminen ->
+                                addLokalisoituteksti(docBase, laajaalainenosaaminen.getKuvaus(), "div"));
                     }
 
                     docBase.getGenerator().decreaseDepth();

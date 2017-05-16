@@ -100,6 +100,8 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    @Transactional(noRollbackFor = DokumenttiException.class)
+    @Async(value = "docTaskExecutor")
     public void autogenerate(Long id, Kieli kieli) throws DokumenttiException {
         Dokumentti dokumentti;
         List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(id, kieli);
