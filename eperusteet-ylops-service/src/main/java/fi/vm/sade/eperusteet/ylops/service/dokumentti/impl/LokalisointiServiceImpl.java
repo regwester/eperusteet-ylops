@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -46,15 +47,21 @@ public class LokalisointiServiceImpl implements LokalisointiService {
     public LokalisointiDto get(String key, String locale) {
         RestTemplate restTemplate = new RestTemplate();
         String url = lokalisointiServiceUrl + "category=" + category + "&locale=" + locale + "&key=" + key;
-        LOG.debug("get lokalisointi url: {}", url);
-        LokalisointiDto[] lokalisoidut = restTemplate.getForObject(url, LokalisointiDto[].class);
+        LokalisointiDto[] re;
+        try {
+            re = restTemplate.getForObject(url, LokalisointiDto[].class);
+        } catch (RestClientException ex) {
+            LOG.error("Rest client error: {}", ex.getLocalizedMessage());
+            re = new LokalisointiDto[]{};
+        }
 
-        if (lokalisoidut.length > 1) {
-            LOG.warn("Got more than one object: {} from {}", lokalisoidut, url);
+        if (re.length > 1) {
+            LOG.warn("Got more than one object: {} from {}", re, url);
         }
-        if (lokalisoidut.length > 0) {
-            return lokalisoidut[0];
+        if (re.length > 0) {
+            return re[0];
         }
+
         return null;
     }
 
