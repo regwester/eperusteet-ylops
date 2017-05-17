@@ -315,7 +315,6 @@ ylopsApp
 
         try {
             const kunnat = await KoodistoHaku.get({ koodistoUri: 'kunta' }).$promise;
-            debugger;
             $scope.kuntalista = mapKunnat(kunnat);
         }
         catch (ex) {
