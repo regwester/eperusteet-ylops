@@ -296,6 +296,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         if( oldOaVlk != null && updateOld ){
 
             HashSet<Oppiaineenvuosiluokka> oldVlks = updateValinnainenVuosiluokat(vuosiluokat, oldOaVlk, oavlk);
+
             oldVlks.forEach(oppiaineenvuosiluokka -> oppiaineenvuosiluokka
                     .getTavoitteet().forEach(opetuksentavoite -> opetuksentavoite
                             .getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
@@ -369,7 +370,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         if (optOldJnro.isPresent()) {
             oldJnro = optOldJnro.get();
         }
-        assertExists(oldJnro, "Päivitettävän oppiaineen ensimmäisen vuosiluokkakokonaisuuden järjestyslukua ei ole olemassa");
         PoistettuOppiaineDto deleted = delete(opsId, oppiaineDto.getId());
         poistettuOppiaineRepository.delete(deleted.getId());
 
