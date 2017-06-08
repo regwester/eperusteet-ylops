@@ -96,20 +96,21 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
 
     @Component
     public static class KayttajaClient {
+
         @Autowired
         private RestClientFactory restClientFactory;
-        @Value("${cas.service.authentication-service:''}")
-        private String serviceUrl;
 
-        private static final String KAYTTAJA_API = "/resources/henkilo/";
-        private static final String OMAT_TIEDOT_API = "/resources/omattiedot/";
+        @Value("${cas.service.oppijanumerorekisteri-service:''}")
+        private String onrServiceUrl;
+
+        private static final String HENKILO_API = "/henkilo/";
         private final ObjectMapper mapper = new ObjectMapper();
 
         @Cacheable("kayttajat")
         public KayttajanTietoDto hae(String oid) {
             try {
-                CachingRestClient crc = restClientFactory.get(serviceUrl);
-                String url = serviceUrl + (oid == null ? OMAT_TIEDOT_API : KAYTTAJA_API + oid);
+                CachingRestClient crc = restClientFactory.get(onrServiceUrl);
+                String url = onrServiceUrl + HENKILO_API + oid;
                 JsonNode json = mapper.readTree(crc.getAsString(url));
                 return parsiKayttaja(json);
             } catch (Exception e) {

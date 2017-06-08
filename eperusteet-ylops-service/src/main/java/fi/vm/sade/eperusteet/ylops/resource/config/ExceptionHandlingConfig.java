@@ -20,7 +20,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 
-import java.net.SocketException;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -171,10 +171,13 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
             map.put("data", ((ValidointiException) ex).getValidointi());
         } else if (ex instanceof ServiceException) {
             map.put("syy", ex.getLocalizedMessage());
-        } else if (ex instanceof SocketException) {
-            suppresstrace = true;
-            map.put("syy", ex.getLocalizedMessage());
-            map.put("avain", "client-abort-virhe");
+        } else if (ex instanceof IOException) {
+            String simpleName = ex.getCause().getClass().getSimpleName();
+            if (simpleName.equals("ClientAbortException")) {
+                suppresstrace = true;
+                map.put("syy", ex.getLocalizedMessage());
+                map.put("avain", "client-abort-virhe");
+            }
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             map.put("syy", "Sovelluspalvelimessa tapahtui odottamaton virhe");
