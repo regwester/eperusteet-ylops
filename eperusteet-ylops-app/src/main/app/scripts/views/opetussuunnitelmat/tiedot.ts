@@ -21,8 +21,27 @@ ylopsApp
         Notifikaatiot, OpsService, Utils, KoodistoHaku, PeruskouluHaku, PeruskoulutoimijaHaku, LukiotoimijaHaku,
         LukioHaku, kunnat, Kieli, OpetussuunnitelmaOikeudetService, Varmistusdialogi) {
 
-    async function getKoulutustoimijat(kunta) {
-        const toimijat = await Api.all("ulkopuoliset/organisaatiot/koulutustoimijat/" + kunta).getList();
+    function hasLukio() {
+        return _.any(["koulutustyyppi_2", "koulutustyyppi_23", "koulutustyyppi_14"],
+            (i) => i === $scope.editableModel.koulutustyyppi);
+    }
+
+    async function getKoulutustoimijat(kunnat: Array<string>) {
+        const oppilaitostyyppi = [];
+        if (hasLukio()) {
+            oppilaitostyyppi.push(15);
+        }
+        else if ($scope.editableModel.koulutustyyppi === "koulutustyyppi_17") {
+            oppilaitostyyppi.push(11, 15);
+        }
+        else {
+            oppilaitostyyppi.push(11);
+        }
+
+        const toimijat = await Api.all("ulkopuoliset/organisaatiot/koulutustoimijat/").getList({
+            kunta: kunnat,
+            oppilaitostyyppi
+        });
         return toimijat.plain();
     }
 
@@ -84,7 +103,6 @@ ylopsApp
             _(model.vuosiluokkakokonaisuudet).filter({valittu: true}).size() > 0;
         return nimiOk && organisaatiotOk && julkaisukieletOk && vlkOk;
     };
-    const isLukio = () => _.any(["koulutustyyppi_2", "koulutustyyppi_23", "koulutustyyppi_14"], (i) => i === $scope.editableModel.koulutustyyppi);
 
     function mapKunnat(lista) {
         return _(lista).map(function (kunta) {
@@ -172,7 +190,22 @@ ylopsApp
         }
     }
 
-    $scope.$watch('editableModel.koulutustyyppi', function (value) {
+    $scope.$watch("editableModel.koulutustyyppi", function (value) {
+        if ($scope.luonnissa) {
+            $timeout(() => {
+                $scope.$apply(() => {
+                    $scope.model.kunnat = [];
+                    $scope.model.koulutoimijat = [];
+                    $scope.model.koulut = [];
+                    $scope.editableModel.kunnat = [];
+                    $scope.editableModel.koulutoimijat = [];
+                    $scope.editableModel.koulut = [];
+                    $scope.koulutoimijalista = [];
+                    $scope.koululista = [];
+                    $scope.haeKunnat();
+                });
+            });
+        }
         if (value) {
             getPohja(value, $scope.editableModel.pohja);
         }
@@ -334,16 +367,16 @@ ylopsApp
             _.isArray($scope.koulutoimijat) && $scope.koulutoimijat.length === 0;
     }
 
-    $scope.$watch('editableModel.kunnat', function () {
+    $scope.$watch("editableModel.kunnat", function () {
         $scope.haeKoulutoimijat();
     });
 
-    $scope.$watch('editableModel.koulutoimijat', function () {
+    $scope.$watch("editableModel.koulutoimijat", function () {
         $scope.haeKoulut();
         updateKoulutoimijaVaroitus();
     });
 
-    $scope.$watch('koululista', function () {
+    $scope.$watch("koululista", function () {
         updateKouluVaroitus();
     });
 
@@ -353,28 +386,28 @@ ylopsApp
         }));
     }
 
-    $scope.$watch('editableModel.julkaisukielet', mapJulkaisukielet);
+    $scope.$watch("editableModel.julkaisukielet", mapJulkaisukielet);
 
     $scope.haeKoulut = function () {
-        $scope.loadingKoulut = true;
-        var koulutoimijat = $scope.editableModel.koulutoimijat;
+        const koulutoimijat = $scope.editableModel.koulutoimijat;
         if (!($scope.editMode || $scope.luonnissa) || !koulutoimijat) {
-            $scope.loadingKoulut = false;
             return;
         }
+
         if (koulutoimijat.length === 0) {
             $scope.loadingKoulut = false;
             $scope.editableModel.koulut = [];
-        } else if (koulutoimijat.length === 1) {
-            var koulutoimija = koulutoimijat[0];
-            (isLukio() ? LukioHaku : PeruskouluHaku).get({oid: koulutoimija.oid}, function (res) {
-                $scope.koululista = _(res).map(function (koulu) {
-                    return _.pick(koulu, ['oid', 'nimi', 'tyypit']);
-                }).sortBy(Utils.sort).value();
-
-                $scope.loadingKoulut = false;
-            }, Notifikaatiot.serverCb);
-        } else {
+        }
+        else if (koulutoimijat.length === 1) {
+            const koulutoimija = koulutoimijat[0];
+            $timeout(() => {
+                $scope.koululista = _(koulutoimija.children)
+                    .map(koulu => _.pick(koulu, ["oid", "nimi", "tyypit"]))
+                    .sortBy(Utils.sort)
+                    .value();
+            });
+        }
+        else {
             $scope.loadingKoulut = false;
             $scope.editableModel.koulut = [];
             $scope.koululista = [];
@@ -390,24 +423,18 @@ ylopsApp
 
     $scope.haeKoulutoimijat = async function () {
         $scope.loadingKoulutoimijat = true;
-        var kunnat = $scope.editableModel.kunnat;
+        const kunnat = $scope.editableModel.kunnat;
         if (kunnat && ($scope.editMode || $scope.luonnissa)) {
             if (kunnat.length === 0) {
                 $scope.editableModel.koulutoimijat = [];
                 $scope.editableModel.koulut = [];
             }
             else {
-                const kuntaUrit = _.map(kunnat, 'koodiUri');
-                let koulutoimijat = [];
-
-                for (const kunta of kuntaUrit) {
-                    const toimijat = await getKoulutustoimijat(kunta);
-                    koulutoimijat = koulutoimijat.concat(toimijat);
-                }
-
+                const kuntaUrit = _.map(kunnat, "koodiUri");
+                const koulutoimijat = await getKoulutustoimijat(kuntaUrit);
                 $scope.koulutoimijalista = koulutoimijat;
                 $scope.editableModel.koulutoimijat = _.filter($scope.editableModel.koulutoimijat, function(koulutoimija) {
-                    return _.includes(_.map($scope.koulutoimijalista, 'oid'), koulutoimija.oid);
+                    return _.includes(_.map($scope.koulutoimijalista, "oid"), koulutoimija.oid);
                 });
             }
         }

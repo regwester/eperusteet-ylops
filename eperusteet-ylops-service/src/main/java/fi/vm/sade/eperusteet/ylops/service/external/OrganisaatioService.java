@@ -16,6 +16,8 @@
 package fi.vm.sade.eperusteet.ylops.service.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -46,5 +48,5 @@ public interface OrganisaatioService {
     JsonNode getLukiotoimijat(List<String> kuntaIdt);
 
     @PreAuthorize("isAuthenticated()")
-    JsonNode getKoulutustoimijat(List<String> kuntaIdt);
+    List<OrganisaatioLaajaDto> getKoulutustoimijat(OrganisaatioQueryDto query);
 }

@@ -16,7 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.service.mocks;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -62,8 +65,8 @@ public class OrganisaatioServiceMock implements OrganisaatioService {
     }
 
     @Override
-    public JsonNode getKoulutustoimijat(List<String> kuntaIdt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<OrganisaatioLaajaDto> getKoulutustoimijat(OrganisaatioQueryDto query) {
+        return new ArrayList<>();
     }
 
 }
