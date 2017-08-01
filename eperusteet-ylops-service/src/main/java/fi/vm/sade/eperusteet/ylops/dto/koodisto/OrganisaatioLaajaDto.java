@@ -13,23 +13,32 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+
 package fi.vm.sade.eperusteet.ylops.dto.koodisto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  *
- * @author mikkom
+ * @author nkala
  */
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OrganisaatioDto {
+public class OrganisaatioLaajaDto extends OrganisaatioDto {
     private String oid;
     private List<String> tyypit;
     private LokalisoituTekstiDto nimi;
+    private String kotipaikkaUri;
+    private String oppilaitosKoodi;
+    private String oppilaitostyyppi;
+    private Set<String> organisaatiotyypit;
+    private String parentOid;
+    private List<OrganisaatioLaajaDto> children;
+
 }

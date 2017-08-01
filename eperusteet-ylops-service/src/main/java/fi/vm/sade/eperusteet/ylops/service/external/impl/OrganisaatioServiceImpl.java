@@ -15,15 +15,20 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -63,6 +68,9 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     public static class Client {
         @Autowired
         RestClientFactory restClientFactory;
+
+        @Autowired
+        private DtoMapper dtoMapper;
 
         @Value("${cas.service.organisaatio-service:''}")
         private String serviceUrl;
@@ -140,9 +148,17 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                                     .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
         }
 
-        public JsonNode getKoulutustoimijat(String kunta) {
-            final String haku = HAKU + KUNTA_KRITEERI + kunta + KOULUTUSTOIMIJAT_KRITEERI;
-            return get(haku);
+        public List<OrganisaatioLaajaDto> getKoulutustoimijat(String kunta) {
+            final String haku = HIERARKIA_HAKU + KUNTA_KRITEERI + kunta;
+            JsonNode resultJson = get(haku);
+            List<OrganisaatioLaajaDto> result = new ArrayList<>();
+            for (JsonNode orgJson : resultJson) {
+                try {
+                    result.add(mapper.treeToValue(orgJson, OrganisaatioLaajaDto.class));
+                } catch (JsonProcessingException ex) {
+                }
+            }
+            return result;
         }
 
         public JsonNode getPeruskoulutByKuntaId(String kuntaId) {
@@ -203,16 +219,25 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     }
 
     @Override
-    public JsonNode getKoulutustoimijat(List<String> kuntaIdt) {
-        ArrayNode toimijat = JsonNodeFactory.instance.arrayNode();
-        kuntaIdt.stream()
-                .forEach(kuntaId -> {
-                    JsonNode koulutustoimijat = client.getKoulutustoimijat(kuntaId);
-                    if (koulutustoimijat != null) {
-                        toimijat.addAll((ArrayNode)koulutustoimijat);
-                    }
-                });
-        return toimijat;
+    public List<OrganisaatioLaajaDto> getKoulutustoimijat(OrganisaatioQueryDto query) {
+        Set<String> sallitutOppilaitostyypit = query.getOppilaitostyyppi().stream()
+                .map(id -> "oppilaitostyyppi_" + id.toString() + "#1")
+                .collect(Collectors.toSet());
+        List<OrganisaatioLaajaDto> result = query.getKunta().stream()
+                .map(kunta -> client.getKoulutustoimijat(kunta))
+                .map(orgs -> orgs.stream())
+                .flatMap(x -> x)
+                .filter(toimija -> toimija.getOrganisaatiotyypit() != null && toimija.getChildren() != null)
+                .filter(toimija -> toimija.getOrganisaatiotyypit().contains("KOULUTUSTOIMIJA"))
+                .map(toimija -> {
+                    toimija.setChildren(toimija.getChildren().stream()
+                        .filter(alitoimija -> sallitutOppilaitostyypit.contains(alitoimija.getOppilaitostyyppi()))
+                        .collect(Collectors.toList()));
+                    return toimija;
+                })
+                .filter(toimija -> !toimija.getChildren().isEmpty())
+                .collect(Collectors.toList());
+        return result;
     }
 
     @Override
