@@ -43,17 +43,18 @@ ylopsApp
     "koulutustyyppi_16": "perusopetus",
     "koulutustyyppi_6": "lisaopetus",
     "koulutustyyppi_20": "varhaiskasvatus",
+    "koulutustyyppi_17": "aipe",
     "koulutustyyppi_2": "lukiokoulutus"
   };
 
   const selectEsitkatseluURL = () => {
     let currentHost= $location.host() + "";
-    if (/localhost/.test(currentHost)) return  'localhost:9010/#/';
+    if (/localhost/.test(currentHost)) return  'http://localhost:9020/#/';
     else if (/testi|itest/.test(currentHost)) return 'https://testi-eperusteet.opintopolku.fi/#/';
     else return 'https://eperusteet.opintopolku.fi/#/';
   };
 
-  $scope.createUrl = function(model){
+  $scope.createUrl = function (model){
     return selectEsitkatseluURL() + $stateParams.lang + '/ops/' + model.id + "/" + koulutusTyypit[model.koulutustyyppi];
   };
 
