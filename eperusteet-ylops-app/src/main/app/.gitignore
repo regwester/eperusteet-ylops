@@ -2,3 +2,4 @@
 *.map
 .tscache
 .baseDir.ts
+typings
