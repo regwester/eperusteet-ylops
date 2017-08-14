@@ -27,7 +27,7 @@ ylopsApp
     }
 
     async function getKoulutustoimijat(kunnat: Array<string>) {
-        const oppilaitostyyppi = [19, 64, 99];
+        const oppilaitostyyppi = [19, 64];
         if (hasLukio()) {
             oppilaitostyyppi.push(15);
         }
