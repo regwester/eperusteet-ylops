@@ -27,12 +27,12 @@ ylopsApp
     }
 
     async function getKoulutustoimijat(kunnat: Array<string>) {
-        const oppilaitostyyppi = [];
+        const oppilaitostyyppi = [19, 64];
         if (hasLukio()) {
             oppilaitostyyppi.push(15);
         }
         else if ($scope.editableModel.koulutustyyppi === "koulutustyyppi_17") {
-            oppilaitostyyppi.push(11, 15);
+            oppilaitostyyppi.push(11, 15, 24, 63);
         }
         else {
             oppilaitostyyppi.push(11);
