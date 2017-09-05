@@ -14,177 +14,202 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-
 interface LukioLukkoParams {
-  opsId: number;
-  lukittavaOsa: string; /*
+    opsId: number;
+    lukittavaOsa: string /*
    OPS,
    OPPIAINE,
    LUKIOKURSSI,
    AIHEKOKONAISUUDET,
    AIHEKOKONAISUUS
-  */
-  id: number;
+  */;
+    id: number;
 }
 
 ylopsApp
-.directive('lukko', function() {
-  return {
-    template: '<div class="lukko" ng-class="{small: size === \'small\'}" ng-attr-title="{{tip}}"><div class="inner1"></div><div class="inner2"></div></div>',
-    restrict: 'AE',
-    scope: {
-      tip: '=',
-      size: '@'
-    }
-  };
-})
+    .directive("lukko", function() {
+        return {
+            template:
+                '<div class="lukko" ng-class="{small: size === \'small\'}" ng-attr-title="{{tip}}"><div class="inner1"></div><div class="inner2"></div></div>',
+            restrict: "AE",
+            scope: {
+                tip: "=",
+                size: "@"
+            }
+        };
+    })
+    .controller("LukittuSisaltoMuuttunutModalController", function($scope, $modalInstance) {
+        $scope.$on("$stateChangeSuccess", function() {
+            $modalInstance.dismiss();
+        });
+    })
+    // FIXME: Korjaa käyttämään promiseja
+    .service("Lukko", function(
+        OpetussuunnitelmanTekstitLukko,
+        OpetussuunnitelmanTekstitRakenneLukko,
+        OppiaineenVuosiluokkakokonaisuusLukko,
+        $q,
+        OpetusuunnitelmaLukioLukko,
+        Notifikaatiot,
+        $state,
+        Editointikontrollit,
+        $modal,
+        Kaanna,
+        $rootScope
+    ) {
+        var etag = null;
+        $rootScope.$on("$stateChangeSuccess", function() {
+            etag = null;
+        });
 
-.controller('LukittuSisaltoMuuttunutModalController', function($scope, $modalInstance) {
-  $scope.$on('$stateChangeSuccess', function() {
-    $modalInstance.dismiss();
-  });
-})
+        function muuttunutModal(resHeaders) {
+            $modal
+                .open({
+                    templateUrl: "views/common/modals/sisaltomuuttunut.html",
+                    controller: "LukittuSisaltoMuuttunutModalController"
+                })
+                .result.then(function() {
+                    etag = resHeaders.etag;
+                }, Editointikontrollit.cancelEditing);
+        }
 
-// FIXME: Korjaa käyttämään promiseja
-.service('Lukko', function(OpetussuunnitelmanTekstitLukko, OpetussuunnitelmanTekstitRakenneLukko,
-                           OppiaineenVuosiluokkakokonaisuusLukko, $q, OpetusuunnitelmaLukioLukko,
-                           Notifikaatiot, $state, Editointikontrollit, $modal, Kaanna, $rootScope) {
-  var etag = null;
-  $rootScope.$on('$stateChangeSuccess', function() {
-    etag = null;
-  });
+        function doLock(resource, params, cb = _.noop, failCb = _.noop) {
+            resource.save(
+                params,
+                {},
+                function(res, headers) {
+                    if (etag && headers().etag !== etag && Editointikontrollit.getEditMode()) {
+                        muuttunutModal(headers());
+                    } else {
+                        etag = headers().etag;
+                        cb(res);
+                    }
+                },
+                function(err) {
+                    Notifikaatiot.serverLukitus(err);
+                    failCb();
+                }
+            );
+        }
 
-  function muuttunutModal(resHeaders) {
-    $modal.open({
-      templateUrl: 'views/common/modals/sisaltomuuttunut.html',
-      controller: 'LukittuSisaltoMuuttunutModalController'
-    }).result.then(function() {
-      etag = resHeaders.etag;
-    }, Editointikontrollit.cancelEditing);
-  }
+        function resourceFromState() {
+            var resource = null;
 
-  function doLock(resource, params, cb = _.noop, failCb = _.noop) {
-    resource.save(params, {}, function(res, headers) {
-      if (etag && headers().etag !== etag && Editointikontrollit.getEditMode()) {
-        muuttunutModal(headers());
-      } else {
-        etag = headers().etag;
-        cb(res);
-      }
-    }, function(err) {
-      Notifikaatiot.serverLukitus(err);
-      failCb();
+            if (_.endsWith($state.current.name, ".tekstikappale")) {
+                resource = OpetussuunnitelmanTekstitLukko;
+            } else if (_.endsWith($state.current.name, "yksi.sisalto")) {
+                resource = OpetussuunnitelmanTekstitRakenneLukko;
+            } else if (
+                _.endsWith($state.current.name, "yksi.opetus.oppiaine.oppiaine") ||
+                _.endsWith($state.current.name, "yksi.opetus.uusioppiaine")
+            ) {
+                resource = OppiaineenVuosiluokkakokonaisuusLukko;
+            }
+
+            if (!resource) {
+                console.warn("Ei lukkoresurssia:", $state.current.name);
+            }
+            return resource;
+        }
+
+        function isLukittu(res) {
+            return res.haltijaOid && new Date() <= new Date(res.vanhentuu) && !res.oma;
+        }
+
+        function virheIlmo(res) {
+            return Kaanna.kaanna("lukitus-kayttajalla", { user: res.haltijaNimi || res.haltijaOid });
+        }
+
+        function checkLock(scope, params) {
+            var okCb = function(res) {
+                scope.lukkotiedot = res;
+                if (isLukittu(res)) {
+                    scope.lukkotiedot.lukittu = true;
+                    scope.lukkotiedot.tip = virheIlmo(res);
+                } else {
+                    scope.lukkotiedot.lukittu = false;
+                }
+            };
+            isLocked(params, okCb);
+        }
+
+        function isLocked(params, cb) {
+            var resource = resourceFromState();
+            resource.get(params, cb, Notifikaatiot.serverLukitus);
+        }
+
+        function lock(params, cb, failCb) {
+            doLock(resourceFromState(), params, cb, failCb);
+        }
+
+        function lockLukio(params: LukioLukkoParams, cb, fallCb) {
+            var d = $q.defer();
+            doLock(
+                OpetusuunnitelmaLukioLukko,
+                params,
+                function(r) {
+                    d.resolve(r);
+                    if (cb) {
+                        cb(r);
+                    }
+                },
+                function(fail) {
+                    d.reject(fail);
+                    if (fallCb) {
+                        fallCb(fail);
+                    }
+                }
+            );
+            return d.promise;
+        }
+
+        function unlockLukio(params: LukioLukkoParams, cb) {
+            var d = $q.defer();
+            OpetusuunnitelmaLukioLukko.delete(
+                params,
+                function(r) {
+                    d.resolve(r);
+                    if (cb) {
+                        cb(r);
+                    }
+                },
+                Notifikaatiot.serverLukitus
+            );
+            etag = null;
+            return d.promise;
+        }
+
+        function unlock(params, cb) {
+            var resource = resourceFromState();
+            resource.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
+            etag = null;
+        }
+
+        function lockRakenne(params, cb) {
+            doLock(OpetussuunnitelmanTekstitRakenneLukko, params, cb);
+        }
+
+        function unlockRakenne(params, cb) {
+            OpetussuunnitelmanTekstitRakenneLukko.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
+            etag = null;
+        }
+
+        function lockTekstikappale(params, cb) {
+            doLock(OpetussuunnitelmanTekstitLukko, params, cb);
+        }
+
+        function unlockTekstikappale(params, cb) {
+            OpetussuunnitelmanTekstitLukko.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
+            etag = null;
+        }
+
+        this.isLocked = checkLock;
+        this.lock = lock;
+        this.unlock = unlock;
+        this.lockLukio = lockLukio;
+        this.unlockLukio = unlockLukio;
+        this.lockRakenne = lockRakenne;
+        this.unlockRakenne = unlockRakenne;
+        this.lockTekstikappale = lockTekstikappale;
+        this.unlockTekstikappale = unlockTekstikappale;
     });
-  }
-
-  function resourceFromState() {
-    var resource = null;
-
-    if (_.endsWith($state.current.name, '.tekstikappale')) {
-      resource = OpetussuunnitelmanTekstitLukko;
-    } else if (_.endsWith($state.current.name, 'yksi.sisalto')) {
-      resource = OpetussuunnitelmanTekstitRakenneLukko;
-    } else if (_.endsWith($state.current.name, 'yksi.opetus.oppiaine.oppiaine') ||
-               _.endsWith($state.current.name, 'yksi.opetus.uusioppiaine')) {
-      resource = OppiaineenVuosiluokkakokonaisuusLukko;
-    }
-
-    if (!resource) {
-      console.warn('Ei lukkoresurssia:', $state.current.name);
-    }
-    return resource;
-  }
-
-  function isLukittu(res) {
-    return res.haltijaOid && new Date() <= new Date(res.vanhentuu) && !res.oma;
-  }
-
-  function virheIlmo(res) {
-    return Kaanna.kaanna('lukitus-kayttajalla', { user: res.haltijaNimi || res.haltijaOid });
-  }
-
-  function checkLock(scope, params) {
-    var okCb = function(res) {
-      scope.lukkotiedot = res;
-      if (isLukittu(res)) {
-        scope.lukkotiedot.lukittu = true;
-        scope.lukkotiedot.tip = virheIlmo(res);
-      } else {
-        scope.lukkotiedot.lukittu = false;
-      }
-    };
-    isLocked(params, okCb);
-  }
-
-  function isLocked(params, cb) {
-    var resource = resourceFromState();
-    resource.get(params, cb, Notifikaatiot.serverLukitus);
-  }
-
-  function lock(params, cb, failCb) {
-    doLock(resourceFromState(), params, cb, failCb);
-  }
-
-  function lockLukio(params:LukioLukkoParams, cb, fallCb) {
-    var d = $q.defer();
-    doLock(OpetusuunnitelmaLukioLukko, params, function(r) {
-      d.resolve(r);
-      if (cb) {
-        cb(r);
-      }
-    }, function(fail) {
-      d.reject(fail);
-      if (fallCb) {
-        fallCb(fail);
-      }
-    });
-    return d.promise;
-  }
-
-  function unlockLukio(params:LukioLukkoParams, cb) {
-    var d = $q.defer();
-    OpetusuunnitelmaLukioLukko.delete(params, function(r) {
-      d.resolve(r);
-      if (cb) {
-        cb(r);
-      }
-    }, Notifikaatiot.serverLukitus);
-    etag = null;
-    return d.promise;
-  }
-
-  function unlock(params, cb) {
-    var resource = resourceFromState();
-    resource.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
-    etag = null;
-  }
-
-  function lockRakenne(params, cb) {
-    doLock(OpetussuunnitelmanTekstitRakenneLukko, params, cb);
-  }
-
-  function unlockRakenne(params, cb) {
-    OpetussuunnitelmanTekstitRakenneLukko.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
-    etag = null;
-  }
-
-  function lockTekstikappale(params, cb) {
-    doLock(OpetussuunnitelmanTekstitLukko, params, cb);
-  }
-
-  function unlockTekstikappale(params, cb) {
-    OpetussuunnitelmanTekstitLukko.delete(params, cb || angular.noop, Notifikaatiot.serverLukitus);
-    etag = null;
-  }
-
-  this.isLocked = checkLock;
-  this.lock = lock;
-  this.unlock = unlock;
-  this.lockLukio = lockLukio;
-  this.unlockLukio = unlockLukio;
-  this.lockRakenne = lockRakenne;
-  this.unlockRakenne = unlockRakenne;
-  this.lockTekstikappale = lockTekstikappale;
-  this.unlockTekstikappale = unlockTekstikappale;
-});

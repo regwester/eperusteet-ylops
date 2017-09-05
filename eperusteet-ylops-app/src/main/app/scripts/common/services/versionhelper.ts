@@ -14,36 +14,32 @@
  * European Union Public Licence for more details.
  */
 
-/* global _ */
-'use strict';
-
 ylopsApp
-    .service('VersionHelper', function($modal, $state, $stateParams) {
-
-        this.historyView = (data) => {
-            $modal.open({
-                templateUrl: 'views/common/modals/versiohelper.html',
-                controller: 'HistoryViewController',
-                resolve: {
-                    versions: () => {
-                        return data;
+    .service("VersionHelper", function($modal, $state, $stateParams) {
+        this.historyView = data => {
+            $modal
+                .open({
+                    templateUrl: "views/common/modals/versiohelper.html",
+                    controller: "HistoryViewController",
+                    resolve: {
+                        versions: () => {
+                            return data;
+                        }
                     }
-                }
-            }).result.then((re) => {
-                let params = _.clone($stateParams);
-                const isOppiaine = _.contains($state.current.name, "root.opetussuunnitelmat.yksi.opetus.oppiaine");
-                params.versio = (re.openOld) ? (isOppiaine ? '' : '/') + re.versio.numero : "";
-                $state.go($state.current.name, params);
-            });
+                })
+                .result.then(re => {
+                    let params = _.clone($stateParams);
+                    const isOppiaine = _.contains($state.current.name, "root.opetussuunnitelmat.yksi.opetus.oppiaine");
+                    params.versio = re.openOld ? (isOppiaine ? "" : "/") + re.versio.numero : "";
+                    $state.go($state.current.name, params);
+                });
         };
-
     })
-
-    .controller('HistoryViewController', ($scope, versions, $modalInstance) => {
+    .controller("HistoryViewController", ($scope, versions, $modalInstance) => {
         $scope.versions = versions;
         $scope.close = (versio, current) => {
             if (versio) {
-                $modalInstance.close({versio: versio, openOld: !current});
+                $modalInstance.close({ versio: versio, openOld: !current });
             } else {
                 $modalInstance.dismiss();
             }

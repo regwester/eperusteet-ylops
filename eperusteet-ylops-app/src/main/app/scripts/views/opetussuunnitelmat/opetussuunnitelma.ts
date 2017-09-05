@@ -14,65 +14,80 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
-ylopsApp
-  .controller('OpetussuunnitelmaController', function ($scope, Editointikontrollit, $stateParams, Kielitarjonta,
-    $timeout, $state, OpetussuunnitelmaCRUD, opsModel, opsService, Notifikaatiot, Varmistusdialogi,
-    OpetussuunnitelmanTekstit) {
-
+ylopsApp.controller("OpetussuunnitelmaController", function(
+    $scope,
+    Editointikontrollit,
+    $stateParams,
+    Kielitarjonta,
+    $timeout,
+    $state,
+    OpetussuunnitelmaCRUD,
+    opsModel,
+    opsService,
+    Notifikaatiot,
+    Varmistusdialogi,
+    OpetussuunnitelmanTekstit
+) {
     $scope.rakenneEdit = false;
     $scope.model = opsModel;
 
     function fetch() {
-      opsService.refetch();
+        opsService.refetch();
     }
 
-    $scope.delete = function () {
-      Varmistusdialogi.dialogi({
-        otsikko: 'varmista-poisto',
-        primaryBtn: 'poista',
-        successCb: function () {
-          $scope.model.$delete({}, function () {
-            Notifikaatiot.onnistui('poisto-onnistui');
-            $timeout(function () {
-              $state.go('root.etusivu');
-            });
-          }, Notifikaatiot.serverCb);
-        }
-      })();
+    $scope.delete = function() {
+        Varmistusdialogi.dialogi({
+            otsikko: "varmista-poisto",
+            primaryBtn: "poista",
+            successCb: function() {
+                $scope.model.$delete(
+                    {},
+                    function() {
+                        Notifikaatiot.onnistui("poisto-onnistui");
+                        $timeout(function() {
+                            $state.go("root.etusivu");
+                        });
+                    },
+                    Notifikaatiot.serverCb
+                );
+            }
+        })();
     };
 
-    $scope.addTekstikappale = function () {
-      $state.go('root.opetussuunnitelmat.yksi.sisalto.tekstikappale', {tekstikappaleId: 'uusi'});
+    $scope.addTekstikappale = function() {
+        $state.go("root.opetussuunnitelmat.yksi.sisalto.tekstikappale", { tekstikappaleId: "uusi" });
     };
 
     function mapSisalto(root) {
-      return {
-        id: root.id,
-        lapset: _.map(root.lapset, mapSisalto)
-      };
+        return {
+            id: root.id,
+            lapset: _.map(root.lapset, mapSisalto)
+        };
     }
 
-    $scope.saveRakenne = function () {
-      var postdata = mapSisalto($scope.model.tekstit);
-      OpetussuunnitelmanTekstit.save({
-        opsId: $scope.model.id,
-        viiteId: $scope.model.tekstit.id
-      }, postdata, function () {
-        Notifikaatiot.onnistui('tallennettu-ok');
+    $scope.saveRakenne = function() {
+        var postdata = mapSisalto($scope.model.tekstit);
+        OpetussuunnitelmanTekstit.save(
+            {
+                opsId: $scope.model.id,
+                viiteId: $scope.model.tekstit.id
+            },
+            postdata,
+            function() {
+                Notifikaatiot.onnistui("tallennettu-ok");
+                $scope.rakenneEdit = false;
+                fetch();
+            },
+            Notifikaatiot.serverCb
+        );
+    };
+
+    $scope.editRakenne = function() {
+        $scope.rakenneEdit = true;
+    };
+
+    $scope.cancelRakenne = function() {
         $scope.rakenneEdit = false;
         fetch();
-      }, Notifikaatiot.serverCb);
     };
-
-    $scope.editRakenne = function () {
-      $scope.rakenneEdit = true;
-    };
-
-    $scope.cancelRakenne = function () {
-      $scope.rakenneEdit = false;
-      fetch();
-    };
-
-  });
+});

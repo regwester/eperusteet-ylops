@@ -14,38 +14,40 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
 ylopsApp
-  .directive('oikeustarkastelu', function (OpetussuunnitelmaOikeudetService) {
-    return {
-      restrict: 'A',
-      link: function postLink(scope: any, element, attrs: any) {
-        var oikeudet = scope.$eval(attrs.oikeustarkastelu);
-        if (!angular.isArray(oikeudet)) {
-          oikeudet = [oikeudet];
-        }
-        if (!_.any(oikeudet, function(o) {
-            return OpetussuunnitelmaOikeudetService.onkoOikeudet(o.target, o.permission);
-          })) {
-          element.hide();
-        }
-      }
-    };
-  })
-  .directive('kayttajaoikeustarkastelu', function (OpetussuunnitelmaOikeudetService) {
-    return {
-      restrict: 'A',
-      link: function postLink(scope: any, element, attrs: any) {
-        var oikeudet = scope.$eval(attrs.kayttajaoikeustarkastelu);
-        if (!angular.isArray(oikeudet)) {
-          oikeudet = [oikeudet];
-        }
-        if (!_.any(oikeudet, function(o) {
-            return OpetussuunnitelmaOikeudetService.onkoOikeudet(o.target, o.permission, true);
-          })) {
-          element.hide();
-        }
-      }
-    };
-  });
+    .directive("oikeustarkastelu", function(OpetussuunnitelmaOikeudetService) {
+        return {
+            restrict: "A",
+            link: function postLink(scope: any, element, attrs: any) {
+                var oikeudet = scope.$eval(attrs.oikeustarkastelu);
+                if (!angular.isArray(oikeudet)) {
+                    oikeudet = [oikeudet];
+                }
+                if (
+                    !_.any(oikeudet, function(o) {
+                        return OpetussuunnitelmaOikeudetService.onkoOikeudet(o.target, o.permission);
+                    })
+                ) {
+                    element.hide();
+                }
+            }
+        };
+    })
+    .directive("kayttajaoikeustarkastelu", function(OpetussuunnitelmaOikeudetService) {
+        return {
+            restrict: "A",
+            link: function postLink(scope: any, element, attrs: any) {
+                var oikeudet = scope.$eval(attrs.kayttajaoikeustarkastelu);
+                if (!angular.isArray(oikeudet)) {
+                    oikeudet = [oikeudet];
+                }
+                if (
+                    !_.any(oikeudet, function(o) {
+                        return OpetussuunnitelmaOikeudetService.onkoOikeudet(o.target, o.permission, true);
+                    })
+                ) {
+                    element.hide();
+                }
+            }
+        };
+    });

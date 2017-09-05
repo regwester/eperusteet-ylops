@@ -14,98 +14,97 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-/* global _ */
-
 ylopsApp
-  .directive('termistoteksti', function() {
-    return {
-      restrict: 'E',
-      scope: { teksti: '=' },
-      transclude: true,
-      template: '<div termisto-viitteet="teksti" ng-bind-html="teksti | kaanna | kuvalinkit | unsafe"></div>'
-    };
-  })
-  .directive('termistoViitteet', function ($stateParams, Kaanna, KasitteetService, $document, $timeout) {
-    var TERMI_MATCHER = 'abbr[data-viite]';
-    return {
-      restrict: 'A',
-      scope: {
-        model: '=termistoViitteet'
-      },
-      link: function (scope: any, element) {
-        scope.popovers = [];
+    .directive("termistoteksti", function() {
+        return {
+            restrict: "E",
+            scope: { teksti: "=" },
+            transclude: true,
+            template: '<div termisto-viitteet="teksti" ng-bind-html="teksti | kaanna | kuvalinkit | unsafe"></div>'
+        };
+    })
+    .directive("termistoViitteet", function($stateParams, Kaanna, KasitteetService, $document, $timeout) {
+        var TERMI_MATCHER = "abbr[data-viite]";
+        return {
+            restrict: "A",
+            scope: {
+                model: "=termistoViitteet"
+            },
+            link: function(scope: any, element) {
+                scope.popovers = [];
 
-        function destroy() {
-          element.find(TERMI_MATCHER).each(function () {
-            var jqEl: any = angular.element(this);
-            if (jqEl.popover) {
-              jqEl.popover('destroy');
-            }
-          });
-          scope.popovers = [];
-        }
-
-        function setup() {
-          element.find(TERMI_MATCHER).each(function () {
-            var jqEl: any = angular.element(this);
-            var viiteId: any = jqEl.attr('data-viite');
-
-            KasitteetService.getWithAvain($stateParams.id, viiteId).then(function(res) {
-              var popover = jqEl.popover({
-                placement: 'auto',
-                html: true,
-                title: Kaanna.kaanna('termin-selitys'),
-                trigger: 'click'
-              })
-              .on('show.bs.popover', function() {
-                var content = res ? Kaanna.kaanna(res.selitys) : Kaanna.kaanna('termia-ei-loytynyt');
-                popover.attr('data-content', content);
-                if (res) {
-                  popover.attr('data-original-title', Kaanna.kaanna(res.termi));
+                function destroy() {
+                    element.find(TERMI_MATCHER).each(function() {
+                        var jqEl: any = angular.element(this);
+                        if (jqEl.popover) {
+                            jqEl.popover("destroy");
+                        }
+                    });
+                    scope.popovers = [];
                 }
-                _.each(scope.popovers, function (po) {
-                  if (po !== popover) {
-                    po.popover('hide');
-                  }
+
+                function setup() {
+                    element.find(TERMI_MATCHER).each(function() {
+                        var jqEl: any = angular.element(this);
+                        var viiteId: any = jqEl.attr("data-viite");
+
+                        KasitteetService.getWithAvain($stateParams.id, viiteId).then(function(res) {
+                            var popover = jqEl
+                                .popover({
+                                    placement: "auto",
+                                    html: true,
+                                    title: Kaanna.kaanna("termin-selitys"),
+                                    trigger: "click"
+                                })
+                                .on("show.bs.popover", function() {
+                                    var content = res
+                                        ? Kaanna.kaanna(res.selitys)
+                                        : Kaanna.kaanna("termia-ei-loytynyt");
+                                    popover.attr("data-content", content);
+                                    if (res) {
+                                        popover.attr("data-original-title", Kaanna.kaanna(res.termi));
+                                    }
+                                    _.each(scope.popovers, function(po) {
+                                        if (po !== popover) {
+                                            po.popover("hide");
+                                        }
+                                    });
+                                    var thisPopover = popover.next(".popover");
+                                    var title = thisPopover.find(".popover-title");
+                                    var closer = angular.element('<span class="closer pull-right">&#x2715;</span>');
+                                    title.append(closer);
+                                    closer.on("click", function() {
+                                        popover.popover("hide");
+                                    });
+                                    scope.popovers.push(popover);
+                                });
+                        });
+                    });
+                }
+
+                // Click anywhere to close
+                $document.on("click", function(event) {
+                    if (element.find(event.target).length > 0) {
+                        return;
+                    }
+                    _.each(scope.popovers, function(popover) {
+                        popover.popover("hide");
+                    });
                 });
-                var thisPopover = popover.next('.popover');
-                var title = thisPopover.find('.popover-title');
-                var closer = angular.element(
-                  '<span class="closer pull-right">&#x2715;</span>');
-                title.append(closer);
-                closer.on('click', function () {
-                  popover.popover('hide');
+
+                function refresh() {
+                    $timeout(function() {
+                        destroy();
+                        setup();
+                    }, 500);
+                }
+
+                scope.$watch("model", refresh);
+                scope.$on("termisto:update", refresh);
+                scope.$on("$destroy", function() {
+                    $document.off("click");
+                    destroy();
                 });
-                scope.popovers.push(popover);
-              });
-            });
-          });
-        }
-
-        // Click anywhere to close
-        $document.on('click', function (event) {
-          if (element.find(event.target).length > 0) {
-            return;
-          }
-          _.each(scope.popovers, function (popover) {
-            popover.popover('hide');
-          });
-        });
-
-        function refresh() {
-          $timeout(function () {
-            destroy();
-            setup();
-          }, 500);
-        }
-
-        scope.$watch('model', refresh);
-        scope.$on('termisto:update', refresh);
-        scope.$on('$destroy', function () {
-          $document.off('click');
-          destroy();
-        });
-      },
-    };
-  });
+            }
+        };
+    });

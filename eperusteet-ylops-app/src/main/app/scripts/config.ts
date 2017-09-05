@@ -14,51 +14,49 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-/* global moment */
-
 ylopsApp
-  .config(function($urlRouterProvider, $sceProvider) {
-    $sceProvider.enabled(true);
-    $urlRouterProvider.when('', '/');
-    $urlRouterProvider.otherwise(function($injector, $location) {
+    .config(function($urlRouterProvider, $sceProvider) {
+        $sceProvider.enabled(true);
+        $urlRouterProvider.when("", "/");
+        $urlRouterProvider.otherwise(function($injector, $location) {
+            $injector.get("VirheService").setData({ path: $location.path() });
+            $injector.get("$state").go("root.virhe");
+        });
+    })
+    .config(function($translateProvider, $urlRouterProvider) {
+        var preferred = "fi";
+        $urlRouterProvider.when("/", "/" + preferred);
+        $translateProvider.useLoader("LokalisointiLoader");
+        $translateProvider.preferredLanguage(preferred);
+        moment.lang(preferred);
+    })
+    .config(function($httpProvider) {
+        $httpProvider.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+        $httpProvider.defaults.xsrfHeaderName = "CSRF";
+        $httpProvider.defaults.xsrfCookieName = "CSRF";
 
-    $injector.get('VirheService').setData({path: $location.path()});
-    $injector.get('$state').go('root.virhe');
+        $httpProvider.interceptors.push([
+            "$rootScope",
+            "$q",
+            "SpinnerService",
+            function($rootScope, $q, Spinner) {
+                return {
+                    request: function(request) {
+                        Spinner.enable();
+                        return request;
+                    },
+                    response: function(response) {
+                        Spinner.disable();
+                        return response || $q.when(response);
+                    },
+                    responseError: function(error) {
+                        Spinner.disable();
+                        return $q.reject(error);
+                    }
+                };
+            }
+        ]);
+    })
+    .config(function(uiSelectConfig) {
+        uiSelectConfig.theme = "bootstrap";
     });
-  })
-
-  .config(function($translateProvider, $urlRouterProvider) {
-    var preferred = 'fi';
-    $urlRouterProvider.when('/', '/' + preferred);
-    $translateProvider.useLoader('LokalisointiLoader');
-    $translateProvider.preferredLanguage(preferred);
-    moment.lang(preferred);
-  })
-
-  .config(function($httpProvider) {
-    $httpProvider.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-    $httpProvider.defaults.xsrfHeaderName = "CSRF";
-    $httpProvider.defaults.xsrfCookieName = "CSRF";
-
-    $httpProvider.interceptors.push(['$rootScope', '$q', 'SpinnerService', function($rootScope, $q, Spinner) {
-      return {
-        request: function(request) {
-          Spinner.enable();
-          return request;
-        },
-        response: function(response) {
-          Spinner.disable();
-          return response || $q.when(response);
-        },
-        responseError: function(error) {
-          Spinner.disable();
-          return $q.reject(error);
-        }
-      };
-    }]);
-  })
-
-  .config(function(uiSelectConfig) {
-    uiSelectConfig.theme = 'bootstrap';
-  });

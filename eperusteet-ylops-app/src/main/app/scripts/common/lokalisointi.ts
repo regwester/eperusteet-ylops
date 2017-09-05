@@ -1,21 +1,20 @@
-
-module Lokalisointi {
-    function joinString(a:l.Lokalisoitu, b:l.Lokalisoitu, key?:string):string {
+namespace Lokalisointi {
+    function joinString(a: l.Lokalisoitu, b: l.Lokalisoitu, key?: string): string {
         if (!a[key] && !b[key]) {
             return null;
         }
-        return (a[key] || '') + (b[key] || '');
+        return (a[key] || "") + (b[key] || "");
     }
 
-    function join(a:l.Lokalisoitu, b:l.Lokalisoitu) {
+    function join(a: l.Lokalisoitu, b: l.Lokalisoitu) {
         return <l.Lokalisoitu>{
-            fi: joinString(a, b, 'fi'),
-            sv: joinString(a, b, 'sv'),
-            en: joinString(a, b, 'en')
+            fi: joinString(a, b, "fi"),
+            sv: joinString(a, b, "sv"),
+            en: joinString(a, b, "en")
         };
     }
 
-    function forAll(constant:string):l.Lokalisoitu {
+    function forAll(constant: string): l.Lokalisoitu {
         return {
             fi: constant,
             sv: constant,
@@ -23,7 +22,7 @@ module Lokalisointi {
         };
     }
 
-    export function concat(...a:(l.Lokalisoitu | string)[]):Lokalisoitu {
+    export function concat(...a: (l.Lokalisoitu | string)[]): Lokalisoitu {
         if (a.length == 0) {
             return forAll(null);
         }
@@ -36,5 +35,3 @@ module Lokalisointi {
         return j;
     }
 }
-
-

@@ -14,37 +14,42 @@
  * European Union Public Licence for more details.
  */
 
-
-'use strict';
-
-ylopsApp.service('Profiili', function($http, $q) {
+ylopsApp.service("Profiili", function($http, $q) {
     var info: any = {};
 
     var prom = $q.defer();
     info.fetchPromise = prom.promise;
 
     if (!info.$casFetched) {
-      info.$casFetched = true;
-      $http
-        .get('/cas/me')
-        .success(function(res) {
-          if (res.oid) {
-            info.oid = res.oid;
-            info.lang = res.lang;
-            info.groups = res.groups;
-            prom.resolve();
-          }
-        })
-        .error(function() {
-           prom.reject();
-        });
+        info.$casFetched = true;
+        $http
+            .get("/cas/me")
+            .success(function(res) {
+                if (res.oid) {
+                    info.oid = res.oid;
+                    info.lang = res.lang;
+                    info.groups = res.groups;
+                    prom.resolve();
+                }
+            })
+            .error(function() {
+                prom.reject();
+            });
     }
 
     return {
-      // Perustiedot
-      oid: function() { return info.oid; },
-      lang: function() { return info.lang; },
-      groups: function() { return info.groups; },
-      profiili: function() { return info; }
+        // Perustiedot
+        oid: function() {
+            return info.oid;
+        },
+        lang: function() {
+            return info.lang;
+        },
+        groups: function() {
+            return info.groups;
+        },
+        profiili: function() {
+            return info;
+        }
     };
-  });
+});

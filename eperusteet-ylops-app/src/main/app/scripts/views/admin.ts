@@ -14,68 +14,74 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
+ylopsApp.controller("AdminController", function(
+    $scope,
+    ListaSorter,
+    Algoritmit,
+    OpsinTila,
+    Notifikaatiot,
+    opsStatistiikka,
+    opsit
+) {
+    $scope.sorter = ListaSorter.init($scope);
+    $scope.opsiLista = true;
+    $scope.tilat = ["luonnos", "valmis", "poistettu"];
+    $scope.items = opsit;
+    $scope.$$collapsestats = true;
 
-ylopsApp
-.controller('AdminController', function ($scope, ListaSorter, Algoritmit, OpsinTila, Notifikaatiot, opsStatistiikka, opsit) {
-  $scope.sorter = ListaSorter.init($scope);
-  $scope.opsiLista = true;
-  $scope.tilat = ['luonnos', 'valmis', 'poistettu'];
-  $scope.items = opsit;
-  $scope.$$collapsestats = true;
+    $scope.paginate = {
+        perPage: 10,
+        current: 1
+    };
 
-  $scope.paginate = {
-    perPage: 10,
-    current: 1
-  };
+    const updatePageinfo = () => {
+        $scope.lastVisible = Math.min(
+            ($scope.paginate.current - 1) * $scope.paginate.perPage + $scope.paginate.perPage,
+            $scope.filtered.length
+        );
+    };
 
-  const updatePageinfo = () => {
-    $scope.lastVisible = Math.min(($scope.paginate.current - 1) * $scope.paginate.perPage + $scope.paginate.perPage,
-      $scope.filtered.length);
-  };
-
-  $scope.search = {
-    term: '',
-    tilaRajain: '',
-    changed: function (value) {
-      $scope.paginate.current = 1;
-      $scope.filtered = _.filter($scope.items, function (item) {
-        if ($scope.search.tilaRajain && item.tila !== $scope.search.tilaRajain) {
-          return false;
+    $scope.search = {
+        term: "",
+        tilaRajain: "",
+        changed: function(value) {
+            $scope.paginate.current = 1;
+            $scope.filtered = _.filter($scope.items, function(item) {
+                if ($scope.search.tilaRajain && item.tila !== $scope.search.tilaRajain) {
+                    return false;
+                }
+                if (value) {
+                    var nameMatch = Algoritmit.match(value, item.nimi);
+                    var kuntaMatch = _.any(item.kunnat, function(kunta) {
+                        return Algoritmit.match(value, kunta.nimi);
+                    });
+                    return nameMatch || kuntaMatch;
+                }
+                return true;
+            });
+            updatePageinfo();
         }
-        if (value) {
-          var nameMatch = Algoritmit.match(value, item.nimi);
-          var kuntaMatch = _.any(item.kunnat, function (kunta) {
-            return Algoritmit.match(value, kunta.nimi);
-          });
-          return nameMatch || kuntaMatch;
-        }
-        return true;
-      });
-      updatePageinfo();
-    }
-  };
+    };
 
-  const koulutMap = _(opsit)
-    .map('organisaatiot')
-    .flatten()
-    .filter((org) => _.includes(org.tyypit, 'Oppilaitos'))
-    .indexBy('oid')
-    .value();
+    const koulutMap = _(opsit)
+        .map("organisaatiot")
+        .flatten()
+        .filter(org => _.includes(org.tyypit, "Oppilaitos"))
+        .indexBy("oid")
+        .value();
 
-  $scope.statsit = opsStatistiikka;
+    $scope.statsit = opsStatistiikka;
 
-  $scope.$watch('search.tilaRajain', function () {
-    $scope.search.changed($scope.search.term);
-  });
-
-  $scope.$watch('paginate.current', updatePageinfo);
-
-  $scope.palauta = (ops) => {
-    OpsinTila.palauta(ops, (res) => {
-      ops.tila = res.tila;
-      Notifikaatiot.onnistui('tallennettu-ok');
+    $scope.$watch("search.tilaRajain", function() {
+        $scope.search.changed($scope.search.term);
     });
-  };
 
+    $scope.$watch("paginate.current", updatePageinfo);
+
+    $scope.palauta = ops => {
+        OpsinTila.palauta(ops, res => {
+            ops.tila = res.tila;
+            Notifikaatiot.onnistui("tallennettu-ok");
+        });
+    };
 });

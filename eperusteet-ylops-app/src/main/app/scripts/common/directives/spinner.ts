@@ -14,64 +14,63 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-
 ylopsApp
-  .service('SpinnerService', function(SPINNER_WAIT, $rootScope, $timeout) {
-    var pyynnot = 0;
+    .service("SpinnerService", function(SPINNER_WAIT, $rootScope, $timeout) {
+        var pyynnot = 0;
 
-    function enableSpinner() {
-      ++pyynnot;
-      $timeout(function() {
-        if (pyynnot > 0) {
-          $rootScope.$emit('event:spinner_on');
-        }
-      }, SPINNER_WAIT);
-    }
-
-    function disableSpinner() {
-      --pyynnot;
-      if (pyynnot === 0) {
-        $rootScope.$emit('event:spinner_off');
-      }
-    }
-
-    return {
-      enable: enableSpinner,
-      disable: disableSpinner,
-      isSpinning: function() {
-        return pyynnot > 0;
-      }
-    };
-  })
-  .directive('spinner', function() {
-    return {
-      template: '<div id="global-spinner" ng-show="isSpinning">' +
-      '<span class="glyphicon glyphicon-refresh spin"></span>' +
-      '</div>',
-      restrict: 'E',
-      link: function($scope: any) {
-        $scope.isSpinning = false;
-
-        function spin(state) {
-          $scope.isSpinning = state;
+        function enableSpinner() {
+            ++pyynnot;
+            $timeout(function() {
+                if (pyynnot > 0) {
+                    $rootScope.$emit("event:spinner_on");
+                }
+            }, SPINNER_WAIT);
         }
 
-        $scope.$on('event:spinner_on', function() {
-          spin(true);
-        });
+        function disableSpinner() {
+            --pyynnot;
+            if (pyynnot === 0) {
+                $rootScope.$emit("event:spinner_off");
+            }
+        }
 
-        $scope.$on('event:spinner_off', function() {
-          spin(false);
-        });
-      }
-    };
-  })
-  .directive('smallSpinner', function () {
-    return {
-      restrict: 'EA',
-      link: function(scope, element) {
-        element.prepend('<img class="small-spinner" src="images/spinner-small.gif" alt="">');
-      }
-    };
-  });
+        return {
+            enable: enableSpinner,
+            disable: disableSpinner,
+            isSpinning: function() {
+                return pyynnot > 0;
+            }
+        };
+    })
+    .directive("spinner", function() {
+        return {
+            template:
+                '<div id="global-spinner" ng-show="isSpinning">' +
+                '<span class="glyphicon glyphicon-refresh spin"></span>' +
+                "</div>",
+            restrict: "E",
+            link: function($scope: any) {
+                $scope.isSpinning = false;
+
+                function spin(state) {
+                    $scope.isSpinning = state;
+                }
+
+                $scope.$on("event:spinner_on", function() {
+                    spin(true);
+                });
+
+                $scope.$on("event:spinner_off", function() {
+                    spin(false);
+                });
+            }
+        };
+    })
+    .directive("smallSpinner", function() {
+        return {
+            restrict: "EA",
+            link: function(scope, element) {
+                element.prepend('<img class="small-spinner" src="images/spinner-small.gif" alt="">');
+            }
+        };
+    });

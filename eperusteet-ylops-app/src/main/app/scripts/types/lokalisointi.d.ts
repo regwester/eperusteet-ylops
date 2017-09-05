@@ -1,5 +1,4 @@
-
-declare module Lokalisointi {
+declare namespace Lokalisointi {
     export interface Lokalisoitu {
         fi?: string;
         sv?: string;

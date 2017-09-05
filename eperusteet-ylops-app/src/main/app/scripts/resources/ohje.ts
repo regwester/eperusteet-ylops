@@ -14,21 +14,22 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-
 ylopsApp
-.service('OhjeResources', function (SERVICE_LOC) {
-  this.base = SERVICE_LOC + '/ohjeet';
-})
-
-.factory('OhjeCRUD', function ($resource, OhjeResources) {
-  return $resource(OhjeResources.base + '/:ohjeId', {
-    ohjeId: '@id'
-  }, {
-    forTekstikappale: {
-      method: 'GET',
-      url: OhjeResources.base + '/tekstikappale/:uuid',
-      isArray: true
-    }
-  });
-});
+    .service("OhjeResources", function(SERVICE_LOC) {
+        this.base = SERVICE_LOC + "/ohjeet";
+    })
+    .factory("OhjeCRUD", function($resource, OhjeResources) {
+        return $resource(
+            OhjeResources.base + "/:ohjeId",
+            {
+                ohjeId: "@id"
+            },
+            {
+                forTekstikappale: {
+                    method: "GET",
+                    url: OhjeResources.base + "/tekstikappale/:uuid",
+                    isArray: true
+                }
+            }
+        );
+    });

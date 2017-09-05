@@ -14,8 +14,6 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
 /**
  * Rajaus
  * callback: optional, called on change
@@ -23,48 +21,48 @@
  * size: 'small' or default
  * placeholder: optional, string or {{expression}}
  */
-ylopsApp
-  .directive('rajaus', function () {
+ylopsApp.directive("rajaus", function() {
     return {
-      template: '' +
-        '<div ng-class="applyClasses()">' +
-        '  <span class="input-group-addon" ng-class="{\'input-sm\': size === \'small\'}" icon-role="search"></span>' +
-        '  <input ng-change="changed()" ng-model="model" ng-model-options="{debounce: 200}" placeholder="{{ (placeholderstring || \'\') | kaanna }}"' +
-        '         class="form-control" ng-class="{\'input-sm\': size === \'small\'}" ui-keydown="{esc: \'clear($event)\'}">' +
-        '  <span ng-show="model" class="input-group-addon rajaus-clear" ng-class="{\'input-sm\': size === \'small\'}"' +
-        '        title="{{\'tyhjenna-rajaus-tooltip\'|kaanna}}" ng-click="clear()" icon-role="remove"></span>' +
-        '</div>',
-      restrict: 'EA',
-      scope: {
-        model: '=',
-        placeholder: '@',
-        callback: '&',
-        classes: '@?',
-        size: '@?'
-      },
-      controller: function ($scope) {
-        $scope.changed = function () {
-          $scope.callback({value: $scope.model});
-        };
-        $scope.applyClasses = function () {
-          var classes = 'input-group rajauslaatikko';
-          if ($scope.classes) {
-            classes += (' ' + $scope.classes);
-          }
-          return classes;
-        };
-        $scope.clear = function ($event) {
-          if ($event) {
-            $event.preventDefault();
-          }
-          $scope.model = '';
-          $scope.changed();
-        };
-      },
-      link: function (scope: any, element, attrs) {
-        attrs.$observe('placeholder', function (value) {
-          scope.placeholderstring = value;
-        });
-      }
+        template:
+            "" +
+            '<div ng-class="applyClasses()">' +
+            '  <span class="input-group-addon" ng-class="{\'input-sm\': size === \'small\'}" icon-role="search"></span>' +
+            '  <input ng-change="changed()" ng-model="model" ng-model-options="{debounce: 200}" placeholder="{{ (placeholderstring || \'\') | kaanna }}"' +
+            "         class=\"form-control\" ng-class=\"{'input-sm': size === 'small'}\" ui-keydown=\"{esc: 'clear($event)'}\">" +
+            '  <span ng-show="model" class="input-group-addon rajaus-clear" ng-class="{\'input-sm\': size === \'small\'}"' +
+            '        title="{{\'tyhjenna-rajaus-tooltip\'|kaanna}}" ng-click="clear()" icon-role="remove"></span>' +
+            "</div>",
+        restrict: "EA",
+        scope: {
+            model: "=",
+            placeholder: "@",
+            callback: "&",
+            classes: "@?",
+            size: "@?"
+        },
+        controller: function($scope) {
+            $scope.changed = function() {
+                $scope.callback({ value: $scope.model });
+            };
+            $scope.applyClasses = function() {
+                var classes = "input-group rajauslaatikko";
+                if ($scope.classes) {
+                    classes += " " + $scope.classes;
+                }
+                return classes;
+            };
+            $scope.clear = function($event) {
+                if ($event) {
+                    $event.preventDefault();
+                }
+                $scope.model = "";
+                $scope.changed();
+            };
+        },
+        link: function(scope: any, element, attrs) {
+            attrs.$observe("placeholder", function(value) {
+                scope.placeholderstring = value;
+            });
+        }
     };
-  });
+});

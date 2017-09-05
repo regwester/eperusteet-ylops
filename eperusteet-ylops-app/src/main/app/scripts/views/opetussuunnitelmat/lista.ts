@@ -14,79 +14,85 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
 ylopsApp
-  .service('ListaSorter', function (Utils, Kaanna) {
-    this.init = function ($scope) {
-      $scope.nimiSort = Utils.sort;
-      return {
-        key: 'luotu',
-        desc: true,
-        set: function (key) {
-          if (key === $scope.sorter.key) {
-            $scope.sorter.desc = !$scope.sorter.desc;
-          } else {
-            $scope.sorter.key = key;
-            $scope.sorter.desc = false;
-          }
-        },
-        fn: function (item) {
-          switch($scope.sorter.key) {
-            case 'nimi':
-              return Utils.sort(item);
-            case 'luotu':
-              return item.luotu;
-            case 'tila':
-              return Utils.nameSort(item, 'tila');
-            case 'koulutustoimija':
-              return _(item.organisaatiot)
-                .filter(function (org) {
-                  return _.includes(org.tyypit, 'Koulutustoimija');
-                })
-                .map(function (org) {
-                  return Kaanna.kaanna(org.nimi).toLowerCase();
-                })
-                .sortBy().first();
-          }
-        }
-      };
-    };
-  })
+    .service("ListaSorter", function(Utils, Kaanna) {
+        this.init = function($scope) {
+            $scope.nimiSort = Utils.sort;
+            return {
+                key: "luotu",
+                desc: true,
+                set: function(key) {
+                    if (key === $scope.sorter.key) {
+                        $scope.sorter.desc = !$scope.sorter.desc;
+                    } else {
+                        $scope.sorter.key = key;
+                        $scope.sorter.desc = false;
+                    }
+                },
+                fn: function(item) {
+                    switch ($scope.sorter.key) {
+                        case "nimi":
+                            return Utils.sort(item);
+                        case "luotu":
+                            return item.luotu;
+                        case "tila":
+                            return Utils.nameSort(item, "tila");
+                        case "koulutustoimija":
+                            return _(item.organisaatiot)
+                                .filter(function(org) {
+                                    return _.includes(org.tyypit, "Koulutustoimija");
+                                })
+                                .map(function(org) {
+                                    return Kaanna.kaanna(org.nimi).toLowerCase();
+                                })
+                                .sortBy()
+                                .first();
+                    }
+                }
+            };
+        };
+    })
+    .controller("OpetussuunnitelmatListaController", function(
+        $scope,
+        $state,
+        OpetussuunnitelmaCRUD,
+        Utils,
+        ListaSorter,
+        Notifikaatiot
+    ) {
+        // $scope.luontiOikeus = true;
+        // $scope.luontiOikeus = OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luku', true)
+        //   || OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luku', true);
+        $scope.opsMaxLimit = 9999;
+        $scope.opsMinLimit = 3;
 
-  .controller('OpetussuunnitelmatListaController', function ($scope, $state,
-    OpetussuunnitelmaCRUD, Utils, ListaSorter, Notifikaatiot) {
+        $scope.sorter = ListaSorter.init($scope);
+        $scope.opsiLista = true;
 
-    // $scope.luontiOikeus = true;
-    // $scope.luontiOikeus = OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luku', true)
-    //   || OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luku', true);
-    $scope.opsMaxLimit = 9999;
-    $scope.opsMinLimit = 3;
+        $scope.items = OpetussuunnitelmaCRUD.query(
+            {},
+            function(res) {
+                $scope.items = _.filter(res, function(item) {
+                    return item.tila !== "poistettu";
+                });
+                $scope.items.$resolved = true;
+            },
+            Notifikaatiot.serverCb
+        );
 
-    $scope.sorter = ListaSorter.init($scope);
-    $scope.opsiLista = true;
+        $scope.opsLimit = $state.is("root.etusivu") ? $scope.opsMinLimit : $scope.opsMaxLimit;
 
-    $scope.items = OpetussuunnitelmaCRUD.query({}, function (res) {
-      $scope.items = _.filter(res, function (item) {
-        return item.tila !== 'poistettu';
-      });
-      $scope.items.$resolved = true;
-    }, Notifikaatiot.serverCb);
+        $scope.showAll = function() {
+            $scope.opsLimit = $scope.opsMaxLimit;
+        };
 
-    $scope.opsLimit = $state.is('root.etusivu') ? $scope.opsMinLimit : $scope.opsMaxLimit;
-
-    $scope.showAll = function() {
-      $scope.opsLimit = $scope.opsMaxLimit;
-    };
-
-    $scope.showLess = function() {
-      $scope.opsLimit = $scope.opsMinLimit;
-    };
-  })
-
-  .controller('TiedotteetController', function ($scope) {
-    $scope.tiedotteet = [
-      {nimi: {fi: 'Tiedote 1'}, muokattu: '14.1.2015'},
-      {nimi: {fi: 'Jotain tärkeää on tapahtunut jossain'}, muokattu: '12.1.2015'}
-    ];
-  });
+        $scope.showLess = function() {
+            $scope.opsLimit = $scope.opsMinLimit;
+        };
+    })
+    .controller("TiedotteetController", function($scope) {
+        $scope.tiedotteet = [
+            { nimi: { fi: "Tiedote 1" }, muokattu: "14.1.2015" },
+            { nimi: { fi: "Jotain tärkeää on tapahtunut jossain" }, muokattu: "12.1.2015" }
+        ];
+    });

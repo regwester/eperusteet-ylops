@@ -14,23 +14,20 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
-ylopsApp
-    .directive('jquerySpinner', () => {
-        return {
-            restrict: 'A',
-            require: 'ngModel',
-            link: (scope, element, attrs, c:any) => {
-                var $e = <any>$(element);
-                $e.spinner({
-                    spin: (event, ui) => c.$setViewValue(ui.value),
-                    change: () => {
-                        var value = parseFloat((''+$e.val()).trim().replace(',', '.'));
-                        $e.val(value);
-                        c.$setViewValue(value);
-                    }
-                });
-            }
+ylopsApp.directive("jquerySpinner", () => {
+    return {
+        restrict: "A",
+        require: "ngModel",
+        link: (scope, element, attrs, c: any) => {
+            var $e = <any>$(element);
+            $e.spinner({
+                spin: (event, ui) => c.$setViewValue(ui.value),
+                change: () => {
+                    var value = parseFloat(("" + $e.val()).trim().replace(",", "."));
+                    $e.val(value);
+                    c.$setViewValue(value);
+                }
+            });
         }
-    });
+    };
+});

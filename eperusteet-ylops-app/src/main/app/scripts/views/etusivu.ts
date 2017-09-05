@@ -14,34 +14,32 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
 ylopsApp
-    .controller('UusiOpsController', function ($scope, $state, OpsListaService, Utils) {
+    .controller("UusiOpsController", function($scope, $state, OpsListaService, Utils) {
         $scope.pohja = {
             active: 0,
             model: null
         };
 
-        $scope.addNew = function () {
+        $scope.addNew = function() {
             var pohjaId = null;
-            if ($scope.pohja.active === '1' && $scope.pohja.model) {
+            if ($scope.pohja.active === "1" && $scope.pohja.model) {
                 pohjaId = $scope.pohja.model.id;
             }
-            $state.go('root.opetussuunnitelmat.yksi.tiedot', {id: 'uusi', pohjaId: pohjaId});
+            $state.go("root.opetussuunnitelmat.yksi.tiedot", { id: "uusi", pohjaId: pohjaId });
         };
 
         $scope.pohjat = OpsListaService.query(false);
         $scope.sorter = Utils.sort;
     })
-    .controller('EtusivuController', function ($scope, Oikeudet, $state, OpetussuunnitelmaOikeudetService) {
+    .controller("EtusivuController", function($scope, Oikeudet, $state, OpetussuunnitelmaOikeudetService) {
         $scope.isVirkailija = Oikeudet.isVirkailija;
 
-        $scope.hasLuontiOps = OpetussuunnitelmaOikeudetService.onkoOikeudet('opetussuunnitelma', 'luonti', true);
-        $scope.hasLuontiPohja = OpetussuunnitelmaOikeudetService.onkoOikeudet('pohja', 'luonti', true);
+        $scope.hasLuontiOps = OpetussuunnitelmaOikeudetService.onkoOikeudet("opetussuunnitelma", "luonti", true);
+        $scope.hasLuontiPohja = OpetussuunnitelmaOikeudetService.onkoOikeudet("pohja", "luonti", true);
         $scope.hasLuontiBox = $scope.hasLuontiOps || $scope.hasLuontiPohja;
 
-        $scope.addNewPohja = function () {
-            $state.go('root.pohjat.yksi.tiedot', {pohjaId: 'uusi'});
+        $scope.addNewPohja = function() {
+            $state.go("root.pohjat.yksi.tiedot", { pohjaId: "uusi" });
         };
     });

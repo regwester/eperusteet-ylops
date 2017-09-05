@@ -14,65 +14,65 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
+ylopsApp.service("Oikeudet", function($http, $q, $rootScope, $window, Kayttaja) {
+    var isVirkailija = false;
+    var info: any = {};
+    var GROUP = "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001";
 
-ylopsApp
-.service('Oikeudet', function($http, $q, $rootScope, $window, Kayttaja) {
-  var isVirkailija = false;
-  var info: any = {};
-  var GROUP = 'APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001';
+    this.setVirkailija = function(value) {
+        isVirkailija = !!value;
+    };
 
-  this.setVirkailija = function (value) {
-    isVirkailija = !!value;
-  };
+    this.isVirkailija = function() {
+        return isVirkailija;
+    };
 
-  this.isVirkailija = function () {
-    return isVirkailija;
-  };
+    this.isLocal = function() {
+        return $window.location.host.indexOf("localhost") === 0;
+    };
 
-  this.isLocal = function () {
-    return $window.location.host.indexOf('localhost') === 0;
-  };
-
-  function setOikeudet() {
-    isVirkailija = _.contains(info.groups, GROUP);
-  }
-
-  function getCasTiedot() {
-    var deferred = $q.defer();
-    if (!info.$casFetched) {
-      info.$casFetched = true;
-      $http.get('/cas/me').success(function(res) {
-        if (res.oid) {
-          info.oid = res.oid;
-          info.lang = res.lang;
-          info.groups = res.groups;
-          setOikeudet();
-        }
-        deferred.resolve(res);
-        $rootScope.$broadcast('fetched:casTiedot');
-      }).error(function() {
-        deferred.resolve({});
-        $rootScope.$broadcast('fetched:casTiedot');
-      });
-    } else {
-      deferred.resolve(info);
+    function setOikeudet() {
+        isVirkailija = _.contains(info.groups, GROUP);
     }
-    return deferred.promise;
-  }
 
-  function getKayttaja() {
-    return Kayttaja.get({}, function (res) {
-      _.each(['oidHenkilo', 'kayttajanimi', 'kieliKoodi'], function (key) {
-        info[key] = res[key];
-      });
-      info.oid = res.oidHenkilo;
-    });
-  }
+    function getCasTiedot() {
+        var deferred = $q.defer();
+        if (!info.$casFetched) {
+            info.$casFetched = true;
+            $http
+                .get("/cas/me")
+                .success(function(res) {
+                    if (res.oid) {
+                        info.oid = res.oid;
+                        info.lang = res.lang;
+                        info.groups = res.groups;
+                        setOikeudet();
+                    }
+                    deferred.resolve(res);
+                    $rootScope.$broadcast("fetched:casTiedot");
+                })
+                .error(function() {
+                    deferred.resolve({});
+                    $rootScope.$broadcast("fetched:casTiedot");
+                });
+        } else {
+            deferred.resolve(info);
+        }
+        return deferred.promise;
+    }
 
-  this.getCasTiedot = getCasTiedot;
-  this.oid = function () {
-    return info.oid;
-  };
-  this.getKayttaja = getKayttaja;
+    function getKayttaja() {
+        return Kayttaja.get({}, function(res) {
+            _.each(["oidHenkilo", "kayttajanimi", "kieliKoodi"], function(key) {
+                info[key] = res[key];
+            });
+            info.oid = res.oidHenkilo;
+        });
+    }
+
+    this.getCasTiedot = getCasTiedot;
+    this.oid = function() {
+        return info.oid;
+    };
+    this.getKayttaja = getKayttaja;
 });
