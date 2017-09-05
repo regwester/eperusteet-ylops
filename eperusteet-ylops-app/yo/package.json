@@ -2,6 +2,15 @@
   "name": "yo",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "6.11.2"
+  },
+  "scripts": {
+    "dev": "grunt dev",
+    "build": "grunt build",
+    "test": "grunt test",
+    "prettier": "prettier --config .prettierrc --write ../src/main/app/**/*.{ts,json,scss}"
+  },
   "devDependencies": {
     "bower": "1.8.0",
     "connect-livereload": "0.6.0",
@@ -40,12 +49,6 @@
     "node-sass": "4.1.1",
     "serve-static": "1.11.1",
     "time-grunt": "1.4.0",
-    "typescript": "2.2.0"
-  },
-  "engines": {
-    "node": "6.x.x"
-  },
-  "scripts": {
-    "test": "grunt test"
+    "typescript": "2.5.2"
   }
 }
