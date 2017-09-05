@@ -14,119 +14,151 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-/*global _*/
-
 ylopsApp
-.controller('OpetussuunnitelmaPoistetutController', (tekstiKappaleet, oppiaineet, $scope, OpetussuunnitelmanTekstit, $stateParams,
-                                                     $state, Algoritmit, $filter, OppiaineService, $modal, OpetussuunnitelmaCRUD,
-                                                     Notifikaatiot, EperusteetKayttajatiedot, $q) => {
+    .controller(
+        "OpetussuunnitelmaPoistetutController",
+        (
+            tekstiKappaleet,
+            oppiaineet,
+            $scope,
+            OpetussuunnitelmanTekstit,
+            $stateParams,
+            $state,
+            Algoritmit,
+            $filter,
+            OppiaineService,
+            $modal,
+            OpetussuunnitelmaCRUD,
+            Notifikaatiot,
+            EperusteetKayttajatiedot,
+            $q
+        ) => {
+            $scope.kaikki = [];
+            $scope.currentPage = 1;
+            $scope.itemsPerPage = 10;
+            $scope.haku = "";
 
-  $scope.kaikki = [];
-  $scope.currentPage = 1;
-  $scope.itemsPerPage = 10;
-  $scope.haku = '';
+            const isLukio = () =>
+                _.any(
+                    ["koulutustyyppi_2", "koulutustyyppi_23", "koulutustyyppi_14"],
+                    i => i === $scope.model.koulutustyyppi
+                );
+            const addItems = (items, type) => {
+                let reqs = [];
+                _.forEach(_.uniq(items, "luoja"), i =>
+                    reqs.push(EperusteetKayttajatiedot.get({ oid: i.luoja }).$promise)
+                );
+                reqs.push();
 
-  const isLukio = () => _.any(['koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_14'], (i) => i === $scope.model.koulutustyyppi);
-  const addItems = (items, type) => {
+                $q.all(reqs).then(values => {
+                    _.forEach(items, item => {
+                        const henkilo = _.find(values, i => i.oidHenkilo === item.luoja);
+                        const nimi = _.isEmpty(henkilo)
+                            ? " "
+                            : (henkilo.kutsumanimi || "") + " " + (henkilo.sukunimi || "");
+                        item.luoja = nimi === " " ? item.luoja : nimi;
+                    });
+                });
 
-    let reqs = [];
-    _.forEach(_.uniq(items, 'luoja'), (i) => reqs.push(EperusteetKayttajatiedot.get({oid: i.luoja}).$promise));
-    reqs.push();
+                _.forEach(items, item => {
+                    item.type = type;
+                    $scope.kaikki.push(item);
+                });
+            };
 
-    $q.all(reqs).then((values) => {
-      _.forEach(items, (item) => {
-        const henkilo = _.find(values, (i) => i.oidHenkilo === item.luoja);
-        const nimi = _.isEmpty(henkilo) ? ' ': (henkilo.kutsumanimi || '') + ' ' + (henkilo.sukunimi || '');
-        item.luoja = nimi === ' ' ? item.luoja : nimi;
-      });
-    });
+            addItems(tekstiKappaleet, "teksti");
+            addItems(oppiaineet, "oppiaine");
 
-    _.forEach( items, (item) => {
-      item.type= type;
-      $scope.kaikki.push(item);
-    });
-  };
+            $scope.kaikki = _.sortBy($scope.kaikki, "luotu");
+            $scope.poistetut = $scope.kaikki;
 
-  addItems(tekstiKappaleet, "teksti");
-  addItems(oppiaineet, "oppiaine");
+            $scope.$watch("haku", searchString => {
+                if (_.isEmpty(searchString)) {
+                    $scope.poistetut = $scope.kaikki;
+                    return;
+                }
 
-  $scope.kaikki = _.sortBy($scope.kaikki, 'luotu');
-  $scope.poistetut = $scope.kaikki;
+                $scope.poistetut = _.filter($scope.kaikki, item => {
+                    const matchRemover = Algoritmit.match(searchString, item.luoja);
+                    const matchRemovedDate = Algoritmit.match(searchString, $filter("aikaleima")(item.luotu, "date"));
+                    const matchTextTitle = Algoritmit.match(searchString, item.nimi);
+                    return matchRemover || matchRemovedDate || matchTextTitle;
+                });
+            });
 
-  $scope.$watch('haku', (searchString) => {
-    if(_.isEmpty(searchString)){
-      $scope.poistetut = $scope.kaikki;
-      return;
-    }
+            $scope.clearSearch = () => {
+                $scope.haku = "";
+            };
 
-    $scope.poistetut = _.filter($scope.kaikki, (item) => {
-      const matchRemover = Algoritmit.match(searchString, item.luoja);
-      const matchRemovedDate = Algoritmit.match(searchString, $filter('aikaleima')(item.luotu, 'date'));
-      const matchTextTitle = Algoritmit.match(searchString, item.nimi);
-      return matchRemover || matchRemovedDate || matchTextTitle;
-    });
-  });
+            const palautaOppiaine = params => {
+                $modal
+                    .open({
+                        templateUrl: "views/common/modals/oppiainePalautus.html",
+                        controller: "OppiaineModalController",
+                        size: "lg",
+                        resolve: {
+                            ops: () => {
+                                return OpetussuunnitelmaCRUD.get({ opsId: params.opsId }, {}).$promise;
+                            }
+                        }
+                    })
+                    .result.then(palautettava => {
+                        params.oppimaara =
+                            palautettava.type === "oppimaara" ? palautettava.oppimaara.oppiaine.id : null;
+                        OppiaineService.palauta(params, {}).then(
+                            palautettu => {
+                                if (isLukio()) {
+                                    $state.go(
+                                        "root.opetussuunnitelmat.lukio.opetus.oppiaine",
+                                        {
+                                            id: $stateParams.id,
+                                            oppiaineId: palautettu.id
+                                        },
+                                        { reload: true, notify: true }
+                                    );
+                                } else {
+                                    $state.go(
+                                        "root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine",
+                                        {
+                                            oppiaineId: palautettu.id,
+                                            vlkId: palautettu.vlkId,
+                                            oppiaineTyyppi: palautettu.tyyppi
+                                        },
+                                        { reload: true, notify: true }
+                                    );
+                                }
+                            },
+                            () => {
+                                Notifikaatiot.fataali("palautus-epaonnistui");
+                            }
+                        );
+                    });
+            };
 
-  $scope.clearSearch = () => {
-    $scope.haku = '';
-  };
-
-  const palautaOppiaine = (params) => {
-    $modal.open({
-      templateUrl: 'views/common/modals/oppiainePalautus.html',
-      controller: 'OppiaineModalController',
-      size: 'lg',
-      resolve: {
-        ops: () => {
-          return OpetussuunnitelmaCRUD.get({opsId: params.opsId}, {}).$promise;
+            $scope.returnVersion = (id, type) => {
+                const params = {
+                    opsId: parseInt($stateParams.id),
+                    id: id
+                };
+                if (type === "oppiaine") {
+                    palautaOppiaine(params);
+                } else if (type === "teksti") {
+                    OpetussuunnitelmanTekstit.palauta(params, {}).$promise.then(() => {
+                        $state.go("root.opetussuunnitelmat.yksi.sisalto", { reload: true });
+                    });
+                }
+            };
         }
-      }
-    }).result.then((palautettava) => {
-      params.oppimaara = (palautettava.type==="oppimaara" ? palautettava.oppimaara.oppiaine.id: null);
-      OppiaineService.palauta(params, {}).then((palautettu) => {
-        if(isLukio()){
-          $state.go('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
-            id: $stateParams.id,
-            oppiaineId: palautettu.id
-          }, { reload: true, notify: true });
-        }else{
-          $state.go('root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine', {
-            oppiaineId: palautettu.id,
-            vlkId: palautettu.vlkId,
-            oppiaineTyyppi: palautettu.tyyppi
-          }, { reload: true, notify: true });
-        }
-      }, () => {
-        Notifikaatiot.fataali('palautus-epaonnistui');
-      });
+    )
+    .controller("OppiaineModalController", (ops, $scope, OppiaineService, $modalInstance) => {
+        $scope.koosteiset = _.filter(ops.oppiaineet, "oppiaine.koosteinen");
+        $scope.palauta = {
+            type: "oppiaine"
+        };
+
+        $scope.isValid = () => {
+            return $scope.palauta.type === "oppimaara" ? !_.isEmpty($scope.palauta.oppimaara) : true;
+        };
+        $scope.ok = () => $modalInstance.close($scope.palauta);
+        $scope.peruuta = () => $modalInstance.dismiss();
     });
-  };
-
-  $scope.returnVersion = (id, type) => {
-    const params = {
-      opsId: parseInt($stateParams.id),
-      id: id,
-    };
-    if (type === "oppiaine") {
-      palautaOppiaine(params);
-    } else if (type === "teksti") {
-      OpetussuunnitelmanTekstit.palauta( params, {}).$promise.then( () => {
-        $state.go('root.opetussuunnitelmat.yksi.sisalto', { reload: true });
-      });
-    }
-  }
-
-})
-
-.controller('OppiaineModalController', (ops, $scope, OppiaineService, $modalInstance) => {
-  $scope.koosteiset = _.filter(ops.oppiaineet, 'oppiaine.koosteinen');
-  $scope.palauta = {
-    type: 'oppiaine'
-  };
-
-  $scope.isValid = () => { return ( $scope.palauta.type === 'oppimaara' ) ? !_.isEmpty($scope.palauta.oppimaara) : true };
-  $scope.ok = () => $modalInstance.close($scope.palauta);
-  $scope.peruuta = () => $modalInstance.dismiss();
-});
-

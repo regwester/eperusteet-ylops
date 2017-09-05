@@ -14,61 +14,59 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-/* global _, angular */
-
 interface GenericTreeNode {
-    $$nodeParent?: GenericTreeNode
-    $$depth?: number
-    $$hasChildren?: boolean
-    $$collapsed?: boolean
+    $$nodeParent?: GenericTreeNode;
+    $$depth?: number;
+    $$hasChildren?: boolean;
+    $$collapsed?: boolean;
 }
 interface VanillaGenericTreeConfig<NodeType extends GenericTreeNode> {
-    root: () => IPromise<NodeType>
-    children: (node:NodeType) => NodeType[]
-    useUiSortable: () => boolean
-    acceptDrop?: (from:NodeType, to:NodeType) => boolean
-    sortableClass?: (node:NodeType) => string
-    template?: (node:NodeType) => JQuery
-    hidden: (node:NodeType) => boolean
-    collapsed: (node:NodeType) => boolean
-    extension: (node:NodeType, $scope:any) => void
+    root: () => IPromise<NodeType>;
+    children: (node: NodeType) => NodeType[];
+    useUiSortable: () => boolean;
+    acceptDrop?: (from: NodeType, to: NodeType) => boolean;
+    sortableClass?: (node: NodeType) => string;
+    template?: (node: NodeType) => JQuery;
+    hidden: (node: NodeType) => boolean;
+    collapsed: (node: NodeType) => boolean;
+    extension: (node: NodeType, $scope: any) => void;
 }
 interface SortableConfig {
-    connectWith?: string
-    handle?: string
-    placeholder?: string
-    cursorAt?: { top?: number | string, left?: number | string, bottom?: number | string, right?: number | string }
-    helper?: string
-    option?: string
-    cursor?: string
-    delay?: number
-    disabled?: boolean
-    tolerance?: string
-    update?: (event:any, ui:any) => void
+    connectWith?: string;
+    handle?: string;
+    placeholder?: string;
+    cursorAt?: { top?: number | string; left?: number | string; bottom?: number | string; right?: number | string };
+    helper?: string;
+    option?: string;
+    cursor?: string;
+    delay?: number;
+    disabled?: boolean;
+    tolerance?: string;
+    update?: (event: any, ui: any) => void;
 }
 
-angular.module('eGenericTree', [])
-    .directive('genericTreeNode', function ($compile, $templateCache) {
+angular
+    .module("eGenericTree", [])
+    .directive("genericTreeNode", function($compile, $templateCache) {
         return {
-            restrict: 'E',
+            restrict: "E",
             replace: true,
-            template: '',
+            template: "",
             scope: {
-                node: '=',
-                treeProvider: '=',
-                uiSortableConfig: '='
+                node: "=",
+                treeProvider: "=",
+                uiSortableConfig: "="
             },
-            controller: function ($scope) {
+            controller: function($scope) {
                 $scope.treeProvider.extension($scope.node, $scope);
-                $scope.isHidden = function (node) {
+                $scope.isHidden = function(node) {
                     return $scope.treeProvider.hidden(node);
                 };
             },
-            link: function (scope: any, element) {
+            link: function(scope: any, element) {
                 function setContext(node, children) {
                     node.$$hasChildren = !_.isEmpty(children);
-                    _.each(children, function (cnode) {
+                    _.each(children, function(cnode) {
                         cnode.$$depth = node.$$depth + 1;
                         cnode.$$nodeParent = node;
                     });
@@ -76,83 +74,83 @@ angular.module('eGenericTree', [])
 
                 function getTemplate(node) {
                     var template = scope.treeProvider.template ? scope.treeProvider.template(node) : undefined;
-                    return $templateCache.get(template) || template || '<pre>{{ node | json }}</pre>';
+                    return $templateCache.get(template) || template || "<pre>{{ node | json }}</pre>";
                 }
 
                 var node = scope.node;
-                var children = scope.treeProvider.children(node)
-                    .then(function (children) {
-                        setContext(node, children);
-                        var template = '';
-                        template += getTemplate(node);
-                        if (children) {
-                            template += '<div ui-sortable="uiSortableConfig" class="' +
-                                scope.treeProvider.sortableClass(node) +
-                                ' recursivetree" ng-model="children">';
-                            scope.children = children;
-                            scope.parentNode = node;
-                            if (!_.isEmpty(children)) {
-                                template += '' +
-                                    '<div ng-repeat="node in children">' +
-                                    '    <generic-tree-node node="node" ng-show="!isHidden(node)" ui-sortable-config="uiSortableConfig"' +
-                                    '                       tree-provider="treeProvider"></generic-tree-node>' +
-                                    '</div>';
-                            }
-                            template += '</div>';
+                var children = scope.treeProvider.children(node).then(function(children) {
+                    setContext(node, children);
+                    var template = "";
+                    template += getTemplate(node);
+                    if (children) {
+                        template +=
+                            '<div ui-sortable="uiSortableConfig" class="' +
+                            scope.treeProvider.sortableClass(node) +
+                            ' recursivetree" ng-model="children">';
+                        scope.children = children;
+                        scope.parentNode = node;
+                        if (!_.isEmpty(children)) {
+                            template +=
+                                "" +
+                                '<div ng-repeat="node in children">' +
+                                '    <generic-tree-node node="node" ng-show="!isHidden(node)" ui-sortable-config="uiSortableConfig"' +
+                                '                       tree-provider="treeProvider"></generic-tree-node>' +
+                                "</div>";
                         }
-                        var templateEl = angular.element(template);
-                        if (element.children().length) {
-                            angular.element(element.children()[0]).replaceWith(templateEl);
-                        } else {
-                            element.append(templateEl);
-                        }
-                        $compile(templateEl)(scope);
-                    });
+                        template += "</div>";
+                    }
+                    var templateEl = angular.element(template);
+                    if (element.children().length) {
+                        angular.element(element.children()[0]).replaceWith(templateEl);
+                    } else {
+                        element.append(templateEl);
+                    }
+                    $compile(templateEl)(scope);
+                });
             }
         };
     })
-    .directive('genericTree', function ($compile, $log) {
+    .directive("genericTree", function($compile, $log) {
         return {
-            restrict: 'E',
+            restrict: "E",
             replace: true,
-            template: '',
+            template: "",
             scope: {
-                treeProvider: '=',
-                uiSortableConfig: '=?'
+                treeProvider: "=",
+                uiSortableConfig: "=?"
             },
-            controller: function ($scope) {
+            controller: function($scope) {
                 function run(provider) {
                     // Sane defaults
-                    provider.sortableClass = provider.sortableClass || _.constant('');
+                    provider.sortableClass = provider.sortableClass || _.constant("");
                     provider.acceptDrop = provider.acceptDrop || _.constant(true);
 
                     $scope.tprovider = provider;
-                    provider.root()
-                        .then(function (root) {
+                    provider
+                        .root()
+                        .then(function(root) {
                             $scope.root = root;
                             return provider.children(root);
                         })
-                        .then(function (children) {
+                        .then(function(children) {
                             $scope.children = children;
                         })
-                        .catch(function (err) {
+                        .catch(function(err) {
                             $log.error(err);
                         });
                 }
 
-                $scope.treeProvider
-                    .then(run)
-                    .catch(function (err) {
-                        $log.error(err);
-                    });
+                $scope.treeProvider.then(run).catch(function(err) {
+                    $log.error(err);
+                });
             },
-            link: function (scope: any, element) {
+            link: function(scope: any, element) {
                 var setupMinHeightBycontainer = function(el) {
                     var $parent: any = $(el).parent(),
                         height = $parent.outerHeight();
-                    $parent.prop('original-min-height', $parent.css('minHeight'));
+                    $parent.prop("original-min-height", $parent.css("minHeight"));
                     //console.log('setting min height:', height, 'for tree container', $parent);
-                    $parent.css('minHeight', height);
+                    $parent.css("minHeight", height);
                 };
                 var setupMinHeightForAllGenericTrees = function() {
                     // (including all connected as well cause may be dragged from tree to another)
@@ -162,9 +160,9 @@ angular.module('eGenericTree', [])
                 };
                 var restoreParentHeight = function(el) {
                     var $parent: any = $(el).parent(),
-                        height = $parent.prop('original-min-height') || 'inherit';
+                        height = $parent.prop("original-min-height") || "inherit";
                     //console.log('restoring min height:', height, 'for tree container', $parent);
-                    $parent.css('minHeight', height);
+                    $parent.css("minHeight", height);
                 };
                 var restoreParentHeightForAllGenericTrees = function() {
                     $("generic-tree").each(function() {
@@ -174,49 +172,66 @@ angular.module('eGenericTree', [])
 
                 function refresh(tree) {
                     if (tree) {
-                        _.each(scope.children, function (child) {
+                        _.each(scope.children, function(child) {
                             child.$$nodeParent = undefined;
                             child.$$depth = 0;
                         });
 
-                        scope.sortableConfig = _.merge({
-                            connectWith: '.recursivetree',
-                            handle: '.treehandle',
-                            cursorAt: {top: 2, left: 2},
-                            helper: 'clone',
-                            option: 'x',
-                            cursor: 'move',
-                            delay: 100,
-                            disabled: scope.tprovider.useUiSortable(),
-                            tolerance: 'pointer',
-                            start: function() {
-                                setupMinHeightForAllGenericTrees();
-                            },
-                            stop: function() {
-                                restoreParentHeightForAllGenericTrees();
-                            },
-                            update: function (e, ui) {
-                                if (scope.tprovider.acceptDrop) {
-                                    var dropTarget = ui.item.sortable.droptarget;
-                                    if (dropTarget) {
-                                        var listItem = dropTarget.closest('.recursivetree');
-                                        var parentScope = listItem ? listItem.scope() : null;
-                                        var parentNode = parentScope && parentScope.node ? parentScope.node : scope.root;
-                                        if (!parentNode || !scope.tprovider.acceptDrop(ui.item.sortable.model, parentNode, parentScope, e, ui)) {
-                                            ui.item.sortable.cancel();
+                        scope.sortableConfig = _.merge(
+                            {
+                                connectWith: ".recursivetree",
+                                handle: ".treehandle",
+                                cursorAt: { top: 2, left: 2 },
+                                helper: "clone",
+                                option: "x",
+                                cursor: "move",
+                                delay: 100,
+                                disabled: scope.tprovider.useUiSortable(),
+                                tolerance: "pointer",
+                                start: function() {
+                                    setupMinHeightForAllGenericTrees();
+                                },
+                                stop: function() {
+                                    restoreParentHeightForAllGenericTrees();
+                                },
+                                update: function(e, ui) {
+                                    if (scope.tprovider.acceptDrop) {
+                                        var dropTarget = ui.item.sortable.droptarget;
+                                        if (dropTarget) {
+                                            var listItem = dropTarget.closest(".recursivetree");
+                                            var parentScope = listItem ? listItem.scope() : null;
+                                            var parentNode =
+                                                parentScope && parentScope.node ? parentScope.node : scope.root;
+                                            if (
+                                                !parentNode ||
+                                                !scope.tprovider.acceptDrop(
+                                                    ui.item.sortable.model,
+                                                    parentNode,
+                                                    parentScope,
+                                                    e,
+                                                    ui
+                                                )
+                                            ) {
+                                                ui.item.sortable.cancel();
+                                            }
                                         }
                                     }
                                 }
+                                // cancel: '.ui-state-disabled'
                             },
-                            // cancel: '.ui-state-disabled'
-                        }, scope.uiSortableConfig || {});
+                            scope.uiSortableConfig || {}
+                        );
 
-                        var templateEl = angular.element('' +
-                            '<div ui-sortable="sortableConfig" class="' + scope.tprovider.sortableClass(scope.root) + ' recursivetree" ng-model="children">' +
-                            '    <div ng-repeat="node in children">' +
-                            '       <generic-tree-node node="node" ui-sortable-config="sortableConfig" tree-provider="tprovider"></generic-tree-node>' +
-                            '    </div>' +
-                            '</div>');
+                        var templateEl = angular.element(
+                            "" +
+                                '<div ui-sortable="sortableConfig" class="' +
+                                scope.tprovider.sortableClass(scope.root) +
+                                ' recursivetree" ng-model="children">' +
+                                '    <div ng-repeat="node in children">' +
+                                '       <generic-tree-node node="node" ui-sortable-config="sortableConfig" tree-provider="tprovider"></generic-tree-node>' +
+                                "    </div>" +
+                                "</div>"
+                        );
                         if (element.children().length) {
                             angular.element(element.children()[0]).replaceWith(templateEl);
                         } else {
@@ -226,53 +241,54 @@ angular.module('eGenericTree', [])
                     }
                 }
 
-                scope.$on('genericTree:refresh', function () {
+                scope.$on("genericTree:refresh", function() {
                     refresh(scope.children);
                 });
-                scope.$on('genericTree:beforeChange', function() {
+                scope.$on("genericTree:beforeChange", function() {
                     setupMinHeightForAllGenericTrees();
                 });
-                scope.$on('genericTree:afterChange', function() {
+                scope.$on("genericTree:afterChange", function() {
                     restoreParentHeightForAllGenericTrees();
                 });
-                scope.$watch('children', refresh, true);
+                scope.$watch("children", refresh, true);
             }
         };
     })
-    .directive('genericTreeVanilla', function ($compile, $log, $templateCache) {
+    .directive("genericTreeVanilla", function($compile, $log, $templateCache) {
         return {
-            restrict: 'E',
+            restrict: "E",
             replace: true,
-            template: '',
+            template: "",
             scope: {
-                treeProvider: '=',
-                uiSortableConfig: '=?'
+                treeProvider: "=",
+                uiSortableConfig: "=?"
             },
-            controller: function ($scope) {
+            controller: function($scope) {
                 function run(provider) {
                     // Sane defaults
-                    provider.sortableClass = provider.sortableClass || _.constant('');
+                    provider.sortableClass = provider.sortableClass || _.constant("");
                     provider.acceptDrop = provider.acceptDrop || _.constant(true);
                     $scope.treeProvider.extension(null, $scope);
                     $scope.tprovider = provider;
-                    provider.root()
-                        .then(function (root) {
+                    provider
+                        .root()
+                        .then(function(root) {
                             $scope.root = root;
                             $scope.children = provider.children(root);
                         })
-                        .catch(function (err) {
+                        .catch(function(err) {
                             $log.error(err);
                         });
                 }
                 run($scope.treeProvider);
             },
-            link: function (scope: any, element) {
+            link: function(scope: any, element) {
                 var setupMinHeightBycontainer = function(el) {
                     var $parent: any = $(el).parent(),
                         height = $parent.outerHeight();
-                    $parent.prop('original-min-height', $parent.css('minHeight'));
+                    $parent.prop("original-min-height", $parent.css("minHeight"));
                     //console.log('setting min height:', height, 'for tree container', $parent);
-                    $parent.css('minHeight', height);
+                    $parent.css("minHeight", height);
                 };
                 var setupMinHeightForAllGenericTrees = function() {
                     // (including all connected as well cause may be dragged from tree to another)
@@ -282,9 +298,9 @@ angular.module('eGenericTree', [])
                 };
                 var restoreParentHeight = function(el) {
                     var $parent: any = $(el).parent(),
-                        height = $parent.prop('original-min-height') || 'inherit';
+                        height = $parent.prop("original-min-height") || "inherit";
                     //console.log('restoring min height:', height, 'for tree container', $parent);
-                    $parent.css('minHeight', height);
+                    $parent.css("minHeight", height);
                 };
                 var restoreParentHeightForAllGenericTrees = function() {
                     $("generic-tree-vanilla").each(function() {
@@ -294,48 +310,53 @@ angular.module('eGenericTree', [])
 
                 function setContext(node, children) {
                     node.$$hasChildren = !_.isEmpty(children);
-                    _.each(children, function (cnode) {
+                    _.each(children, function(cnode) {
                         cnode.$$depth = node.$$depth + 1;
                         cnode.$$nodeParent = node;
                     });
                 }
                 function buildNode(node) {
-                    var $el = $('<generic-tree-node-vanilla></generic-tree-node-vanilla>');
-                    $el.prop('relatedNode', node);
+                    var $el = $("<generic-tree-node-vanilla></generic-tree-node-vanilla>");
+                    $el.prop("relatedNode", node);
                     if (scope.tprovider.hidden(node)) {
-                        $el.css('display', 'none');
+                        $el.css("display", "none");
                     }
                     var children = scope.tprovider.children(node);
                     setContext(node, children);
                     $el.append($(scope.tprovider.template(node)));
                     if (children) {
-                        var $subSoratable = $('<div class="'
-                            + scope.tprovider.sortableClass(node)
-                            + ' recursivetree"></div>');
+                        var $subSoratable = $(
+                            '<div class="' + scope.tprovider.sortableClass(node) + ' recursivetree"></div>'
+                        );
                         if (scope.tprovider.collapsed(node)) {
-                            $subSoratable.css('display', 'none');
+                            $subSoratable.css("display", "none");
                         }
-                        (<any>$subSoratable).sortable(angular.extend({
-                            model: children
-                        }, scope.sortableConfig));
-                        $subSoratable.prop('sortableModel', children);
+                        (<any>$subSoratable).sortable(
+                            angular.extend(
+                                {
+                                    model: children
+                                },
+                                scope.sortableConfig
+                            )
+                        );
+                        $subSoratable.prop("sortableModel", children);
                         $el.append($subSoratable);
                         _.each(children, c => {
-                            $subSoratable.append($('<div></div>').append(buildNode(c)));
+                            $subSoratable.append($("<div></div>").append(buildNode(c)));
                         });
                     }
                     return $el;
                 }
                 function updateNode(el) {
                     var $el = $(el),
-                        node = $el.prop('relatedNode');
+                        node = $el.prop("relatedNode");
                     $el.replaceWith(buildNode(node));
                 }
                 function updateVisibility(el) {
                     var $el = $(el),
-                        node = $el.prop('relatedNode'),
+                        node = $el.prop("relatedNode"),
                         hide = scope.tprovider.hidden(node),
-                        $childrenContainer = $el.find('.recursivetree').first(),
+                        $childrenContainer = $el.find(".recursivetree").first(),
                         collapsed = scope.tprovider.collapsed(node);
                     if (hide) {
                         $el.hide();
@@ -343,10 +364,10 @@ angular.module('eGenericTree', [])
                         $el.show();
                     }
                     if (_.isEmpty($childrenContainer)) {
-                        $childrenContainer.find('.collapse-based').each(() => {
+                        $childrenContainer.find(".collapse-based").each(() => {
                             var $c: any = $(this),
-                                unCollapseClass = $c.attr('data-uncollapse-class'),
-                                collapseClass = $c.attr('data-collapse-class');
+                                unCollapseClass = $c.attr("data-uncollapse-class"),
+                                collapseClass = $c.attr("data-collapse-class");
                             if (collapsed) {
                                 $c.addClass(collapseClass).removeClass(unCollapseClass);
                             } else {
@@ -361,75 +382,98 @@ angular.module('eGenericTree', [])
 
                 function refresh(tree) {
                     if (tree) {
-                        _.each(scope.children, function (child) {
+                        _.each(scope.children, function(child) {
                             child.$$nodeParent = undefined;
                             child.$$depth = 0;
                         });
 
-                        scope.sortableConfig = _.merge({
-                            connectWith: '.recursivetree',
-                            handle: '.treehandle',
-                            cursorAt: {top: 2, left: 2},
-                            helper: 'clone',
-                            option: 'x',
-                            cursor: 'move',
-                            delay: 100,
-                            disabled: scope.tprovider.useUiSortable(),
-                            tolerance: 'pointer',
-                            start: function (e, ui) {
-                                setupMinHeightForAllGenericTrees();
-                                var $el = $(ui.item.context).find('generic-tree-node-vanilla').first(),
-                                    $parentEl = $(ui.item.parent()[0]),
-                                    $parentParent = $parentEl.parent('generic-tree-node-vanilla').first();
-                                ui.item.sortable = {
-                                    source: $parentEl,
-                                    sourceList: $parentEl.prop('sortableModel'),
-                                    sourceNode: _.isEmpty($parentParent) ? scope.root : $parentParent.prop('relatedNode'),
-                                    node: $el.prop('relatedNode'),
-                                    index: ui.item.index()
-                                };
-                            },
-                            stop: function () {
-                                restoreParentHeightForAllGenericTrees();
-                            },
-                            update: function (e, ui) {
-                                ui.item.sortable.dropindex = ui.item.index();
-                                var $parentEl = $(ui.item.parent()[0]),
-                                    $parentParent = $parentEl.parent('generic-tree-node-vanilla').first();
-                                ui.item.sortable.droptarget = $parentEl;
-                                ui.item.sortable.droptargetList = $parentEl.prop('sortableModel');
-                                ui.item.sortable.droptargetNode = _.isEmpty($parentParent)
-                                    ? scope.root : $parentParent.prop('relatedNode');
-                                if (scope.tprovider.acceptDrop) {
-                                    if (!scope.tprovider.acceptDrop(
-                                            ui.item.sortable.node,
-                                            ui.item.sortable.droptargetNode)) {
-                                        (<any>$(ui.sender)).sortable('cancel');
-                                        ui.item.sortable = true;
-                                        //$log.info('cancled');
-                                        return;
+                        scope.sortableConfig = _.merge(
+                            {
+                                connectWith: ".recursivetree",
+                                handle: ".treehandle",
+                                cursorAt: { top: 2, left: 2 },
+                                helper: "clone",
+                                option: "x",
+                                cursor: "move",
+                                delay: 100,
+                                disabled: scope.tprovider.useUiSortable(),
+                                tolerance: "pointer",
+                                start: function(e, ui) {
+                                    setupMinHeightForAllGenericTrees();
+                                    var $el = $(ui.item.context)
+                                            .find("generic-tree-node-vanilla")
+                                            .first(),
+                                        $parentEl = $(ui.item.parent()[0]),
+                                        $parentParent = $parentEl.parent("generic-tree-node-vanilla").first();
+                                    ui.item.sortable = {
+                                        source: $parentEl,
+                                        sourceList: $parentEl.prop("sortableModel"),
+                                        sourceNode: _.isEmpty($parentParent)
+                                            ? scope.root
+                                            : $parentParent.prop("relatedNode"),
+                                        node: $el.prop("relatedNode"),
+                                        index: ui.item.index()
+                                    };
+                                },
+                                stop: function() {
+                                    restoreParentHeightForAllGenericTrees();
+                                },
+                                update: function(e, ui) {
+                                    ui.item.sortable.dropindex = ui.item.index();
+                                    var $parentEl = $(ui.item.parent()[0]),
+                                        $parentParent = $parentEl.parent("generic-tree-node-vanilla").first();
+                                    ui.item.sortable.droptarget = $parentEl;
+                                    ui.item.sortable.droptargetList = $parentEl.prop("sortableModel");
+                                    ui.item.sortable.droptargetNode = _.isEmpty($parentParent)
+                                        ? scope.root
+                                        : $parentParent.prop("relatedNode");
+                                    if (scope.tprovider.acceptDrop) {
+                                        if (
+                                            !scope.tprovider.acceptDrop(
+                                                ui.item.sortable.node,
+                                                ui.item.sortable.droptargetNode
+                                            )
+                                        ) {
+                                            (<any>$(ui.sender)).sortable("cancel");
+                                            ui.item.sortable = true;
+                                            //$log.info('cancled');
+                                            return;
+                                        }
                                     }
+                                    scope.$apply(function() {
+                                        ui.item.sortable.sourceList.splice(ui.item.sortable.index, 1);
+                                        ui.item.sortable.droptargetList.splice(
+                                            ui.item.sortable.dropindex,
+                                            0,
+                                            ui.item.sortable.node
+                                        );
+                                        setContext(ui.item.sortable.droptargetNode, ui.item.sortable.droptargetList);
+                                        setContext(ui.item.sortable.sourceNode, ui.item.sortable.sourceList);
+                                        //$log.info('moved', ui.item.sortable.node, ' to ', ui.item.sortable.droptargetList,
+                                        //        ' from ', ui.item.sortable.sourceList);
+                                        ui.item.sortable = true;
+                                    });
                                 }
-                                scope.$apply(function () {
-                                    ui.item.sortable.sourceList.splice(ui.item.sortable.index, 1);
-                                    ui.item.sortable.droptargetList.splice(ui.item.sortable.dropindex, 0,
-                                        ui.item.sortable.node);
-                                    setContext(ui.item.sortable.droptargetNode, ui.item.sortable.droptargetList);
-                                    setContext(ui.item.sortable.sourceNode, ui.item.sortable.sourceList);
-                                    //$log.info('moved', ui.item.sortable.node, ' to ', ui.item.sortable.droptargetList,
-                                    //        ' from ', ui.item.sortable.sourceList);
-                                    ui.item.sortable = true;
-                                });
-                            }
-                        }, scope.uiSortableConfig || {});
+                            },
+                            scope.uiSortableConfig || {}
+                        );
 
-                        var $template = $('<div class="' + scope.tprovider.sortableClass(scope.root) + ' recursivetree" ui-sortable=""></div>');
-                        (<any>$template).sortable(angular.extend({
-                            model: scope.children
-                        },scope.sortableConfig));
-                        $template.prop('sortableModel', scope.children);
+                        var $template = $(
+                            '<div class="' +
+                                scope.tprovider.sortableClass(scope.root) +
+                                ' recursivetree" ui-sortable=""></div>'
+                        );
+                        (<any>$template).sortable(
+                            angular.extend(
+                                {
+                                    model: scope.children
+                                },
+                                scope.sortableConfig
+                            )
+                        );
+                        $template.prop("sortableModel", scope.children);
                         _.each(scope.children, c => {
-                            $template.append($('<div></div>').append(buildNode(c)));
+                            $template.append($("<div></div>").append(buildNode(c)));
                         });
                         var templateEl = angular.element($template);
                         //$compile(templateEl)(scope);
@@ -442,10 +486,10 @@ angular.module('eGenericTree', [])
                 }
 
                 // Use this event to efficiently update singe node (or it and tree under it):
-                scope.$on('genericTree:updateNode', function (e,el) {
+                scope.$on("genericTree:updateNode", function(e, el) {
                     if (scope.root) {
                         if (el) {
-                            var closest = $(el).closest('generic-tree-node-vanilla');
+                            var closest = $(el).closest("generic-tree-node-vanilla");
                             if (!_.isEmpty(closest)) {
                                 updateNode(closest);
                             }
@@ -455,40 +499,44 @@ angular.module('eGenericTree', [])
                     }
                 });
                 // Use this event to update hidden/collapsed states of the whole tree / subtree:
-                scope.$on('genericTree:refreshVisibility', function(e,el) {
+                scope.$on("genericTree:refreshVisibility", function(e, el) {
                     if (scope.root) {
                         if (el) {
-                            var closest = $(el).closest('generic-tree-node-vanilla');
+                            var closest = $(el).closest("generic-tree-node-vanilla");
                             if (!_.isEmpty(closest)) {
                                 updateVisibility(closest);
                             }
                         } else {
-                            $(element).find('generic-tree-node-vanilla').each(function () {
-                                updateVisibility(this);
-                            });
+                            $(element)
+                                .find("generic-tree-node-vanilla")
+                                .each(function() {
+                                    updateVisibility(this);
+                                });
                         }
                     }
                 });
-                scope.$on('genericTree:updateVisibilityGiven', function(e,on) {
+                scope.$on("genericTree:updateVisibilityGiven", function(e, on) {
                     if (scope.root && (!on || on(scope.root))) {
-                        $(element).find('generic-tree-node-vanilla').each(function () {
-                            updateVisibility(this);
-                        });
+                        $(element)
+                            .find("generic-tree-node-vanilla")
+                            .each(function() {
+                                updateVisibility(this);
+                            });
                     }
                 });
                 // Use this to fully refresh the tree:
-                scope.$on('genericTree:refresh', function () {
+                scope.$on("genericTree:refresh", function() {
                     refresh(scope.children);
                 });
                 // Call before an action that might change the height of the tree (e.g. removing from it):
-                scope.$on('genericTree:beforeChange', function() {
+                scope.$on("genericTree:beforeChange", function() {
                     setupMinHeightForAllGenericTrees();
                 });
                 // Call after an action that might change the height of the tree (e.g. removing from it):
-                scope.$on('genericTree:afterChange', function() {
+                scope.$on("genericTree:afterChange", function() {
                     restoreParentHeightForAllGenericTrees();
                 });
-                scope.$watch('children', refresh, true);
+                scope.$watch("children", refresh, true);
             }
         };
     });

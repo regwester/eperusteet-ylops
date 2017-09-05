@@ -14,64 +14,72 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-
 ylopsApp
-.directive('opsNavigaatio', function () {
-  return {
-    restrict: 'AE',
-    templateUrl: 'views/opetussuunnitelmat/directives/navigaatio.html',
-    controller: 'OpsNavigaatioController',
-    scope: {
-      shouldShow: '=',
-      items: '='
-    },
-    transclude: true
-  };
-})
+    .directive("opsNavigaatio", function() {
+        return {
+            restrict: "AE",
+            templateUrl: "views/opetussuunnitelmat/directives/navigaatio.html",
+            controller: "OpsNavigaatioController",
+            scope: {
+                shouldShow: "=",
+                items: "="
+            },
+            transclude: true
+        };
+    })
+    .controller("OpsNavigaatioController", function(
+        $scope,
+        $state,
+        $stateParams
+        /*, MurupolkuData*/
+    ) {
+        $scope.isActive = false;
+        $scope.chosen = 0;
+        $scope.collapsed = true;
+        $scope.showTakaisin = false;
 
-.controller('OpsNavigaatioController', function ($scope, $state, $stateParams
-  /*, MurupolkuData*/) {
-  $scope.isActive = false;
-  $scope.chosen = 0;
-  $scope.collapsed = true;
-  $scope.showTakaisin = false;
+        var shouldShow = $scope.shouldShow || _.constant(true);
 
-  var shouldShow = $scope.shouldShow || _.constant(true);
+        function updateActive() {
+            if (shouldShow()) {
+                var currentUrl = $state.href($state.current, $stateParams);
+                var deepest = _.reduce($scope.items, function(acc, item) {
+                    return item.url && _.startsWith(currentUrl, item.url.split("?")[0])
+                        ? acc && (acc.depth || 0) > (item.depth || 0) ? acc : item
+                        : acc;
+                });
+                if (deepest) {
+                    _.each($scope.items, function(item) {
+                        item.active = false;
+                    });
+                    deepest.active = true;
+                    $scope.isActive = true;
+                }
+            } else {
+                $scope.isActive = false;
+            }
+        }
+        updateActive();
 
-  function updateActive() {
-    if (shouldShow()) {
-      var currentUrl = $state.href($state.current, $stateParams);
-      var deepest = _.reduce($scope.items, function(acc, item) {
-        return item.url && _.startsWith(currentUrl, item.url.split('?')[0]) ?
-          (acc && (acc.depth || 0) > (item.depth || 0) ? acc : item) :
-          acc;
-      });
-      if (deepest) {
-        _.each($scope.items, function(item) { item.active = false; });
-        deepest.active = true;
-        $scope.isActive = true;
-      }
-    }
-    else {
-      $scope.isActive = false;
-    }
-  }
-  updateActive();
+        $scope.toggle = function() {
+            $scope.collapsed = !$scope.collapsed;
+        };
 
-  $scope.toggle = function() {
-    $scope.collapsed = !$scope.collapsed;
-  };
-
-  $scope.$on('$stateChangeStart', function() { $scope.collapsed = true; });
-  $scope.$on('$stateChangeSuccess', updateActive);
-  $scope.$on('navigaatio:update', updateActive);
-  $scope.$on('navigaatio:setNavi', (navi:NavigaatioItem[]) => {
-    $scope.navi = navi;
-    $scope.collapsed = false;
-    $scope.isActive = !_.isEmpty($scope.navi);
-    updateActive();
-  });
-  $scope.$on('navigaatio:hide', function() { $scope.isActive = false; });
-  $scope.$on('navigaatio:show', function() { $scope.isActive = true; });
-});
+        $scope.$on("$stateChangeStart", function() {
+            $scope.collapsed = true;
+        });
+        $scope.$on("$stateChangeSuccess", updateActive);
+        $scope.$on("navigaatio:update", updateActive);
+        $scope.$on("navigaatio:setNavi", (navi: NavigaatioItem[]) => {
+            $scope.navi = navi;
+            $scope.collapsed = false;
+            $scope.isActive = !_.isEmpty($scope.navi);
+            updateActive();
+        });
+        $scope.$on("navigaatio:hide", function() {
+            $scope.isActive = false;
+        });
+        $scope.$on("navigaatio:show", function() {
+            $scope.isActive = true;
+        });
+    });

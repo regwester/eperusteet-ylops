@@ -14,28 +14,25 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-
-ylopsApp
-.service('Algoritmit', function (Kaanna) {
-  function traverse(objekti, lapsienAvain, cb, depth) {
-    if (!objekti) {
-      return;
+ylopsApp.service("Algoritmit", function(Kaanna) {
+    function traverse(objekti, lapsienAvain, cb, depth) {
+        if (!objekti) {
+            return;
+        }
+        depth = depth || 0;
+        _.forEach(objekti[lapsienAvain], function(solmu, index) {
+            if (!cb(solmu, depth, index, objekti[lapsienAvain], objekti)) {
+                solmu.$$traverseParent = objekti;
+                traverse(solmu, lapsienAvain, cb, depth + 1);
+            }
+        });
     }
-    depth = depth || 0;
-    _.forEach(objekti[lapsienAvain], function(solmu, index) {
-      if (!cb(solmu, depth, index, objekti[lapsienAvain], objekti)) {
-        solmu.$$traverseParent = objekti;
-        traverse(solmu, lapsienAvain, cb, depth + 1);
-      }
-    });
-  }
 
-  function match(input, to) {
-    var vertailu = Kaanna.kaanna(to) || '';
-    return vertailu.toLowerCase().indexOf(input.toLowerCase()) !== -1;
-  }
+    function match(input, to) {
+        var vertailu = Kaanna.kaanna(to) || "";
+        return vertailu.toLowerCase().indexOf(input.toLowerCase()) !== -1;
+    }
 
-  this.traverse = traverse;
-  this.match = match;
+    this.traverse = traverse;
+    this.match = match;
 });

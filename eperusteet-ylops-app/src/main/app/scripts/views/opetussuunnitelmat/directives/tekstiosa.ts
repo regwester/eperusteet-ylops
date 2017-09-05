@@ -14,97 +14,93 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-
 ylopsApp
-.directive('perusteenTekstiosa', function ($timeout, $window) {
-  return {
-    restrict: 'A',
-    scope: {
-      model: '=perusteenTekstiosa',
-      muokattava: '=?',
-      callbacks: '=',
-      startCollapsed: '=?',
-      ohjepallo: '=',
-      shouldDisable: '='
-    },
-    templateUrl: 'views/opetussuunnitelmat/directives/tekstiosa.html',
-    controller: 'TekstiosaController',
-    link: function (scope: any, element, attrs: any) {
-      scope.editable = !!attrs.muokattava;
-      scope.focusAndScroll = function () {
-        $timeout(function () {
-          var el = element.find('[ckeditor]');
-          if (el && el.length > 0) {
-            el[0].focus();
-            $window.scrollTo(0, el.eq(0).offset().top - 200);
-          }
-        }, 300);
-      };
-    }
-  };
-})
+    .directive("perusteenTekstiosa", function($timeout, $window) {
+        return {
+            restrict: "A",
+            scope: {
+                model: "=perusteenTekstiosa",
+                muokattava: "=?",
+                callbacks: "=",
+                startCollapsed: "=?",
+                ohjepallo: "=",
+                shouldDisable: "="
+            },
+            templateUrl: "views/opetussuunnitelmat/directives/tekstiosa.html",
+            controller: "TekstiosaController",
+            link: function(scope: any, element, attrs: any) {
+                scope.editable = !!attrs.muokattava;
+                scope.focusAndScroll = function() {
+                    $timeout(function() {
+                        var el = element.find("[ckeditor]");
+                        if (el && el.length > 0) {
+                            el[0].focus();
+                            $window.scrollTo(0, el.eq(0).offset().top - 200);
+                        }
+                    }, 300);
+                };
+            }
+        };
+    })
+    .directive("yksinkertainenTekstiosa", function($timeout, $window) {
+        return {
+            restrict: "A",
+            scope: {
+                model: "=yksinkertainenTekstiosa",
+                callbacks: "=",
+                startCollapsed: "=?",
+                otsikko: "@?",
+                shouldDisable: "="
+            },
+            templateUrl: "views/opetussuunnitelmat/directives/yksinkertainentekstiosa.html",
+            controller: "TekstiosaController",
+            link: function(scope: any, element) {
+                scope.focusAndScroll = function() {
+                    $timeout(function() {
+                        var el = element.find("[ckeditor]");
+                        if (el && el.length > 0) {
+                            el[0].focus();
+                            $window.scrollTo(0, el.eq(0).offset().top - 200);
+                        }
+                    }, 300);
+                };
+            }
+        };
+    })
+    .controller("TekstiosaController", function($state, $scope, $q, Editointikontrollit, Kieli) {
+        $scope.editMode = false;
+        $scope.collapsed = _.isUndefined($scope.startCollapsed) ? true : $scope.startCollapsed;
 
-.directive('yksinkertainenTekstiosa', function ($timeout, $window) {
-  return {
-    restrict: 'A',
-    scope: {
-      model: '=yksinkertainenTekstiosa',
-      callbacks: '=',
-      startCollapsed: '=?',
-      otsikko: '@?',
-      shouldDisable: '='
-    },
-    templateUrl: 'views/opetussuunnitelmat/directives/yksinkertainentekstiosa.html',
-    controller: 'TekstiosaController',
-    link: function (scope: any, element) {
-      scope.focusAndScroll = function () {
-        $timeout(function () {
-          var el = element.find('[ckeditor]');
-          if (el && el.length > 0) {
-            el[0].focus();
-            $window.scrollTo(0, el.eq(0).offset().top - 200);
-          }
-        }, 300);
-      };
-    }
-  };
-})
+        function validoi() {
+            if ($scope.muokattava) {
+                if (!$scope.model && $state.current.name === "root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine") {
+                    return;
+                }
+                $scope.muokattava.otsikko = $scope.muokattava.otsikko || {};
+                $scope.muokattava.otsikko.$$validointi = Kieli.validoi($scope.muokattava.otsikko);
+                $scope.muokattava.teksti = $scope.muokattava.teksti || {};
+                $scope.muokattava.teksti.$$validointi = Kieli.validoi($scope.muokattava.teksti);
+            }
+        }
 
-.controller('TekstiosaController', function ($state, $scope, $q, Editointikontrollit, Kieli) {
-  $scope.editMode = false;
-  $scope.collapsed = _.isUndefined($scope.startCollapsed) ? true : $scope.startCollapsed;
+        $scope.$watch("muokattava", validoi, true);
 
-  function validoi() {
-    if ($scope.muokattava) {
-      if (!$scope.model && $state.current.name === 'root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine') {
-        return;
-      }
-      $scope.muokattava.otsikko = $scope.muokattava.otsikko || {};
-      $scope.muokattava.otsikko.$$validointi = Kieli.validoi($scope.muokattava.otsikko);
-      $scope.muokattava.teksti = $scope.muokattava.teksti || {};
-      $scope.muokattava.teksti.$$validointi = Kieli.validoi($scope.muokattava.teksti);
-    }
-  }
+        function notifyFn(mode) {
+            $scope.editMode = mode;
+            if (!mode) {
+                $scope.callbacks.notifier = angular.noop;
+            }
+        }
 
-  $scope.$watch('muokattava', validoi, true);
+        $scope.startEditing = function() {
+            $scope.editMode = true;
+            $scope.callbacks.notifier = notifyFn;
+            $scope.focusAndScroll();
+            validoi();
+            Editointikontrollit.startEditing().then(() => $q.when());
+        };
 
-  function notifyFn(mode) {
-    $scope.editMode = mode;
-    if (!mode) {
-      $scope.callbacks.notifier = angular.noop;
-    }
-  }
-
-  $scope.startEditing = function () {
-    $scope.editMode = true;
-    $scope.callbacks.notifier = notifyFn;
-    $scope.focusAndScroll();
-    validoi();
-    Editointikontrollit.startEditing().then(() => $q.when());
-  };
-
-  $scope.remove = function () {
-    $scope.callbacks.remove($scope.muokattava);
-  };
-});
+        $scope.remove = function() {
+            $scope.callbacks.remove($scope.muokattava);
+        };
+    });

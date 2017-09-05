@@ -14,59 +14,67 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
 ylopsApp
-  .service('Varmistusdialogi', function($modal) {
+    .service("Varmistusdialogi", function($modal) {
+        const dialogi = options => {
+            return (success, failure) => {
+                var resolve = {
+                    opts: () => {
+                        return {
+                            primaryBtn: options.primaryBtn || "ok",
+                            primaryBtnClass: options.primaryBtnClass || "",
+                            secondaryBtn: options.secondaryBtn || "peruuta"
+                        };
+                    },
+                    data: () => options.data || null,
+                    otsikko: () => options.otsikko || "",
+                    teksti: () => options.teksti || "",
+                    htmlSisalto: () => options.htmlSisalto || "",
+                    lisaTeksti: () => options.lisaTeksti || "",
+                    comment: () => options.comment || ""
+                };
+                const successCb = success || options.successCb || angular.noop;
+                const failureCb = failure || options.failureCb || angular.noop;
 
-    const dialogi = (options) => {
-      return (success, failure) => {
-        var resolve = {
-          opts: () => {
-            return {
-              primaryBtn: options.primaryBtn || 'ok',
-              primaryBtnClass: options.primaryBtnClass || '',
-              secondaryBtn: options.secondaryBtn || 'peruuta'
+                $modal
+                    .open({
+                        templateUrl: "views/common/modals/varmistusdialogi.html",
+                        controller: "VarmistusDialogiController",
+                        resolve: resolve
+                    })
+                    .result.then(successCb, failureCb);
             };
-          },
-          data: () => options.data || null,
-          otsikko: () => options.otsikko || '',
-          teksti: () => options.teksti || '',
-          htmlSisalto: () => options.htmlSisalto || '',
-          lisaTeksti: () => options.lisaTeksti || '',
-          comment: () => options.comment || ''
         };
-        const successCb = success || options.successCb || angular.noop;
-        const failureCb = failure || options.failureCb || angular.noop;
 
-        $modal.open({
-          templateUrl: 'views/common/modals/varmistusdialogi.html',
-          controller: 'VarmistusDialogiController',
-          resolve: resolve
-        }).result.then(successCb, failureCb);
-      };
-    };
+        return {
+            dialogi: dialogi
+        };
+    })
+    .controller("VarmistusDialogiController", function(
+        $scope,
+        $modalInstance,
+        opts,
+        data,
+        otsikko,
+        teksti,
+        htmlSisalto,
+        lisaTeksti,
+        comment
+    ) {
+        $scope.opts = opts;
+        $scope.otsikko = otsikko;
+        $scope.teksti = teksti;
+        $scope.htmlSisalto = htmlSisalto;
+        $scope.lisaTeksti = lisaTeksti;
+        $scope.comment = comment;
 
-    return {
-      dialogi: dialogi
-    };
-  })
-  .controller('VarmistusDialogiController', function($scope, $modalInstance, opts, data, otsikko, teksti,
-                                                     htmlSisalto, lisaTeksti, comment) {
-    $scope.opts = opts;
-    $scope.otsikko = otsikko;
-    $scope.teksti = teksti;
-    $scope.htmlSisalto = htmlSisalto;
-    $scope.lisaTeksti = lisaTeksti;
-    $scope.comment = comment;
+        $scope.ok = () => {
+            if (data !== null) {
+                $modalInstance.close(data);
+            } else {
+                $modalInstance.close();
+            }
+        };
 
-    $scope.ok = () => {
-      if (data !== null) {
-        $modalInstance.close(data);
-      } else {
-        $modalInstance.close();
-      }
-    };
-
-    $scope.peruuta = () => $modalInstance.dismiss();
-  });
+        $scope.peruuta = () => $modalInstance.dismiss();
+    });

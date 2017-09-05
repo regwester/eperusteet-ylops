@@ -14,43 +14,48 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
+ylopsApp.directive("slocalized", function($parse, $rootScope, Kieli) {
+    return {
+        priority: 5,
+        restrict: "A",
+        require: "ngModel",
+        scope: false,
+        link: function(scope: any, element, attrs, ngModelCtrl: any) {
+            ngModelCtrl.$formatters.push(function(modelValue) {
+                if (angular.isUndefined(modelValue)) {
+                    return;
+                }
+                if (modelValue === null) {
+                    return;
+                }
+                return modelValue[Kieli.getSisaltokieli()];
+            });
 
-ylopsApp
-    .directive('slocalized', function($parse, $rootScope, Kieli)  {
-        return {
-            priority: 5,
-            restrict: 'A',
-            require: 'ngModel',
-            scope: false,
-            link: function(scope: any, element, attrs, ngModelCtrl: any) {
-                ngModelCtrl.$formatters.push(function(modelValue) {
-                    if(angular.isUndefined(modelValue)) { return; }
-                    if(modelValue === null) { return; }
-                    return modelValue[Kieli.getSisaltokieli()];
-                });
+            ngModelCtrl.$parsers.push(function(viewValue) {
+                var localizedModelValue = ngModelCtrl.$modelValue;
 
-                ngModelCtrl.$parsers.push(function(viewValue) {
-                    var localizedModelValue = ngModelCtrl.$modelValue;
+                if (angular.isUndefined(localizedModelValue)) {
+                    localizedModelValue = {};
+                }
+                if (localizedModelValue === null) {
+                    localizedModelValue = {};
+                }
+                localizedModelValue[Kieli.getSisaltokieli()] = viewValue;
+                return localizedModelValue;
+            });
 
-                    if(angular.isUndefined(localizedModelValue)) {
-                        localizedModelValue = {};
-                    }
-                    if(localizedModelValue === null) {
-                        localizedModelValue = {};
-                    }
-                    localizedModelValue[Kieli.getSisaltokieli()] = viewValue;
-                    return localizedModelValue;
-                });
-
-                scope.$on('changed:sisaltokieli', function(event, sisaltokieli) {
-                    if(ngModelCtrl.$modelValue !== null && !angular.isUndefined(ngModelCtrl.$modelValue) && !_.isEmpty(ngModelCtrl.$modelValue[sisaltokieli])) {
-                        ngModelCtrl.$setViewValue(ngModelCtrl.$modelValue[sisaltokieli]);
-                    } else {
-                        ngModelCtrl.$setViewValue('');
-                    }
-                    ngModelCtrl.$render();
-                });
-            }
-        };
-    });
+            scope.$on("changed:sisaltokieli", function(event, sisaltokieli) {
+                if (
+                    ngModelCtrl.$modelValue !== null &&
+                    !angular.isUndefined(ngModelCtrl.$modelValue) &&
+                    !_.isEmpty(ngModelCtrl.$modelValue[sisaltokieli])
+                ) {
+                    ngModelCtrl.$setViewValue(ngModelCtrl.$modelValue[sisaltokieli]);
+                } else {
+                    ngModelCtrl.$setViewValue("");
+                }
+                ngModelCtrl.$render();
+            });
+        }
+    };
+});

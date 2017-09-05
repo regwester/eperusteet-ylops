@@ -14,35 +14,33 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
+ylopsApp.directive("collapseToggler", function($compile) {
+    return {
+        restrict: "A",
+        scope: {
+            isCollapsed: "=collapseToggler"
+        },
+        link: function(scope: any, element) {
+            var toggler = angular
+                .element("<span>")
+                .addClass("glyphicon")
+                .addClass("collapse-toggler")
+                .attr("ng-class", "isCollapsed ? 'glyphicon-chevron-right' : 'glyphicon-chevron-down'");
+            element.prepend($compile(toggler)(scope));
 
-ylopsApp
-.directive('collapseToggler', function($compile)  {
-  return {
-    restrict: 'A',
-    scope: {
-      isCollapsed: '=collapseToggler'
-    },
-    link: function (scope: any, element) {
-      var toggler = angular.element('<span>')
-        .addClass('glyphicon')
-        .addClass('collapse-toggler')
-        .attr('ng-class', 'isCollapsed ? \'glyphicon-chevron-right\' : \'glyphicon-chevron-down\'');
-      element.prepend($compile(toggler)(scope));
+            var toggleFn = function() {
+                scope.$apply(scope.toggle);
+            };
+            element.bind("click", toggleFn);
 
-      var toggleFn = function () {
-        scope.$apply(scope.toggle);
-      };
-      element.bind('click', toggleFn);
-
-      scope.$on('$destroy', function () {
-        element.unbind('click', toggleFn);
-      });
-    },
-    controller: function ($scope) {
-      $scope.toggle = function () {
-        $scope.isCollapsed = !$scope.isCollapsed;
-      };
-    }
-  };
+            scope.$on("$destroy", function() {
+                element.unbind("click", toggleFn);
+            });
+        },
+        controller: function($scope) {
+            $scope.toggle = function() {
+                $scope.isCollapsed = !$scope.isCollapsed;
+            };
+        }
+    };
 });

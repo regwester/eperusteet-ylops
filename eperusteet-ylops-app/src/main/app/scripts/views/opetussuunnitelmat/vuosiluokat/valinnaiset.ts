@@ -14,23 +14,29 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
+ylopsApp.controller("ValinnaisetOppiaineetController", function($scope, vlk, $state, $stateParams, opsModelVal) {
+    $scope.vlk = vlk;
+    $scope.valinnaiset = _(opsModelVal.oppiaineet)
+        .map("oppiaine")
+        .filter(function(oppiaine) {
+            return (
+                oppiaine.tyyppi !== "yhteinen" &&
+                _.any(oppiaine.vuosiluokkakokonaisuudet, function(opVlk) {
+                    return opVlk._vuosiluokkakokonaisuus === vlk._tunniste;
+                })
+            );
+        })
+        .forEach(function(oppiaine) {
+            oppiaine.vlk = _(oppiaine.vuosiluokkakokonaisuudet)
+                .filter("_vuosiluokkakokonaisuus", vlk.tunniste)
+                .first();
+            oppiaine.vlk.vuosiluokat = _.sortBy(oppiaine.vlk.vuosiluokat, "vuosiluokka");
+        })
+        .value();
 
-ylopsApp
-.controller('ValinnaisetOppiaineetController', function ($scope, vlk, $state, $stateParams, opsModelVal) {
-  $scope.vlk = vlk;
-  $scope.valinnaiset = _(opsModelVal.oppiaineet).map('oppiaine').filter(function (oppiaine) {
-    return oppiaine.tyyppi !== 'yhteinen' && _.any(oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
-      return opVlk._vuosiluokkakokonaisuus === vlk._tunniste;
-    });
-  }).forEach(function (oppiaine) {
-    oppiaine.vlk = _(oppiaine.vuosiluokkakokonaisuudet).filter('_vuosiluokkakokonaisuus', vlk.tunniste).first();
-    oppiaine.vlk.vuosiluokat = _.sortBy(oppiaine.vlk.vuosiluokat, 'vuosiluokka');
-  }).value();
-
-  $scope.addOppiaine = function () {
-    $state.go('root.opetussuunnitelmat.yksi.opetus.uusioppiaine', {
-      vlkId: $stateParams.vlkId
-    });
-  };
+    $scope.addOppiaine = function() {
+        $state.go("root.opetussuunnitelmat.yksi.opetus.uusioppiaine", {
+            vlkId: $stateParams.vlkId
+        });
+    };
 });

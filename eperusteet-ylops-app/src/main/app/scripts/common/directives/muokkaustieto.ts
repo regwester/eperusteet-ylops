@@ -13,37 +13,41 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
-angular.module('ylopsApp')
-  .directive('muokkaustieto', function($rootScope, EperusteetKayttajatiedot) {
+angular.module("ylopsApp").directive("muokkaustieto", function($rootScope, EperusteetKayttajatiedot) {
     return {
-      template:
-        '<div ng-if="tiedot && tiedot.luotu" class="dir-muokkaustieto">' +
-        '  <span>' +
-        '    <span class="muokkaustieto-topic" kaanna="muokattu-viimeksi"></span>:' +
-        '    <span class="muokkaustieto-data" ng-bind="(tiedot.muokattu || tiedot.luotu) | aikaleima"></span>' +
-        '  </span>' +
-        '  <span style="margin-left: 5px" ng-if="muokkaajanNimi">' +
-        '    <span class="muokkaustieto-topic" kaanna="muokkaaja"></span>:' +
-        '    <span class="muokkaustieto-data" ng-bind="muokkaajanNimi"></span>' +
-        '  </span>' +
-        '</div>',
-      scope: {
-        tiedot: '='
-      },
-      controller: ($scope) => {
-        $scope.$watch('tiedot', (tiedot) => {
-          if (tiedot && tiedot.muokkaajaOid) {
-            EperusteetKayttajatiedot.get({
-              oid: tiedot.muokkaajaOid
-            }, (res) => {
-              if (res.sukunimi && (res.kutsumanimi || res.etunimet)) {
-                $scope.muokkaajanNimi = (res.kutsumanimi || res.etunimet) + ' ' + res.sukunimi;
-              }
-            });
-          }
-        }, true);
-      }
+        template:
+            '<div ng-if="tiedot && tiedot.luotu" class="dir-muokkaustieto">' +
+            "  <span>" +
+            '    <span class="muokkaustieto-topic" kaanna="muokattu-viimeksi"></span>:' +
+            '    <span class="muokkaustieto-data" ng-bind="(tiedot.muokattu || tiedot.luotu) | aikaleima"></span>' +
+            "  </span>" +
+            '  <span style="margin-left: 5px" ng-if="muokkaajanNimi">' +
+            '    <span class="muokkaustieto-topic" kaanna="muokkaaja"></span>:' +
+            '    <span class="muokkaustieto-data" ng-bind="muokkaajanNimi"></span>' +
+            "  </span>" +
+            "</div>",
+        scope: {
+            tiedot: "="
+        },
+        controller: $scope => {
+            $scope.$watch(
+                "tiedot",
+                tiedot => {
+                    if (tiedot && tiedot.muokkaajaOid) {
+                        EperusteetKayttajatiedot.get(
+                            {
+                                oid: tiedot.muokkaajaOid
+                            },
+                            res => {
+                                if (res.sukunimi && (res.kutsumanimi || res.etunimet)) {
+                                    $scope.muokkaajanNimi = (res.kutsumanimi || res.etunimet) + " " + res.sukunimi;
+                                }
+                            }
+                        );
+                    }
+                },
+                true
+            );
+        }
     };
-  });
+});

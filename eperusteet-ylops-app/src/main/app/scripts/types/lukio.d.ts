@@ -1,7 +1,6 @@
-
-declare module Lukio {
+declare namespace Lukio {
     export interface IdHolder {
-        id: number
+        id: number;
     }
 
     export enum Tila {
@@ -11,7 +10,7 @@ declare module Lukio {
         julkaistu
     }
 
-    export interface PerusteOpsOsa<Perusteen,Opsin> {
+    export interface PerusteOpsOsa<Perusteen, Opsin> {
         perusteen?: Perusteen;
         paikallinen: Opsin;
         tunniste?: string;
@@ -35,11 +34,10 @@ declare module Lukio {
         otsikko: l.Lokalisoitu;
         yleiskuvaus: l.Lokalisoitu;
     }
-    export interface PaivitaAihekokonaisuus extends LuoAihekokonaisuus{
-    }
+    export interface PaivitaAihekokonaisuus extends LuoAihekokonaisuus {}
 
     export interface JarjestaAihekokonaisuudet {
-        aihekokonaisuudet: IdHolder[]
+        aihekokonaisuudet: IdHolder[];
     }
 
     export interface MuokkaaAihekokonaisuutta {
@@ -50,7 +48,7 @@ declare module Lukio {
 
     export interface Aihekokonaisuudet {
         uuidTunniste?: string;
-        id? : number;
+        id?: number;
         otsikko?: l.Lokalisoitu;
         yleiskuvaus?: l.Lokalisoitu;
         aihekokonaisuudet: Aihekokonaisuus[];
@@ -66,7 +64,7 @@ declare module Lukio {
     }
 
     export interface OpetuksenYleisetTavoitteet {
-        parent?: OpetuksenYleisetTavoitteet
+        parent?: OpetuksenYleisetTavoitteet;
         uuidTunniste?: string;
         id?: number;
         otsikko?: l.Lokalisoitu;
@@ -79,15 +77,12 @@ declare module Lukio {
     }
 
     export interface OpsOpetuksenYleisetTavoitteet extends OpetuksenYleisetTavoitteet {
-        perusteen?: OpetuksenYleisetTavoitteet
+        perusteen?: OpetuksenYleisetTavoitteet;
     }
 
-    export interface AihekokonaisuudetPerusteenOsa extends PerusteOpsOsa<Aihekokonaisuudet,
-        OpsAihekokonaisuudet> {
-    }
-    export interface OpetuksenYleisetTavoitteetPerusteenOsa extends PerusteOpsOsa<OpetuksenYleisetTavoitteet,
-        OpsOpetuksenYleisetTavoitteet> {
-    }
+    export interface AihekokonaisuudetPerusteenOsa extends PerusteOpsOsa<Aihekokonaisuudet, OpsAihekokonaisuudet> {}
+    export interface OpetuksenYleisetTavoitteetPerusteenOsa
+        extends PerusteOpsOsa<OpetuksenYleisetTavoitteet, OpsOpetuksenYleisetTavoitteet> {}
 
     export enum LukioKurssiTyyppiPeruste {
         PAKOLLINEN,
@@ -134,7 +129,7 @@ declare module Lukio {
         palautettava: boolean;
         tyyppi: LukioKurssiTyyppi;
         tavoitteet?: l.TekstiOsa;
-        laajuus: number,
+        laajuus: number;
         keskeinenSisalto?: l.TekstiOsa;
         tavoitteetJaKeskeinenSisalto?: l.TekstiOsa;
     }
@@ -152,11 +147,10 @@ declare module Lukio {
     }
 
     export interface LuoLukiokurssi extends LukiokurssiPerusTiedot {
-        oppiaineId: number
+        oppiaineId: number;
     }
 
-    export interface UpdateLukiokurssi extends LukiokurssiPerusTiedot {
-    }
+    export interface UpdateLukiokurssi extends LukiokurssiPerusTiedot {}
 
     export interface Oppiaine {
         koodiUri?: string;
@@ -170,22 +164,22 @@ declare module Lukio {
     }
 
     export interface AbstraktiOppiaine {
-        tunniste: string
-        nimi: l.Lokalisoitu
+        tunniste: string;
+        nimi: l.Lokalisoitu;
     }
 
     export interface OppiaineKielitarjonta {
-        tunniste: string
-        nimi: l.Lokalisoitu
-        kieliKoodiUri?: string
-        kieliKoodiArvo?: string
-        kieli: l.Lokalisoitu
+        tunniste: string;
+        nimi: l.Lokalisoitu;
+        kieliKoodiUri?: string;
+        kieliKoodiArvo?: string;
+        kieli: l.Lokalisoitu;
     }
 
     export interface LukioOppiaineTallennus extends Oppiaine {
         laajuus?: string;
         oppiaineId?: number;
-        kurssiTyyppiKuvaukset: { [key:string/*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu; };
+        kurssiTyyppiKuvaukset: { [key: string /*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu };
     }
 
     export interface LukioOppiainePeruste extends Oppiaine {
@@ -217,20 +211,20 @@ declare module Lukio {
         jarjestys?: number;
         tyyppi: OppiaineTyyppi;
         laajuus: string;
-        kurssiTyyppiKuvaukset?: { [key:string/*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu; };
+        kurssiTyyppiKuvaukset?: { [key: string /*LukioKurssiTyyppi, not supported in ts*/]: l.Lokalisoitu };
         oppimaarat?: LukioOppiaine[];
         kurssit: LukiokurssiOps[];
         pohjanTarjonta?: LukioOppiaine[];
     }
 
     export interface LukioOppiaineJarjestys {
-        oppiaineId: number
-        jarjestys: number
+        oppiaineId: number;
+        jarjestys: number;
     }
 
     export interface LukioOpetussuunnitelmaRakenneOps {
         perusteId: number;
-        root: boolean
+        root: boolean;
         oppiaineet: LukioOppiaine[];
         pohjanTarjonta: LukioOppiaine[];
     }

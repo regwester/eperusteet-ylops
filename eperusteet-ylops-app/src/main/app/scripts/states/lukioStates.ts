@@ -14,85 +14,93 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
-ylopsApp
-    .config(function($stateProvider) {
-        $stateProvider
-        .state('root.opetussuunnitelmat.lukio', {
-            url: '/:id/lukio',
-            templateUrl: 'views/opetussuunnitelmat/opetussuunnitelmabase.html',
+ylopsApp.config(function($stateProvider) {
+    $stateProvider
+        .state("root.opetussuunnitelmat.lukio", {
+            url: "/:id/lukio",
+            templateUrl: "views/opetussuunnitelmat/opetussuunnitelmabase.html",
             abstract: true,
             resolve: {
-                opsService: 'OpsService',
-                vuosiluokatService: 'VuosiluokatService',
-                opsId: ['$stateParams', function($stateParams){
-                    return $stateParams.id;
-                }],
-                opsModel: ['opsService', 'opsId', function(opsService, opsId) {
-                    var fetched = opsService.fetch(opsId);
-                    return fetched.$promise ? fetched.$promise : fetched;
-                }],
-                'opsOikeudet': 'OpetussuunnitelmaOikeudetService',
-                'opsOikeudetNouto': ['opsOikeudet', '$stateParams', function (opsOikeudet, $stateParams) {
-                    return opsOikeudet.fetch($stateParams);
-                }]
+                opsService: "OpsService",
+                vuosiluokatService: "VuosiluokatService",
+                opsId: [
+                    "$stateParams",
+                    function($stateParams) {
+                        return $stateParams.id;
+                    }
+                ],
+                opsModel: [
+                    "opsService",
+                    "opsId",
+                    function(opsService, opsId) {
+                        var fetched = opsService.fetch(opsId);
+                        return fetched.$promise ? fetched.$promise : fetched;
+                    }
+                ],
+                opsOikeudet: "OpetussuunnitelmaOikeudetService",
+                opsOikeudetNouto: [
+                    "opsOikeudet",
+                    "$stateParams",
+                    function(opsOikeudet, $stateParams) {
+                        return opsOikeudet.fetch($stateParams);
+                    }
+                ]
             },
-            controller: function ($scope, $stateParams, opsModel, opsService) {
+            controller: function($scope, $stateParams, opsModel, opsService) {
                 $scope.model = opsModel;
                 $scope.isEditable = opsService.isEditable;
-                $scope.luonnissa = $stateParams.id === 'uusi';
+                $scope.luonnissa = $stateParams.id === "uusi";
                 $scope.isLukio = true;
             }
         })
-        .state('root.opetussuunnitelmat.lukio.opetus', {
-            url: '/opetus',
-            templateUrl: 'views/opetussuunnitelmat/lukio/opetus.html',
-            controller: 'LukioOpetusController'
+        .state("root.opetussuunnitelmat.lukio.opetus", {
+            url: "/opetus",
+            templateUrl: "views/opetussuunnitelmat/lukio/opetus.html",
+            controller: "LukioOpetusController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet', {
-            url: '/aihekokonaisuudet',
-            templateUrl: 'views/opetussuunnitelmat/lukio/aihekokonaisuudet.html',
-            controller: 'AihekokonaisuudetController'
+        .state("root.opetussuunnitelmat.lukio.opetus.aihekokonaisuudet", {
+            url: "/aihekokonaisuudet",
+            templateUrl: "views/opetussuunnitelmat/lukio/aihekokonaisuudet.html",
+            controller: "AihekokonaisuudetController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.uusiaihekokonaisuus', {
-            url: '/aihekokonaisuudet/uusi',
-            templateUrl: 'views/opetussuunnitelmat/lukio/aihekokonaisuus.html',
-            controller: 'LuoAihekokonaisuusController'
+        .state("root.opetussuunnitelmat.lukio.opetus.uusiaihekokonaisuus", {
+            url: "/aihekokonaisuudet/uusi",
+            templateUrl: "views/opetussuunnitelmat/lukio/aihekokonaisuus.html",
+            controller: "LuoAihekokonaisuusController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.aihekokonaisuus', {
-            url: '/aihekokonaisuudet/kokonaisuus/:aihekokonaisuusId',
-            templateUrl: 'views/opetussuunnitelmat/lukio/aihekokonaisuus.html',
-            controller: 'AihekokonaisuusController'
+        .state("root.opetussuunnitelmat.lukio.opetus.aihekokonaisuus", {
+            url: "/aihekokonaisuudet/kokonaisuus/:aihekokonaisuusId",
+            templateUrl: "views/opetussuunnitelmat/lukio/aihekokonaisuus.html",
+            controller: "AihekokonaisuusController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet', {
-            url: '/yleisetTavoitteet',
-            templateUrl: 'views/opetussuunnitelmat/lukio/yleisettavoitteet.html',
-            controller: 'OpetuksenYleisetTavoitteetController'
+        .state("root.opetussuunnitelmat.lukio.opetus.yleisettavoitteet", {
+            url: "/yleisetTavoitteet",
+            templateUrl: "views/opetussuunnitelmat/lukio/yleisettavoitteet.html",
+            controller: "OpetuksenYleisetTavoitteetController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.oppiaineet', {
-            url: '/oppiaineet',
-            templateUrl: 'views/opetussuunnitelmat/lukio/oppiaineet.html',
-            controller: 'LukioOppiaineetController'
+        .state("root.opetussuunnitelmat.lukio.opetus.oppiaineet", {
+            url: "/oppiaineet",
+            templateUrl: "views/opetussuunnitelmat/lukio/oppiaineet.html",
+            controller: "LukioOppiaineetController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.oppiaine', {
-            url: '/oppiaineet/aine/:oppiaineId',
-            templateUrl: 'views/opetussuunnitelmat/lukio/oppiaine.html',
-            controller: 'LukioOppiaineController'
+        .state("root.opetussuunnitelmat.lukio.opetus.oppiaine", {
+            url: "/oppiaineet/aine/:oppiaineId",
+            templateUrl: "views/opetussuunnitelmat/lukio/oppiaine.html",
+            controller: "LukioOppiaineController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.kurssi', {
-            url: '/oppiaineet/aine/:oppiaineId/kurssi/:kurssiId',
-            templateUrl: 'views/opetussuunnitelmat/lukio/kurssi.html',
-            controller: 'LukioKurssiController'
+        .state("root.opetussuunnitelmat.lukio.opetus.kurssi", {
+            url: "/oppiaineet/aine/:oppiaineId/kurssi/:kurssiId",
+            templateUrl: "views/opetussuunnitelmat/lukio/kurssi.html",
+            controller: "LukioKurssiController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.uusikurssi', {
-            url: '/oppiaineet/aine/:oppiaineId/uusi/kurssi',
-            templateUrl: 'views/opetussuunnitelmat/lukio/kurssi.html',
-            controller: 'LuoLukioKurssiController'
+        .state("root.opetussuunnitelmat.lukio.opetus.uusikurssi", {
+            url: "/oppiaineet/aine/:oppiaineId/uusi/kurssi",
+            templateUrl: "views/opetussuunnitelmat/lukio/kurssi.html",
+            controller: "LuoLukioKurssiController"
         })
-        .state('root.opetussuunnitelmat.lukio.opetus.uusioppiaine', {
-            url: '/oppiaineet/uusi/:parentOppiaineId',
-            templateUrl: 'views/opetussuunnitelmat/lukio/oppiaine.html',
-            controller: 'LuoLukioOppiaineController'
-        })
-    });
+        .state("root.opetussuunnitelmat.lukio.opetus.uusioppiaine", {
+            url: "/oppiaineet/uusi/:parentOppiaineId",
+            templateUrl: "views/opetussuunnitelmat/lukio/oppiaine.html",
+            controller: "LuoLukioOppiaineController"
+        });
+});

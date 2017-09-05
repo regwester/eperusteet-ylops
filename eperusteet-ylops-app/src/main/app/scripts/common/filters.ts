@@ -14,49 +14,43 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-
 ylopsApp
-  .filter('unsafe', function ($sce) {
-    return function (val) {
-      return $sce.trustAsHtml(val) || "";
-    };
-  })
+    .filter("unsafe", function($sce) {
+        return function(val) {
+            return $sce.trustAsHtml(val) || "";
+        };
+    })
+    .filter("stripTags", function() {
+        return function(val) {
+            if (!val) {
+                return "";
+            } else {
+                return String(val).replace(/<[^>]+>/gm, "");
+            }
+        };
+    })
+    .filter("aikaleima", function($filter, Kaanna) {
+        var mapping = {
+            date: "d.M.yyyy",
+            default: "d.M.yyyy H:mm:ss",
+            short: "d.M.yyyy H:mm"
+        };
 
-  .filter('stripTags', function () {
-    return function (val) {
-      if (!val) {
-        return '';
-      }
-      else {
-        return String(val).replace(/<[^>]+>/gm, '');
-      }
-    };
-  })
+        return function(input, format, defaultKey) {
+            if (!input) {
+                return defaultKey ? Kaanna.kaanna(defaultKey) : "";
+            }
 
-  .filter('aikaleima', function ($filter, Kaanna) {
-    var mapping = {
-      date: 'd.M.yyyy',
-      default: 'd.M.yyyy H:mm:ss',
-      short: 'd.M.yyyy H:mm'
-    };
-
-    return function (input, format, defaultKey) {
-      if (!input) {
-        return defaultKey ? Kaanna.kaanna(defaultKey) : '';
-      }
-
-      return $filter('date')(input, mapping[format] || mapping.default);
-    };
-  })
-
-  .filter('arrayFilterByField', function () {
-    return function (value, selectedArray, field) {
-      angular.forEach(selectedArray, function (selected) {
-        _.remove(value, function (object) {
-          return object[field] === selected[field];
-        });
-      });
-      return value;
-    };
-  });
+            return $filter("date")(input, mapping[format] || mapping.default);
+        };
+    })
+    .filter("arrayFilterByField", function() {
+        return function(value, selectedArray, field) {
+            angular.forEach(selectedArray, function(selected) {
+                _.remove(value, function(object) {
+                    return object[field] === selected[field];
+                });
+            });
+            return value;
+        };
+    });

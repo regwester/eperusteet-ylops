@@ -14,70 +14,76 @@
  * European Union Public Licence for more details.
  */
 
-'use strict';
-/* global _ */
-
 ylopsApp
-  .service('Lokalisointi', function ($http, $q) {
-    var translations = {};
-    var PREFIX = 'localisation/locale-',
-        SUFFIX = '.json';
+    .service("Lokalisointi", function($http, $q) {
+        var translations = {};
+        var PREFIX = "localisation/locale-",
+            SUFFIX = ".json";
 
-    this.init = function () {
-      var deferred = [];
-      _.each(['fi', 'sv'], function (key) {
-        deferred.push($http({
-          url: PREFIX + key + SUFFIX,
-          method: 'GET',
-          params: ''
-        }).success(function (data) {
-          translations[key] = data;
-        }));
-      });
-      return $q.all(deferred);
-    };
-  })
-
-  .factory('LokalisointiResource', function(LOKALISOINTI_SERVICE_LOC, $resource) {
-    return $resource(LOKALISOINTI_SERVICE_LOC, {}, {
-      get: {
-        method: 'GET',
-        isArray: true,
-        cache: true
-      }
+        this.init = function() {
+            var deferred = [];
+            _.each(["fi", "sv"], function(key) {
+                deferred.push(
+                    $http({
+                        url: PREFIX + key + SUFFIX,
+                        method: "GET",
+                        params: ""
+                    }).success(function(data) {
+                        translations[key] = data;
+                    })
+                );
+            });
+            return $q.all(deferred);
+        };
+    })
+    .factory("LokalisointiResource", function(LOKALISOINTI_SERVICE_LOC, $resource) {
+        return $resource(
+            LOKALISOINTI_SERVICE_LOC,
+            {},
+            {
+                get: {
+                    method: "GET",
+                    isArray: true,
+                    cache: true
+                }
+            }
+        );
+    })
+    .factory("LokalisointiLoader", function($q, $http, LokalisointiResource, $window, $rootScope) {
+        var PREFIX = "localisation/locale-",
+            SUFFIX = ".json",
+            BYPASS_REMOTE = $window.location.host.indexOf("localhost") === 0;
+        return function(options) {
+            var deferred = $q.defer();
+            var translations = {};
+            $http({
+                url: PREFIX + options.key + SUFFIX,
+                method: "GET",
+                params: ""
+            })
+                .success(function(data) {
+                    _.extend(translations, data);
+                    if (BYPASS_REMOTE) {
+                        deferred.resolve(translations);
+                        $rootScope.lokalisointiInited = true;
+                    } else {
+                        LokalisointiResource.get(
+                            { locale: options.key },
+                            function(res) {
+                                var remotes = _.zipObject(_.map(res, "key"), _.map(res, "value"));
+                                _.extend(translations, remotes);
+                                deferred.resolve(translations);
+                                $rootScope.lokalisointiInited = true;
+                            },
+                            function() {
+                                deferred.reject(options.key);
+                            }
+                        );
+                    }
+                })
+                .error(function() {
+                    deferred.reject(options.key);
+                });
+            return deferred.promise;
+        };
     });
-  })
-
-  .factory('LokalisointiLoader', function ($q, $http, LokalisointiResource, $window,
-    $rootScope) {
-    var PREFIX = 'localisation/locale-',
-        SUFFIX = '.json',
-        BYPASS_REMOTE = $window.location.host.indexOf('localhost') === 0;
-    return function (options) {
-      var deferred = $q.defer();
-      var translations = {};
-      $http({
-        url: PREFIX + options.key + SUFFIX,
-        method: 'GET',
-        params: ''
-      }).success(function (data) {
-        _.extend(translations, data);
-        if (BYPASS_REMOTE) {
-          deferred.resolve(translations);
-          $rootScope.lokalisointiInited = true;
-        } else {
-          LokalisointiResource.get({locale: options.key}, function (res) {
-            var remotes = _.zipObject(_.map(res, 'key'), _.map(res, 'value'));
-            _.extend(translations, remotes);
-            deferred.resolve(translations);
-            $rootScope.lokalisointiInited = true;
-          }, function () {
-            deferred.reject(options.key);
-          });
-        }
-      }).error(function () {
-        deferred.reject(options.key);
-      });
-      return deferred.promise;
-    };
-  });

@@ -14,135 +14,169 @@
 * European Union Public Licence for more details.
 */
 
-'use strict';
-
-ylopsApp
-.controller('PohjaTiedotController', function ($scope, $stateParams, $state, $q,
-  OpetussuunnitelmaCRUD, Notifikaatiot, Utils, OpsService, $rootScope,
-  Editointikontrollit, $timeout, Kieli, Varmistusdialogi, EperusteetPerusopetus, EperusteetLukiokoulutus, perusteet) {
-
-    $scope.luonnissa = $stateParams.pohjaId === 'uusi';
+ylopsApp.controller("PohjaTiedotController", function(
+    $scope,
+    $stateParams,
+    $state,
+    $q,
+    OpetussuunnitelmaCRUD,
+    Notifikaatiot,
+    Utils,
+    OpsService,
+    $rootScope,
+    Editointikontrollit,
+    $timeout,
+    Kieli,
+    Varmistusdialogi,
+    EperusteetPerusopetus,
+    EperusteetLukiokoulutus,
+    perusteet
+) {
+    $scope.luonnissa = $stateParams.pohjaId === "uusi";
     $scope.kieliOrderFn = Kieli.orderFn;
 
     if ($scope.luonnissa) {
-      $scope.model.tyyppi = 'pohja';
-      $scope.model.julkaisukielet = ['fi'];
+        $scope.model.tyyppi = "pohja";
+        $scope.model.julkaisukielet = ["fi"];
     }
 
     $scope.editMode = false;
-    $scope.kielivalinnat = ['fi', 'sv', 'se'];
+    $scope.kielivalinnat = ["fi", "sv", "se"];
     $scope.perustelista = [];
 
-    $scope.hasRequiredFields = function () {
-      var model = $scope.model;
-      return Utils.hasLocalizedText(model.nimi) &&
-        model.perusteenDiaarinumero &&
-      _.any(_.values($scope.julkaisukielet));
+    $scope.hasRequiredFields = function() {
+        var model = $scope.model;
+        return (
+            Utils.hasLocalizedText(model.nimi) && model.perusteenDiaarinumero && _.any(_.values($scope.julkaisukielet))
+        );
     };
 
     if (perusteet) {
-      $scope.perustelista = perusteet;
+        $scope.perustelista = perusteet;
     }
 
-    const fetch = (notify?) => $q((resolve, reject) => {
-      OpsService.refetchPohja((res) => {
-        $scope.model = res;
-        if (notify) {
-          $rootScope.$broadcast('rakenne:updated');
-        }
-        resolve();
-      }, reject);
-    });
+    const fetch = (notify?) =>
+        $q((resolve, reject) => {
+            OpsService.refetchPohja(res => {
+                $scope.model = res;
+                if (notify) {
+                    $rootScope.$broadcast("rakenne:updated");
+                }
+                resolve();
+            }, reject);
+        });
 
-    const successCb = (res) => $q((resolve, reject) => {
-      Notifikaatiot.onnistui('tallennettu-ok');
-      if ($scope.luonnissa) {
-        reject();
-        $state.go('root.pohjat.yksi', {pohjaId: res.id}, {reload: true});
-      }
-      else {
-        fetch(true).then(resolve).catch(reject);
-      }
-    });
+    const successCb = res =>
+        $q((resolve, reject) => {
+            Notifikaatiot.onnistui("tallennettu-ok");
+            if ($scope.luonnissa) {
+                reject();
+                $state.go("root.pohjat.yksi", { pohjaId: res.id }, { reload: true });
+            } else {
+                fetch(true)
+                    .then(resolve)
+                    .catch(reject);
+            }
+        });
 
     function mapJulkaisukielet() {
-      $scope.julkaisukielet = _.zipObject($scope.kielivalinnat, _.map($scope.kielivalinnat, function (kieli) {
-        return _.indexOf($scope.model.julkaisukielet, kieli) > -1;
-      }));
+        $scope.julkaisukielet = _.zipObject(
+            $scope.kielivalinnat,
+            _.map($scope.kielivalinnat, function(kieli) {
+                return _.indexOf($scope.model.julkaisukielet, kieli) > -1;
+            })
+        );
     }
 
-    $scope.$watch('model.julkaisukielet', mapJulkaisukielet);
+    $scope.$watch("model.julkaisukielet", mapJulkaisukielet);
 
     var callbacks = {
-      edit: fetch,
-      validate: function () {
-        return $scope.hasRequiredFields();
-      },
-      save: () => $q((resolve, reject) => {
-        $scope.model.julkaisukielet = _($scope.julkaisukielet)
-          .keys()
-          .filter((koodi) => $scope.julkaisukielet[koodi])
-          .value();
+        edit: fetch,
+        validate: function() {
+            return $scope.hasRequiredFields();
+        },
+        save: () =>
+            $q((resolve, reject) => {
+                $scope.model.julkaisukielet = _($scope.julkaisukielet)
+                    .keys()
+                    .filter(koodi => $scope.julkaisukielet[koodi])
+                    .value();
 
-        const params = $scope.luonnissa ? {} : {
-          opsId: $stateParams.pohjaId
-        };
+                const params = $scope.luonnissa
+                    ? {}
+                    : {
+                          opsId: $stateParams.pohjaId
+                      };
 
-        OpetussuunnitelmaCRUD.save(params, $scope.model, (res) => {
-          successCb(res).then(resolve);
-        }, Notifikaatiot.serverCb);
-      }),
-      cancel: fetch,
-      notify: (mode) => {
-        $scope.editMode = mode;
-        if (mode) {
-          $scope.haePerusteet();
+                OpetussuunnitelmaCRUD.save(
+                    params,
+                    $scope.model,
+                    res => {
+                        successCb(res).then(resolve);
+                    },
+                    Notifikaatiot.serverCb
+                );
+            }),
+        cancel: fetch,
+        notify: mode => {
+            $scope.editMode = mode;
+            if (mode) {
+                $scope.haePerusteet();
+            }
         }
-      }
     };
     Editointikontrollit.registerCallback(callbacks);
 
     $scope.uusi = {
-      cancel: function () {
-        $timeout(function () {
-          $state.go('root.etusivu');
-        });
-      },
-      create: function () {
-        callbacks.save();
-      }
-    };
-
-    $scope.edit = function () {
-      Editointikontrollit.startEditing();
-    };
-
-    $scope.haePerusteet = function () {
-      if (!($scope.editMode || $scope.luonnissa)) {
-        return;
-      }
-
-      const isLukio = _.any(['koulutustyyppi_2', 'koulutustyyppi_23', 'koulutustyyppi_14'], (i) => i === $scope.model.koulutustyyppi);
-      const perusteet = isLukio ? EperusteetLukiokoulutus : EperusteetPerusopetus;
-      perusteet.query({}, (perusteet) => {
-        $scope.perustelista = perusteet;
-      }, Notifikaatiot.serverCb);
-
-    };
-
-    $scope.delete = function () {
-      Varmistusdialogi.dialogi({
-        otsikko: 'varmista-poisto',
-        primaryBtn: 'poista',
-        successCb: function () {
-          $scope.model.$delete({}, function () {
-            Notifikaatiot.onnistui('poisto-onnistui');
-            $timeout(function () {
-              $state.go('root.etusivu');
+        cancel: function() {
+            $timeout(function() {
+                $state.go("root.etusivu");
             });
-          }, Notifikaatiot.serverCb);
+        },
+        create: function() {
+            callbacks.save();
         }
-      })();
     };
 
-  });
+    $scope.edit = function() {
+        Editointikontrollit.startEditing();
+    };
+
+    $scope.haePerusteet = function() {
+        if (!($scope.editMode || $scope.luonnissa)) {
+            return;
+        }
+
+        const isLukio = _.any(
+            ["koulutustyyppi_2", "koulutustyyppi_23", "koulutustyyppi_14"],
+            i => i === $scope.model.koulutustyyppi
+        );
+        const perusteet = isLukio ? EperusteetLukiokoulutus : EperusteetPerusopetus;
+        perusteet.query(
+            {},
+            perusteet => {
+                $scope.perustelista = perusteet;
+            },
+            Notifikaatiot.serverCb
+        );
+    };
+
+    $scope.delete = function() {
+        Varmistusdialogi.dialogi({
+            otsikko: "varmista-poisto",
+            primaryBtn: "poista",
+            successCb: function() {
+                $scope.model.$delete(
+                    {},
+                    function() {
+                        Notifikaatiot.onnistui("poisto-onnistui");
+                        $timeout(function() {
+                            $state.go("root.etusivu");
+                        });
+                    },
+                    Notifikaatiot.serverCb
+                );
+            }
+        })();
+    };
+});
