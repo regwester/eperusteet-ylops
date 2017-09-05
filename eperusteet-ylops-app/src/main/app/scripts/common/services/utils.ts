@@ -129,7 +129,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
     };
   })
 
-  .directive('ngEnter', function() {
+  /*.directive('ngEnter', function() {
     return function(scope, element, attrs) {
       element.bind('keydown keypress', function(event) {
         if (event.which === 13) {
@@ -140,9 +140,9 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
         }
       });
     };
-  })
+  })*/
 
-  .directive('ngEsc', function() {
+  /*.directive('ngEsc', function() {
     return function(scope, element, attrs) {
       element.bind('keydown keypress', function(event) {
         if (event.which === 27) {
@@ -153,7 +153,7 @@ ylopsApp.service('Utils', function($window, Kieli, Kaanna) {
         }
       });
     };
-  })
+  })*/
 
   .directive('dateformatvalidator', function () {
     return {

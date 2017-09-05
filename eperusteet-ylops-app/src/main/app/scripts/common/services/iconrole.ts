@@ -20,7 +20,7 @@
    * Prepends a glyphicon to the element, see mapping in IconMapping.
    */
 ylopsApp
-  .directive('iconRole', function (IconMapping) {
+  .directive('iconRole', ['IconMapping', function (IconMapping) {
     return {
       restrict: 'A',
       compile: function() {
@@ -32,7 +32,7 @@ ylopsApp
         };
       }
     };
-  })
+  }])
 
   .service('IconMapping', function () {
     this.addIcon = function (key, el) {
