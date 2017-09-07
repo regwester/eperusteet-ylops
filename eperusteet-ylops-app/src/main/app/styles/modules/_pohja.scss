@@ -1,36 +1,35 @@
 .pohja-sisalto-editing-buttons {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .teksti-node-actions {
-  display: none;
+    display: none;
 }
 
 .pohjan-muokkaus {
-  .rakenne {
-    margin-top: 20px;
-  }
-
-  .tekstikappaleet {
-    padding-left: 20px;
-    .teksti-node {
-      position: relative;
-      font-size: 14px;
-      padding-right: 50px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      &.editmode {
-        height: 50px;
-        padding-right: 5px;
-      }
-      .teksti-node-actions {
-        display: block;
-        position: absolute;
-        right: 0;
-      }
+    .rakenne {
+        margin-top: 20px;
     }
-    margin-bottom: 50px;
-  }
 
+    .tekstikappaleet {
+        padding-left: 20px;
+        .teksti-node {
+            position: relative;
+            font-size: 14px;
+            padding-right: 50px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            &.editmode {
+                height: 50px;
+                padding-right: 5px;
+            }
+            .teksti-node-actions {
+                display: block;
+                position: absolute;
+                right: 0;
+            }
+        }
+        margin-bottom: 50px;
+    }
 }
