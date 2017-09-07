@@ -4,29 +4,30 @@
 $fluid-container-width: 1400px;
 
 .container-fluid {
-  max-width: $fluid-container-width;
+    max-width: $fluid-container-width;
 }
 
 .breadcrumb {
-  margin-bottom: 10px;
-  .active {
-    color: #777;
-  }
-  li {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: 20em;
-  }
-  & > li + li:before {
-    padding-right: 0;
-  }
+    margin-bottom: 10px;
+    .active {
+        color: #777;
+    }
+    li {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 20em;
+    }
+    & > li + li:before {
+        padding-right: 0;
+    }
 }
 
-.input-group .btn, .input-group input {
-  border-radius: 0;
+.input-group .btn,
+.input-group input {
+    border-radius: 0;
 }
 
 .form-control {
-  border-radius: 0 !important;
+    border-radius: 0 !important;
 }
