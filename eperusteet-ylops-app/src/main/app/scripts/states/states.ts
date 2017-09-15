@@ -20,23 +20,14 @@ ylopsApp.config(function($stateProvider) {
             url: "/:lang",
             template: "<div ui-view></div>",
             abstract: true,
-            onEnter: [
-                "Kieli",
-                "$stateParams",
-                "$rootScope",
-                function(Kieli, $stateParams, $rootScope) {
-                    Kieli.setUiKieli($stateParams.lang, false);
-                    $rootScope.$broadcast("fetched:oikeusTiedot");
-                }
-            ],
+            onEnter: function(Kieli, $stateParams, $rootScope) {
+                Kieli.setUiKieli($stateParams.lang, false);
+                $rootScope.$broadcast("fetched:oikeusTiedot");
+            },
             resolve: {
-                casTiedot: [
-                    "Oikeudet",
-                    "$q",
-                    function(Oikeudet, $q) {
+                casTiedot: function(Oikeudet, $q) {
                         return $q.all([Oikeudet.getKayttaja().$promise, Oikeudet.getCasTiedot()]);
-                    }
-                ],
+                },
                 opsOikeudet: "OpetussuunnitelmaOikeudetService",
                 kayttajaOikeudetNouto: [
                     "casTiedot",

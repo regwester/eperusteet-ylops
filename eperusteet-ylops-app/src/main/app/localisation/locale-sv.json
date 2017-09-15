@@ -311,5 +311,9 @@
     "virhe-ylempaan-nakymaan": "Övre vy",
     "virhe-opetussuunnitelmaan": "Läroplanen",
     "virhe-nayta-lisatiedot": "Visa teknisk information om felet",
-    "virhe-piilota-lisatiedot": "Dölj teknisk information om felet"
+    "virhe-piilota-lisatiedot": "Dölj teknisk information om felet",
+    "oppiaine-osa-tehtava": "Läroämnets uppdrag",
+    "oppiaine-osa-tavoitteet": "Mål för undervisningen",
+    "kurssi-osa-tavoitteet": "Mål",
+    "kurssi-osa-keskeinenSisalto": "Centralt innehåll"
 }
