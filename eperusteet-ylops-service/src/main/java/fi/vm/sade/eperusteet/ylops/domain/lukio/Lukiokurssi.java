@@ -148,15 +148,19 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
                 Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet,
                         LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
             } else {
-                Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet,
-                        this.getNimi());
+                Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet, this.getNimi());
             }
             return;
         } else if (keskeinenSisalto != null && tavoitteet != null) {
-            Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet,
-                    LokalisoituTeksti.concat(this.getNimi(), lokalisoituKoodi));
-            Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet,
-                    LokalisoituTeksti.concat(this.getNimi(), lokalisoituKoodi));
+            if (lokalisoituKoodi != null) {
+                Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet,
+                        LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
+                Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet,
+                        LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
+            } else {
+                Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet, this.getNimi());
+                Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet, this.getNimi());
+            }
             return;
         }
         validointi.varoitus("lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat", this.getNimi());
