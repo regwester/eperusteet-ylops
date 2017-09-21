@@ -83,11 +83,21 @@ public class Tekstiosa implements Serializable {
     }
 
 
-    public static void validoiOtsikko(Validointi validointi, Tekstiosa osa, Set<Kieli> kielet, LokalisoituTeksti... parents) {
-        LokalisoituTeksti.validoi(validointi, kielet, osa.getOtsikko(), parents);
+    public static void validoiOtsikko(Validointi validointi, Tekstiosa osa, Set<Kieli> kielet, LokalisoituTeksti parent) {
+        LokalisoituTeksti otsikko = osa.getOtsikko();
+        if (otsikko != null) {
+            LokalisoituTeksti.validoi(validointi, kielet, otsikko, parent);
+        } else {
+            validointi.varoitus("tekstisisalto-puuttuu", parent);
+        }
     }
 
-    public static void validoiTeksti(Validointi validointi, Tekstiosa osa, Set<Kieli> kielet, LokalisoituTeksti... parents) {
-        LokalisoituTeksti.validoi(validointi, kielet, osa.getTeksti(), parents);
+    public static void validoiTeksti(Validointi validointi, Tekstiosa osa, Set<Kieli> kielet, LokalisoituTeksti parent) {
+        LokalisoituTeksti teksti = osa.getTeksti();
+        if (teksti != null) {
+            LokalisoituTeksti.validoi(validointi, kielet, teksti, parent);
+        } else {
+            validointi.varoitus("tekstisisalto-puuttuu", parent);
+        }
     }
 }
