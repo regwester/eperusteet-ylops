@@ -143,7 +143,6 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
 
     public void validoiTavoitteetJaKeskeinenSisalto(Validointi validointi, Set<Kieli> julkaisukielet) {
         if (tavoitteetJaKeskeinenSisalto != null) {
-            LokalisoituTeksti concat = LokalisoituTeksti.concat(this.getNimi(), "(");
             if (lokalisoituKoodi != null) {
                 Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet,
                         LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
