@@ -1150,7 +1150,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
         });
 
-        logger.error("lukio-opsin-validointi-epaonnistui ", validointi.getVirheet().size());
+        logger.error("lukio-opsin-validointi-epaonnistui", validointi.getVirheet().size());
         return validointi;
     }
 
