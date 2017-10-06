@@ -15,10 +15,11 @@
 */
 
 ylopsApp
-    .service("SpinnerService", function(SPINNER_WAIT, $rootScope, $timeout) {
+    .service("SpinnerService", function(SPINNER_WAIT, $rootScope, $timeout, cfpLoadingBar) {
         var pyynnot = 0;
 
         function enableSpinner() {
+            cfpLoadingBar.start();
             ++pyynnot;
             $timeout(function() {
                 if (pyynnot > 0) {
@@ -28,6 +29,7 @@ ylopsApp
         }
 
         function disableSpinner() {
+            cfpLoadingBar.complete();
             --pyynnot;
             if (pyynnot === 0) {
                 $rootScope.$emit("event:spinner_off");
