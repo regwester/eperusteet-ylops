@@ -28,10 +28,9 @@ var ylopsApp = angular.module("ylopsApp", [
     "ui.tree",
     "ui.sortable",
     "ngFileUpload",
-    "eGenericTree"
+    "eGenericTree",
+    "angular-loading-bar"
 ]);
-
-/* jshint ignore:end */
 
 ylopsApp
     .run(function(
@@ -116,7 +115,7 @@ ylopsApp
             }
         });
     })
-    .config(function($tooltipProvider) {
+    .config(function($tooltipProvider, cfpLoadingBarProvider) {
         $tooltipProvider.setTriggers({
             mouseenter: "mouseleave",
             click: "click",
@@ -128,6 +127,9 @@ ylopsApp
             popupDelay: 500,
             placement: "bottom"
         });
+        cfpLoadingBarProvider.parentSelector = "#loading-bar-container";
+        cfpLoadingBarProvider.includeSpinner = true;
+        cfpLoadingBarProvider.latencyThreshold = 100;
     })
     .run(function($templateCache) {
         //angular-ui-select korjaus (IE9)

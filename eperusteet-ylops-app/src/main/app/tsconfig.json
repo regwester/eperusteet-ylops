@@ -95,6 +95,7 @@
         "scripts/common/directives/rajaus.ts",
         "scripts/common/directives/navimenu.ts",
         "scripts/common/directives/jqueryspinner.ts",
+        "scripts/common/directives/sticky.ts",
         "scripts/common/filters.ts",
         "scripts/constants.ts",
         "scripts/config.ts"

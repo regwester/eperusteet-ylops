@@ -318,3 +318,20 @@ hr.mujuviiva {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+#loading-bar-container {
+  position: relative;
+  z-index: 1001;
+}
+
+#loading-bar > .bar {
+  position: absolute;
+}
+
+#loading-bar-spinner {
+  position: absolute;
+}
+
+#raamit-header {
+  margin-bottom: 0 !important;
+}

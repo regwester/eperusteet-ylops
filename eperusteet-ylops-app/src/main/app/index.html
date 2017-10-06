@@ -17,6 +17,10 @@
     <!-- endbuild -->
   </head>
   <body ng-app="ylopsApp" style="height:100%; background-color: white">
+    <div id="loading-bar-container" sticky>
+      <div></div>
+    </div>
+    
     <!-- build:js scripts/ieshims.js -->
     <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
@@ -47,7 +51,6 @@
         </div>
       </div>
     </div>
-    <spinner></spinner>
 
     <div class="clearfix"></div>
 
@@ -82,6 +85,7 @@
     <script src="bower_components/angular-ui-sortable/src/sortable.js"></script>
     <script src="bower_components/angular-ui-tree/dist/angular-ui-tree.min.js"></script>
     <script src="bower_components/angular-elastic/elastic.js"></script>
+    <script src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
     <script src="bower_components/lodash/lodash.min.js"></script>
     <script src="bower_components/angular-i18n/angular-locale_fi-fi.js"></script>
     <script src="bower_components/momentjs/min/moment.min.js"></script>
@@ -91,10 +95,8 @@
     <script src="bower_components/angular-ui-select/dist/select.min.js"></script>
     <script src="bower_components/ng-file-upload/ng-file-upload-shim.min.js"></script>
     <script src="bower_components/ng-file-upload/ng-file-upload.min.js"></script>
-    <script src="scripts/common/directives/generictree.js"></script>
+    <script src="bower_components/jquery-sticky/jquery.sticky.js"></script>
     <!-- endbuild -->
-
-    <script src="bower_components/ckeditor/ckeditor.js?v=4.4.6"></script>
 
     <!-- build:js({.tmp,../src/main/app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
@@ -103,6 +105,7 @@
     <script src="scripts/resources/ylops.js"></script>
     <script src="scripts/common/lokalisointi.js"></script>
     <script src="scripts/common/cache.js"></script>
+    <script src="scripts/common/directives/generictree.js"></script>
     <script src="scripts/states/states.js"></script>
     <script src="scripts/states/lukioStates.js"></script>
     <script src="scripts/states/vuosiluokatjaoppiaineet.js"></script>
@@ -146,6 +149,7 @@
     <script src="scripts/common/directives/muokkaustieto.js"></script>
     <script src="scripts/common/directives/termistoviitteet.js"></script>
     <script src="scripts/common/directives/jqueryspinner.js"></script>
+    <script src="scripts/common/directives/sticky.js"></script>
 
     <script src="scripts/resources/opetussuunnitelma.js"></script>
     <script src="scripts/resources/ohje.js"></script>
@@ -191,5 +195,7 @@
     <script src="scripts/views/opetussuunnitelmat/lukio/lukioOppiaineetControllers.js"></script>
     <script src="scripts/views/opetussuunnitelmat/lukio/lukioAihekokonaisuudet.js"></script>
     <!-- endbuild -->
+
+    <script src="bower_components/ckeditor/ckeditor.js?v=4.4.6"></script>
   </body>
 </html>
