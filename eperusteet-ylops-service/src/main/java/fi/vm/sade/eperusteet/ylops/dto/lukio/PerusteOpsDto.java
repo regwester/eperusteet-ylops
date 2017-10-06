@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.toMap;
  */
 @Getter
 public abstract class PerusteOpsDto<T extends PerusteenOsa, OpsT extends PerusteeseenViittaava<T>>
-            implements PerusteeseenViittaava<T>, PerusteenOsa {
+        implements PerusteeseenViittaava<T>, PerusteenOsa {
     private T perusteen;
     private OpsT paikallinen;
     @Setter

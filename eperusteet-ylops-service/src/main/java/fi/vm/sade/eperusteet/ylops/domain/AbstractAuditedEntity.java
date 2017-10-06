@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -24,11 +25,13 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 import lombok.Getter;
 import org.hibernate.envers.Audited;
 
 /**
  * Kantaluokka entiteeteille joista ylläpidetään luotu/muokattu -tietoja.
+ *
  * @author jhyoty
  */
 @MappedSuperclass

@@ -21,7 +21,6 @@ import lombok.Setter;
 import java.util.Optional;
 
 /**
- *
  * @author mikkom
  */
 @Getter
@@ -31,7 +30,8 @@ public class TekstiosaDto {
     private Optional<LokalisoituTekstiDto> otsikko;
     private Optional<LokalisoituTekstiDto> teksti;
 
-    public TekstiosaDto() { }
+    public TekstiosaDto() {
+    }
 
     public TekstiosaDto(Optional<LokalisoituTekstiDto> otsikko, Optional<LokalisoituTekstiDto> teksti) {
         this.otsikko = otsikko;

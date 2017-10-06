@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
  * @author mikkom
  */
 public interface OpetussuunnitelmaService {
@@ -39,8 +38,8 @@ public interface OpetussuunnitelmaService {
     Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(null, 'tarkastelu', 'HALLINTA') ||" +
-        "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and (hasPermission(null, 'opetussuunnitelma', 'LUKU'))) || " +
-        "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
+            "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and (hasPermission(null, 'opetussuunnitelma', 'LUKU'))) || " +
+            "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi, Tila tila);
 
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
@@ -61,7 +60,7 @@ public interface OpetussuunnitelmaService {
     OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaDto getOpetussuunnitelmaKaikki (@P("opsId") Long id);
+    OpetussuunnitelmaDto getOpetussuunnitelmaKaikki(@P("opsId") Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(@P("opsId") Long id);
@@ -108,6 +107,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(@P("opsId") final Long opsId, final Long parentId,
                                                        TekstiKappaleViiteDto.Matala viite);
+
     /**
      * Hakee opetussuunnitelmaan liittyvän opetussuunnitelman perusteen
      *

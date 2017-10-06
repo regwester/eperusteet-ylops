@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Lisää ResponseEntityyn Cache-Control ja Expires -headerit jos niitä ei ole erikseen lisätty.
+ *
  * @author jhyoty
  */
 @Aspect
@@ -36,7 +37,8 @@ public class CacheHeadersAspect {
     private static final Logger LOG = LoggerFactory.getLogger(CacheHeadersAspect.class);
 
     @Pointcut("execution(org.springframework.http.ResponseEntity fi.vm.sade.eperusteet.ylops.resource..*Controller.*(..))")
-    public void controller() {}
+    public void controller() {
+    }
 
     @Around("controller() && !@annotation(fi.vm.sade.eperusteet.ylops.resource.util.CacheControl)")
     public Object aroundResponse(ProceedingJoinPoint jp) throws Throwable {

@@ -21,7 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- *  Kantaluokka palvelukerroksen poikkeuksille
+ * Kantaluokka palvelukerroksen poikkeuksille
+ *
  * @author jhyoty
  */
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

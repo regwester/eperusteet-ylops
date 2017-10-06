@@ -18,13 +18,16 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.KUVA;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.LIITE;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import io.swagger.annotations.Api;
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -32,6 +35,7 @@ import java.util.*;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +51,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- *
  * @author jhyoty
  */
 @RestController
@@ -78,7 +81,7 @@ public class LiitetiedostoController {
                            @PathVariable UUID id,
                            @RequestParam Integer width,
                            @RequestParam Integer height,
-                           @RequestParam Part file){
+                           @RequestParam Part file) {
         //TODO implement image rescaling
 //        return audit.withAudit(LogMessage.builder(opsId, LIITETIEDOSTO, MUOKKAUSKO));
     }
@@ -107,9 +110,9 @@ public class LiitetiedostoController {
             }
 
             UUID id = null;
-            if( width != null && height != null){
+            if (width != null && height != null) {
                 ByteArrayOutputStream os = scaleImage(file, tyyppi, width, height);
-                id = liitteet.add(opsId, tyyppi, nimi, os.size(), new PushbackInputStream( new ByteArrayInputStream( os.toByteArray() )));
+                id = liitteet.add(opsId, tyyppi, nimi, os.size(), new PushbackInputStream(new ByteArrayInputStream(os.toByteArray())));
             } else {
                 id = liitteet.add(opsId, tyyppi, nimi, koko, pis);
             }
@@ -134,10 +137,10 @@ public class LiitetiedostoController {
 
     private BufferedImage scaleImage(BufferedImage img, int maxDimension) {
         int w = (img.getWidth() > img.getHeight() ? maxDimension :
-                (int)(((double)img.getWidth() / img.getHeight()) * maxDimension));
+                (int) (((double) img.getWidth() / img.getHeight()) * maxDimension));
 
         int h = (img.getHeight() > img.getWidth() ? maxDimension :
-                (int)(((double)img.getHeight() / img.getWidth()) * maxDimension));
+                (int) (((double) img.getHeight() / img.getWidth()) * maxDimension));
 
         BufferedImage preview = new BufferedImage(w, h, img.getType());
         preview.createGraphics().drawImage(img.getScaledInstance(w, h, Image.SCALE_SMOOTH), 0, 0, null);

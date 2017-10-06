@@ -41,7 +41,7 @@ public class ObjectMapperJsonMapperAdapter implements JsonMapper {
     }
 
     @Override
-    public <T> T deserialize(Class<T> t, Reader from)  throws IOException {
+    public <T> T deserialize(Class<T> t, Reader from) throws IOException {
         return mapper.reader(t).readValue(from);
     }
 
@@ -51,7 +51,7 @@ public class ObjectMapperJsonMapperAdapter implements JsonMapper {
     }
 
     @Override
-    public <T> void serialize(T obj, Writer to)  throws IOException {
+    public <T> void serialize(T obj, Writer to) throws IOException {
         mapper.writer().writeValue(to, obj);
     }
 

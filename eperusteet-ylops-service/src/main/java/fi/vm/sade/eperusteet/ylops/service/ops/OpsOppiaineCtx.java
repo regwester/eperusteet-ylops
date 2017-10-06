@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author jhyoty
  */
 @Getter
@@ -42,19 +41,19 @@ public class OpsOppiaineCtx extends OpsCtx {
     }
 
     public boolean isValid() {
-        return ( isOppiane() || isKokonaisuus() || isVuosiluokka() );
+        return (isOppiane() || isKokonaisuus() || isVuosiluokka());
     }
 
     public boolean isOppiane() {
-        return getOpsId()!= null && oppiaineId != null && kokonaisuusId == null && vuosiluokkaId == null;
+        return getOpsId() != null && oppiaineId != null && kokonaisuusId == null && vuosiluokkaId == null;
     }
 
     public boolean isKokonaisuus() {
-        return getOpsId()!= null && oppiaineId != null && kokonaisuusId != null && vuosiluokkaId == null;
+        return getOpsId() != null && oppiaineId != null && kokonaisuusId != null && vuosiluokkaId == null;
     }
 
     public boolean isVuosiluokka() {
-        return getOpsId()!= null && oppiaineId != null && kokonaisuusId != null && vuosiluokkaId != null;
+        return getOpsId() != null && oppiaineId != null && kokonaisuusId != null && vuosiluokkaId != null;
     }
 
 }

@@ -34,15 +34,15 @@ public class JsonMapperFactory implements FactoryBean<JsonMapper> {
     @Override
     public JsonMapper getObject() throws Exception {
         return ObjectMapperJsonMapperAdapter.of(
-            Jackson2ObjectMapperBuilder
-                .json()
-                    .featuresToEnable(
-                        SerializationFeature.WRITE_ENUMS_USING_TO_STRING,
-                        DeserializationFeature.READ_ENUMS_USING_TO_STRING
-                    )
-                    .modules(new Jdk8Module())
-                    .propertyNamingStrategy(new ReferenceNamingStrategy())
-                .build()
+                Jackson2ObjectMapperBuilder
+                        .json()
+                        .featuresToEnable(
+                                SerializationFeature.WRITE_ENUMS_USING_TO_STRING,
+                                DeserializationFeature.READ_ENUMS_USING_TO_STRING
+                        )
+                        .modules(new Jdk8Module())
+                        .propertyNamingStrategy(new ReferenceNamingStrategy())
+                        .build()
         );
     }
 

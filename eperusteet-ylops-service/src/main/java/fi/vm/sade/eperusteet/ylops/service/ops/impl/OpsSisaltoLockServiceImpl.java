@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author jhyoty
  */
 @Service
@@ -52,7 +51,7 @@ public class OpsSisaltoLockServiceImpl extends AbstractLockService<OpsCtx> imple
     @Override
     protected Long validateCtx(OpsCtx ctx, boolean readOnly) {
         Long id = getLockId(ctx);
-        if ( id != null ) {
+        if (id != null) {
             return id;
         }
         throw new LockingException("virheellinen lukitus");

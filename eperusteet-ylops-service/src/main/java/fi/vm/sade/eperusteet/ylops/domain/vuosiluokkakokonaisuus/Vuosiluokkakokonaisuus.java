@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -34,13 +35,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 /**
- *
  * @author jhyoty
  */
 @Entity

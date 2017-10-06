@@ -19,11 +19,13 @@ import fi.vm.sade.eperusteet.ylops.domain.Lukko;
 import fi.vm.sade.eperusteet.ylops.dto.LukkoDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+
 import java.time.Instant;
 import java.util.Objects;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
@@ -38,7 +40,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- *
  * @author jhyoty
  */
 @Component

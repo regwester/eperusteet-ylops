@@ -25,17 +25,16 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
- *
  * @author jhyoty
  */
 @RestController
 @RequestMapping(value = {
-    "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/lukko",
-    "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/lukko",
-    "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat/{vuosiluokkaId}/lukko"
+        "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/lukko",
+        "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/lukko",
+        "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat/{vuosiluokkaId}/lukko"
 })
 @ApiIgnore
-public class OppiaineLockController extends AbstractLockController<OpsOppiaineCtx>{
+public class OppiaineLockController extends AbstractLockController<OpsOppiaineCtx> {
     @Autowired
     private OppiaineService service;
 

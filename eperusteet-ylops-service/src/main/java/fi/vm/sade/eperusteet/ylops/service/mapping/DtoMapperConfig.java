@@ -35,7 +35,6 @@ import org.springframework.context.annotation.Configuration;
 import java.time.Instant;
 
 /**
- *
  * @author jhyoty
  */
 @Configuration
@@ -43,11 +42,11 @@ public class DtoMapperConfig {
 
     @Bean
     public DtoMapper dtoMapper(
-        ReferenceableEntityConverter referenceableEntityConverter,
-        LokalisoituTekstiConverter lokalisoituTekstiConverter,
-        KoodistoKoodiConverter koodistoKoodiConverter) {
+            ReferenceableEntityConverter referenceableEntityConverter,
+            LokalisoituTekstiConverter lokalisoituTekstiConverter,
+            KoodistoKoodiConverter koodistoKoodiConverter) {
         DefaultMapperFactory factory = new DefaultMapperFactory.Builder()
-            .build();
+                .build();
 
         factory.getConverterFactory().registerConverter(referenceableEntityConverter);
         factory.getConverterFactory().registerConverter(lokalisoituTekstiConverter);
@@ -62,23 +61,23 @@ public class DtoMapperConfig {
 
         //yksisuuntainen mappaus
         factory.classMap(OpetussuunnitelmaDto.class, Opetussuunnitelma.class)
-            .fieldBToA(Opetussuunnitelma_.tekstit.getName(), Opetussuunnitelma_.tekstit.getName())
-            .fieldBToA(Opetussuunnitelma_.oppiaineet.getName(), Opetussuunnitelma_.oppiaineet.getName())
-            //.fieldBToA(Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName(), Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName())
-            //.fieldAToB("vuosiluokkakokonaisuudet", "vuosiluokkakokonaisuudet")
-            .byDefault()
-            .register();
+                .fieldBToA(Opetussuunnitelma_.tekstit.getName(), Opetussuunnitelma_.tekstit.getName())
+                .fieldBToA(Opetussuunnitelma_.oppiaineet.getName(), Opetussuunnitelma_.oppiaineet.getName())
+                //.fieldBToA(Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName(), Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName())
+                //.fieldAToB("vuosiluokkakokonaisuudet", "vuosiluokkakokonaisuudet")
+                .byDefault()
+                .register();
 
         factory.classMap(OppiaineDto.class, Oppiaine.class)
-            .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
-            .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
-            .byDefault()
-            .register();
+                .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
+                .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
+                .byDefault()
+                .register();
 
         factory.classMap(OppiaineLaajaDto.class, Oppiaine.class)
-            .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
-            .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
-            .register();
+                .fieldBToA(Oppiaine_.vuosiluokkakokonaisuudet.getName(), Oppiaine_.vuosiluokkakokonaisuudet.getName())
+                .fieldBToA(Oppiaine_.oppimaarat.getName(), Oppiaine_.oppimaarat.getName()).byDefault()
+                .register();
 
         factory.classMap(Oppiaine.class, LukioOppiaineRakenneListausDto.class)
                 .exclude(Oppiaine_.oppimaarat.getName())

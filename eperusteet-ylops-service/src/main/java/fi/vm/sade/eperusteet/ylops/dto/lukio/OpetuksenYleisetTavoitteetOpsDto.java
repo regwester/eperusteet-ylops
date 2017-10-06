@@ -28,6 +28,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OpetuksenYleisetTavoitteetOpsDto extends OpetuksenYleisetTavoitteetDto
-            implements PerusteeseenViittaava<OpetuksenYleisetTavoitteetDto> {
+        implements PerusteeseenViittaava<OpetuksenYleisetTavoitteetDto> {
     private OpetuksenYleisetTavoitteetDto perusteen;
 }

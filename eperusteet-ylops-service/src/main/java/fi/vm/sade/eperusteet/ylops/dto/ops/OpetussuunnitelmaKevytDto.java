@@ -16,11 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import java.util.Set;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author nkala
  */
 @Getter

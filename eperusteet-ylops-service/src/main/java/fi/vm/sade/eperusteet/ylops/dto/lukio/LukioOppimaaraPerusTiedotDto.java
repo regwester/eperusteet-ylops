@@ -33,7 +33,7 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class LukioOppimaaraPerusTiedotDto implements Serializable  {
+public class LukioOppimaaraPerusTiedotDto implements Serializable {
     private Long id;
     private Long oppiaineId;
     private Date muokattu;

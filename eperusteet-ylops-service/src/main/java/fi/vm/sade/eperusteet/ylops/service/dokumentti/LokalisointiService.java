@@ -21,7 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 
 /**
- *
  * @author iSaul
  */
 public interface LokalisointiService {

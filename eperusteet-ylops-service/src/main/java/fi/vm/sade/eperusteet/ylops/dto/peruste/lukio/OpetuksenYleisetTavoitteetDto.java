@@ -39,7 +39,8 @@ public class OpetuksenYleisetTavoitteetDto implements Serializable, PerusteenOsa
     private String muokkaaja;
 
 
-    @Override @JsonIgnore // uuidTunniste
+    @Override
+    @JsonIgnore // uuidTunniste
     public UUID getTunniste() {
         return uuidTunniste;
     }

@@ -21,7 +21,6 @@ import ma.glasnost.orika.metadata.Type;
 import org.springframework.stereotype.Component;
 
 /**
- *
  * @author mikkom
  */
 @Component

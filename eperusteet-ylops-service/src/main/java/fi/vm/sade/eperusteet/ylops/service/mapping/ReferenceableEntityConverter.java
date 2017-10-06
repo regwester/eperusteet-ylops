@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
+
 import java.io.Serializable;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -26,13 +27,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ManagedType;
+
 import ma.glasnost.orika.ConverterException;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.springframework.stereotype.Component;
 
 /**
- *
  * @author teele1
  */
 @Component
@@ -44,7 +45,7 @@ public class ReferenceableEntityConverter extends BidirectionalConverter<Referen
     @Override
     public boolean canConvert(Type<?> sourceType, Type<?> destinationType) {
         return (this.sourceType.isAssignableFrom(sourceType) && this.destinationType.isAssignableFrom(destinationType))
-            || (this.sourceType.isAssignableFrom(destinationType) && this.destinationType.isAssignableFrom(sourceType));
+                || (this.sourceType.isAssignableFrom(destinationType) && this.destinationType.isAssignableFrom(sourceType));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ReferenceableEntityConverter extends BidirectionalConverter<Referen
         if (managedType instanceof IdentifiableType) {
             final Class<?> idType = ((IdentifiableType<?>) managedType).getIdType().getJavaType();
             return em.getReference(type.getRawType(),
-                                   converters.getOrDefault(idType, ReferenceableEntityConverter::fail).apply(reference));
+                    converters.getOrDefault(idType, ReferenceableEntityConverter::fail).apply(reference));
         }
         throw new ConverterException();
     }

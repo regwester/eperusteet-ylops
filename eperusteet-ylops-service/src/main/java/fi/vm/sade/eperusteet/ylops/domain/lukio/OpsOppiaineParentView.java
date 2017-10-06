@@ -18,15 +18,17 @@ package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+
 import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.*;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * NOTE: just a view (do not attempt to modify or save)
- *
+ * <p>
  * User: tommiratamaa
  * Date: 9.12.2015
  * Time: 16.54
@@ -46,7 +48,7 @@ public class OpsOppiaineParentView implements Serializable {
     @MapsId("oppiaineId")
     @ManyToOne(fetch = FetchType.LAZY)
     private Oppiaine oppiaine;
-    
+
     @Column(name = "oppiaine_oma", nullable = false)
     private boolean oma;
 

@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 /**
- *
  * @author jhyoty
  */
 

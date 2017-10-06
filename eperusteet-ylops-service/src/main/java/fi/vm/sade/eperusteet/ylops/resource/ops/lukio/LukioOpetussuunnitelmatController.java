@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.ABSTRAKTIOPPIAINE;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.AIHEKOKONAISUUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.KIELITARJONTA;
@@ -32,12 +33,14 @@ import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -64,7 +67,7 @@ public class LukioOpetussuunnitelmatController {
     @ResponseBody
     @RequestMapping(value = "/oppiaine/{oppiaineId}", method = RequestMethod.GET)
     public LukioOppiaineTiedotDto getOppiaine(@PathVariable("opsId") Long opsId,
-                                                           @PathVariable("oppiaineId") Long oppiaineId) {
+                                              @PathVariable("oppiaineId") Long oppiaineId) {
         return lukioOpetussuunnitelmaService.getOppiaineTiedot(opsId, oppiaineId);
     }
 
@@ -87,7 +90,7 @@ public class LukioOpetussuunnitelmatController {
     @ResponseBody
     @RequestMapping(value = "/aihekokonaisuudet/kokonaisuus", method = RequestMethod.POST)
     public LongIdResultDto saveAihekokonaisuus(@PathVariable("opsId") Long opsId,
-                                                @RequestBody AihekokonaisuusSaveDto kokonaisuus) {
+                                               @RequestBody AihekokonaisuusSaveDto kokonaisuus) {
         return audit.withAudit(LogMessage.builder(opsId, AIHEKOKONAISUUS, LISAYS), (Void) -> {
             return new LongIdResultDto(lukioOpetussuunnitelmaService.saveAihekokonaisuus(opsId, kokonaisuus));
         });
@@ -95,7 +98,7 @@ public class LukioOpetussuunnitelmatController {
 
     @RequestMapping(value = "/aihekokonaisuudet/jarjesta", method = RequestMethod.POST)
     public void reArrangeAihekokonaisuudet(@PathVariable("opsId") Long opsId,
-                                               @RequestBody AihekokonaisuudetJarjestaDto jarjestys) {
+                                           @RequestBody AihekokonaisuudetJarjestaDto jarjestys) {
         audit.withAudit(LogMessage.builder(opsId, AIHEKOKONAISUUS, JARJESTAMINEN), (Void) -> {
             lukioOpetussuunnitelmaService.reArrangeAihekokonaisuudet(opsId, jarjestys);
             return null;
@@ -168,8 +171,8 @@ public class LukioOpetussuunnitelmatController {
     @ResponseBody
     @RequestMapping(value = "/oppiaine/{oppiaineId}/kielitarjonta", method = RequestMethod.POST)
     public LongIdResultDto addOppimaara(@PathVariable("opsId") final Long opsId,
-            @PathVariable("oppiaineId") final Long oppiaineId,
-            @RequestBody LukioKopioiOppimaaraDto kt) {
+                                        @PathVariable("oppiaineId") final Long oppiaineId,
+                                        @RequestBody LukioKopioiOppimaaraDto kt) {
         return audit.withAudit(LogMessage.builder(opsId, KIELITARJONTA, LISAYS), (Void) -> {
             return new LongIdResultDto(lukioOpetussuunnitelmaService.addOppimaara(opsId, oppiaineId, kt));
         });
@@ -223,7 +226,7 @@ public class LukioOpetussuunnitelmatController {
 
     @RequestMapping(value = "/kurssi/{kurssiId}/remove", method = RequestMethod.DELETE)
     public void removeKurssi(@PathVariable("opsId") final Long opsId,
-                                           @PathVariable("kurssiId") final Long kurssiId) {
+                             @PathVariable("kurssiId") final Long kurssiId) {
         audit.withAudit(LogMessage.builder(opsId, KURSSI, POISTO), (Void) -> {
             lukioOpetussuunnitelmaService.removeKurssi(opsId, kurssiId);
             return null;

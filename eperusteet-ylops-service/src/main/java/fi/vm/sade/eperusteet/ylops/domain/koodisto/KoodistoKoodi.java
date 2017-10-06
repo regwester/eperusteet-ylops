@@ -23,6 +23,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +32,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
- *
  * @author mikkom
  */
 @Entity
@@ -40,7 +40,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 @EqualsAndHashCode(of = "koodiUri")
 @Getter
 @Table(name = "koodistokoodi", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "koodiUri")})
+        @UniqueConstraint(columnNames = "koodiUri")})
 public class KoodistoKoodi implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

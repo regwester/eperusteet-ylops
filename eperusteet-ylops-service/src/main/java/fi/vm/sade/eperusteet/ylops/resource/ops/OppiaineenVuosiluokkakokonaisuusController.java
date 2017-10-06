@@ -25,17 +25,21 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokon
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPPIAINEENVUOSILUOKKAKOKONAISUUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.TAVOITE;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
+
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +47,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
- *
  * @author jhyoty
  */
 @RestController
@@ -62,38 +65,38 @@ public class OppiaineenVuosiluokkakokonaisuusController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<OppiaineenVuosiluokkakokonaisuusDto> get(
-        @PathVariable("opsId") final Long opsId,
-        @PathVariable("oppiaineId") final Long oppiaineId,
-        @PathVariable("id") final Long id) {
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("id") final Long id) {
 
         OppiaineDto oa = oppiaineService.get(opsId, oppiaineId).getOppiaine();
         return Responses.of(oa.getVuosiluokkakokonaisuudet().stream()
-            .filter(vk -> vk.getId().equals(id))
-            .findAny());
+                .filter(vk -> vk.getId().equals(id))
+                .findAny());
     }
 
     @RequestMapping(value = "/{id}/tavoitteet", method = RequestMethod.GET)
     public Map<Vuosiluokka, Set<UUID>> getVuosiluokkienTavoitteet(
-        @PathVariable("opsId") final Long opsId,
-        @PathVariable("oppiaineId") final Long oppiaineId,
-        @PathVariable("id") final Long id) {
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("id") final Long id) {
 
         OppiaineDto oa = oppiaineService.get(opsId, oppiaineId).getOppiaine();
         return oa.getVuosiluokkakokonaisuudet().stream()
-            .filter(vk -> vk.getId().equals(id))
-            .flatMap(vk -> vk.getVuosiluokat().stream())
-            .collect(Collectors.toMap(
-                    OppiaineenVuosiluokkaDto::getVuosiluokka,
-                    l -> l.getTavoitteet().stream().map(OpetuksenTavoiteDto::getTunniste).collect(Collectors.toSet())));
+                .filter(vk -> vk.getId().equals(id))
+                .flatMap(vk -> vk.getVuosiluokat().stream())
+                .collect(Collectors.toMap(
+                        OppiaineenVuosiluokkaDto::getVuosiluokka,
+                        l -> l.getTavoitteet().stream().map(OpetuksenTavoiteDto::getTunniste).collect(Collectors.toSet())));
     }
 
     @RequestMapping(value = "/{id}/tavoitteet", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateVuosiluokkienTavoitteet(
-        @PathVariable("opsId") final Long opsId,
-        @PathVariable("oppiaineId") final Long oppiaineId,
-        @PathVariable("id") final Long id,
-        @RequestBody Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("id") final Long id,
+            @RequestBody Map<Vuosiluokka, Set<UUID>> tavoitteet) {
         audit.withAudit(LogMessage.builder(opsId, TAVOITE, MUOKKAUS), (Void) -> {
             oppiaineService.updateVuosiluokkienTavoitteet(opsId, oppiaineId, id, tavoitteet);
             return null;
@@ -102,10 +105,10 @@ public class OppiaineenVuosiluokkakokonaisuusController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(
-        @PathVariable("opsId") final Long opsId,
-        @PathVariable("oppiaineId") final Long oppiaineId,
-        @PathVariable("id") final Long id,
-        @RequestBody OppiaineenVuosiluokkakokonaisuusDto dto) {
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("id") final Long id,
+            @RequestBody OppiaineenVuosiluokkakokonaisuusDto dto) {
         return audit.withAudit(LogMessage.builder(opsId, OPPIAINEENVUOSILUOKKAKOKONAISUUS, MUOKKAUS), (Void) -> {
             dto.setId(id);
             return oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineId, dto);
@@ -129,18 +132,18 @@ public class OppiaineenVuosiluokkakokonaisuusController {
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     @CacheControl(nonpublic = false, age = 3600)
     public ResponseEntity<PerusteOppiaineenVuosiluokkakokonaisuusDto> getPerusteSisalto(
-        @PathVariable("opsId") final Long opsId,
-        @PathVariable("oppiaineId") final Long oppiaineId,
-        @PathVariable("id") final Long id) {
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("id") final Long id) {
 
         final PerusteDto peruste = ops.getPeruste(opsId);
         final Optional<OppiaineDto> aine = Optional.ofNullable(oppiaineService.get(opsId, oppiaineId).getOppiaine());
 
         return Responses.of(aine.flatMap(a -> a.getVuosiluokkakokonaisuudet().stream()
-            .filter(vk -> vk.getId().equals(id))
-            .findAny()
-            .flatMap(ovk -> peruste.getPerusopetus().getOppiaine(a.getTunniste())
-                .flatMap(poa -> poa.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus())))));
+                .filter(vk -> vk.getId().equals(id))
+                .findAny()
+                .flatMap(ovk -> peruste.getPerusopetus().getOppiaine(a.getTunniste())
+                        .flatMap(poa -> poa.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus())))));
 
     }
 }

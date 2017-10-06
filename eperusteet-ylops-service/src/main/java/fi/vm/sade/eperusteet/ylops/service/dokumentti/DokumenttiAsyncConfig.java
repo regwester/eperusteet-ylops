@@ -37,7 +37,7 @@ public class DokumenttiAsyncConfig implements AsyncConfigurer {
     private final Logger LOG = LoggerFactory.getLogger(DokumenttiAsyncConfig.class);
 
     @Override
-    @Bean(name="docTaskExecutor")
+    @Bean(name = "docTaskExecutor")
     public Executor getAsyncExecutor() {
         LOG.debug("Creating async document task executor");
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

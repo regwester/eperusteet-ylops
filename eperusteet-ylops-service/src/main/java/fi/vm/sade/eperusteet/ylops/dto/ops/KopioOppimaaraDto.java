@@ -16,12 +16,13 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author nkala
  */
 @Getter

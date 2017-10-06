@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -38,6 +39,7 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,13 +47,12 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 /**
- *
  * @author jhyoty
  */
 @Entity
 @Audited
 @Table(name = "oppiaineenvuosiluokka", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"kokonaisuus_id", "vuosiluokka"})})
+        @UniqueConstraint(columnNames = {"kokonaisuus_id", "vuosiluokka"})})
 public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
 
     @Getter
@@ -86,14 +87,14 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
 
     public Optional<Keskeinensisaltoalue> getSisaltoalue(UUID tunniste) {
         return this.sisaltoalueet.stream()
-            .filter(k -> Objects.equals(k.getTunniste(), tunniste))
-            .findAny();
+                .filter(k -> Objects.equals(k.getTunniste(), tunniste))
+                .findAny();
     }
 
     public Optional<Opetuksentavoite> getTavoite(UUID tunniste) {
         return this.tavoitteet.stream()
-            .filter(k -> Objects.equals(k.getTunniste(), tunniste))
-            .findAny();
+                .filter(k -> Objects.equals(k.getTunniste(), tunniste))
+                .findAny();
     }
 
     public List<Opetuksentavoite> getTavoitteet() {
@@ -123,12 +124,12 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
         ovl.setVuosiluokka(other.getVuosiluokka());
 
         Map<Long, Keskeinensisaltoalue> sisaltoalueet = other.getSisaltoalueet().stream()
-            .collect(Collectors.toMap(s -> s.getId(), s -> Keskeinensisaltoalue.copyOf(s), (u, v) -> u, LinkedHashMap::new));
+                .collect(Collectors.toMap(s -> s.getId(), s -> Keskeinensisaltoalue.copyOf(s), (u, v) -> u, LinkedHashMap::new));
         ovl.setSisaltoalueet(sisaltoalueet.values());
         ovl.setTavoitteet(
-            other.tavoitteet.stream()
-            .map(t -> Opetuksentavoite.copyOf(t, kohdealueet, sisaltoalueet))
-            .collect(Collectors.toList()));
+                other.tavoitteet.stream()
+                        .map(t -> Opetuksentavoite.copyOf(t, kohdealueet, sisaltoalueet))
+                        .collect(Collectors.toList()));
         return ovl;
     }
 

@@ -17,13 +17,14 @@ package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+
 import java.util.Date;
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author nkala
  */
 @Getter

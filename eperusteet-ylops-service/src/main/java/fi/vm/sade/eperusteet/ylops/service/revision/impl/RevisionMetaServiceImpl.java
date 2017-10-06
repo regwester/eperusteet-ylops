@@ -17,8 +17,10 @@
 package fi.vm.sade.eperusteet.ylops.service.revision.impl;
 
 import fi.vm.sade.eperusteet.ylops.service.revision.RevisionMetaService;
+
 import java.util.Date;
 import javax.persistence.EntityManager;
+
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.exception.RevisionDoesNotExistException;
@@ -27,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author nkala
  */
 @Service
@@ -42,8 +43,7 @@ public class RevisionMetaServiceImpl implements RevisionMetaService {
         try {
             Number revision = reader.getRevisionNumberForDate(new Date(Long.MAX_VALUE));
             return revision;
-        }
-        catch (RevisionDoesNotExistException ex) {
+        } catch (RevisionDoesNotExistException ex) {
         }
         return 0;
     }

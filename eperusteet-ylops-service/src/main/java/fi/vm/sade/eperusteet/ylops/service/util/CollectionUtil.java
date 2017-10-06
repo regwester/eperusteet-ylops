@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
  * @author mikkom
  */
 public class CollectionUtil {

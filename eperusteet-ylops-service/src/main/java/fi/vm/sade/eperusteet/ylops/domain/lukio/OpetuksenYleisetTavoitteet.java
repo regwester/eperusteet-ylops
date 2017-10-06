@@ -32,7 +32,7 @@ import java.util.UUID;
 @Audited
 @Table(name = "lukiokoulutuksen_opetuksen_yleiset_tavoitteet", schema = "public")
 public class OpetuksenYleisetTavoitteet extends AbstractAuditedReferenceableEntity
-            implements Copyable<OpetuksenYleisetTavoitteet> {
+        implements Copyable<OpetuksenYleisetTavoitteet> {
 
     @Column(name = "tunniste", nullable = false, unique = true, updatable = false)
     @Getter

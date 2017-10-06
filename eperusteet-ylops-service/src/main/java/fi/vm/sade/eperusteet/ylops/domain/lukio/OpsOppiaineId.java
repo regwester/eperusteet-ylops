@@ -19,6 +19,7 @@ package fi.vm.sade.eperusteet.ylops.domain.lukio;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +29,7 @@ import lombok.Setter;
 public class OpsOppiaineId implements Serializable {
     @Column(name = "oppiaine_id")
     private Long oppiaineId;
-    
+
     @Column(name = "opetussuunnitelma_id")
     private Long opetussuunnitelmaId;
 }

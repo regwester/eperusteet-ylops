@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
- *
  * @author iSaul
  */
 public interface LocalizedMessagesService {

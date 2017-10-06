@@ -36,7 +36,7 @@ public class LukioLockServiceImpl extends AbstractLockService<LukioLockCtx>
         implements LukioLockService {
     @Autowired
     private ApplicationContext applicationContext;
-    
+
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
@@ -44,7 +44,7 @@ public class LukioLockServiceImpl extends AbstractLockService<LukioLockCtx>
     protected Long getLockId(LukioLockCtx ctx) {
         if (ctx.getLukittavaOsa().isFromOps()) {
             return ctx.getLukittavaOsa().getFromOps().get()
-                .apply(opetussuunnitelmaRepository.findOne(ctx.getOpsId())).getId();
+                    .apply(opetussuunnitelmaRepository.findOne(ctx.getOpsId())).getId();
         }
         Object val = getRepo(ctx).findOne(ctx.getId());
         return val == null ? null : ctx.getId();

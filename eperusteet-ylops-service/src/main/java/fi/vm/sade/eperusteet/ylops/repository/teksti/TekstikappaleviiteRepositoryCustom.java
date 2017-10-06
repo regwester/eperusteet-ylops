@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.repository.teksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 
 /**
- *
  * @author jhyoty
  */
 public interface TekstikappaleviiteRepositoryCustom {

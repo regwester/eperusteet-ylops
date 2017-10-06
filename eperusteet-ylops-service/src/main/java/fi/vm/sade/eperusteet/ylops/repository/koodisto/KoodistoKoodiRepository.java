@@ -22,7 +22,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- *
  * @author mikkom
  */
 @Repository

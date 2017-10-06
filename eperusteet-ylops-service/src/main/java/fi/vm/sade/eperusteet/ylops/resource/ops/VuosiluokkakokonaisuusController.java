@@ -23,17 +23,21 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.VUOSILUOKKAKOKONAISUUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.KLOONAUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import io.swagger.annotations.Api;
+
 import java.util.Optional;
 import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,9 +83,9 @@ public class VuosiluokkakokonaisuusController {
         final VuosiluokkakokonaisuusDto v = vuosiluokkakokonaisuudet.get(opsId, id).getVuosiluokkakokonaisuus();
 
         Optional<PerusteVuosiluokkakokonaisuusDto> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet()
-            .stream()
-            .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
-            .findAny();
+                .stream()
+                .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
+                .findAny();
 
         return vkDto.orElse(null);
     }

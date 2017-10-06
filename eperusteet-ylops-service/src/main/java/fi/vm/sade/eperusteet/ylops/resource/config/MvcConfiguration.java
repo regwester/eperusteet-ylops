@@ -38,7 +38,6 @@ import javax.persistence.EntityManagerFactory;
 import java.util.List;
 
 /**
- *
  * @author jhyoty
  */
 @Configuration

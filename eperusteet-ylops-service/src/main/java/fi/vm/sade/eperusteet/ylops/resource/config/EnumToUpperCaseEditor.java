@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.resource.config;
 import java.beans.PropertyEditorSupport;
 
 /**
- *
  * @author jhyoty
  */
 public class EnumToUpperCaseEditor<E extends Enum<E>> extends PropertyEditorSupport {

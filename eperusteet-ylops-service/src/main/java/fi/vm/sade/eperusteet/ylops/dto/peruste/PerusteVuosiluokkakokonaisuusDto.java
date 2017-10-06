@@ -21,13 +21,14 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+
 import java.util.Set;
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author jhyoty
  */
 @Getter

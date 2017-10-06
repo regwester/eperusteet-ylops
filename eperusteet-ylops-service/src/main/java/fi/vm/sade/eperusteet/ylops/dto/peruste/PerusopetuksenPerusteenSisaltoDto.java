@@ -16,17 +16,18 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import fi.vm.sade.eperusteet.ylops.service.util.Nulls;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author nkala
  */
 @Getter
@@ -40,9 +41,9 @@ public class PerusopetuksenPerusteenSisaltoDto implements Serializable {
 
     public Optional<PerusteOppiaineDto> getOppiaine(UUID tunniste) {
         return oppiaineet.stream()
-            .flatMap(oa -> Stream.concat(Stream.of(oa), Nulls.nullToEmpty(oa.getOppimaarat()).stream()))
-            .filter(oa -> Objects.equals(oa.getTunniste(), tunniste))
-            .findAny();
+                .flatMap(oa -> Stream.concat(Stream.of(oa), Nulls.nullToEmpty(oa.getOppimaarat()).stream()))
+                .filter(oa -> Objects.equals(oa.getTunniste(), tunniste))
+                .findAny();
 
     }
 

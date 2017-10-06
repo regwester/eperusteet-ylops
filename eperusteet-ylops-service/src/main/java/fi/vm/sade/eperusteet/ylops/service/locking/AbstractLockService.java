@@ -23,7 +23,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author jhyoty
  */
 
@@ -44,7 +43,7 @@ public abstract class AbstractLockService<T extends OpsCtx> implements LockServi
     @Transactional
     @PreAuthorize("hasPermission(#ctx.opsId,'opetussuunnitelma','muokkaus')")
     public LukkoDto lock(@P("ctx") T ctx) {
-        return lock(ctx,null);
+        return lock(ctx, null);
     }
 
     @Override
@@ -53,7 +52,7 @@ public abstract class AbstractLockService<T extends OpsCtx> implements LockServi
     public LukkoDto lock(T ctx, Integer ifMatchRevision) {
         Long key = validateCtx(ctx, false);
         final int latestRevision = latestRevision(ctx);
-        if ( ifMatchRevision == null || latestRevision == ifMatchRevision ) {
+        if (ifMatchRevision == null || latestRevision == ifMatchRevision) {
             return LukkoDto.of(manager.lock(key), latestRevision);
         }
         return null;
@@ -93,6 +92,7 @@ public abstract class AbstractLockService<T extends OpsCtx> implements LockServi
 
     /**
      * Varmistaa että lukituskonteksti on validi
+     *
      * @param ctx
      * @return kontekstia vastaavan lukittavan entiteetin
      */

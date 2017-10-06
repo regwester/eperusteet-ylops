@@ -22,7 +22,6 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 /**
- *
  * @author jhyoty
  */
 @MappedSuperclass

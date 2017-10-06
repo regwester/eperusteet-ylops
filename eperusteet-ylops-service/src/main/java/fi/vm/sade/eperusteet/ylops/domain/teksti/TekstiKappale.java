@@ -40,7 +40,6 @@ import java.util.UUID;
 import javax.persistence.Column;
 
 /**
- *
  * @author mikkom
  */
 @Entity
@@ -105,7 +104,9 @@ public class TekstiKappale extends AbstractAuditedEntity
         }
     }
 
-    public TekstiKappale copy() { return new TekstiKappale(this); }
+    public TekstiKappale copy() {
+        return new TekstiKappale(this);
+    }
 
     private void copyState(TekstiKappale other) {
         this.setNimi(other.getNimi());

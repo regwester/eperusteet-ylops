@@ -31,7 +31,7 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class LukioAbstraktiOppiaineTuontiDto implements Serializable  {
+public class LukioAbstraktiOppiaineTuontiDto implements Serializable {
     @NotNull
     private LokalisoituTekstiDto nimi;
     @NotNull

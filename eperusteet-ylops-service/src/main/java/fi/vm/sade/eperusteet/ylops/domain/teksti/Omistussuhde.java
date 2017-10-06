@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.stream.Stream;
 
 /**
- *
  * @author mikkom
  */
 public enum Omistussuhde {
@@ -34,5 +33,7 @@ public enum Omistussuhde {
     }
 
     @Override
-    public String toString() { return omistussuhde; }
+    public String toString() {
+        return omistussuhde;
+    }
 }

@@ -18,13 +18,16 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.KommenttiDto;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.KOMMENTTI;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -32,13 +35,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -91,13 +97,13 @@ public class KommenttiController {
     private List<KommenttiDto> rikastaKommentit(List<KommenttiDto> kommentit) {
 
         Map<String, Future<KayttajanTietoDto>> kayttajat = kommentit.stream()
-            .map(KommenttiDto::getMuokkaaja)
-            .distinct()
-            .collect(Collectors.toMap(s -> s, s -> kayttajanTietoService.haeAsync(s)));
+                .map(KommenttiDto::getMuokkaaja)
+                .distinct()
+                .collect(Collectors.toMap(s -> s, s -> kayttajanTietoService.haeAsync(s)));
 
         return kommentit.stream()
-            .map(k -> rikastaKommentti(k, kayttajat))
-            .collect(Collectors.toList());
+                .map(k -> rikastaKommentti(k, kayttajat))
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/opetussuunnitelmat/{id}", method = GET)
@@ -108,31 +114,31 @@ public class KommenttiController {
 
     @RequestMapping(value = "/opetussuunnitelmat/{id}/tekstikappaleviitteet/{viiteId}", method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByTekstiKappaleViite(
-        @PathVariable("id") final long id,
-        @PathVariable("viiteId") final long viiteId) {
+            @PathVariable("id") final long id,
+            @PathVariable("viiteId") final long viiteId) {
         List<KommenttiDto> t = service.getAllByTekstiKappaleViite(id, viiteId);
         return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/opetussuunnitelmat/{id}/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}", method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByOppiaine(
-        @PathVariable("id") final long id,
-        @PathVariable("vlkId") final long vlkId,
-        @PathVariable("oppiaineId") final long oppiaineId) {
+            @PathVariable("id") final long id,
+            @PathVariable("vlkId") final long vlkId,
+            @PathVariable("oppiaineId") final long oppiaineId) {
         List<KommenttiDto> t = service.getAllByOppiaine(id, vlkId, oppiaineId);
         return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }
 
     @RequestMapping(value = {
-        "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}",
-        "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}/tavoitteet",
-        "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}/sisaltoalueet"
-        }, method = GET)
+            "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}",
+            "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}/tavoitteet",
+            "/opetussuunnitelmat/{opsId}/opetus/vuosiluokat/{vlkId}/oppiaine/{oppiaineId}/vuosiluokka/{vlId}/sisaltoalueet"
+    }, method = GET)
     public ResponseEntity<List<KommenttiDto>> getAllByVuosiluokka(
-        @PathVariable("opsId") final long opsId,
-        @PathVariable("vlkId") final long vlkId,
-        @PathVariable("oppiaineId") final long oppiaineId,
-        @PathVariable("vlId") final long vlId) {
+            @PathVariable("opsId") final long opsId,
+            @PathVariable("vlkId") final long vlkId,
+            @PathVariable("oppiaineId") final long oppiaineId,
+            @PathVariable("vlId") final long vlId) {
         List<KommenttiDto> t = service.getAllByVuosiluokka(opsId, vlkId, oppiaineId, vlId);
         return new ResponseEntity<>(rikastaKommentit(t), HttpStatus.OK);
     }

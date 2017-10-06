@@ -24,13 +24,14 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.TermistoRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author apvilkko
  */
 @Service

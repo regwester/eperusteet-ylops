@@ -100,8 +100,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addVlkYleisetOsiot(DokumenttiBase docBase,
-                                           PerusteTekstiOsaDto perusteTekstiOsaDto,
-                                           Tekstiosa tekstiosa) {
+                                    PerusteTekstiOsaDto perusteTekstiOsaDto,
+                                    Tekstiosa tekstiosa) {
         // Otsikko
         if (perusteTekstiOsaDto.getOtsikko() != null) {
             addHeader(docBase,
@@ -122,12 +122,11 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addVlkLaajaalaisetOsaamisenAlueet(DokumenttiBase docBase,
-                                                       PerusteVuosiluokkakokonaisuusDto perusteVlk,
-                                                       Vuosiluokkakokonaisuus vlk) {
-        if (perusteVlk.getLaajaalaisetOsaamiset() != null ) {
+                                                   PerusteVuosiluokkakokonaisuusDto perusteVlk,
+                                                   Vuosiluokkakokonaisuus vlk) {
+        if (perusteVlk.getLaajaalaisetOsaamiset() != null) {
 
             addHeader(docBase, messages.translate("laaja-alaisen-osaamisen-alueet", docBase.getKieli()));
-
 
 
             List<PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto> perusteLaajaalaisetOsaamiset = perusteVlk.getLaajaalaisetOsaamiset().stream()
@@ -275,8 +274,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addOppiaineVuosiluokkkakokonaisuus(DokumenttiBase docBase,
-                                                           PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
-                                                           Oppiaineenvuosiluokkakokonaisuus oaVlkDto) {
+                                                    PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
+                                                    Oppiaineenvuosiluokkakokonaisuus oaVlkDto) {
 
         if (oaVlkDto == null) {
             return;
@@ -300,8 +299,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addTavoitteetJaSisaltoalueet(DokumenttiBase docBase,
-                                                     PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
-                                                     Oppiaineenvuosiluokkakokonaisuus oaVlkDto) {
+                                              PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
+                                              Oppiaineenvuosiluokkakokonaisuus oaVlkDto) {
 
         // Tavoitteet vuosiluokittain
         if (oaVlkDto.getVuosiluokat() != null) {
@@ -325,8 +324,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addVuosiluokkaSisaltoalueet(DokumenttiBase docBase,
-                                                    Oppiaineenvuosiluokka oaVuosiluokka,
-                                                    PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
+                                             Oppiaineenvuosiluokka oaVuosiluokka,
+                                             PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
         if (oaVuosiluokka.getSisaltoalueet() != null && !oaVuosiluokka.getSisaltoalueet().isEmpty()) {
             addHeader(docBase, messages.translate("vuosiluokan-keskeiset-sisaltoalueet", docBase.getKieli()));
 
@@ -356,8 +355,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addVuosiluokkaTaulukko(DokumenttiBase docBase,
-                                               Oppiaineenvuosiluokka oaVuosiluokka,
-                                               PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
+                                        Oppiaineenvuosiluokka oaVuosiluokka,
+                                        PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
         // Opetuksen tavoitteet taulukko
         if (oaVuosiluokka.getTavoitteet() != null) {
             DokumenttiTaulukko taulukko = new DokumenttiTaulukko();
@@ -385,7 +384,6 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                         }
 
 
-
                         // Tavoitteisiin liittyvät sisltöalueet
                         Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = opetuksentavoite.getSisaltoalueet();
 
@@ -408,7 +406,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                             && keskeinensisaltoalue.getNimi().getTeksti() != null
                                             && keskeinensisaltoalue.getNimi().getTeksti().containsKey(docBase.getKieli())) {
                                         String nimi = keskeinensisaltoalue.getNimi().getTeksti().get(docBase.getKieli());
-                                        if(nimi.contains(" ")){
+                                        if (nimi.contains(" ")) {
                                             sisaltoalueetBuilder.append(nimi.substring(0, nimi.indexOf(" ")));
                                             sisaltoalueetBuilder.append(", ");
                                         }
@@ -456,7 +454,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                                     String nimi = perusteLao.getLaajaalainenOsaaminen()
                                                             .getNimi().get(docBase.getKieli());
 
-                                                    if(nimi.contains(" ")){
+                                                    if (nimi.contains(" ")) {
                                                         laajaalaisetLista.add(nimi.substring(0, nimi.indexOf(" ")));
                                                     }
                                                 }
@@ -468,7 +466,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                             // Laaja-alaiset aakkosjärjestykseen
                             laajaalaisetLista.stream()
                                     .sorted(String::compareTo)
-                                    .forEach(el ->  {
+                                    .forEach(el -> {
                                         laajaalainenOsaaminenBuilder.append(el);
                                         laajaalainenOsaaminenBuilder.append(", ");
                                     });
@@ -485,8 +483,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addVuosiluokkaTavoitteet(DokumenttiBase docBase,
-                                                 Oppiaineenvuosiluokka oaVuosiluokka,
-                                                 PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
+                                          Oppiaineenvuosiluokka oaVuosiluokka,
+                                          PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
         if (oaVuosiluokka.getTavoitteet() != null && !oaVuosiluokka.getTavoitteet().isEmpty()) {
 
             addTeksti(docBase, messages.translate("vuosiluokan-tavoitteet", docBase.getKieli()), "tavoitteet-otsikko");
@@ -543,14 +541,14 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 addVuosiluokkaTavoitteenSisaltoalueet(docBase, opetuksentavoite);
 
                 // Sisältöalue ops
-                opetuksentavoite.getSisaltoalueet().forEach(sisaltoAlue ->addLokalisoituteksti(
+                opetuksentavoite.getSisaltoalueet().forEach(sisaltoAlue -> addLokalisoituteksti(
                         docBase, sisaltoAlue.getSisaltoalueet().getKuvaus(), "div"));
             }
         }
     }
 
     private void addVuosiluokkaTavoitteenSisaltoalueet(DokumenttiBase docBase,
-                                                              Opetuksentavoite opetuksentavoite) {
+                                                       Opetuksentavoite opetuksentavoite) {
 
         Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = opetuksentavoite.getSisaltoalueet();
         List<OpetuksenKeskeinensisaltoalue> sisaltoalueetAsc = sisaltoalueet.stream()
@@ -591,7 +589,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addOppimaarat(DokumenttiBase docBase, Set<PerusteOppiaineDto> perusteOppimaarat,
-                                      Set<Oppiaine> oppimaarat, Vuosiluokkakokonaisuus vlk) {
+                               Set<Oppiaine> oppimaarat, Vuosiluokkakokonaisuus vlk) {
         if (oppimaarat != null) {
             for (Oppiaine oppimaara : oppimaarat) {
                 PerusteOppiaineDto perusteOppiaineDto = null;
@@ -621,7 +619,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     }
 
     private void addOppimaara(DokumenttiBase docBase, PerusteOppiaineDto perusteOppiaineDto,
-                                     Oppiaine oppiaine, Vuosiluokkakokonaisuus vlk) {
+                              Oppiaine oppiaine, Vuosiluokkakokonaisuus vlk) {
         Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk
                 = oppiaine.getVuosiluokkakokonaisuus(vlk.getTunniste().getId());
 

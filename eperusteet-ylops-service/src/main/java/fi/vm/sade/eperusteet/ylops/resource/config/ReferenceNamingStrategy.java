@@ -20,12 +20,13 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
+
 import java.lang.reflect.Type;
 import java.util.Optional;
 
 /**
  * JSON-kenttien nimeämisstrategia.
- *
+ * <p>
  * Nimeää EntitiReference -tyyppiä olevat kentät muotoon _kentännimi ja käyttää muissa tapauksissa oletusnimeämistä.
  *
  * @author jhyoty
@@ -34,13 +35,13 @@ public class ReferenceNamingStrategy extends PropertyNamingStrategy {
 
     @Override
     public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method,
-        String defaultName) {
+                                      String defaultName) {
         return getName(config, method.getGenericReturnType(), defaultName);
     }
 
     @Override
     public String nameForSetterMethod(MapperConfig<?> config, AnnotatedMethod method,
-        String defaultName) {
+                                      String defaultName) {
         return getName(config, method.getParameter(0).getGenericType(), defaultName);
     }
 

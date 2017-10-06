@@ -35,7 +35,8 @@ public class LukioOpetussuunnitelmaRakenneDto implements Serializable, Perusteen
     private Long perusteId;
     private Set<LukioPerusteOppiaineDto> oppiaineet = new HashSet<>();
 
-    @Override @JsonIgnore
+    @Override
+    @JsonIgnore
     public UUID getTunniste() {
         return null;
     }

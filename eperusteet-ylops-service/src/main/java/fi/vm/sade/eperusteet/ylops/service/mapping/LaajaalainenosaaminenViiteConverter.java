@@ -21,7 +21,6 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 /**
- *
  * @author hyoty
  */
 public class LaajaalainenosaaminenViiteConverter extends BidirectionalConverter<Reference, LaajaalainenosaaminenViite> {

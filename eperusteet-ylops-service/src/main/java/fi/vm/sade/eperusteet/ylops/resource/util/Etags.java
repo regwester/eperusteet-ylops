@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.resource.util;
 import org.springframework.http.HttpHeaders;
 
 /**
- *
  * @author jhyoty
  */
 public final class Etags {

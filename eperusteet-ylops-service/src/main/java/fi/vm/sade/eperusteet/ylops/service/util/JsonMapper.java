@@ -27,13 +27,13 @@ import java.util.Optional;
  * Time: 15.28
  */
 public interface JsonMapper {
-    default <T> T deserialize(Class<T> t, String from)  throws IOException{
+    default <T> T deserialize(Class<T> t, String from) throws IOException {
         return deserialize(t, new StringReader(from));
     }
 
     <T> T deserialize(Class<T> t, Reader from) throws IOException;
 
-    default <T> String serialize(T obj)  throws IOException {
+    default <T> String serialize(T obj) throws IOException {
         StringWriter writer = new StringWriter();
         serialize(obj, writer);
         return writer.getBuffer().toString();

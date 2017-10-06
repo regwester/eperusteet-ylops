@@ -28,15 +28,19 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.TermistoRepository;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+
 import java.util.Collections;
 import java.util.HashSet;
+
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
+
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -16,12 +16,13 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+
 import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author jhyoty
  */
 @Getter

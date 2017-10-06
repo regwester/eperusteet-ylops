@@ -41,7 +41,7 @@ import java.util.*;
 @Entity
 @Audited
 @Table(name = "oppiaineen_vlkok", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"oppiaine_id", "vuosiluokkakokonaisuus_id"})})
+        @UniqueConstraint(columnNames = {"oppiaine_id", "vuosiluokkakokonaisuus_id"})})
 public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
 
     @Getter
@@ -139,8 +139,8 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
 
     public Optional<Oppiaineenvuosiluokka> getVuosiluokka(Vuosiluokka luokka) {
         return vuosiluokat.stream()
-            .filter(l -> Objects.equals(l.getVuosiluokka(), luokka))
-            .findAny();
+                .filter(l -> Objects.equals(l.getVuosiluokka(), luokka))
+                .findAny();
     }
 
     static Oppiaineenvuosiluokkakokonaisuus copyOf(final Oppiaineenvuosiluokkakokonaisuus other, Map<Long, Opetuksenkohdealue> kohdealueet) {

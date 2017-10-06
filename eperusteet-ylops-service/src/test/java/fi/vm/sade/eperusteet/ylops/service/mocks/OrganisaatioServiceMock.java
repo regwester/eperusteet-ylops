@@ -19,12 +19,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author mikkom
  */
 @Service

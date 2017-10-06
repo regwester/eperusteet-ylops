@@ -23,7 +23,6 @@ import org.jsoup.safety.Whitelist;
 import java.util.Map;
 
 /**
- *
  * @author mikkom
  */
 public abstract class ValidHtmlValidatorBase {
@@ -35,7 +34,7 @@ public abstract class ValidHtmlValidatorBase {
     }
 
     protected boolean isValid(LokalisoituTeksti lokalisoituTeksti) {
-        if(lokalisoituTeksti != null) {
+        if (lokalisoituTeksti != null) {
             Map<Kieli, String> tekstit = lokalisoituTeksti.getTeksti();
             if (tekstit != null) {
                 return tekstit.values().stream()

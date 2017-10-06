@@ -17,10 +17,12 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.Setter;
 import ma.glasnost.orika.MapperFacade;
@@ -30,9 +32,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 
-
 /**
- *
  * @author jhyoty
  */
 public class MergeMapperTest {

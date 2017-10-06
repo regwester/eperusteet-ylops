@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- *
  * @author mikkom
  */
 @Getter
@@ -44,7 +43,8 @@ public class TekstiKappaleDto {
     private Boolean pakollinen;
     private Boolean valmis;
 
-    public TekstiKappaleDto() {}
+    public TekstiKappaleDto() {
+    }
 
     public TekstiKappaleDto(LokalisoituTekstiDto nimi, LokalisoituTekstiDto teksti, Tila tila) {
         this.nimi = nimi;

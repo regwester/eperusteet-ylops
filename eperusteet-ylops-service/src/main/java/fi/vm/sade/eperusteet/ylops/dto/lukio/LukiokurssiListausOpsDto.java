@@ -33,7 +33,7 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-public class LukiokurssiListausOpsDto implements Serializable  {
+public class LukiokurssiListausOpsDto implements Serializable {
     private Long id;
     private Date muokattu;
     private UUID tunniste;

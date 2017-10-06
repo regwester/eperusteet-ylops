@@ -16,12 +16,14 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+
 import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

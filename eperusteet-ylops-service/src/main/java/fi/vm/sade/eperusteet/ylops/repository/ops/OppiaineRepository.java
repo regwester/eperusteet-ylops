@@ -20,13 +20,14 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
+
 import java.util.Set;
 import java.util.UUID;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author mikkom
  */
 @Repository

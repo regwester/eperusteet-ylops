@@ -17,12 +17,13 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author mikkom
  */
 @Getter

@@ -18,7 +18,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Entity
 @Audited
-@Table(name="opetuksen_tavoite_keskeinen_sisaltoalue")
+@Table(name = "opetuksen_tavoite_keskeinen_sisaltoalue")
 public class OpetuksenKeskeinensisaltoalue implements Serializable {
 
     @Getter
@@ -50,9 +50,9 @@ public class OpetuksenKeskeinensisaltoalue implements Serializable {
 
     public static OpetuksenKeskeinensisaltoalue copyOf(OpetuksenKeskeinensisaltoalue other, Opetuksentavoite opetuksentavoite) {
         OpetuksenKeskeinensisaltoalue ks = new OpetuksenKeskeinensisaltoalue();
-        ks.setOmaKuvaus( other.getOmaKuvaus() );
-        ks.setSisaltoalueet( Keskeinensisaltoalue.copyOf( other.getSisaltoalueet() ));
-        ks.setOpetuksentavoite( opetuksentavoite );
+        ks.setOmaKuvaus(other.getOmaKuvaus());
+        ks.setSisaltoalueet(Keskeinensisaltoalue.copyOf(other.getSisaltoalueet()));
+        ks.setOpetuksentavoite(opetuksentavoite);
         return ks;
     }
 

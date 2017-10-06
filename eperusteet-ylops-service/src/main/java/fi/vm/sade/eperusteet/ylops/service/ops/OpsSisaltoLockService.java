@@ -19,7 +19,6 @@ import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import fi.vm.sade.eperusteet.ylops.service.locking.OpsCtx;
 
 /**
- *
  * @author jhyoty
  */
 public interface OpsSisaltoLockService extends LockService<OpsCtx> {

@@ -25,7 +25,6 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
- *
  * @author iSaul
  */
 @Entity

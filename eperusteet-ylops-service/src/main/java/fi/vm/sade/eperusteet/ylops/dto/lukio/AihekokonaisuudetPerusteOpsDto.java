@@ -24,7 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
  * Time: 14.27
  */
 public class AihekokonaisuudetPerusteOpsDto extends PerusteOpsDto<AihekokonaisuudetDto,
-                    AihekokonaisuudetOpsDto> {
+        AihekokonaisuudetOpsDto> {
     public AihekokonaisuudetPerusteOpsDto(AihekokonaisuudetOpsDto paikallinen) {
         super(paikallinen);
     }

@@ -16,12 +16,13 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
+
 import java.util.List;
+
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
- *
  * @author apvilkko
  */
 public interface TermistoService {

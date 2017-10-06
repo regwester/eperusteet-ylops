@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.RAKENNE;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LUONTI;
@@ -31,21 +32,23 @@ import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.REKURSIIVINENMUOKKAUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.SYNKRONOINTI;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.TILAMUUTOS;
+
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import io.swagger.annotations.Api;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- *
  * @author mikkom
  */
 @RestController
@@ -65,8 +68,8 @@ public class OpetussuunnitelmaController {
     @ResponseBody
     @Timed
     public List<OpetussuunnitelmaInfoDto> getAll(
-            @RequestParam(value="tyyppi", required=false) Tyyppi tyyppi,
-            @RequestParam(value="tila", required=false) Tila tila) {
+            @RequestParam(value = "tyyppi", required = false) Tyyppi tyyppi,
+            @RequestParam(value = "tila", required = false) Tila tila) {
         return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi, tila);
     }
 
@@ -133,10 +136,10 @@ public class OpetussuunnitelmaController {
 
             if (opetussuunnitelmaDto.getTyyppi().equals(Tyyppi.POHJA)) {
                 return new ResponseEntity<>(opetussuunnitelmaService.addPohja(opetussuunnitelmaDto),
-                    HttpStatus.OK);
+                        HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(opetussuunnitelmaService.addOpetussuunnitelma(opetussuunnitelmaDto),
-                    HttpStatus.OK);
+                        HttpStatus.OK);
             }
         });
     }
@@ -180,8 +183,8 @@ public class OpetussuunnitelmaController {
     @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> updateTila(
-        @PathVariable final Long id,
-        @PathVariable Tila tila) {
+            @PathVariable final Long id,
+            @PathVariable Tila tila) {
         return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, TILAMUUTOS),
                 (Void) -> new ResponseEntity<>(opetussuunnitelmaService.updateTila(id, tila), HttpStatus.OK));
     }
@@ -190,7 +193,7 @@ public class OpetussuunnitelmaController {
     @ResponseBody
     @Timed
     public ResponseEntity<List<Validointi>> validoiOpetussuunnitelma(
-        @PathVariable("id") final Long id) {
+            @PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.validoiOpetussuunnitelma(id), HttpStatus.OK);
     }
 
@@ -198,7 +201,7 @@ public class OpetussuunnitelmaController {
     @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> restore(
-        @PathVariable("id") final Long id) {
+            @PathVariable("id") final Long id) {
         return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, PALAUTUS),
                 (Void) -> new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK));
     }
@@ -219,7 +222,7 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}/oikeudet", method = RequestMethod.GET)
     public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudet(
-        @PathVariable("id") final Long id) {
+            @PathVariable("id") final Long id) {
         return new ResponseEntity<>(permissionManager.getOpsPermissions(id), HttpStatus.OK);
     }
 }

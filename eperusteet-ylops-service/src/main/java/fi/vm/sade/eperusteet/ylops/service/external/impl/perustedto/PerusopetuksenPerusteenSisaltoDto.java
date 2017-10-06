@@ -17,11 +17,11 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
 import java.io.Serializable;
 import java.util.Set;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author nkala
  */
 @Getter

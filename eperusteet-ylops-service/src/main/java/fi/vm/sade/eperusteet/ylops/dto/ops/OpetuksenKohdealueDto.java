@@ -29,7 +29,8 @@ public class OpetuksenKohdealueDto implements ReferenceableDto {
     private Long id;
     private LokalisoituTekstiDto nimi;
 
-    public OpetuksenKohdealueDto() { }
+    public OpetuksenKohdealueDto() {
+    }
 
     public OpetuksenKohdealueDto(LokalisoituTekstiDto nimi) {
         this.nimi = nimi;

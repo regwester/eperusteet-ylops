@@ -22,7 +22,6 @@ import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
- *
  * @author jhyoty
  */
 public interface VuosiluokkakokonaisuusService {

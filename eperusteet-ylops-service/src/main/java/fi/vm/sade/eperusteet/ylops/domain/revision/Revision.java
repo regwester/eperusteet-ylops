@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.domain.revision;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import lombok.EqualsAndHashCode;
 
 import lombok.Getter;

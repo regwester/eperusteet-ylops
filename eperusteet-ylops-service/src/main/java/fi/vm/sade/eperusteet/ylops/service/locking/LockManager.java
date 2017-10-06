@@ -19,7 +19,6 @@ import fi.vm.sade.eperusteet.ylops.domain.Lukko;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 
 /**
- *
  * @author jhyoty
  */
 public interface LockManager {

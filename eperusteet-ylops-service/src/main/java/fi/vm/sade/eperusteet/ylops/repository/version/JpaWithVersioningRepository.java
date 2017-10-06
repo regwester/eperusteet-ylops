@@ -16,8 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
+
 import java.io.Serializable;
 import java.util.List;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -42,7 +44,7 @@ public interface JpaWithVersioningRepository<T, ID extends Serializable> extends
 
     /**
      * Lukitsee entiteetin muokkausta varten. Lukitus vapautuu automaattisesti transaktion loppuessa.
-     *
+     * <p>
      * Enversillä on ongelmia yhtäaikaisten transaktioiden kanssa, joten pessimistisen lukituksen käyttäminen on joissakin tapauksissa tarpeen.
      *
      * @param entity
@@ -53,7 +55,7 @@ public interface JpaWithVersioningRepository<T, ID extends Serializable> extends
 
     /**
      * Asettaa revisiokohtaisen kommentin.
-     *
+     * <p>
      * Jos revisioon on jo asetettu kommentti, uusi kommentti korvaa aikaisemman. Kommentti on globaali koko revisiolle; jos samassa muutoksessa muokataan
      * useita entiteettejä, kommentti koskee niitä kaikkia.
      *

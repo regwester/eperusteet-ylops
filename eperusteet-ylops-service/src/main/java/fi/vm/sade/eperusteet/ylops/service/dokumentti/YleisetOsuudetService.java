@@ -11,5 +11,6 @@ import java.io.IOException;
  */
 public interface YleisetOsuudetService {
     void addYleisetOsuudet(DokumenttiBase docBase) throws IOException, SAXException, ParserConfigurationException;
+
     void addLiitteet(DokumenttiBase docBase) throws IOException, SAXException, ParserConfigurationException;
 }

@@ -40,7 +40,7 @@ public interface LukioOpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void updateOpetuksenYleisetTavoitteet(long opsId, OpetuksenYleisetTavoitteetUpdateDto tavoitteet);
-    
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     long saveOppiaine(long opsId, LukioOppiaineSaveDto oppiaine);
 

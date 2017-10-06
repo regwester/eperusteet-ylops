@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
+
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
 /**
- *
  * @author teele1
  */
 @ControllerAdvice
@@ -71,7 +71,7 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleTransactionExceptions(TransactionSystemException e, WebRequest request) {
         if (e.getRootCause() != null && e.getRootCause() instanceof ConstraintViolationException) {
             return handleExceptionInternal((ConstraintViolationException) e.getRootCause(), null, new HttpHeaders(),
-                                           HttpStatus.BAD_REQUEST, request);
+                    HttpStatus.BAD_REQUEST, request);
         } else {
             return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
         }
@@ -79,7 +79,7 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status,
-        WebRequest request) {
+                                                                  WebRequest request) {
         if (ex.getRootCause() != null && ex.getRootCause() instanceof UnrecognizedPropertyException) {
             return handleExceptionInternal((UnrecognizedPropertyException) ex.getRootCause(), null, headers, status, request);
         } else {
@@ -90,16 +90,16 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ClientAbortException.class)
     public void clientAbortExceptionHandler(HttpServletRequest request, ClientAbortException ex) {
         Principal principal = request.getUserPrincipal();
-        String username = principal != null ? principal.getName() :"<NONE>";
+        String username = principal != null ? principal.getName() : "<NONE>";
         LOG.warn("ClientAbortException: username={}, remoteAddr={}, userAgent={}, requestedURL={}", username,
                 request.getRemoteAddr(), request.getHeader("User-Agent"), request.getRequestURL());
     }
 
     @ExceptionHandler(value = {
-        NestedRuntimeException.class,
-        NestedCheckedException.class,
-        ServletException.class,
-        ValidationException.class})
+            NestedRuntimeException.class,
+            NestedCheckedException.class,
+            ServletException.class,
+            ValidationException.class})
     public ResponseEntity<Object> handleAllExceptions(Exception e, WebRequest request) throws Exception {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ResponseStatus rs = e.getClass().getAnnotation(ResponseStatus.class);
@@ -148,7 +148,7 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
             describe(map, "datan-käsittelyssä-odottamaton-virhe", "Datan käsittelyssä tapahtui odottamaton virhe.");
         } else if (ex instanceof UnrecognizedPropertyException) {
             describe(map, "datassa-tuntematon-kenttä", "Dataa ei pystytty käsittelemään. Lähetetyssä datassa esiintyi tuntematon kenttä \"" +
-                     ((UnrecognizedPropertyException) ex).getPropertyName() + "\"");
+                    ((UnrecognizedPropertyException) ex).getPropertyName() + "\"");
         } else if (ex instanceof ConstraintViolationException) {
             suppresstrace = true;
             List<String> reasons = new ArrayList<>();

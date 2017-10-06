@@ -94,7 +94,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     @Transactional(readOnly = false)
     public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("rootId") Long rootId, Long parentViiteId,
-        TekstiKappaleViiteDto.Matala viiteDto) {
+                                                              TekstiKappaleViiteDto.Matala viiteDto) {
         TekstiKappaleViite parentViite = findViite(rootId, parentViiteId);
         TekstiKappaleViite uusiViite = new TekstiKappaleViite(Omistussuhde.OMA);
         if (viiteDto != null) {
@@ -137,7 +137,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     @Transactional(readOnly = false)
     public TekstiKappaleViiteDto updateTekstiKappaleViite(
-        @P("opsId") Long opsId, Long viiteId, TekstiKappaleViiteDto uusi) {
+            @P("opsId") Long opsId, Long viiteId, TekstiKappaleViiteDto uusi) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         // Nopea ratkaisu sisällön häviämiseen, korjaantuu oikein uuden näkymän avulla
         if (uusi.getTekstiKappale().getTeksti() == null) {
@@ -251,7 +251,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         Long kappaleId = getTekstiKappaleViite(opsId, viiteId).getTekstiKappale().getId();
         TekstiKappale tekstiKappale = tekstiKappaleRepository.findRevision(kappaleId, versio);
         TekstiKappaleDto dto = mapper.map(tekstiKappale, TekstiKappaleDto.class);
-        tekstiKappaleService.update( dto );
+        tekstiKappaleService.update(dto);
     }
 
     @Override
@@ -260,7 +260,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         connectMissingTekstikappaleetIfAny(opsId);
         List<PoistettuTekstiKappaleDto> list = mapper.mapAsList(poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId), PoistettuTekstiKappaleDto.class);
         list.forEach(poistettuTekstiKappaleDto -> {
-            TekstiKappaleDto teksti= tekstiKappaleService.get(poistettuTekstiKappaleDto.getTekstiKappale());
+            TekstiKappaleDto teksti = tekstiKappaleService.get(poistettuTekstiKappaleDto.getTekstiKappale());
             poistettuTekstiKappaleDto.setMuokkaaja(kayttajanTietoService.haeKayttajanimi(poistettuTekstiKappaleDto.getMuokkaaja()));
             poistettuTekstiKappaleDto.setNimi(teksti.getNimi());
             poistettuTekstiKappaleDto.setTekstiKappale(teksti.getId());
@@ -270,20 +270,20 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     private void connectMissingTekstikappaleetIfAny(Long opsId) {
         poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId)
-            .stream()
-            .filter(poistettuTekstiKappale -> {
-                TekstiKappale tk = tekstiKappaleRepository.findOne(poistettuTekstiKappale.getTekstiKappale());
-                return (tk == null);
-            })
-            .collect(Collectors.toList())
-            .forEach(poistettuTekstiKappale -> {
-                List<Revision> revs = tekstiKappaleRepository.getRevisions(poistettuTekstiKappale.getTekstiKappale());
-                if (revs.size() > 1) {
-                    TekstiKappale rev = tekstiKappaleRepository.findRevision(revs.get(1).getId(), revs.get(1).getNumero());
-                    rev = tekstiKappaleRepository.save(rev);
-                    poistettuTekstiKappale.setTekstiKappale(rev.getId());
-                }
-            });
+                .stream()
+                .filter(poistettuTekstiKappale -> {
+                    TekstiKappale tk = tekstiKappaleRepository.findOne(poistettuTekstiKappale.getTekstiKappale());
+                    return (tk == null);
+                })
+                .collect(Collectors.toList())
+                .forEach(poistettuTekstiKappale -> {
+                    List<Revision> revs = tekstiKappaleRepository.getRevisions(poistettuTekstiKappale.getTekstiKappale());
+                    if (revs.size() > 1) {
+                        TekstiKappale rev = tekstiKappaleRepository.findRevision(revs.get(1).getId(), revs.get(1).getNumero());
+                        rev = tekstiKappaleRepository.save(rev);
+                        poistettuTekstiKappale.setTekstiKappale(rev.getId());
+                    }
+                });
     }
 
     @Override
@@ -325,7 +325,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     private void updateTekstiKappale(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto uusiTekstiKappale, boolean requireLock) {
         if (uusiTekstiKappale != null) {
             if (viite.getOmistussuhde() == Omistussuhde.OMA) {
-                if ( viite.getTekstiKappale() != null ) {
+                if (viite.getTekstiKappale() != null) {
                     final Long tid = viite.getTekstiKappale().getId();
                     if (requireLock || lockMgr.getLock(tid) != null) {
                         lockMgr.ensureLockedByAuthenticatedUser(tid);
@@ -339,7 +339,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     private TekstiKappaleViite updateTraverse(Long opsId, TekstiKappaleViite parent, TekstiKappaleViiteDto.Puu uusi,
-        Set<TekstiKappaleViite> refs) {
+                                              Set<TekstiKappaleViite> refs) {
         TekstiKappaleViite viite = repository.findOne(uusi.getId());
         if (viite == null || !refs.remove(viite)) {
             throw new BusinessRuleViolationException("Viitepuun päivitysvirhe, annettua alipuun juuren viitettä ei löydy");
@@ -351,9 +351,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         if (uusi.getLapset() != null) {
             lapset.addAll(uusi.getLapset()
-                .stream()
-                .map(elem -> updateTraverse(opsId, viite, elem, refs))
-                .collect(Collectors.toList()));
+                    .stream()
+                    .map(elem -> updateTraverse(opsId, viite, elem, refs))
+                    .collect(Collectors.toList()));
         }
         return repository.save(viite);
     }

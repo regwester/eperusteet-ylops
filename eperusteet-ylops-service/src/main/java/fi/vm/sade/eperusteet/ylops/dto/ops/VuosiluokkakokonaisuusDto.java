@@ -20,13 +20,14 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
+
 import java.util.Optional;
 import java.util.Set;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author jhyoty
  */
 @Getter

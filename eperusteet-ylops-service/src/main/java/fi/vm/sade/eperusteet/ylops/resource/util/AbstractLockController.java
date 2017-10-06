@@ -29,9 +29,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
- *
- * @author jhyoty
  * @param <T>
+ * @author jhyoty
  */
 @InternalApi
 public abstract class AbstractLockController<T> {
@@ -40,7 +39,7 @@ public abstract class AbstractLockController<T> {
     public ResponseEntity<LukkoDto> checkLock(T ctx) {
         LukkoDto lock = service().getLock(ctx);
         return lock == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-            : new ResponseEntity<>(lock, Etags.eTagHeader(lock.getRevisio()), HttpStatus.OK);
+                : new ResponseEntity<>(lock, Etags.eTagHeader(lock.getRevisio()), HttpStatus.OK);
     }
 
     @RequestMapping(method = POST)

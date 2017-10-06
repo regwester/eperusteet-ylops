@@ -34,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
 /**
- *
  * @author mikkom
  */
 @Service
@@ -74,7 +73,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     @Override
     public TekstiKappaleDto update(TekstiKappaleDto tekstiKappaleDto) {
         Long id = tekstiKappaleDto.getId();
-        TekstiKappale current = assertExists(repository.findOne(id),"Tekstikappaletta ei ole olemassa");
+        TekstiKappale current = assertExists(repository.findOne(id), "Tekstikappaletta ei ole olemassa");
         repository.lock(current);
         mapper.map(tekstiKappaleDto, current);
         return mapper.map(repository.save(current), TekstiKappaleDto.class);
@@ -82,11 +81,11 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
 
     @Override
     public TekstiKappaleDto mergeNew(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
-        if ( viite.getTekstiKappale() == null || viite.getTekstiKappale().getId() == null ) {
+        if (viite.getTekstiKappale() == null || viite.getTekstiKappale().getId() == null) {
             throw new IllegalArgumentException("Virheellinen viite");
         }
         Long id = viite.getTekstiKappale().getId();
-        TekstiKappale clone = assertExists(repository.findOne(id),"Tekstikappaletta ei ole olemassa").copy();
+        TekstiKappale clone = assertExists(repository.findOne(id), "Tekstikappaletta ei ole olemassa").copy();
         mapper.map(tekstiKappaleDto, clone);
         clone = repository.save(clone);
 

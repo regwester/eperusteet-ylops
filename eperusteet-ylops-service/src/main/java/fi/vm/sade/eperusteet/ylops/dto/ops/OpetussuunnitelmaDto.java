@@ -17,8 +17,10 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+
 import java.util.Optional;
 import java.util.Set;
+
 import lombok.Getter;
 import lombok.Setter;
 

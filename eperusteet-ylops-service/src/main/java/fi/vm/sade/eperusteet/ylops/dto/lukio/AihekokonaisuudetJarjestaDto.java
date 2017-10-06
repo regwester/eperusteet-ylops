@@ -33,6 +33,7 @@ import java.util.List;
 @Getter
 @Setter
 public class AihekokonaisuudetJarjestaDto implements Serializable {
-    @NotNull @Valid
+    @NotNull
+    @Valid
     private List<AihekokonaisuusJarjestysDto> aihekokonaisuudet = new ArrayList<>();
 }

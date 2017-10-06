@@ -27,7 +27,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
- *
  * @author iSaul
  */
 @Service

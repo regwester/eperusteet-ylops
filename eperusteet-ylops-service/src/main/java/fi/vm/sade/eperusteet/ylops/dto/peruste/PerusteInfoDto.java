@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+
 import java.util.Date;
 
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
@@ -25,7 +26,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author nkala
  */
 @Getter

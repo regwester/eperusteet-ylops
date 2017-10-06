@@ -19,8 +19,10 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+
 import java.util.Collections;
 import java.util.Set;
+
 import lombok.Getter;
 import lombok.Setter;
 import ma.glasnost.orika.MapperFacade;
@@ -31,7 +33,6 @@ import org.junit.Test;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 
 /**
- *
  * @author mikkom
  */
 public class MappingTest {

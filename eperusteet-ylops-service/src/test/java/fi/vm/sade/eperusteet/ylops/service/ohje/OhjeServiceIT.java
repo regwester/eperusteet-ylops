@@ -24,7 +24,9 @@ import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+
 import java.util.UUID;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lokalisoituTekstiOf;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
+
 import java.util.List;
 
 /**

@@ -11,6 +11,6 @@ import java.util.Date;
  */
 @Getter
 @Setter
-public class PoistettuTekstiKappaleDto extends PoistettuDto{
+public class PoistettuTekstiKappaleDto extends PoistettuDto {
     private Long tekstiKappale;
 }
