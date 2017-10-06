@@ -17,7 +17,6 @@
 package fi.vm.sade.eperusteet.ylops.service.audit;
 
 /**
- *
  * @author nkala
  */
 public enum EperusteetYlopsOperation {

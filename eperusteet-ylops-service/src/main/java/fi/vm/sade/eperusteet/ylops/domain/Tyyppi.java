@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
 /**
- *
  * @author harrik
  */
 public enum Tyyppi {
@@ -26,8 +25,12 @@ public enum Tyyppi {
 
     private final String tyyppi;
 
-    private Tyyppi(String tyyppi) { this.tyyppi = tyyppi; }
+    private Tyyppi(String tyyppi) {
+        this.tyyppi = tyyppi;
+    }
 
     @Override
-    public String toString() { return tyyppi; }
+    public String toString() {
+        return tyyppi;
+    }
 }

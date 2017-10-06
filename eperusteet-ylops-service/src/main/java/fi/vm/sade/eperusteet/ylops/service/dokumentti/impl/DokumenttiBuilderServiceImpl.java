@@ -68,7 +68,6 @@ import java.util.*;
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.getTextString;
 
 /**
- *
  * @author iSaul
  */
 @Service
@@ -372,7 +371,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 BufferedImage tempImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(),
                         BufferedImage.TYPE_3BYTE_BGR);
                 tempImage.getGraphics().setColor(new Color(255, 255, 255, 0));
-                tempImage.getGraphics().fillRect (0, 0, width, height);
+                tempImage.getGraphics().fillRect(0, 0, width, height);
                 tempImage.getGraphics().drawImage(bufferedImage, 0, 0, null);
                 bufferedImage = tempImage;
 

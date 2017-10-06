@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePref
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -42,7 +44,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *
  * @author mikkom
  */
 @Service
@@ -95,7 +96,7 @@ public class PermissionManager {
 
     @Transactional(readOnly = true)
     public boolean hasPermission(Authentication authentication, Serializable targetId, TargetType target,
-        Permission perm) {
+                                 Permission perm) {
 
         if (perm == Permission.HALLINTA && targetId == null && target == TargetType.TARKASTELU &&
                 hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.OPH)) {
@@ -103,7 +104,7 @@ public class PermissionManager {
         }
 
         Pair<Tyyppi, Tila> tyyppiJaTila =
-            targetId != null ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId) : null;
+                targetId != null ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId) : null;
 
         if (perm == Permission.LUKU && tyyppiJaTila != null) {
             if (tyyppiJaTila.getSecond() == Tila.JULKAISTU) {
@@ -159,27 +160,27 @@ public class PermissionManager {
                     return !CollectionUtil.intersect(opsOrganisaatiot, kayttajaOrganisaatiot).isEmpty();
                 } else {
                     return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
-                                      permissions, Organization.ANY);
+                            permissions, Organization.ANY);
                 }
             default:
                 return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
-                                  permissions, Organization.ANY);
+                        permissions, Organization.ANY);
         }
     }
 
     private static boolean hasRole(Authentication authentication, RolePrefix prefix,
-        RolePermission permission, Organization org) {
+                                   RolePermission permission, Organization org) {
         return hasAnyRole(authentication, prefix, Collections.singleton(permission), org);
     }
 
     private static boolean hasAnyRole(Authentication authentication, RolePrefix prefix,
-        Set<RolePermission> permission, Organization org) {
+                                      Set<RolePermission> permission, Organization org) {
         return authentication.getAuthorities().stream()
-            .anyMatch(a -> permission.stream().anyMatch(p -> roleEquals(a.getAuthority(), prefix, p, org)));
+                .anyMatch(a -> permission.stream().anyMatch(p -> roleEquals(a.getAuthority(), prefix, p, org)));
     }
 
     private static boolean roleEquals(String authority, RolePrefix prefix,
-        RolePermission permission, Organization org) {
+                                      RolePermission permission, Organization org) {
         if (Organization.ANY.equals(org)) {
             return authority.equals(prefix.name() + "_" + permission.name());
         }
@@ -192,19 +193,19 @@ public class PermissionManager {
 
         Map<TargetType, Set<Permission>> permissionMap = new HashMap<>();
         Set<Permission> opsPermissions =
-            EnumSet.allOf(RolePermission.class).stream()
-                   .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
-                   .filter(pair -> !pair.getSecond().isEmpty())
-                   .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
-                   .collect(Collectors.toSet());
+                EnumSet.allOf(RolePermission.class).stream()
+                        .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+                        .filter(pair -> !pair.getSecond().isEmpty())
+                        .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
+                        .collect(Collectors.toSet());
         permissionMap.put(TargetType.OPETUSSUUNNITELMA, opsPermissions);
 
         Set<Permission> pohjaPermissions =
-            EnumSet.allOf(RolePermission.class).stream()
-                   .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
-                   .filter(pair -> pair.getSecond().contains(SecurityUtil.OPH_OID))
-                   .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
-                   .collect(Collectors.toSet());
+                EnumSet.allOf(RolePermission.class).stream()
+                        .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+                        .filter(pair -> pair.getSecond().contains(SecurityUtil.OPH_OID))
+                        .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
+                        .collect(Collectors.toSet());
         permissionMap.put(TargetType.POHJA, pohjaPermissions);
 
         return permissionMap;
@@ -222,15 +223,15 @@ public class PermissionManager {
         boolean isPohja = ops.getTyyppi() == Tyyppi.POHJA;
         Set<String> organisaatiot = ops.getOrganisaatiot();
         Set<Permission> permissions
-            = EnumSet.allOf(RolePermission.class).stream()
-            .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
-            .filter(pair -> !CollectionUtil.intersect(pair.getSecond(), organisaatiot).isEmpty())
-            .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
-            .filter(permission -> ops.getTila() == Tila.LUONNOS ||
-                (permission == Permission.TILANVAIHTO &&
-                !ops.getTila().mahdollisetSiirtymat(isPohja).isEmpty()) ||
-                fromRolePermission(RolePermission.READ).contains(permission))
-            .collect(Collectors.toSet());
+                = EnumSet.allOf(RolePermission.class).stream()
+                .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
+                .filter(pair -> !CollectionUtil.intersect(pair.getSecond(), organisaatiot).isEmpty())
+                .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
+                .filter(permission -> ops.getTila() == Tila.LUONNOS ||
+                        (permission == Permission.TILANVAIHTO &&
+                                !ops.getTila().mahdollisetSiirtymat(isPohja).isEmpty()) ||
+                        fromRolePermission(RolePermission.READ).contains(permission))
+                .collect(Collectors.toSet());
 
         permissionMap.put(TargetType.OPETUSSUUNNITELMA, permissions);
         if (ops.getTyyppi() == Tyyppi.POHJA) {

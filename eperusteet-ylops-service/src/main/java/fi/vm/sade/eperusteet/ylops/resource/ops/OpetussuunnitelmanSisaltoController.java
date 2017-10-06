@@ -22,26 +22,31 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.TEKSTIKAPPALE;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.KLOONAUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.PALAUTUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
+
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
- *
  * @author mikkom
  */
 @RestController
@@ -86,9 +91,9 @@ public class OpetussuunnitelmanSisaltoController {
 
     @RequestMapping(value = "/tekstit/{viiteId}/revert/{versio}", method = RequestMethod.POST)
     public void revertTekstikappaleToVersion(
-        @PathVariable("opsId") final Long opsId,
-        @PathVariable("viiteId") final Long viiteId,
-        @PathVariable("versio") final Integer versio){
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("viiteId") final Long viiteId,
+            @PathVariable("versio") final Integer versio) {
         audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, PALAUTUS)
                 .palautus(viiteId, versio.longValue()), (Void) -> {
             tekstiKappaleViiteService.revertToVersion(opsId, viiteId, versio);

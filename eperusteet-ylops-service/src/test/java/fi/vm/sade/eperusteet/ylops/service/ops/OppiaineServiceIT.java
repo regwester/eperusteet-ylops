@@ -42,7 +42,6 @@ import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author mikkom
  */
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -126,7 +125,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         try {
             oppiaineService.palautaYlempi(alaOps.getId(), opsOppiaine.getOppiaine().getId());
             fail("Palauttamisen pitäisi epäonnistua");
-        }catch (Exception e){
+        } catch (Exception e) {
             assertEquals(e.getClass(), BusinessRuleViolationException.class);
         }
 
@@ -201,8 +200,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
                 .findAny()
                 .get()
                 .getVuosiluokat().stream()
-                    .findFirst()
-                    .get();
+                .findFirst()
+                .get();
 
         List<TekstiosaDto> tavoitteet = new ArrayList<>();
         tavoitteet.add(TestUtils.createTekstiosa("hello", "world"));

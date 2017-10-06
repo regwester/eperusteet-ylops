@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +49,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author mikkom
  */
 @Service
@@ -205,13 +206,13 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         return getToimijatByKuntas(kuntaIdt, this::getPeruskoulutByKuntaId);
     }
 
-    private JsonNode getToimijatByKuntas(List<String> kuntaIdt, Function<String,JsonNode> getByKuntaId) {
+    private JsonNode getToimijatByKuntas(List<String> kuntaIdt, Function<String, JsonNode> getByKuntaId) {
         Set<String> toimijaOidit =
-            kuntaIdt.stream()
-                    .flatMap(kuntaId ->
-                                 StreamSupport.stream(getByKuntaId.apply(kuntaId).spliterator(), false)
-                                              .map(koulu -> koulu.get("parentOid").asText()))
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
+                kuntaIdt.stream()
+                        .flatMap(kuntaId ->
+                                StreamSupport.stream(getByKuntaId.apply(kuntaId).spliterator(), false)
+                                        .map(koulu -> koulu.get("parentOid").asText()))
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
 
         ArrayNode toimijat = JsonNodeFactory.instance.arrayNode();
         toimijaOidit.stream().map(this::getOrganisaatio).forEach(toimijat::add);
@@ -231,8 +232,8 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                 .filter(toimija -> toimija.getOrganisaatiotyypit().contains("KOULUTUSTOIMIJA"))
                 .map(toimija -> {
                     toimija.setChildren(toimija.getChildren().stream()
-                        .filter(alitoimija -> sallitutOppilaitostyypit.contains(alitoimija.getOppilaitostyyppi()))
-                        .collect(Collectors.toList()));
+                            .filter(alitoimija -> sallitutOppilaitostyypit.contains(alitoimija.getOppilaitostyyppi()))
+                            .collect(Collectors.toList()));
                     return toimija;
                 })
                 .filter(toimija -> !toimija.getChildren().isEmpty())

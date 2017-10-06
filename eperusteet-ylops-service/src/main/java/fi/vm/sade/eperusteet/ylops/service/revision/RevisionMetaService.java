@@ -17,7 +17,6 @@
 package fi.vm.sade.eperusteet.ylops.service.revision;
 
 /**
- *
  * @author nkala
  */
 public interface RevisionMetaService {

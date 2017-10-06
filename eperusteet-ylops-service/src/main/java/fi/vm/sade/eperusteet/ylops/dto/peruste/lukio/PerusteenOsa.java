@@ -41,13 +41,13 @@ public interface PerusteenOsa {
                 .filter(o -> o != null).flatMap(PerusteenOsa::osineen));
     }
 
-    static<T extends PerusteenOsa, OpsT extends PerusteeseenViittaava<T>> void map(T perusteen, OpsT paikallinen) {
+    static <T extends PerusteenOsa, OpsT extends PerusteeseenViittaava<T>> void map(T perusteen, OpsT paikallinen) {
         if (perusteen != null && paikallinen != null) {
             Map<UUID, PerusteenOsa> perusteenOsat;
             perusteenOsat = perusteen.osineen()
                     .filter(o -> o != null && o.getTunniste() != null)
                     .map(o -> (PerusteenOsa) o) // <-- required for javac /compiles without in Idea)
-                    .collect(toMap(PerusteenOsa::getTunniste, o -> o,  (o1, o2) -> o1));
+                    .collect(toMap(PerusteenOsa::getTunniste, o -> o, (o1, o2) -> o1));
             paikallinen.viittauksineen().filter(p -> p != null && p.getTunniste() != null)
                     .forEach(p -> {
                         //noinspection unchecked

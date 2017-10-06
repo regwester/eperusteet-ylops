@@ -61,10 +61,14 @@ public enum LukiokurssiTyyppi {
 
     public static LukiokurssiTyyppi ofPerusteTyyppi(PerusteenLukiokurssiTyyppi tyyppi) {
         switch (tyyppi) {
-            case PAKOLLINEN: return VALTAKUNNALLINEN_PAKOLLINEN;
-            case VALTAKUNNALLINEN_SOVELTAVA: return VALTAKUNNALLINEN_SOVELTAVA;
-            case VALTAKUNNALLINEN_SYVENTAVA: return VALTAKUNNALLINEN_SYVENTAVA;
-            default: throw new IllegalStateException("Unimplemented peruste lukiokurssityyppi: " + tyyppi);
+            case PAKOLLINEN:
+                return VALTAKUNNALLINEN_PAKOLLINEN;
+            case VALTAKUNNALLINEN_SOVELTAVA:
+                return VALTAKUNNALLINEN_SOVELTAVA;
+            case VALTAKUNNALLINEN_SYVENTAVA:
+                return VALTAKUNNALLINEN_SYVENTAVA;
+            default:
+                throw new IllegalStateException("Unimplemented peruste lukiokurssityyppi: " + tyyppi);
         }
     }
 
@@ -77,6 +81,7 @@ public enum LukiokurssiTyyppi {
                       Setter<Oppiaine, LokalisoituTeksti> oppiaineKuvausSetter) {
         this(oppiaineKuvausGetter, oppiaineKuvausSetter, false);
     }
+
     LukiokurssiTyyppi(Function<Oppiaine, LokalisoituTeksti> oppiaineKuvausGetter,
                       Setter<Oppiaine, LokalisoituTeksti> oppiaineKuvausSetter, boolean paikallinen) {
         this.oppiaineKuvausGetter = oppiaineKuvausGetter;

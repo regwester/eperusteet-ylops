@@ -19,7 +19,6 @@ package fi.vm.sade.eperusteet.ylops.domain.dokumentti;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
- *
  * @author iSaul
  */
 public enum DokumenttiTila {

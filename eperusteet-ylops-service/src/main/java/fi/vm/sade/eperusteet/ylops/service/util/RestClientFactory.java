@@ -16,13 +16,14 @@
 package fi.vm.sade.eperusteet.ylops.service.util;
 
 import fi.vm.sade.generic.rest.CachingRestClient;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- *
  * @author mikkom
  */
 @Component

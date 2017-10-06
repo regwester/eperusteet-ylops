@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lokalisoituTekstiOf;
 
 /**
- *
  * @author mikkom
  */
 @Transactional

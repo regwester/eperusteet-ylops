@@ -20,15 +20,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author jhyoty
  */
 @Getter
@@ -54,7 +55,7 @@ public class PerusteOppiaineenVuosiluokkakokonaisuusDto implements Referenceable
     @JsonIgnore
     public Optional<PerusteOpetuksentavoiteDto> getTavoite(UUID tunniste) {
         return tavoitteet.stream()
-            .filter(t -> t.getTunniste().equals(tunniste))
-            .findAny();
+                .filter(t -> t.getTunniste().equals(tunniste))
+                .findAny();
     }
 }

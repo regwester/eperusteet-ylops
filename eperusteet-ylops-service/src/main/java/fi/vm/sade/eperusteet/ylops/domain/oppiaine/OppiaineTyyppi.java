@@ -16,22 +16,18 @@
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 /**
- *
  * @author mikkom
  */
 public enum OppiaineTyyppi {
     /**
-     *
      * Kaikille yhteinen aine
      */
     YHTEINEN("yhteinen"),
     /**
-     *
      * Taide- ja/tai taitoaineen valinnainen tunti
      */
     TAIDE_TAITOAINE("taide_taitoaine"),
     /**
-     *
      * Muu valinnainen aine
      */
     MUU_VALINNAINEN("muu_valinnainen"),
@@ -42,8 +38,12 @@ public enum OppiaineTyyppi {
 
     private final String tyyppi;
 
-    private OppiaineTyyppi(String tyyppi) { this.tyyppi = tyyppi; }
+    private OppiaineTyyppi(String tyyppi) {
+        this.tyyppi = tyyppi;
+    }
 
     @Override
-    public String toString() { return tyyppi; }
+    public String toString() {
+        return tyyppi;
+    }
 }

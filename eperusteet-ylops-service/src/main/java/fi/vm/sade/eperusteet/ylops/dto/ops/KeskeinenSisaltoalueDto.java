@@ -23,7 +23,6 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- *
  * @author mikkom
  */
 @Getter

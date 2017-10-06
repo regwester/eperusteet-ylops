@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -25,7 +26,6 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 
 /**
- *
  * @author jhyoty
  */
 @Embeddable

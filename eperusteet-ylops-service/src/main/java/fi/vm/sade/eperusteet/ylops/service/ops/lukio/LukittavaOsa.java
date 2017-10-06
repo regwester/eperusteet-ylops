@@ -37,21 +37,21 @@ public enum LukittavaOsa {
     YLEISET_TAVOITTEET(OpetuksenYleisetTavoitteetRepository.class, Opetussuunnitelma::getOpetuksenYleisetTavoitteet),
     AIHEKOKONAISUUDET(AihekokonaisuudetRepository.class, Opetussuunnitelma::getAihekokonaisuudet),
     AIHEKOKONAISUUS(AihekokonaisuusRepository.class);
-    
+
     private Optional<Function<Opetussuunnitelma, ? extends AbstractAuditedReferenceableEntity>> fromOps = Optional.empty();
 
-    private Class<? extends JpaWithVersioningRepository<?,?>> repository;
+    private Class<? extends JpaWithVersioningRepository<?, ?>> repository;
 
-    <T>LukittavaOsa(Class<? extends JpaWithVersioningRepository<T, ?>> repository) {
+    <T> LukittavaOsa(Class<? extends JpaWithVersioningRepository<T, ?>> repository) {
         this.repository = repository;
     }
 
-    <T extends AbstractAuditedReferenceableEntity>LukittavaOsa(Class<? extends JpaWithVersioningRepository<T, ?>> repository,
-                                                               Function<Opetussuunnitelma, T> fromOps) {
+    <T extends AbstractAuditedReferenceableEntity> LukittavaOsa(Class<? extends JpaWithVersioningRepository<T, ?>> repository,
+                                                                Function<Opetussuunnitelma, T> fromOps) {
         this.repository = repository;
         this.fromOps = Optional.of(fromOps);
     }
-    
+
     public Class<? extends JpaWithVersioningRepository<?, ?>> getRepository() {
         return repository;
     }

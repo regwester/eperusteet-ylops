@@ -36,7 +36,8 @@ public class AihekokonaisuudetDto extends AihekokonaisuudetBaseDto
     private AihekokonaisuudetDto parent;
     private List<AihekokonaisuusDto> aihekokonaisuudet;
 
-    @Override @JsonIgnore // uuidTunniste
+    @Override
+    @JsonIgnore // uuidTunniste
     public UUID getTunniste() {
         return getUuidTunniste();
     }

@@ -44,7 +44,6 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toMap;
 
 /**
- *
  * @author jhyoty
  */
 @Entity
@@ -68,7 +67,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     private OppiaineTyyppi tyyppi = OppiaineTyyppi.YHTEINEN;
 
     /**
-     *
      * Laajuus vuosiviikkotunteina (vvh)
      */
     @Getter
@@ -236,7 +234,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
 
     public Set<Oppiaineenvuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
         return vuosiluokkakokonaisuudet == null ? Collections.emptySet()
-            : Collections.unmodifiableSet(vuosiluokkakokonaisuudet);
+                : Collections.unmodifiableSet(vuosiluokkakokonaisuudet);
     }
 
     public Optional<Oppiaineenvuosiluokkakokonaisuus> getVuosiluokkakokonaisuus(UUID tunniste) {
@@ -441,7 +439,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Transient
     public Map<LukiokurssiTyyppi, Optional<LokalisoituTeksti>> getKurssiTyyppiKuvaukset() {
         return Stream.of(LukiokurssiTyyppi.values()).collect(toMap(k -> k,
-            k -> Optional.ofNullable(k.oppiaineKuvausGetter().apply(this))
+                k -> Optional.ofNullable(k.oppiaineKuvausGetter().apply(this))
         ));
     }
 

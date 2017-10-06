@@ -16,14 +16,15 @@
 package fi.vm.sade.eperusteet.ylops.repository.liite;
 
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
+
 import java.util.List;
 import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author jhyoty
  */
 @Repository

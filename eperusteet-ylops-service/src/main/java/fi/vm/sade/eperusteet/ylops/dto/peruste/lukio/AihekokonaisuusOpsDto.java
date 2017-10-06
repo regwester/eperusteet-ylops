@@ -28,6 +28,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AihekokonaisuusOpsDto extends AihekokonaisuusDto
-            implements PerusteeseenViittaava<AihekokonaisuusDto> {
+        implements PerusteeseenViittaava<AihekokonaisuusDto> {
     private AihekokonaisuusDto perusteen;
 }

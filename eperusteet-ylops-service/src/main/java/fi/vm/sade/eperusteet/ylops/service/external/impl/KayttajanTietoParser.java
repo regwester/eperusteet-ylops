@@ -17,12 +17,12 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- *
  * @author jhyoty
  */
 final class KayttajanTietoParser {
@@ -56,8 +56,8 @@ final class KayttajanTietoParser {
 
     public static List<KayttajanTietoDto> parsiKayttajat(JsonNode jsonList) {
         return Stream.of(jsonList)
-                     .map(KayttajanTietoParser::parsiKayttaja)
-                     .collect(Collectors.toList());
+                .map(KayttajanTietoParser::parsiKayttaja)
+                .collect(Collectors.toList());
     }
 
 }

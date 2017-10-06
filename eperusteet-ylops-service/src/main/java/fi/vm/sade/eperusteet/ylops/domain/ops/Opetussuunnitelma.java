@@ -48,7 +48,6 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 
 /**
- *
  * @author mikkom
  */
 @Entity
@@ -129,7 +128,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @JoinColumn
     private TekstiKappaleViite tekstit = new TekstiKappaleViite();
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Getter
     @Setter
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -137,12 +136,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(joinColumns = {
-        @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
+            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
     private Set<OpsOppiaine> oppiaineet = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(joinColumns = {
-        @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
+            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
     private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
 
     @ElementCollection
@@ -158,7 +157,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     private Set<Kieli> julkaisukielet = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "opetussuunnitelma_liite", inverseJoinColumns = {@JoinColumn(name="liite_id")}, joinColumns = {@JoinColumn(name="opetussuunnitelma_id")})
+    @JoinTable(name = "opetussuunnitelma_liite", inverseJoinColumns = {@JoinColumn(name = "liite_id")}, joinColumns = {@JoinColumn(name = "opetussuunnitelma_id")})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<Liite> liitteet = new HashSet<>();
 
@@ -222,7 +221,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     }
 
     public void setOppiaineet(Set<OpsOppiaine> oppiaineet) {
-        if ( oppiaineet == null ) {
+        if (oppiaineet == null) {
             this.oppiaineet.clear();
         } else {
             this.oppiaineet.addAll(oppiaineet);
@@ -246,8 +245,8 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     public void removeOppiaine(Oppiaine oppiaine) {
         List<OpsOppiaine> poistettavat = oppiaineet.stream()
-                  .filter(opsOppiaine -> opsOppiaine.getOppiaine().equals(oppiaine))
-                  .collect(Collectors.toList());
+                .filter(opsOppiaine -> opsOppiaine.getOppiaine().equals(oppiaine))
+                .collect(Collectors.toList());
         for (OpsOppiaine opsOppiaine : poistettavat) {
             // TODO: Tarkista onko opsOppiaineen alla oleva oppiaine enää käytössä missään
             oppiaineet.remove(opsOppiaine);
@@ -264,7 +263,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         }
 
         return oppiaineet.stream()
-                         .anyMatch(opsOppiaine -> opsOppiaine.getOppiaine().equals(oppiaine));
+                .anyMatch(opsOppiaine -> opsOppiaine.getOppiaine().equals(oppiaine));
     }
 
     public Set<OpsVuosiluokkakokonaisuus> getVuosiluokkakokonaisuudet() {
@@ -294,9 +293,9 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     public Function<Long, List<OppiaineLukiokurssi>> lukiokurssitByOppiaine() {
         return orEmpty(this.getLukiokurssit().stream()
-            .sorted(comparing((OppiaineLukiokurssi oaLk) -> Optional.ofNullable(oaLk.getJarjestys()).orElse(0))
-                .thenComparing((OppiaineLukiokurssi oaLk) -> oaLk.getKurssi().getNimi().firstByKieliOrder().orElse("")))
-            .collect(groupingBy(k -> k.getOppiaine().getId()))::get);
+                .sorted(comparing((OppiaineLukiokurssi oaLk) -> Optional.ofNullable(oaLk.getJarjestys()).orElse(0))
+                        .thenComparing((OppiaineLukiokurssi oaLk) -> oaLk.getKurssi().getNimi().firstByKieliOrder().orElse("")))
+                .collect(groupingBy(k -> k.getOppiaine().getId()))::get);
     }
 
     @Transient // ei pitäisi käyttää pääosin (raskas, tässä vain erikoistapaukseen)

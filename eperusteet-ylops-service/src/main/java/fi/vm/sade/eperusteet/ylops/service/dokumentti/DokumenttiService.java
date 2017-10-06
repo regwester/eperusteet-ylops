@@ -23,7 +23,6 @@ import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
- *
  * @author iSaul
  */
 public interface DokumenttiService {

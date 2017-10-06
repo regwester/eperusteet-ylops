@@ -23,7 +23,6 @@ import lombok.Setter;
 import java.util.Date;
 
 /**
- *
  * @author iSaul
  */
 @Getter
@@ -32,7 +31,7 @@ import java.util.Date;
 public class LokalisointiDto {
     String value;
     String key;
-    Long   id;
+    Long id;
     String locale;
     String description;
     String category;

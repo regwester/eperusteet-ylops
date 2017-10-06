@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,28 +38,28 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 /**
- *
  * @author mikkom
  */
 @Entity
 @Audited
 @Table(name = "tekstikappaleviite")
 @NamedNativeQuery(
-    name = "TekstiKappaleViite.findRootByTekstikappaleId",
-    query
-    = "with recursive vanhemmat(id,vanhempi_id,tekstikappale_id) as "
-    + "(select tv.id, tv.vanhempi_id, tv.tekstikappale_id from tekstikappaleviite tv "
-    + "where tv.tekstikappale_id = ?1 and tv.omistussuhde in (?2,?3) "
-    + "union all "
-    + "select tv.id, tv.vanhempi_id, v.tekstikappale_id "
-    + "from tekstikappaleviite tv, vanhemmat v where tv.id = v.vanhempi_id) "
-    + "select id from vanhemmat where vanhempi_id is null"
+        name = "TekstiKappaleViite.findRootByTekstikappaleId",
+        query
+                = "with recursive vanhemmat(id,vanhempi_id,tekstikappale_id) as "
+                + "(select tv.id, tv.vanhempi_id, tv.tekstikappale_id from tekstikappaleviite tv "
+                + "where tv.tekstikappale_id = ?1 and tv.omistussuhde in (?2,?3) "
+                + "union all "
+                + "select tv.id, tv.vanhempi_id, v.tekstikappale_id "
+                + "from tekstikappaleviite tv, vanhemmat v where tv.id = v.vanhempi_id) "
+                + "select id from vanhemmat where vanhempi_id is null"
 )
 public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
 
@@ -155,8 +156,7 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
             if (lapsi.pakollinen) {
                 if (lapsi.getTekstiKappale() != null) {
                     LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getNimi(), teksti);
-                }
-                else {
+                } else {
                     validointi.virhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti);
                 }
             }

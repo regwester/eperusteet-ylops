@@ -19,12 +19,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author nkala
  */
 @Getter
 @Setter
-public class OpsOppiaineKevytDto  {
+public class OpsOppiaineKevytDto {
     private boolean oma;
     private Integer jnro;
     private OppiaineSuppeaDto oppiaine;

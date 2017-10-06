@@ -16,11 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author jhyoty
  */
 @Getter

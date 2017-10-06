@@ -31,7 +31,7 @@ public class LambdaUtil {
     private LambdaUtil() {
     }
 
-    public static <K,V> Function<K,List<V>> orEmpty(Function<K,List<V>> f) {
+    public static <K, V> Function<K, List<V>> orEmpty(Function<K, List<V>> f) {
         return k -> Optional.ofNullable(f.apply(k)).orElseGet(ArrayList::new);
     }
 
@@ -49,7 +49,7 @@ public class LambdaUtil {
         T copy(T from);
     }
 
-    public static<K,F,T> Function<K, T> map(Map<K,F> from, Function<F,T> map) {
+    public static <K, F, T> Function<K, T> map(Map<K, F> from, Function<F, T> map) {
         return k -> Optional.ofNullable(from.get(k)).map(map).orElse(null);
     }
 
@@ -62,11 +62,11 @@ public class LambdaUtil {
             return to;
         }
 
-        default ConstructedCopier<T> construct(Function<T,T> conststructor) {
+        default ConstructedCopier<T> construct(Function<T, T> conststructor) {
             return (a) -> copied(a, conststructor.apply(a));
         }
 
-        default Copier<T> and(Copier<T> ...also) {
+        default Copier<T> and(Copier<T>... also) {
             Copier<T> copier = this;
             for (Copier<T> c : also) {
                 copier = copier.and(c);
@@ -79,23 +79,24 @@ public class LambdaUtil {
                 return this;
             }
             Copier<T> me = this;
-            return (a,b) -> {
-                me.copy(a,b);
-                also.copy(a,b);
+            return (a, b) -> {
+                me.copy(a, b);
+                also.copy(a, b);
             };
         }
 
-        static<T> Copier<T> nothing() {
-            return (a,b) -> {};
+        static <T> Copier<T> nothing() {
+            return (a, b) -> {
+            };
         }
 
-        static<T,E> Copier<T> of(Function<T,E> getter, Setter<T,E> setter) {
-            return (a,b) -> setter.set(b, getter.apply(a));
+        static <T, E> Copier<T> of(Function<T, E> getter, Setter<T, E> setter) {
+            return (a, b) -> setter.set(b, getter.apply(a));
         }
     }
 
     @FunctionalInterface
-    public interface Setter<ClassType,ValueType> {
+    public interface Setter<ClassType, ValueType> {
         void set(ClassType obj, ValueType value);
     }
 

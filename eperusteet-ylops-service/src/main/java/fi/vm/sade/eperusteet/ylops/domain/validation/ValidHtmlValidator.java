@@ -21,7 +21,6 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- *
  * @author mikkom
  */
 public class ValidHtmlValidator extends ValidHtmlValidatorBase implements

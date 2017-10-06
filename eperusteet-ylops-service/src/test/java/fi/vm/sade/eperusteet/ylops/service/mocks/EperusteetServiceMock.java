@@ -28,16 +28,17 @@ import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author nkala
  */
 @Service
@@ -97,7 +98,7 @@ public class EperusteetServiceMock implements EperusteetService {
         return getPerusteByDiaari(diaarinumero);
     }
 
-    private PerusteDto getPerusteByDiaari (String diaariNumero) {
+    private PerusteDto getPerusteByDiaari(String diaariNumero) {
         if (perusteDto != null && diaariNumero.equals(perusteDto.getDiaarinumero())) {
             return mapper.map(perusteDto, PerusteDto.class);
         }

@@ -46,8 +46,8 @@ public class ExceptionUtil {
     }
 
     public static <F, T, Ex extends Exception, RtEx extends RuntimeException> Function<F, T>
-            wrapRuntime(ThrowingFunction<F, T, Ex> target, Function<? super Ex, ? extends RtEx> wrapper)
-                throws RtEx {
+    wrapRuntime(ThrowingFunction<F, T, Ex> target, Function<? super Ex, ? extends RtEx> wrapper)
+            throws RtEx {
         return (F f) -> {
             try {
                 return target.apply(f);
@@ -65,9 +65,9 @@ public class ExceptionUtil {
         return wrapRuntime(target, DEFAULT_RUNTIME_EX);
     }
 
-    public static <T,Ex extends Exception, RtEx extends RuntimeException> Supplier<T>
-            wrapRuntime(ThrowingSupplier<T, Ex> target, Function<? super Ex, ? extends RtEx> wrapper)
-                throws RtEx {
+    public static <T, Ex extends Exception, RtEx extends RuntimeException> Supplier<T>
+    wrapRuntime(ThrowingSupplier<T, Ex> target, Function<? super Ex, ? extends RtEx> wrapper)
+            throws RtEx {
         return () -> {
             try {
                 return target.get();
@@ -75,7 +75,7 @@ public class ExceptionUtil {
                 if (RuntimeException.class.isAssignableFrom(e.getClass())) {
                     throw (RuntimeException) e;
                 }
-                throw wrapper.apply((Ex)e);
+                throw wrapper.apply((Ex) e);
             }
         };
     }

@@ -23,11 +23,10 @@ import javax.validation.Valid;
 import java.util.Collection;
 
 /**
- *
  * @author mikkom
  */
 public class ValidHtmlCollectionValidator extends ValidHtmlValidatorBase implements
-        ConstraintValidator<ValidHtml, Collection<LokalisoituTeksti>>{
+        ConstraintValidator<ValidHtml, Collection<LokalisoituTeksti>> {
     @Override
     public void initialize(ValidHtml constraintAnnotation) {
         setupValidator(constraintAnnotation);

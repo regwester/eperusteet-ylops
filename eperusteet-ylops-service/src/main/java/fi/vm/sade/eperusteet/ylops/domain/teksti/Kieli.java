@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.domain.teksti;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
- *
  * @author jhyoty
  */
 public enum Kieli {

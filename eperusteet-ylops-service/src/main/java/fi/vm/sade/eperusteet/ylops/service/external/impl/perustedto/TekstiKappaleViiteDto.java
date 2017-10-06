@@ -16,12 +16,13 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author jhyoty
  */
 @Getter

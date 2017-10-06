@@ -42,7 +42,6 @@ import static com.google.common.base.Predicates.not;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
- *
  * @author jhyoty
  */
 @Configuration
@@ -69,7 +68,8 @@ public class SwaggerConfig {
                 .genericModelSubstitutes(ResponseEntity.class, Optional.class)
                 .alternateTypeRules(
                         AlternateTypeRules.newRule(
-                                typeResolver.resolve(new GenericType<Callable<ResponseEntity<Object>>>() {}),
+                                typeResolver.resolve(new GenericType<Callable<ResponseEntity<Object>>>() {
+                                }),
                                 typeResolver.resolve(Object.class)
                         )
                 );

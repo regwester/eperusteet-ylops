@@ -18,8 +18,10 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
+
 import java.util.Collection;
 import java.util.Optional;
+
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MapperFactory;
@@ -32,9 +34,9 @@ import org.hibernate.proxy.HibernateProxy;
 
 /**
  * Tuki Javan Optional-luokalle Orika mapperin yhteydessä.
- *
+ * <p>
  * Tarkoitettu Dto-Entiteetti-Dto mappaukseen.
- *
+ * <p>
  * Mahdollistaa mappauksen siten, että DTO-luokissa voi määritellä attribuutteja Optional&lt;Attr&gt; ja mappaus entiteetteihin toimii seuraavasti:
  * <ul>
  * <li>null: pidetään kohdearvo
@@ -64,7 +66,7 @@ public final class OptionalSupport {
         if (entity instanceof HibernateProxy) {
             Hibernate.initialize(entity);
             entity = (T) ((HibernateProxy) entity).getHibernateLazyInitializer()
-                .getImplementation();
+                    .getImplementation();
         }
         return entity;
     }
@@ -171,10 +173,10 @@ public final class OptionalSupport {
 
         private static boolean isImmutable(Type<?> type) {
             return LokalisoituTeksti.class.isAssignableFrom(type.getRawType())
-                || type.isPrimitiveWrapper()
-                || type.isEnum()
-                || type.isPrimitive()
-                || type.isString();
+                    || type.isPrimitiveWrapper()
+                    || type.isEnum()
+                    || type.isPrimitive()
+                    || type.isString();
         }
     }
 }

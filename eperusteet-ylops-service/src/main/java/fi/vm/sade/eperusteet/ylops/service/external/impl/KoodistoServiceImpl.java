@@ -17,11 +17,13 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 /**
- *
  * @author mikkom
  */
 @Service
@@ -73,12 +74,12 @@ public class KoodistoServiceImpl implements KoodistoService {
         List<KoodistoKoodiDto> koodistoLista;
         if ("kunta".equals(koodisto)) {
             koodistoLista
-                = Arrays.stream(koodistot)
-                // Filtteröi pois ex-kunnat
-                .filter(kunta -> kunta.getVoimassaLoppuPvm() == null)
-                // Ja "puuttuva" kunta
-                .filter(kunta -> !"999".equals(kunta.getKoodiArvo()))
-                .collect(Collectors.toList());
+                    = Arrays.stream(koodistot)
+                    // Filtteröi pois ex-kunnat
+                    .filter(kunta -> kunta.getVoimassaLoppuPvm() == null)
+                    // Ja "puuttuva" kunta
+                    .filter(kunta -> !"999".equals(kunta.getKoodiArvo()))
+                    .collect(Collectors.toList());
         } else {
             koodistoLista = koodistot == null ? null : Arrays.asList(koodistot);
         }
@@ -97,12 +98,12 @@ public class KoodistoServiceImpl implements KoodistoService {
         List<KoodistoKoodiDto> tulos = new ArrayList<>();
 
         Predicate<KoodistoKoodiDto> matches
-            = x -> x.getKoodiUri().contains(haku) || Arrays.stream(x.getMetadata())
-            .anyMatch(y -> y.getNimi().toLowerCase().contains(haku.toLowerCase()));
+                = x -> x.getKoodiUri().contains(haku) || Arrays.stream(x.getMetadata())
+                .anyMatch(y -> y.getNimi().toLowerCase().contains(haku.toLowerCase()));
 
         filter.stream()
-            .filter(matches)
-            .forEach(tulos::add);
+                .filter(matches)
+                .forEach(tulos::add);
         return tulos;
     }
 

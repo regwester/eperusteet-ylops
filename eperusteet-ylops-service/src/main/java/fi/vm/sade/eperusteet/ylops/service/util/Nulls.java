@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.util;
 
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public final class Nulls {
         return o;
     }
 
-    public static<F,T> Function<F,Optional<T>> ofNullable(Function<F,T> target) {
+    public static <F, T> Function<F, Optional<T>> ofNullable(Function<F, T> target) {
         return f -> {
             T value = target.apply(f);
             return Optional.ofNullable(value);

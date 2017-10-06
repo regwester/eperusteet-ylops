@@ -20,11 +20,12 @@ import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter;
+
 import java.util.concurrent.TimeUnit;
+
 import org.springframework.context.annotation.Configuration;
 
 /**
- *
  * @author jhyoty
  */
 @Configuration
@@ -34,12 +35,12 @@ public class MetricsConfig extends MetricsConfigurerAdapter {
     @Override
     public void configureReporters(MetricRegistry metricRegistry) {
         registerReporter(JmxReporter
-            .forRegistry(metricRegistry)
-            .build()).start();
+                .forRegistry(metricRegistry)
+                .build()).start();
 
         registerReporter(ConsoleReporter
-            .forRegistry(metricRegistry)
-            .build()).start(1, TimeUnit.DAYS);
+                .forRegistry(metricRegistry)
+                .build()).start(1, TimeUnit.DAYS);
     }
 
 }

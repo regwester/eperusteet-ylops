@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author mikkom
  */
 @Getter
@@ -34,7 +33,8 @@ public class KoodistoDto {
     private String koodiArvo;
     private LokalisoituTekstiDto nimi;
 
-    public KoodistoDto() { }
+    public KoodistoDto() {
+    }
 
     public KoodistoDto(Long id, String koodiUri, String koodiArvo) {
         this.id = id;

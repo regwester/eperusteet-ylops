@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.ohje;
 
 /**
- *
  * @author harrik
  */
 public enum OhjeTyyppi {
@@ -26,8 +25,12 @@ public enum OhjeTyyppi {
 
     private final String tyyppi;
 
-    private OhjeTyyppi(String tyyppi) { this.tyyppi = tyyppi; }
+    private OhjeTyyppi(String tyyppi) {
+        this.tyyppi = tyyppi;
+    }
 
     @Override
-    public String toString() { return tyyppi; }
+    public String toString() {
+        return tyyppi;
+    }
 }

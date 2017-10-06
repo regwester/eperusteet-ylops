@@ -45,13 +45,17 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -117,14 +121,14 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         PerusteDto peruste = perusteet.getPeruste(ops.getPerusteenDiaarinumero());
 
         Oppiaineenvuosiluokkakokonaisuus ovk = oppiaine.getVuosiluokkakokonaisuudet().stream()
-            .filter(vk -> vk.getId().equals(vlkId))
-            .findAny()
-            .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa"));
+                .filter(vk -> vk.getId().equals(vlkId))
+                .findAny()
+                .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiainetta ei ole opetussuunnitelmassa"));
 
         PerusteOppiaineenVuosiluokkakokonaisuusDto pov
-            = peruste.getPerusopetus().getOppiaine(oppiaine.getTunniste())
-            .flatMap(po -> po.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus().getId()))
-            .orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta tai vuosiluokkakokonaisuutta ei ole perusteessa"));
+                = peruste.getPerusopetus().getOppiaine(oppiaine.getTunniste())
+                .flatMap(po -> po.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus().getId()))
+                .orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta tai vuosiluokkakokonaisuutta ei ole perusteessa"));
 
         oppiaineet.lock(oppiaine);
         updateVuosiluokkakokonaisuudenTavoitteet(ovk, pov, tavoitteet);
@@ -152,8 +156,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         Set<Oppiaine> aineet = valinnaiset ?
-                               oppiaineet.findValinnaisetByOpsId(opsId) :
-                               oppiaineet.findYhteisetByOpsId(opsId);
+                oppiaineet.findValinnaisetByOpsId(opsId) :
+                oppiaineet.findYhteisetByOpsId(opsId);
         return mapper.mapAsList(aineet, OppiaineDto.class);
     }
 
@@ -216,8 +220,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             uusi.setKoosteinen(false);
             uusi.setAbstrakti(false);
             parent.addOppimaara(oppiaineet.save(uusi));
-        }
-        else {
+        } else {
             for (Oppiaine om : pohjaparent.getOppimaarat()) {
                 if (om.getTunniste().equals(kt.getTunniste())) {
                     uusi = Oppiaine.copyOf(om);
@@ -282,18 +285,18 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oavlk.setOhjaus(mapper.map(oavlktDto.getOhjaus(), Tekstiosa.class));
         oavlk.setArviointi(mapper.map(oavlktDto.getArviointi(), Tekstiosa.class));
 
-        if( oldJnro != null ){
+        if (oldJnro != null) {
             oavlk.setJnro(oldJnro);
-        }else{
+        } else {
             Optional<Integer> maxJnroInOps = getMaxJarjestysnumero(ops);
-            int max = ops.getOppiaineet().size()+1;
+            int max = ops.getOppiaineet().size() + 1;
             if (maxJnroInOps.isPresent()) {
-                max = (maxJnroInOps.get()+1 > max) ? maxJnroInOps.get()+1 : max;
+                max = (maxJnroInOps.get() + 1 > max) ? maxJnroInOps.get() + 1 : max;
             }
             oavlk.setJnro(max);
         }
 
-        if( oldOaVlk != null && updateOld ){
+        if (oldOaVlk != null && updateOld) {
 
             HashSet<Oppiaineenvuosiluokka> oldVlks = updateValinnainenVuosiluokat(vuosiluokat, oldOaVlk, oavlk);
 
@@ -301,9 +304,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     .getTavoitteet().forEach(opetuksentavoite -> opetuksentavoite
                             .getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
                                 opetuksenKeskeinensisaltoalue.setOpetuksentavoite(opetuksentavoite);
-            })));
+                            })));
 
-        }else if( !updateOld ){
+        } else if (!updateOld) {
             oavlk.setVuosiluokat(luoOppiaineenVuosiluokat(vuosiluokat, tavoitteetDto));
         }
 
@@ -410,13 +413,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
         Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
-        pelastettu.setTyyppi( oppiaine.getTyyppi() );
-        pelastettu.setLaajuus( oppiaine.getLaajuus() );
+        pelastettu.setTyyppi(oppiaine.getTyyppi());
+        pelastettu.setLaajuus(oppiaine.getLaajuus());
 
-        if( oppimaaraId != null){
+        if (oppimaaraId != null) {
             Oppiaine parent = oppiaineet.findOne(oppimaaraId);
             parent.addOppimaara(pelastettu);
-        }else{
+        } else {
             ops.addOppiaine(pelastettu);
         }
 
@@ -448,13 +451,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         OppiaineLaajaDto oppiaine = mapper.map(latest, OppiaineLaajaDto.class);
         Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
-        pelastettu.setTyyppi( oppiaine.getTyyppi() );
-        pelastettu.setLaajuus( oppiaine.getLaajuus() );
+        pelastettu.setTyyppi(oppiaine.getTyyppi());
+        pelastettu.setLaajuus(oppiaine.getLaajuus());
 
-        if( oppimaaraId != null){
+        if (oppimaaraId != null) {
             Oppiaine parent = oppiaineet.findOne(oppimaaraId);
             parent.addOppimaara(pelastettu);
-        }else{
+        } else {
             ops.addOppiaine(pelastettu);
         }
 
@@ -509,7 +512,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         for (Opetuksenkohdealue opetuksenkohdealue : latest.getKohdealueet()) {
             if (opetuksenkohdealueRepository.findOne(opetuksenkohdealue.getId()) == null) {
                 List<Revision> revisions = opetuksenkohdealueRepository.getRevisions(opetuksenkohdealue.getId());
-                if(revisions.size() > 1){
+                if (revisions.size() > 1) {
                     Revision revision = revisions.get(revisions.size() - 1);
                     opetuksenkohdealue = opetuksenkohdealueRepository.findRevision(revision.getId(), revision.getNumero());
                     Opetuksenkohdealue a = opetuksenkohdealueRepository.save(opetuksenkohdealue);
@@ -585,8 +588,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private Set<Oppiaineenvuosiluokka> luoOppiaineenVuosiluokat(Set<Vuosiluokka> vuosiluokat,
                                                                 List<TekstiosaDto> tavoitteetDto) {
         return vuosiluokat.stream().map(Oppiaineenvuosiluokka::new)
-                          .map(oavl -> asetaOppiaineenVuosiluokanSisalto(oavl, tavoitteetDto))
-                          .collect(Collectors.toSet());
+                .map(oavl -> asetaOppiaineenVuosiluokanSisalto(oavl, tavoitteetDto))
+                .collect(Collectors.toSet());
     }
 
     private Oppiaineenvuosiluokka asetaOppiaineenVuosiluokanSisalto(Oppiaineenvuosiluokka oavl,
@@ -594,20 +597,20 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         List<Tekstiosa> tavoitteet = mapper.mapAsList(tavoitteetDto, Tekstiosa.class);
 
         List<Keskeinensisaltoalue> sisaltoalueet = tavoitteet.stream()
-            .map(tekstiosa -> {
-                Keskeinensisaltoalue k = new Keskeinensisaltoalue();
-                k.setTunniste(UUID.randomUUID());
-                k.setKuvaus(tekstiosa.getTeksti());
-                return k;
-            })
-            .collect(Collectors.toList());
+                .map(tekstiosa -> {
+                    Keskeinensisaltoalue k = new Keskeinensisaltoalue();
+                    k.setTunniste(UUID.randomUUID());
+                    k.setKuvaus(tekstiosa.getTeksti());
+                    return k;
+                })
+                .collect(Collectors.toList());
 
         List<Keskeinensisaltoalue> oavlSisaltoalueet = sisaltoalueet.stream()
-            .map(Keskeinensisaltoalue::copyOf)
-            .collect(Collectors.toList());
+                .map(Keskeinensisaltoalue::copyOf)
+                .collect(Collectors.toList());
 
         List<Opetuksentavoite> oavlTavoitteet =
-            StreamUtils.zip(tavoitteet.stream(), oavlSisaltoalueet.stream(),
+                StreamUtils.zip(tavoitteet.stream(), oavlSisaltoalueet.stream(),
                         (tekstiosa, sisaltoalue) -> {
                             Opetuksentavoite t = new Opetuksentavoite();
                             t.setTunniste(UUID.randomUUID());
@@ -615,11 +618,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                             t.connectSisaltoalueet(Collections.singleton(sisaltoalue));
                             return t;
                         })
-                   .collect(Collectors.toList());
+                        .collect(Collectors.toList());
 
-        oavl.getTavoitteet().forEach( opetuksentavoite -> opetuksentavoite
+        oavl.getTavoitteet().forEach(opetuksentavoite -> opetuksentavoite
                 .getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
-                    opetuksenkeskeinenSisaltoalueRepository.delete( opetuksenKeskeinensisaltoalue );
+                    opetuksenkeskeinenSisaltoalueRepository.delete(opetuksenKeskeinensisaltoalue);
                 })
         );
 
@@ -706,12 +709,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkakokonaisuusDto dto) {
         Oppiaine oppiaine = getOppiaine(opsId, id);
         Oppiaineenvuosiluokkakokonaisuus oavlk
-            = oppiaine.getVuosiluokkakokonaisuudet().stream()
-            .filter(ov -> ov.getId().equals(dto.getId()))
-            .findAny()
-            .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei löydy"));
+                = oppiaine.getVuosiluokkakokonaisuudet().stream()
+                .filter(ov -> ov.getId().equals(dto.getId()))
+                .findAny()
+                .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei löydy"));
 
-        if (dto.getTehtava() != null ) {
+        if (dto.getTehtava() != null) {
             oavlk.setTehtava(mapper.map(dto.getTehtava(), Tekstiosa.class));
         }
         if (dto.getYleistavoitteet() != null) {
@@ -807,7 +810,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .filter(a -> (a.getOppiaine().getTunniste().compareTo(tunniste) == 0))
                 .collect(Collectors.toList());
 
-        if( pohjanOppiaineet.size() != 1){
+        if (pohjanOppiaineet.size() != 1) {
             throw new BusinessRuleViolationException("Oppiainetta ei löytynyt.");
         }
 
@@ -818,15 +821,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .filter(oa -> !oa.getOppiaine().getId().equals(id))
                 .collect(Collectors.toSet());
 
-        opsOppiaineet.add( oldOppiaine );
-        ops.setOppiaineet( opsOppiaineet );
+        opsOppiaineet.add(oldOppiaine);
+        ops.setOppiaineet(opsOppiaineet);
         if (ops.getKoulutustyyppi().isLukio()) {
             remapLukiokurssit(ops, oppiaine, opp);
 
             updateLukioJarjestyksetOnOpsOppaineRefChange(ops, oppiaine, opp);
         }
 
-        return mapper.map( oldOppiaine, OpsOppiaineDto.class );
+        return mapper.map(oldOppiaine, OpsOppiaineDto.class);
     }
 
     @Override
@@ -862,7 +865,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     private Boolean canCopyOppiaine(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        if(ops == null){
+        if (ops == null) {
             return false;
         }
 
@@ -878,7 +881,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             if (oppiaine.getOppiaine() != null) {
                 return false;
             }
-        }catch (BusinessRuleViolationException e){
+        } catch (BusinessRuleViolationException e) {
             return false;
         }
         return true;
@@ -886,25 +889,25 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     private void remapLukiokurssit(Opetussuunnitelma ops, Oppiaine oppiaine, Oppiaine newOppiaine) {
         Map<OppiaineOpsTunniste, Oppiaine> oldByUuid = oppiaine.maarineen()
-                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa->oa));
+                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa -> oa));
         Map<OppiaineOpsTunniste, Oppiaine> newByUuid = newOppiaine.maarineen()
-                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa->oa));
+                .collect(toMap(Oppiaine::getOpsUniikkiTunniste, oa -> oa));
         ops.getLukiokurssit().removeAll(
-            ops.getLukiokurssit().stream()
-                .filter(oaLk -> oldByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
-                .filter(oaLk -> !newByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
-                .collect(toSet())
+                ops.getLukiokurssit().stream()
+                        .filter(oaLk -> oldByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+                        .filter(oaLk -> !newByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+                        .collect(toSet())
         );
         ops.getLukiokurssit().stream()
-            .filter(oaLk -> oldByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
-            .forEach(oaLk -> oaLk.setOppiaine(newByUuid.get(oaLk.getOppiaine().getOpsUniikkiTunniste())));
+                .filter(oaLk -> oldByUuid.containsKey(oaLk.getOppiaine().getOpsUniikkiTunniste()))
+                .forEach(oaLk -> oaLk.setOppiaine(newByUuid.get(oaLk.getOppiaine().getOpsUniikkiTunniste())));
     }
 
     private void updateLukioJarjestyksetOnOpsOppaineRefChange(Opetussuunnitelma ops,
                                                               Oppiaine oppiaine, Oppiaine newOppiaine) {
         Map<OppiaineOpsTunniste, LukioOppiaineJarjestys> jarjestykset = lukioOppiaineJarjestysRepository
                 .findByOppiaineIds(ops.getId(), oppiaine.maarineen().map(Oppiaine::getId).collect(toSet()))
-                .stream().collect(toMap(j -> j.getOppiaine().getOpsUniikkiTunniste(), j->j));
+                .stream().collect(toMap(j -> j.getOppiaine().getOpsUniikkiTunniste(), j -> j));
         ops.getOppiaineJarjestykset().removeAll(jarjestykset.values());
         opetussuunnitelmaRepository.flush();
         Map<OppiaineOpsTunniste, Oppiaine> uudetOppiaineJaMaaraByTunniste = newOppiaine.maarineen()
@@ -930,9 +933,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private void updateVuosiluokkakokonaisuudenTavoitteet(
-        Oppiaineenvuosiluokkakokonaisuus v,
-        PerusteOppiaineenVuosiluokkakokonaisuusDto vuosiluokkakokonaisuus,
-        Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+            Oppiaineenvuosiluokkakokonaisuus v,
+            PerusteOppiaineenVuosiluokkakokonaisuusDto vuosiluokkakokonaisuus,
+            Map<Vuosiluokka, Set<UUID>> tavoitteet) {
 
         if (!vuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet())) {
             throw new BusinessRuleViolationException("Yksi tai useampi vuosiluokka ei kuulu tähän vuosiluokkakokonaisuuteen");
@@ -941,67 +944,67 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(v, false);
 
         tavoitteet.entrySet().stream()
-            .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))
-            .forEach(e -> {
-                Oppiaineenvuosiluokka ov = v.getVuosiluokka(e.getKey()).orElseGet(() -> {
-                    Oppiaineenvuosiluokka tmp = new Oppiaineenvuosiluokka(e.getKey());
-                    v.addVuosiluokka(tmp);
-                    return tmp;
+                .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))
+                .forEach(e -> {
+                    Oppiaineenvuosiluokka ov = v.getVuosiluokka(e.getKey()).orElseGet(() -> {
+                        Oppiaineenvuosiluokka tmp = new Oppiaineenvuosiluokka(e.getKey());
+                        v.addVuosiluokka(tmp);
+                        return tmp;
+                    });
+                    mergePerusteTavoitteet(ov, vuosiluokkakokonaisuus, e.getValue());
+                    if (ov.getTavoitteet().isEmpty()) {
+                        v.removeVuosiluokka(ov);
+                    }
                 });
-                mergePerusteTavoitteet(ov, vuosiluokkakokonaisuus, e.getValue());
-                if (ov.getTavoitteet().isEmpty()) {
-                    v.removeVuosiluokka(ov);
-                }
-            });
     }
 
     private void mergePerusteTavoitteet(Oppiaineenvuosiluokka ov, PerusteOppiaineenVuosiluokkakokonaisuusDto pvk, Set<UUID> tavoiteIds) {
         List<PerusteOpetuksentavoiteDto> filtered = pvk.getTavoitteet().stream()
-            .filter(t -> tavoiteIds.contains(t.getTunniste()))
-            .collect(Collectors.toList());
+                .filter(t -> tavoiteIds.contains(t.getTunniste()))
+                .collect(Collectors.toList());
 
         if (tavoiteIds.size() > filtered.size()) {
             throw new BusinessRuleViolationException("Yksi tai useampi tavoite ei kuulu oppiaineen vuosiluokkakokonaisuuden tavoitteisiin");
         }
 
         LinkedHashMap<UUID, Keskeinensisaltoalue> alueet = pvk.getSisaltoalueet().stream()
-            .filter(s -> filtered.stream().flatMap(t -> t.getSisaltoalueet().stream()).anyMatch(Predicate.isEqual(s)))
-            .map(ps -> ov.getSisaltoalue(ps.getTunniste()).orElseGet(() -> {
-                Keskeinensisaltoalue k = new Keskeinensisaltoalue();
-                k.setTunniste(ps.getTunniste());
-                k.setNimi(fromDto(ps.getNimi()));
-                // Kuvaus-kenttä on paikaillisesti määritettävää sisältöä joten sitä ei tässä aseteta
-                return k;
-            }))
-            .collect(Collectors.toMap(Keskeinensisaltoalue::getTunniste, k -> k, (u, v) -> u, LinkedHashMap::new));
+                .filter(s -> filtered.stream().flatMap(t -> t.getSisaltoalueet().stream()).anyMatch(Predicate.isEqual(s)))
+                .map(ps -> ov.getSisaltoalue(ps.getTunniste()).orElseGet(() -> {
+                    Keskeinensisaltoalue k = new Keskeinensisaltoalue();
+                    k.setTunniste(ps.getTunniste());
+                    k.setNimi(fromDto(ps.getNimi()));
+                    // Kuvaus-kenttä on paikaillisesti määritettävää sisältöä joten sitä ei tässä aseteta
+                    return k;
+                }))
+                .collect(Collectors.toMap(Keskeinensisaltoalue::getTunniste, k -> k, (u, v) -> u, LinkedHashMap::new));
 
         ov.setSisaltoalueet(new ArrayList<>(alueet.values()));
 
         List<Opetuksentavoite> tmp = filtered.stream()
-            .map(t -> {
-                Opetuksentavoite opst = ov.getTavoite(t.getTunniste()).orElseGet(() -> {
-                    Opetuksentavoite uusi = new Opetuksentavoite();
-                    // Tavoite-kenttä on paikaillisesti määritettävää sisältöä joten sitä ei tässä aseteta
-                    uusi.setTunniste(t.getTunniste());
-                    return uusi;
-                });
-                opst.setLaajattavoitteet(t.getLaajattavoitteet().stream()
-                    .map(l -> new LaajaalainenosaaminenViite(l.getTunniste().toString()))
-                    .collect(Collectors.toSet()));
+                .map(t -> {
+                    Opetuksentavoite opst = ov.getTavoite(t.getTunniste()).orElseGet(() -> {
+                        Opetuksentavoite uusi = new Opetuksentavoite();
+                        // Tavoite-kenttä on paikaillisesti määritettävää sisältöä joten sitä ei tässä aseteta
+                        uusi.setTunniste(t.getTunniste());
+                        return uusi;
+                    });
+                    opst.setLaajattavoitteet(t.getLaajattavoitteet().stream()
+                            .map(l -> new LaajaalainenosaaminenViite(l.getTunniste().toString()))
+                            .collect(Collectors.toSet()));
 
-                opst.connectSisaltoalueet(t.getSisaltoalueet().stream()
-                        .map(s -> alueet.get(s.getTunniste()))
-                        .collect(Collectors.toSet()));
+                    opst.connectSisaltoalueet(t.getSisaltoalueet().stream()
+                            .map(s -> alueet.get(s.getTunniste()))
+                            .collect(Collectors.toSet()));
 
-                opst.setKohdealueet(t.getKohdealueet().stream()
-                        .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
-                        .collect(Collectors.toSet()));
-                opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
-                    .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getHyvanOsaamisenKuvaus())))
-                    .collect(Collectors.toSet()));
-                return opst;
-            })
-            .collect(Collectors.toList());
+                    opst.setKohdealueet(t.getKohdealueet().stream()
+                            .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
+                            .collect(Collectors.toSet()));
+                    opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
+                            .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getHyvanOsaamisenKuvaus())))
+                            .collect(Collectors.toSet()));
+                    return opst;
+                })
+                .collect(Collectors.toList());
         ov.setTavoitteet(tmp);
     }
 

@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- *
  * @author mikkom
  */
 @Component
@@ -45,6 +44,6 @@ public class KoodistoKoodiConverter extends BidirectionalConverter<KoodistoKoodi
         }
 
         return repository.findByKoodiUri(source.getKoodiUri())
-                         .orElse(new KoodistoKoodi(source.getKoodiUri(), source.getKoodiArvo()));
+                .orElse(new KoodistoKoodi(source.getKoodiUri(), source.getKoodiArvo()));
     }
 }

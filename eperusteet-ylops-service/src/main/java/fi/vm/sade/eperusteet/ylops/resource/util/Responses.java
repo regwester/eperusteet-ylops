@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.util;
 
 import java.util.Optional;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public final class Responses {
     /**
      * Luo ResponseEntityn
      *
-     * @param <T> tyyppi
+     * @param <T>  tyyppi
      * @param data body, voi oll null
      * @return jos data on null, asettaa paluukoodiksi NOT_FOUD, muussa tapauksessa OK
      */

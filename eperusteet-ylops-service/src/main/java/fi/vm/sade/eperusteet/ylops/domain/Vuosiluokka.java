@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
 /**
- *
  * @author jhyoty
  */
 public enum Vuosiluokka {
@@ -29,8 +28,7 @@ public enum Vuosiluokka {
     VUOSILUOKKA_6,
     VUOSILUOKKA_7,
     VUOSILUOKKA_8,
-    VUOSILUOKKA_9
-    ;
+    VUOSILUOKKA_9;
 
     @Override
     public String toString() {

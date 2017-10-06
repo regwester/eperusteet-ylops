@@ -30,6 +30,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+
 import lombok.Getter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -37,6 +38,7 @@ import org.hibernate.annotations.Immutable;
 
 /**
  * Viittaa perusteessa määriteltyyn vuosiluokkakokonaisuuteen.
+ *
  * @author jhyoty
  */
 @Entity
@@ -53,7 +55,7 @@ public class Vuosiluokkakokonaisuusviite implements ReferenceableEntity, Seriali
     @ElementCollection
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "vlkokviite_vuosiluokat", joinColumns = {
-        @JoinColumn(name = "vlkokviite_id")})
+            @JoinColumn(name = "vlkokviite_id")})
     @Column(name = "vuosiluokka")
     private Set<Vuosiluokka> vuosiluokat = EnumSet.noneOf(Vuosiluokka.class);
 

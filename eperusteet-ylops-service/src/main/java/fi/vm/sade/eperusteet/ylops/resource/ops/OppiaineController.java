@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
+
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.KIELITARJONTA;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPPIAINE;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.VALINNAINEN;
@@ -31,19 +32,21 @@ import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.PALAUTUS;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.PALAUTUSALKUPERAISEEN;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
+
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import io.swagger.annotations.Api;
+
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- *
  * @author mikkom
  */
 @RestController
@@ -180,19 +183,19 @@ public class OppiaineController {
         }
     }
 
-    @RequestMapping(value = "/yhteiset",method = RequestMethod.GET)
+    @RequestMapping(value = "/yhteiset", method = RequestMethod.GET)
     public List<OppiaineDto> getYhteiset(@PathVariable final Long opsId) {
         return oppiaineService.getAll(opsId, false);
     }
 
-    @RequestMapping(value = "/valinnaiset",method = RequestMethod.GET)
+    @RequestMapping(value = "/valinnaiset", method = RequestMethod.GET)
     public List<OppiaineDto> getValinnaiset(@PathVariable final Long opsId) {
         return oppiaineService.getAll(opsId, true);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public UnwrappedOpsOppiaineDto update(@PathVariable final Long opsId, @PathVariable final Long id,
-        @RequestBody OppiaineDto dto) {
+                                          @RequestBody OppiaineDto dto) {
         return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, MUOKKAUS), (Void) -> {
             dto.setId(id);
             return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, dto));
@@ -248,7 +251,7 @@ public class OppiaineController {
     ) {
         PerusteDto p = ops.getPeruste(opsId);
         return Responses.of(Optional.ofNullable(oppiaineService.get(opsId, id))
-            .flatMap(a -> p.getPerusopetus().getOppiaine(a.getOppiaine().getTunniste())));
+                .flatMap(a -> p.getPerusopetus().getOppiaine(a.getOppiaine().getTunniste())));
     }
 
     @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)

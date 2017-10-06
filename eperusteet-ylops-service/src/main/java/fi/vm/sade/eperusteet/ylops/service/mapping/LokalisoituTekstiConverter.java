@@ -19,14 +19,15 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
+
 import java.util.Map;
+
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- *
  * @author jhyoty
  */
 @Component
@@ -55,7 +56,7 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
                 Map<Kieli, String> teksti = current.getTeksti();
                 teksti.putAll(dto.getTekstit());
                 LokalisoituTeksti tekstiPalanen = LokalisoituTeksti.of(teksti, current.getTunniste());
-                if ( current.equals(tekstiPalanen) ) {
+                if (current.equals(tekstiPalanen)) {
                     return current;
                 }
                 return tekstiPalanen;

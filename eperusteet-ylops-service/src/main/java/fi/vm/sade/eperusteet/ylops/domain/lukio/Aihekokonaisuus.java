@@ -32,7 +32,7 @@ import java.util.UUID;
 @Audited
 @Table(name = "aihekokonaisuus", schema = "public")
 public class Aihekokonaisuus extends AbstractAuditedReferenceableEntity
-            implements Copyable<Aihekokonaisuus> {
+        implements Copyable<Aihekokonaisuus> {
     @Column(nullable = false, unique = true, updatable = false)
     @Getter
     private UUID tunniste;

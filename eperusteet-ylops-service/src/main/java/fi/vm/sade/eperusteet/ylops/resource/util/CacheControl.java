@@ -22,7 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
  * @author jhyoty
  */
 @Target({ElementType.METHOD})
@@ -32,7 +31,9 @@ public @interface CacheControl {
      * Expires-aika sekunteina
      */
     int age() default 0;
+
     boolean nonpublic() default true;
+
     boolean nocache() default false;
 
     public static final int ONE_YEAR = 365 * 24 * 3600;

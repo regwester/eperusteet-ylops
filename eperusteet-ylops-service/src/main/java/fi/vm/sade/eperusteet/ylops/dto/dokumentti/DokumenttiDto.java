@@ -25,7 +25,6 @@ import lombok.Setter;
 import java.util.Date;
 
 /**
- *
  * @author iSaul
  */
 @Getter

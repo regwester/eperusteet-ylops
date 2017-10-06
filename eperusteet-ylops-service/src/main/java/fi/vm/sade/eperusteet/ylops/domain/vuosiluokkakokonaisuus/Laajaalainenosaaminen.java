@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -26,18 +27,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 /**
- *
  * @author jhyoty
  */
 @Entity
 @Audited
-@Table(name="vlkok_laaja_osaaminen")
+@Table(name = "vlkok_laaja_osaaminen")
 public class Laajaalainenosaaminen extends AbstractReferenceableEntity {
 
     @Getter
@@ -67,11 +68,11 @@ public class Laajaalainenosaaminen extends AbstractReferenceableEntity {
     }
 
     public void setVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vuosiluokkakokonaisuus) {
-        if ( this.vuosiluokkakokonaisuus == null || this.vuosiluokkakokonaisuus.equals(vuosiluokkakokonaisuus) ) {
+        if (this.vuosiluokkakokonaisuus == null || this.vuosiluokkakokonaisuus.equals(vuosiluokkakokonaisuus)) {
             this.vuosiluokkakokonaisuus = vuosiluokkakokonaisuus;
         } else {
             throw new IllegalStateException("Vuosiluokkakokonaisuuteen kuulumista ei voi muuttaa");
         }
     }
-    
+
 }

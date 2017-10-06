@@ -46,14 +46,14 @@ import java.util.Date;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Immutable
 @Table(name = "peruste_cache", schema = "public", uniqueConstraints =
-        @UniqueConstraint(columnNames = {"peruste_id", "aikaleima"}))
+@UniqueConstraint(columnNames = {"peruste_id", "aikaleima"}))
 public class PerusteCache {
     @Id
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     @GeneratedValue(generator = "peruste_cache_id_seq")
     @SequenceGenerator(name = "peruste_cache_id_seq", sequenceName = "peruste_cache_id_seq")
     private Long id;
-    
+
     @Column(name = "peruste_id", nullable = false, updatable = false)
     private Long perusteId;
 

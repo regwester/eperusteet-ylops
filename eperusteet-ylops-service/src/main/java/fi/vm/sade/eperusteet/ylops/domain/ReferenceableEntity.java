@@ -31,7 +31,7 @@ public interface ReferenceableEntity {
      */
     Serializable getId();
 
-    static<T extends ReferenceableEntity> Predicate<T> idEquals(Serializable id) {
+    static <T extends ReferenceableEntity> Predicate<T> idEquals(Serializable id) {
         return e -> id != null && id.equals(e.getId());
     }
 }

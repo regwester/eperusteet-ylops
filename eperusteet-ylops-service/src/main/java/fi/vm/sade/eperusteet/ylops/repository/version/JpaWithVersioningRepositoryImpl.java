@@ -18,11 +18,13 @@ package fi.vm.sade.eperusteet.ylops.repository.version;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo_;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;
@@ -31,7 +33,7 @@ import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements
-    JpaWithVersioningRepository<T, ID> {
+        JpaWithVersioningRepository<T, ID> {
 
     private final EntityManager entityManager;
     private final JpaEntityInformation<T, ID> entityInformation;
@@ -49,19 +51,19 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
 
         @SuppressWarnings("unchecked")
         List<Object[]> results = (List<Object[]>) auditReader.createQuery()
-            .forRevisionsOfEntity(entityInformation.getJavaType(), false, true)
-            .addProjection(AuditEntity.id())
-            .addProjection(AuditEntity.revisionNumber())
-            .addProjection(AuditEntity.revisionProperty(RevisionInfo_.timestamp.getName()))
-            .addProjection(AuditEntity.revisionProperty(RevisionInfo_.muokkaajaOid.getName()))
-            .addProjection(AuditEntity.revisionProperty(RevisionInfo_.kommentti.getName()))
-            .addOrder(AuditEntity.revisionProperty(RevisionInfo_.timestamp.getName()).desc())
-            .add(AuditEntity.id().eq(id))
-            .getResultList();
+                .forRevisionsOfEntity(entityInformation.getJavaType(), false, true)
+                .addProjection(AuditEntity.id())
+                .addProjection(AuditEntity.revisionNumber())
+                .addProjection(AuditEntity.revisionProperty(RevisionInfo_.timestamp.getName()))
+                .addProjection(AuditEntity.revisionProperty(RevisionInfo_.muokkaajaOid.getName()))
+                .addProjection(AuditEntity.revisionProperty(RevisionInfo_.kommentti.getName()))
+                .addOrder(AuditEntity.revisionProperty(RevisionInfo_.timestamp.getName()).desc())
+                .add(AuditEntity.id().eq(id))
+                .getResultList();
 
         List<Revision> revisions = new ArrayList<>();
         for (Object[] result : results) {
-            revisions.add(new Revision((Long) result[0], (Integer) result[1], (Long) result[2], (String)result[3], (String)result[4]));
+            revisions.add(new Revision((Long) result[0], (Integer) result[1], (Long) result[2], (String) result[3], (String) result[4]));
         }
 
         return revisions;

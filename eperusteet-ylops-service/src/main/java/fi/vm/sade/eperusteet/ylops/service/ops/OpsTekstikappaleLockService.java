@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 
 /**
- *
  * @author jhyoty
  */
 public interface OpsTekstikappaleLockService extends LockService<OpsTekstikappaleCtx> {

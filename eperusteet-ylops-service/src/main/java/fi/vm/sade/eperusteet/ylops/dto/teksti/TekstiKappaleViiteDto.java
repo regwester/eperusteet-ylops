@@ -19,12 +19,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
+
 import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
  * @author mikkom
  */
 @Getter
@@ -44,7 +45,8 @@ public class TekstiKappaleViiteDto {
 
     private boolean valmis;
 
-    public TekstiKappaleViiteDto() { }
+    public TekstiKappaleViiteDto() {
+    }
 
     public TekstiKappaleViiteDto(TekstiKappaleDto tekstiKappale) {
         this.tekstiKappale = tekstiKappale;
@@ -55,7 +57,8 @@ public class TekstiKappaleViiteDto {
     public static class Matala extends TekstiKappaleViiteDto {
         private List<Reference> lapset;
 
-        public Matala() {}
+        public Matala() {
+        }
 
         public Matala(TekstiKappaleDto tekstiKappale) {
             super(tekstiKappale);

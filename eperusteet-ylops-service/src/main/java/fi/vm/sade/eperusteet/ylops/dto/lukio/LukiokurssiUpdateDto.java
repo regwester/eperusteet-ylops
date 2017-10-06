@@ -33,7 +33,7 @@ import java.math.BigDecimal;
  */
 @Getter
 @Setter
-public class LukiokurssiUpdateDto implements Serializable  {
+public class LukiokurssiUpdateDto implements Serializable {
     @NotNull
     private LokalisoituTekstiDto nimi;
     @NotNull

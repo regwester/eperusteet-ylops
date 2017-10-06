@@ -64,7 +64,7 @@ public class JpaWithVersioningRepositoryFactoryBean<R extends JpaRepository<T, I
         @Override
         protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
             return JpaWithVersioningRepository.class.isAssignableFrom(metadata.getRepositoryInterface())
-                ? JpaWithVersioningRepository.class : super.getRepositoryBaseClass(metadata);
+                    ? JpaWithVersioningRepository.class : super.getRepositoryBaseClass(metadata);
         }
     }
 }

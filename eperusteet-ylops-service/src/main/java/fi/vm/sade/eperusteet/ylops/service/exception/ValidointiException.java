@@ -20,7 +20,6 @@ import lombok.Getter;
 import org.springframework.core.NestedRuntimeException;
 
 /**
- *
  * @author nkala
  */
 public class ValidointiException extends NestedRuntimeException {

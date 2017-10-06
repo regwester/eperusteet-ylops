@@ -205,7 +205,7 @@ public class LukioServiceImpl implements LukioService {
 
         // Oppimäärät
         if (oppiaine.getOppimaarat() != null) {
-            Map<Long,OppiaineJarjestysDto> jarjestykset = jarjestysRepository
+            Map<Long, OppiaineJarjestysDto> jarjestykset = jarjestysRepository
                     .findJarjestysDtosByOpetussuunnitelmaId(docBase.getOps().getId(),
                             oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())).stream()
                     .collect(toMap(OppiaineJarjestysDto::getId, o -> o));
@@ -335,8 +335,8 @@ public class LukioServiceImpl implements LukioService {
 
     private Comparator<Oppiaine> compareOppiaineet(Function<Long, Integer> jarjestys) {
         return comparing((Oppiaine oa) -> ofNullable(jarjestys.apply(oa.getId())).orElse(Integer.MAX_VALUE))
-                .thenComparing(comparing((Oppiaine oa)-> {
-                    if( oa == null || oa.getNimi() == null){
+                .thenComparing(comparing((Oppiaine oa) -> {
+                    if (oa == null || oa.getNimi() == null) {
                         return "";
                     }
                     return oa.getNimi().firstByKieliOrder().orElse("");

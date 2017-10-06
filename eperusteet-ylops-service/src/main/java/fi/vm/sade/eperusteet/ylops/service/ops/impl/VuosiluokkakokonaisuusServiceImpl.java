@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author jhyoty
  */
 @Service
@@ -101,12 +100,12 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
 
     @Override
     public void removeSisaltoalueetInKeskeinensisaltoalueet(Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean clearSisaltoalueet) {
-        vuosiluokkakokonaisuus.getVuosiluokat().forEach( oppiaineenvuosiluokka -> {
-            oppiaineenvuosiluokka.getTavoitteet().forEach( opetuksentavoite -> {
-                opetuksentavoite.getSisaltoalueet().forEach( opetuksenKeskeinensisaltoalue -> {
-                    opetuksenkeskeinenSisaltoalueRepository.delete( opetuksenKeskeinensisaltoalue );
-                } );
-                if(clearSisaltoalueet){
+        vuosiluokkakokonaisuus.getVuosiluokat().forEach(oppiaineenvuosiluokka -> {
+            oppiaineenvuosiluokka.getTavoitteet().forEach(opetuksentavoite -> {
+                opetuksentavoite.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
+                    opetuksenkeskeinenSisaltoalueRepository.delete(opetuksenKeskeinensisaltoalue);
+                });
+                if (clearSisaltoalueet) {
                     opetuksentavoite.getSisaltoalueet().clear();
                 }
             });
@@ -145,9 +144,9 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
 
         Set<OpsVuosiluokkakokonaisuus> opsVlkt =
-            ops.getVuosiluokkakokonaisuudet().stream()
-               .filter(vlk -> !vlk.getVuosiluokkakokonaisuus().getId().equals(kokonaisuusId))
-               .collect(Collectors.toSet());
+                ops.getVuosiluokkakokonaisuudet().stream()
+                        .filter(vlk -> !vlk.getVuosiluokkakokonaisuus().getId().equals(kokonaisuusId))
+                        .collect(Collectors.toSet());
 
         vk = Vuosiluokkakokonaisuus.copyOf(vk);
         vk = kokonaisuudet.save(vk);

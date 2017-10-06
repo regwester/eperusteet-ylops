@@ -24,16 +24,22 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
  * @author nkala
  */
 public interface EperusteetService {
     PerusteDto getPeruste(String diaariNumero);
+
     PerusteDto getPerusteUpdateCache(String diaarinumero);
+
     List<PerusteInfoDto> findPerusteet();
+
     List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit);
+
     List<PerusteInfoDto> findPerusopetuksenPerusteet();
+
     List<PerusteInfoDto> findLukiokoulutusPerusteet();
+
     PerusteDto getEperusteetPeruste(final Long id);
+
     JsonNode getTiedotteet(Long jalkeen);
 }

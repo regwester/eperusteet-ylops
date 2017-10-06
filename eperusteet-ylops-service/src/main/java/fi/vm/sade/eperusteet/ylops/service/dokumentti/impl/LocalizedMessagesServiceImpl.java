@@ -30,6 +30,7 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
+
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
@@ -42,7 +43,6 @@ import org.springframework.stereotype.Service;
 import java.util.Locale;
 
 /**
- *
  * @author iSaul
  */
 @Service

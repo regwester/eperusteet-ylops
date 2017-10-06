@@ -20,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import java.io.Serializable;
 
 /**
- *
  * @author mikkom
  */
 public class TestPermissionEvaluator implements org.springframework.security.access.PermissionEvaluator {
