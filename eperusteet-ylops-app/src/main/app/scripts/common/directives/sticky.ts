@@ -7,7 +7,6 @@ namespace Sticky {
                     topSpacing: attrs.topSpacing || 0,
                     className: attrs.classname
                 });
-                console.log(element);
             }
         };
     };
