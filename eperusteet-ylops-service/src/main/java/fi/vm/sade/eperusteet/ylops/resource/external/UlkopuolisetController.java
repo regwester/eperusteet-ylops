@@ -28,16 +28,12 @@ import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -193,4 +189,17 @@ public class UlkopuolisetController {
             @PathVariable("koodi") final String koodi) {
         return new ResponseEntity<>(koodistoService.getYlarelaatio(koodi), HttpStatus.OK);
     }
+
+    /**
+     * Hakee käyttäjälle liitetyt organisaatioryhmät
+     *
+     * @return Organisaatioryhmät
+     */
+    @RequestMapping(value = "/organisaatioryhmat", method = GET)
+    @ResponseBody
+    public ResponseEntity<List<JsonNode>> getOrganisaatioRyhmat() {
+        List<JsonNode> ryhmat = organisaatioService.getRyhmat();
+        return new ResponseEntity<>(ryhmat, HttpStatus.OK);
+    }
+
 }

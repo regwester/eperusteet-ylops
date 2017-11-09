@@ -26,24 +26,16 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-
 import static fi.vm.sade.eperusteet.ylops.service.util.ExceptionUtil.wrapRuntime;
-
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
-
 import java.io.IOException;
 import java.util.*;
-
 import static java.util.Collections.singletonList;
-
 import java.util.stream.Collectors;
-
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-
 import javax.annotation.PostConstruct;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -101,6 +93,7 @@ public class EperusteetServiceImpl implements EperusteetService {
                 KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS,
                 KoulutusTyyppi.PERUSOPETUSVALMISTAVA,
                 KoulutusTyyppi.AIKUISLUKIOKOULUTUS,
+                KoulutusTyyppi.TPO,
                 KoulutusTyyppi.AIKUISTENPERUSOPETUS
         };
         return new HashSet<>(Arrays.asList(vaihtoehdot));

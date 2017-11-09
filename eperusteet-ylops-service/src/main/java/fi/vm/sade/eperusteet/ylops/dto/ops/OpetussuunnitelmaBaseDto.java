@@ -22,11 +22,9 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,5 +50,7 @@ public abstract class OpetussuunnitelmaBaseDto implements Serializable {
     private Tyyppi tyyppi;
     private KoulutusTyyppi koulutustyyppi;
     private Date paatospaivamaara;
+    private String ryhmaoid;
+    private String ryhmanNimi;
     private boolean esikatseltavissa;
 }

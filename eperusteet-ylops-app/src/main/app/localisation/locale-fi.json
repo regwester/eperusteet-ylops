@@ -105,6 +105,7 @@
     "koulutustyyppi_15": "Esiopetus",
     "koulutustyyppi_16": "Perusopetus",
     "koulutustyyppi_17": "Aikuisten perusopetus",
+    "koulutustyyppi_999907": "Taiteen perusopetus",
     "koulutustyyppi_6": "Lisäopetus",
     "koulutustyyppi_2": "Lukiokoulutus",
     "koulutustyyppi_23": "Valmistava lukiokoulutus",
@@ -636,5 +637,10 @@
     "validointi-huomiot": "Muut huomiot",
     "palauta-oppiaineena": "Palauta oppiaineena",
     "palauta-oppimaarana": "Palauta oppimääränä",
-    "palautus-epaonnistui": "Palauttaminen epäonnistui"
+    "palautus-epaonnistui": "Palauttaminen epäonnistui",
+    "oppilaitos": "Oppilaitos",
+    "organisaatioryhma": "Koulut / Ryhmät",
+    "ryhma": "Ryhmä",
+    "valitse-ryhmat": "Valitse ryhmät",
+    "lisaa-koulu": "Lisää oppilaitos"
 }

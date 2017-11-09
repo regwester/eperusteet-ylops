@@ -27,7 +27,6 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.generic.rest.CachingRestClient;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +38,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +60,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private static final String ORGANISAATIO_KRITEERI = "oidRestrictionList=";
     private static final String KOULUTUSTOIMIJAT_KRITEERI = "&organisaatiotyyppi=Koulutustoimija";
 
+
     @Autowired
     private Client client;
 
@@ -81,6 +80,9 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         @Value("#{'${fi.vm.sade.eperusteet.ylops.organisaatio-service.lukio-oppilaitostyypit}'.split(',')}")
         private List<String> lukioOppilaitostyypit;
+
+        @Value("${cas.service.kayttooikeus-service:''}")
+        private String koServiceUrl;
 
         private static final Logger LOG = LoggerFactory.getLogger(Client.class);
 
@@ -179,6 +181,28 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         public JsonNode getLukiotByOid(String oid) {
             return getLukiot(ORGANISAATIO_KRITEERI + oid);
         }
+
+//        @Cacheable("organisaatio-ryhma")
+        public List<JsonNode> getRyhmat() {
+            CachingRestClient crc = restClientFactory.get(serviceUrl);
+            try {
+                String url = serviceUrl + ORGANISAATIOT + "v3/ryhmat";
+                JsonNode tree = mapper.readTree(crc.getAsString(url));
+                List<JsonNode> result = new ArrayList<>();
+
+                for (JsonNode ryhma : tree) {
+                    for (JsonNode tyyppi : ryhma.get("ryhmatyypit")) {
+                        if ("ryhmatyypit_5#1".equals(tyyppi.asText())) {
+                            result.add(ryhma);
+                            break;
+                        }
+                    }
+                }
+                return result;
+            } catch (IOException ex) {
+                throw new BusinessRuleViolationException("Työryhmätietojen hakeminen epäonnistui", ex);
+            }
+        }
     }
 
     @Override
@@ -204,6 +228,11 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     @Override
     public JsonNode getPeruskoulutoimijat(List<String> kuntaIdt) {
         return getToimijatByKuntas(kuntaIdt, this::getPeruskoulutByKuntaId);
+    }
+
+    @Override
+    public List<JsonNode> getRyhmat() {
+        return client.getRyhmat();
     }
 
     private JsonNode getToimijatByKuntas(List<String> kuntaIdt, Function<String, JsonNode> getByKuntaId) {

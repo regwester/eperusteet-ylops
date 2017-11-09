@@ -16,17 +16,16 @@
 
 package fi.vm.sade.eperusteet.ylops.service.util;
 
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePrefix;
 import java.security.Principal;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
-import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePrefix;
 
 
 /**
@@ -62,6 +61,15 @@ public final class SecurityUtil {
                         permissions))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .collect(Collectors.toSet());
+    }
+
+    public static Set<String> getOrganizations() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter((String auth) -> {
+                    return auth.startsWith(RolePrefix.ROLE_APP_EPERUSTEET_YLOPS.name());
+                })
                 .collect(Collectors.toSet());
     }
 

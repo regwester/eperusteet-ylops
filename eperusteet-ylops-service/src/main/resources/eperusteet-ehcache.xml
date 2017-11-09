@@ -303,6 +303,12 @@
            timeToLiveSeconds="6000"
            overflowToDisk="false" />
 
+    <cache name="organisaatio-ryhma"
+           maxElementsInMemory="1000"
+           eternal="false"
+           timeToLiveSeconds="6000"
+           overflowToDisk="false" />
+
     <cache name="organisaation-peruskoulut"
            maxElementsInMemory="1000"
            eternal="false"

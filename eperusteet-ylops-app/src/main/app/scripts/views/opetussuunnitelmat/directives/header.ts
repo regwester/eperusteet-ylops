@@ -49,6 +49,7 @@ ylopsApp
             koulutustyyppi_6: "lisaopetus",
             koulutustyyppi_20: "varhaiskasvatus",
             koulutustyyppi_17: "aipe",
+            koulutustyyppi_999907: "tpo",
             koulutustyyppi_2: "lukiokoulutus"
         };
 

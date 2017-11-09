@@ -48,6 +48,8 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
         const oppilaitostyyppi = [19, 64];
         if (hasLukio()) {
             oppilaitostyyppi.push(15);
+        } else if ($scope.editableModel.koulutustyyppi === "koulutustyyppi_999907") {
+            oppilaitostyyppi.push(1, 61);
         } else if ($scope.editableModel.koulutustyyppi === "koulutustyyppi_17") {
             oppilaitostyyppi.push(11, 15, 24, 63);
         } else {
@@ -61,6 +63,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
         return toimijat.plain();
     }
 
+    $scope.kouluvalinta = false;
     $scope.kielivalinnat = []; // Täytetään pohjan perusteella
     $scope.luonnissa = $stateParams.id === "uusi";
     $scope.editableModel = _.clone($scope.model);
@@ -81,17 +84,40 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
     $scope.koulutoimijalista = [];
     $scope.koululista = [];
     $scope.eiKoulujaVaroitus = false;
+    $scope.ryhmalista = null;
     $scope.nimiOrder = function(vlk) {
         return Utils.sort(vlk.vuosiluokkakokonaisuus);
     };
 
     $scope.model.nimi.$$validointi = Kieli.validoi($scope.model.nimi);
+
+    // FIXME: remove this
+    // $timeout(() => {
+    //     $scope.editableModel.koulutustyyppi = "koulutustyyppi_999907";
+    // }, 1000);
+
+    let loading = false;
+    $scope.vaihdaKouluvalinta = async (value: boolean) => {
+        $scope.editableModel.kunnat = [];
+        $scope.editableModel.koulutoimijat = [];
+        $scope.editableModel.koulut = [];
+        if (value) {
+            if (!$scope.ryhmalista && !loading) {
+                loading = true;
+                const ryhmalista = await Api.all("ulkopuoliset/organisaatioryhmat").getList();
+                $scope.ryhmalista = ryhmalista;
+            }
+        }
+        $scope.kouluvalinta = value;
+    };
+
     $scope.sallitutKoulutustyypit = [
         "koulutustyyppi_2",
         "koulutustyyppi_6",
         "koulutustyyppi_14",
         "koulutustyyppi_15",
         "koulutustyyppi_16",
+        "koulutustyyppi_999907",
         "koulutustyyppi_17",
         "koulutustyyppi_20",
         "koulutustyyppi_22",
@@ -102,6 +128,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
         "year-format": "yy",
         "starting-day": 1
     };
+
     $scope.format = "d.M.yyyy";
     $scope.kalenteriTilat = {};
     $scope.open = function($event) {
@@ -122,7 +149,12 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
             _(model.vuosiluokkakokonaisuudet)
                 .filter({ valittu: true })
                 .size() > 0;
-        return nimiOk && organisaatiotOk && julkaisukieletOk && vlkOk;
+        if (model.koulutustyyppi === "koulutustyyppi_999907") {
+            return nimiOk;
+        }
+        else {
+            return nimiOk && organisaatiotOk && julkaisukieletOk && vlkOk;
+        }
     };
 
     function mapKunnat(lista) {

@@ -212,6 +212,12 @@
         </div>
 
         <div class="col-sm-9 formfield-data">
+          <div class="organisaatio-label"></div>
+          <div class="organisaatio-input">
+            <button class="btn btn-default" ng-click="vaihdaKouluvalinta(!kouluvalinta)" ng-if="editableModel.koulutustyyppi === 'koulutustyyppi_999907'">
+              <span kaanna="'organisaatioryhma'"></span>
+            </button>
+          </div>
           <div>
             <div class="organisaatio-label"><label><span kaanna="'kunta'"></span>*</label></div>
             <div class="organisaatio-input">
@@ -223,31 +229,54 @@
               </ui-select>
             </div>
           </div>
+          <div ng-hide="kouluvalinta" style="margin-top: 10px">
+            <div>
+              <div class="organisaatio-label"><label><span kaanna="'koulutustoimija'"></span>*</label></div>
+              <div class="organisaatio-input">
+                <ui-select class="ui-select" multiple ng-model="editableModel.koulutoimijat" on-select="$select.search = ''"
+                  ng-disabled="editableModel.kunnat.length === 0">
+                  <ui-select-choices repeat="koulutoimija in koulutoimijalista | filter: $select.search | arrayFilterByField: editableModel.koulutoimijat: 'oid' track by koulutoimija.oid">
+                    <span ng-bind-html="koulutoimija.nimi | kaanna:false:true | highlight: $select.search"></span>
+                  </ui-select-choices>
+                  <ui-select-match placeholder="{{'valitse-koulutustoimijat' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
+                </ui-select>
+              </div>
+            </div>
 
-          <div>
-            <div class="organisaatio-label"><label><span kaanna="'koulutustoimija'"></span>*</label></div>
-            <div class="organisaatio-input">
-              <ui-select class="ui-select" multiple ng-model="editableModel.koulutoimijat" on-select="$select.search = ''"
-                         ng-disabled="editableModel.kunnat.length === 0 || koulutoimijalista.length === 0">
-                <ui-select-choices repeat="koulutoimija in koulutoimijalista | filter: $select.search | arrayFilterByField: editableModel.koulutoimijat: 'oid' track by koulutoimija.oid">
-                  <span ng-bind-html="koulutoimija.nimi | kaanna:false:true | highlight: $select.search"></span>
-                </ui-select-choices>
-                <ui-select-match placeholder="{{'valitse-koulutustoimijat' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
-              </ui-select>
+            <div>
+              <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
+              <div class="organisaatio-input">
+                <ui-select class="ui-select" multiple ng-model="editableModel.koulut" on-select="$select.search = ''"
+                  ng-disabled="editableModel.koulutoimijat.length !== 1 || koululista.length === 0">
+                  <ui-select-choices repeat="koulu in koululista | filter: $select.search | arrayFilterByField: editableModel.koulut: 'oid' track by koulu.oid">
+                    <span ng-bind-html="koulu.nimi | kaanna:false:true | highlight: $select.search"></span>
+                  </ui-select-choices>
+                  <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
+                </ui-select>
+                <p ng-if="!loadingKoulut && eiKoulujaVaroitus" kaanna="'kunnalla-ei-kouluja'"></p>
+              </div>
             </div>
           </div>
-
-          <div>
-            <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
-            <div class="organisaatio-input">
-              <ui-select class="ui-select" multiple ng-model="editableModel.koulut" on-select="$select.search = ''"
-                         ng-disabled="editableModel.koulutoimijat.length !== 1 || koululista.length === 0">
-                <ui-select-choices repeat="koulu in koululista | filter: $select.search | arrayFilterByField: editableModel.koulut: 'oid' track by koulu.oid">
-                  <span ng-bind-html="koulu.nimi | kaanna:false:true | highlight: $select.search"></span>
-                </ui-select-choices>
-                <ui-select-match placeholder="{{'valitse-koulut' | kaanna}}">{{$item.nimi | kaanna:false:true}}</ui-select-match>
-              </ui-select>
-              <p ng-if="!loadingKoulut && eiKoulujaVaroitus" kaanna="'kunnalla-ei-kouluja'"></p>
+          <div ng-show="kouluvalinta" style="margin-top: 10px">
+            <div>
+              <div class="organisaatio-label"><label><span kaanna="'ryhma'"></span>*</label></div>
+              <div class="organisaatio-input">
+                <ui-select class="ui-select" ng-model="editableModel.organisaatiot" on-select="$select.search = ''"
+                  ng-disabled="false && editableModel.koulutoimijat.length !== 1">
+                  <ui-select-choices repeat="ryhma in ryhmalista | filter: $select.search">
+                    <span ng-bind-html="ryhma.nimi | kaanna:false:true | highlight: $select.search"></span>
+                  </ui-select-choices>
+                  <ui-select-match placeholder="{{'valitse-ryhmat' | kaanna}}">{{ $select.selected.nimi | kaanna:false:true }}</ui-select-match>
+                </ui-select>
+                <!-- <p ng&#45;if="!loadingKoulut &#38;&#38; eiKoulujaVaroitus" kaanna="'kunnalla&#45;ei&#45;kouluja'"></p> -->
+              </div>
+            </div>
+            <div>
+              <div class="organisaatio-label"><label><span kaanna="'oppilaitos'"></span>*</label></div>
+              <div class="organisaatio-input">
+                  <input id="ops-field-hyvaksyjataho" ng-model="editableModel.ryhmanNimi"
+                         slocalised class="form-control" placeholder="{{'lisaa-koulu' | kaanna}}"/>
+              </div>
             </div>
           </div>
         </div>
@@ -309,7 +338,7 @@
           <div class="luontinapit">
             <button class="btn btn-default tallenna-peruuta-nappi" kaanna="'peruuta'" ng-click="uusi.cancel()"></button>
             <button class="btn btn-primary tallenna-peruuta-nappi" kaanna="'luo-opetussuunnitelma'" ng-click="uusi.create()"
-                  ng-disabled="!hasRequiredFields() || savingDisabled"></button>
+              ng-disabled="!hasRequiredFields() || savingDisabled"></button>
           </div>
         </div>
       </div>

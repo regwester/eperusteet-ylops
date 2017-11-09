@@ -30,22 +30,20 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
+import java.io.Serializable;
+import java.util.*;
+import static java.util.Comparator.comparing;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.groupingBy;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
-import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.groupingBy;
 
 /**
  * @author mikkom
@@ -191,6 +189,15 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<PoistettuTekstiKappale> poistetutTekstiKappaleet = new HashSet<>();
 
+    @Getter
+    @Setter
+    @Column(name = "ryhmaoid")
+    private String ryhmaOid;
+
+    @Getter
+    @Setter
+    @Column(name = "ryhman_nimi")
+    private String ryhmanNimi;
 
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
