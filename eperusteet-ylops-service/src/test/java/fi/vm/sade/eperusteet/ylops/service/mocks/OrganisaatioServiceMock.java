@@ -19,10 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 /**
@@ -67,6 +65,11 @@ public class OrganisaatioServiceMock implements OrganisaatioService {
 
     @Override
     public List<OrganisaatioLaajaDto> getKoulutustoimijat(OrganisaatioQueryDto query) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<JsonNode> getRyhmat() {
         return new ArrayList<>();
     }
 
