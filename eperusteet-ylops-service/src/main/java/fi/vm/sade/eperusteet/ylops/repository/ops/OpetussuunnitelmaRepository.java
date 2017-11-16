@@ -21,11 +21,9 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -69,7 +67,7 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
                                             @Param("organisaatiot") Collection<String> organisaatiot);
 
     @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
-            "WHERE o.tila != fi.vm.sade.eperusteet.ylops.domain.Tila.POISTETTU AND o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.POHJA AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.VALMIS OR org IN (:organisaatiot))")
+            "WHERE o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.POHJA AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.VALMIS OR org IN (:organisaatiot))")
     List<Opetussuunnitelma> findPohja(@Param("organisaatiot") Collection<String> organisaatiot);
 
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE o.tekstit.id in ?1")

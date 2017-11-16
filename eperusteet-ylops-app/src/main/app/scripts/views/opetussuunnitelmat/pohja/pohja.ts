@@ -34,9 +34,7 @@ ylopsApp
         OpetussuunnitelmaCRUD.query(
             { tyyppi: "pohja" },
             function(res) {
-                $scope.items = _.filter(res, function(item) {
-                    return item.tila !== "poistettu";
-                });
+                $scope.items = res;
                 $scope.items.$resolved = true;
             },
             Notifikaatiot.serverCb
