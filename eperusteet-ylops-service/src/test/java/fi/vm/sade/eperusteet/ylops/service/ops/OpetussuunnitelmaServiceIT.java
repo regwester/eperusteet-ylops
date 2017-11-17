@@ -31,22 +31,18 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
-
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,7 +177,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(Tila.VALMIS, luotu.getTila());
 
         opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);
-        assertEquals(1, opsit.size());
+        assertEquals(2, opsit.size());
 
         luotu = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(luotu.getId());
         assertEquals(Tila.VALMIS, luotu.getTila());
