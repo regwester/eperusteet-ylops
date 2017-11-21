@@ -143,7 +143,7 @@
     <div class="row">
       <div class="col-sm-3 formfield-label">
         <label>
-          <span kaanna="'koulutustyyppi'"></span><span ng-if="(editMode || luonnissa)">*</span>
+          <!-- <span kaanna="'koulutustyyppi'"></span><span ng&#45;if="(editMode || luonnissa)">*</span> -->
         </label>
       </div>
 
@@ -269,13 +269,6 @@
                   <ui-select-match placeholder="{{'valitse-ryhmat' | kaanna}}">{{ $select.selected.nimi | kaanna:false:true }}</ui-select-match>
                 </ui-select>
                 <!-- <p ng&#45;if="!loadingKoulut &#38;&#38; eiKoulujaVaroitus" kaanna="'kunnalla&#45;ei&#45;kouluja'"></p> -->
-              </div>
-            </div>
-            <div>
-              <div class="organisaatio-label"><label><span kaanna="'oppilaitos'"></span>*</label></div>
-              <div class="organisaatio-input">
-                  <input id="ops-field-hyvaksyjataho" ng-model="editableModel.ryhmanNimi"
-                         slocalised class="form-control" placeholder="{{'lisaa-koulu' | kaanna}}"/>
               </div>
             </div>
           </div>
