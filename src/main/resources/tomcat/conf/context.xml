@@ -21,17 +21,17 @@
   <!-- Default set of monitored resources -->
   <WatchedResource>WEB-INF/web.xml</WatchedResource>
 
-  <Resource 
-    name="jdbc/eperusteet-ylops" 
+  <Resource
+    name="jdbc/eperusteet-ylops"
     auth="Container"
     type="javax.sql.DataSource"
     maxActive="{{ host_postgresql_eperusteet_ylops_maxActive | default(50) }}"
     maxIdle="{{ host_postgresql_eperusteet_ylops_maxIdle | default(30) }}"
     maxWait="{{ host_postgresql_eperusteet_ylops_maxWait | default(10000) }}"
-    username="{{ host_postgresql_eperusteet_ylops_user }}" 
+    username="{{ host_postgresql_eperusteet_ylops_user }}"
     password="{{ host_postgresql_eperusteet_ylops_password }}"
     driverClassName="org.postgresql.Driver"
     validationQuery="select 1"
-    url="jdbc:postgresql://{{host_postgresql_eperusteet_ylops}}:{{port_postgresql}}/eperusteet-ylops" />
+    url="jdbc:postgresql://{{host_postgresql_eperusteet_ylops}}:{{port_postgresql}}/{{host_postgresql_eperusteet_ylops_database | default('eperusteet-ylops') }}" />
 
 </Context>
