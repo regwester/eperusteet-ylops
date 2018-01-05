@@ -82,9 +82,11 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
 
     $scope.$watch("editableModel.$$pohja", () => {
         if ($scope.editableModel.$$pohja) {
-            $scope.editableModel.koulutustyyppi = $scope.editableModel.$$pohja.koulutustyyppi;
-            $scope.editableModel._pohja = "" + $scope.editableModel.$$pohja.id;
-            asetaKieletJaVlk($scope.editableModel.$$pohja);
+            OpetussuunnitelmaCRUD.get({ opsId: $scope.editableModel.$$pohja.id }, pohja => {
+                $scope.editableModel.koulutustyyppi = pohja.koulutustyyppi;
+                $scope.editableModel._pohja = "" + pohja.id;
+                asetaKieletJaVlk(pohja);
+            });
         }
     });
 
