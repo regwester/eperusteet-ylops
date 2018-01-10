@@ -72,7 +72,7 @@ public class DtoMapperConfig {
         factory.classMap(Opetussuunnitelma.class, OpetussuunnitelmaBaseDto.class)
                 .byDefault()
                 .favorExtension(true)
-                .fieldAToB("cachedPeruste.id", "perusteenId")
+                .fieldAToB("cachedPeruste.perusteId", "perusteenId")
                 .register();
 
         factory.classMap(OppiaineDto.class, Oppiaine.class)
