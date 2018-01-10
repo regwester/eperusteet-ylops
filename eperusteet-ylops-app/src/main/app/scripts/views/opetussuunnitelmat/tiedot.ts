@@ -80,16 +80,6 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
             OpetussuunnitelmaOikeudetService.onkoOikeudet("opetussuunnitelma", "tilanvaihto", true);
     }
 
-    $scope.$watch("editableModel.$$pohja", () => {
-        if ($scope.editableModel.$$pohja) {
-            OpetussuunnitelmaCRUD.get({ opsId: $scope.editableModel.$$pohja.id }, pohja => {
-                $scope.editableModel.koulutustyyppi = pohja.koulutustyyppi;
-                $scope.editableModel._pohja = "" + pohja.id;
-                asetaKieletJaVlk(pohja);
-            });
-        }
-    });
-
     $scope.$$isOps = true;
     $scope.editMode = false;
     $scope.loading = false;
@@ -224,22 +214,47 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
 
     //Jos luodaan uutta ops:ia toisesta opetussuunnitelmasta,
     // niin haetaan pohja opetussuunnitelmasta kunnat ja organisaatiot
-    (async function() {
-        if ($scope.luonnissa && $scope.editableModel._pohja) {
-            try {
-                const res = await OpetussuunnitelmaCRUD.get({ opsId: $scope.editableModel._pohja }).$promise;
-                $scope.$$pohja = res;
-                $scope.pohjanNimi = res.nimi;
-                $scope.editableModel.kunnat = res.kunnat;
-                $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
-                $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
-                $scope.editableModel.koulutustyyppi = res.koulutustyyppi;
-                asetaKieletJaVlk(res);
-            } catch (ex) {
-                Notifikaatiot.serverCb(ex);
-            }
+    if ($scope.luonnissa) {
+        if ($scope.editableModel._pohja) {
+            (async function() {
+                try {
+                    const res = await OpetussuunnitelmaCRUD.get({ opsId: $scope.editableModel._pohja }).$promise;
+                    console.log(res);
+                    $scope.$$pohja = res;
+                    $scope.pohjanNimi = res.nimi;
+                    $scope.editableModel.kunnat = res.kunnat;
+                    $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
+                    $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
+                    $scope.editableModel.koulutustyyppi = res.koulutustyyppi;
+                    asetaKieletJaVlk(res);
+                } catch (ex) {
+                    Notifikaatiot.serverCb(ex);
+                }
+            })();
         }
-    })();
+        else {
+            $scope.$watch("editableModel.$$pohja", () => {
+                if ($scope.editableModel.$$pohja) {
+                    OpetussuunnitelmaCRUD.get({ opsId: $scope.editableModel.$$pohja.id }, pohja => {
+                        $scope.editableModel.koulutustyyppi = pohja.koulutustyyppi;
+                        $scope.editableModel._pohja = "" + pohja.id;
+                        asetaKieletJaVlk(pohja);
+                    });
+                }
+            });
+        }
+    }
+    else {
+        $scope.$watch("editableModel.$$pohja", () => {
+            if ($scope.editableModel.pohja) {
+                OpetussuunnitelmaCRUD.get({ opsId: $scope.editableModel.pohja.id }, pohja => {
+                    $scope.editableModel.koulutustyyppi = pohja.koulutustyyppi;
+                    $scope.editableModel._pohja = "" + pohja.id;
+                    asetaKieletJaVlk(pohja);
+                });
+            }
+        });
+    }
 
     $scope.$watch("editableModel.koulutustyyppi", function(value) {
         if ($scope.luonnissa) {
