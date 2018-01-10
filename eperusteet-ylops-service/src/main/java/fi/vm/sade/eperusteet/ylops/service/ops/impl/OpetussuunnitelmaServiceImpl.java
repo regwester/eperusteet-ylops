@@ -918,7 +918,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    @Transactional()
     public void updateLapsiOpetussuunnitelmat(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");

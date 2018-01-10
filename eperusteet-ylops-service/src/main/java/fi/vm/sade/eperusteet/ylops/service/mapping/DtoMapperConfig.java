@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
@@ -66,6 +67,12 @@ public class DtoMapperConfig {
                 //.fieldBToA(Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName(), Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName())
                 //.fieldAToB("vuosiluokkakokonaisuudet", "vuosiluokkakokonaisuudet")
                 .byDefault()
+                .register();
+
+        factory.classMap(Opetussuunnitelma.class, OpetussuunnitelmaBaseDto.class)
+                .byDefault()
+                .favorExtension(true)
+                .fieldAToB("cachedPeruste.id", "perusteenId")
                 .register();
 
         factory.classMap(OppiaineDto.class, Oppiaine.class)
