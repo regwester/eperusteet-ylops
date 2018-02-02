@@ -219,7 +219,6 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
             (async function() {
                 try {
                     const res = await OpetussuunnitelmaCRUD.get({ opsId: $scope.editableModel._pohja }).$promise;
-                    console.log(res);
                     $scope.$$pohja = res;
                     $scope.pohjanNimi = res.nimi;
                     $scope.editableModel.kunnat = res.kunnat;
@@ -357,9 +356,15 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
                         return $scope.julkaisukielet[koodi];
                     })
                     .value();
-                $scope.editableModel.organisaatiot = $scope.editableModel.koulutoimijat.concat(
-                    $scope.editableModel.koulut
-                );
+                if (!$scope.kouluvalinta) {
+                    $scope.editableModel.organisaatiot = $scope.editableModel.koulutoimijat.concat(
+                        $scope.editableModel.koulut
+                    );
+                } else {
+                    $scope.editableModel.organisaatiot = [
+                        $scope.editableModel.organisaatiot
+                    ];
+                }
                 delete $scope.editableModel.tekstit;
                 delete $scope.editableModel.oppiaineet;
 
@@ -447,7 +452,8 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
             _.isArray($scope.editableModel.koulutoimijat) &&
             $scope.editableModel.koulutoimijat.length === 1 &&
             _.isArray($scope.koululista) &&
-            $scope.koululista.length === 0;
+            $scope.koululista.length === 0 &&
+            $scope.koulut && $scope.koulut.length === 0;
     }
 
     function updateKoulutoimijaVaroitus() {
@@ -494,6 +500,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
         } else if (koulutoimijat.length === 1) {
             const koulutoimija = koulutoimijat[0];
             $timeout(() => {
+                // Todo: ei toimi muokatessa, koska children puuttuvat
                 $scope.koululista = _(koulutoimija.children)
                     .map(koulu => _.pick(koulu, ["oid", "nimi", "tyypit"]))
                     .sortBy(Utils.sort)

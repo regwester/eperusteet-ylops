@@ -221,7 +221,7 @@
               </ui-select>
             </div>
           </div>
-          <div ng-hide="kouluvalinta" style="margin-top: 10px">
+          <div ng-hide="kouluvalinta">
             <div>
               <div class="organisaatio-label"><label><span kaanna="'koulutustoimija'"></span>*</label></div>
               <div class="organisaatio-input">
@@ -249,7 +249,7 @@
               </div>
             </div>
           </div>
-          <div ng-show="kouluvalinta" style="margin-top: 10px">
+          <div ng-show="kouluvalinta">
             <div>
               <div class="organisaatio-label"><label><span kaanna="'ryhma'"></span>*</label></div>
               <div class="organisaatio-input">
@@ -260,7 +260,6 @@
                   </ui-select-choices>
                   <ui-select-match placeholder="{{'valitse-ryhmat' | kaanna}}">{{ $select.selected.nimi | kaanna:false:true }}</ui-select-match>
                 </ui-select>
-                <!-- <p ng&#45;if="!loadingKoulut &#38;&#38; eiKoulujaVaroitus" kaanna="'kunnalla&#45;ei&#45;kouluja'"></p> -->
               </div>
             </div>
           </div>
