@@ -24,7 +24,7 @@
     "ckeditor": "4.4.8",
     "eperusteet-frontend-utils": "Opetushallitus/eperusteet-frontend-utils#master",
     "es5-shim": "2.3.0",
-    "jquery": "1.11.3",
+    "jquery": "3.3.1",
     "json3": "3.2.6",
     "lodash": "3.10.1",
     "momentjs": "2.5.1",
