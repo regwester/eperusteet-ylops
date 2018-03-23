@@ -76,7 +76,7 @@
           </div>
         </div>
 
-        <div>
+        <div ng-hide="model.ryhmat.length > 0">
           <div class="organisaatio-label"><label kaanna="'organisaatio'"></label></div>
           <div class="organisaatio-input viewmode">
             <span ng-repeat="koulutoimija in model.koulutoimijat">
@@ -86,13 +86,22 @@
           </div>
         </div>
 
-        <div>
+        <div ng-hide="model.ryhmat.length > 0">
           <div class="organisaatio-label"><label kaanna="'koulu'"></label></div>
           <div class="organisaatio-input viewmode">
             <span ng-repeat="koulu in model.koulut">{{koulu.nimi | kaanna:false:true}}<span ng-show="!$last" ng-bind="', '"></span></span>
             <span ng-if="!model.koulut || model.koulut.length === 0">-</span>
           </div>
         </div>
+
+        <div ng-show="model.ryhmat.length > 0">
+          <div class="organisaatio-label"><label kaanna="'ryhma'"></label></div>
+          <div class="organisaatio-input viewmode">
+            <span ng-repeat="ryhma in model.ryhmat">{{ryhma.nimi | kaanna:false:true}}<span ng-show="!$last" ng-bind="', '"></span></span>
+            <span ng-if="!model.ryhmat || model.ryhmat.length === 0">-</span>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -197,8 +206,7 @@
       </div> -->
 
 
-
-      <div class="row">
+      <div class="row" ng-show="luonnissa">
         <div class="col-sm-3 formfield-label">
           <label kaanna="'organisaatio'"></label>
         </div>
