@@ -939,6 +939,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
 
+        // Ei sallita kunnan muuttamista
+        opetussuunnitelmaDto.setKunnat(ops.getKunnat().stream()
+                .map(kunta -> mapper.map(kunta, KoodistoDto.class))
+                .collect(toSet()));
+
+        // Ei sallita organisaation muuttamista
+        opetussuunnitelmaDto.setOrganisaatiot(ops.getOrganisaatiot().stream().map(orgOid -> {
+            OrganisaatioDto dto = new OrganisaatioDto();
+            dto.setOid(orgOid);
+            return dto;
+        }).collect(toSet()));
+
+        // Käyttäjällä ei oikeutta tulevassa organisaatiossa
+        Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD,
+                RolePermission.ADMIN));
+        Set<String> organisaatiot = opetussuunnitelmaDto.getOrganisaatiot().stream()
+                .map(OrganisaatioDto::getOid)
+                .collect(toSet());
+        if (CollectionUtil.intersect(userOids, organisaatiot).isEmpty()) {
+            throw new BusinessRuleViolationException("Käyttäjällä ei ole oikeuksia organisaatiossa");
+        }
+
         if (opetussuunnitelmaDto.getTyyppi() != ops.getTyyppi()) {
             throw new BusinessRuleViolationException("Opetussuunnitelman tyyppiä ei voi vaihtaa");
         }

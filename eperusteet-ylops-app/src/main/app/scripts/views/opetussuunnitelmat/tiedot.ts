@@ -183,6 +183,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
 
     var filterKoulutustoimija = filterOrganisaatio("Koulutustoimija");
     var filterOppilaitos = filterOrganisaatio("Oppilaitos");
+    var filterRyhma = filterOrganisaatio("Ryhma");
 
     if (kunnat) {
         $scope.kuntalista = mapKunnat(kunnat);
@@ -191,6 +192,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
     if ($scope.model.organisaatiot) {
         $scope.model.koulutoimijat = filterKoulutustoimija($scope.model.organisaatiot);
         $scope.model.koulut = filterOppilaitos($scope.model.organisaatiot);
+        $scope.model.ryhmat = filterRyhma($scope.model.organisaatiot);
     }
 
     function isValidKielivalinta(chosen, options) {
@@ -307,6 +309,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
 
                 $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
                 $scope.editableModel.koulut = filterOppilaitos(res.organisaatiot);
+                $scope.editableModel.ryhmat = filterRyhma(res.organisaatiot);
                 fixTimefield("paatospaivamaara");
                 if (notify) {
                     $rootScope.$broadcast("rakenne:updated");
