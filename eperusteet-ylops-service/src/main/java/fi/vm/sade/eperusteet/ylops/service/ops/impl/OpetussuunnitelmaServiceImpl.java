@@ -939,6 +939,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
 
+        poistaKielletytMuutokset(ops, opetussuunnitelmaDto);
+
+        validoiMuutokset(ops, opetussuunnitelmaDto);
+
+        mapper.map(opetussuunnitelmaDto, ops);
+        ops = repository.save(ops);
+
+        return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private void poistaKielletytMuutokset(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
         // Ei sallita kunnan muuttamista
         opetussuunnitelmaDto.setKunnat(ops.getKunnat().stream()
                 .map(kunta -> mapper.map(kunta, KoodistoDto.class))
@@ -950,6 +961,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             dto.setOid(orgOid);
             return dto;
         }).collect(toSet()));
+
+        // Tilan muuttamiseen on oma erillinen endpointtinsa
+        opetussuunnitelmaDto.setTila(ops.getTila());
+    }
+
+    private void validoiMuutokset(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
+
 
         // Käyttäjällä ei oikeutta tulevassa organisaatiossa
         Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD,
@@ -993,14 +1011,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (opetussuunnitelmaDto.getOrganisaatiot().isEmpty()) {
             throw new BusinessRuleViolationException("Organisaatiolista ei voi olla tyhjä");
         }
-
-        // Tilan muuttamiseen on oma erillinen endpointtinsa
-        opetussuunnitelmaDto.setTila(ops.getTila());
-
-        mapper.map(opetussuunnitelmaDto, ops);
-        ops = repository.save(ops);
-
-        return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
     private Validointi validoiOpetussuunnitelma(Opetussuunnitelma ops) {
