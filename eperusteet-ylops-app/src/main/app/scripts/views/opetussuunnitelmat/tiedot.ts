@@ -222,6 +222,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
                 try {
                     const res = await OpetussuunnitelmaCRUD.get({ opsId: $scope.editableModel._pohja }).$promise;
                     $scope.$$pohja = res;
+                    $scope.editableModel.$$pohja = res;
                     $scope.pohjanNimi = res.nimi;
                     $scope.editableModel.kunnat = res.kunnat;
                     $scope.editableModel.koulutoimijat = filterKoulutustoimija(res.organisaatiot);
