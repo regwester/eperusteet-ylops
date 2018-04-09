@@ -94,6 +94,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 /**
  * @author mikkom
@@ -292,7 +293,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public OpetussuunnitelmaStatistiikkaDto getStatistiikka() {
         List<OpetussuunnitelmaInfoDto> opsit = mapper.mapAsList(repository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class).stream()
                 .map(ops -> {
-                    fetchOrganisaatioNimet(ops);
+                    try {
+                        fetchOrganisaatioNimet(ops);
+                    } catch (BusinessRuleViolationException ex) {
+                        logger.error(ex.getLocalizedMessage());
+                    }
                     return ops;
                 })
                 .collect(Collectors.toList());
@@ -302,11 +307,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         result.getTasoittain().put("kunnat", opsit.stream().filter(ops -> ops.getKunnat().size() == 1).count());
         result.getTasoittain().put("koulujoukko", opsit.stream()
                 .filter(ops -> ops.getOrganisaatiot().stream()
+                        .filter(org -> !ObjectUtils.isEmpty(org.getTyypit()))
                         .filter(org -> "Oppilaitos".equals(org.getTyypit().get(0)))
                         .count() > 1)
                 .count());
         result.getTasoittain().put("koulut", opsit.stream()
                 .filter(ops -> ops.getOrganisaatiot().stream()
+                        .filter(org -> !ObjectUtils.isEmpty(org.getTyypit()))
                         .filter(org -> "Oppilaitos".equals(org.getTyypit().get(0)))
                         .count() == 1)
                 .count());
