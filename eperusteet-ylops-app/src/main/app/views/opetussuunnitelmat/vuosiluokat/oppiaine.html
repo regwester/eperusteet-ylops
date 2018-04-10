@@ -17,8 +17,8 @@
     </span>
     <button ng-show="oppiaine.oma" class="btn btn-default" icon-role="edit" ng-disabled="lukkotiedot.lukittu" ng-click="editOppiaine()" kaanna="'muokkaa-oppiainetta'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
     <button ng-show="oppiaine.oma" class="btn btn-default" icon-role="remove" ng-disabled="lukkotiedot.lukittu" ng-click="removeOppiaine()" kaanna="'poista-oppiaine'" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
-    <button ng-if="!oppiaine.oma" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'"
-            icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'poisto' }"></button>
+    <button ng-if="!oppiaine.oma && (!oppiaine.$parent  || (oppiaine.$parent && oppiaine.$parent.oma))" class="btn btn-default" ng-disabled="lukkotiedot.lukittu" kaanna="'kopioi-muokattavaksi'"
+            icon-role="ep-text-clone" ng-click="kopioiMuokattavaksi()" ></button>
 </div>
 
 <div ng-hide="options.editing" ng-if="oppiaine.oma && isLatest()" class="action-buttons-inline">
