@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -129,7 +130,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "valtakunnallinen_pakollinen_kuvaus_id", nullable = true)
+    @JoinColumn(name = "valtakunnallinen_pakollinen_kuvaus_id")
     private LokalisoituTeksti valtakunnallinenPakollinenKuvaus;
 
     @Getter
@@ -137,7 +138,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "valtakunnallinen_syventava_kuvaus_id", nullable = true)
+    @JoinColumn(name = "valtakunnallinen_syventava_kuvaus_id")
     private LokalisoituTeksti valtakunnallinenSyventavaKurssiKuvaus;
 
     @Getter
@@ -145,7 +146,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "valtakunnallinen_soveltava_kuvaus_id", nullable = true)
+    @JoinColumn(name = "valtakunnallinen_soveltava_kuvaus_id")
     private LokalisoituTeksti valtakunnallinenSoveltavaKurssiKuvaus;
 
     @Getter
@@ -153,7 +154,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "paikallinen_syventava_kuvaus_id", nullable = true)
+    @JoinColumn(name = "paikallinen_syventava_kuvaus_id")
     private LokalisoituTeksti paikallinenSyventavaKurssiKuvaus;
 
     @Getter
@@ -161,7 +162,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @ValidHtml
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "paikallinen_soveltava_kuvaus_id", nullable = true)
+    @JoinColumn(name = "paikallinen_soveltava_kuvaus_id")
     private LokalisoituTeksti paikallinenSoveltavaKurssiKuvaus;
 
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -395,7 +396,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     public static Copier<Oppiaine> perusopetusCopier() {
         return (other, o) -> {
             Map<Long, Opetuksenkohdealue> kohdealueet = other.getKohdealueet().stream()
-                    .collect(Collectors.toMap(ka -> ka.getId(), ka -> new Opetuksenkohdealue(ka.getNimi())));
+                    .collect(Collectors.toMap(AbstractReferenceableEntity::getId, ka -> new Opetuksenkohdealue(ka.getNimi())));
             o.setKohdealueet(new HashSet<>(kohdealueet.values()));
             other.getVuosiluokkakokonaisuudet().forEach((vk -> {
                 Oppiaineenvuosiluokkakokonaisuus ovk = Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet);
@@ -411,9 +412,9 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     public static Copier<Oppiaine> oppimaaraCopier(Predicate<Oppiaine> oppimaaraFilter, ConstructedCopier<Oppiaine> with) {
         return (other, o) -> {
             if (other.isKoosteinen() && other.getOppiaine() == null) {
-                other.getOppimaarat().stream().filter(oppimaaraFilter).forEach((om -> {
-                    o.addOppimaara(with.copy(om));
-                }));
+                other.getOppimaarat().stream()
+                        .filter(oppimaaraFilter)
+                        .forEach((om -> o.addOppimaara(with.copy(om))));
             }
         };
     }
