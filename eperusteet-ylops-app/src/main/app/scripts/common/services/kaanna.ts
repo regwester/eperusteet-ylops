@@ -15,7 +15,8 @@
  */
 
 ylopsApp
-    .service("Kaanna", function($translate, Kieli) {
+    .constant("DEBUG_KAANNA", false)
+    .service("Kaanna", function($translate, Kieli, DEBUG_KAANNA) {
         function translate(obj, key, useFallback) {
             function getTranslation(input, lang) {
                 return input[lang] || input[lang.toUpperCase()] || input["kieli_" + lang + "#1"];
@@ -52,6 +53,11 @@ ylopsApp
                     result = kaannaSisalto(input, useFallback);
                 } else if (_.isString(input)) {
                     result = $translate.instant(input, config);
+                    if (DEBUG_KAANNA) {
+                        if (!_.isEmpty(input) && _.eq(result, input)) {
+                            console.info("Käännös puuttuu:", input);
+                        }
+                    }
                 }
                 return result || "";
             },
