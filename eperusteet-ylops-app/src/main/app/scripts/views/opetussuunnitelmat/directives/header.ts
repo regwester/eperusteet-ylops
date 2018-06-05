@@ -56,7 +56,7 @@ ylopsApp
         const selectEsitkatseluURL = () => {
             let currentHost = $location.host() + "";
             if (/localhost/.test(currentHost)) return "http://localhost:9020/#/";
-            else if (/testi|itest/.test(currentHost)) return "https://testi-eperusteet.opintopolku.fi/#/";
+            else if (/testi|itest/.test(currentHost)) return "https://eperusteet.testiopintopolku.fi/#/";
             else return "https://eperusteet.opintopolku.fi/#/";
         };
 
