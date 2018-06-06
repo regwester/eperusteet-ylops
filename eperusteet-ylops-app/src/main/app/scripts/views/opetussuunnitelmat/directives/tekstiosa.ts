@@ -73,9 +73,6 @@ ylopsApp
 
         function validoi() {
             if ($scope.muokattava) {
-                if (!$scope.model && $state.current.name === "root.opetussuunnitelmat.yksi.opetus.oppiaine.oppiaine") {
-                    return;
-                }
                 $scope.muokattava.otsikko = $scope.muokattava.otsikko || {};
                 $scope.muokattava.otsikko.$$validointi = Kieli.validoi($scope.muokattava.otsikko);
                 $scope.muokattava.teksti = $scope.muokattava.teksti || {};

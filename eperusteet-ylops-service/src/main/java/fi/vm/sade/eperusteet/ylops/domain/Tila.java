@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
