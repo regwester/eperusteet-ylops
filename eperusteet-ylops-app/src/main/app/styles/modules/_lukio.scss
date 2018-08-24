@@ -555,6 +555,10 @@ a.pointer {
       margin-left: 10px;
       padding-top: 7px;
       float: left;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 420px;
       .oppiaine {
         font-weight: bold;
       }
