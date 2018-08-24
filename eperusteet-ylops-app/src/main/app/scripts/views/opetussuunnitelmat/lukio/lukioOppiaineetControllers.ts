@@ -147,6 +147,7 @@ ylopsApp
                 }),
             save: kommentti =>
                 $q(resolve => {
+                    console.log($scope.treeRoot);
                     if (!_.isEmpty(state.liittamattomatKurssit())) {
                         Notifikaatiot.varoitus("lukio-puun-muokkaus-ei-saa-olla-liittamattomia-kursseja");
                     } else {
@@ -927,8 +928,7 @@ ylopsApp
             $timeout,
             $state,
             LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
-            Kaanna,
-            $log
+            Kaanna
         ) => {
             $scope.kurssi = <Lukio.LuoLukiokurssi>{
                 oppiaineId: $stateParams.oppiaineId,
@@ -989,12 +989,7 @@ ylopsApp
         }
     )
     .controller("LukioOppiaineSisaltoController", function(
-        $scope,
-        $q: IQService,
-        $stateParams,
-        LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
-        Kaanna,
-        $log
+        $scope
     ) {
         $scope.textHidden = false;
         $scope.editing = false;
@@ -1150,8 +1145,7 @@ ylopsApp
         valittu,
         LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
         Notifikaatiot,
-        LukioControllerHelpers,
-        Kaanna
+        LukioControllerHelpers
     ) {
         $scope.$valittu = _.cloneDeep(valittu);
         $scope.$valittu.kieli = LukioControllerHelpers.kielella("");

@@ -23,6 +23,7 @@ ylopsApp.service("Algoritmit", function(Kaanna) {
         _.forEach(objekti[lapsienAvain], function(solmu, index) {
             if (!cb(solmu, depth, index, objekti[lapsienAvain], objekti)) {
                 solmu.$$traverseParent = objekti;
+                solmu.$$nodeParent = objekti;
                 traverse(solmu, lapsienAvain, cb, depth + 1);
             }
         });

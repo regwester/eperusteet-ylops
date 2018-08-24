@@ -254,6 +254,8 @@ angular
             }
         };
     })
+
+
     .directive("genericTreeVanilla", function($compile, $log, $templateCache) {
         return {
             restrict: "E",
@@ -419,40 +421,43 @@ angular
                                     restoreParentHeightForAllGenericTrees();
                                 },
                                 update: function(e, ui) {
-                                    ui.item.sortable.dropindex = ui.item.index();
-                                    var $parentEl = $(ui.item.parent()[0]),
-                                        $parentParent = $parentEl.parent("generic-tree-node-vanilla").first();
-                                    ui.item.sortable.droptarget = $parentEl;
-                                    ui.item.sortable.droptargetList = $parentEl.prop("sortableModel");
-                                    ui.item.sortable.droptargetNode = _.isEmpty($parentParent)
-                                        ? scope.root
-                                        : $parentParent.prop("relatedNode");
-                                    if (scope.tprovider.acceptDrop) {
-                                        if (
-                                            !scope.tprovider.acceptDrop(
-                                                ui.item.sortable.node,
-                                                ui.item.sortable.droptargetNode
-                                            )
-                                        ) {
-                                            (<any>$(ui.sender)).sortable("cancel");
-                                            ui.item.sortable = true;
-                                            //$log.info('cancled');
-                                            return;
+                                    if (_.isObject(ui.item.sortable)) {
+                                        ui.item.sortable.dropindex = ui.item.index();
+                                        var $parentEl = $(ui.item.parent()[0]),
+                                            $parentParent = $parentEl.parent("generic-tree-node-vanilla").first();
+                                        ui.item.sortable.droptarget = $parentEl;
+                                        ui.item.sortable.droptargetList = $parentEl.prop("sortableModel");
+                                        ui.item.sortable.droptargetNode = _.isEmpty($parentParent)
+                                            ? scope.root
+                                            : $parentParent.prop("relatedNode");
+                                        if (scope.tprovider.acceptDrop) {
+                                            if (
+                                                !scope.tprovider.acceptDrop(
+                                                    ui.item.sortable.node,
+                                                    ui.item.sortable.droptargetNode
+                                                )
+                                            ) {
+                                                console.log("canceled");
+                                                (<any>$(ui.sender)).sortable("cancel");
+                                                ui.item.sortable = true;
+                                                //$log.info('cancled');
+                                                return;
+                                            }
                                         }
+                                        scope.$apply(function() {
+                                            ui.item.sortable.sourceList.splice(ui.item.sortable.index, 1);
+                                            ui.item.sortable.droptargetList.splice(
+                                                ui.item.sortable.dropindex,
+                                                0,
+                                                ui.item.sortable.node
+                                            );
+                                            setContext(ui.item.sortable.droptargetNode, ui.item.sortable.droptargetList);
+                                            setContext(ui.item.sortable.sourceNode, ui.item.sortable.sourceList);
+                                            //$log.info('moved', ui.item.sortable.node, ' to ', ui.item.sortable.droptargetList,
+                                            //        ' from ', ui.item.sortable.sourceList);
+                                            ui.item.sortable = true;
+                                        });
                                     }
-                                    scope.$apply(function() {
-                                        ui.item.sortable.sourceList.splice(ui.item.sortable.index, 1);
-                                        ui.item.sortable.droptargetList.splice(
-                                            ui.item.sortable.dropindex,
-                                            0,
-                                            ui.item.sortable.node
-                                        );
-                                        setContext(ui.item.sortable.droptargetNode, ui.item.sortable.droptargetList);
-                                        setContext(ui.item.sortable.sourceNode, ui.item.sortable.sourceList);
-                                        //$log.info('moved', ui.item.sortable.node, ' to ', ui.item.sortable.droptargetList,
-                                        //        ' from ', ui.item.sortable.sourceList);
-                                        ui.item.sortable = true;
-                                    });
                                 }
                             },
                             scope.uiSortableConfig || {}
