@@ -57,16 +57,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="lukiotree-ylapainikkeet">
-                    <span class="rakenne-nimi ng-binding"> </span>
+                <!--<div class="lukiotree-ylapainikkeet">
                     <div class="pull-right">
                         <a class="group-toggler action-link" ng-click="toggleCollapse()">
                             <span class="avaa-sulje" icon-role="ep-open-close">{{ 'avaa-sulje-kaikki' | kaanna }}</span>
                         </a>
                     </div>
-                </div>
-                <generic-tree-vanilla tree-provider="treeProvider"
-                              ui-sortable-config="sortableConfig"></generic-tree-vanilla>
+                </div>-->
+                <lukio-tree tree-provider="treeProvider"
+                            ui-sortable-config="sortableConfig"></lukio-tree>
+                <!--<generic-tree-vanilla tree-provider="treeProvider"
+                                      ui-sortable-config="sortableConfig"></generic-tree-vanilla>-->
             </div>
         </div>
     </div>

@@ -47,7 +47,7 @@ $aikaleima-vari: #888;
 
 .lukio-oppiaineet-puu {
     .search-field-container {
-        margin-left: 5px;
+        //margin-left: 5px;
     }
 
     .tree-con {
@@ -108,10 +108,9 @@ $aikaleima-vari: #888;
         height: 33px;
         width: 100%;
         padding: 5px;
-        padding-right: 10px;
         margin-top: 10px;
+        margin-bottom: 10px;
         min-width: 600px;
-        right: -5px;
         border: 1px solid #ccc;
     }
 
@@ -537,6 +536,70 @@ a.pointer {
     right: auto;
 }
 
+.lukio-tree {
+  .node {
+    min-height: 32px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+
+    .tree-handle {
+      cursor: move;
+      padding-left: 5px;
+      padding-right: 5px;
+      display: inline-block;
+      float: left;
+      padding-top: 7px;
+    }
+
+    .name {
+      padding-top: 7px;
+      float: left;
+      .oppiaine {
+        font-weight: bold;
+      }
+    }
+
+    .muokattu-aikaleima {
+      color: $aikaleima-vari;
+      font-size: 0.7em;
+      padding-top: 8px;
+      float: right;
+    }
+
+    .remove {
+      padding-left: 5px;
+      padding-right: 5px;
+      display: inline-block;
+      margin-left: 5px;
+      margin-right: 5px;
+      float: right;
+      padding-top: 7px;
+
+      * {
+        cursor: pointer;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .oppiaine-tausta {
+    background-color: $oppiaine-oppimaara-tausta;
+  }
+  .kurssi-tausta {
+    background-color: #FFF;
+  }
+
+  .lukio-tree-placeholder {
+    background-color: #eee;
+    margin-bottom: 10px;
+  }
+
+  .lapset {
+    border-left: #dddddd dotted 1px;
+    padding-left: 30px;
+  }
+}
+
 @mixin generic-tree-viivat($margin-between-nodes, $empty-group-drop-margin) {
     min-height: 16px;
 
@@ -776,7 +839,6 @@ a.clickable {
     .action-buttons {
         margin-top: 0px;
         margin-bottom: 0px;
-        margin-right: -5px;
         .btn {
             margin-right: 6px;
             &:last-child {

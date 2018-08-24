@@ -77,6 +77,7 @@
         "scripts/common/services/kieli.ts",
         "scripts/common/directives/koodisto.ts",
         "scripts/common/directives/generictree.ts",
+        "scripts/common/directives/lukiotree.ts",
         "scripts/common/directives/datepicker.ts",
         "scripts/common/directives/kommenttiviesti.ts",
         "scripts/common/directives/muokkaustieto.ts",
