@@ -1,21 +1,29 @@
 <div ng-hide="lapsi.$$hide">
     <div class="node" ng-class="{ 'kurssi-tausta': lapsi.dtype === 1, 'oppiaine-tausta': lapsi.dtype === 2}">
-        <div class="tree-handle">
+        <div class="tree-handle" ng-show="editointi">
             <span class="glyphicon glyphicon-resize-vertical"></span>
         </div>
         <div ng-show="lapsi.dtype === 1" class="colorbox kurssi-tyyppi" ng-class="lapsi.tyyppi.toLowerCase()"></div>
-        <a class="name">
-            <span ng-show="lapsi.dtype === 2" class="oppiaine">
+        <a class="name" ng-show="lapsi.dtype === 2"
+           ui-sref="root.opetussuunnitelmat.lukio.opetus.oppiaine({ id: $stateParams.id, oppiaineId: lapsi.id })">
+            <span class="oppiaine">
                 {{lapsi.nimi | kaanna}}
             </span>
-            <span ng-show="lapsi.dtype === 1 && lapsi.lokalisoituKoodi" class="kurssi">
+        </a>
+        <a class="name" ng-show="lapsi.dtype === 1"
+           ui-sref="root.opetussuunnitelmat.lukio.opetus.kurssi({ id: $stateParams.id, oppiaineId: lapsi.$$nodeParent.id, kurssiId: lapsi.id })">
+            <span class="kurssi">
+                {{lapsi.nimi | kaanna}}
+            </span>
+            <span ng-show="lapsi.lokalisoituKoodi" class="kurssi">
                 {{lapsi.nimi | kaanna}} ({{lapsi.lokalisoituKoodi | kaanna}})
             </span>
+
         </a>
-        <a ng-click="poista(lapsi)" role="button" class="remove">
+        <a ng-click="poista(lapsi)" role="button" class="remove" ng-show="editointi">
             <i class="glyphicon glyphicon-remove"></i>
         </a>
-        <span class="muokattu-aikaleima">{{lapsi.muokattu | aikaleima}}</span>
+        <span class="muokattu-aikaleima" ng-hide="editointi">{{lapsi.muokattu | aikaleima}}</span>
     </div>
     <div ng-model="lapsi.lapset" ui-sortable="sortableConfig" class="lapset">
         <div ng-repeat="lapsi in lapsi.lapset" ng-include="'views/common/directives/lukiotreenode.html'"></div>

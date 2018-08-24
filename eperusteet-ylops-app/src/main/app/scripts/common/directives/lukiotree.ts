@@ -24,6 +24,7 @@ ylopsApp.directive("lukioTree", () => {
         },
         templateUrl: "views/common/directives/lukiotree.html",
         controller: ($scope, $log, Algoritmit) => {
+            $scope.editointi = false;
             const initProvider = (provider) => {
                 provider
                     .root()
@@ -57,10 +58,7 @@ ylopsApp.directive("lukioTree", () => {
                     }
                 }, /*$scope.uiSortableConfig ||*/ {});
 
-            console.log("config", $scope.sortableConfig);
-
             $scope.poista = (node) => {
-                console.log("poista");
                 let foundIndex, foundList;
                 Algoritmit.traverse($scope.root, "lapset", (lapsi, depth, index, arr) => {
                     if (lapsi === node) {
@@ -72,7 +70,14 @@ ylopsApp.directive("lukioTree", () => {
                 if (foundList) {
                     foundList.splice(foundIndex, 1);
                 }
-            }
+            };
+
+            $scope.$on("enableEditing", () => {
+                $scope.editointi = true;
+            });
+            $scope.$on("disableEditing", () => {
+                $scope.editointi = false;
+            });
         }
     };
 });
