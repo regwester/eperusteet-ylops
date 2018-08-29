@@ -81,7 +81,11 @@ ylopsApp.config(function($stateProvider) {
         .state("root.opetussuunnitelmat.lukio.opetus.oppiaineet", {
             url: "/oppiaineet",
             templateUrl: "views/opetussuunnitelmat/lukio/oppiaineet.html",
-            controller: "LukioOppiaineetController"
+            controller: "LukioOppiaineetController",
+            resolve: {
+                rakenne: (LukioOpetussuunnitelmaService, $stateParams) =>
+                    LukioOpetussuunnitelmaService.getRakenne($stateParams.id)
+            }
         })
         .state("root.opetussuunnitelmat.lukio.opetus.oppiaine", {
             url: "/oppiaineet/aine/:oppiaineId",

@@ -20,8 +20,9 @@
     <div class="main-column tree">
         <div class="tree-con">
             <div class="left search-field-container">
-                <rajaus size="small" classes="puun-rajaus" model="haku.haku"
-                        callback="haku.hae()" placeholder="{{ 'lukio-etsi-oppiaineista-ja-kursseista' || kaanna }}"></rajaus>
+                <rajaus size="small" classes="puun-rajaus" model="haku"
+                        callback="hae()" placeholder="{{ 'lukio-etsi-oppiaineista-ja-kursseista' || kaanna }}"
+                        ng-show="!editMode"></rajaus>
             </div>
             <div class="action-buttons right" ng-show="!editMode">
                 <div dropdown class="action-button dropdown-container" style="display:inline-block;" ng-if="canAddFromTarjonta()"
@@ -57,74 +58,8 @@
                         </div>
                     </div>
                 </div>
-                <!--<div class="lukiotree-ylapainikkeet">
-                    <div class="pull-right">
-                        <a class="group-toggler action-link" ng-click="toggleCollapse()">
-                            <span class="avaa-sulje" icon-role="ep-open-close">{{ 'avaa-sulje-kaikki' | kaanna }}</span>
-                        </a>
-                    </div>
-                </div>-->
-                <lukio-tree tree-provider="treeProvider"
-                            ui-sortable-config="sortableConfig"></lukio-tree>
-                <!--<generic-tree-vanilla tree-provider="treeProvider"
-                                      ui-sortable-config="sortableConfig"></generic-tree-vanilla>-->
+                <lukio-tree rakenne="rakenne" root="root"></lukio-tree>
             </div>
         </div>
-    </div>
-
-
-    <div class="liittamattomat-column" ng-class="{'tree-edit-mode': editMode}">
-        <div class="kelluva" ui-scrollfix="+160">
-            <div ng-show="editMode" class="liittamattomat-container">
-                <h4 ng-bind="'lukio-liitamattomat-kurssit' | kaanna" ></h4>
-
-                <div class="tree-con">
-                    <div class="action-buttons" ng-show="!editMode">
-                        <button icon-role="add" class="floater btn"
-                                oikeustarkastelu="[{ target: 'opetussuunnitelma', permission: 'muokkaus' }, { target: 'peruste', permission: 'korjaus' }]"
-                                ng-click="addKurssi()" kaanna="'lisaa-kurssi'"></button>
-                    </div>
-                    <div class="search-field-container">
-                        <rajaus size="small" classes="puun-rajaus" model="liittamattomatHaku.haku"
-                                callback="liittamattomatHaku.hae()"
-                                placeholder="{{ 'lukio-etsi-liittamattomista-kursseista' || kaanna }}"></rajaus>
-                    </div>
-                </div>
-                <div ui-sortable="liittamattomatKurssitConfig" ng-model="liittamattomatKurssit" class="recursivetreeLiittamattomat">
-                    <generic-tree-vanilla tree-provider="liittamattomatTreeProvider"
-                                  ui-sortable-config="sortableLiittamattomatConfig"></generic-tree-vanilla>
-                </div>
-                <pagination ng-show="liittamattomatPagination.multiPage"
-                            ng-model="liittamattomatPagination.currentPage"
-                            ng-change="liittamattomatPagination.changePage(liittamattomatPagination.currentPage)"
-                            total-items="liittamattomatPagination.total"
-                            items-per-page="liittamattomatPagination.showPerPage"></pagination>
-
-                <div ng-show="!editMode" ng-bind="'lukio-liitetyt-kurssit-ohje' | kaanna" ></div>
-            </div>
-            <div ng-show="editMode" class="liitetyt-container">
-                <h4 ng-bind="'lukio-liitetyt-kurssit' | kaanna" ></h4>
-
-                <div class="tree-con">
-                    <div class="search-field-container">
-                        <rajaus size="small" classes="puun-rajaus" model="liitetytHaku.haku"
-                                callback="liitetytHaku.hae()"
-                                placeholder="{{ 'lukio-etsi-liitetyista-kursseista' || kaanna }}"></rajaus>
-                    </div>
-                </div>
-                <div ui-sortable="liitetytKurssitConfig" ng-model="liitetytKurssit" class="recursivetreeLiittamattomat">
-                    <generic-tree-vanilla tree-provider="liitetytTreeProvider"
-                                  ui-sortable-config="sortableLiitetytConfig"></generic-tree-vanilla>
-                </div>
-                <pagination ng-show="liitetytPagination.multiPage"
-                            ng-model="liitetytPagination.currentPage"
-                            ng-change="liitetytPagination.changePage(liitetytPagination.currentPage)"
-                            total-items="liitetytPagination.total"
-                            items-per-page="liitetytPagination.showPerPage"></pagination>
-            </div>
-        </div>
-    </div>
-    <div style="clear: both;">
-        <br />
     </div>
 </div>

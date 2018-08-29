@@ -51,12 +51,12 @@ $aikaleima-vari: #888;
     }
 
     .tree-con {
-        min-width: 635px;
+        min-width: 880px;
     }
 
     .main-column {
         float: left;
-        width: 60%;
+      width: 100%;
         position: relative;
     }
     .left {
@@ -558,7 +558,7 @@ a.pointer {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
-      width: 420px;
+      width: 500px;
       .oppiaine {
         font-weight: bold;
       }
@@ -572,7 +572,7 @@ a.pointer {
       margin-right: 10px;
     }
 
-    .remove {
+    .action-button-right {
       padding-left: 5px;
       padding-right: 5px;
       display: inline-block;
@@ -584,6 +584,11 @@ a.pointer {
         cursor: pointer;
         text-decoration: none;
       }
+
+    }
+
+    .remove {
+      color: #ea4a4a;
     }
   }
 
@@ -597,6 +602,7 @@ a.pointer {
   .lukio-tree-placeholder {
     background-color: #eee;
     margin-bottom: 10px;
+    height: 32px;
   }
 
   .lapset {

@@ -7,198 +7,87 @@ interface KoodistoArvo {
 ylopsApp
     .controller("LukioOppiaineetController", function(
         $scope,
-        $q: IQService,
-        $stateParams,
-        Kaanna,
-        $log,
-        LukioOpetussuunnitelmaService: LukioOpetussuunnitelmaServiceI,
-        LukioTreeUtils: LukioTreeUtilsI,
-        Kommentit,
-        $modal,
-        Editointikontrollit,
         $state,
-        Notifikaatiot
+        $modal,
+        $stateParams,
+        $q,
+        $timeout,
+        Editointikontrollit,
+        LukioTreeUtils,
+        LukioOpetussuunnitelmaService,
+        Notifikaatiot,
+        rakenne
     ) {
+        $scope.root = LukioTreeUtils.buildTree(rakenne);
         $scope.editMode = false;
-        $scope.sortableConfig = <SortableConfig>{
-            placeholder: "placeholder",
-            handle: ".treehandle",
-            cursorAt: { top: 5, left: 5 }
-        };
-        $scope.sortableLiittamattomatConfig = <SortableConfig>_.cloneDeep($scope.sortableConfig);
-        $scope.sortableLiitetytConfig = <SortableConfig>_.cloneDeep($scope.sortableConfig);
-        $scope.treeRoot = <LukioKurssiTreeNode>{
-            dtype: LukioKurssiTreeNodeType.root,
-            lapset: [],
-            paginationUsed: false
-        };
-        $scope.canAddFromTarjonta = () => $scope.rakenne && !_.isEmpty($scope.rakenne.pohjanTarjonta);
-        $scope.liittamattomatRoot = <LukioKurssiTreeNode>_.cloneDeep($scope.treeRoot);
-        $scope.liittamattomatRoot.paginationUsed = true;
-        $scope.liitetytRoot = <LukioKurssiTreeNode>_.cloneDeep($scope.treeRoot);
-        $scope.liitetytRoot.paginationUsed = true;
-        var updatePagination = () => {
-            LukioTreeUtils.updatePagination($scope.liittamattomatRoot.lapset, $scope.liittamattomatPagination);
-            LukioTreeUtils.updatePagination($scope.liitetytRoot.lapset, $scope.liitetytPagination);
-        };
-        var state: LukioKurssiTreeState = {
-            isEditMode: () => $scope.editMode,
-            scope: $scope,
-            defaultCollapse: false,
-            root: () => $scope.treeRoot,
-            liitetytKurssit: () => $scope.liitetytRoot.lapset,
-            liittamattomatKurssit: () => $scope.liittamattomatRoot.lapset,
-            updatePagination: () => updatePagination()
-        };
-        $scope.toggleCollapse = LukioTreeUtils.collapseToggler(() => $scope.treeRoot, state);
-        var resolveRakenne = (d: IDeferred<LukioKurssiTreeNode>) =>
-            LukioOpetussuunnitelmaService.getRakenne().then(rakenne => {
-                $scope.rakenne = rakenne;
-                $scope.treeRoot.lapset.length = 0; // empty the Array (but maintain object reference)
-                _.each(LukioTreeUtils.treeRootLapsetFromRakenne(rakenne), (lapsi: LukioKurssiTreeNode) => {
-                    $scope.treeRoot.lapset.push(lapsi);
-                });
-                $scope.liitetytRoot.lapset.length = 0; // empty the Array (but maintain object reference)
-                _.each(
-                    _($scope.treeRoot)
-                        .flattenTree(n => n.lapset)
-                        .filter((n: LukioKurssiTreeNode) => n.dtype == LukioKurssiTreeNodeType.kurssi)
-                        .uniq((n: LukioKurssiTreeNode) => n.id)
-                        .value(),
-                    (k: LukioKurssiTreeNode) => {
-                        k = _.cloneDeep(k);
-                        k.$$nodeParent = null;
-                        $scope.liitetytRoot.lapset.push(k);
-                    }
-                );
-                $scope.liittamattomatRoot.lapset.length = 0; // empty the Array (but maintain object reference)
-                updatePagination();
-                d.resolve($scope.treeRoot);
-                return rakenne;
+        $scope.haku = "";
+        $scope.rakenne = rakenne;
+
+        $scope.hae = () => {
+            $timeout(() => {
+                LukioTreeUtils.search($scope.root, $scope.haku);
             });
-        $scope.treeProvider = <VanillaGenericTreeConfig<LukioKurssiTreeNode>>{
-            root: () => {
-                var d = $q.defer<LukioKurssiTreeNode>();
-                resolveRakenne(d);
-                return d.promise;
-            },
-            children: node => node.lapset || [],
-            useUiSortable: () => !state.isEditMode(),
-            hidden: LukioTreeUtils.defaultHidden(false),
-            collapsed: LukioTreeUtils.defaultCollapsed,
-            template: node => LukioTreeUtils.templates(state).nodeTemplate(node),
-            extension: LukioTreeUtils.extensions(state, (n, scope) => {}),
-            acceptDrop: LukioTreeUtils.acceptDropWrapper(state),
-            sortableClass: _.constant("is-draggable-into")
         };
 
-        $scope.liittamattomatPagination = <PaginationDetails>{ showPerPage: 5, currentPage: 1, state: state };
-        $scope.liittamattomatTreeProvider = <VanillaGenericTreeConfig<LukioKurssiTreeNode>>{
-            root: () => $q.when($scope.liittamattomatRoot),
-            children: node => node.lapset || [],
-            useUiSortable: () => !state.isEditMode(),
-            hidden: LukioTreeUtils.defaultHidden(true),
-            collapsed: LukioTreeUtils.defaultCollapsed,
-            template: node => LukioTreeUtils.templates(state).nodeTemplateKurssilista(node),
-            extension: LukioTreeUtils.extensions(state, (n, scope) => {}),
-            acceptDrop: LukioTreeUtils.acceptDropWrapper(state),
-            sortableClass: _.constant("is-draggable-into")
-        };
+        $scope.canAddFromTarjonta = () => $scope.rakenne && !_.isEmpty($scope.rakenne.pohjanTarjonta);
 
-        $scope.liitetytPagination = <PaginationDetails>{ showPerPage: 5, currentPage: 1, state: state };
-        $scope.liitetytTreeProvider = <VanillaGenericTreeConfig<LukioKurssiTreeNode>>{
-            root: () => $q.when($scope.liitetytRoot),
-            children: node => node.lapset || [],
-            hidden: LukioTreeUtils.defaultHidden(true),
-            collapsed: LukioTreeUtils.defaultCollapsed,
-            useUiSortable: () => !state.isEditMode(),
-            template: node => LukioTreeUtils.templates(state).nodeTemplateKurssilista(node),
-            extension: LukioTreeUtils.extensions(state, (n, scope) => {}),
-            acceptDrop: LukioTreeUtils.acceptDropWrapper(state),
-            sortableClass: _.constant("is-draggable-into")
-        };
-        $scope.haku = LukioTreeUtils.luoHaku(state);
-        $scope.liitetytHaku = LukioTreeUtils.luoHaku(state, $scope.liitetytRoot);
-        $scope.liittamattomatHaku = LukioTreeUtils.luoHaku(state, $scope.liittamattomatRoot);
         $scope.addOppiaine = () => $state.go("root.opetussuunnitelmat.lukio.opetus.uusioppiaine");
 
-        Editointikontrollit.registerCallback({
-            doNotShowMandatoryMessage: true,
-            validate: () => {
-                if (!_.isEmpty(state.liittamattomatKurssit())) {
-                    Notifikaatiot.varoitus("lukio-puun-muokkaus-ei-saa-olla-liittamattomia-kursseja");
-                    return false;
-                }
-                return true;
-            },
-            edit: () =>
-                $q(resolve => {
-                    LukioOpetussuunnitelmaService.lukitseRakenne().then(() => resolve());
-                }),
-            cancel: () =>
-                $q(resolve => {
-                    $scope.editMode = false;
-                    LukioOpetussuunnitelmaService.vapautaRakenne().then(() => {
-                        resolveRakenne($q.defer()).then(() => {
-                            $scope.$broadcast("genericTree:refresh"); // templates get updated
-                            resolve();
-                        });
-                    });
-                }),
-            save: kommentti =>
-                $q(resolve => {
-                    console.log($scope.treeRoot);
-                    if (!_.isEmpty(state.liittamattomatKurssit())) {
-                        Notifikaatiot.varoitus("lukio-puun-muokkaus-ei-saa-olla-liittamattomia-kursseja");
-                    } else {
-                        LukioOpetussuunnitelmaService.updateOppiaineKurssiStructure(
-                            $scope.treeRoot,
-                            kommentti
-                        ).then(() => {
-                            Notifikaatiot.onnistui("lukio-puun-muokkaus-onnistui");
-                            LukioOpetussuunnitelmaService.vapautaRakenne().then(() => {
-                                $scope.editMode = false;
-                                resolveRakenne($q.defer()).then(() => {
-                                    $scope.$broadcast("genericTree:refresh"); // templates get updated
-                                    resolve();
-                                });
-                            });
-                        });
-                    }
-                })
-        });
-
         $scope.addTarjonnasta = pohjanOppiaine => {
-            $modal
-                .open({
-                    templateUrl: "views/opetussuunnitelmat/modals/lukioAbstraktiOppiaineModaali.html",
-                    controller: "LukioTuoAbstraktiOppiaineController",
-                    size: "lg",
-                    resolve: {
-                        opsId: _.constant($stateParams.id),
-                        valittu: _.constant(pohjanOppiaine)
-                    }
-                })
-                .result.then(
-                    res => {
-                        $state.go("root.opetussuunnitelmat.lukio.opetus.oppiaine", {
-                            id: $stateParams.id,
-                            oppiaineId: res.id
-                        });
-                    },
-                    () => {}
-                );
+            $modal.open({
+                templateUrl: "views/opetussuunnitelmat/modals/lukioAbstraktiOppiaineModaali.html",
+                controller: "LukioTuoAbstraktiOppiaineController",
+                size: "lg",
+                resolve: {
+                    opsId: _.constant($stateParams.id),
+                    valittu: _.constant(pohjanOppiaine)
+                }
+            })
+            .result.then(res => {
+                $state.go("root.opetussuunnitelmat.lukio.opetus.oppiaine", {
+                    id: $stateParams.id,
+                    oppiaineId: res.id
+                });
+            }, () => {});
         };
 
         $scope.toEditMode = () => {
             $scope.editMode = true;
-            state.defaultCollapse = true;
-            LukioTreeUtils.updateCollapse(state);
-            $scope.$broadcast("genericTree:refresh"); // templates get updated
             Editointikontrollit.startEditing();
         };
 
-        // TODO:kommentit (ei nyt rakenteelle omaa käsitettä)
+        Editointikontrollit.registerCallback({
+            doNotShowMandatoryMessage: true,
+            validate: () => {
+                return true;
+            },
+            edit: () => LukioOpetussuunnitelmaService.lukitseRakenne(),
+            cancel: () => $q(resolve => {
+                LukioOpetussuunnitelmaService.vapautaRakenne().then(() => {
+                    // Rakennetaan puu uudestaan
+                    LukioOpetussuunnitelmaService.getRakenne($stateParams.id)
+                        .then(rakenne => {
+                            $scope.rakenne = rakenne;
+                            $scope.root = LukioTreeUtils.buildTree(rakenne);
+                            $scope.editMode = false;
+                            resolve();
+                        });
+                });
+            }),
+            save: kommentti =>
+                $q(resolve => {
+                    LukioOpetussuunnitelmaService.updateOppiaineKurssiStructure(
+                        $scope.root,
+                        kommentti
+                    ).then(() => {
+                        Notifikaatiot.onnistui("lukio-puun-muokkaus-onnistui");
+                        LukioOpetussuunnitelmaService.vapautaRakenne().then(() => {
+                            $scope.editMode = false;
+                            resolve();
+                        });
+                    });
+                })
+        });
     })
     .service("LukioControllerHelpers", function($rootScope, Koodisto, MuokkausUtils, Kieli, Kaanna, $log) {
         var mapKoodiArvo = (and?: (arvoKoodistoArvo) => void) => (obj: any, koodisto: KoodistoArvo) => {
