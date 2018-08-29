@@ -33,6 +33,9 @@
                 <a ng-click="lisaaKurssi(kurssi)" role="button" class="action-button-right" ng-hide="kurssi.$$lisatty">
                     <i class="glyphicon glyphicon-plus"></i>
                 </a>
+                <a ng-click="poistaKurssi(kurssi)" role="button" class="action-button-right" ng-show="kurssi.$$lisatty">
+                    <i class="glyphicon glyphicon-ok"></i>
+                </a>
             </div>
         </div>
     </div>
