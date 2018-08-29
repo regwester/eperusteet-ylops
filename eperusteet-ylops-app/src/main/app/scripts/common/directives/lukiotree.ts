@@ -19,65 +19,114 @@ ylopsApp.directive("lukioTree", () => {
         restrict: "E",
         replace: true,
         scope: {
-            treeProvider: "=",
-            uiSortableConfig: "=?"
+            rakenne: "=",
+            root: "="
         },
         templateUrl: "views/common/directives/lukiotree.html",
-        controller: ($scope, $log, Algoritmit) => {
-            $scope.editointi = false;
-            const initProvider = (provider) => {
-                provider
-                    .root()
-                    .then(root => {
-                        $scope.root = root;
-                        Algoritmit.traverse($scope.root, "lapset", (lapsi, depth, index, arr) => {});
-                    })
-                    .catch(err => {
-                        $log.error(err);
-                    });
-            };
-
-            // Haetaan puun juuri ja kiinnitetään se scopeen.
-            initProvider($scope.treeProvider);
-
-            $scope.sortableConfig = _.merge({
+        controller: ($scope, $log, $modal,$stateParams, Algoritmit, LukioTreeUtils) => {
+            $scope.stateParams = $stateParams;
+            $scope.sortableConfig = {
                     handle: ".tree-handle",
                     helper: "clone",
                     axis: "y",
                     cursor: "move",
                     delay: 100,
                     placeholder: "lukio-tree-placeholder",
-                    forcePlaceholderSize: true,
                     opacity: 0.5,
                     tolerance: "pointer",
-                    //connectWith: ".recursivetree",
-                    //cursorAt: { top: 2, left: 2 },
-                    //disabled: $scope.treeProvider.useUiSortable()
-                    start: (e, ui) => {
-                        ui.placeholder.height(ui.item.height() - 10);
-                    }
-                }, /*$scope.uiSortableConfig ||*/ {});
+                    disabled: true
+                };
 
-            $scope.poista = (node) => {
-                let foundIndex, foundList;
-                Algoritmit.traverse($scope.root, "lapset", (lapsi, depth, index, arr) => {
-                    if (lapsi === node) {
-                        foundIndex = index;
-                        foundList = arr;
-                        return true;
-                    }
+            $scope.poista = node => {
+                _.remove(node.$$nodeParent.lapset, node);
+            };
+
+            $scope.lisaa = node => {
+                $modal.open({
+                    templateUrl: "views/opetussuunnitelmat/modals/kurssi.html",
+                    controller: "LukioTreeModalController",
+                    size: "lg",
+                    resolve: {
+                        rakenne: _.constant($scope.rakenne),
+                        root: _.constant($scope.root)
+                    },
+                    backdrop  : 'static',
+                    keyboard  : false
+                }).result.then(kurssit => {
+                    const kurssitMap = _.indexBy(node.lapset, "id");
+                    _.each(kurssit, kurssi => {
+                        if (!_.has(kurssitMap, kurssi.id)) {
+                            node.lapset.push(kurssi);
+                        }
+                    });
                 });
-                if (foundList) {
-                    foundList.splice(foundIndex, 1);
-                }
             };
 
             $scope.$on("enableEditing", () => {
-                $scope.editointi = true;
+                LukioTreeUtils.search($scope.root, "");
+                $scope.sortableConfig.disabled = false;
             });
+
             $scope.$on("disableEditing", () => {
-                $scope.editointi = false;
+                $scope.sortableConfig.disabled = true;
             });
         }
+    };
+}).controller("LukioTreeModalController", ($scope, $modalInstance, $timeout, LukioTreeUtils,
+                                           rakenne, root) => {
+    const resolveKurssit = (node) => {
+        const kurssit = _(node)
+            .flattenTree(n => n.lapset)
+            .filter(c => c.dtype == LukioKurssiTreeNodeType.kurssi)
+            .value();
+
+        return _.uniq(kurssit, "id");
+    };
+
+    const resolveLiittamattomatKurssit = () => {
+        const kaikkiKurssit = resolveKurssit(LukioTreeUtils.buildTree(rakenne));
+        const liitetytKurssit = resolveKurssit(root);
+
+        const liitetytKurssitMap = _.indexBy(liitetytKurssit, "id");
+
+        return _.filter(kaikkiKurssit, k => !_.has(liitetytKurssitMap, k.id));
+    };
+
+    $scope.liittamattomatHaku = "";
+    $scope.liitetytHaku = "";
+    $scope.lisattavatKurssit = [];
+    $scope.liittamattomatKurssit = resolveLiittamattomatKurssit();
+    $scope.liitetytKurssit = resolveKurssit(root);
+
+    _.each($scope.liitetytKurssit, kurssi => {
+       kurssi.$$lisatty = false;
+    });
+
+    $scope.liittamattomatHae = () => {
+        $timeout(() => {
+            LukioTreeUtils.search($scope.liittamattomatKurssit, $scope.liittamattomatHaku);
+        });
+    };
+
+    $scope.liitetytHae = () => {
+        $timeout(() => {
+            LukioTreeUtils.search($scope.liitetytKurssit, $scope.liitetytHaku);
+        });
+    };
+
+    $scope.lisaaKurssi = (kurssi) => {
+        if (!_.includes($scope.lisattavatKurssit, { id: kurssi.id })) {
+            $scope.lisattavatKurssit.push(kurssi);
+            kurssi.$$lisatty = true;
+        }
+    };
+
+    $scope.poistaKurssi = (kurssi) => {
+        _.remove($scope.lisattavatKurssit, kurssi);
+        kurssi.$$lisatty = false;
+    };
+
+    $scope.lisaa = () => {
+        $modalInstance.close($scope.lisattavatKurssit);
     };
 });
