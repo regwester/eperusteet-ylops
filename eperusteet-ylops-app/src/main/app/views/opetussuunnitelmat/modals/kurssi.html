@@ -11,7 +11,7 @@
 
     <br>
 
-    <div class="lukio-tree">
+    <div class="lukio-tree" style="height: 200px; overflow-y: auto">
         <div ng-repeat="kurssi in liittamattomatKurssit" ng-hide="kurssi.$$hide">
             <div class="node kurssi-tausta">
                 <div class="colorbox kurssi-tyyppi" ng-class="kurssi.$$tyyppi"></div>
@@ -49,7 +49,7 @@
 
     <br>
 
-    <div class="lukio-tree">
+    <div class="lukio-tree" style="height: 200px; overflow-y: auto">
         <div ng-repeat="kurssi in liitetytKurssit" ng-hide="kurssi.$$hide">
             <div class="node kurssi-tausta">
                 <div ng-show="kurssi.dtype === 1" class="colorbox kurssi-tyyppi" ng-class="kurssi.tyyppi.toLowerCase()"></div>
