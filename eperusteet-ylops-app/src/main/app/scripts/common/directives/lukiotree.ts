@@ -47,8 +47,8 @@ ylopsApp.directive("lukioTree", () => {
                     controller: "LukioTreeModalController",
                     size: "lg",
                     resolve: {
-                        rakenne: _.constant($scope.rakenne),
-                        root: _.constant($scope.root)
+                        rakenne: _.constant(_.cloneDeep($scope.rakenne)),
+                        root: _.constant(_.cloneDeep($scope.root))
                     },
                     backdrop  : 'static',
                     keyboard  : false
