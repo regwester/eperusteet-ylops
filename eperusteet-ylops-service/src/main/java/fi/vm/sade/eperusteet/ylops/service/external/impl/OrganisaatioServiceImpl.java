@@ -26,7 +26,6 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
-import fi.vm.sade.generic.rest.CachingRestClient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +37,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.PostConstruct;
+
+import fi.vm.sade.javautils.http.OphHttpClient;
+import fi.vm.sade.javautils.http.OphHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 /**
  * @author mikkom
@@ -99,13 +103,23 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         @Cacheable("organisaatiot")
         public JsonNode getOrganisaatio(String organisaatioOid) {
-            CachingRestClient crc = restClientFactory.getWithoutCas(serviceUrl);
+            OphHttpClient client = restClientFactory.get(serviceUrl, false);
             String url = serviceUrl + ORGANISAATIOT + organisaatioOid;
-            try {
-                return mapper.readTree(crc.getAsString(url));
-            } catch (IOException ex) {
-                throw new BusinessRuleViolationException("Organisaation tietojen hakeminen epäonnistui", ex);
-            }
+
+            OphHttpRequest request = OphHttpRequest.Builder
+                    .get(url)
+                    .build();
+
+            return client.<JsonNode>execute(request)
+                    .expectedStatus(SC_OK)
+                    .mapWith(text -> {
+                        try {
+                            return mapper.readTree(text);
+                        } catch (IOException ex) {
+                            throw new BusinessRuleViolationException("Organisaation tietojen hakeminen epäonnistui", ex);
+                        }
+                    })
+                    .orElse(null);
         }
 
         private ArrayNode flattenTree(JsonNode tree, String childTreeName, Predicate<JsonNode> filter) {
@@ -131,14 +145,24 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         }
 
         private JsonNode get(String hakuehto) {
-            CachingRestClient crc = restClientFactory.getWithoutCas(serviceUrl);
-            try {
-                final String url = serviceUrl + ORGANISAATIOT + hakuehto + STATUS_KRITEERI;
-                JsonNode tree = mapper.readTree(crc.getAsString(url));
-                return tree.get("organisaatiot");
-            } catch (IOException ex) {
-                throw new BusinessRuleViolationException("Tietojen hakeminen epäonnistui", ex);
-            }
+            OphHttpClient client = restClientFactory.get(serviceUrl, false);
+            String url = serviceUrl + ORGANISAATIOT + hakuehto + STATUS_KRITEERI;
+
+            OphHttpRequest request = OphHttpRequest.Builder
+                    .get(url)
+                    .build();
+
+            return client.<JsonNode>execute(request)
+                    .expectedStatus(SC_OK)
+                    .mapWith(text -> {
+                        try {
+                            JsonNode tree = mapper.readTree(text);
+                            return tree.get("organisaatiot");
+                        } catch (IOException ex) {
+                            throw new BusinessRuleViolationException("Organisaation tietojen hakeminen epäonnistui", ex);
+                        }
+                    })
+                    .orElse(null);
         }
 
         private JsonNode getLaitoksetByEhtoAndTyypit(String hakuehto, Collection<String> tyypit) {
@@ -182,26 +206,35 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
             return getLukiot(ORGANISAATIO_KRITEERI + oid);
         }
 
-//        @Cacheable("organisaatio-ryhma")
         public List<JsonNode> getRyhmat() {
-            CachingRestClient crc = restClientFactory.get(serviceUrl);
-            try {
-                String url = serviceUrl + ORGANISAATIOT + "v3/ryhmat";
-                JsonNode tree = mapper.readTree(crc.getAsString(url));
-                List<JsonNode> result = new ArrayList<>();
+            OphHttpClient client = restClientFactory.get(serviceUrl, false);
+            String url = serviceUrl + ORGANISAATIOT + "v3/ryhmat";
 
-                for (JsonNode ryhma : tree) {
-                    for (JsonNode tyyppi : ryhma.get("ryhmatyypit")) {
-                        if ("ryhmatyypit_5#1".equals(tyyppi.asText())) {
-                            result.add(ryhma);
-                            break;
+            OphHttpRequest request = OphHttpRequest.Builder
+                    .get(url)
+                    .build();
+
+            List<JsonNode> result = new ArrayList<>();
+            client.<JsonNode>execute(request)
+                    .expectedStatus(SC_OK)
+                    .mapWith(text -> {
+                        try {
+                            return mapper.readTree(text);
+                        } catch (IOException ex) {
+                            throw new BusinessRuleViolationException("Työryhmätietojen hakeminen epäonnistui", ex);
                         }
-                    }
-                }
-                return result;
-            } catch (IOException ex) {
-                throw new BusinessRuleViolationException("Työryhmätietojen hakeminen epäonnistui", ex);
-            }
+                    }).ifPresent(tree -> {
+                        for (JsonNode ryhma : tree) {
+                            for (JsonNode tyyppi : ryhma.get("ryhmatyypit")) {
+                                if ("ryhmatyypit_5#1".equals(tyyppi.asText())) {
+                                    result.add(ryhma);
+                                    break;
+                                }
+                            }
+                        }
+                    });
+
+            return result;
         }
     }
 

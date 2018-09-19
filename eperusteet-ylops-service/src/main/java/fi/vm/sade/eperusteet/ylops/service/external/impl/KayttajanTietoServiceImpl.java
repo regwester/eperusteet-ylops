@@ -22,7 +22,8 @@ import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-import fi.vm.sade.generic.rest.CachingRestClient;
+import fi.vm.sade.javautils.http.OphHttpClient;
+import fi.vm.sade.javautils.http.OphHttpRequest;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,11 +33,15 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import static fi.vm.sade.eperusteet.ylops.service.external.impl.KayttajanTietoParser.parsiKayttaja;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
 /**
  * @author mikkom
@@ -76,8 +81,7 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
         Principal ap = SecurityUtil.getAuthenticatedPrincipal();
         KayttajanTietoDto kayttaja = hae(ap.getName());
         if (kayttaja == null) { //"fallback" jos integraatio on rikki eikä löydä käyttäjän tietoja
-            kayttaja = new KayttajanTietoDto();
-            kayttaja.setOidHenkilo(ap.getName());
+            kayttaja = new KayttajanTietoDto(ap.getName());
         }
         return kayttaja;
     }
@@ -108,14 +112,26 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
 
         @Cacheable("kayttajat")
         public KayttajanTietoDto hae(String oid) {
-            try {
-                CachingRestClient crc = restClientFactory.get(onrServiceUrl);
-                String url = onrServiceUrl + HENKILO_API + oid;
-                JsonNode json = mapper.readTree(crc.getAsString(url));
-                return parsiKayttaja(json);
-            } catch (Exception e) {
-                return null;
-            }
+            OphHttpClient client = restClientFactory.get(onrServiceUrl, true);
+            String url = onrServiceUrl + HENKILO_API + oid;
+
+            OphHttpRequest request = OphHttpRequest.Builder
+                    .get(url)
+                    .build();
+
+            return client.<KayttajanTietoDto>execute(request)
+                    .handleErrorStatus(SC_UNAUTHORIZED)
+                    .with((res) -> Optional.of(new KayttajanTietoDto(oid)))
+                    .expectedStatus(SC_OK)
+                    .mapWith(text -> {
+                        try {
+                            JsonNode json = mapper.readTree(text);
+                            return parsiKayttaja(json);
+                        } catch (IOException e) {
+                            return new KayttajanTietoDto(oid);
+                        }
+                    })
+                    .orElse(new KayttajanTietoDto(oid));
         }
     }
 }
