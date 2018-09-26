@@ -28,7 +28,8 @@ public class OpetussuunnitelmaJulkisetController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "koulutustyyppi", dataType = "string", paramType = "query", allowMultiple = false, value = "koulutustyyppi (koodistokoodi)"),
             @ApiImplicitParam(name = "organisaatio", dataType = "string", paramType = "query", allowMultiple = false, value = "organisaatio oid (organisaatiopalvelusta)"),
-            @ApiImplicitParam(name = "tyyppi", dataType = "string", paramType = "query", allowMultiple = false, value = "ops | pohja")
+            @ApiImplicitParam(name = "tyyppi", dataType = "string", paramType = "query", allowMultiple = false, value = "ops | pohja"),
+            @ApiImplicitParam(name = "perusteenId", dataType = "string", paramType = "query", allowMultiple = false, value = "perusterajaus")
     })
     public List<OpetussuunnitelmaJulkinenDto> getAll(OpetussuunnitelmaQuery query) {
         return opetussuunnitelmaService.getAllJulkiset(query);

@@ -20,6 +20,8 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
+import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache_;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
@@ -185,6 +187,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         // Perusteen tyyppi
         if (pquery.getTyyppi() != null) {
             ehdot.add(builder.and(builder.equal(ops.get(Opetussuunnitelma_.tyyppi), pquery.getTyyppi())));
+        }
+
+        // Perusteen id
+        if (pquery.getPerusteenId() != null) {
+            Path<PerusteCache> cachedPeruste = ops.join(Opetussuunnitelma_.cachedPeruste);
+            ehdot.add(builder.and(builder.equal(cachedPeruste.get(PerusteCache_.perusteId), pquery.getPerusteenId())));
         }
 
         query.where(ehdot.toArray(new Predicate[ehdot.size()]));
