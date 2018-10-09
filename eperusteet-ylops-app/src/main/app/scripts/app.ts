@@ -41,8 +41,7 @@ ylopsApp
         Kaanna,
         Varmistusdialogi,
         $state,
-        paginationConfig,
-        $log
+        paginationConfig
     ) {
         paginationConfig.firstText = "";
         paginationConfig.previousText = "";

@@ -11,7 +11,6 @@ const yeomanConfig = {
 };
 
 const tsconfig = require(yeomanConfig.app + '/tsconfig.json');
-const tsconfigTest = require(yeomanConfig.test + '/tsconfig.json');
 
 module.exports = grunt => {
   require('time-grunt')(grunt);
@@ -28,18 +27,6 @@ module.exports = grunt => {
       }
     },
     ts: {
-      tests: {
-        files: [{
-          src: tsconfigTest.files.map(file => yeomanConfig.test + '/' + file),
-          dest: yeomanConfig.test,
-          options: {
-            module: "commonjs",
-            target: "es3",
-            lib: ["es2015", "dom", "es5"],
-            alwaysStrict: true
-          }
-        }]
-      },
       sources: {
         files: [{
           src: tsconfig.files.map(file => yeomanConfig.app + '/' + file),
@@ -62,10 +49,6 @@ module.exports = grunt => {
       css: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.scss'],
         tasks: ['sass', 'copy:fonts', 'autoprefixer']
-      },
-      test: {
-        files: ['<%= yeoman.app %>/**/*.{ts,html}', '<%= yeoman.test %>/**/*.ts','!<%= yeoman.app %>/bower_components/**'],
-        tasks: ['ts:tests', 'karma:unit', 'regex-check']
       },
       livereload: {
         options: {
@@ -306,12 +289,6 @@ module.exports = grunt => {
         'htmlmin'
       ]
     },
-    karma: {
-      unit: {
-        configFile: 'karma.conf.js',
-        singleRun: true
-      }
-    },
     cdnify: {
       dist: {
         html: ['<%= yeoman.dist %>/*.html']
@@ -374,7 +351,6 @@ module.exports = grunt => {
 
   grunt.registerTask('dev', [
     'clean:server',
-    // 'tsd:refresh',
     'ts:sources',
     'concurrent:server',
     'copy:fonts',
@@ -387,12 +363,10 @@ module.exports = grunt => {
   grunt.registerTask('test', [
     'clean:server',
     'tsd:refresh',
-    'ts:tests',
     'copy:fonts',
     'concurrent:test',
     'autoprefixer',
-    'regex-check',
-    'karma'
+    'regex-check'
   ]);
 
   grunt.registerTask('build', [

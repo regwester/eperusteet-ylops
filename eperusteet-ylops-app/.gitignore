@@ -10,5 +10,6 @@ bower_components/
 *~
 *.js
 !yo/*.js
+!src/test/js/*.js
 *.map
 !src/main/app/ckeditor-plugins/
