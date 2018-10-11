@@ -487,6 +487,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Uudessa opetussuunnitelmassa on id");
         }
 
+        if (opetussuunnitelmaDto.getPerusteenDiaarinumero() == null) {
+            throw new BusinessRuleViolationException("Uudessa opetussuunnitelmasta puuttuu perusteen diaarinumero");
+        }
+
         opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
 
@@ -548,7 +552,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setCachedPeruste(ops.getCachedPeruste());
         if (ops.getCachedPeruste() == null) {
             PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-            ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
+            PerusteCache perusteCache = perusteCacheRepository.findNewestEntryForPeruste(peruste.getId());
+            if (ops.getCachedPeruste() == null) {
+                throw new BusinessRuleViolationException("Valmista perustetta ei löytynyt");
+            }
+            ops.setCachedPeruste(perusteCache);
         }
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
@@ -977,6 +985,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             return dto;
         }).collect(toSet()));
 
+        // Ei sallita pohjan muuttamista
+        opetussuunnitelmaDto.setPohja(mapper.map(ops.getPohja(), OpetussuunnitelmaNimiDto.class));
+
+        // Ei sallita perusteen diaarinumeron muuttamista
+        opetussuunnitelmaDto.setPerusteenDiaarinumero(ops.getPerusteenDiaarinumero());
+
+        // Ei sallita peruste cachen muuttamista
+        PerusteCache cachedPeruste = ops.getCachedPeruste();
+        if (cachedPeruste.getPerusteId() != null) {
+            opetussuunnitelmaDto.setPerusteenId(cachedPeruste.getPerusteId());
+        } else {
+            opetussuunnitelmaDto.setPerusteenId(null);
+        }
+
         // Tilan muuttamiseen on oma erillinen endpointtinsa
         opetussuunnitelmaDto.setTila(ops.getTila());
     }
@@ -1015,12 +1037,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
         }
 
-        if (ops.getPohja() != null && !Objects.equals(opetussuunnitelmaDto.getPohja().getId(), ops.getPohja().getId())) {
-            throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
+        {
+            Long pohjaId = null;
+            if (opetussuunnitelmaDto.getPohja() != null) {
+                pohjaId = opetussuunnitelmaDto.getPohja().getId();
+            }
+            if (!Objects.equals(pohjaId, ops.getPohja().getId())) {
+                throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
+            }
         }
 
         if (!Objects.equals(opetussuunnitelmaDto.getPerusteenDiaarinumero(), ops.getPerusteenDiaarinumero())) {
             throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei voi vaihtaa");
+        }
+
+        if (!Objects.equals(opetussuunnitelmaDto.getPerusteenId(), ops.getCachedPeruste().getId())) {
+            throw new BusinessRuleViolationException("Opetussuunnitelman perustetta ei voi vaihtaa");
         }
 
         if (opetussuunnitelmaDto.getOrganisaatiot().isEmpty()) {
