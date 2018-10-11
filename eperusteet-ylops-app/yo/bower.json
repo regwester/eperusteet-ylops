@@ -27,7 +27,7 @@
     "jquery": "3.3.1",
     "json3": "3.2.6",
     "lodash": "3.10.1",
-    "momentjs": "2.5.1",
+    "momentjs": "2.22.2",
     "ng-file-upload": "4.0.4",
     "tinycolor": "1.2.1",
     "restangular": "1.4.0",
