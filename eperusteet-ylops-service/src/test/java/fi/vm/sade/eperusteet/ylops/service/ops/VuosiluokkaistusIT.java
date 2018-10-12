@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
@@ -60,7 +61,7 @@ import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 public class VuosiluokkaistusIT extends AbstractIntegrationTest {
 
     @Autowired
-    OpetussuunnitelmaService opsit;
+    OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
     TekstiKappaleViiteService tekstiKappaleViiteService;
@@ -77,51 +78,47 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
     @Autowired
     private EperusteetServiceMock mock;
 
-    private static boolean setupDone = false;
     private static Long opsId = null;
 
     @Before
     public void setUp() throws IOException {
-
-        if (!setupDone) {
-            try (InputStream json = getClass().getResourceAsStream("/data/peruste.json")) {
-                mock.setPeruste(json);
-            }
-
-            OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
-            ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
-            ops.setNimi(lt(uniikkiString()));
-            ops.setKuvaus(lt(uniikkiString()));
-            ops.setTyyppi(Tyyppi.POHJA);
-            ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
-            OpetussuunnitelmaDto luotu = opsit.addPohja(ops);
-            opsit.updateTila(luotu.getId(), Tila.VALMIS);
-
-            ops = new OpetussuunnitelmaLuontiDto();
-            ops.setNimi(lt(uniikkiString()));
-            ops.setKuvaus(lt(uniikkiString()));
-            ops.setTila(Tila.LUONNOS);
-            ops.setTyyppi(Tyyppi.OPS);
-            ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
-
-            KoodistoDto kunta = new KoodistoDto();
-            kunta.setKoodiUri("kunta_837");
-            ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
-            OrganisaatioDto kouluDto = new OrganisaatioDto();
-            kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
-            kouluDto.setOid(SecurityUtil.OPH_OID);
-            ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
-            luotu = opsit.addOpetussuunnitelma(ops);
-            opsId = luotu.getId();
-            setupDone = true;
+        try (InputStream json = getClass().getResourceAsStream("/data/peruste.json")) {
+            mock.setPeruste(json);
         }
+
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTyyppi(Tyyppi.POHJA);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+        OpetussuunnitelmaDto luotu = opetussuunnitelmaService.addPohja(ops);
+        opetussuunnitelmaService.updateTila(luotu.getId(), Tila.VALMIS);
+
+        ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.OPS);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+        ops.setPohja(Reference.of(luotu.getId()));
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid(SecurityUtil.OPH_OID);
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+        luotu = opetussuunnitelmaService.addOpetussuunnitelma(ops);
+        opsId = luotu.getId();
     }
 
     @Test
     public void testVuosiluokkaistus() {
         for (int i = 0; i < 3; i++) {
-            OpetussuunnitelmaDto opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
-            PerusteDto peruste = opsit.getPeruste(opsId);
+            OpetussuunnitelmaDto opsDto = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+            PerusteDto peruste = opetussuunnitelmaService.getPeruste(opsId);
             opsDto.getOppiaineet().stream()
                     .flatMap(o -> Stream.of(o.getOppiaine()))
                     .forEach(oa -> {
@@ -137,7 +134,7 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
                         });
                     });
 
-            opsDto = opsit.getOpetussuunnitelmaKaikki(opsId);
+            opsDto = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
             opsDto.getOppiaineet().stream()
                     .flatMap(o -> Stream.of(o.getOppiaine()))
                     .forEach(oa -> {
