@@ -487,10 +487,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Uudessa opetussuunnitelmassa on id");
         }
 
-        if (opetussuunnitelmaDto.getPerusteenDiaarinumero() == null) {
-            throw new BusinessRuleViolationException("Uudessa opetussuunnitelmasta puuttuu perusteen diaarinumero");
-        }
-
         opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
         Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
 
@@ -548,16 +544,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         ops.setPohja(pohja);
+        if (pohja.getPerusteenDiaarinumero() == null) {
+            throw new BusinessRuleViolationException("Pohjalta puuttuu perusteen diaarinumero");
+        }
         ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
         ops.setCachedPeruste(ops.getCachedPeruste());
         if (ops.getCachedPeruste() == null) {
             PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
             PerusteCache perusteCache = perusteCacheRepository.findNewestEntryForPeruste(peruste.getId());
-            if (ops.getCachedPeruste() == null) {
+            if (perusteCache == null) {
                 throw new BusinessRuleViolationException("Valmista perustetta ei löytynyt");
             }
             ops.setCachedPeruste(perusteCache);
         }
+
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
@@ -1038,11 +1038,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         {
-            Long pohjaId = null;
-            if (opetussuunnitelmaDto.getPohja() != null) {
-                pohjaId = opetussuunnitelmaDto.getPohja().getId();
-            }
-            if (!Objects.equals(pohjaId, ops.getPohja().getId())) {
+            Long pohjaId = opetussuunnitelmaDto.getPohja() != null ? opetussuunnitelmaDto.getPohja().getId() : null;
+            Long oldPohjaId = ops.getPohja() != null ? ops.getPohja().getId() : null;
+            if (!Objects.equals(pohjaId, oldPohjaId)) {
                 throw new BusinessRuleViolationException("Opetussuunnitelman pohjaa ei voi vaihtaa");
             }
         }
@@ -1051,7 +1049,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei voi vaihtaa");
         }
 
-        if (!Objects.equals(opetussuunnitelmaDto.getPerusteenId(), ops.getCachedPeruste().getId())) {
+        if (!Objects.equals(opetussuunnitelmaDto.getPerusteenId(), ops.getCachedPeruste().getPerusteId())) {
             throw new BusinessRuleViolationException("Opetussuunnitelman perustetta ei voi vaihtaa");
         }
 
