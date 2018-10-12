@@ -22,12 +22,24 @@ ylopsApp
 
         var SISALTOKIELET = ["fi", "sv", "se", "ru", "en"];
 
+        var KIELI_ORDER = ["fi", "sv", "se", "ru", "en"];
+
         var SISALTOKIELETMAP = {};
 
         var UIKIELET = ["fi", "sv", "en"];
 
         function orderFn(kielikoodi) {
             return _.indexOf(SISALTOKIELET, kielikoodi);
+        }
+
+        function sortKielet(kielet) {
+            const sortedKielet = [];
+            _.each(KIELI_ORDER, kielikoodi => {
+                if (_.includes(kielet, kielikoodi)) {
+                    sortedKielet.push(kielikoodi);
+                }
+            });
+            return sortedKielet;
         }
 
         function isValidKielikoodi(kielikoodi) {
@@ -102,6 +114,7 @@ ylopsApp
         this.SISALTOKIELET = SISALTOKIELET;
         this.UIKIELET = UIKIELET;
         this.orderFn = orderFn;
+        this.sortKielet = sortKielet;
     })
     .directive("kielenvaihto", function() {
         return {

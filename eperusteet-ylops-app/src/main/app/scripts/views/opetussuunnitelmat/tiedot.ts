@@ -204,7 +204,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
     function asetaKieletJaVlk(ops) {
         $scope.opsvuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
         $scope.editableModel.vuosiluokkakokonaisuudet = ops.vuosiluokkakokonaisuudet;
-        $scope.kielivalinnat = ops.julkaisukielet;
+        $scope.kielivalinnat = Kieli.sortKielet(ops.julkaisukielet);
         if (
             _.isEmpty($scope.editableModel.julkaisukielet) ||
             !isValidKielivalinta($scope.editableModel.julkaisukielet, $scope.kielivalinnat)
@@ -290,7 +290,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
                 $scope.model = res;
                 $scope.editableModel = res;
                 if ($scope.model.pohja) {
-                    $scope.kielivalinnat = $scope.model.pohja.julkaisukielet;
+                    $scope.kielivalinnat = Kieli.sortKielet($scope.model.pohja.julkaisukielet);
                 }
 
                 if (_.size(res.vuosiluokkakokonaisuudet) > 0) {
