@@ -30,6 +30,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
@@ -149,6 +150,59 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(kuvaus, ops.getKuvaus().get(Kieli.FI));
         assertEquals(vanhaTila, ops.getTila());
         assertEquals(pvm, ops.getPaatospaivamaara());
+    }
+
+    @Test(expected = BusinessRuleViolationException.class)
+    public void testOpsPohja() {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.OPS);
+        ops.setKoulutustyyppi(KoulutusTyyppi.LUKIOKOULUTUS);
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.246.562.10.00000000001");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+
+
+        opetussuunnitelmaService.addOpetussuunnitelma(ops);
+    }
+
+    @Test
+    public void testOpsPohja2() {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.POHJA);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.246.562.10.00000000001");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+
+        OpetussuunnitelmaDto dto = opetussuunnitelmaService.addOpetussuunnitelma(ops);
+        assertNotNull(dto);
+    }
+
+    @Test
+    public void testOpsPohja3() {
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
+        assertEquals(1, opsit.size());
+        Long id = opsit.get(0).getId();
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
+        ops.setPohja(null);
+        ops = opetussuunnitelmaService.updateOpetussuunnitelma(ops);
+        assertNotNull(ops.getPohja());
     }
 
     @Test
