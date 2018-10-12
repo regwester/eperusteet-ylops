@@ -553,7 +553,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
             PerusteCache perusteCache = perusteCacheRepository.findNewestEntryForPeruste(peruste.getId());
             if (perusteCache == null) {
-                throw new BusinessRuleViolationException("Valmista perustetta ei löytynyt");
+                throw new BusinessRuleViolationException("Opetussuunnitelman pohjasta ei löytynyt perustetta");
             }
             ops.setCachedPeruste(perusteCache);
         }

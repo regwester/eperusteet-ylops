@@ -15,26 +15,35 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mocks;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +59,9 @@ public class EperusteetServiceMock implements EperusteetService {
 
     @Autowired
     private DtoMapper mapper;
+
+    @Autowired
+    private PerusteCacheRepository perusteCacheRepository;
 
     @Override
     public List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit) {
@@ -81,7 +93,10 @@ public class EperusteetServiceMock implements EperusteetService {
     public PerusteDto getEperusteetPeruste(Long id) {
         PerusteDto peruste = new PerusteDto();
         peruste.setId(id);
+        peruste.setNimi(mapper.map(LokalisoituTeksti.of(Kieli.FI, "mock-peruste"), LokalisoituTekstiDto.class));
         peruste.setDiaarinumero(DIAARINUMERO);
+        peruste.setGlobalVersion(new PerusteVersionDto(new Date()));
+        peruste.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
         PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
         sisalto.setOppiaineet(Collections.emptySet());
         peruste.setPerusopetus(sisalto);
@@ -100,14 +115,32 @@ public class EperusteetServiceMock implements EperusteetService {
 
     private PerusteDto getPerusteByDiaari(String diaariNumero) {
         if (perusteDto != null && diaariNumero.equals(perusteDto.getDiaarinumero())) {
+            savePerusteCahceEntry(perusteDto);
             return mapper.map(perusteDto, PerusteDto.class);
         }
-        return getEperusteetPeruste(0L);
+        PerusteDto peruste = getEperusteetPeruste(0L);
+
+        savePerusteCahceEntry(mapper.map(peruste, EperusteetPerusteDto.class));
+        return peruste;
     }
 
     @Override
     public JsonNode getTiedotteet(Long jalkeen) {
         return null;
+    }
+
+    private void savePerusteCahceEntry(EperusteetPerusteDto peruste) {
+        PerusteCache cache = new PerusteCache();
+        cache.setAikaleima(new Date());
+        cache.setPerusteId(peruste.getId());
+        cache.setKoulutustyyppi(peruste.getKoulutustyyppi());
+        cache.setDiaarinumero(peruste.getDiaarinumero());
+        cache.setVoimassaoloAlkaa(peruste.getVoimassaoloAlkaa());
+        cache.setVoimassaoloLoppuu(peruste.getVoimassaoloLoppuu());
+        cache.setNimi(LokalisoituTeksti.of(peruste.getNimi().getTekstit()));
+        cache.setPerusteJson("{}");
+
+        perusteCacheRepository.saveAndFlush(cache);
     }
 
     public void setPeruste(InputStream is) throws IOException {

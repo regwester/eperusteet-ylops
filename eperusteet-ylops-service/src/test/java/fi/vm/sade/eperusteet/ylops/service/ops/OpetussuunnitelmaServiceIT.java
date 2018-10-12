@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
@@ -82,6 +83,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setTila(Tila.LUONNOS);
         ops.setTyyppi(Tyyppi.OPS);
         ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+        ops.setPohja(Reference.of(luotu.getId()));
 
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");
