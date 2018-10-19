@@ -17,7 +17,7 @@ env:
     # AWS_ACCESS_KEY_ID
     - secure: "yR3V8fQou+INYtMFIaYIq9FXpp+B0jBYdBufarX2X+P6cKtXufsLyrsS3JX2+G7FJSFQlFOFhEJMfHSso5N5p9hALAT4RMxpnOFb6X1bauPsQISjRXItodlj9Akoz81C83UQV9+SL9o/6XHnHcu2SKcZZETYjZgL7Ui0tlQV+5g="
     # AWS_SECRET_ACCESS_KEY
-    secure: "Td60mqV9jZhw/IZo9ST2ynVYeOlVqRK7YZ2IOEFepWa5h9lNv6105Iz9cwCWNIzDu/9dM9locy/E4y5w4o5yShc16X2C0Vkm+0eCDpdpxQ4er8D8I6lTrMFe5IDoFmGJH7NISl60bBl4xu25JiYQc+EFP0uvUQ59/aozn3VrI6o="
+    - secure: "Td60mqV9jZhw/IZo9ST2ynVYeOlVqRK7YZ2IOEFepWa5h9lNv6105Iz9cwCWNIzDu/9dM9locy/E4y5w4o5yShc16X2C0Vkm+0eCDpdpxQ4er8D8I6lTrMFe5IDoFmGJH7NISl60bBl4xu25JiYQc+EFP0uvUQ59/aozn3VrI6o="
 
 install:
   - git clone https://github.com/Opetushallitus/ci-tools.git
