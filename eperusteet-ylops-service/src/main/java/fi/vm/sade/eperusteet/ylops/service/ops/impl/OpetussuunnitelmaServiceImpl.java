@@ -195,6 +195,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ehdot.add(builder.and(builder.equal(cachedPeruste.get(PerusteCache_.perusteId), pquery.getPerusteenId())));
         }
 
+        // Perusteen diaarinumero
+        if (pquery.getPerusteenDiaarinumero() != null) {
+            ehdot.add(builder.and(builder.equal(ops.get(Opetussuunnitelma_.perusteenDiaarinumero), pquery.getPerusteenDiaarinumero())));
+        }
+
         query.where(ehdot.toArray(new Predicate[ehdot.size()]));
 
         return query.select(ops);

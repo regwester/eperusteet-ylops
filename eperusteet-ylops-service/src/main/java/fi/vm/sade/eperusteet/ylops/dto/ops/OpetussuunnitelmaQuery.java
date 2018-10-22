@@ -14,4 +14,5 @@ public class OpetussuunnitelmaQuery implements Serializable {
     private Tyyppi tyyppi;
     private String organisaatio;
     private Long perusteenId;
+    private String perusteenDiaarinumero;
 }
