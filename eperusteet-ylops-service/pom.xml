@@ -294,7 +294,7 @@
         <dependency>
             <groupId>fi.vm.sade.eperusteet</groupId>
             <artifactId>eperusteet-backend-utils</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>fi.vm.sade.java-utils</groupId>
@@ -422,15 +422,6 @@
                 <configuration>
                     <path>/eperusteet-ylops-service</path>
                     <contextFile>${basedir}/src/test/config/context.xml</contextFile>
-                    <webapps>
-                        <webapp>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>eperusteet-ylops-app</artifactId>
-                            <version>${project.version}</version>
-                            <type>war</type>
-                            <asWebapp>true</asWebapp>
-                        </webapp>
-                    </webapps>
                 </configuration>
                 <dependencies>
                     <dependency>

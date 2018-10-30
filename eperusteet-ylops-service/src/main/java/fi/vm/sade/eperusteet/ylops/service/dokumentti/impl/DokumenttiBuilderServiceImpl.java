@@ -17,6 +17,7 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.utils.dto.dokumentti.DokumenttiMetaDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -29,6 +30,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.*;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.CharapterNumberGenerator;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -110,6 +112,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     @Autowired
     private DokumenttiStateService dokumenttiStateService;
 
+    @Autowired
+    private LocalizedMessagesService messages;
+
     @Override
     public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
             throws TransformerException, IOException, SAXException,
@@ -181,8 +186,13 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         LOG.info("Generate PDF (opsId=" + docBase.getOps().getId() + ")");
 
+        DokumenttiMetaDto meta = DokumenttiMetaDto.builder()
+                .title(DokumenttiUtils.getTextString(docBase, ops.getNimi()))
+                .subject(messages.translate("docgen.meta.subject.ops", kieli))
+                .build();
+
         // PDF luonti XHTML dokumentista
-        byte[] pdf = pdfService.xhtml2pdf(doc);
+        byte[] pdf = pdfService.xhtml2pdf(doc, meta);
 
         // Validointi
         /*ValidationResult result = DokumenttiUtils.validatePdf(pdf);

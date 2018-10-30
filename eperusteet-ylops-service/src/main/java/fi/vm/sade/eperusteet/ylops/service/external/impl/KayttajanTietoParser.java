@@ -43,13 +43,12 @@ final class KayttajanTietoParser {
     }
 
     public static KayttajanTietoDto parsiKayttaja(JsonNode json) {
-        KayttajanTietoDto ktd = new KayttajanTietoDto();
+        KayttajanTietoDto ktd = new KayttajanTietoDto(getField(json, "oidHenkilo"));
         ktd.setKayttajanimi(getField(json, "kayttajatiedot", "username"));
         ktd.setEtunimet(getField(json, "etunimet"));
         ktd.setKieliKoodi(getField(json, "asiointiKieli", "kieliKoodi"));
         ktd.setKutsumanimi(getField(json, "kutsumanimi"));
         ktd.setSukunimi(getField(json, "sukunimi"));
-        ktd.setOidHenkilo(getField(json, "oidHenkilo"));
         ktd.setYhteystiedot(json.get("yhteystiedotRyhma"));
         return ktd;
     }

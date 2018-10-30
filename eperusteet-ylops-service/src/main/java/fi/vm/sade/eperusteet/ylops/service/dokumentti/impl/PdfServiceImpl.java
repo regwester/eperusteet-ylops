@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.utils.dto.dokumentti.DokumenttiMetaDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.PdfService;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -50,12 +52,12 @@ public class PdfServiceImpl implements PdfService {
     private Resource config;
 
     @Override
-    public byte[] xhtml2pdf(Document document) throws IOException, TransformerException, SAXException {
-        return convertOps2PDF(document, template.getFile());
+    public byte[] xhtml2pdf(Document document, DokumenttiMetaDto meta) throws IOException, TransformerException, SAXException {
+        return convertOps2PDF(document, template.getFile(), meta);
     }
 
 
-    private byte[] convertOps2PDF(Document doc, File xslt)
+    private byte[] convertOps2PDF(Document doc, File xslt, DokumenttiMetaDto meta)
             throws IOException, TransformerException, SAXException {
         // Alustetaan Streamit
         ByteArrayOutputStream xmlStream = new ByteArrayOutputStream();
@@ -71,7 +73,7 @@ public class PdfServiceImpl implements PdfService {
 
         // Muunnetaan saatu fo malli pdf:ksi
         InputStream foInputStream = new ByteArrayInputStream(foStream.toByteArray());
-        convertFO2PDF(foInputStream, pdfStream);
+        convertFO2PDF(foInputStream, pdfStream, meta);
 
         return pdfStream.toByteArray();
     }
@@ -107,7 +109,7 @@ public class PdfServiceImpl implements PdfService {
     }
 
     @SuppressWarnings("unchecked")
-    public void convertFO2PDF(InputStream fo, OutputStream pdf)
+    public void convertFO2PDF(InputStream fo, OutputStream pdf, DokumenttiMetaDto meta)
             throws IOException, SAXException, TransformerException {
 
         FopFactory fopFactory = FopFactory.newInstance(config.getFile());
@@ -116,6 +118,14 @@ public class PdfServiceImpl implements PdfService {
             FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
             foUserAgent.getRendererOptions().put("pdf-a-mode", "PDF/A-1b");
             foUserAgent.getEventBroadcaster().addEventListener(new DokumenttiEventListener());
+
+            if (meta != null && !ObjectUtils.isEmpty(meta.getTitle())) {
+                foUserAgent.setTitle(meta.getTitle());
+            }
+
+            if (meta != null && !ObjectUtils.isEmpty(meta.getSubject())) {
+                foUserAgent.setSubject(meta.getSubject());
+            }
 
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
 

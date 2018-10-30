@@ -46,7 +46,7 @@ interface LukioOpetussuunnitelmaServiceI {
     getRakenne(id?: number): IPromise<Lukio.LukioOpetussuunnitelmaRakenneOps>;
     lukitseRakenne(opsId?: number): IPromise<void>;
     vapautaRakenne(opsId?: number): IPromise<void>;
-    updateOppiaineKurssiStructure(treeRoot: LukioKurssiTreeNode, kommentti?: string, opsId?: number): IPromise<void>;
+    updateOppiaineKurssiStructure(treeRoot, kommentti?: string, opsId?: number): IPromise<void>;
 
     getOppiaine(id: number, opsId?: number): IPromise<Lukio.LukioOppiaine>;
     lukitseOppiaine(id: number, opsId?: number): IPromise<void>;
@@ -213,12 +213,12 @@ ylopsApp.service("LukioOpetussuunnitelmaService", function(
             lukittavaOsa: "OPS"
         });
     const getRakenne = (id?: number) => rakenneCache.get(id || $stateParams.id);
-    const updateOppiaineKurssiStructure = (treeRoot: LukioKurssiTreeNode, kommentti?: string, opsId?: number) => {
-        var chain = _(treeRoot).flattenTree((node: LukioKurssiTreeNode) => {
+    const updateOppiaineKurssiStructure = (treeRoot, kommentti?: string, opsId?: number) => {
+        var chain = _(treeRoot).flattenTree((node) => {
                 var kurssiJarjestys = 1,
                     oppiaineJarjestys = 1;
                 return _(node.lapset)
-                    .map((n: LukioKurssiTreeNode): LukioKurssiTreeNode => {
+                    .map(n => {
                         if (n.dtype == LukioKurssiTreeNodeType.kurssi) {
                             return {
                                 id: n.id,
