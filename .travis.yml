@@ -13,6 +13,7 @@ cache:
     - $HOME/.m2
     - $HOME/.npm
     - $HOME/.cache/bower
+    - $HOME/.tsd-cache
 
 env:
   global:
