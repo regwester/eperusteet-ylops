@@ -18,10 +18,9 @@ package fi.vm.sade.eperusteet.ylops.resource.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheHeaderInterceptor;
 import fi.vm.sade.eperusteet.ylops.resource.util.LoggingInterceptor;
-import org.apache.commons.io.Charsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +34,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.servlet.config.annotation.*;
 
 import javax.persistence.EntityManagerFactory;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -62,7 +62,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(byteArrayConverter());
         converters.add(converter());
-        StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter(Charsets.UTF_8);
+        StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
         stringHttpMessageConverter.setWriteAcceptCharset(false);
         converters.add(stringHttpMessageConverter);
     }
@@ -83,7 +83,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
         converter.getObjectMapper().enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         converter.getObjectMapper().disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
         converter.getObjectMapper().registerModule(new Jdk8Module());
-        converter.getObjectMapper().registerModule(new JSR310Module());
+        converter.getObjectMapper().registerModule(new JavaTimeModule());
         MappingModule module = new MappingModule();
         converter.getObjectMapper().registerModule(module);
         converter.getObjectMapper().setPropertyNamingStrategy(new ReferenceNamingStrategy());

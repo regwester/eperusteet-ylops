@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import lombok.Getter;
 import lombok.Setter;
 
