@@ -34,20 +34,18 @@ import java.util.Optional;
 public class ReferenceNamingStrategy extends PropertyNamingStrategy {
 
     @Override
-    public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method,
-                                      String defaultName) {
-        return getName(config, method.getGenericReturnType(), defaultName);
+    public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName) {
+        return getName(config, method.getType(), defaultName);
     }
 
     @Override
-    public String nameForSetterMethod(MapperConfig<?> config, AnnotatedMethod method,
-                                      String defaultName) {
-        return getName(config, method.getParameter(0).getGenericType(), defaultName);
+    public String nameForSetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName) {
+        return getName(config, method.getParameter(0).getType(), defaultName);
     }
 
     private String getName(MapperConfig<?> config, Type type, String defaultName) {
-        final JavaType ot = config.getTypeFactory().constructParametrizedType(Optional.class, Optional.class, Reference.class);
         final JavaType et = config.getTypeFactory().constructType(Reference.class);
+        final JavaType ot = config.getTypeFactory().constructReferenceType(Optional.class, et);
         final JavaType t = config.getTypeFactory().constructType(type);
 
         if (et.equals(t) || ot.equals(t)) {

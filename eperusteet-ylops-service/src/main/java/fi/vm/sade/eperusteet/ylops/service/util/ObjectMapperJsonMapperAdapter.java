@@ -42,12 +42,12 @@ public class ObjectMapperJsonMapperAdapter implements JsonMapper {
 
     @Override
     public <T> T deserialize(Class<T> t, Reader from) throws IOException {
-        return mapper.reader(t).readValue(from);
+        return mapper.readerFor(t).readValue(from);
     }
 
     @Override
     public <T> T deserialize(Class<T> t, String from) throws IOException {
-        return mapper.reader(t).readValue(from);
+        return mapper.readerFor(t).readValue(from);
     }
 
     @Override

@@ -15,21 +15,29 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
-import java.io.Serializable;
-
-import javax.persistence.EntityManager;
-
+import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository.DomainClassNotAuditedException;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
+import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 
-import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository.DomainClassNotAuditedException;
+import javax.persistence.EntityManager;
+import java.io.Serializable;
 
 public class JpaWithVersioningRepositoryFactoryBean<R extends JpaRepository<T, ID>, T, ID extends Serializable> extends JpaRepositoryFactoryBean<R, T, ID> {
+
+    /**
+     * Creates a new {@link JpaRepositoryFactoryBean} for the given repository interface.
+     *
+     * @param repositoryInterface must not be {@literal null}.
+     */
+    public JpaWithVersioningRepositoryFactoryBean(Class<? extends R> repositoryInterface) {
+        super(repositoryInterface);
+    }
 
     @Override
     protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
@@ -49,7 +57,7 @@ public class JpaWithVersioningRepositoryFactoryBean<R extends JpaRepository<T, I
 
         @SuppressWarnings("unchecked")
         @Override
-        protected Object getTargetRepository(RepositoryMetadata metadata) {
+        protected Object getTargetRepository(RepositoryInformation metadata) {
 
             if (JpaWithVersioningRepository.class.isAssignableFrom(metadata.getRepositoryInterface())) {
                 if (metadata.getDomainType().getAnnotation(Audited.class) == null) {
