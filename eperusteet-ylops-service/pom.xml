@@ -449,6 +449,14 @@
                             <basePath>/api</basePath>
                             <locations>
                                 <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
+                                <location>${eperusteet.resources}.ops.KommenttiController</location>
+                                <location>${eperusteet.resources}.ops.LiitetiedostoController</location>
+                                <location>${eperusteet.resources}.ops.OpetussuunnitelmaJulkisetController</location>
+                                <location>${eperusteet.resources}.ops.OpetussuunnitelmanSisaltoController</location>
+                                <location>${eperusteet.resources}.ops.TermistoController</location>
+                                <location>${eperusteet.resources}.ohje.*</location>
+                                <location>${eperusteet.resources}.external.*</location>
+                                <location>${eperusteet.resources}.dokumentti.*</location>
                             </locations>
                             <info>
                                 <title>ePerusteet lukio api</title>

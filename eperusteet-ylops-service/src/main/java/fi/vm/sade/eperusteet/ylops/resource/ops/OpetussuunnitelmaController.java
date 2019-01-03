@@ -147,7 +147,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}/oppiainejarjestys", method = RequestMethod.POST)
     @ResponseBody
     @Timed
-    public ResponseEntity updateOpetussuunnitelma(
+    public ResponseEntity updateOppiainejarjestys(
             @PathVariable("id") final Long id,
             @RequestBody List<JarjestysDto> oppiainejarjestys) {
         return audit.withAudit(LogMessage.builder(id, RAKENNE, MUOKKAUS), (Void) -> {
@@ -221,7 +221,7 @@ public class OpetussuunnitelmaController {
     }
 
     @RequestMapping(value = "/{id}/oikeudet", method = RequestMethod.GET)
-    public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudet(
+    public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudetById(
             @PathVariable("id") final Long id) {
         return new ResponseEntity<>(permissionManager.getOpsPermissions(id), HttpStatus.OK);
     }
