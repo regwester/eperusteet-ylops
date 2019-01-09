@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RestClientFactory {
 
-    private static final String CLIENT_SUBSYSTEM_CODE = "eperusteetYlops";
+    private static final String CLIENT_SUBSYSTEM_CODE = "eperusteet-ylops";
 
     private static final int TIMEOUT = 60000;
 
