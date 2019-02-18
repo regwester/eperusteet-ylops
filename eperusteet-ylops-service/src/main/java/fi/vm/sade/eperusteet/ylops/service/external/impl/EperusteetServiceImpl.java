@@ -53,7 +53,7 @@ import org.springframework.web.client.RestTemplate;
  * @author nkala
  */
 @Service
-@Profile(value = "default")
+@Profile("default")
 @SuppressWarnings("TransactionalAnnotations")
 public class EperusteetServiceImpl implements EperusteetService {
     private static final Logger logger = LoggerFactory.getLogger(EperusteetServiceImpl.class);

@@ -16,6 +16,8 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 
@@ -30,6 +32,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PerusteInfoDto {
     private Long id;
     private PerusteVersionDto globalVersion;
