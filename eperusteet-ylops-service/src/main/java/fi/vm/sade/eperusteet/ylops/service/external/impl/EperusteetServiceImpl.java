@@ -72,10 +72,13 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
+
     @Autowired
     private JsonMapper jsonMapper;
+
     @Autowired
     private DtoMapper mapper;
+
     private RestTemplate client;
 
     @PostConstruct

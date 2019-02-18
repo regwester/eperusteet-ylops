@@ -8,11 +8,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import lombok.Value;
 import org.eclipse.core.internal.jobs.ObjectMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,22 +44,54 @@ import java.util.stream.Collectors;
 @Profile("e2e")
 public class EperusteetServiceE2EMock implements EperusteetService {
 
-    static private JsonNode openFakeData(String file) {
+    @Autowired
+    private PerusteCacheRepository perusteCacheRepository;
+
+    @Autowired
+    private JsonMapper jsonMapper;
+
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @PostConstruct
+    public void init() {
+        objectMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        perusteet.add(openFakeData("varhaiskasvatus.json"));
+    }
+
+    private JsonNode openFakeData(String file) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             Resource resource = new ClassPathResource("fakedata/" + file);
             InputStream resourceInputStream = resource.getInputStream();
-            return objectMapper.readTree(resourceInputStream);
+            JsonNode result = objectMapper.readTree(resourceInputStream);
+            savePerusteCahceEntry(objectMapper.treeToValue(result, EperusteetPerusteDto.class));
+            return result;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    static private List<JsonNode> perusteet = new ArrayList<>();
+    private List<JsonNode> perusteet = new ArrayList<>();
 
-    static {
-        perusteet.add(openFakeData("varhaiskasvatus.json"));
+    // FIXME pilko service kahteen osaan
+    private void savePerusteCahceEntry(EperusteetPerusteDto peruste) {
+        PerusteCache cache = new PerusteCache();
+        cache.setAikaleima(peruste.getGlobalVersion().getAikaleima());
+        cache.setPerusteId(peruste.getId());
+        cache.setKoulutustyyppi(peruste.getKoulutustyyppi());
+        cache.setDiaarinumero(peruste.getDiaarinumero());
+        cache.setVoimassaoloAlkaa(peruste.getVoimassaoloAlkaa());
+        cache.setVoimassaoloLoppuu(peruste.getVoimassaoloLoppuu());
+        cache.setNimi(LokalisoituTeksti.of(peruste.getNimi().getTekstit()));
+        try {
+            cache.setPerusteJson(peruste, jsonMapper);
+        } catch (IOException e) {
+            // Should not happen (EperusteetPerusteDto parsed from JSON to begin with)
+            throw new IllegalStateException("Could not serialize EperusteetPerusteDto for cache.", e);
+        }
+        perusteCacheRepository.saveAndFlush(cache);
     }
 
     @Override
