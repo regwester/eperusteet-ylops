@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,6 +40,9 @@ public interface KayttajanTietoService {
 
     @PreAuthorize("isAuthenticated()")
     Future<KayttajanTietoDto> haeAsync(String oid);
+
+    @PreAuthorize("isAuthenticated()")
+    Set<String> haeOrganisaatioOikeudet();
 
     @PreAuthorize("isAuthenticated()")
     List<KayttajanProjektitiedotDto> haeOpetussuunnitelmat(String oid);

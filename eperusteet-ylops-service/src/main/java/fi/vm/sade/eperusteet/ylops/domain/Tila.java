@@ -49,7 +49,7 @@ public enum Tila {
 
     private final String tila;
 
-    private Tila(String tila) {
+    Tila(String tila) {
         this.tila = tila;
     }
 

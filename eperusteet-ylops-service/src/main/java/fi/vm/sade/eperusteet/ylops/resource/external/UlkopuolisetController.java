@@ -34,6 +34,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -118,6 +119,21 @@ public class UlkopuolisetController {
             OrganisaatioQueryDto query) {
         List<OrganisaatioLaajaDto> toimijat = organisaatioService.getKoulutustoimijat(query);
         return new ResponseEntity<>(toimijat, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/organisaatiot/{oid}", method = GET)
+    @ResponseBody
+    public ResponseEntity<JsonNode> getOrganisaatio(@PathVariable(value = "oid") final String organisaatioOid) {
+        JsonNode peruskoulut = organisaatioService.getOrganisaatio(organisaatioOid);
+        return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/organisaatiot", method = GET)
+    @ResponseBody
+    public List<JsonNode> getUserOrganisations() {
+        return kayttajanTietoService.haeOrganisaatioOikeudet().stream()
+                .map(organisaatioService::getOrganisaatio)
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/organisaatiot/peruskoulutoimijat/{kuntaIdt}", method = GET)

@@ -35,11 +35,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Future;
 
 import static fi.vm.sade.eperusteet.ylops.service.external.impl.KayttajanTietoParser.parsiKayttaja;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.ADMIN;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.CRUD;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -120,19 +121,30 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
                     .get(url)
                     .build();
 
-            return client.<KayttajanTietoDto>execute(request)
-                    .handleErrorStatus(SC_UNAUTHORIZED, SC_FORBIDDEN)
-                    .with((res) -> Optional.of(new KayttajanTietoDto(oid)))
-                    .expectedStatus(SC_OK)
-                    .mapWith(text -> {
-                        try {
-                            JsonNode json = mapper.readTree(text);
-                            return parsiKayttaja(json);
-                        } catch (IOException e) {
-                            return new KayttajanTietoDto(oid);
-                        }
-                    })
-                    .orElse(new KayttajanTietoDto(oid));
+            try {
+                return client.<KayttajanTietoDto>execute(request)
+                        .handleErrorStatus(SC_UNAUTHORIZED, SC_FORBIDDEN)
+                        .with((res) -> Optional.of(new KayttajanTietoDto(oid)))
+                        .expectedStatus(SC_OK)
+                        .mapWith(text -> {
+                            try {
+                                JsonNode json = mapper.readTree(text);
+                                return parsiKayttaja(json);
+                            } catch (IOException e) {
+                                return new KayttajanTietoDto(oid);
+                            }
+                        })
+                        .orElse(new KayttajanTietoDto(oid));
+            }
+            catch (RuntimeException ex) {
+                return new KayttajanTietoDto(oid);
+            }
         }
     }
+
+    @Override
+    public Set<String> haeOrganisaatioOikeudet() {
+        return SecurityUtil.getOrganizations(new HashSet<>(Arrays.asList(ADMIN, CRUD)));
+    }
+
 }

@@ -514,6 +514,7 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
+                <version>5.2.4</version>
                 <configuration>
                     <url>${eperusteet-ylops.devdb.jdbcurl}</url>
                     <user>${eperusteet-ylops.devdb.user}</user>

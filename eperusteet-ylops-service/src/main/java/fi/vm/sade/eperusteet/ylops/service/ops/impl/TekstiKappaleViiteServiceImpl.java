@@ -93,7 +93,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = false)
-    public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("rootId") Long rootId, Long parentViiteId,
+    public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("rootId") Long rootId,
+                                                              Long parentViiteId,
                                                               TekstiKappaleViiteDto.Matala viiteDto) {
         TekstiKappaleViite parentViite = findViite(rootId, parentViiteId);
         TekstiKappaleViite uusiViite = new TekstiKappaleViite(Omistussuhde.OMA);
@@ -137,7 +138,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     @Transactional(readOnly = false)
     public TekstiKappaleViiteDto updateTekstiKappaleViite(
-            @P("opsId") Long opsId, Long viiteId, TekstiKappaleViiteDto uusi) {
+            @P("opsId") Long opsId,
+            Long viiteId,
+            TekstiKappaleViiteDto uusi) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         // Nopea ratkaisu sisällön häviämiseen, korjaantuu oikein uuden näkymän avulla
         if (uusi.getTekstiKappale().getTeksti() == null) {

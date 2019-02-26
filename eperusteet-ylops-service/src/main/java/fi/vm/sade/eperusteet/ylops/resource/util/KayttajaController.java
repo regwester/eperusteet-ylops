@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Set;
+
 /**
  * @author jhyoty
  */
@@ -39,5 +41,10 @@ public class KayttajaController {
     @RequestMapping(method = RequestMethod.GET)
     public KayttajanTietoDto get() {
         return kayttajat.haeKirjautaunutKayttaja();
+    }
+
+    @RequestMapping(value = "/organisaatiot", method = RequestMethod.GET)
+    public Set<String> getOrganisaatioOikeudet() {
+        return kayttajat.haeOrganisaatioOikeudet();
     }
 }
