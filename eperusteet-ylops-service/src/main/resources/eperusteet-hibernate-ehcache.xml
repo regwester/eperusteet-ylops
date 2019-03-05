@@ -272,7 +272,7 @@
 
   <!--
   Mandatory Default Cache configuration. These settings will be applied to caches
-  created programmtically using CacheManager.add(String cacheName)
+  created programmtically using CacheManager.addOppiaine(String cacheName)
   -->
   <defaultCache
     maxElementsInMemory="10000"

@@ -181,7 +181,7 @@ public class LiitetiedostoController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<LiiteDto> getAll(@PathVariable Long opsId) {
+    public List<LiiteDto> getAllLiitteet(@PathVariable Long opsId) {
         return liitteet.getAll(opsId);
     }
 }

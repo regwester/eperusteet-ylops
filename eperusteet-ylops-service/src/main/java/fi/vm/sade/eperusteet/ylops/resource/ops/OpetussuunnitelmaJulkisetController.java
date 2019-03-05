@@ -32,7 +32,7 @@ public class OpetussuunnitelmaJulkisetController {
             @ApiImplicitParam(name = "perusteenId", dataType = "string", paramType = "query", allowMultiple = false, value = "perusterajaus"),
             @ApiImplicitParam(name = "perusteenDiaarinumero", dataType = "string", paramType = "query", allowMultiple = false, value = "perusterajaus")
     })
-    public List<OpetussuunnitelmaJulkinenDto> getAll(OpetussuunnitelmaQuery query) {
+    public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query) {
         return opetussuunnitelmaService.getAllJulkiset(query);
     }
 

@@ -39,7 +39,7 @@ public class KayttajaController {
     private KayttajanTietoService kayttajat;
 
     @RequestMapping(method = RequestMethod.GET)
-    public KayttajanTietoDto get() {
+    public KayttajanTietoDto getKayttaja() {
         return kayttajat.haeKirjautaunutKayttaja();
     }
 

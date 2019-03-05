@@ -105,7 +105,7 @@ public class OpetussuunnitelmanSisaltoController {
     }
 
     @RequestMapping(value = "/tekstit/removed", method = GET)
-    public ResponseEntity<List<PoistettuTekstiKappaleDto>> getVersionsForTekstiKappaleViite(@PathVariable("opsId") final Long opsId) {
+    public ResponseEntity<List<PoistettuTekstiKappaleDto>> getRemovedTekstikappaleet(@PathVariable("opsId") final Long opsId) {
         return new ResponseEntity<>(tekstiKappaleViiteService.getRemovedTekstikappaleetForOps(opsId), HttpStatus.OK);
     }
 
@@ -133,7 +133,7 @@ public class OpetussuunnitelmanSisaltoController {
 
     @RequestMapping(value = "/tekstit/{parentId}/lapsi/{childId}", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<TekstiKappaleViiteDto.Matala> addTekstiKappaleLapsi(
+    public ResponseEntity<TekstiKappaleViiteDto.Matala> addTekstiKappaleLapsiTiettyynTekstikappaleeseen(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("parentId") final Long parentId,
             @PathVariable("childId") final Long childId) {
