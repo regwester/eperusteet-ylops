@@ -78,6 +78,7 @@ public class OpetussuunnitelmanSisaltoController {
 
     @RequestMapping(value = "/tekstit/{viiteId}/versiot", method = GET)
     public ResponseEntity<List<RevisionDto>> getVersionsForTekstiKappaleViite(
+            @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final long viiteId) {
 
         return new ResponseEntity<>(tekstiKappaleViiteService.getVersions(viiteId), HttpStatus.OK);

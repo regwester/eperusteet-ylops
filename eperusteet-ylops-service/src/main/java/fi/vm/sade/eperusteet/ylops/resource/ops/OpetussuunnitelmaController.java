@@ -82,7 +82,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaKevytDto> get(@PathVariable("id") final Long id) {
+    public ResponseEntity<OpetussuunnitelmaKevytDto> getOpetussuunnitelma(@PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelma(id));
     }
 
@@ -192,7 +192,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaDto> restore(
+    public ResponseEntity<OpetussuunnitelmaDto> restoreOpetussuunnitelma(
             @PathVariable("id") final Long id) {
         return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, PALAUTUS),
                 (Void) -> new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK));

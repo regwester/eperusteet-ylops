@@ -58,6 +58,7 @@ public class EperusteetServiceE2EMock implements EperusteetService {
         objectMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         perusteet.add(openFakeData("varhaiskasvatus.json"));
+        perusteet.add(openFakeData("lops.json"));
     }
 
     private JsonNode openFakeData(String file) {

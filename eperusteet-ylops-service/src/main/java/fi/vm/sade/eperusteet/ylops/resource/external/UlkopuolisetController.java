@@ -69,7 +69,7 @@ public class UlkopuolisetController {
 
     @RequestMapping(value = "/kayttajatiedot/{oid:.+}", method = GET)
     @ResponseBody
-    public ResponseEntity<KayttajanTietoDto> get(@PathVariable("oid") final String oid) {
+    public ResponseEntity<KayttajanTietoDto> getKayttajanTiedot(@PathVariable("oid") final String oid) {
         return new ResponseEntity<>(kayttajanTietoService.hae(oid), HttpStatus.OK);
     }
 
@@ -186,7 +186,7 @@ public class UlkopuolisetController {
 
     @RequestMapping(value = "/koodisto/{koodisto}", method = GET)
     @ResponseBody
-    public ResponseEntity<List<KoodistoKoodiDto>> kaikki(
+    public ResponseEntity<List<KoodistoKoodiDto>> kaikkiKoodistonKoodit(
             @PathVariable("koodisto") final String koodisto,
             @RequestParam(value = "haku", required = false) final String haku) {
         return new ResponseEntity<>(haku == null || haku.isEmpty()
@@ -196,7 +196,7 @@ public class UlkopuolisetController {
 
     @RequestMapping(value = "/koodisto/{koodisto}/{koodi}", method = GET)
     @ResponseBody
-    public ResponseEntity<KoodistoKoodiDto> yksi(
+    public ResponseEntity<KoodistoKoodiDto> yksiKoodistokoodi(
             @PathVariable("koodisto") final String koodisto,
             @PathVariable("koodi") final String koodi) {
         return new ResponseEntity<>(koodistoService.get(koodisto, koodi), HttpStatus.OK);
@@ -204,14 +204,14 @@ public class UlkopuolisetController {
 
     @RequestMapping(value = "/koodisto/relaatio/sisaltyy-alakoodit/{koodi}", method = GET)
     @ResponseBody
-    public ResponseEntity<List<KoodistoKoodiDto>> alarelaatio(
+    public ResponseEntity<List<KoodistoKoodiDto>> koodinAlarelaatiot(
             @PathVariable("koodi") final String koodi) {
         return new ResponseEntity<>(koodistoService.getAlarelaatio(koodi), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/koodisto/relaatio/sisaltyy-ylakoodit/{koodi}", method = GET)
     @ResponseBody
-    public ResponseEntity<List<KoodistoKoodiDto>> ylarelaatio(
+    public ResponseEntity<List<KoodistoKoodiDto>> koodinYlarelaatiot(
             @PathVariable("koodi") final String koodi) {
         return new ResponseEntity<>(koodistoService.getYlarelaatio(koodi), HttpStatus.OK);
     }

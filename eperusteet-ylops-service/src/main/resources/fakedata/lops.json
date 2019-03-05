@@ -1,0 +1,165 @@
+
+{
+  "id" : 1,
+  "globalVersion" : {
+    "aikaleima" : 1525271279758
+  },
+  "nimi" : {
+    "fi" : "Lukion opetussuunnitelman perusteet 2015",
+    "sv" : "Grunderna för gymnasiets läroplan 2015",
+    "_id" : "1431924"
+  },
+  "koulutustyyppi" : "koulutustyyppi_2",
+  "koulutukset" : [ ],
+  "kielet" : [ "sv", "fi" ],
+  "kuvaus" : {
+    "fi" : "<p>Nuorille tarkoitetun lukiokoulutuksen opetussuunnitelman perusteet</p>",
+    "sv" : "<p>Grunderna för läroplanen för gymnasieutbildning för ungdomar</p>",
+    "_id" : "1431926"
+  },
+  "maarayskirje" : {
+    "id" : 1372980,
+    "url" : {
+      "sv" : "http://www.oph.fi/download/172125_grunderna_for_gymnasiets_laroplan_2015.pdf",
+      "fi" : "http://www.oph.fi/download/172124_lukion_opetussuunnitelman_perusteet_2015.pdf"
+    },
+    "liitteet" : { }
+  },
+  "muutosmaaraykset" : [],
+  "diaarinumero" : "1/2/3",
+  "voimassaoloAlkaa" : 1469998800000,
+  "siirtymaPaattyy" : null,
+  "voimassaoloLoppuu" : null,
+  "paatospvm" : 1445896800000,
+  "luotu" : 1449736763749,
+  "muokattu" : 1525271279758,
+  "tila" : "valmis",
+  "tyyppi" : "normaali",
+  "koulutusvienti" : false,
+  "korvattavatDiaarinumerot" : [ "10/011/2009", "33/011/2003", "6/011/2014", "42/011/2010", "21/011/2006" ],
+  "osaamisalat" : [ ],
+  "tyotehtavatJoissaVoiToimia" : null,
+  "suorittaneenOsaaminen" : null,
+  "suoritustavat" : [ {
+    "suoritustapakoodi" : "lukiokoulutus2019",
+    "laajuusYksikko" : "OPINTOPISTE"
+  } ],
+  "kvliite" : {
+    "id" : 10,
+    "suorittaneenOsaaminen" : null,
+    "tyotehtavatJoissaVoiToimia" : null,
+    "tutkintotodistuksenAntaja" : null,
+    "_arvosanaAsteikko" : null,
+    "jatkoopintoKelpoisuus" : null,
+    "kansainvalisetSopimukset" : null,
+    "saadosPerusta" : null,
+    "pohjakoulutusvaatimukset" : null,
+    "lisatietoja" : null,
+    "tutkintotodistuksenSaaminen" : null,
+    "tutkinnostaPaattavaViranomainen" : null
+  },
+  "lukiokoulutus2019": {
+    "sisalto": {
+    },
+    "laajaAlainenOsaaminen": {
+      "laajaAlaisetOsaamiset": [{
+        "id": 101,
+        "nimi": {
+          "fi": "Hyvinvointiosaaminen"
+        },
+        "kuvaus": {
+          "fi": "Aihealueen opinnoilla tavoitellaan osaamista, jota opiskelija tarvitsee lisätäkseen hyvinvointiaan ja lukio-opiskelusta saamaansa motivaatiota ja iloa. Aihealue pyrkii varmistamaan osaltaan, että jokaisen lukiolaisen ainutlaatuisuus ja merkityksellisyys tulisi tunnistetuksi ja tunnustetuksi. Aihealueen keskeisiä teemoja ovat itsetuntemus, elämänhallinta sekä terveyttä, hyvinvointia ja turvallisuutta edistävät tiedot, taidot, asenteet, arvot ja tahto."
+        },
+        "opinnot": {
+          "fi": "Aihealueen opinnot ovat osa lukion hyvinvointia ja turvallisuutta ylläpitävää toimintakulttuuria, jossa yhteisöllisyys ja keskinäinen huolenpito korostuvat. Hyvinvointi- ja turvallisuusnäkökulmat liittyvät myös opiskelijakunnan toimintaan, kodin ja oppilaitoksen yhteistyöhön, oppilaitosruokailuun sekä opiskeluhuoltoon. Aihealueen toteuttamiseksi lukio voi tehdä yhteistyötä nuoriso-, liikunta-, kulttuuri- ja sosiaalitoimen sekä poliisin ja pelastuslaitoksen sekä erilaisten järjestöjen kanssa."
+        },
+        "tavoitteet": {
+          "kohde": {
+            "fi": "Opiskelija"
+          },
+          "tavoitteet": [{
+            "fi": "saa rohkaisua oman identiteettinsä rakentamiseen, oppii tunnistamaan vahvuuksiaan ja kehittämistä kaipaavia puoliaan (opiskelijana, lukiolaisena); saa monenlaisen oppimisen ja siinä onnistumisen kokemuksia, omaksuu epävarmuuden sietokykyä (sinnikkyyttä) ja vahvistaa luottamustaan siihen, että elämä kantaa. "
+          }, {
+            "fi": "lisää ymmärrystään ja vastuutaan sitoutumisesta elämänmittaiseen fyysiseen aktiivisuuteen sekä terveyttä ja toimintakykyä edistäviin elintapoihin"
+          }]
+        },
+        "painopisteet": [{
+          "nimi": {
+            "fi": "Omien vahvuuksien tunnistaminen ja käyttäminen sekä identiteetin rakentaminen"
+          }
+        }, {
+          "nimi": {
+            "fi": "Huolenpito itsestä ja muista"
+          }
+        }, {
+          "nimi": {
+            "fi": "Epävarmuuden sietokyky / Sinnikkyys muutosten ja yllätysten maailmassa"
+          }
+        }]
+      }, {
+        "id": 102,
+        "nimi": {
+          "fi": "Vuorovaikutusosaaminen"
+        }
+      }, {
+        "id": 103,
+        "nimi": {
+          "fi": "Monitieteinen ja luova osaaminen"
+        }
+      }, {
+        "id": 104,
+        "nimi": {
+          "fi": "Yhteiskunnallinen osaaminen"
+        }
+      }, {
+        "id": 105,
+        "nimi": {
+          "fi": "Eettinen ja ympäristöosaaminen"
+        }
+      }, {
+        "id": 106,
+        "nimi": {
+          "fi": "Globaali- ja kulttuuriosaaminen"
+        }
+      }]
+    },
+    "oppiaineet": [{
+      "id": 1001,
+      "nimi": {
+        "fi": "Matematiikka"
+      },
+      "arviointi": {
+        "kuvaus": {
+          "fi": "Monipuolisella arvioinnilla ja kannustavalla palautteella tuetaan opiskelijan matemaattisen ajattelun ja itseluottamuksen kehittymistä sekä ylläpidetään ja vahvistetaan opiskelumotivaatiota. Arviointi ohjaa opiskelijaa kehittämään matematiikan osaamistaan ja ymmärtämistään sekä pitkäjänteisen työskentelyn taitoja. Sillä autetaan opiskelijaa kehittämään matemaattisten ratkaisujen esittämistä, tuetaan häntä käsitteiden muodostamisprosessissa ja ohjataan oman työn arvioimiseen. Onnistunut palaute auttaa opiskelijaa huomaamaan vahvuutensa sekä sen, mitä ja miten tietoja ja taitoja tulisi edelleen kehittää."
+        }
+      },
+      "tehtava": {
+        "kuvaus": {
+          "fi": "Matematiikan opiskelu antaa opiskelijalle valmiudet ymmärtää, soveltaa ja tuottaa sekä arvioida matemaattisesti esitettyä tietoa. Opetus ohjaa opiskelijaa ymmärtämään matematiikan merkityksen aikamme kulttuurissa ja huomaamaan sen välttämättömyyden monilla aloilla kuten luonnontieteissä, tekniikassa, lääketieteessä, taloustieteessä ja yhteiskuntatieteissä sekä taiteessa. Matematiikan opetuksen tehtävänä on perehdyttää opiskelija matematiikan peruskäsitteisiin, matematiikan perusideoihin ja rakenteisiin sekä ohjata käyttämään puhuttua ja kirjoitettua matematiikan kieltä. Lisäksi opetus kehittää laskemisen, luovan ajattelun, ilmiöiden mallintamisen, ennustamisen ja ongelmien ratkaisemisen taitoja."
+        }
+      },
+      "laajaAlainenOsaaminen": {
+        "laajaAlaisetOsaamiset": [{
+          "laajaAlainenId": 103
+        }],
+        "kuvaus": {
+          "fi": "Opetuksessa tutkitaan arkielämän ja matematiikan välisiä yhteyksiä sekä hyödynnetään mahdollisuuksia opiskelijan kiinnostuksen ohjaamiseen, itsetunnon vahvistamiseen, kokeiluihin kannustamiseen ja tiedonhankintaprosessien kehittämiseen sekä sinnikkääseen työskentelyyn. Matematiikassa opittavia taitoja sovelletaan omien tavoitteiden asettamisessa ja päätöksenteossa sekä pohditaan, kuinka näitä taitoja voidaan hyödyntää kestävän kehitykseen ja ihmiskuntaan liittyvien ongelmien ratkaisussa."
+        }
+      },
+      "tavoitteet": {
+        "etuliite": {
+          "fi": "Matematiikan opetuksen yleisenä tavoitteena on, että opiskelija"
+        },
+        "tavoitteet": [{
+          "kuvaus": {
+            "fi": "saa myönteisiä oppimiskokemuksia ja tottuu pitkäjänteiseen työskentelyyn sekä oppii luottamaan omiin matemaattisiin kykyihinsä, taitoihinsa ja ajatteluunsa"
+          }
+        }, {
+          "kuvaus": {
+            "fi": "vahvistaa matemaattista pohjaa jatko-opinnoilleen"
+          }
+        }]
+      }
+    }]
+  }
+}

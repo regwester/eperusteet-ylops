@@ -149,10 +149,10 @@ public class LiitetiedostoController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @CacheControl(age = CacheControl.ONE_YEAR)
-    public void get(@PathVariable Long opsId,
-                    @PathVariable UUID id,
-                    @RequestHeader(value = "If-None-Match", required = false) String etag,
-                    HttpServletResponse response) throws IOException {
+    public void getLiitetiedosto(@PathVariable Long opsId,
+                                 @PathVariable UUID id,
+                                 @RequestHeader(value = "If-None-Match", required = false) String etag,
+                                 HttpServletResponse response) throws IOException {
 
         LiiteDto dto = liitteet.get(opsId, id);
         if (dto != null) {
@@ -173,7 +173,7 @@ public class LiitetiedostoController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long opsId, @PathVariable UUID id) {
+    public void deleteLiitetiedosto(@PathVariable Long opsId, @PathVariable UUID id) {
         audit.withAudit(LogMessage.builder(opsId, LIITE, POISTO), (Void) -> {
             liitteet.delete(opsId, id);
             return null;

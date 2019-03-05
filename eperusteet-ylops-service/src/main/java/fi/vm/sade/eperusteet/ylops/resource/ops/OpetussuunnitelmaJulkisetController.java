@@ -39,7 +39,7 @@ public class OpetussuunnitelmaJulkisetController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaJulkinenDto> get(@PathVariable("id") final Long id) {
+    public ResponseEntity<OpetussuunnitelmaJulkinenDto> getOpetussuunnitelmanJulkisetTiedot(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkinen(id), HttpStatus.OK);
     }
 
