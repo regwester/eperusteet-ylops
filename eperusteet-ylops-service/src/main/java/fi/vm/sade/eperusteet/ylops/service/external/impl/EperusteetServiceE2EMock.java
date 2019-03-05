@@ -66,7 +66,10 @@ public class EperusteetServiceE2EMock implements EperusteetService {
             Resource resource = new ClassPathResource("fakedata/" + file);
             InputStream resourceInputStream = resource.getInputStream();
             JsonNode result = objectMapper.readTree(resourceInputStream);
-            savePerusteCahceEntry(objectMapper.treeToValue(result, EperusteetPerusteDto.class));
+            PerusteCache peruste = perusteCacheRepository.findNewestEntryForPerusteByDiaarninumero(result.get("diaarinumero").asText());
+            if (peruste == null) {
+                savePerusteCahceEntry(objectMapper.treeToValue(result, EperusteetPerusteDto.class));
+            }
             return result;
         } catch (IOException e) {
             e.printStackTrace();
