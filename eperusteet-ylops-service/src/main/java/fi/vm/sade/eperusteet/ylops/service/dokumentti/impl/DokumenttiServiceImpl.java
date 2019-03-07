@@ -152,21 +152,22 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         dto.setTila(DokumenttiTila.LUODAAN);
-        Dokumentti dokumentti = dokumenttiStateService.save(dto);
-
-        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
-        Kieli kieli = dokumentti.getKieli();
+        dokumenttiStateService.save(dto);
 
         try {
-            dokumentti.setData(builder.generatePdf(opetussuunnitelma, kieli));
+            Dokumentti dokumentti = mapper.map(dto, Dokumentti.class);
+            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
             dokumentti.setTila(DokumenttiTila.VALMIS);
             dokumentti.setValmistumisaika(new Date());
-            dokumentti.setVirhekoodi("");
+            dokumentti.setVirhekoodi(null);
+            dokumentti.setData(builder.generatePdf(ops, dokumentti.getKieli()));
+
             dokumenttiRepository.save(dokumentti);
         } catch (Exception ex) {
-            dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
-            dokumentti.setVirhekoodi(ExceptionUtils.getStackTrace(ex));
-            dokumenttiRepository.save(dokumentti);
+            dto.setTila(DokumenttiTila.EPAONNISTUI);
+            dto.setVirhekoodi(ex.getLocalizedMessage());
+
+            dokumenttiStateService.save(dto);
 
             throw new DokumenttiException(ex.getMessage(), ex);
         }

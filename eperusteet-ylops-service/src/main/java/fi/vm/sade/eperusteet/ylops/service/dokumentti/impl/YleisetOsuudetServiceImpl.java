@@ -42,7 +42,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
             throws IOException, SAXException, ParserConfigurationException {
 
         if (docBase.getOps().getTekstit() != null) {
-            if (docBase.getOps().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOKOULUTUS)) {
+            if (KoulutusTyyppi.LUKIOKOULUTUS.equals(docBase.getOps().getKoulutustyyppi())) {
                 addTekstiKappale(docBase, docBase.getOps().getTekstit(), false);
             } else {
                 addTekstiKappale(docBase, docBase.getOps().getTekstit(), true);
