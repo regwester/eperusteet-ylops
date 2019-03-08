@@ -45,5 +45,6 @@ public abstract class PerusteBaseDto implements Serializable {
     private Date muokattu;
     private String tila;
     private String tyyppi;
+    private String toteutus;
     private Set<String> korvattavatDiaarinumerot;
 }

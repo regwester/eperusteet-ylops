@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuudet;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OpetuksenYleisetTavoitteet;
@@ -115,6 +116,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     private KoulutusTyyppi koulutustyyppi;
 
+    @Enumerated(value = EnumType.STRING)
+    @Setter
+    private KoulutustyyppiToteutus toteutus;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Getter
     @Setter
@@ -132,16 +137,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<KoodistoKoodi> kunnat = new HashSet<>();
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(joinColumns = {
-            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
-    private Set<OpsOppiaine> oppiaineet = new HashSet<>();
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(joinColumns = {
-            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
-    private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
-
     @ElementCollection
     @Getter
     @Setter
@@ -153,6 +148,19 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Enumerated(EnumType.STRING)
     @NotNull
     private Set<Kieli> julkaisukielet = new HashSet<>();
+
+    // FIXME: vanhat toteutuskohtaiset sisällöt mitkä eivät kuuluisi tähän entiteettiin
+    // --------------------------------------------------
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = {
+            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
+    private Set<OpsOppiaine> oppiaineet = new HashSet<>();
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = {
+            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
+    private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "opetussuunnitelma_liite", inverseJoinColumns = {@JoinColumn(name = "liite_id")}, joinColumns = {@JoinColumn(name = "opetussuunnitelma_id")})
@@ -182,6 +190,13 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
             cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private OpetuksenYleisetTavoitteet opetuksenYleisetTavoitteet;
+    // --------------------------------------------------
+
+    @Getter
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private Lops2019Sisalto lops2019;
 
     @Getter
     @Audited
@@ -315,5 +330,17 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public Optional<Oppiaine> findYlatasonOppiaine(Predicate<Oppiaine> predicate, Predicate<OpsOppiaine> filter) {
         return oppiaineet.stream().filter(filter).map(OpsOppiaine::getOppiaine)
                 .filter(predicate).findFirst();
+    }
+
+    public KoulutustyyppiToteutus getToteutus() {
+        if (koulutustyyppi == null || koulutustyyppi.isYksinkertainen()) {
+            return KoulutustyyppiToteutus.YKSINKERTAINEN;
+        }
+        else if (Objects.equals(koulutustyyppi, KoulutusTyyppi.PERUSOPETUS)) {
+            return KoulutustyyppiToteutus.PERUSOPETUS;
+        }
+        else {
+            return toteutus;
+        }
     }
 }

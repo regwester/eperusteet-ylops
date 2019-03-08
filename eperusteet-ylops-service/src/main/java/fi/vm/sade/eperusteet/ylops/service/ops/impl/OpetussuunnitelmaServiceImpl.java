@@ -16,12 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache_;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
@@ -39,6 +37,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
@@ -858,11 +857,23 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 || KoulutusTyyppi.PERUSOPETUSVALMISTAVA == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.VARHAISKASVATUS == peruste.getKoulutustyyppi()) {
             return addPohjaLisaJaEsiopetus(ops, peruste);
+        } else if (Objects.equals("lops2019", peruste.getToteutus())) {
+            return addPohjaLops2019(ops, peruste);
         } else if (peruste.getKoulutustyyppi().isLukio()) {
             return addPohjaLukiokoulutus(ops, peruste);
         } else {
             throw new BusinessRuleViolationException("Ei toimintatapaa perusteen koulutustyypille");
         }
+    }
+
+    private Opetussuunnitelma addPohjaLops2019(Opetussuunnitelma ops, PerusteDto peruste) {
+        ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
+        ops.setToteutus(KoulutustyyppiToteutus.LOPS2019);
+        ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
+        Lops2019Sisalto sisalto = new Lops2019Sisalto();
+        sisalto.setOpetussuunnitelma(ops);
+        ops.setLops2019(sisalto);
+        return ops;
     }
 
     @Override
@@ -898,9 +909,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunJuuri(ops);
 
         ops = repository.save(ops);
-        lisaaTekstipuunLapset(ops);
+
 
         PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        if (!Objects.equals(peruste.getToteutus(), "lops2019")) {
+            lisaaTekstipuunLapset(ops);
+        }
+
         ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi()
                 : KoulutusTyyppi.PERUSOPETUS);

@@ -80,24 +80,34 @@ public class UlkopuolisetController {
     }
 
     @RequestMapping(value = "/perusopetusperusteet", method = GET)
+    @Deprecated
     @ResponseBody
     public ResponseEntity<List<PerusteInfoDto>> getPerusopetusperusteet() {
         return new ResponseEntity<>(eperusteetService.findPerusopetuksenPerusteet(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/perusopetusperusteet/{id}", method = GET)
+    @Deprecated
     @ResponseBody
     public PerusteDto getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
         return eperusteetService.getEperusteetPeruste(id);
     }
 
+    @RequestMapping(value = "/peruste/{id}", method = GET)
+    @ResponseBody
+    public PerusteDto getYlopsPeruste(@PathVariable(value = "id") final Long id) {
+        return eperusteetService.getEperusteetPeruste(id);
+    }
+
     @RequestMapping(value = "/lukiokoulutusperusteet", method = GET)
+    @Deprecated
     @ResponseBody
     public ResponseEntity<List<PerusteInfoDto>> getLukiokoulutusperusteet() {
         return new ResponseEntity<>(eperusteetService.findLukiokoulutusPerusteet(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/lukiokoulutusperusteet/{id}", method = GET)
+    @Deprecated
     @ResponseBody
     public PerusteDto getLukiokoulutusperuste(@PathVariable(value = "id") final Long id) {
         return eperusteetService.getEperusteetPeruste(id);

@@ -13,22 +13,31 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.dto.peruste;
+package fi.vm.sade.eperusteet.ylops.domain;
 
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019SisaltoDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  * @author nkala
+ *
+ * Koulutustyyppi ei enää yksilöi toteutusta ja toteutus voi olla jaettu eri koulutustyyppien välillä.
+ *
  */
-@Getter
-@Setter
-public class PerusteDto extends PerusteBaseDto {
-    private PerusteVersionDto globalVersion;
-    private PerusopetuksenPerusteenSisaltoDto perusopetus;
-    private LukiokoulutuksenPerusteenSisaltoDto lukiokoulutus;
-    private Lops2019SisaltoDto lops2019;
+public enum KoulutustyyppiToteutus {
+    YKSINKERTAINEN("yksinkertainen"), // Sisältää ainoastaan tekstikappaleita
+    PERUSOPETUS("perusopetus"),
+    LOPS("lops"),
+    LOPS2019("lops2019");
+
+    private final String tyyppi;
+
+    KoulutustyyppiToteutus(String tyyppi) {
+        this.tyyppi = tyyppi;
+    }
+
+    @Override
+    public String toString() {
+        return tyyppi;
+    }
+
 }

@@ -10,6 +10,7 @@
     "_id" : "1431924"
   },
   "koulutustyyppi" : "koulutustyyppi_2",
+  "toteutus" : "lops2019",
   "koulutukset" : [ ],
   "kielet" : [ "sv", "fi" ],
   "kuvaus" : {
@@ -58,9 +59,8 @@
     "tutkintotodistuksenSaaminen" : null,
     "tutkinnostaPaattavaViranomainen" : null
   },
-  "lukiokoulutus2019": {
-    "sisalto": {
-    },
+  "lops2019": {
+    "sisalto": { },
     "laajaAlainenOsaaminen": {
       "laajaAlaisetOsaamiset": [{
         "id": 101,
@@ -74,13 +74,17 @@
           "fi": "Aihealueen opinnot ovat osa lukion hyvinvointia ja turvallisuutta ylläpitävää toimintakulttuuria, jossa yhteisöllisyys ja keskinäinen huolenpito korostuvat. Hyvinvointi- ja turvallisuusnäkökulmat liittyvät myös opiskelijakunnan toimintaan, kodin ja oppilaitoksen yhteistyöhön, oppilaitosruokailuun sekä opiskeluhuoltoon. Aihealueen toteuttamiseksi lukio voi tehdä yhteistyötä nuoriso-, liikunta-, kulttuuri- ja sosiaalitoimen sekä poliisin ja pelastuslaitoksen sekä erilaisten järjestöjen kanssa."
         },
         "tavoitteet": {
-          "kohde": {
+          "etuliite": {
             "fi": "Opiskelija"
           },
           "tavoitteet": [{
-            "fi": "saa rohkaisua oman identiteettinsä rakentamiseen, oppii tunnistamaan vahvuuksiaan ja kehittämistä kaipaavia puoliaan (opiskelijana, lukiolaisena); saa monenlaisen oppimisen ja siinä onnistumisen kokemuksia, omaksuu epävarmuuden sietokykyä (sinnikkyyttä) ja vahvistaa luottamustaan siihen, että elämä kantaa. "
+            "kuvaus": {
+              "fi": "saa rohkaisua oman identiteettinsä rakentamiseen, oppii tunnistamaan vahvuuksiaan ja kehittämistä kaipaavia puoliaan (opiskelijana, lukiolaisena); saa monenlaisen oppimisen ja siinä onnistumisen kokemuksia, omaksuu epävarmuuden sietokykyä (sinnikkyyttä) ja vahvistaa luottamustaan siihen, että elämä kantaa. "
+            }
           }, {
-            "fi": "lisää ymmärrystään ja vastuutaan sitoutumisesta elämänmittaiseen fyysiseen aktiivisuuteen sekä terveyttä ja toimintakykyä edistäviin elintapoihin"
+            "kuvaus": {
+              "fi": "lisää ymmärrystään ja vastuutaan sitoutumisesta elämänmittaiseen fyysiseen aktiivisuuteen sekä terveyttä ja toimintakykyä edistäviin elintapoihin"
+            }
           }]
         },
         "painopisteet": [{
