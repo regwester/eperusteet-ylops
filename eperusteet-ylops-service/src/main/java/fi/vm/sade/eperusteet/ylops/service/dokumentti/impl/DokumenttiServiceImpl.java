@@ -167,7 +167,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             dokumentti.setTila(DokumenttiTila.VALMIS);
             dokumentti.setValmistumisaika(new Date());
             dokumentti.setVirhekoodi(null);
-            dokumentti.setData(builder.generatePdf(ops, dokumentti.getKieli()));
+            dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
 
             dokumenttiRepository.save(dokumentti);
         } catch (Exception ex) {
