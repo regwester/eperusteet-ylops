@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -39,6 +40,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         List<PerusteInfoDto> perusteet = eperusteetService.findPerusteet();
         assertThat(perusteet.size()).isEqualTo(2);
         PerusteDto peruste = eperusteetService.getPeruste("1/2/3");
+        assertThat(peruste.getLops2019()).isNotNull();
+        List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(0).getOppimaarat().get(0).getModuulit();
+        assertThat(moduulit.size()).isNotEqualTo(0);
     }
 
 }

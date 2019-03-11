@@ -15,9 +15,13 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.util;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author mikkom
@@ -27,5 +31,41 @@ public class CollectionUtil {
         Set<T> intersection = new HashSet<>(a);
         intersection.retainAll(b);
         return intersection;
+    }
+
+    /**
+     * Traverse tree as a stream with provided child node getter
+     *
+     * @param root base object
+     * @param mapper a function that returns child nodes
+     * @param <T>
+     * @return Stream that iterates a tree
+     */
+    public static <T> Stream<T> treeToStream(Collection<T> roots, Function<T, Collection<T>> mapper) {
+        Iterator<T> iterator = new Iterator<T>() {
+            final LinkedList<T> stack = new LinkedList<>();
+            {
+                stack.addAll(roots);
+            }
+
+            @Override
+            public boolean hasNext() {
+                return !stack.isEmpty();
+            }
+
+            @Override
+            public T next() {
+                T next = stack.pop();
+                stack.addAll(mapper.apply(next));
+                return next;
+            }
+        };
+
+        Iterable<T> iterable = () -> iterator;
+        return StreamSupport.stream(iterable.spliterator(), false);
+    }
+
+    public static <T> Stream<T> treeToStream(T root, Function<T, Collection<T>> mapper) {
+        return treeToStream(Collections.singleton(root), mapper);
     }
 }

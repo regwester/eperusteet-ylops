@@ -132,6 +132,13 @@
       "nimi": {
         "fi": "Matematiikka"
       },
+      "koodi": {
+        "uri": "oppiaine_ma",
+        "arvo": "ma",
+        "nimi": {
+          "fi": "Matematiikka"
+        }
+      },
       "arviointi": {
         "kuvaus": {
           "fi": "Monipuolisella arvioinnilla ja kannustavalla palautteella tuetaan opiskelijan matemaattisen ajattelun ja itseluottamuksen kehittymistä sekä ylläpidetään ja vahvistetaan opiskelumotivaatiota. Arviointi ohjaa opiskelijaa kehittämään matematiikan osaamistaan ja ymmärtämistään sekä pitkäjänteisen työskentelyn taitoja. Sillä autetaan opiskelijaa kehittämään matemaattisten ratkaisujen esittämistä, tuetaan häntä käsitteiden muodostamisprosessissa ja ohjataan oman työn arvioimiseen. Onnistunut palaute auttaa opiskelijaa huomaamaan vahvuutensa sekä sen, mitä ja miten tietoja ja taitoja tulisi edelleen kehittää."
@@ -163,7 +170,56 @@
             "fi": "vahvistaa matemaattista pohjaa jatko-opinnoilleen"
           }
         }]
-      }
+      },
+      "oppimaarat": [{
+        "nimi": {
+          "fi": "Matematiikan pitkä oppimäärä"
+        },
+        "koodi": {
+          "uri": "oppiaineet_maa",
+          "arvo": "maa",
+          "koodisto": "oppiaineet",
+          "nimi": {
+            "fi": "Matematiikkan pitkä oppimäärä"
+          }
+        },
+        "moduulit": [{
+          "nimi": {
+            "fi": "Integraalilaskenta" 
+          },
+          "laajuus": 2,
+          "koodi": {
+            "uri": "moduulit_MAA7",
+            "arvo": "maa7",
+            "koodisto": "moduulit",
+            "nimi": {
+              "fi": "Integraalilaskenta"
+            }
+          },
+          "tavoitteet": {
+            "etuliite": {
+              "fi": "Moduulin tavoitteena on, että opiskelija"
+            },
+            "arvot": [{
+              "fi": "ymmärtää integraalifunktion käsitteen ja oppii määrittämään alkeisfunktioiden integraalifunktioita"
+            }, {
+              "fi": "ymmärtää määrätyn integraalin käsitteen ja sen yhteyden pinta-alaan sekä tutustuu numeeriseen menetelmään määrätyn integraalin määrittämisessä"
+            }, {
+              "fi": "osaa määrittää pinta-aloja ja tilavuuksia määrätyn integraalin avulla"
+            }]
+          },
+          "sisallot": {
+            "etuliite": null,
+            "arvot": [{
+              "fi": "integraalifunktio"
+            }, {
+              "fi": "alkeisfunktioiden integraalifunktiot"
+            }, {
+              "fi": "suorakaidesääntö"
+            }]
+          }
+        }]
+      }]
     }]
   }
 }

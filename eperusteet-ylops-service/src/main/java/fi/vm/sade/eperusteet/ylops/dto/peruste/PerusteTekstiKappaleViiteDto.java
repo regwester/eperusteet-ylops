@@ -25,8 +25,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusteTekstiKappaleViiteDto {
-    private Long id;
-    private PerusteTekstiKappaleDto tesktiKappale;
+public class PerusteTekstiKappaleViiteDto extends PerusteTekstiKappaleViiteMatalaDto {
     private List<PerusteTekstiKappaleViiteDto> lapset;
 }

@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mocks;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +42,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -90,7 +88,7 @@ public class EperusteetServiceMock implements EperusteetService {
     }
 
     @Override
-    public PerusteDto getEperusteetPeruste(Long id) {
+    public PerusteDto getPerusteById(Long id) {
         PerusteDto peruste = new PerusteDto();
         peruste.setId(id);
         peruste.setNimi(mapper.map(LokalisoituTeksti.of(Kieli.FI, "mock-peruste"), LokalisoituTekstiDto.class));
@@ -118,7 +116,7 @@ public class EperusteetServiceMock implements EperusteetService {
             savePerusteCahceEntry(perusteDto);
             return mapper.map(perusteDto, PerusteDto.class);
         }
-        PerusteDto peruste = getEperusteetPeruste(0L);
+        PerusteDto peruste = getPerusteById(0L);
 
         savePerusteCahceEntry(mapper.map(peruste, EperusteetPerusteDto.class));
         return peruste;

@@ -90,13 +90,13 @@ public class UlkopuolisetController {
     @Deprecated
     @ResponseBody
     public PerusteDto getPerusopetusperuste(@PathVariable(value = "id") final Long id) {
-        return eperusteetService.getEperusteetPeruste(id);
+        return eperusteetService.getPerusteById(id);
     }
 
     @RequestMapping(value = "/peruste/{id}", method = GET)
     @ResponseBody
     public PerusteDto getYlopsPeruste(@PathVariable(value = "id") final Long id) {
-        return eperusteetService.getEperusteetPeruste(id);
+        return eperusteetService.getPerusteById(id);
     }
 
     @RequestMapping(value = "/lukiokoulutusperusteet", method = GET)
@@ -110,7 +110,7 @@ public class UlkopuolisetController {
     @Deprecated
     @ResponseBody
     public PerusteDto getLukiokoulutusperuste(@PathVariable(value = "id") final Long id) {
-        return eperusteetService.getEperusteetPeruste(id);
+        return eperusteetService.getPerusteById(id);
     }
 
     @RequestMapping(value = "/tiedotteet", method = GET)

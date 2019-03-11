@@ -143,7 +143,7 @@ public class EperusteetServiceImpl implements EperusteetService {
                     .forEach(p -> {
                         PerusteCache current = byId.get(p.getId());
                         if (current == null || current.getAikaleima().compareTo(p.getGlobalVersion().getAikaleima()) < 0) {
-                            getEperusteetPeruste(p.getId());
+                            getPerusteById(p.getId());
                         }
                     });
         }
@@ -208,7 +208,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     @Cacheable("perusteet")
     @Transactional
-    public PerusteDto getEperusteetPeruste(final Long id) {
+    public PerusteDto getPerusteById(final Long id) {
         return getEperusteetPeruste(id, false);
     }
 

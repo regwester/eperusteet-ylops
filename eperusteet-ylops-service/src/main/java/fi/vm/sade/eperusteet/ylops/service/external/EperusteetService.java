@@ -39,7 +39,7 @@ public interface EperusteetService {
 
     List<PerusteInfoDto> findLukiokoulutusPerusteet();
 
-    PerusteDto getEperusteetPeruste(final Long id);
+    PerusteDto getPerusteById(final Long id);
 
     JsonNode getTiedotteet(Long jalkeen);
 }

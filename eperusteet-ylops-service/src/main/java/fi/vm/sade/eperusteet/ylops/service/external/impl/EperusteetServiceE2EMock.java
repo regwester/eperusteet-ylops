@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -98,13 +99,12 @@ public class EperusteetServiceE2EMock implements EperusteetService {
         perusteCacheRepository.saveAndFlush(cache);
     }
 
-    @Override
-    public PerusteDto getPeruste(String diaariNumero) {
+    public PerusteDto getPeruste(Predicate<JsonNode> cmp) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         for (JsonNode peruste : perusteet) {
-            if (peruste.get("diaarinumero") != null && Objects.equals(diaariNumero, peruste.get("diaarinumero").asText())) {
+            if (cmp.test(peruste)) {
                 try {
                     return objectMapper.treeToValue(peruste, PerusteDto.class);
                 } catch (JsonProcessingException e) {
@@ -113,6 +113,13 @@ public class EperusteetServiceE2EMock implements EperusteetService {
             }
         }
         return null;
+    }
+
+    @Override
+    public PerusteDto getPeruste(String diaariNumero) {
+        return getPeruste((peruste) ->
+                peruste.get("diaarinumero") != null
+                        && Objects.equals(diaariNumero, peruste.get("diaarinumero").asText()));
     }
 
     @Override
@@ -154,8 +161,10 @@ public class EperusteetServiceE2EMock implements EperusteetService {
     }
 
     @Override
-    public PerusteDto getEperusteetPeruste(Long id) {
-        throw new UnsupportedOperationException("ei-toteutettu");
+    public PerusteDto getPerusteById(Long id) {
+        return getPeruste((peruste) ->
+                peruste.get("id") != null
+                        && Objects.equals(id, peruste.get("id").asLong()));
     }
 
     @Override
