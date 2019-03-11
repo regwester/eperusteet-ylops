@@ -90,8 +90,6 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     public DokumenttiDto createDtoFor(Long id, Kieli kieli) {
         Dokumentti dokumentti = new Dokumentti();
         dokumentti.setTila(DokumenttiTila.EI_OLE);
-        dokumentti.setAloitusaika(new Date());
-        dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
         dokumentti.setKieli(kieli);
         dokumentti.setOpsId(id);
 
@@ -162,7 +160,8 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         dokumenttiStateService.save(dto);
 
         try {
-            Dokumentti dokumentti = mapper.map(dto, Dokumentti.class);
+            Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
+            mapper.map(dto, dokumentti);
             Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
             dokumentti.setTila(DokumenttiTila.VALMIS);
             dokumentti.setValmistumisaika(new Date());

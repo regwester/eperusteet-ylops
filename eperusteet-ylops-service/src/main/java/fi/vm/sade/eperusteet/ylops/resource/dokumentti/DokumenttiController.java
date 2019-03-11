@@ -158,10 +158,12 @@ public class DokumenttiController {
     ) {
         Kieli k = Kieli.of(kieli);
         DokumenttiDto dto = service.getDto(opsId, k);
+
+        // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
         if (dto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(service.createDtoFor(opsId, Kieli.of(kieli)));
         } else {
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+            return ResponseEntity.ok(dto);
         }
     }
 
