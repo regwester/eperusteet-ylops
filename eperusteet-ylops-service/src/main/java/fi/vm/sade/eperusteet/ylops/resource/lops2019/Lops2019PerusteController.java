@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/peruste")
 @Api("Lops2019PerusteController")
-@ApiIgnore
 public class Lops2019PerusteController {
 
     @Autowired
