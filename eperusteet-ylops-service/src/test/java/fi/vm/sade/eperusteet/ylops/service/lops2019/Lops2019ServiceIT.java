@@ -10,10 +10,12 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.EperusteetServiceE2EMock;
@@ -46,6 +48,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private Lops2019OpintojaksoService opintojaksoService;
+
+    @Autowired
+    private Lops2019Service lopsService;
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
@@ -89,6 +94,12 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .extracting("toteutus", "koulutustyyppi", "perusteenDiaarinumero", "tyyppi")
                 .containsExactly(KoulutustyyppiToteutus.LOPS2019, KoulutusTyyppi.LUKIOKOULUTUS, "1/2/3", Tyyppi.OPS);
         assertThat(ops.getPohja()).isNotNull();
+        List<Lops2019OppiaineDto> oppiaineet = lopsService.getPerusteOppiaineet(ops.getId());
+        assertThat(oppiaineet).isNotNull();
+        assertThat(oppiaineet.size()).isNotEqualTo(0);
+
+        PerusteTekstiKappaleViiteDto tekstikappaleet = lopsService.getPerusteTekstikappaleet(ops.getId());
+        assertThat(tekstikappaleet).isNotNull();
     }
 
     @Test

@@ -58,7 +58,9 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public List<Lops2019OppiaineDto> getPerusteOppiaineet(Long opsId) {
-        return getPeruste(opsId).getLops2019().getOppiaineet();
+        PerusteDto perusteDto = getPeruste(opsId);
+        return perusteDto.getLops2019()
+                .getOppiaineet();
     }
 
     @Override

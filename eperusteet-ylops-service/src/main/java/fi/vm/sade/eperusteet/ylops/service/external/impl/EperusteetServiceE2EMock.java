@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Profile("e2e")
+@Transactional
 public class EperusteetServiceE2EMock implements EperusteetService {
 
     @Autowired
@@ -98,17 +100,21 @@ public class EperusteetServiceE2EMock implements EperusteetService {
         perusteCacheRepository.saveAndFlush(cache);
     }
 
-    public PerusteDto getPeruste(Predicate<JsonNode> cmp) {
+    private PerusteDto jsonToPerusteDto(JsonNode perusteJson) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        try {
+            return objectMapper.treeToValue(perusteJson, PerusteDto.class);
+        } catch (JsonProcessingException e) {
+            throw new BusinessRuleViolationException("perusteen-parsinta-epaonnistui");
+        }
+    }
+
+    private PerusteDto getPeruste(Predicate<JsonNode> cmp) {
         for (JsonNode peruste : perusteet) {
             if (cmp.test(peruste)) {
-                try {
-                    return objectMapper.treeToValue(peruste, PerusteDto.class);
-                } catch (JsonProcessingException e) {
-                    throw new BusinessRuleViolationException("perusteen-parsinta-epaonnistui");
-                }
+                return jsonToPerusteDto(peruste);
             }
         }
         return null;
@@ -162,9 +168,12 @@ public class EperusteetServiceE2EMock implements EperusteetService {
 
     @Override
     public PerusteDto getPerusteById(Long id) {
+        PerusteCache cached = perusteCacheRepository.findOne(id);
         return getPeruste((peruste) ->
                 peruste.get("id") != null
-                        && Objects.equals(id, peruste.get("id").asLong()));
+                        && Objects.equals(
+                                cached.getPerusteId(),
+                                peruste.get("id").asLong()));
     }
 
     @Override

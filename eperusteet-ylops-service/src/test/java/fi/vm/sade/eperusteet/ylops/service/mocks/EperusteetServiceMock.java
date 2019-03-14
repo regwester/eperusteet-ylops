@@ -88,16 +88,22 @@ public class EperusteetServiceMock extends EperusteetServiceE2EMock {
 
     @Override
     public PerusteDto getPerusteById(Long id) {
-        PerusteDto peruste = new PerusteDto();
-        peruste.setId(id);
-        peruste.setNimi(mapper.map(LokalisoituTeksti.of(Kieli.FI, "mock-peruste"), LokalisoituTekstiDto.class));
-        peruste.setDiaarinumero(DIAARINUMERO);
-        peruste.setGlobalVersion(new PerusteVersionDto(new Date()));
-        peruste.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
-        PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
-        sisalto.setOppiaineet(Collections.emptySet());
-        peruste.setPerusopetus(sisalto);
-        return peruste;
+        PerusteDto peruste = super.getPerusteById(id);
+        if (peruste != null) {
+            return peruste;
+        }
+        else {
+            peruste = new PerusteDto();
+            peruste.setId(id);
+            peruste.setNimi(mapper.map(LokalisoituTeksti.of(Kieli.FI, "mock-peruste"), LokalisoituTekstiDto.class));
+            peruste.setDiaarinumero(DIAARINUMERO);
+            peruste.setGlobalVersion(new PerusteVersionDto(new Date()));
+            peruste.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+            PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
+            sisalto.setOppiaineet(Collections.emptySet());
+            peruste.setPerusopetus(sisalto);
+            return peruste;
+        }
     }
 
     @Override
