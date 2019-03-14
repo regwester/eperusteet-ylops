@@ -25,6 +25,36 @@ create table lops2019_opintojakso_AUD (
     primary key (id, REV)
 );
 
+create table lops2019_opintojakso_moduuli (
+    opintojakso_id int8,
+    moduuli_id int8 not null,
+    primary key (opintojakso_id, moduuli_id)
+);
+
+create table lops2019_opintojakso_moduuli_AUD (
+    moduuli_id int8 not null,
+    REV int4 not null,
+    opintojakso_id int8,
+    REVTYPE int2,
+    REVEND int4,
+    primary key (REV, opintojakso_id, moduuli_id)
+);
+
+create table lops2019_sisalto_opintojakso (
+    sisalto_id int8,
+    opintojakso_id int8 not null,
+    primary key (sisalto_id, opintojakso_id)
+);
+
+create table lops2019_sisalto_opintojakso_AUD (
+    REV int4 not null,
+    sisalto_id int8 not null,
+    opintojakso_id int8 not null,
+    REVTYPE int2,
+    REVEND int4,
+    primary key (REV, sisalto_id, opintojakso_id)
+);
+
 create table lops2019_opintojakso_lops2019_opintojakson_moduuli (
     lops2019_opintojakso_id int8 not null,
     moduulit_id int8 not null,
@@ -122,3 +152,55 @@ alter table lops2019_opintojakson_moduuli_AUD
     add constraint FK_8v8upo8467oabaff6s8f4myfi 
     foreign key (REVEND) 
     references revinfo;
+
+alter table lops2019_opintojakso_moduuli 
+    add constraint UK_3tanx65psog165cvk2385y6nm  unique (moduuli_id);
+
+alter table lops2019_opintojakso_moduuli 
+    add constraint FK_mliwu29em4npwnc2nk3vwtcws 
+    foreign key (opintojakso_id) 
+    references lops2019_opintojakso;
+
+alter table lops2019_opintojakso_moduuli 
+    add constraint FK_3tanx65psog165cvk2385y6nm 
+    foreign key (moduuli_id) 
+    references lops2019_opintojakson_moduuli;
+
+alter table lops2019_opintojakso_moduuli_AUD 
+    add constraint FK_ev3cjm133axbcp6n0cj3cux08 
+    foreign key (moduuli_id, REV) 
+    references lops2019_opintojakson_moduuli_AUD;
+
+alter table lops2019_opintojakso_moduuli_AUD 
+    add constraint FK_adhqpajkw7mppyhe4w5dmxept 
+    foreign key (REV) 
+    references revinfo;
+
+alter table lops2019_opintojakso_moduuli_AUD 
+    add constraint FK_nh2g0mfjsfybpjji0lkytab2w 
+    foreign key (REVEND) 
+    references revinfo;
+
+alter table lops2019_sisalto_opintojakso 
+    add constraint UK_l7al4nkque7vwitms9hqmj735  unique (opintojakso_id);
+
+alter table lops2019_sisalto_opintojakso 
+    add constraint FK_rnyymps6ttmhmnepnq79ptu1l 
+    foreign key (sisalto_id) 
+    references lops2019_sisalto;
+
+alter table lops2019_sisalto_opintojakso 
+    add constraint FK_l7al4nkque7vwitms9hqmj735 
+    foreign key (opintojakso_id) 
+    references lops2019_opintojakso;
+
+alter table lops2019_sisalto_opintojakso_AUD 
+    add constraint FK_ekdckbbn0i3n1owo7s9qrv29l 
+    foreign key (REV) 
+    references revinfo;
+
+alter table lops2019_sisalto_opintojakso_AUD 
+    add constraint FK_2l2ye1uuxxq0ug5eilhrv565l 
+    foreign key (REVEND) 
+    references revinfo;
+
