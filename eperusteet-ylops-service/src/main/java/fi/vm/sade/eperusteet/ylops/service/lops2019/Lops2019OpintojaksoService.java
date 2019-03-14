@@ -24,7 +24,7 @@ public interface Lops2019OpintojaksoService {
     Lops2019OpintojaksoDto updateOpintojakso(@P("opsId") Long opsId, Long opintojaksoId, UpdateWrapperDto<Lops2019OpintojaksoDto> opintojaksoDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    Lops2019OpintojaksoDto removeOne(@P("opsId") Long opsId, Long opintojaksoId);
+    void removeOne(@P("opsId") Long opsId, Long opintojaksoId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     List<RevisionDto> getVersions(@P("opsId") Long opsId, Long opintojaksoId);
