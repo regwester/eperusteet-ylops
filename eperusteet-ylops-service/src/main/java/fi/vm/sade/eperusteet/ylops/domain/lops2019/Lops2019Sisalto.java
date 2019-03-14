@@ -9,6 +9,8 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Audited
@@ -26,5 +28,14 @@ public class Lops2019Sisalto extends AbstractAuditedEntity implements Serializab
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
     private Opetussuunnitelma opetussuunnitelma;
+
+    @Getter
+    @OrderColumn
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "lops2019_sisalto_opintojakso",
+        joinColumns = @JoinColumn(name = "sisalto_id"),
+        inverseJoinColumns = @JoinColumn(name = "opintojakso_id"))
+    private Set<Lops2019Opintojakso> opintojaksot = new HashSet<>();
+
 
 }

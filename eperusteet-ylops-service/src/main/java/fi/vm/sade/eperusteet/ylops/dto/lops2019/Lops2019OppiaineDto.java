@@ -19,7 +19,7 @@ public class Lops2019OppiaineDto {
     private LokalisoituTekstiDto kuvaus;
     private Lops2019OppiaineenArviointi arviointi;
     private Lops2019OppiaineenTehtava tehtava;
-    private Lops2019OppimaaranLaajaAlaisetOsaamisetDto laajaAlaisetOsaamiset;
+    private Lops2019OppimaaranLaajaAlaisetOsaamisetDto laajaAlainenOsaaminen;
     private List<Lops2019OppiaineDto> oppimaarat = new ArrayList<>();
     private List<Lops2019ModuuliDto> moduulit = new ArrayList<>();
 }

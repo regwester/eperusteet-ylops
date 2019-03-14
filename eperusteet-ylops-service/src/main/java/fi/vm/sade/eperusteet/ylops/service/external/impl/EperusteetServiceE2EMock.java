@@ -51,7 +51,6 @@ public class EperusteetServiceE2EMock implements EperusteetService {
     @Autowired
     private JsonMapper jsonMapper;
 
-
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -143,9 +142,10 @@ public class EperusteetServiceE2EMock implements EperusteetService {
     }
 
     @Override
-    @Deprecated
     public List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit) {
-        throw new UnsupportedOperationException("ei-toteutettu");
+        return findPerusteet().stream()
+                .filter(peruste -> tyypit.contains(peruste.getKoulutustyyppi()))
+                .collect(Collectors.toList());
     }
 
     @Override

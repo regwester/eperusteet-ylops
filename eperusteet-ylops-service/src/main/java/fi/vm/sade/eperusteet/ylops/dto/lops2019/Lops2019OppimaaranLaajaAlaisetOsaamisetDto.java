@@ -4,5 +4,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lops2019OppimaaranLaajaAlaisetOsaamisetDto {
-    private List<Lops2019OppimaaranLaajaAlainenOsaaminenDto> laajaAlaiset = new ArrayList<>();
+    private List<Lops2019OppimaaranLaajaAlainenOsaaminenDto> laajaAlaisetOsaamiset = new ArrayList<>();
 }

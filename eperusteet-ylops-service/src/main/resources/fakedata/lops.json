@@ -73,7 +73,7 @@
         "opinnot": {
           "fi": "Aihealueen opinnot ovat osa lukion hyvinvointia ja turvallisuutta ylläpitävää toimintakulttuuria, jossa yhteisöllisyys ja keskinäinen huolenpito korostuvat. Hyvinvointi- ja turvallisuusnäkökulmat liittyvät myös opiskelijakunnan toimintaan, kodin ja oppilaitoksen yhteistyöhön, oppilaitosruokailuun sekä opiskeluhuoltoon. Aihealueen toteuttamiseksi lukio voi tehdä yhteistyötä nuoriso-, liikunta-, kulttuuri- ja sosiaalitoimen sekä poliisin ja pelastuslaitoksen sekä erilaisten järjestöjen kanssa."
         },
-        "tavoitteet": {
+        "tavoitteet": [{
           "etuliite": {
             "fi": "Opiskelija"
           },
@@ -86,7 +86,7 @@
               "fi": "lisää ymmärrystään ja vastuutaan sitoutumisesta elämänmittaiseen fyysiseen aktiivisuuteen sekä terveyttä ja toimintakykyä edistäviin elintapoihin"
             }
           }]
-        },
+        }],
         "painopisteet": [{
           "nimi": {
             "fi": "Omien vahvuuksien tunnistaminen ja käyttäminen sekä identiteetin rakentaminen"

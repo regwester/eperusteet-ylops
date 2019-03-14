@@ -12,9 +12,9 @@ import java.util.List;
 @Setter
 public class Lops2019LaajaAlainenDto {
     private Long id;
-//    private LokalisoituTekstiDto nimi;
-//    private LokalisoituTekstiDto kuvaus;
-//    private LokalisoituTekstiDto opinnot;
-//    private List<Lops2019LaajaAlaisenOsaamisenTavoitteetDto> tavoitteet = new ArrayList<>();
-//    private List<Lops2019LaajaAlaisenOsaamisenPainopisteDto> painopisteet = new ArrayList<>();
+    private LokalisoituTekstiDto nimi;
+    private LokalisoituTekstiDto kuvaus;
+    private LokalisoituTekstiDto opinnot;
+    private List<Lops2019LaajaAlaisenOsaamisenTavoitteetDto> tavoitteet = new ArrayList<>();
+    private List<Lops2019LaajaAlaisenOsaamisenPainopisteDto> painopisteet = new ArrayList<>();
 }

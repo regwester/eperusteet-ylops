@@ -45,6 +45,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+import org.springframework.stereotype.Controller;
 
 /**
  * @author mikkom
@@ -117,7 +118,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     private KoulutusTyyppi koulutustyyppi;
 
     @Enumerated(value = EnumType.STRING)
-    @Setter
     private KoulutustyyppiToteutus toteutus;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -149,6 +149,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @NotNull
     private Set<Kieli> julkaisukielet = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "opetussuunnitelma_liite", inverseJoinColumns = {@JoinColumn(name = "liite_id")}, joinColumns = {@JoinColumn(name = "opetussuunnitelma_id")})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private Set<Liite> liitteet = new HashSet<>();
+
+
     // FIXME: vanhat toteutuskohtaiset sisällöt mitkä eivät kuuluisi tähän entiteettiin
     // --------------------------------------------------
 
@@ -161,11 +167,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @CollectionTable(joinColumns = {
             @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
     private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "opetussuunnitelma_liite", inverseJoinColumns = {@JoinColumn(name = "liite_id")}, joinColumns = {@JoinColumn(name = "opetussuunnitelma_id")})
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    private Set<Liite> liitteet = new HashSet<>();
 
     @Getter
     @Audited
@@ -190,10 +191,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
             cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private OpetuksenYleisetTavoitteet opetuksenYleisetTavoitteet;
+
     // --------------------------------------------------
 
     @Getter
-    @Setter
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
             cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Lops2019Sisalto lops2019;
@@ -343,4 +344,17 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             return toteutus;
         }
     }
+
+    public void setLops2019(Lops2019Sisalto lops2019) {
+        if (this.lops2019 == null) {
+            this.lops2019 = lops2019;
+        }
+    }
+
+    public void setToteutus(KoulutustyyppiToteutus toteutus) {
+        if (this.toteutus == null) {
+            this.toteutus = toteutus;
+        }
+    }
+
 }

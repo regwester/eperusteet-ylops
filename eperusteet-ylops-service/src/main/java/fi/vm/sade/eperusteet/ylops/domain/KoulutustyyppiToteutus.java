@@ -35,6 +35,16 @@ public enum KoulutustyyppiToteutus {
         this.tyyppi = tyyppi;
     }
 
+    @JsonCreator
+    public static KoulutustyyppiToteutus of(String tila) {
+        for (KoulutustyyppiToteutus s : values()) {
+            if (s.tyyppi.equalsIgnoreCase(tila)) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException(tila + " ei ole kelvollinen tila");
+    }
+
     @Override
     public String toString() {
         return tyyppi;
