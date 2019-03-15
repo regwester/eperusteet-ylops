@@ -8,7 +8,6 @@ import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -45,7 +44,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         if (ops == null) {
             throw new BusinessRuleViolationException("opetussuunnitelmaa-ei-loytynyt");
         }
-        else if (Objects.equals(KoulutustyyppiToteutus.LOPS2019, ops.getToteutus())) {
+        else if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
             throw new BusinessRuleViolationException("opetussuunnitelma-vaaran-tyyppinen");
         }
         else {

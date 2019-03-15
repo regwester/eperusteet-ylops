@@ -49,10 +49,10 @@ public class Lops2019OpintojaksoController {
 
 
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.DELETE)
-    public Lops2019OpintojaksoDto removeOpintojakso(
+    public void removeOpintojakso(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
-        return opintojaksoService.removeOne(opsId, opintojaksoId);
+        opintojaksoService.removeOne(opsId, opintojaksoId);
     }
 
     @RequestMapping(value = "/{opintojaksoId}/versiot", method = RequestMethod.GET)

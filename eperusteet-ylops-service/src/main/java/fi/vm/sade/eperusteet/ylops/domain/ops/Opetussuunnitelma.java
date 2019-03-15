@@ -337,7 +337,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         if (koulutustyyppi == null || koulutustyyppi.isYksinkertainen()) {
             return KoulutustyyppiToteutus.YKSINKERTAINEN;
         }
-        else if (Objects.equals(koulutustyyppi, KoulutusTyyppi.PERUSOPETUS)) {
+        else if (KoulutusTyyppi.PERUSOPETUS.equals(koulutustyyppi)) {
             return KoulutustyyppiToteutus.PERUSOPETUS;
         }
         else {
