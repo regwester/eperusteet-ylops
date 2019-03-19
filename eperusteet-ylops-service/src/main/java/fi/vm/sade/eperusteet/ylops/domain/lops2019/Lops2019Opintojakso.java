@@ -36,22 +36,18 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
-    @Getter
-    @Setter
-    @OrderColumn
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    @JoinTable(name = "lops2019_opintojakso_moduuli",
-            joinColumns = @JoinColumn(name = "opintojakso_id"),
-            inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
-    private Set<Lops2019OpintojaksonModuuli> moduulit;
+//    @Getter
+//    @Setter
+//    @OrderColumn
+//    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+//    @JoinTable(name = "lops2019_opintojakso_moduuli",
+//            joinColumns = @JoinColumn(name = "opintojakso_id"),
+//            inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
+//    private Set<Lops2019OpintojaksonModuuli> moduulit;
 
     @Getter
     @Setter
-    @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "lops2019_sisalto_opintojakso",
-            joinColumns = @JoinColumn(name = "opintojakso_id"),
-            inverseJoinColumns = @JoinColumn(name = "sisalto_id"))
     private Lops2019Sisalto sisalto;
 
 }

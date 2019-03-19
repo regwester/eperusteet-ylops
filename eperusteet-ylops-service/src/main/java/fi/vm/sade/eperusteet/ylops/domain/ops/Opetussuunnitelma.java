@@ -196,7 +196,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     @Getter
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+            cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Lops2019Sisalto lops2019;
 
     @Getter

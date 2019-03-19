@@ -17,6 +17,8 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.EperusteetServiceE2EMock;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -55,6 +57,12 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
+    @Autowired
+    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    private Lops2019OpintojaksoRepository opintojaksoRepository;
+
     private OpetussuunnitelmaDto createLukioOpetussuunnitelma() {
         OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
         pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
@@ -71,9 +79,18 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 })
                 .collect(Collectors.toSet()));
         opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
-        OpetussuunnitelmaDto opsDto = opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
 
-        return opsDto;
+        return opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
+    }
+
+    @Test
+    public void convertTestJsonToDto() {
+        List<PerusteInfoDto> perusteet = eperusteetService.findPerusteet();
+        assertThat(perusteet.size()).isGreaterThan(0);
+        PerusteDto peruste = eperusteetService.getPeruste("1/2/3");
+        assertThat(peruste.getLops2019()).isNotNull();
+        List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(0).getOppimaarat().get(0).getModuulit();
+        assertThat(moduulit.size()).isNotEqualTo(0);
     }
 
     @Test
@@ -89,27 +106,23 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testUudenLukionOpsinLuonti() {
-        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
-        assertThat(ops)
+        OpetussuunnitelmaDto opsDto = createLukioOpetussuunnitelma();
+        assertThat(opsDto)
                 .extracting("toteutus", "koulutustyyppi", "perusteenDiaarinumero", "tyyppi")
                 .containsExactly(KoulutustyyppiToteutus.LOPS2019, KoulutusTyyppi.LUKIOKOULUTUS, "1/2/3", Tyyppi.OPS);
-        assertThat(ops.getPohja()).isNotNull();
-        List<Lops2019OppiaineDto> oppiaineet = lopsService.getPerusteOppiaineet(ops.getId());
+        assertThat(opsDto.getPohja()).isNotNull();
+
+        List<Lops2019OppiaineDto> oppiaineet = lopsService.getPerusteOppiaineet(opsDto.getId());
         assertThat(oppiaineet).isNotNull();
         assertThat(oppiaineet.size()).isNotEqualTo(0);
 
-        PerusteTekstiKappaleViiteDto tekstikappaleet = lopsService.getPerusteTekstikappaleet(ops.getId());
+        PerusteTekstiKappaleViiteDto tekstikappaleet = lopsService.getPerusteTekstikappaleet(opsDto.getId());
         assertThat(tekstikappaleet).isNotNull();
-    }
 
-    @Test
-    public void convertTestJsonToDto() {
-        List<PerusteInfoDto> perusteet = eperusteetService.findPerusteet();
-        assertThat(perusteet.size()).isEqualTo(3);
-        PerusteDto peruste = eperusteetService.getPeruste("1/2/3");
-        assertThat(peruste.getLops2019()).isNotNull();
-        List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(0).getOppimaarat().get(0).getModuulit();
-        assertThat(moduulit.size()).isNotEqualTo(0);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsDto.getId());
+        assertThat(ops.getLops2019()).isNotNull();
+        assertThat(ops.getLops2019().getOpetussuunnitelma()).isNotNull();
+
     }
 
     @Test
@@ -130,7 +143,10 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                         .build())
                 .build();
 
-        opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+        opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+        List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(ops.getId());
+        assertThat(opintojaksot.size()).isEqualTo(1);
+        assertThat(opintojaksot.get(0).getId()).isEqualTo(opintojaksoDto.getId());
     }
 
 }

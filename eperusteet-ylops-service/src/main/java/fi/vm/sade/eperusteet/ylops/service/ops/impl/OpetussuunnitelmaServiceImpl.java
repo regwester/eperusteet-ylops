@@ -520,14 +520,38 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (pohja != null) {
             ops.setKoulutustyyppi(pohja.getKoulutustyyppi());
             ops.setToteutus(pohja.getToteutus());
+            ops.setPohja(pohja);
+            ops.setTila(Tila.LUONNOS);
             ops.setTekstit(new TekstiKappaleViite(Omistussuhde.OMA));
             ops.getTekstit().setLapset(new ArrayList<>());
-            luoOpsPohjasta(pohja, ops);
-            ops.setTila(Tila.LUONNOS);
-            ops = repository.save(ops);
 
-            if (isPohjastaTehtyPohja(pohja) && pohja.getKoulutustyyppi().isLukio()) {
-                lisaaTeemaopinnotJosPohjassa(ops, pohja);
+            if (pohja.getPerusteenDiaarinumero() == null) {
+                throw new BusinessRuleViolationException("Pohjalta puuttuu perusteen diaarinumero");
+            }
+            ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
+            ops.setCachedPeruste(ops.getCachedPeruste());
+            if (ops.getCachedPeruste() == null) {
+                PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+                PerusteCache perusteCache = perusteCacheRepository.findNewestEntryForPeruste(peruste.getId());
+                if (perusteCache == null) {
+                    throw new BusinessRuleViolationException("Opetussuunnitelman pohjasta ei löytynyt perustetta");
+                }
+                ops.setCachedPeruste(perusteCache);
+            }
+
+            if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
+                Lops2019Sisalto sisalto = new Lops2019Sisalto();
+                sisalto.setOpetussuunnitelma(ops);
+                ops.setLops2019(sisalto);
+                ops = repository.save(ops);
+            }
+            else {
+                luoOpsPohjasta(pohja, ops);
+                ops = repository.save(ops);
+
+                if (isPohjastaTehtyPohja(pohja) && pohja.getKoulutustyyppi().isLukio()) {
+                    lisaaTeemaopinnotJosPohjassa(ops, pohja);
+                }
             }
         } else {
             throw new BusinessRuleViolationException("Valmista opetussuunnitelman pohjaa ei löytynyt");
@@ -550,21 +574,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
-        ops.setPohja(pohja);
-        if (pohja.getPerusteenDiaarinumero() == null) {
-            throw new BusinessRuleViolationException("Pohjalta puuttuu perusteen diaarinumero");
-        }
-        ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
-        ops.setCachedPeruste(ops.getCachedPeruste());
-        if (ops.getCachedPeruste() == null) {
-            PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-            PerusteCache perusteCache = perusteCacheRepository.findNewestEntryForPeruste(peruste.getId());
-            if (perusteCache == null) {
-                throw new BusinessRuleViolationException("Opetussuunnitelman pohjasta ei löytynyt perustetta");
-            }
-            ops.setCachedPeruste(perusteCache);
-        }
-
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
 
@@ -573,6 +582,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Copier<Oppiaine> oppiaineCopier = teeKopio ? Oppiaine.basicCopier() : Copier.nothing();
         Map<Long, Oppiaine> newOppiaineByOld = new HashMap<>();
         Copier<Oppiaine> kurssiCopier = null;
+
         if (pohja.getKoulutustyyppi().isLukio()) {
             luoLukiokoulutusPohjasta(pohja, ops);
             kurssiCopier = getLukiokurssitOppiaineCopier(pohja, ops, teeKopio);
@@ -585,6 +595,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         } else if (teeKopio) {
             oppiaineCopier = oppiaineCopier.and(Oppiaine.perusopetusCopier());
         }
+
         final Copier<Oppiaine> oppiainePerusCopier = oppiaineCopier;
         if (teeKopio && (!onPohjastaTehtyPohja || pohja.getKoulutustyyppi().isLukio())) {
             ConstructedCopier<Oppiaine> omConst = oppiainePerusCopier.construct(oa -> new Oppiaine(oa.getTunniste()));

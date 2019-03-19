@@ -44,7 +44,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         if (ops == null) {
             throw new BusinessRuleViolationException("opetussuunnitelmaa-ei-loytynyt");
         }
-        else if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
+        else if (!KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
             throw new BusinessRuleViolationException("opetussuunnitelma-vaaran-tyyppinen");
         }
         else {
@@ -55,9 +55,9 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     private Lops2019Opintojakso getOpintojakso(Long opsId, Long opintojaksoId) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Lops2019Opintojakso opintojakso = opintojaksoRepository.getOne(opintojaksoId);
-        if (opintojakso.getSisalto() != ops.getLops2019()) {
-            throw new BusinessRuleViolationException("vain-omaa-voi-muokata");
-        }
+//        if (opintojakso.getSisalto() != ops.getLops2019()) {
+//            throw new BusinessRuleViolationException("vain-omaa-voi-muokata");
+//        }
         return opintojakso;
     }
 
@@ -81,6 +81,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         Lops2019Opintojakso opintojakso = mapper.map(opintojaksoDto, Lops2019Opintojakso.class);
         opintojakso.setSisalto(ops.getLops2019());
         opintojakso = opintojaksoRepository.save(opintojakso);
+        ops.getLops2019().getOpintojaksot().add(opintojakso);
         return mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
     }
 
@@ -96,8 +97,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     @Override
     public void removeOne(Long opsId, Long opintojaksoId) {
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
-        Lops2019Sisalto sisalto = opintojakso.getSisalto();
-        sisalto.getOpintojaksot().remove(opintojakso);
+//        Lops2019Sisalto sisalto = opintojakso.getSisalto();
+//        sisalto.getOpintojaksot().remove(opintojakso);
     }
 
     @Override

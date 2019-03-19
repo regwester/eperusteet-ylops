@@ -31,7 +31,7 @@ public class Lops2019Sisalto extends AbstractAuditedEntity implements Serializab
 
     @Getter
     @OrderColumn
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @JoinTable(name = "lops2019_sisalto_opintojakso",
         joinColumns = @JoinColumn(name = "sisalto_id"),
         inverseJoinColumns = @JoinColumn(name = "opintojakso_id"))

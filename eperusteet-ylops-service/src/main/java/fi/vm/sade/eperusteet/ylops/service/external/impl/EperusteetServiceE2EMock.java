@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
@@ -16,24 +15,17 @@ import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
-import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
-import lombok.Value;
-import org.eclipse.core.internal.jobs.ObjectMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,16 +51,17 @@ public class EperusteetServiceE2EMock implements EperusteetService {
     public void init() {
         objectMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        perusteet.add(openFakeData("varhaiskasvatus.json"));
-        perusteet.add(openFakeData("lops.json"));
+        perusteet.add(openFakeData("/fakedata/varhaiskasvatus.json"));
+        perusteet.add(openFakeData("/data/peruste.json"));
+        perusteet.add(openFakeData("/fakedata/lops.json"));
     }
 
     private JsonNode openFakeData(String file) {
         try {
-            Resource resource = new ClassPathResource("fakedata/" + file);
+            Resource resource = new ClassPathResource(file);
             InputStream resourceInputStream = resource.getInputStream();
-            JsonNode result = objectMapper.readTree(resourceInputStream);
-            PerusteCache peruste = perusteCacheRepository.findNewestEntryForPerusteByDiaarninumero(result.get("diaarinumero").asText());
+            JsonNode result = objectMapper.readTree(getClass().getResourceAsStream(file));
+            PerusteCache peruste = perusteCacheRepository.findNewestEntryForPerusteByDiaarinumero(result.get("diaarinumero").asText());
             if (peruste == null) {
                 savePerusteCahceEntry(objectMapper.treeToValue(result, EperusteetPerusteDto.class));
             }
@@ -169,11 +162,16 @@ public class EperusteetServiceE2EMock implements EperusteetService {
     @Override
     public PerusteDto getPerusteById(Long id) {
         PerusteCache cached = perusteCacheRepository.findOne(id);
-        return getPeruste((peruste) ->
-                peruste.get("id") != null
-                        && Objects.equals(
-                                cached.getPerusteId(),
-                                peruste.get("id").asLong()));
+        if (cached == null) {
+            return null;
+        }
+        else {
+            return getPeruste((peruste) ->
+                    peruste.get("id") != null
+                            && Objects.equals(
+                                    cached.getPerusteId(),
+                                    peruste.get("id").asLong()));
+        }
     }
 
     @Override
