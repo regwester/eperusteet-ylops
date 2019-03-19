@@ -42,9 +42,10 @@ public class KysymysController {
     public ResponseEntity<KysymysDto> createKysymys(
             @RequestBody KysymysDto dto
     ) {
-        dto.setId(null);
-        return audit.withAudit(LogMessage.builder(null, OPH, KYSYMYS_LISAYS),
-                (Void) -> ResponseEntity.ok(service.createKysymys(dto)));
+        return audit.withAudit(LogMessage.builder(null, OPH, KYSYMYS_LISAYS), (Void) -> {
+            dto.setId(null);
+            return ResponseEntity.ok(service.createKysymys(dto));
+        });
     }
 
     @RequestMapping(value = "/{id}", method = PUT)
@@ -52,17 +53,19 @@ public class KysymysController {
             @PathVariable Long id,
             @RequestBody KysymysDto dto
     ) {
-        dto.setId(id);
-        return audit.withAudit(LogMessage.builder(null, OPH, KYSYMYS_MUOKKAUS),
-                (Void) -> ResponseEntity.ok(service.updateKysymys(dto)));
+        return audit.withAudit(LogMessage.builder(null, OPH, KYSYMYS_MUOKKAUS), (Void) -> {
+            dto.setId(id);
+            return ResponseEntity.ok(service.updateKysymys(dto));
+        });
     }
 
     @RequestMapping(value = "/{id}", method = DELETE)
     public ResponseEntity deleteKysymys(
-            @RequestParam Long id
+            @PathVariable Long id
     ) {
-        service.deleteKysymys(id);
-        return audit.withAudit(LogMessage.builder(null, OPH, KYSYMYS_POISTO),
-                (Void) -> ResponseEntity.status(HttpStatus.OK).build());
+        return audit.withAudit(LogMessage.builder(null, OPH, KYSYMYS_POISTO), (Void) -> {
+            service.deleteKysymys(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        });
     }
 }

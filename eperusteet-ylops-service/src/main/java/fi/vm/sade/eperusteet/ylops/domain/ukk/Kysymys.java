@@ -9,6 +9,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,8 +36,9 @@ public class Kysymys extends AbstractAuditedEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private LokalisoituTeksti vastaus;
 
-    @ElementCollection
     @Getter
     @Setter
+    @ElementCollection
+    @Size(min = 1, message = "Ainakin {min} organisaatiota tarvitaan")
     private Set<String> organisaatiot = new HashSet<>();
 }
