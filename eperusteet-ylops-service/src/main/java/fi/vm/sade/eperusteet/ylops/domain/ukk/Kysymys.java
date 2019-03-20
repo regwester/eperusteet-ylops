@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Audited
 public class Kysymys extends AbstractAuditedEntity {
 
     @Id
