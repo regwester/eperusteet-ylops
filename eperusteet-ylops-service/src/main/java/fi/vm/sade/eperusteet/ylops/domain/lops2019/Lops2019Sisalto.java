@@ -31,11 +31,20 @@ public class Lops2019Sisalto extends AbstractAuditedEntity implements Serializab
 
     @Getter
     @OrderColumn
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "lops2019_sisalto_opintojakso",
         joinColumns = @JoinColumn(name = "sisalto_id"),
         inverseJoinColumns = @JoinColumn(name = "opintojakso_id"))
     private Set<Lops2019Opintojakso> opintojaksot = new HashSet<>();
 
+    public void addOpintojakso(Lops2019Opintojakso opintojakso) {
+        opintojaksot.add(opintojakso);
+    }
+
+    public Lops2019Opintojakso getOpintojakso(Long id) {
+        return this.opintojaksot.stream()
+                .filter(oj -> id.equals(oj.getId()))
+                .findFirst().orElse(null);
+    }
 
 }

@@ -11,6 +11,7 @@ import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -36,18 +37,34 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
-//    @Getter
-//    @Setter
-//    @OrderColumn
-//    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-//    @JoinTable(name = "lops2019_opintojakso_moduuli",
-//            joinColumns = @JoinColumn(name = "opintojakso_id"),
-//            inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
-//    private Set<Lops2019OpintojaksonModuuli> moduulit;
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
+    private LokalisoituTeksti tavoitteet;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
+    private LokalisoituTeksti keskeisetSisallot;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
+    private LokalisoituTeksti laajaAlainenOsaaminen;
 
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Lops2019Sisalto sisalto;
+    @OrderColumn
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinTable(name = "lops2019_opintojakso_moduuli",
+            joinColumns = @JoinColumn(name = "opintojakso_id"),
+            inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
+    private Set<Lops2019OpintojaksonModuuli> moduulit = new HashSet<>();
 
 }

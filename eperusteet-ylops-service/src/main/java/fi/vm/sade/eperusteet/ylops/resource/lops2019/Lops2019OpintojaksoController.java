@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/opintojaksot")
-@Api("Lops2019PerusteController")
+@Api("Lops2019OpintojaksoController")
 public class Lops2019OpintojaksoController {
 
     @Autowired

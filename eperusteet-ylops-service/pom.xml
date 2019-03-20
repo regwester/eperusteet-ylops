@@ -570,6 +570,7 @@
                                         <location>${eperusteet.resources}.ops.OpetussuunnitelmaJulkisetController</location>
                                         <location>${eperusteet.resources}.ops.OpetussuunnitelmanSisaltoController</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019PerusteController</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019OpintojaksoController</location>
                                         <location>${eperusteet.resources}.ops.TermistoController</location>
                                         <location>${eperusteet.resources}.ohje.*</location>
                                         <location>${eperusteet.resources}.ukk.*</location>

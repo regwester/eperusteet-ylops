@@ -9,6 +9,7 @@ import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +32,9 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     private Lops2019OpintojaksoRepository opintojaksoRepository;
 
     @Autowired
+    private Lops2019SisaltoRepository sisaltoRepository;
+
+    @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
@@ -38,6 +43,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     @Autowired
     private DtoMapper mapper;
 
+    @Autowired
+    private EntityManager em;
 
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -54,18 +61,17 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     private Lops2019Opintojakso getOpintojakso(Long opsId, Long opintojaksoId) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
-        Lops2019Opintojakso opintojakso = opintojaksoRepository.getOne(opintojaksoId);
-//        if (opintojakso.getSisalto() != ops.getLops2019()) {
-//            throw new BusinessRuleViolationException("vain-omaa-voi-muokata");
-//        }
+        Lops2019Opintojakso opintojakso = ops.getLops2019().getOpintojakso(opintojaksoId);
+        if (opintojakso == null) {
+            throw new BusinessRuleViolationException("opintojaksoa-ei-ole");
+        }
         return opintojakso;
     }
 
     @Override
     public List<Lops2019OpintojaksoDto> getAll(Long opsId) {
         Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
-        List<Lops2019OpintojaksoDto> opintojaksot = mapper.mapAsList(opetussuunnitelma.getLops2019().getOpintojaksot(), Lops2019OpintojaksoDto.class);
-        return opintojaksot;
+        return mapper.mapAsList(opetussuunnitelma.getLops2019().getOpintojaksot(), Lops2019OpintojaksoDto.class);
     }
 
     @Override
@@ -79,9 +85,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         opintojaksoDto.setId(null);
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Lops2019Opintojakso opintojakso = mapper.map(opintojaksoDto, Lops2019Opintojakso.class);
-        opintojakso.setSisalto(ops.getLops2019());
         opintojakso = opintojaksoRepository.save(opintojakso);
-        ops.getLops2019().getOpintojaksot().add(opintojakso);
+        ops.getLops2019().addOpintojakso(opintojakso);
         return mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
     }
 
@@ -97,8 +102,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     @Override
     public void removeOne(Long opsId, Long opintojaksoId) {
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
-//        Lops2019Sisalto sisalto = opintojakso.getSisalto();
-//        sisalto.getOpintojaksot().remove(opintojakso);
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        ops.getLops2019().getOpintojaksot().remove(opintojakso);
     }
 
     @Override

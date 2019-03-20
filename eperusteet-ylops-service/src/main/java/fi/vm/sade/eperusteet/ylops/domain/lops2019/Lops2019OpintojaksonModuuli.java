@@ -29,12 +29,4 @@ public class Lops2019OpintojaksonModuuli extends AbstractAuditedReferenceableEnt
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
-    @Getter
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "lops2019_opintojakso_moduuli",
-            joinColumns = @JoinColumn(name = "moduuli_id"),
-            inverseJoinColumns = @JoinColumn(name = "opintojakso_id"))
-    private Lops2019Opintojakso opintojakso;
-
 }
