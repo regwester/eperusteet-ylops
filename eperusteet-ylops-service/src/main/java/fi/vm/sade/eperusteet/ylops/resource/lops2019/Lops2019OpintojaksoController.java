@@ -84,7 +84,6 @@ public class Lops2019OpintojaksoController {
         return opintojaksoService.getVersion(opsId, opintojaksoId, versio);
     }
 
-
     @RequestMapping(value = "/{opintojaksoId}/versiot/{versio}", method = RequestMethod.POST)
     public Lops2019OpintojaksoDto revertToVersion(
             @PathVariable final Long opsId,
@@ -92,8 +91,5 @@ public class Lops2019OpintojaksoController {
             @PathVariable final Integer versio) {
         return opintojaksoService.revertTo(opsId, opintojaksoId, versio);
     }
-
-
-
 
 }
