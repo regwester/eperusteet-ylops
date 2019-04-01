@@ -30,6 +30,9 @@ public interface OrganisaatioService {
     JsonNode getOrganisaatio(String organisaatioOid);
 
     @PreAuthorize("isAuthenticated()")
+    JsonNode getOrganisaatioVirkailijat(String organisaatioOid);
+
+    @PreAuthorize("isAuthenticated()")
     JsonNode getPeruskoulutByKuntaId(String kuntaId);
 
     @PreAuthorize("isAuthenticated()")
