@@ -175,7 +175,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                                     .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
         }
 
-        public JsonNode getOrganisaatioVirkailijat(String organisaatioOid) {
+        public JsonNode getOrganisaatioVirkailijat(Set<String> organisaatioOids) {
             OphHttpClient client = restClientFactory.get(koServiceUrl, true);
             String url = koServiceUrl + VIRKAILIJA_HAKU;
 
@@ -185,9 +185,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
             criteriaDto.setPassivoitu(false);
 
             // Rajattu organisaatioon
-            Set<String> organisaatiot = new HashSet<>();
-            organisaatiot.add(organisaatioOid);
-            criteriaDto.setOrganisaatioOids(organisaatiot);
+            criteriaDto.setOrganisaatioOids(organisaatioOids);
 
             Map<String, Collection<String>> kayttooikeudet = new HashMap<>();
             ArrayList<String> oikeudet = new ArrayList<>();
@@ -295,8 +293,8 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     }
 
     @Override
-    public JsonNode getOrganisaatioVirkailijat(String organisaatioOid) {
-        return client.getOrganisaatioVirkailijat(organisaatioOid);
+    public JsonNode getOrganisaatioVirkailijat(Set<String> organisaatioOids) {
+        return client.getOrganisaatioVirkailijat(organisaatioOids);
     }
 
     @Override
