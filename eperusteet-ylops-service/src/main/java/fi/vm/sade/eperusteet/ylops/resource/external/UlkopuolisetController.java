@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.resource.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.VirkailijaQueryDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
@@ -36,6 +37,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.swagger.annotations.ApiOperation;
@@ -164,10 +166,14 @@ public class UlkopuolisetController {
         return new ResponseEntity<>(peruskoulut, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/organisaatiot/{oid}/virkailijat", method = GET)
+    @RequestMapping(value = "/organisaatiot/virkailijat", method = GET)
     @ResponseBody
-    public ResponseEntity<JsonNode> getOrganisaatioVirkailijat(@PathVariable(value = "oid") final String organisaatioOid) {
-        JsonNode virkailijat = organisaatioService.getOrganisaatioVirkailijat(organisaatioOid);
+    @ApiOperation(value = "virkailijoiden haku")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "oid", dataType = "string", paramType = "query", allowMultiple = true, value = "organisaation oid")
+    })
+    public ResponseEntity<JsonNode> getOrganisaatioVirkailijat(VirkailijaQueryDto dto) {
+        JsonNode virkailijat = organisaatioService.getOrganisaatioVirkailijat(dto.getOid());
         return ResponseEntity.ok(virkailijat);
     }
 
