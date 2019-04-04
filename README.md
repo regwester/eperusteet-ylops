@@ -75,3 +75,7 @@ $ http "https://eperusteet.opintopolku.fi/eperusteet-service/api/perusteet/12663
 $ mvn  tomcat7:run -Dspring.profiles.active=e2e
 
 ```
+
+# Uusi käyttöliittymä
+
+Uusi käyttöliittymä rakennetaan kansioon /uusi.
