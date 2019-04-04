@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import io.swagger.annotations.ApiOperation;
@@ -182,6 +182,7 @@ public class UlkopuolisetController {
     public List<JsonNode> getUserOrganisations() {
         return kayttajanTietoService.haeOrganisaatioOikeudet().stream()
                 .map(organisaatioService::getOrganisaatio)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
