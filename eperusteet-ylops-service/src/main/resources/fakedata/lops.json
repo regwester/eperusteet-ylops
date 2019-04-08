@@ -211,54 +211,54 @@
           "teksti" : {
             "fi" : ""
           },
-          "osanTyyppi" : "tekstikappale",
-          "lapset" : [{
-            "id" : 20054,
-            "perusteenOsa" : {
-              "id" : 30054,
-              "luotu" : 1449736763770,
-              "muokattu" : 1450450639080,
-              "tunniste" : "normaali",
-              "nimi" : {
-                "fi" : "Opintojen rakenne"
-              },
-              "teksti" : {
-                "fi" : "Nuorille tarkoitetun lukiokoulutuksen oppimäärän laajuus on 150 opintopistettä. Lukio-opinnot muodostuvat lukiokoulutuksesta annetun valtioneuvoston asetuksen (810/2018) liitteen 1 mukaisista pakollisista ja valtakunnallisista valinnaisista opinnoista, joita koulutuksen järjestäjän tulee tarjota opiskelijalle. Valtioneuvoston asetuksen mukaisia valtakunnallisia valinnaisia opintoja nuorille tarkoitetun lukiokoulutuksen oppimäärään tulee sisältyä vähintään 20 opistopistettä. Oppimäärään voi lisäksi sisältyä lukiodiplomeita ja muita valinnaisia opintoja koulutuksen järjestäjän päättämällä tavalla.  Opetushallitus on laatinut opetussuunnitelman perusteet lukiokoulutuksesta annetun valtioneuvoston asetuksen (810/2018) liitteessä 1 tarkoitettuihin pakollisiin ja valtakunnallisiin valinnaisiin opintoihin lukuun ottamatta temaattisia opintoja. Lisäksi Opetushallitus on laatinut opetussuunnitelman perusteet lukiodiplomeihin. Lukiodiplomien laajuus on kaksi opintopistettä.  Koulutuksen järjestäjä päättää, minkä laajuisina opintojaksoina opinnot tarjotaan opiskelijalle. Koulutuksen järjestäjän tulee kuitenkin tarjota opiskelijalle mahdollisuus suorittaa valtioneuvoston asetuksen liitteen 1 mukaisia valtakunnallisia valinnaisia opintoja kahden opintopisteen laajuisina opintojaksoina.  Oppiaineen opintojen suoritusjärjestyksestä päätetään lukion opetussuunnitelmassa."
-              },
-              "osanTyyppi" : "tekstikappale"
-            }
-          }, {
-            "id" : 20055,
-            "perusteenOsa" : {
-              "id" : 30055,
-              "luotu" : 1449736763770,
-              "muokattu" : 1450450639080,
-              "tunniste" : "normaali",
-              "nimi" : {
-                "fi" : "Oppimiskäsitys"
-              },
-              "teksti" : {
-                "fi" : "Opetussuunnitelman perusteet pohjautuvat oppimiskäsitykseen, jonka mukaan oppiminen on seurausta opiskelijan aktiivisesta, tavoitteellisesta ja itseohjautuvasta toiminnasta. Oppimisprosessin aikana opiskelija tulkitsee, analysoi ja arvioi eri muodoissa esitettyä dataa, informaatiota tai tietoa aikaisempien kokemusten ja tietojen pohjalta. Hän kehittää ratkaisuja ja luo uudenlaisia kokonaisuuksia aineistojen pohjalta sekä tietoja ja taitoja uudella tavalla yhdistäen. Ohjaus ja rakentava palaute vahvistavat itseluottamusta ja auttavat opiskelijaa kehittämään ajatteluaan ja työskentelemään tarkoituksenmukaisella tavalla.  Oppiminen tapahtuu vuorovaikutuksessa muiden opiskelijoiden, opettajien, asiantuntijoiden ja yhteisöjen kanssa erilaisissa ympäristöissä. Se on monimuotoista ja sidoksissa siihen toimintaan, tilanteeseen ja kulttuuriin, jossa se tapahtuu. Myös kieli, kehollisuus ja eri aistien käyttö ovat oppimisen kannalta olennaisia. Lukio-opinnoissa opiskelijoita opiskelijaa ohjataan havaitsemaan käsitteiden, tiedonalojen ja osaamisen välisiä yhteyksiä sekä soveltamaan aiemmin oppimaansa muuttuvissa tilanteissa. Näin kehittyvät myös jatkuvan oppimisen edellyttämät taidot. Oppimisprosesseistaan tietoinsen opiskelija t opiskelijat oppiivat vähitellen yhä paremmin arviomaan ja kehittämään opiskelu- ja ajattelutaitojaan. Opintoihin liittyvät onnistumiset ja muut myönteiset kokemukset edistävät oppimista ja innostavat osaamisen kehittämiseen.  "
-              },
-              "osanTyyppi" : "tekstikappale"
-            }
-          }, {
-            "id" : 20056,
-            "perusteenOsa" : {
-              "id" : 30056,
-              "luotu" : 1449736763770,
-              "muokattu" : 1450450639080,
-              "tunniste" : "normaali",
-              "nimi" : {
-                "fi" : "Opiskeluympäristöt ja -menetelmät"
-              },
-              "teksti" : {
-                "fi" : "Lukion opiskeluympäristöjä ja -menetelmiä koskevien ratkaisujen lähtökohtana ovat oppimiskäsitys sekä opetukselle asetetut tavoitteet. Opiskeluympäristöjen kehittämisessä ja menetelmien valinnassa otetaan huomioon myös opiskelijoiden yhdenvertaisuus, edellytykset, kiinnostuksen kohteet, näkemykset ja yksilölliset tarpeet.    Opiskeluympäristöt Opiskeluympäristöt lukiossa ovat monipuolisia, turvallisia ja viihtyisiä. Ne edistävät opiskelumotivaatiota ja rikastuttavat opiskeluun liittyviä kokemuksia. Hyvä opiskeluympäristö tukee sekä vuorovaikutusta ja yhdessä työskentelyä että itsenäistä opiskelua. Opiskelijoita aktivoidaan kehittämään opiskeluympäristöjään.  Rakennettuja tiloja ja luontoa hyödynnetään opiskelussa siten, että luova ajattelu ja tutkimiseen perustuva opiskelu on mahdollista. Yliopistojen, ammattikorkeakoulujen ja muiden oppilaitosten, kirjastojen, liikunta- ja luontokeskusten, taide- ja kulttuurilaitosten, työelämän ja yritysten sekä muiden tahojen tarjoamia mahdollisuuksia hyödynnetään monin tavoin sekä kansallisesti että kansainvälisesti. Opiskeluympäristöä laajennetaan oppilaitoksen ulkopuolelle tieto- ja viestintäteknologian avulla.  Opiskelijaa ohjataan hyödyntämään digitaalisia opiskeluympäristöjä, oppimateriaaleja ja työvälineitä tiedon hankintaan, käsittelyyn ja arviointiin sekä tuottamiseen ja jakamiseen. Yksilöllistä etenemistä, henkilökohtaisia oppimispolkuja ja osaamisen kehittymistä voidaan tukea tarjoamalla opiskelijalle mahdollisuuksia suorittaa opintoja myös verkko-opiskeluna.  Itsenäistä opiskelua järjestettäessä otetaan huomion opiskelijan edellytykset suorittaa opintoja opetukseen osallistumatta sekä hänen ohjauksen ja tuen tarpeensa.  Opiskelumenetelmät Lukiossa käytetään monipuolisia opetus-, ohjaus- ja opiskelumenetelmiä, joilla on yhteys oppiaineissa edellytettyyn tiedonalan käsitteelliseen ja menetelmälliseen osaamiseen. Opetusta koskevilla ratkaisuilla rakennetaan myös kokonaisuuksien hallintaa ja oppiainerajat ylittävää osaamista. Tutkimiseen, kokeilemiseen ja ongelmanratkaisuun perustuvat opiskelumenetelmät edistävät oppimaan oppimista ja kehittävät kriittistä ja luovaa ajattelua.  Merkitykselliset oppimiskokemukset sitouttavat ja innostavat opiskeluun. Opiskelijalle tarjotaan mahdollisuuksia työskentelyyn, joka kytkee opiskeltavat tiedot ja taidot sekä hänen kokemuksiinsa että ympäristössä ja yhteiskunnassa esiintyviin ilmiöihin. Opiskelijaa rohkaistaan ja ohjataan ratkomaan avoimia ja riittävän haastavia tehtäviä, havaitsemaan ongelmia sekä esittämään kysymyksiä ja etsimään vastauksia.  Lukion opetuksen ja opiskelumenetelmien tarkoituksena on edistää opiskelijan aktiivista työskentelyä ja yhteistyötaitojen kehittymistä. Opiskelijaa ohjataan suunnittelemaan opiskeluaan, arvioimaan toiminta- ja työskentelytaitojaan sekä ottamaan vastuuta omasta oppimisestaan. Opiskelija saa tilaisuuksia käyttää monipuolisesti tieto- ja viestintäteknologiaa sekä itsenäisessä että yhteisöllisessä työskentelyssä.  Opiskelumenetelmien valinnassa ja työskentelyn ohjauksessa kiinnitetään huomiota yhdenvertaisiin opiskelumahdollisuuksiin sekä sukupuolittuneiden asenteiden ja käytänteiden tunnistamiseen ja muuttamiseen."
-              },
-              "osanTyyppi" : "tekstikappale"
-            }
-          }]
-        }
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [{
+          "id" : 20054,
+          "perusteenOsa" : {
+            "id" : 30054,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Opintojen rakenne"
+            },
+            "teksti" : {
+              "fi" : "Nuorille tarkoitetun lukiokoulutuksen oppimäärän laajuus on 150 opintopistettä. Lukio-opinnot muodostuvat lukiokoulutuksesta annetun valtioneuvoston asetuksen (810/2018) liitteen 1 mukaisista pakollisista ja valtakunnallisista valinnaisista opinnoista, joita koulutuksen järjestäjän tulee tarjota opiskelijalle. Valtioneuvoston asetuksen mukaisia valtakunnallisia valinnaisia opintoja nuorille tarkoitetun lukiokoulutuksen oppimäärään tulee sisältyä vähintään 20 opistopistettä. Oppimäärään voi lisäksi sisältyä lukiodiplomeita ja muita valinnaisia opintoja koulutuksen järjestäjän päättämällä tavalla.  Opetushallitus on laatinut opetussuunnitelman perusteet lukiokoulutuksesta annetun valtioneuvoston asetuksen (810/2018) liitteessä 1 tarkoitettuihin pakollisiin ja valtakunnallisiin valinnaisiin opintoihin lukuun ottamatta temaattisia opintoja. Lisäksi Opetushallitus on laatinut opetussuunnitelman perusteet lukiodiplomeihin. Lukiodiplomien laajuus on kaksi opintopistettä.  Koulutuksen järjestäjä päättää, minkä laajuisina opintojaksoina opinnot tarjotaan opiskelijalle. Koulutuksen järjestäjän tulee kuitenkin tarjota opiskelijalle mahdollisuus suorittaa valtioneuvoston asetuksen liitteen 1 mukaisia valtakunnallisia valinnaisia opintoja kahden opintopisteen laajuisina opintojaksoina.  Oppiaineen opintojen suoritusjärjestyksestä päätetään lukion opetussuunnitelmassa."
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }, {
+          "id" : 20055,
+          "perusteenOsa" : {
+            "id" : 30055,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Oppimiskäsitys"
+            },
+            "teksti" : {
+              "fi" : "Opetussuunnitelman perusteet pohjautuvat oppimiskäsitykseen, jonka mukaan oppiminen on seurausta opiskelijan aktiivisesta, tavoitteellisesta ja itseohjautuvasta toiminnasta. Oppimisprosessin aikana opiskelija tulkitsee, analysoi ja arvioi eri muodoissa esitettyä dataa, informaatiota tai tietoa aikaisempien kokemusten ja tietojen pohjalta. Hän kehittää ratkaisuja ja luo uudenlaisia kokonaisuuksia aineistojen pohjalta sekä tietoja ja taitoja uudella tavalla yhdistäen. Ohjaus ja rakentava palaute vahvistavat itseluottamusta ja auttavat opiskelijaa kehittämään ajatteluaan ja työskentelemään tarkoituksenmukaisella tavalla.  Oppiminen tapahtuu vuorovaikutuksessa muiden opiskelijoiden, opettajien, asiantuntijoiden ja yhteisöjen kanssa erilaisissa ympäristöissä. Se on monimuotoista ja sidoksissa siihen toimintaan, tilanteeseen ja kulttuuriin, jossa se tapahtuu. Myös kieli, kehollisuus ja eri aistien käyttö ovat oppimisen kannalta olennaisia. Lukio-opinnoissa opiskelijoita opiskelijaa ohjataan havaitsemaan käsitteiden, tiedonalojen ja osaamisen välisiä yhteyksiä sekä soveltamaan aiemmin oppimaansa muuttuvissa tilanteissa. Näin kehittyvät myös jatkuvan oppimisen edellyttämät taidot. Oppimisprosesseistaan tietoinsen opiskelija t opiskelijat oppiivat vähitellen yhä paremmin arviomaan ja kehittämään opiskelu- ja ajattelutaitojaan. Opintoihin liittyvät onnistumiset ja muut myönteiset kokemukset edistävät oppimista ja innostavat osaamisen kehittämiseen.  "
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }, {
+          "id" : 20056,
+          "perusteenOsa" : {
+            "id" : 30056,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Opiskeluympäristöt ja -menetelmät"
+            },
+            "teksti" : {
+              "fi" : "Lukion opiskeluympäristöjä ja -menetelmiä koskevien ratkaisujen lähtökohtana ovat oppimiskäsitys sekä opetukselle asetetut tavoitteet. Opiskeluympäristöjen kehittämisessä ja menetelmien valinnassa otetaan huomioon myös opiskelijoiden yhdenvertaisuus, edellytykset, kiinnostuksen kohteet, näkemykset ja yksilölliset tarpeet.    Opiskeluympäristöt Opiskeluympäristöt lukiossa ovat monipuolisia, turvallisia ja viihtyisiä. Ne edistävät opiskelumotivaatiota ja rikastuttavat opiskeluun liittyviä kokemuksia. Hyvä opiskeluympäristö tukee sekä vuorovaikutusta ja yhdessä työskentelyä että itsenäistä opiskelua. Opiskelijoita aktivoidaan kehittämään opiskeluympäristöjään.  Rakennettuja tiloja ja luontoa hyödynnetään opiskelussa siten, että luova ajattelu ja tutkimiseen perustuva opiskelu on mahdollista. Yliopistojen, ammattikorkeakoulujen ja muiden oppilaitosten, kirjastojen, liikunta- ja luontokeskusten, taide- ja kulttuurilaitosten, työelämän ja yritysten sekä muiden tahojen tarjoamia mahdollisuuksia hyödynnetään monin tavoin sekä kansallisesti että kansainvälisesti. Opiskeluympäristöä laajennetaan oppilaitoksen ulkopuolelle tieto- ja viestintäteknologian avulla.  Opiskelijaa ohjataan hyödyntämään digitaalisia opiskeluympäristöjä, oppimateriaaleja ja työvälineitä tiedon hankintaan, käsittelyyn ja arviointiin sekä tuottamiseen ja jakamiseen. Yksilöllistä etenemistä, henkilökohtaisia oppimispolkuja ja osaamisen kehittymistä voidaan tukea tarjoamalla opiskelijalle mahdollisuuksia suorittaa opintoja myös verkko-opiskeluna.  Itsenäistä opiskelua järjestettäessä otetaan huomion opiskelijan edellytykset suorittaa opintoja opetukseen osallistumatta sekä hänen ohjauksen ja tuen tarpeensa.  Opiskelumenetelmät Lukiossa käytetään monipuolisia opetus-, ohjaus- ja opiskelumenetelmiä, joilla on yhteys oppiaineissa edellytettyyn tiedonalan käsitteelliseen ja menetelmälliseen osaamiseen. Opetusta koskevilla ratkaisuilla rakennetaan myös kokonaisuuksien hallintaa ja oppiainerajat ylittävää osaamista. Tutkimiseen, kokeilemiseen ja ongelmanratkaisuun perustuvat opiskelumenetelmät edistävät oppimaan oppimista ja kehittävät kriittistä ja luovaa ajattelua.  Merkitykselliset oppimiskokemukset sitouttavat ja innostavat opiskeluun. Opiskelijalle tarjotaan mahdollisuuksia työskentelyyn, joka kytkee opiskeltavat tiedot ja taidot sekä hänen kokemuksiinsa että ympäristössä ja yhteiskunnassa esiintyviin ilmiöihin. Opiskelijaa rohkaistaan ja ohjataan ratkomaan avoimia ja riittävän haastavia tehtäviä, havaitsemaan ongelmia sekä esittämään kysymyksiä ja etsimään vastauksia.  Lukion opetuksen ja opiskelumenetelmien tarkoituksena on edistää opiskelijan aktiivista työskentelyä ja yhteistyötaitojen kehittymistä. Opiskelijaa ohjataan suunnittelemaan opiskeluaan, arvioimaan toiminta- ja työskentelytaitojaan sekä ottamaan vastuuta omasta oppimisestaan. Opiskelija saa tilaisuuksia käyttää monipuolisesti tieto- ja viestintäteknologiaa sekä itsenäisessä että yhteisöllisessä työskentelyssä.  Opiskelumenetelmien valinnassa ja työskentelyn ohjauksessa kiinnitetään huomiota yhdenvertaisiin opiskelumahdollisuuksiin sekä sukupuolittuneiden asenteiden ja käytänteiden tunnistamiseen ja muuttamiseen."
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }]
       }, {
         "id" : 20012,
         "perusteenOsa" : {
