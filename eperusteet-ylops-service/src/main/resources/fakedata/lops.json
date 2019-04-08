@@ -421,7 +421,9 @@
         }
       },
       "tavoitteet": {
-        "kuvaus": "Biologian opetuksessa edistetään opiskelijan kykyä tarkastella ilmiöitä biotieteiden näkökulmasta sekä vahvistetaan ja syvennetään biologian tietoja, taitoja ja osaamista monipuolisesti. Tavoitteet liittyvät biologiseen tarkastelutapaan, biologian ilmiöihin ja prosesseihin sekä biologisiin taitoihin ja niiden soveltamiseen. Tavoitealueittain opetuksen yleiset tavoitteet ovat seuraavat.",
+        "kuvaus": {
+          "fi": "Biologian opetuksessa edistetään opiskelijan kykyä tarkastella ilmiöitä biotieteiden näkökulmasta sekä vahvistetaan ja syvennetään biologian tietoja, taitoja ja osaamista monipuolisesti. Tavoitteet liittyvät biologiseen tarkastelutapaan, biologian ilmiöihin ja prosesseihin sekä biologisiin taitoihin ja niiden soveltamiseen. Tavoitealueittain opetuksen yleiset tavoitteet ovat seuraavat."
+        },
         "tavoitealueet": [{
           "nimi": {
             "fi": "Biologiset ilmiöt ja prosessit"
