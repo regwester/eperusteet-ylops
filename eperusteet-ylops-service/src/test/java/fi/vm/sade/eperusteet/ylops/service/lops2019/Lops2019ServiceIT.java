@@ -3,14 +3,11 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -19,7 +16,6 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -30,9 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -140,9 +134,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
 
         Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
-                .nimi(LokalisoituTekstiDto.of("Geometriat"))
                 .kuvaus(LokalisoituTekstiDto.of("Geometriaan liittyvät moduulit toteutetaan yhtenä opintojaksona"))
-                .koodi("1234")
                 .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").build()))
                 .moduuli(Lops2019OpintojaksonModuuliDto.builder()
                         .koodiUri("moduuli_maa3")
@@ -153,6 +145,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                         .kuvaus(LokalisoituTekstiDto.of("Y"))
                         .build())
                 .build();
+
+        opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+        opintojaksoDto.setKoodi("1234");
 
         opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
         List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(ops.getId());
