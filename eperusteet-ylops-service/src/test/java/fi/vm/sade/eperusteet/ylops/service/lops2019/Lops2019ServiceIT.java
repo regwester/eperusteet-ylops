@@ -7,9 +7,8 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleDto;
@@ -20,11 +19,15 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoReposi
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import org.hibernate.envers.Audited;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 
@@ -39,6 +42,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class Lops2019ServiceIT extends AbstractIntegrationTest {
+
+    @Autowired
+    private DtoMapper mapper;
 
     @Autowired
     private EperusteetService eperusteetService;
@@ -63,6 +69,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private Lops2019OpintojaksoRepository opintojaksoRepository;
+
+    @Autowired
+    private Kommentti2019Service kommenttiService;
 
     private OpetussuunnitelmaDto createLukioOpetussuunnitelma() {
         OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
@@ -160,6 +169,35 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testKommentointi() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        Kommentti2019Dto kommentti = new Kommentti2019Dto();
+        kommentti.setSisalto("kommentti");
+        Kommentti2019Dto lisatty = kommenttiService.add(ops.getId(), kommentti);
+        assertThat(lisatty)
+                .extracting(Kommentti2019LuontiDto::getParent, Kommentti2019Dto::getOpsId, Kommentti2019Dto::getLuoja, Kommentti2019LuontiDto::getSisalto)
+                .containsExactly(null, ops.getId(), SecurityContextHolder.getContext().getAuthentication().getName(), "kommentti");
+        assertThat(lisatty.getUuid()).isNotNull();
+        assertThat(lisatty.getMuokattu()).isNotNull();
+        assertThat(lisatty.getLuotu()).isNotNull();
+
+        Kommentti2019Dto paivitys = new Kommentti2019Dto();
+        paivitys.setSisalto("päivitetty");
+        Kommentti2019Dto paivitetty = kommenttiService.update(ops.getId(), lisatty.getUuid(), paivitys);
+        assertThat(lisatty.getUuid()).isEqualTo(paivitetty.getUuid());
+        assertThat(paivitetty.getSisalto()).isEqualTo("päivitetty");
+
+        Kommentti2019Dto kommenttiDto = kommenttiService.get(ops.getId(), lisatty.getUuid());
+        assertThat(kommenttiDto.getSisalto()).isEqualTo("päivitetty");
+
+        kommenttiService.remove(ops.getId(), lisatty.getUuid());
+
+        assertThatThrownBy(() -> {
+            kommenttiService.get(ops.getId(), lisatty.getUuid());
+        }).isInstanceOf(BusinessRuleViolationException.class);
+    }
+
     @Rollback
     public void testVirheellisetKoodit() {
         OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
@@ -251,6 +289,5 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         oppiaineDto = oppiaineService.addOppiaine(ops.getId(), oppiaineDto);
         assertThat(oppiaineDto.getId()).isNotNull();
     }
-
 
 }
