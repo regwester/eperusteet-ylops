@@ -352,7 +352,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
         String name = SecurityUtil.getAuthenticatedPrincipal().getName();
 
-        return ops.getTila().equals(Tila.JULKAISTU) || !name.equals("anonymousUser");
+        return ops.getTila().equals(Tila.JULKAISTU) || ops.isEsikatseltavissa() || !name.equals("anonymousUser");
     }
 
     @Override
