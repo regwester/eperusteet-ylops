@@ -53,7 +53,8 @@ import org.springframework.web.client.RestTemplate;
 /**
  * @author nkala
  */
-//@Service
+@Service
+@Profile("!test")
 @SuppressWarnings("TransactionalAnnotations")
 public class EperusteetServiceImpl implements EperusteetService {
     private static final Logger logger = LoggerFactory.getLogger(EperusteetServiceImpl.class);
@@ -201,8 +202,10 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public List<PerusteInfoDto> findLukiokoulutusPerusteet() {
-        return findPerusteet(new HashSet<>(Arrays.asList(KoulutusTyyppi.LUKIOKOULUTUS,
-                KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS, KoulutusTyyppi.AIKUISLUKIOKOULUTUS)));
+        return findPerusteet(new HashSet<>(Arrays.asList(
+                KoulutusTyyppi.LUKIOKOULUTUS,
+                KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS,
+                KoulutusTyyppi.AIKUISLUKIOKOULUTUS)));
     }
 
     @Override
@@ -287,7 +290,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         PerusteInfoDto perusteInfoDto = findPerusteet(forceRefresh).stream()
                 .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
                 .findAny()
-                .orElseThrow(() -> new BusinessRuleViolationException("Perusopetuksen perustetta ei löytynyt"));
+                .orElseThrow(() -> new BusinessRuleViolationException("Perustetta ei löytynyt"));
 
         return getEperusteetPeruste(perusteInfoDto.getId(), forceRefresh);
     }

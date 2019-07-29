@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
-@Service
+@Profile("test")
 @Transactional
 public class EperusteetLocalService implements EperusteetService {
 
@@ -167,17 +167,10 @@ public class EperusteetLocalService implements EperusteetService {
 
     @Override
     public PerusteDto getPerusteById(Long id) {
-        PerusteCache cached = perusteCacheRepository.findOne(id);
-        if (cached == null) {
-            return null;
-        }
-        else {
-            return getPeruste((peruste) ->
-                    peruste.get("id") != null
-                            && Objects.equals(
-                                    cached.getPerusteId(),
-                                    peruste.get("id").asLong()));
-        }
+        return getPeruste((peruste) -> peruste.get("id") != null
+               && Objects.equals(
+                       id,
+                       peruste.get("id").asLong()));
     }
 
     @Override

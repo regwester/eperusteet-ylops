@@ -74,7 +74,8 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     private PerusteDto getPerusteImpl(Long opsId) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         PerusteCache perusteCached = ops.getCachedPeruste();
-        return eperusteetService.getPerusteById(perusteCached.getId());
+        PerusteDto perusteDto = eperusteetService.getPerusteById(perusteCached.getPerusteId());
+        return perusteDto;
     }
 
     @Override
@@ -84,7 +85,8 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public Lops2019SisaltoDto getSisalto(Long opsId) {
-        return getPerusteImpl(opsId).getLops2019();
+        PerusteDto perusteDto = getPerusteImpl(opsId);
+        return perusteDto.getLops2019();
     }
 
     @Override

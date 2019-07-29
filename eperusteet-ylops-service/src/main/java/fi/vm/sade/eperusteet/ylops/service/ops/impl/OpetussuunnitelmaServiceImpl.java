@@ -1044,11 +1044,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 viiteDto -> {
                     TekstiKappale kpl = new TekstiKappale();
                     TekstiKappaleViite result = new TekstiKappaleViite();
-                    ofNullable(mapper.map(viiteDto.getPerusteenOsa(), TekstiKappale.class))
-                            .ifPresent(osa -> {
-                                result.setPerusteTekstikappaleId(osa.getId());
-                                kpl.setNimi(osa.getNimi());
-                            });
+                    if (viiteDto.getPerusteenOsa() != null) {
+                        TekstiKappale tk = mapper.map(viiteDto.getPerusteenOsa(), TekstiKappale.class);
+                        result.setPerusteTekstikappaleId(tk.getId());
+                        kpl.setNimi(tk.getNimi());
+                    }
                     kpl.setId(null);
                     kpl.setTila(Tila.LUONNOS);
                     kpl.setValmis(false);
