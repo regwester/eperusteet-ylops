@@ -9,6 +9,7 @@ services:
   - docker
 
 cache:
+  yarn: true
   directories:
     - $HOME/.m2
     - $HOME/.npm
@@ -34,9 +35,9 @@ script:
   # Rakennetaan uuden lukion front end
   - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
   - cd eperusteet-ylops-lukio
-  - npm install
-  - npm run gen:api
-  - npm run build
+  - yarn install --frozen-lockfile
+  - yarn run gen:api
+  - yarn run build
   - cd ..
 
   # Rakennetaan palvelu
