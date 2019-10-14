@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import fi.vm.sade.eperusteet.ylops.dto.VirkailijaCriteriaDto;
 import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
@@ -29,16 +30,14 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.javautils.http.OphHttpClient;
 import fi.vm.sade.javautils.http.OphHttpRequest;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.PostConstruct;
+
+import fi.vm.sade.javautils.http.OphHttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +46,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.*;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 /**
@@ -55,6 +55,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 @Service
 public class OrganisaatioServiceImpl implements OrganisaatioService {
 
+    private static final String VIRKAILIJA_HAKU = "/virkailija/haku";
     private static final String ORGANISAATIOT = "/rest/organisaatio/";
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
     private static final String HAKU = "v2/hae?";
@@ -174,6 +175,55 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                                     .anyMatch(s -> s.equals(node.get("oppilaitostyyppi").asText())));
         }
 
+        public JsonNode getOrganisaatioVirkailijat(Set<String> organisaatioOids) {
+            OphHttpClient client = restClientFactory.get(koServiceUrl, true);
+            String url = koServiceUrl + VIRKAILIJA_HAKU;
+
+            VirkailijaCriteriaDto criteriaDto = new VirkailijaCriteriaDto();
+
+            criteriaDto.setDuplikaatti(false);
+            criteriaDto.setPassivoitu(false);
+
+            // Rajattu organisaatioon
+            criteriaDto.setOrganisaatioOids(organisaatioOids);
+
+            Map<String, Collection<String>> kayttooikeudet = new HashMap<>();
+            ArrayList<String> oikeudet = new ArrayList<>();
+            oikeudet.add(CRUD.toString());
+            oikeudet.add(READ_UPDATE.toString());
+            oikeudet.add(READ.toString());
+            oikeudet.add(ADMIN.toString());
+            kayttooikeudet.put("EPERUSTEET_YLOPS", oikeudet);
+            criteriaDto.setKayttooikeudet(kayttooikeudet);
+
+            try {
+                String jsonContent = mapper.writeValueAsString(criteriaDto);
+
+                OphHttpEntity entity = new OphHttpEntity.Builder()
+                        .content(jsonContent)
+                        .contentType("application/json", "UTF-8")
+                        .build();
+
+                OphHttpRequest request = OphHttpRequest.Builder
+                        .post(url)
+                        .setEntity(entity)
+                        .build();
+
+                return client.<JsonNode>execute(request)
+                        .expectedStatus(SC_OK)
+                        .mapWith(text -> {
+                            try {
+                                return mapper.readTree(text);
+                            } catch (IOException ex) {
+                                throw new BusinessRuleViolationException("Organisaation kuuluvien henkilöiden hakeminen epäonnistui", ex);
+                            }
+                        })
+                        .orElse(null);
+            } catch (JsonProcessingException e) {
+                return null;
+            }
+        }
+
         public List<OrganisaatioLaajaDto> getKoulutustoimijat(String kunta) {
             final String haku = HIERARKIA_HAKU + KUNTA_KRITEERI + kunta;
             JsonNode resultJson = get(haku);
@@ -240,6 +290,11 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     @Override
     public JsonNode getOrganisaatio(String organisaatioOid) {
         return client.getOrganisaatio(organisaatioOid);
+    }
+
+    @Override
+    public JsonNode getOrganisaatioVirkailijat(Set<String> organisaatioOids) {
+        return client.getOrganisaatioVirkailijat(organisaatioOids);
     }
 
     @Override

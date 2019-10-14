@@ -62,7 +62,7 @@
     <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
 
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service"/>
-    <context:component-scan base-package="fi.vm.sade.eperusteet.utils.client"/>
+    <context:component-scan base-package="fi.vm.sade.eperusteet.utils"/>
     <tx:annotation-driven/>
     <cache:annotation-driven/>
     <aop:aspectj-autoproxy/>
@@ -120,4 +120,5 @@
     <bean id="defaultExecutor" class="org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor">
         <constructor-arg ref="defaultThreadPool"/>
     </bean>
+
 </beans>

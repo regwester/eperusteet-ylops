@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- NOT IN USE -->
+
 <configuration>
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -16,7 +19,7 @@
   <logger name="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" level="error"/>
   <logger name="fi.vm.sade" level="warn"/>
   <logger name="fi.vm.sade.eperusteet.ylops" level="info"/>
-  <!--<logger name="fi.vm.sade.eperusteet.ylops.PROFILING" level="trace"/>-->
+  <logger name="fi.vm.sade.eperusteet.ylops.PROFILING" level="trace"/>
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiServiceImpl" level="info"/>
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiEventListener" level="warn"/>
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiBuilderServiceImpl" level="info"/>
@@ -24,4 +27,22 @@
   <root level="info">
     <appender-ref ref="console"/>
   </root>
+
+  <appender name="AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoding>UTF-8</encoding>
+    <file>${user.home}/logs/auditlog_eperusteet-ylops.log</file>
+    <append>true</append>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${user.home}/logs/auditlog_eperusteet-ylops.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+      <maxFileSize>20MB</maxFileSize>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="fi.vm.sade.eperusteet.ylops.service.audit" level="INFO" additivity="false">
+    <appender-ref ref="AUDIT" />
+  </logger>
+
 </configuration>
