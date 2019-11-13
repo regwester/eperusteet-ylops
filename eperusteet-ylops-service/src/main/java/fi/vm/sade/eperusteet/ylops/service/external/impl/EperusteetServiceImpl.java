@@ -119,7 +119,8 @@ public class EperusteetServiceImpl implements EperusteetService {
         return findPerusteet(getKoulutuskoodit(), false);
     }
 
-    private List<PerusteInfoDto> findPerusteet(boolean forceRefresh) {
+    @Override
+    public List<PerusteInfoDto> findPerusteet(boolean forceRefresh) {
         return findPerusteet(getKoulutuskoodit(), forceRefresh);
     }
 
