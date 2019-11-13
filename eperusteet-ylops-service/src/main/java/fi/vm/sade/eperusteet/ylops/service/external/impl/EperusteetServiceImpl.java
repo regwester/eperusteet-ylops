@@ -137,12 +137,13 @@ public class EperusteetServiceImpl implements EperusteetService {
             }
             log.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
                     + " Trying from DB-cache.", e);
-            return perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
+            List<PerusteInfoDto> result = perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
                     .map(wrapRuntime(
                             c -> c.getPerusteJson(jsonMapper),
                             (IOException e1) -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e)))
                     .map(f -> mapper.map(f, PerusteInfoDto.class))
                     .collect(toList());
+            return result;
         }
     }
 
