@@ -36,6 +36,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class EperusteetLocalService implements EperusteetService {
 
+    @Override
+    public List<PerusteInfoDto> findPerusteet(boolean forceRefresh) {
+        return null;
+    }
+
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
 
