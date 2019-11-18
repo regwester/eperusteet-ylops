@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -130,8 +131,21 @@ public class LiiteServiceImpl implements LiiteService {
     @Override
     @Transactional(readOnly = true)
     public List<LiiteDto> getAll(Long opsId) {
-        List<Liite> liitteet = this.liiteRepository.findByOpsId(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmat.findOne(opsId);
+        List<Liite> liitteet = getLiitteetDeep(ops);
         return mapper.mapAsList(liitteet, LiiteDto.class);
+    }
+
+    private List<Liite> getLiitteetDeep(Opetussuunnitelma ops) {
+        List<Liite> liitteet = new ArrayList<>(this.liiteRepository.findByOpsId(ops.getId()));
+
+        // Rekursiivisesti
+        Opetussuunnitelma parent = ops.getPohja();
+        if (parent != null) {
+            liitteet.addAll(getLiitteetDeep(parent));
+        }
+
+        return liitteet;
     }
 
     @Override
