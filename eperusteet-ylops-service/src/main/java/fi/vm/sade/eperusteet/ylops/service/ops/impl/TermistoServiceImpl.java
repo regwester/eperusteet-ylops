@@ -25,8 +25,8 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.TermistoRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,8 +51,21 @@ public class TermistoServiceImpl implements TermistoService {
     @Override
     @Transactional(readOnly = true)
     public List<TermiDto> getTermit(Long opsId) {
-        List<Termi> termit = termisto.findByOpsId(opsId);
+        Opetussuunnitelma ops = opsit.findOne(opsId);
+        List<Termi> termit = getTermitDeep(ops);
         return mapper.mapAsList(termit, TermiDto.class);
+    }
+
+    private List<Termi> getTermitDeep(Opetussuunnitelma ops) {
+        List<Termi> termit = new ArrayList<>(termisto.findByOpsId(ops.getId()));
+
+        // Rekursiivisesti
+        Opetussuunnitelma parent = ops.getPohja();
+        if (parent != null) {
+            termit.addAll(getTermitDeep(parent));
+        }
+
+        return termit;
     }
 
     @Override
