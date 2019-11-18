@@ -332,6 +332,12 @@
            eternal="false"
            timeToLiveSeconds="3600"
            overflowToDisk="false" />
+    
+    <cache name="ops-navigation"
+           maxElementsInMemory="500"
+           eternal="false"
+           timeToLiveSeconds="3600"
+           overflowToDisk="false"/>
 
     <cache name="lokalisoinnit"
            maxElementsInMemory="10000"
