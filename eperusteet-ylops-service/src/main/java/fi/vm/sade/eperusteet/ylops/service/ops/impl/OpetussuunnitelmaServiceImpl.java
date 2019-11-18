@@ -35,6 +35,8 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
@@ -164,8 +166,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Autowired
     private JsonMapper jsonMapper;
 
+    @Autowired
+    private OpsDispatcher dispatcher;
+
     @PersistenceContext
     private EntityManager em;
+
 
     private List<Opetussuunnitelma> findByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getQuery(pquery);
@@ -406,6 +412,19 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return data;
     }
 
+    @Override
+    public NavigationNodeDto buildNavigationWithDate(Long opsId, Date pvm) {
+        NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilder.class)
+                .buildNavigation(opsId);
+        return siirraLiitteetLoppuun(navigationNodeDto);
+    }
+
+    @Override
+    public NavigationNodeDto buildNavigation(Long opsId) {
+        // Todo: toteuta global version, jotta navigaatio voidaan cachea
+        return buildNavigationWithDate(opsId, new Date());
+    }
+
 
     @Override
     public OpetussuunnitelmanJulkaisuDto addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
@@ -539,6 +558,35 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oppimaara.getVuosiluokkakokonaisuudet().forEach(
                     oppiaineenvuosiluokkakokonaisuus -> oppiaineenvuosiluokkakokonaisuus.setJnro(node.getJnro()));
         }
+    }
+
+    private NavigationNodeDto siirraLiitteetLoppuun(NavigationNodeDto navigationNodeDto) {
+        Stack<NavigationNodeDto> stack = new Stack<>();
+        stack.push(navigationNodeDto);
+
+        List<NavigationNodeDto> liitteet = new ArrayList<>();
+
+        while (!stack.empty()) {
+            NavigationNodeDto head = stack.pop();
+
+            // Kerätään liitteet talteen
+            liitteet.addAll(head.getChildren().stream()
+                    .filter(child -> Objects.equals(child.getType(), NavigationType.liite))
+                    .collect(Collectors.toList()));
+
+            // Poistetaan liitteet
+            head.setChildren(head.getChildren().stream()
+                    .filter(child -> !Objects.equals(child.getType(), NavigationType.liite))
+                    .collect(Collectors.toList()));
+
+            // Käydään lävitse myös lapset
+            stack.addAll(head.getChildren());
+        }
+
+        // Lisätään liitteet loppuun
+        navigationNodeDto.getChildren().addAll(liitteet);
+
+        return navigationNodeDto;
     }
 
     private void fetchKuntaNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
