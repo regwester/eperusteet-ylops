@@ -861,6 +861,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         tkv.setPakollinen(vanhaTkv.isPakollinen());
                         tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());
                         tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
+                        tkv.setLiite(vanhaTkv.isLiite());
                         TekstiKappale tkCopy = vanhaTkv.getTekstiKappale().copy();
                         tkCopy.setTeksti(null);
                         tkv.setTekstiKappale(tekstiKappaleRepository.save(tkCopy));
@@ -1125,6 +1126,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         TekstiKappale tk = mapper.map(viiteDto.getPerusteenOsa(), TekstiKappale.class);
                         result.setPerusteTekstikappaleId(tk.getId());
                         kpl.setNimi(tk.getNimi());
+                        result.setLiite(viiteDto.getPerusteenOsa().getLiite()
+                                ? viiteDto.getPerusteenOsa().getLiite() : false);
                     }
                     kpl.setId(null);
                     kpl.setTila(Tila.LUONNOS);

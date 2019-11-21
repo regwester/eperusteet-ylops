@@ -37,4 +37,5 @@ public class PerusteTekstiKappaleDto {
     private Tila tila;
     private String tunniste;
     private String osanTyyppi;
+    private Boolean liite;
 }

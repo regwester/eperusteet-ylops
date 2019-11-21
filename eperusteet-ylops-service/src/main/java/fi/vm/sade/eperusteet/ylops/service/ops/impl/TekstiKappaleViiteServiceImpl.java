@@ -158,6 +158,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.setValmis(uusi.isValmis());
         viite.setNaytaPerusteenTeksti(uusi.isNaytaPerusteenTeksti());
         viite.setNaytaPohjanTeksti(uusi.isNaytaPohjanTeksti());
+        viite.setLiite(uusi.isLiite());
         viite = tekstikappaleviiteRepository.save(viite);
         return mapper.map(viite, TekstiKappaleViiteDto.class);
     }

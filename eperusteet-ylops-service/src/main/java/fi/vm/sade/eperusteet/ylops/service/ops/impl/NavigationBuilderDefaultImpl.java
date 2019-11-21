@@ -35,12 +35,13 @@ public class NavigationBuilderDefaultImpl implements NavigationBuilder {
         return Collections.emptySet();
     }
 
-    public NavigationNodeDto buildTekstinavi(TekstiKappaleViite root) {
+    private NavigationNodeDto buildTekstinavi(TekstiKappaleViite root) {
         LokalisoituTekstiDto nimi = root.getTekstiKappale() != null
                 ? mapper.map(root.getTekstiKappale().getNimi(), LokalisoituTekstiDto.class)
                 : null;
+
         return NavigationNodeDto
-                .of(NavigationType.viite, nimi, root.getId())
+                .of(root.isLiite() ? NavigationType.liite : NavigationType.viite, nimi, root.getId())
                 .addAll(Optional.ofNullable(root.getLapset())
                     .map(lapset -> lapset.stream()
                             .map(this::buildTekstinavi)
@@ -49,8 +50,8 @@ public class NavigationBuilderDefaultImpl implements NavigationBuilder {
     }
 
     @Override
-    public NavigationNodeDto buildNavigation(Long perusteId) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.getOne(perusteId);
+    public NavigationNodeDto buildNavigation(Long opsId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.getOne(opsId);
         return NavigationNodeDto.of(NavigationType.root)
                 .addAll(buildTekstinavi(ops.getTekstit()).getChildren());
     }
