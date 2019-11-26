@@ -38,4 +38,6 @@ public class OpetuksenTavoiteDto implements ReferenceableDto {
     @JsonIdentityReference(alwaysAsId = true)
     private Set<OpetuksenKohdealueDto> kohdealueet;
     private Set<TavoitteenArviointiDto> arvioinninkohteet;
+    private PerusteenLokalisoituTekstiDto arvioinninKuvaus;
+    private PerusteenLokalisoituTekstiDto vapaaTeksti;
 }

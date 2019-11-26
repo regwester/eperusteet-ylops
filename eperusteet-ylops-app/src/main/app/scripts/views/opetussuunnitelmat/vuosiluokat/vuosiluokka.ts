@@ -100,6 +100,8 @@ ylopsApp
                         return laajaalainen;
                     });
                     item.$arvioinninkohteet = perusteTavoite.arvioinninkohteet;
+                    item.$arvioinninKuvaus = perusteTavoite.arvioinninKuvaus;
+                    item.$vapaaTeksti = perusteTavoite.vapaaTeksti;
                 }
             });
 
@@ -223,6 +225,19 @@ ylopsApp
                 isEditing: false
             };
         };
+
+        $scope.getArvioinninKohteenTeksti = (tavoite) => {
+            
+            const hyvanOsaamisenArvio = _.find(tavoite.$arvioinninkohteet, (arvioinninkohde: any) => {
+                return arvioinninkohde.arvosana == 8
+            });
+
+            if(hyvanOsaamisenArvio && !_.isEmpty(hyvanOsaamisenArvio.arvioinninKohde)) {
+                return hyvanOsaamisenArvio.arvioinninKohde;
+            }
+
+            return tavoite.$arvioinninKuvaus;
+        }
 
         $scope.callbacks = {
             edit: () => $q(resolve => resolve()),
