@@ -134,6 +134,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                                     NavigationType.moduuli,
                                     mapper.map(m.getNimi(), LokalisoituTekstiDto.class),
                                     m.getId())
+                                    .meta("oppiaine", m.getOppiaine() != null ? m.getOppiaine().getId() : null)
                                     .meta("koodi", mapper.map(m.getKoodi(), KoodiDto.class))
                                     .meta("laajuus", m.getLaajuus())
                                     .meta("pakollinen", m.isPakollinen()))));
