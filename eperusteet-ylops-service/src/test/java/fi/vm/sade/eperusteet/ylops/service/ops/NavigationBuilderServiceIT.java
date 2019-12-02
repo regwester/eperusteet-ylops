@@ -61,7 +61,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = createOpetussuunnitelma();
         NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
         assertThat(navi.getType()).isEqualTo(NavigationType.root);
-        assertThat(navi.getChildren()).hasSize(6);
+        assertThat(navi.getChildren()).hasSize(7);
         assertThat(navi.getChildren().get(0).getType()).isEqualTo(NavigationType.viite);
     }
 }

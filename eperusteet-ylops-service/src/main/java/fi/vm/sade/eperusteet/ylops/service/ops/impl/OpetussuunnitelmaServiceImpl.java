@@ -1126,8 +1126,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         TekstiKappale tk = mapper.map(viiteDto.getPerusteenOsa(), TekstiKappale.class);
                         result.setPerusteTekstikappaleId(tk.getId());
                         kpl.setNimi(tk.getNimi());
-                        result.setLiite(viiteDto.getPerusteenOsa().getLiite()
-                                ? viiteDto.getPerusteenOsa().getLiite() : false);
+                        if (viiteDto.getPerusteenOsa() != null && viiteDto.getPerusteenOsa().getLiite() != null) {
+                            result.setLiite(viiteDto.getPerusteenOsa().getLiite()
+                                    ? viiteDto.getPerusteenOsa().getLiite() : false);
+                        }
                     }
                     kpl.setId(null);
                     kpl.setTila(Tila.LUONNOS);
