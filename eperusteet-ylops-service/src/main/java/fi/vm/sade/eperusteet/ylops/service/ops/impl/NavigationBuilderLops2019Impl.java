@@ -26,7 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Component
 @Transactional
@@ -72,32 +76,23 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
         List<Lops2019OppiaineKaikkiDto> oppiaineet = lopsService.getPerusteOppiaineet(opsId);
         List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(opsId);
 
-        Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = new HashMap<>();
-        List<Lops2019OpintojaksoDto> opsOpintojaksot = opintojaksoService.getAll(opsId);
-        if (!ObjectUtils.isEmpty(opsOpintojaksot)) {
-            opsOpintojaksot.forEach(oj -> {
-                Set<Lops2019OpintojaksonOppiaineDto> ojOppiaineet = oj.getOppiaineet();
-                if (!ObjectUtils.isEmpty(ojOppiaineet)) {
-                    ojOppiaineet.forEach(oa -> {
-                        String key = oa.getKoodi();
-                        if (!ObjectUtils.isEmpty(key)) {
-                            if (!opintojaksotMap.containsKey(key)) {
-                                opintojaksotMap.put(key, new HashSet<>());
-                            }
-                            opintojaksotMap.get(key).add(oj);
-                        }
-                    });
-                }
-            });
-        }
+        // Järjestetään oppiaineen koodilla opintojaksot
+        Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAll(opsId).stream()
+                .flatMap(oj -> oj.getOppiaineet().stream()
+                        .map(oa -> new AbstractMap.SimpleImmutableEntry<>(oa.getKoodi(), oj)))
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue, toSet())
+                ));
+
 
         return NavigationNodeDto.of(NavigationType.oppiaineet)
                 .addAll(oppiaineet.stream()
                         .map(oa -> mapOppiaine(oa, opintojaksotMap))
-                        .collect(Collectors.toList()))
+                        .collect(toList()))
                 .addAll(paikallisetOppiaineet.stream()
                         .map(this::mapPaikallinenOppiaine)
-                        .collect(Collectors.toList()));
+                        .collect(toList()));
     }
 
     private NavigationNodeDto mapOppiaine(
