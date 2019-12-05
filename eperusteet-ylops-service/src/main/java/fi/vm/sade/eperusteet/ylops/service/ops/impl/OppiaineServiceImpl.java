@@ -1000,12 +1000,28 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                             .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
                             .collect(Collectors.toSet()));
                     opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
-                            .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getHyvanOsaamisenKuvaus())))
+                            .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getOsaamisenKuvaus()), new Integer(a.getArvosana())))
                             .collect(Collectors.toSet()));
+
+                    if(t.getArvioinninKuvaus() != null) {
+                        opst.setArvioinninKuvaus(LokalisoituTeksti.of(t.getArvioinninKuvaus().getTekstit()));
+                    }
+
+                    if(t.getVapaaTeksti() != null) {
+                        opst.setVapaaTeksti(LokalisoituTeksti.of(t.getVapaaTeksti().getTekstit()));
+                    }
+                    if(t.getTavoitteistaJohdetutOppimisenTavoitteet() != null) {
+                        opst.setTavoitteistaJohdetutOppimisenTavoitteet(LokalisoituTeksti.of(t.getTavoitteistaJohdetutOppimisenTavoitteet().getTekstit()));
+                    }
+
                     return opst;
                 })
                 .collect(Collectors.toList());
         ov.setTavoitteet(tmp);
+
+        if(pvk.getVapaaTeksti() != null) {
+            ov.setVapaaTeksti(LokalisoituTeksti.of(pvk.getVapaaTeksti().getTekstit()));
+        }
     }
 
     private LokalisoituTeksti fromDto(LokalisoituTekstiDto dto) {

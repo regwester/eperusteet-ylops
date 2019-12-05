@@ -27,5 +27,14 @@ import lombok.Setter;
 public class TavoitteenArviointiDto implements ReferenceableDto {
     private Long id;
     private PerusteenLokalisoituTekstiDto arvioinninKohde;
-    private PerusteenLokalisoituTekstiDto hyvanOsaamisenKuvaus;
+    private PerusteenLokalisoituTekstiDto osaamisenKuvaus;
+    private Integer arvosana;
+
+    public PerusteenLokalisoituTekstiDto getHyvanOsaamisenKuvaus() {
+        if(arvosana == null || arvosana == 8) {
+            return osaamisenKuvaus;
+        }
+
+        return null;
+    }
 }
