@@ -115,6 +115,10 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Column(name = "nayta_pohjan_teksti")
     private boolean naytaPohjanTeksti = true;
 
+    @Getter
+    @Setter
+    @NotNull
+    private boolean liite = false;
 
     public TekstiKappaleViite() {
     }

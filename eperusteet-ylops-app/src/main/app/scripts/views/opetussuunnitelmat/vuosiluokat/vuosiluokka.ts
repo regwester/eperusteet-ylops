@@ -102,6 +102,7 @@ ylopsApp
                     item.$arvioinninkohteet = perusteTavoite.arvioinninkohteet;
                     item.$arvioinninKuvaus = perusteTavoite.arvioinninKuvaus;
                     item.$vapaaTeksti = perusteTavoite.vapaaTeksti;
+                    item.$tavoitteistaJohdetutOppimisenTavoitteet = perusteTavoite.tavoitteistaJohdetutOppimisenTavoitteet;
                 }
             });
 
@@ -192,9 +193,9 @@ ylopsApp
                     resolve();
                 });
             });
+
         $scope.vuosiluokka = vuosiluokkaSisalto;
         VuosiluokkaMapper.mapModel($scope);
-
         $scope.options = {
             editing: false,
             isEditable: () => $scope.oppiaine.oma && OpsService.isEditable()
@@ -227,7 +228,7 @@ ylopsApp
         };
 
         $scope.getArvioinninKohteenTeksti = (tavoite) => {
-            
+
             const hyvanOsaamisenArvio = _.find(tavoite.$arvioinninkohteet, (arvioinninkohde: any) => {
                 return arvioinninkohde.arvosana == 8
             });
