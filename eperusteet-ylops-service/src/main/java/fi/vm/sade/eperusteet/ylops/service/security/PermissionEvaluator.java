@@ -51,6 +51,7 @@ public class PermissionEvaluator implements org.springframework.security.access.
         }
 
         public static final Organization OPH = new Organization(SecurityUtil.OPH_OID);
+        public static final Organization OPH_KOULUTUSTOIMIJA = new Organization(SecurityUtil.OPH_KOULUTUSTOIMIJA_OID);
         static final Organization ANY = new Organization();
     }
 
