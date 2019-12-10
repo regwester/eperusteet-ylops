@@ -34,7 +34,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public final class SecurityUtil {
 
     public static final String OPH_OID = "1.2.246.562.10.00000000001";
-    public static final String OPH_KOULUTUSTOIMIJA_OID = "1.2.246.562.10.48587687889";
 
     private SecurityUtil() {
         //helper class

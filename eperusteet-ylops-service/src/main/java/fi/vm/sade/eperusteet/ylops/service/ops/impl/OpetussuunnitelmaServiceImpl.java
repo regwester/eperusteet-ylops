@@ -73,8 +73,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil.OPH_KOULUTUSTOIMIJA_OID;
-import static fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil.OPH_OID;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import java.util.function.Consumer;
@@ -294,40 +292,32 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi, Tila tila) {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
-        Set<String> adminOrganisaatiot = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.ADMIN));
         final List<Opetussuunnitelma> opetussuunnitelmat;
         if (tyyppi == Tyyppi.POHJA) {
-            if (adminOrganisaatiot.contains(OPH_KOULUTUSTOIMIJA_OID)) {
-                opetussuunnitelmat = repository.findPohja();
-            } else {
-                opetussuunnitelmat = repository.findPohja(organisaatiot);
-            }
+            opetussuunnitelmat = repository.findPohja(organisaatiot);
         } else {
-            if (adminOrganisaatiot.contains(OPH_KOULUTUSTOIMIJA_OID)) {
-                opetussuunnitelmat = repository.findAllByTyyppi(tyyppi);
-            } else {
-                opetussuunnitelmat = repository.findAllByTyyppi(tyyppi, organisaatiot);
-            }
+            opetussuunnitelmat = repository.findAllByTyyppi(tyyppi, organisaatiot);
         }
 
         return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class).stream()
-                .filter(ops -> tila == null || ops.getTila() == tila)
-                .peek(dto -> {
-                    fetchKuntaNimet(dto);
-                    fetchOrganisaatioNimet(dto);
-                })
-                .collect(Collectors.toList());
+            .filter(ops -> tila == null || ops.getTila() == tila)
+            .map(dto -> {
+                fetchKuntaNimet(dto);
+                fetchOrganisaatioNimet(dto);
+                return dto;
+            })
+            .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Long getAmount(Tyyppi tyyppi, Set<Tila> tilat) {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
-        Set<String> adminOrganisaatiot = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.ADMIN));
-        if (adminOrganisaatiot.contains(OPH_KOULUTUSTOIMIJA_OID)) {
-            return repository.countByTyyppi(tyyppi, tilat);
+        if (tyyppi == Tyyppi.POHJA) {
+            return repository.countByTyyppi(tyyppi, tilat, organisaatiot);
+        } else {
+            return repository.countByTyyppi(tyyppi, tilat, organisaatiot);
         }
-        return repository.countByTyyppi(tyyppi, tilat, organisaatiot);
     }
 
     @Override
@@ -341,12 +331,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional(readOnly = true)
     public OpetussuunnitelmaStatistiikkaDto getStatistiikka() {
         List<OpetussuunnitelmaInfoDto> opsit = mapper.mapAsList(repository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class).stream()
-                .peek(ops -> {
+                .map(ops -> {
                     try {
                         fetchOrganisaatioNimet(ops);
                     } catch (BusinessRuleViolationException ex) {
                         logger.error(ex.getLocalizedMessage());
                     }
+                    return ops;
                 })
                 .collect(Collectors.toList());
 
@@ -1075,7 +1066,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         Opetussuunnitelma pohja = mapper.map(pohjaDto, Opetussuunnitelma.class);
         // Jokainen pohja sisältää OPH:n organisaationaan
-        pohja.getOrganisaatiot().add(OPH_OID);
+        pohja.getOrganisaatiot().add(SecurityUtil.OPH_OID);
 
         Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD));
         if (CollectionUtil.intersect(userOids, pohja.getOrganisaatiot()).isEmpty()) {
