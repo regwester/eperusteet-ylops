@@ -123,12 +123,6 @@ public class PermissionManager {
             }
         }
 
-        // EP-1970
-        // Sallitaan erikoisoikeudet jos kyseessä OPH koulutustoimija organisaatio admin-oikeuksilla
-        if (hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.ADMIN, Organization.OPH_KOULUTUSTOIMIJA)) {
-            return true;
-        }
-
         // Salli valmiiden pohjien lukeminen kaikilta joilla on CRUD-oikeus tai ADMIN-oikeus
         if (perm == Permission.LUKU && targetId != null &&
                 (hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.ANY) ||
@@ -242,8 +236,7 @@ public class PermissionManager {
         Set<Permission> pohjaPermissions =
                 EnumSet.allOf(RolePermission.class).stream()
                         .map(p -> new Pair<>(p, SecurityUtil.getOrganizations(Collections.singleton(p))))
-                        .filter(pair -> pair.getSecond().contains(SecurityUtil.OPH_OID)
-                                || pair.getSecond().contains(SecurityUtil.OPH_KOULUTUSTOIMIJA_OID))
+                        .filter(pair -> pair.getSecond().contains(SecurityUtil.OPH_OID))
                         .flatMap(pair -> fromRolePermission(pair.getFirst()).stream())
                         .collect(Collectors.toSet());
         permissionMap.put(TargetType.POHJA, pohjaPermissions);

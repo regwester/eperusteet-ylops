@@ -465,7 +465,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         OpetussuunnitelmaLaajaDto opsData = getOpetussuunnitelmaEnempi(opsId);
 
         try {
-            ObjectNode opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
+            ObjectNode opsDataJson = (ObjectNode)jsonMapper.toJson(opsData);
             List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
             if (!vanhatJulkaisut.isEmpty()) {
                 int lastHash = vanhatJulkaisut.get(vanhatJulkaisut.size() - 1).getData().getHash();
@@ -481,7 +481,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             julkaisu = julkaisuRepository.save(julkaisu);
             return mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class);
         } catch (IOException e) {
-            logger.error(e.getLocalizedMessage(), e);
+            e.printStackTrace();
             throw new BusinessRuleViolationException("julkaisun-tallennus-epaonnistui");
         }
     }
