@@ -6,6 +6,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,15 +19,11 @@ import java.util.UUID;
 public class Kommentti2019 {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Getter
-    @Setter
-    private Long id;
-
     @Getter
     @Setter
     @Column(updatable = false)
-    private UUID uuid;
+    @NotNull
+    private UUID tunniste;
 
     @Getter
     @Setter

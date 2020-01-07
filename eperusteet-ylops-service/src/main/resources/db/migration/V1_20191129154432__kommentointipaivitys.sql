@@ -1,9 +1,10 @@
 drop table if exists kommentti_2019;
 drop table if exists kommentti_2019_AUD;
 
+create extension if not exists "uuid-ossp";
+
 create table kommentti_2019 (
-    id int8 not null,
-    uuid uuid not null,
+    tunniste uuid not null,
     kommentti varchar(255),
     luoja varchar(255),
     luotu timestamp,
@@ -11,12 +12,11 @@ create table kommentti_2019 (
     opsId int8,
     parent uuid,
     sisalto varchar(1024),
-    primary key (id)
+    primary key (tunniste)
 );
 
 create table kommentti_2019_AUD (
-    id int8 not null,
-    uuid uuid not null,
+    tunniste uuid not null,
     REV int4 not null,
     REVTYPE int2,
     REVEND int4,
@@ -27,7 +27,7 @@ create table kommentti_2019_AUD (
     opsId int8,
     parent uuid,
     sisalto varchar(1024),
-    primary key (id, REV)
+    primary key (tunniste, REV)
 );
 
 alter table kommentti_2019_AUD 

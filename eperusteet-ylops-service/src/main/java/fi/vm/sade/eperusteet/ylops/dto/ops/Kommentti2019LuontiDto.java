@@ -9,5 +9,4 @@ import java.util.UUID;
 @Setter
 public class Kommentti2019LuontiDto {
     private String sisalto;
-    private UUID parent;
 }

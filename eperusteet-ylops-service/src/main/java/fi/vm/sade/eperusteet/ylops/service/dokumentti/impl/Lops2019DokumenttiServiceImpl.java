@@ -380,8 +380,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Laaja-alainen osaaminen ja paikallinen lisäys
         addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-        addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
-        addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
+
+        // Näitä ei oletuksena mukaan
+//        addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
+//        addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
         addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
 
         // Arviointi
