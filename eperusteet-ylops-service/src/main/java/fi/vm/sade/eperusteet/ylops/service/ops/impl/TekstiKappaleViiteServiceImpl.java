@@ -145,7 +145,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public TekstiKappaleViiteDto updateTekstiKappaleViite(
             @P("opsId") Long opsId,
             Long viiteId,
-            TekstiKappaleViiteDto uusi) {
+            TekstiKappaleViiteDto uusi
+    ) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         // Nopea ratkaisu sisällön häviämiseen, korjaantuu oikein uuden näkymän avulla
         if (uusi.getTekstiKappale().getTeksti() == null) {
@@ -158,6 +159,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.setValmis(uusi.isValmis());
         viite.setNaytaPerusteenTeksti(uusi.isNaytaPerusteenTeksti());
         viite.setNaytaPohjanTeksti(uusi.isNaytaPohjanTeksti());
+        viite.setLiite(uusi.isLiite());
         viite = tekstikappaleviiteRepository.save(viite);
         return mapper.map(viite, TekstiKappaleViiteDto.class);
     }
@@ -357,6 +359,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             TekstiKappaleViite uusiViite = mapper.map(uusi, TekstiKappaleViite.class);
             uusiViite.getTekstiKappale().setValmis(false);
             uusiViite.getTekstiKappale().setTila(Tila.LUONNOS);
+            uusiViite.getLapset().clear();
             uusiViite.setTekstiKappale(tekstiKappaleRepository.save(uusiViite.getTekstiKappale()));
             viite = tekstikappaleviiteRepository.save(uusiViite);
             refs.add(viite);
