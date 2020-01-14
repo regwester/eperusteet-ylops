@@ -11,4 +11,5 @@ import java.util.UUID;
 
 @Repository
 public interface Kommentti2019Repository extends JpaWithVersioningRepository<Kommentti2019, UUID> {
+    List<Kommentti2019> findAllByThread(UUID thread);
 }

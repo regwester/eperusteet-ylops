@@ -48,6 +48,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @RequestMapping("/kommentit")
 @ApiIgnore
 @Api("Kommentit")
+@Deprecated
 public class KommenttiController {
 
     @Autowired

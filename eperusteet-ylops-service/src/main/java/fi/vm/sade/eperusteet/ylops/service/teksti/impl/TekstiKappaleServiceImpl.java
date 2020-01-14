@@ -76,7 +76,8 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
         TekstiKappale current = assertExists(repository.findOne(id), "Tekstikappaletta ei ole olemassa");
         repository.lock(current);
         mapper.map(tekstiKappaleDto, current);
-        return mapper.map(repository.save(current), TekstiKappaleDto.class);
+        TekstiKappale tk = repository.save(current);
+        return mapper.map(tk, TekstiKappaleDto.class);
     }
 
     @Override

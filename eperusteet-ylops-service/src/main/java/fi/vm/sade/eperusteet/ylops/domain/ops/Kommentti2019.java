@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -13,6 +14,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Kommenttikahvaan kiinnitetty kommentti. Kommentit haetaan tekstisisältöjen relaationa löytyvästä ketjusta.
+ */
 @Entity
 @Table(name = "kommentti_2019")
 @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -28,18 +32,19 @@ public class Kommentti2019 {
     @Getter
     @Setter
     @Column(updatable = false)
-    private UUID parent;
+    @NotNull
+    private UUID thread;
+
+    @Getter
+    @Setter
+    @Column(updatable = false)
+    private UUID reply;
 
     @Getter
     @Setter
     @Column(length = 1024)
     @Size(max = 1024, message = "Kommentin maksimipituus on {max} merkkiä")
     private String sisalto;
-
-    @Getter
-    @Setter
-    @Column(updatable = false)
-    private Long opsId;
 
     @Column(updatable = false)
     @Getter
@@ -57,10 +62,5 @@ public class Kommentti2019 {
     @Setter
     @Column(updatable = false)
     private String luoja;
-
-    @Getter
-    @Setter
-    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
-    private List<Kommentti2019> kommentit = new ArrayList<>();
 
 }
