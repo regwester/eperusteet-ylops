@@ -223,6 +223,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Column(name = "ryhman_nimi")
     private String ryhmanNimi;
 
+    @Getter
+    @Setter
+    private boolean ainepainoitteinen;
+
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
     }
@@ -387,4 +391,16 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public NavigationType getNavigationType() {
         return NavigationType.opetussuunnitelma;
     }
+
+    public Date getPerusteenVoimassaoloAlkaa() {
+        return cachedPeruste != null ? cachedPeruste.getVoimassaoloAlkaa() : null;
+    }
+
+    public Date getPerusteenVoimassaoloLoppuu(){
+        return cachedPeruste != null ? cachedPeruste.getVoimassaoloLoppuu() : null;
+    }
+
+    public void setPerusteenVoimassaoloAlkaa() {}
+
+    public void setPerusteenVoimassaoloLoppuu() {}
 }

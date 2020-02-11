@@ -85,7 +85,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,7 +173,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private EntityManager em;
 
     @Autowired
-    private MuokkaustietoService muokkaustietoService;
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     private List<Opetussuunnitelma> findByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getQuery(pquery);
@@ -690,6 +689,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ops.setTekstit(new TekstiKappaleViite(Omistussuhde.OMA));
             ops.getTekstit().setLapset(new ArrayList<>());
 
+            checkValidPohja(ops);
+
             if (pohja.getPerusteenDiaarinumero() == null) {
                 throw new BusinessRuleViolationException("Pohjalta puuttuu perusteen diaarinumero");
             }
@@ -726,6 +727,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private void checkValidPohja(Opetussuunnitelma ops) {
+        if(ops.getPohja().getPohja() == null) {
+            if (!Tila.VALMIS.equals(ops.getPohja().getTila()) & !Tila.JULKAISTU.equals(ops.getPohja().getTila())) {
+                throw new BusinessRuleViolationException("pohjan-pitaa-olla-julkaistu");
+            }
+        }
     }
 
     private void lisaaTeemaopinnotJosPohjassa(Opetussuunnitelma ops, Opetussuunnitelma pohja) {
@@ -1420,7 +1429,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public OpetussuunnitelmaDto updateTila(@P("id") Long id, Tila tila) {
+    public OpetussuunnitelmaDto updateTila(Long id, Tila tila) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
@@ -1544,7 +1553,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public OpetussuunnitelmaDto restore(@P("id") Long id) {
+    public OpetussuunnitelmaDto restore(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 

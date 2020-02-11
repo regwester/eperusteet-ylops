@@ -448,7 +448,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 element.setAttribute("src", "data:image/jpg;base64," + base64);
             }
 
-        } catch (XPathExpressionException | IOException e) {
+        } catch (XPathExpressionException | IOException | NotExistsException e) {
             LOG.error(e.getLocalizedMessage());
         }
     }

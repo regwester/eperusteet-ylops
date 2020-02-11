@@ -1,16 +1,15 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
+import fi.vm.sade.eperusteet.ylops.domain.AikatauluTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -28,47 +27,37 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Getter
 @Setter
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "opetussuunnitelman_muokkaustieto")
-public class OpetussuunnitelmanMuokkaustieto implements Serializable {
+@Audited
+@Table(name = "opetussuunnitelman_aikataulu")
+public class OpetussuunnitelmaAikataulu extends AbstractAuditedEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
     private Long id;
 
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private LokalisoituTeksti nimi;
-
-    @Enumerated(value = EnumType.STRING)
     @NotNull
-    private MuokkausTapahtuma tapahtuma;
-
     @Column(name = "opetussuunnitelma_id")
     private Long opetussuunnitelmaId;
 
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private LokalisoituTeksti tavoite;
+
     @Enumerated(value = EnumType.STRING)
     @NotNull
-    private NavigationType kohde;
+    private AikatauluTapahtuma tapahtuma;
 
-    @Column(updatable = false)
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    private Date luotu;
+    private Date tapahtumapaiva;
 
-    private String muokkaaja;
-
-    @NotNull
-    @Column(name="kohde_id")
-    private Long kohdeId;
-
-    private String lisatieto;
-
-    @NotNull
-    private boolean poistettu = false;
 }

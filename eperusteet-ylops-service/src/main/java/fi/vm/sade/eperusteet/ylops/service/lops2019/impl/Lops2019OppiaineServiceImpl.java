@@ -19,7 +19,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import java.util.List;
@@ -69,9 +69,9 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     private EntityManager em;
 
     @Autowired
-    private MuokkaustietoService muokkaustietoService;
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
-    private Opetussuunnitelma getOpetussuunnitelma(@P("opsId") Long opsId) {
+    private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops == null) {
             throw new BusinessRuleViolationException("opetussuunnitelmaa-ei-loytynyt");
@@ -101,23 +101,52 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     }
 
     @Override
-    public Lops2019PaikallinenOppiaineDto addOppiaine(Long opsId, Lops2019PaikallinenOppiaineDto oppiaineDto) {
+    public Lops2019PaikallinenOppiaineDto addOppiaine(
+            Long opsId,
+            Lops2019PaikallinenOppiaineDto oppiaineDto
+    ) {
+        return this.addOppiaine(opsId, oppiaineDto, null);
+    }
+
+    @Override
+    public Lops2019PaikallinenOppiaineDto addOppiaine(
+            Long opsId,
+            Lops2019PaikallinenOppiaineDto oppiaineDto,
+            MuokkausTapahtuma tapahtuma
+    ) {
         Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
         Lops2019Oppiaine oppiaine = mapper.map(oppiaineDto, Lops2019Oppiaine.class);
         oppiaine.setId(null);
         oppiaine.setSisalto(opetussuunnitelma.getLops2019());
         oppiaine = oppiaineRepository.save(oppiaine);
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.LUONTI);
+        muokkaustietoService.addOpsMuokkausTieto(opsId,
+                oppiaine,
+                tapahtuma != null ? tapahtuma : MuokkausTapahtuma.LUONTI);
         return mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
     }
 
     @Override
-    public Lops2019PaikallinenOppiaineDto updateOppiaine(Long opsId, Long oppiaineId, UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto) {
+    public Lops2019PaikallinenOppiaineDto updateOppiaine(
+            Long opsId,
+            Long oppiaineId,
+            UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto
+    ) {
+        return this.updateOppiaine(opsId, oppiaineId, oppiaineDto, null);
+    }
+
+    @Override
+    public Lops2019PaikallinenOppiaineDto updateOppiaine(
+            Long opsId,
+            Long oppiaineId,
+            UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto,
+            MuokkausTapahtuma tapahtuma
+    ) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Lops2019Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
         String oppiaineenKoodi = oppiaine.getKoodi();
         mapper.map(oppiaineDto.getData(), oppiaine);
+        oppiaine.updateMuokkaustiedot();
         oppiaine = oppiaineRepository.save(oppiaine);
         if (!Objects.equals(oppiaineenKoodi, oppiaineDto.getData().getKoodi())) {
             for (Lops2019OpintojaksonOppiaine ojOa : opintojaksonOppiaineRepository
@@ -127,7 +156,7 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
             }
         }
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS);
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, tapahtuma != null ? tapahtuma : MuokkausTapahtuma.PAIVITYS);
         return mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
     }
 
@@ -141,6 +170,7 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         poistettu.setPoistettu_id(oppiaineId);
         poistettu.setPalautettu(false);
         poistettu.setTyyppi(PoistetunTyyppi.LOPS2019OPPIAINE);
+        oppiaine.updateMuokkaustiedot();
         poistetutRepository.save(poistettu);
         oppiaineRepository.delete(oppiaine);
 
@@ -172,6 +202,11 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
 
     @Override
     public Lops2019PaikallinenOppiaineDto revertTo(Long opsId, Long oppiaineId, Integer versio) {
-        throw new UnsupportedOperationException("not implemented yet");
+        getOppiaine(opsId, oppiaineId);
+        Lops2019Oppiaine revision = oppiaineRepository.findRevision(oppiaineId, versio);
+        Lops2019PaikallinenOppiaineDto dto = mapper.map(revision, Lops2019PaikallinenOppiaineDto.class);
+        UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> wrapperDto = new UpdateWrapperDto<>();
+        wrapperDto.setData(dto);
+        return updateOppiaine(opsId, oppiaineId, wrapperDto, MuokkausTapahtuma.PALAUTUS);
     }
 }

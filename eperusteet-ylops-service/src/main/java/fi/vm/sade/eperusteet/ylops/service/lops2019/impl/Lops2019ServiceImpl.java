@@ -1,11 +1,11 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Poistettu;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -14,7 +14,6 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDt
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
@@ -22,7 +21,6 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
-import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.LaajaalainenOsaaminenDto;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
@@ -111,7 +109,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         Lops2019Oppiaine latest = oppiaineRepository.getLatestNotNull(poistettuInfo.getPoistettu_id());
         Lops2019Oppiaine oppiaine = Lops2019Oppiaine.copy(latest);
         Lops2019PaikallinenOppiaineDto uusi = mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
-        oppiaineService.addOppiaine(opsId, uusi);
+        oppiaineService.addOppiaine(opsId, uusi, MuokkausTapahtuma.PALAUTUS);
         poistetutRepository.delete(poistettuInfo);
     }
 
@@ -119,7 +117,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         Lops2019Opintojakso latest = opintojaksoRepository.getLatestNotNull(poistettuInfo.getPoistettu_id());
         Lops2019Opintojakso opintojakso = Lops2019Opintojakso.copy(latest);
         Lops2019OpintojaksoDto opintojaksoDto = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
-        opintojaksoService.addOpintojakso(opsId, opintojaksoDto);
+        opintojaksoService.addOpintojakso(opsId, opintojaksoDto, MuokkausTapahtuma.PALAUTUS);
         poistetutRepository.delete(poistettuInfo);
     }
 
