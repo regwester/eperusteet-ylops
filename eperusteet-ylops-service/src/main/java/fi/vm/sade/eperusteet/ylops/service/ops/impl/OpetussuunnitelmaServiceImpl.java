@@ -85,6 +85,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,6 +173,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @PersistenceContext
     private EntityManager em;
 
+    @Autowired
+    private MuokkaustietoService muokkaustietoService;
 
     private List<Opetussuunnitelma> findByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getQuery(pquery);
@@ -647,6 +650,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Transactional
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
 
         if (opetussuunnitelmaDto.getId() != null) {
@@ -711,7 +715,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             else {
                 luoOpsPohjasta(pohja, ops);
                 ops = repository.save(ops);
-                if (isPohjastaTehtyPohja(pohja) && pohja.getKoulutustyyppi().isLukio()) {
+                if (isPohjastaTehtyPohja(pohja)
+                        && !KoulutustyyppiToteutus.LOPS2019.equals(pohja.getToteutus())
+                        && pohja.getKoulutustyyppi().isLukio()) {
                     lisaaTeemaopinnotJosPohjassa(ops, pohja);
                 }
             }
@@ -780,14 +786,19 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 oppiaineCopier.construct(existing -> teeKopio ? new Oppiaine(existing.getTunniste()) : existing), teeKopio);
         Stream<OpsOppiaine> oppiaineetToCopy = pohja.getKoulutustyyppi().isLukio()
                 && pohja.getTyyppi() == Tyyppi.POHJA // ei kopioida pohjasta abstakteja ylätason oppiaineita, mutta OPS:sta kyllä
-                ? pohja.getOppiaineet().stream().filter(opsOa -> !opsOa.getOppiaine().isAbstraktiBool())
-                : pohja.getOppiaineet().stream();
+                    ? pohja.getOppiaineet().stream()
+                        .filter(opsOa -> !opsOa.getOppiaine().isAbstraktiBool())
+                    : pohja.getOppiaineet().stream();
         ops.setOppiaineet(oppiaineetToCopy.map(opsOppiaineCopier::copy).collect(toSet()));
-        ops.getOppiaineJarjestykset().addAll(pohja.getOppiaineJarjestykset().stream().map(old
-                -> !teeKopio ? new LukioOppiaineJarjestys(ops, old.getOppiaine(), old.getJarjestys())
-                : (newOppiaineByOld.get(old.getId().getOppiaineId()) != null ?
-                new LukioOppiaineJarjestys(ops, newOppiaineByOld.get(old.getId().getOppiaineId()), old.getJarjestys())
-                : null)).filter(Objects::nonNull).collect(toSet()));
+        ops.getOppiaineJarjestykset().addAll(pohja.getOppiaineJarjestykset().stream()
+                .map(old -> !teeKopio
+                    ? new LukioOppiaineJarjestys(ops, old.getOppiaine(), old.getJarjestys())
+                    : (newOppiaineByOld.get(old.getId().getOppiaineId()) != null
+                        ? new LukioOppiaineJarjestys(ops, newOppiaineByOld.get(old.getId().getOppiaineId()), old.getJarjestys())
+                        : null))
+                .filter(Objects::nonNull)
+                .collect(toSet()));
+
         Set<OpsVuosiluokkakokonaisuus> ovlkoot = pohja.getVuosiluokkakokonaisuudet().stream()
                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
                         .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste()
@@ -1212,6 +1223,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         mapper.map(opetussuunnitelmaDto, ops);
         ops = repository.save(ops);
 
+        muokkaustietoService.addOpsMuokkausTieto(ops.getId(), ops, MuokkausTapahtuma.PAIVITYS);
+
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
@@ -1453,6 +1466,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
             ops.setTila(tila);
             ops = repository.save(ops);
+
+            muokkaustietoService.addOpsMuokkausTieto(id, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-tila-"+tila);
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);

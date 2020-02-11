@@ -1,15 +1,14 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Poistettu;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksonOppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
@@ -20,18 +19,17 @@ import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -62,10 +60,16 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     private KayttajanTietoService kayttajanTietoService;
 
     @Autowired
+    private Lops2019OpintojaksonOppiaineRepository opintojaksonOppiaineRepository;
+
+    @Autowired
     private DtoMapper mapper;
 
     @Autowired
     private EntityManager em;
+
+    @Autowired
+    private MuokkaustietoService muokkaustietoService;
 
     private Opetussuunnitelma getOpetussuunnitelma(@P("opsId") Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -103,6 +107,8 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         oppiaine.setId(null);
         oppiaine.setSisalto(opetussuunnitelma.getLops2019());
         oppiaine = oppiaineRepository.save(oppiaine);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.LUONTI);
         return mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
     }
 
@@ -114,14 +120,14 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         mapper.map(oppiaineDto.getData(), oppiaine);
         oppiaine = oppiaineRepository.save(oppiaine);
         if (!Objects.equals(oppiaineenKoodi, oppiaineDto.getData().getKoodi())) {
-            Set<Lops2019Opintojakso> liitetytOpintojaksot = ops.getLops2019().getOpintojaksot().stream()
-                    .filter(oj -> Objects.equals(oj.getKoodi(), oppiaineenKoodi))
-                    .collect(Collectors.toSet());
-            for (Lops2019Opintojakso oj : liitetytOpintojaksot) {
-                oj.setKoodi(oppiaineDto.getData().getKoodi());
-                opintojaksoRepository.save(oj);
+            for (Lops2019OpintojaksonOppiaine ojOa : opintojaksonOppiaineRepository
+                    .findAllByKoodi(oppiaineenKoodi)) {
+                ojOa.setKoodi(oppiaine.getKoodi());
+                opintojaksonOppiaineRepository.save(ojOa);
             }
         }
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS);
         return mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
     }
 
@@ -137,6 +143,8 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         poistettu.setTyyppi(PoistetunTyyppi.LOPS2019OPPIAINE);
         poistetutRepository.save(poistettu);
         oppiaineRepository.delete(oppiaine);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
     }
 
     @Override
