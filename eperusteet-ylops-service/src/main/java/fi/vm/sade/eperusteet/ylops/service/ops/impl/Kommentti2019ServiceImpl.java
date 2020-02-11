@@ -2,7 +2,6 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Kommentti2019;
 import fi.vm.sade.eperusteet.ylops.domain.ops.KommenttiKahva;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.Kommentti2019Dto;
@@ -22,17 +21,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 @Transactional
 public class Kommentti2019ServiceImpl implements Kommentti2019Service {
-
-    private final int CommentTagSize = 62;
 
     @Autowired
     private DtoMapper mapper;
@@ -99,7 +98,8 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
         int commentsBefore = (int)ketjut.stream()
                 .filter(k -> k.getStart() < kahvaDto.getStart())
                 .count();
-        int pushAmount = CommentTagSize * commentsBefore;
+        int commentTagSize = 62;
+        int pushAmount = commentTagSize * commentsBefore;
         kahvaDto.setStart(kahvaDto.getStart() - pushAmount);
         kahvaDto.setStop(kahvaDto.getStop() - pushAmount);
     }
@@ -162,45 +162,31 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
 
     @Override
     public List<Kommentti2019Dto> get(UUID uuid) {
-        return mapper.mapAsList(getThread(uuid), Kommentti2019Dto.class);
+        List<Kommentti2019Dto> kommentit = mapper.mapAsList(getThread(uuid), Kommentti2019Dto.class);
+        kommentit.forEach(this::asetaNimi);
+        return kommentit;
     }
 
     @Override
-    public void asetaOikeatNimet(Kommentti2019Dto kommentti) {
-//        kommentti.getKommentit().stream()
-//                .flatMap(k -> k.getKommentit().stream())
-//                .forEach(k -> k.setLuoja(haeNimi(k.getLuoja())));
+    public void asetaNimi(Kommentti2019Dto kommentti) {
+        kommentti.setNimi(haeNimi(kommentti.getLuoja()));
     }
 
-//    private String haeNimi(String oid) {
-//        if (!StringUtils.isEmpty(oid)) {
-//            try {
-//                KayttajanTietoDto kayttaja = kayttajanTietoService.haeAsync(oid).get();
-//                String kutsumanimi = kayttaja.getKutsumanimi();
-//                String etunimet = kayttaja.getEtunimet();
-//                String etunimi = kutsumanimi != null ? kutsumanimi : etunimet;
-//                return etunimi + " " + kayttaja.getSukunimi();
-//            } catch (ExecutionException | InterruptedException e) {
-//                return oid;
-//            }
-//        }
-//        return "Tuntematon käyttäjä";
-//    }
-
-    private void validateParentChain(Kommentti2019 kommentti) {
-//        if (kommentti.getOpsId() == null) {
-//            throw new BusinessRuleViolationException("virheellinen-kommenttiketju");
-//        }
-//
-//        UUID threadUuid = kommentti.getThread();
-//        if (threadUuid != null) {
-//            Kommentti2019 parent = kommenttiRepository.getOne(threadUuid);
-//            if (!Objects.equals(parent.getOpsId(), kommentti.getOpsId())) {
-//                throw new BusinessRuleViolationException("virheellinen-kommenttiketju");
-//            }
-//            validateParentChain(parent);
-//        }
+    private String haeNimi(String oid) {
+        if (!StringUtils.isEmpty(oid)) {
+            try {
+                KayttajanTietoDto kayttaja = kayttajanTietoService.haeAsync(oid).get();
+                String kutsumanimi = kayttaja.getKutsumanimi();
+                String etunimet = kayttaja.getEtunimet();
+                String etunimi = kutsumanimi != null ? kutsumanimi : etunimet;
+                return etunimi + " " + kayttaja.getSukunimi();
+            } catch (ExecutionException | InterruptedException e) {
+                return oid;
+            }
+        }
+        return "Tuntematon käyttäjä";
     }
+
 
     private void hasOpsPermissions(Long opsId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -213,16 +199,6 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
         }
     }
 
-    private void validateComment(Kommentti2019 kommentti, PermissionManager.Permission p) {
-        validateParentChain(kommentti);
-//        assertRights(kommentti, p);
-    }
-
-    private void validateComment(Kommentti2019 kommentti) {
-        validateParentChain(kommentti);
-//        assertRights(kommentti, PermissionManager.Permission.HALLINTA);
-    }
-
     @Override
     public Kommentti2019Dto add(UUID uuid, Kommentti2019Dto kommenttiDto) {
         kommenttiDto.setLuoja(getUser());
@@ -232,7 +208,6 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
         kommenttiDto.setTunniste(UUID.randomUUID());
         hasOpsPermissions(kommenttiDto.getOpsId());
         Kommentti2019 kommentti = mapper.map(kommenttiDto, Kommentti2019.class);
-//        validateComment(kommentti, PermissionManager.Permission.MUOKKAUS);
         kommentti = kommenttiRepository.save(kommentti);
         return mapper.map(kommentti, Kommentti2019Dto.class);
     }
@@ -246,7 +221,6 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
 
         kommentti.setSisalto(kommenttiDto.getSisalto());
         kommentti.setMuokattu(new Date());
-        validateComment(kommentti);
         kommenttiRepository.save(kommentti);
         return mapper.map(kommentti, Kommentti2019Dto.class);
     }
@@ -270,7 +244,6 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
     @Override
     public void remove(UUID uuid) {
         Kommentti2019 kommentti = getOne(uuid);
-        validateComment(kommentti);
         if (!kommentti.getLuoja().equals(getUser())) {
             throw new BusinessRuleViolationException("vain-omaa-kommenttia-voi-muokata");
         }

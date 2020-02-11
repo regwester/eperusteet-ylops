@@ -21,6 +21,7 @@ public class Kommentti2019Dto {
     private Date luotu;
     private Date muokattu;
     private String luoja;
+    private String nimi;
 
     public static Kommentti2019Dto of(String kommentti) {
         Kommentti2019Dto result = new Kommentti2019Dto();

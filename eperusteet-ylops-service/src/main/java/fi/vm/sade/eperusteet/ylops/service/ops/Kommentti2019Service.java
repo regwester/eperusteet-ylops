@@ -14,7 +14,7 @@ public interface Kommentti2019Service {
     List<Kommentti2019Dto> get(@P("uuid") final UUID uuid);
 
     @PreAuthorize("isAuthenticated()")
-    void asetaOikeatNimet(Kommentti2019Dto kommentti);
+    void asetaNimi(Kommentti2019Dto kommentti);
 
     @PreAuthorize("isAuthenticated()")
     Kommentti2019Dto add(UUID uuid, final Kommentti2019Dto kommenttiDto);
