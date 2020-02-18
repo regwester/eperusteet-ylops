@@ -61,7 +61,7 @@ public class KommentointiIT extends AbstractIntegrationTest {
         LokalisoituTeksti paivitetty = lokalisoituTekstiRepository.getOne(lt.getId());
         assertThat(paivitetty).isNotNull();
 
-        Map<Kieli, String> teksti = paivitetty.getTeksti();
+        Map<Kieli, String> teksti = mapper.map(paivitetty, LokalisoituTekstiDto.class).getTekstit();
         String s = teksti.get(Kieli.FI);
 
         Document parsed = Jsoup.parse(s);
