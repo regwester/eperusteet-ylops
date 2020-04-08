@@ -4,22 +4,33 @@ import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
+import java.util.List;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-import java.util.List;
 
 public interface Lops2019OpintojaksoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<Lops2019OpintojaksoDto> getAll(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    List<Lops2019OpintojaksoDto> getTuodut(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    List<Lops2019OpintojaksoDto> getAllTuodut(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Lops2019OpintojaksoDto getOne(@P("opsId") Long opsId, Long opintojaksoId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Lops2019OpintojaksoDto getTuotu(@P("opsId") Long opsId, Long opintojaksoId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     Lops2019OpintojaksoDto addOpintojakso(@P("opsId") Long opsId, Lops2019OpintojaksoDto opintojaksoDto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void addTuodutOpintojaksot(@P("opsId") Long opsId, List<Lops2019OpintojaksoDto> opintojaksoDtos);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     Lops2019OpintojaksoDto addOpintojakso(@P("opsId") Long opsId,
@@ -54,4 +65,10 @@ public interface Lops2019OpintojaksoService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     long getOpintojaksonLaajuus(@P("opsId") Long opsId, Lops2019OpintojaksoDto opintojakso);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    boolean tarkistaOpintojaksot(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpetussuunnitelmaDto getOpintojaksonOpetussuunnitelma(@P("opsId") Long opsId, Long opintojaksoId);
 }
