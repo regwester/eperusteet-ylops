@@ -333,7 +333,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         TekstiKappaleViite viiteOriginal = viite.getOriginal();
 
-        if (viiteOriginal.getOriginal() != null && viiteOriginal.isNaytaPohjanTeksti()) {
+        if (viiteOriginal != null && viiteOriginal.getOriginal() != null && viiteOriginal.isNaytaPohjanTeksti()) {
             viiteList.add(mapper.map(viiteOriginal.getOriginal(), TekstiKappaleViiteDto.Matala.class));
         }
 

@@ -136,7 +136,9 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
         });
 
         LokalisoituTeksti result = LokalisoituTeksti.of(uudetTekstit, source.getTunniste());
-        result.setKetjut(uudetKetjut);
+        if (result != null) {
+            result.setKetjut(uudetKetjut);
+        }
         return result;
     }
 
@@ -159,7 +161,13 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
                     return current;
                 }
                 else {
-                    return extractComments(dto, current);
+                    LokalisoituTeksti withExtracted = extractComments(dto, current);
+                    if (withExtracted != null) {
+                        return withExtracted;
+                    }
+                    else {
+                        return tekstiPalanen;
+                    }
                 }
             }
         }
