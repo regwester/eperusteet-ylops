@@ -1,6 +1,3 @@
-drop table if exists kommentti_2019;
-drop table if exists kommentti_2019_AUD;
-
 create table kommentti_2019 (
     id int8 not null,
     uuid uuid not null,
