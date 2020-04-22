@@ -1,7 +1,8 @@
 drop table if exists kommentti_2019;
+drop table if exists lokalisoituteksti_kommentti_kahva_2019;
+drop table if exists kommentti_kahva_2019;
 drop table if exists kommentti_2019_AUD;
 
-create extension if not exists "uuid-ossp";
 
 create table kommentti_2019 (
     tunniste uuid not null,
