@@ -207,9 +207,9 @@
             <version>${metrics.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.2.5.Final</version>
+            <version>6.1.4.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -351,7 +351,6 @@
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-catalina</artifactId>
             <version>${tomcat.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -459,6 +458,18 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <debug>true</debug>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.4.29.v20200521</version>
+                <configuration>
+                    <webApp>
+                        <contextPath>/eperusteet-ylops-service</contextPath>
+                        <descriptor>${basedir}/src/main/webapp/WEB-INF/web.xml</descriptor>
+                        <jettyEnvXml>${basedir}/src/test/config/jetty-env.xml</jettyEnvXml>
+                    </webApp>
                 </configuration>
             </plugin>
             <plugin>
