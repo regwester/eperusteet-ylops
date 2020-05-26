@@ -218,11 +218,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.el</artifactId>
-            <version>3.0.1-b11</version>
-        </dependency>
-        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
@@ -485,11 +480,11 @@
                         <artifactId>postgresql</artifactId>
                         <version>${postgresql.version}</version>
                     </dependency>
-<!--                    <dependency>-->
-<!--                        <groupId>org.glassfish</groupId>-->
-<!--                        <artifactId>javax.el</artifactId>-->
-<!--                        <version>3.0.1-b11</version>-->
-<!--                    </dependency>-->
+                    <dependency>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>javax.el</artifactId>
+                        <version>3.0.1-b11</version>
+                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>
