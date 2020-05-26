@@ -351,6 +351,7 @@
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-catalina</artifactId>
             <version>${tomcat.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -461,18 +462,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.4.29.v20200521</version>
-                <configuration>
-                    <webApp>
-                        <contextPath>/eperusteet-ylops-service</contextPath>
-                        <descriptor>${basedir}/src/main/webapp/WEB-INF/web.xml</descriptor>
-                        <jettyEnvXml>${basedir}/src/test/config/jetty-env.xml</jettyEnvXml>
-                    </webApp>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <configuration>
@@ -484,6 +473,11 @@
                         <groupId>org.postgresql</groupId>
                         <artifactId>postgresql</artifactId>
                         <version>${postgresql.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>javax.el</artifactId>
+                        <version>3.0.1-b11</version>
                     </dependency>
                 </dependencies>
             </plugin>
