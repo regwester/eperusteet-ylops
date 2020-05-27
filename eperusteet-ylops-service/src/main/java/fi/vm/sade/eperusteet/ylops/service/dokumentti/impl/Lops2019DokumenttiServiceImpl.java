@@ -480,7 +480,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Arviointi
         addTeksti(docBase, messages.translate("opintojakson-arviointi", docBase.getKieli()), "h6");
-        addOpintojaksonArviointi(docBase, oppiaineet);
+        //addOpintojaksonArviointi(docBase, oppiaineet);
         addOpintojaksonArviointiPaikallinenLisays(docBase, oj);
 
         // Vapaa kuvaus
@@ -595,7 +595,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Arviointi
         addTeksti(docBase, messages.translate("opintojakson-arviointi", docBase.getKieli()), "h6");
-        addOpintojaksonArviointi(docBase, oppiaineet);
+        //addOpintojaksonArviointi(docBase, oppiaineet);
         addOpintojaksonArviointiPaikallinenLisays(docBase, oj);
 
         // Vapaa kuvaus
