@@ -39,7 +39,7 @@ public interface Lops2019OppiaineService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void removeOne(@P("opsId") Long opsId, Long oppiaineId);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<RevisionDto> getVersions(@P("opsId") Long opsId, Long oppiaineId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
