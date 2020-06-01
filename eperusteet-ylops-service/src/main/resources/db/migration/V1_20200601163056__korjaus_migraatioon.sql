@@ -1,0 +1,1 @@
+alter table oppiaine alter column valinnainen_tyyppi set default 'EI_MAARITETTY';
