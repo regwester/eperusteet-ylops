@@ -179,6 +179,9 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
                 String kutsumanimi = kayttaja.getKutsumanimi();
                 String etunimet = kayttaja.getEtunimet();
                 String etunimi = kutsumanimi != null ? kutsumanimi : etunimet;
+                if (etunimi == null || kayttaja.getSukunimi() == null) {
+                    return oid;
+                }
                 return etunimi + " " + kayttaja.getSukunimi();
             } catch (ExecutionException | InterruptedException e) {
                 return oid;

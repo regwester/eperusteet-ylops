@@ -112,7 +112,7 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
                 throw new BusinessRuleViolationException("sama-ketju-saa-olla-vain-kerran");
             }
 
-            if (!kommentitSet.containsAll(ketjuSet)) {
+            if (!ketjuSet.containsAll(kommentitSet)) {
                 throw new BusinessRuleViolationException("uusia-ketjuja-ei-saa-lisata-editoinnissa");
             }
 
