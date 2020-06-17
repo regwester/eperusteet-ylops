@@ -19,14 +19,18 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.KommenttiKahva;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.Kommentti2019Repository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.KommenttiKahvaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +41,8 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author jhyoty
  */
@@ -44,10 +50,19 @@ import org.springframework.stereotype.Component;
 public class LokalisoituTekstiConverter extends BidirectionalConverter<LokalisoituTeksti, LokalisoituTekstiDto> {
 
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
     private LokalisoituTekstiRepository repository;
 
     @Autowired
     private KommenttiKahvaRepository kommenttiKahvaRepository;
+
+    @Autowired
+    private Kommentti2019Repository kommentti2019Repository;
+
+//    @Autowired
+//    private KayttajanTietoService kayttajanTietoService;
 
     @Override
     public LokalisoituTekstiDto convertTo(LokalisoituTeksti tekstiPalanen, Type<LokalisoituTekstiDto> type) {
@@ -57,9 +72,21 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
     private Map<Kieli, String> tekstitWithKommentit(LokalisoituTeksti source) {
         Map<Kieli, String> map = source.getTeksti();
 
+        Principal ap = SecurityUtil.getAuthenticatedPrincipal();
+
+        if (ap == null || org.springframework.util.StringUtils.isEmpty(ap.getName())) {
+            return map;
+        }
+
+        ArrayList<String> h = Collections.list(request.getHeaders("disable-comments"));
+        if (!h.isEmpty()) {
+            return map;
+        }
+
         if (!source.getKetjut().isEmpty()) {
             List<KommenttiKahva> ketjut = source.getKetjut().stream()
                     .sorted(Comparator.comparingInt(KommenttiKahva::getStart).reversed())
+                    .filter(kahva -> kommentti2019Repository.countByThread(kahva.getThread()) > 0)
                     .collect(Collectors.toList());
 
             for (KommenttiKahva kahva : ketjut) {

@@ -10,4 +10,7 @@ import java.util.UUID;
 public interface KommenttiKahvaRepository extends JpaRepository<KommenttiKahva, Long> {
 
     Set<KommenttiKahva> findAllByTeksti(LokalisoituTeksti lt);
+
+    KommenttiKahva findOneByThread(UUID thread);
+
 }

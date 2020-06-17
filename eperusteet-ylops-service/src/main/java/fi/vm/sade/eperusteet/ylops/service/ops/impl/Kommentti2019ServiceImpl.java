@@ -223,13 +223,12 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
         }
 
         kommentti.setSisalto(kommenttiDto.getSisalto());
-        kommentti.setMuokattu(new Date());
         kommenttiRepository.save(kommentti);
         return mapper.map(kommentti, Kommentti2019Dto.class);
     }
 
     private Kommentti2019 getOne(UUID uuid) {
-        Kommentti2019 kommentti = kommenttiRepository.getOne(uuid);
+        Kommentti2019 kommentti = kommenttiRepository.getOneByTunniste(uuid);
         if (kommentti == null) {
             throw new BusinessRuleViolationException("virheellinen-kiinnitys");
         }
@@ -247,10 +246,21 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
     @Override
     public void remove(UUID uuid) {
         Kommentti2019 kommentti = getOne(uuid);
-        if (!kommentti.getLuoja().equals(getUser())) {
+        if (!kommentti.getMuokkaaja().equals(getUser())) {
             throw new BusinessRuleViolationException("vain-omaa-kommenttia-voi-muokata");
         }
 
-        kommenttiRepository.delete(kommentti);
+        Kommentti2019 root = kommenttiRepository.findFirstByThreadOrderByLuotuAsc(kommentti.getThread());
+        if (Objects.equals(root.getTunniste(), kommentti.getTunniste())) {
+            KommenttiKahva kahva = kahvaRepository.findOneByThread(kommentti.getThread());
+            kahva.getTeksti().getKetjut().clear();
+            kahvaRepository.delete(kahva);
+            List<Kommentti2019> kommentit = kommenttiRepository.findAllByThread(kommentti.getThread());
+            kommentit.forEach(kommenttiRepository::delete);
+
+        }
+        else {
+            kommenttiRepository.delete(kommentti);
+        }
     }
 }

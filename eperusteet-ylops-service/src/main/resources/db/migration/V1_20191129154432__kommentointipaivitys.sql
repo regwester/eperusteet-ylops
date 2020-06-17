@@ -5,8 +5,10 @@ drop table if exists kommentti_2019_AUD;
 
 
 create table kommentti_2019 (
+    id int8 not null,
     tunniste uuid not null,
     luoja varchar(255),
+    muokkaaja varchar(255),
     luotu timestamp,
     muokattu timestamp,
     reply uuid,
@@ -16,17 +18,19 @@ create table kommentti_2019 (
 );
 
 create table kommentti_2019_AUD (
-    tunniste uuid not null,
+    id int8 not null,
+    tunniste uuid,
     REV int4 not null,
     REVTYPE int2,
     REVEND int4,
     luoja varchar(255),
+    muokkaaja varchar(255),
     luotu timestamp,
     muokattu timestamp,
     reply uuid,
     sisalto varchar(1024),
     thread uuid,
-    primary key (tunniste, REV)
+    primary key (id, REV)
 );
 
 create table kommentti_kahva_2019 (

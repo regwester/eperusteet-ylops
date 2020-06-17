@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti_;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine_;
-import fi.vm.sade.eperusteet.ylops.domain.ops.KommenttiKahva;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;

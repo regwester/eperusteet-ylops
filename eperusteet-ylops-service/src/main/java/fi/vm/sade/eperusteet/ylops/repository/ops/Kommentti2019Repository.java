@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface Kommentti2019Repository extends JpaWithVersioningRepository<Kommentti2019, UUID> {
+public interface Kommentti2019Repository extends JpaWithVersioningRepository<Kommentti2019, Long> {
+    Kommentti2019 getOneByTunniste(UUID tunniste);
     List<Kommentti2019> findAllByThread(UUID thread);
+    Kommentti2019 findFirstByThreadOrderByLuotuAsc(UUID thread);
+    long countByThread(UUID thread);
 }
