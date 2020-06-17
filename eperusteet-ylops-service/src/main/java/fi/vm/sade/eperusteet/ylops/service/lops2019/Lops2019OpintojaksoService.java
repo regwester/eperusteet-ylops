@@ -51,7 +51,7 @@ public interface Lops2019OpintojaksoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void removeOne(@P("opsId") Long opsId, Long opintojaksoId);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<RevisionDto> getVersions(@P("opsId") Long opsId, Long opintojaksoId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")

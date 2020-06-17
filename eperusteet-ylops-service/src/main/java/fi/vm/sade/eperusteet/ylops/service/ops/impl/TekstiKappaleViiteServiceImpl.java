@@ -42,9 +42,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsFeaturesFactory;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
-import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -233,10 +231,16 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             throw new BusinessRuleViolationException("pakollista-tekstikappaletta-ei-voi-poistaa");
         }
 
+        // Poistetaan viittaus poistettavaan tekstikappale viitteeseen
+        List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(viiteId);
+        viittaavat.forEach(vierasViite -> {
+            vierasViite.updateOriginal(null);
+        });
+
         tekstikappaleviiteRepository.lock(viite.getRoot());
-        if (viite.getTekstiKappale() != null && viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
-            lockMgr.lock(viite.getTekstiKappale().getId());
-            TekstiKappale tekstiKappale = viite.getTekstiKappale();
+        TekstiKappale tekstiKappale = viite.getTekstiKappale();
+        if (tekstiKappale != null && tekstiKappale.getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
+            lockMgr.lock(tekstiKappale.getId());
             tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId());
         }
 

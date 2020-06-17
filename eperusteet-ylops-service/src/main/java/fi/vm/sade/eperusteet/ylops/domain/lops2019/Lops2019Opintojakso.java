@@ -12,6 +12,8 @@ import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -80,6 +82,7 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     @Getter
     @OrderBy("koodiuri")
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "lops2019_opintojakso_moduuli",
             joinColumns = @JoinColumn(name = "opintojakso_id"),
             inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
@@ -88,6 +91,7 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     @Getter
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @NotEmpty
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "lops2019_opintojakso_oppiaine",
             joinColumns = @JoinColumn(name = "opintojakso_id"),
             inverseJoinColumns = @JoinColumn(name = "oj_oppiaine_id"))

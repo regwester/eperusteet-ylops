@@ -5,6 +5,7 @@ import fi.vm.sade.eperusteet.utils.dto.peruste.lops2019.tutkinnonrakenne.KoodiDt
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
@@ -20,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,10 +54,10 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Autowired
-    private Lops2019Service lopsService;
+    protected Lops2019Service lopsService;
 
     @Autowired
-    private Lops2019OppiaineService oppiaineService;
+    protected Lops2019OppiaineService oppiaineService;
 
     @Autowired
     private DtoMapper mapper;
@@ -73,9 +75,6 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     }
 
     private NavigationNodeDto oppiaineet(Long opsId) {
-        List<Lops2019OppiaineKaikkiDto> oppiaineet = lopsService.getPerusteOppiaineet(opsId);
-        List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(opsId);
-
         // Järjestetään oppiaineen koodilla opintojaksot
         Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAllTuodut(opsId).stream()
                 .flatMap(oj -> oj.getOppiaineet().stream()
@@ -85,6 +84,8 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                         Collectors.mapping(Map.Entry::getValue, toSet())
                 ));
 
+        List<Lops2019OppiaineKevytDto> oppiaineet = getOppiaineet(opsId, opintojaksotMap);
+        List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = getPaikallisetOppiaineet(opsId, opintojaksotMap);
 
         return NavigationNodeDto.of(NavigationType.oppiaineet)
                 .addAll(oppiaineet.stream()
@@ -95,8 +96,16 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                         .collect(toList()));
     }
 
+    protected List<Lops2019OppiaineKevytDto> getOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
+        return mapper.mapAsList(lopsService.getPerusteOppiaineet(opsId), Lops2019OppiaineKevytDto.class);
+    }
+
+    protected List<Lops2019PaikallinenOppiaineDto> getPaikallisetOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
+        return oppiaineService.getAll(opsId);
+    }
+
     private NavigationNodeDto mapOppiaine(
-            Lops2019OppiaineKaikkiDto oa,
+            Lops2019OppiaineKevytDto oa,
             Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap
     ) {
         NavigationNodeDto result = NavigationNodeDto

@@ -56,7 +56,7 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<UnwrappedOpsVuosiluokkakokonaisuusDto> get(
+    public ResponseEntity<UnwrappedOpsVuosiluokkakokonaisuusDto> getVuosiluokkakokonaisuus(
             @PathVariable final Long opsId,
             @PathVariable final Long id
     ) {
@@ -64,7 +64,7 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
-    public PerusteVuosiluokkakokonaisuusDto getPerusteSisalto(
+    public PerusteVuosiluokkakokonaisuusDto getVuosiluokkakokonaisuudenPerusteSisalto(
             @PathVariable final Long opsId,
             @PathVariable final Long id
     ) {
@@ -90,7 +90,7 @@ public class VuosiluokkakokonaisuusController {
 //    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public UnwrappedOpsVuosiluokkakokonaisuusDto update(
+    public UnwrappedOpsVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuus(
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @RequestBody VuosiluokkakokonaisuusDto dto) {
@@ -99,7 +99,7 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
-    public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(
+    public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiVuosiluokkakokonaisuusMuokattavaksi(
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
         return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.kopioiMuokattavaksi(opsId, id));
@@ -107,7 +107,7 @@ public class VuosiluokkakokonaisuusController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(
+    public void deleteVuosiluokkakokonaisuus(
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
         vuosiluokkakokonaisuudet.delete(opsId, id);
