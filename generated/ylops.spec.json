@@ -14,6 +14,8 @@
   }, {
     "name" : "Kommentit"
   }, {
+    "name" : "Kommentointi"
+  }, {
     "name" : "Kysymykset"
   }, {
     "name" : "Liitetiedostot"
@@ -696,6 +698,120 @@
           "required" : true,
           "type" : "integer",
           "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/kommentointi" : {
+      "post" : {
+        "tags" : [ "Kommentointi" ],
+        "operationId" : "addKetju",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/KommenttiKahvaDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/KommenttiKahvaDto"
+            }
+          }
+        }
+      }
+    },
+    "/kommentointi/{ketjuUuid}" : {
+      "get" : {
+        "tags" : [ "Kommentointi" ],
+        "operationId" : "getKommenttiByKetjuUuid",
+        "parameters" : [ {
+          "name" : "ketjuUuid",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Kommentti2019Dto"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Kommentointi" ],
+        "operationId" : "addKommentti2019",
+        "parameters" : [ {
+          "name" : "ketjuUuid",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Kommentti2019Dto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Kommentti2019Dto"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Kommentointi" ],
+        "operationId" : "updateKommentti2019",
+        "parameters" : [ {
+          "name" : "ketjuUuid",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Kommentti2019Dto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Kommentti2019Dto"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Kommentointi" ],
+        "operationId" : "poistaKommenttiKetju2019",
+        "parameters" : [ {
+          "name" : "ketjuUuid",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
         } ],
         "responses" : {
           "default" : {
@@ -5254,6 +5370,44 @@
         }
       }
     },
+    "Kommentti2019Dto" : {
+      "type" : "object",
+      "properties" : {
+        "thread" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "reply" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "sisalto" : {
+          "type" : "string"
+        },
+        "opsId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "luotu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "luoja" : {
+          "type" : "string"
+        },
+        "nimi" : {
+          "type" : "string"
+        }
+      }
+    },
     "KommenttiDto" : {
       "type" : "object",
       "properties" : {
@@ -5308,6 +5462,38 @@
         "vlId" : {
           "type" : "integer",
           "format" : "int64"
+        }
+      }
+    },
+    "KommenttiKahvaDto" : {
+      "type" : "object",
+      "properties" : {
+        "thread" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "opsId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "start" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "stop" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "kieli" : {
+          "type" : "string",
+          "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
+        },
+        "tekstiId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "aloituskommentti" : {
+          "$ref" : "#/definitions/Kommentti2019Dto"
         }
       }
     },

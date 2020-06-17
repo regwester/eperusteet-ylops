@@ -180,6 +180,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), false /* TODO: pakota lukitus */);
         viite.setPakollinen(uusi.isPakollinen());
         viite.setValmis(uusi.isValmis());
+        viite.setPerusteTekstikappaleId(uusi.getPerusteTekstikappaleId());
         viite.setNaytaPerusteenTeksti(uusi.isNaytaPerusteenTeksti());
         viite.setNaytaPohjanTeksti(uusi.isNaytaPohjanTeksti());
         viite.setLiite(uusi.isLiite());

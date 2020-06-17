@@ -48,6 +48,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @RequestMapping("/kommentit")
 @ApiIgnore
 @Api("Kommentit")
+@Deprecated
 public class KommenttiController {
 
     @Autowired
@@ -87,7 +88,6 @@ public class KommenttiController {
     }
 
     private List<KommenttiDto> rikastaKommentit(List<KommenttiDto> kommentit) {
-
         Map<String, Future<KayttajanTietoDto>> kayttajat = kommentit.stream()
                 .map(KommenttiDto::getMuokkaaja)
                 .distinct()
