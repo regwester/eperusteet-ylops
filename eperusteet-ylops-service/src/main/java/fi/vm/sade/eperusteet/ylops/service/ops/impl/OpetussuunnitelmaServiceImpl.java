@@ -675,6 +675,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         jarjestaOppiaineet(ops, oaKoodiMap, oppiaineopintojaksojarjestys);
         jarjestaOpintojaksot(oppiaineopintojaksojarjestys, oaKoodiMap, ojMap, null);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.PAIVITYS);
     }
 
     private NavigationNodeDto siirraLiitteetLoppuun(NavigationNodeDto navigationNodeDto) {
@@ -1596,7 +1598,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ops.setTila(tila);
             ops = repository.save(ops);
 
-            muokkaustietoService.addOpsMuokkausTieto(id, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-tila-"+tila);
+            muokkaustietoService.addOpsMuokkausTieto(id, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-tila-" + tila);
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);

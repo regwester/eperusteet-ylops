@@ -6,7 +6,6 @@ import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
