@@ -110,15 +110,16 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         assertThat(navi.getType()).isEqualTo(NavigationType.root);
         assertThat(navi.getChildren()).hasSize(7);
 
-        List<NavigationNodeDto> oppiaineet = navi.getChildren().stream().filter(child -> child.getType().equals(NavigationType.oppiaineet)).collect(Collectors.toList());
+        List<NavigationNodeDto> oppiaineet = navi.getChildren().stream()
+                .filter(child -> child.getType().equals(NavigationType.oppiaineet))
+                .collect(Collectors.toList());
         assertThat(oppiaineet).hasSize(1);
-        assertThat(oppiaineet).flatExtracting("children").hasSize(2);
-        assertThat(oppiaineet.get(0).getChildren()).extracting("type").containsExactly(NavigationType.oppiaine, NavigationType.poppiaine);
+        assertThat(oppiaineet).flatExtracting("children").hasSize(1);
+        assertThat(oppiaineet.get(0).getChildren()).extracting("type")
+                .containsExactly(NavigationType.oppiaine);
 
-        assertThat(oppiaineet.get(0).getChildren().get(0).getChildren()).hasSize(2);
-        assertThat(oppiaineet.get(0).getChildren().get(0).getChildren()).extracting("type").containsExactly(NavigationType.opintojaksot, NavigationType.moduulit);
-
-        assertThat(oppiaineet.get(0).getChildren().get(1).getChildren()).hasSize(1);
-        assertThat(oppiaineet.get(0).getChildren().get(1).getChildren()).extracting("type").containsExactlyInAnyOrder(NavigationType.opintojaksot);
+        assertThat(oppiaineet.get(0).getChildren().get(0).getChildren()).hasSize(3);
+        assertThat(oppiaineet.get(0).getChildren().get(0).getChildren()).extracting("type")
+                .containsExactly(NavigationType.oppimaarat, NavigationType.opintojaksot, NavigationType.moduulit);
     }
 }
