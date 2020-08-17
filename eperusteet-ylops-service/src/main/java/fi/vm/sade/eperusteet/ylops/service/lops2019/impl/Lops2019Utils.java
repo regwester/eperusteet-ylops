@@ -72,7 +72,7 @@ public class Lops2019Utils {
                         : (dto.getPoa() != null ? dto.getPoa().getKoodi() : "")))
                 // Ensisisijainen
                 .sorted(comparing((Lops2019PerustePaikallinenOppiaineDto dto) -> Optional
-                        .ofNullable(dto.getJarjestys()).orElse(0)))
+                        .ofNullable(dto.getJarjestys()).orElse(Integer.MAX_VALUE)))
                 .forEach(dto -> {
                     Lops2019SortableOppiaineDto oa = dto.getOa();
                     Lops2019PaikallinenOppiaineDto poa = dto.getPoa();

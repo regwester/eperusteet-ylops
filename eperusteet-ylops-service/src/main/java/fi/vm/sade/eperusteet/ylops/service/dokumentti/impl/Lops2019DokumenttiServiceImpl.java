@@ -265,10 +265,11 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                     })
                     // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
                     // Toissijaisesti opintojakson koodin mukaan.
+                    .sorted(comparing(p -> p.getFirst().getKoodi()))
                     .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
                             -> Optional.ofNullable(p.getSecond().isPresent()
                             ? p.getSecond().get().getJarjestys()
-                            : null).orElse(0)).thenComparing(p -> p.getFirst().getKoodi()))
+                            : null).orElse(Integer.MAX_VALUE)))
                     .forEach(p -> addOpintojakso(docBase, p.getFirst(), oa, null));
             docBase.getGenerator().decreaseDepth();
         }
@@ -305,8 +306,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 });
 
         if (!ObjectUtils.isEmpty(paikallisetOppimaarat)) {
-            paikallisetOppimaarat.forEach(pom -> addPaikallinenOppiaine(docBase, pom,
-                    opintojaksotMap.get(pom.getKoodi()), oa));
+            paikallisetOppimaarat.forEach(pom -> {
+                Lops2019OppiaineKaikkiDto perusteOa = lops2019Service.getPerusteOppiaine(docBase.getOps().getId(), oa.getId());
+                ArrayList<Lops2019OppiaineKaikkiDto> oaJaOppimaarat = new ArrayList<>();
+                oaJaOppimaarat.add(perusteOa);
+                oaJaOppimaarat.addAll(perusteOa.getOppimaarat());
+                Lops2019OppiaineKaikkiDto oppimaaranOppiaine = oaJaOppimaarat.stream()
+                        .filter(oppiaineTaiOppimaara -> oppiaineTaiOppimaara
+                                .getKoodi().getUri().equals(pom.getPerusteenOppiaineUri()))
+                        .findFirst()
+                        .orElse(null);
+                addPaikallinenOppiaine(docBase, pom, opintojaksotMap.get(pom.getKoodi()), oppimaaranOppiaine);
+            });
         }
 
         docBase.getGenerator().decreaseDepth();
@@ -463,9 +474,23 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         if (!ObjectUtils.isEmpty(opintojaksot)) {
             addTeksti(docBase, messages.translate("opintojaksot", docBase.getKieli()), "h6");
             docBase.getGenerator().increaseDepth();
+
             opintojaksot.stream()
-                    .sorted(Comparator.comparing(Lops2019OpintojaksoBaseDto::getKoodi))
-                    .forEach(oj -> addOpintojakso(docBase, oj, null, poa));
+                    .map(oj -> {
+                        Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
+                                .filter(ojOa -> ojOa.getKoodi() != null)
+                                .filter(ojOa -> ojOa.getKoodi().equals(poa.getKoodi()))
+                                .findAny();
+                        return new Pair<>(oj, ojOaOpt);
+                    })
+                    // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
+                    // Toissijaisesti opintojakson koodin mukaan.
+                    .sorted(comparing(p -> p.getFirst().getKoodi()))
+                    .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
+                            -> Optional.ofNullable(p.getSecond().isPresent()
+                            ? p.getSecond().get().getJarjestys()
+                            : null).orElse(Integer.MAX_VALUE)))
+                    .forEach(p -> addOpintojakso(docBase, p.getFirst(), null, poa));
             docBase.getGenerator().decreaseDepth();
         }
 

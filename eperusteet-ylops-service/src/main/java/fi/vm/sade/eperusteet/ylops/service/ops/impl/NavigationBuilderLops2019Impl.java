@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.impl.Lops2019Utils;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
+import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toSet;
 
 @Component
@@ -157,11 +159,25 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
             Set<Lops2019OpintojaksoDto> oaOpintojaksot = opintojaksotMap.get(oa.getKoodi().getUri());
             result.add(NavigationNodeDto.of(NavigationType.opintojaksot).meta("navigation-subtype", true)
                     .addAll(oaOpintojaksot.stream()
-                            .map(ojOa -> NavigationNodeDto.of(
+                            .map(oj -> {
+                                Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
+                                        .filter(ojOa -> ojOa.getKoodi() != null)
+                                        .filter(ojOa -> ojOa.getKoodi().equals(oa.getKoodi().getUri()))
+                                        .findAny();
+                                return new Pair<>(oj, ojOaOpt);
+                            })
+                            // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
+                            // Toissijaisesti opintojakson koodin mukaan.
+                            .sorted(comparing(p -> p.getFirst().getKoodi()))
+                            .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
+                                    -> Optional.ofNullable(p.getSecond().isPresent()
+                                    ? p.getSecond().get().getJarjestys()
+                                    : null).orElse(Integer.MAX_VALUE)))
+                            .map(p -> NavigationNodeDto.of(
                                     NavigationType.opintojakso,
-                                    mapper.map(ojOa.getNimi(), LokalisoituTekstiDto.class),
-                                    ojOa.getId())
-                                    .meta("koodi", ojOa.getKoodi()))));
+                                    mapper.map(p.getFirst().getNimi(), LokalisoituTekstiDto.class),
+                                    p.getFirst().getId())
+                                    .meta("koodi", p.getFirst().getKoodi()))));
         }
 
         List<Lops2019ModuuliDto> moduulit = oa.getModuulit();
@@ -195,11 +211,25 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
             Set<Lops2019OpintojaksoDto> poaOpintojaksot = opintojaksotMap.get(poa.getKoodi());
             result.add(NavigationNodeDto.of(NavigationType.opintojaksot).meta("navigation-subtype", true)
                     .addAll(poaOpintojaksot.stream()
-                            .map(ojPoa -> NavigationNodeDto.of(
+                            .map(oj -> {
+                                Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
+                                        .filter(ojOa -> ojOa.getKoodi() != null)
+                                        .filter(ojOa -> ojOa.getKoodi().equals(poa.getKoodi()))
+                                        .findAny();
+                                return new Pair<>(oj, ojOaOpt);
+                            })
+                            // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
+                            // Toissijaisesti opintojakson koodin mukaan.
+                            .sorted(comparing(p -> p.getFirst().getKoodi()))
+                            .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
+                                    -> Optional.ofNullable(p.getSecond().isPresent()
+                                    ? p.getSecond().get().getJarjestys()
+                                    : null).orElse(Integer.MAX_VALUE)))
+                            .map(p -> NavigationNodeDto.of(
                                     NavigationType.opintojakso,
-                                    mapper.map(ojPoa.getNimi(), LokalisoituTekstiDto.class),
-                                    ojPoa.getId())
-                                    .meta("koodi", ojPoa.getKoodi()))));
+                                    mapper.map(p.getFirst().getNimi(), LokalisoituTekstiDto.class),
+                                    p.getFirst().getId())
+                                    .meta("koodi", p.getFirst().getKoodi()))));
         }
 
         return result;
