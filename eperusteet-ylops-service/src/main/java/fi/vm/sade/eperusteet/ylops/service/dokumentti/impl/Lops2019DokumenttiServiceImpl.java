@@ -186,7 +186,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             Map<String, List<Lops2019OpintojaksoDto>> opintojaksotMap
     ) {
         StringBuilder nimiBuilder = new StringBuilder();
-        nimiBuilder.append(getTextString(docBase, oa.getNimi()));
+        String nimi = getTextString(docBase, oa.getNimi());
+        nimiBuilder.append(StringUtils.isEmpty(nimi)
+                ? messages.translate("nimeton-oppiaine", docBase.getKieli())
+                : nimi);
         KoodiDto koodi = oa.getKoodi();
         if (koodi != null && koodi.getArvo() != null) {
             nimiBuilder.append(" (");
@@ -334,7 +337,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
     ) {
         // Nimi
         StringBuilder nimiBuilder = new StringBuilder();
-        nimiBuilder.append(getTextString(docBase, poa.getNimi()));
+        String nimi = getTextString(docBase, poa.getNimi());
+        nimiBuilder.append(StringUtils.isEmpty(nimi)
+                ? messages.translate("nimeton-oppiaine", docBase.getKieli())
+                : nimi);
         String koodi = poa.getKoodi();
         if (!ObjectUtils.isEmpty(koodi)) {
             nimiBuilder.append(" (");
@@ -559,7 +565,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         StringBuilder nimiBuilder = new StringBuilder();
 
         // Nimi
-        nimiBuilder.append(getTextString(docBase, oj.getNimi()));
+        String nimi = getTextString(docBase, oj.getNimi());
+        nimiBuilder.append(StringUtils.isEmpty(nimi)
+                ? messages.translate("nimeton-opintojakso", docBase.getKieli())
+                : nimi);
 
         // Opintopisteet
         Long laajuus = oj.getLaajuus();
@@ -761,7 +770,12 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                         paikallisetOppiaineet.stream()
                                 .map(oppiaine -> Pair.of(oppiaine.getNimi(), oppiaine.getKoodi())))
                         .filter(pair -> Objects.equals(pair.getSecond(), koodiUri))
-                        .map(pair -> getTextString(docBase, pair.getFirst()))
+                        .map(pair -> {
+                            String nimi = getTextString(docBase, pair.getFirst());
+                            return StringUtils.isEmpty(nimi)
+                                    ? messages.translate("nimeton-oppiaine", docBase.getKieli())
+                                    : nimi;
+                        })
                         .findAny()
                         .orElse(koodiUri));
 
@@ -826,7 +840,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
                         // Moduulin nimi
                         Element nimiEl = docBase.getDocument().createElement("p");
-                        nimiEl.setTextContent(getTextString(docBase, m.getNimi()));
+                        String nimi = getTextString(docBase, m.getNimi());
+                        nimiEl.setTextContent(StringUtils.isEmpty(nimi)
+                                ? messages.translate("nimeton-moduuli", docBase.getKieli())
+                                : nimi);
                         cite.appendChild(nimiEl);
 
                         Lops2019ModuuliTavoiteDto tavoitteet = m.getTavoitteet();
@@ -881,7 +898,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             oj.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
 
                 if (!ObjectUtils.isEmpty(paikallinenOpintojakso.getTavoitteet())) {
-                    addLokalisoituteksti(docBase, paikallinenOpintojakso.getNimi(), "p");
+                    String nimi = getTextString(docBase, paikallinenOpintojakso.getNimi());
+                    addTeksti(docBase, StringUtils.isEmpty(nimi)
+                            ? messages.translate("nimeton-opintojakso", docBase.getKieli())
+                            : nimi, "p");
                     Element ul = docBase.getDocument().createElement("ul");
                     paikallinenOpintojakso.getTavoitteet().stream()
                             .filter(Objects::nonNull)
@@ -911,7 +931,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
                         // Moduulin nimi
                         Element nimiEl = docBase.getDocument().createElement("p");
-                        nimiEl.setTextContent(getTextString(docBase, m.getNimi()));
+                        String nimi = getTextString(docBase, m.getNimi());
+                        nimiEl.setTextContent(StringUtils.isEmpty(nimi)
+                                ? messages.translate("nimeton-moduuli", docBase.getKieli())
+                                : nimi);
                         cite.appendChild(nimiEl);
 
                         List<Lops2019ModuuliSisaltoDto> sisallot = m.getSisallot();
@@ -970,7 +993,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             oj.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
 
                 if (!ObjectUtils.isEmpty(paikallinenOpintojakso.getKeskeisetSisallot())) {
-                    addLokalisoituteksti(docBase, paikallinenOpintojakso.getNimi(), "p");
+                    String nimi = getTextString(docBase, paikallinenOpintojakso.getNimi());
+                    addTeksti(docBase, StringUtils.isEmpty(nimi)
+                            ? messages.translate("nimeton-moduuli", docBase.getKieli())
+                            : nimi, "p");
                     Element ul = docBase.getDocument().createElement("ul");
                     paikallinenOpintojakso.getKeskeisetSisallot().stream()
                             .filter(Objects::nonNull)
@@ -1058,7 +1084,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             oj.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
 
                 if (!ObjectUtils.isEmpty(paikallinenOpintojakso.getLaajaAlainenOsaaminen())) {
-                    addLokalisoituteksti(docBase, paikallinenOpintojakso.getNimi(), "p");
+                    String nimi = getTextString(docBase, paikallinenOpintojakso.getNimi());
+                    addTeksti(docBase, StringUtils.isEmpty(nimi)
+                            ? messages.translate("nimeton-opintojakso", docBase.getKieli())
+                            : nimi, "p");
                     paikallinenOpintojakso.getLaajaAlainenOsaaminen().forEach(laajaAlainenDto -> lops2019Service
                             .getLaajaAlaisetOsaamiset(docBase.getKieli()).getLaajaAlaisetOsaamiset().stream()
                             .filter(lao -> lao.getKoodi() != null
@@ -1088,7 +1117,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 if (oa != null) {
                     Lops2019ArviointiDto arviointi = oa.getArviointi();
                     if (arviointi != null && arviointi.getKuvaus() != null) {
-                        addTeksti(docBase, getTextString(docBase, oa.getNimi()), "h6");
+                        String nimi = getTextString(docBase, oa.getNimi());
+                        addTeksti(docBase, StringUtils.isEmpty(nimi)
+                                ? messages.translate("nimeton-oppiaine", docBase.getKieli())
+                                : nimi, "h6");
                         LokalisoituTekstiDto kuvaus = arviointi.getKuvaus();
                         addLokalisoituteksti(docBase, kuvaus, "cite");
                     }
@@ -1111,7 +1143,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             oj.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
                 LokalisoituTekstiDto paikallinenArviointi = paikallinenOpintojakso.getArviointi();
                 if (paikallinenArviointi != null) {
-                    addLokalisoituteksti(docBase, paikallinenOpintojakso.getNimi(), "p");
+                    String nimi = getTextString(docBase, paikallinenOpintojakso.getNimi());
+                    addTeksti(docBase, StringUtils.isEmpty(nimi)
+                            ? messages.translate("nimeton-opintojakso", docBase.getKieli())
+                            : nimi, "p");
                     addLokalisoituteksti(docBase, paikallinenArviointi, "div");
                 }
             });
@@ -1138,7 +1173,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         StringBuilder stringBuilder = new StringBuilder();
 
         // Nimi
-        stringBuilder.append(getTextString(docBase, m.getNimi()));
+        String nimi = getTextString(docBase, m.getNimi());
+        stringBuilder.append(StringUtils.isEmpty(nimi)
+                ? messages.translate("nimeton-moduuli", docBase.getKieli())
+                : nimi);
 
         // Opintopisteet
         BigDecimal laajuus = m.getLaajuus();
@@ -1180,7 +1218,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         StringBuilder stringBuilder = new StringBuilder();
 
         // Nimi
-        stringBuilder.append(getTextString(docBase, paikallinenOpintojakso.getNimi()));
+        String nimi = getTextString(docBase, paikallinenOpintojakso.getNimi());
+        stringBuilder.append(StringUtils.isEmpty(nimi)
+                ? messages.translate("nimeton-opintojakso", docBase.getKieli())
+                : nimi);
 
         // Opintopisteet
         Long laajuus = paikallinenOpintojakso.getLaajuus();

@@ -67,7 +67,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
