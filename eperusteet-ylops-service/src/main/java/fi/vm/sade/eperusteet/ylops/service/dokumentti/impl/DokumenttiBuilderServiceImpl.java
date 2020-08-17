@@ -263,14 +263,13 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         docBase.getOps().getOrganisaatiot().stream()
                 .map(org -> organisaatioService.getOrganisaatio(org))
+                .filter(Objects::nonNull)
                 .filter(node -> {
-                    if (node != null) {
-                        JsonNode tyypit = node.get("tyypit");
-                        if (tyypit != null && tyypit.isArray()) {
-                            for (JsonNode tyyppi : tyypit) {
-                                if (tyyppi != null && Objects.equals(tyyppi.textValue(), "Koulutustoimija")) {
-                                    return true;
-                                }
+                    JsonNode tyypit = node.get("tyypit");
+                    if (tyypit != null && tyypit.isArray()) {
+                        for (JsonNode tyyppi : tyypit) {
+                            if (tyyppi != null && Objects.equals(tyyppi.textValue(), "Koulutustoimija")) {
+                                return true;
                             }
                         }
                     }
@@ -308,11 +307,12 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         docBase.getOps().getOrganisaatiot().stream()
                 .map(org -> organisaatioService.getOrganisaatio(org))
+                .filter(Objects::nonNull)
                 .filter(node -> {
                     JsonNode tyypit = node.get("tyypit");
-                    if (tyypit.isArray()) {
-                        for (JsonNode asd : tyypit) {
-                            if (asd.textValue().equals("Oppilaitos")) {
+                    if (tyypit != null && tyypit.isArray()) {
+                        for (JsonNode tyyppi : tyypit) {
+                            if (tyyppi.textValue().equals("Oppilaitos")) {
                                 return true;
                             }
                         }
