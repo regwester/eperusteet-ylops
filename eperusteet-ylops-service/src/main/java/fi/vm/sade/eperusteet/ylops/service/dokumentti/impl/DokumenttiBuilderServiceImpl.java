@@ -42,12 +42,13 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
-import org.apache.pdfbox.preflight.ValidationResult;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -232,10 +233,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         docBase.getHeadElement().appendChild(title);
 
         String kuvaus = getTextString(docBase, docBase.getOps().getKuvaus());
-        if (kuvaus != null && kuvaus.length() != 0) {
+        if (!StringUtils.isEmpty(kuvaus)) {
             Element description = docBase.getDocument().createElement("meta");
             description.setAttribute("name", "description");
-            description.setAttribute("content", kuvaus);
+            description.setAttribute("content", Jsoup.parse(kuvaus).text());
             docBase.getHeadElement().appendChild(description);
         }
 
