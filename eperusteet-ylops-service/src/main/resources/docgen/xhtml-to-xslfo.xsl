@@ -440,7 +440,7 @@
                               font-size="0pt" id="{@name}"/>
                 </xsl:if>
             </xsl:when>
-            <xsl:when test="@href and @href != '' and starts-with(@href,'#')">
+            <xsl:when test="@href and @href != '' and starts-with(@href,'#') and string-length(@href) &gt; 1">
                 <fo:basic-link color="red">
                     <xsl:attribute name="internal-destination">
                         <xsl:value-of select="substring-after(@href,'#')"/>
