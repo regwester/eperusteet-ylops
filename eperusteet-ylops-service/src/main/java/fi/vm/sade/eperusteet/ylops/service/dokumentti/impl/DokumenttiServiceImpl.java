@@ -40,6 +40,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import javax.imageio.ImageIO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * @author iSaul
  */
+@Slf4j
 @Service
 @Transactional
 public class DokumenttiServiceImpl implements DokumenttiService {
@@ -178,6 +180,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
             dokumenttiRepository.save(dokumentti);
         } catch (Exception ex) {
+            log.error(ExceptionUtils.getStackTrace(ex));
             dto.setTila(DokumenttiTila.EPAONNISTUI);
             dto.setVirhekoodi(ex.getLocalizedMessage());
 
